@@ -176,6 +176,10 @@ class WebContentsAndroid;
 class SelectionPopupDelegate;
 #endif
 
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+class SurfaceEmbedConnectorImpl;
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+
 // CreatedWindow holds the WebContentsImpl and target url between IPC calls to
 // CreateNewWindow and ShowCreatedWindow.
 struct CONTENT_EXPORT CreatedWindow {
@@ -1622,6 +1626,21 @@ class CONTENT_EXPORT WebContentsImpl
 
   WebContents* GetDocumentPictureInPictureOpener();
 
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  // SetSurfaceEmbedConnector and ClearSurfaceEmbedConnector are used in WebUI
+  // browser to embed a WebContents into a SurfaceEmbed plugin. The
+  // SurfaceEmbedConnector is used to connect the WebContents to the plugin and
+  // manage the communication between them. See
+  // components/surface_embed/README.md for more details.
+  // Sets the SurfaceEmbedConnector for this WebContents. Called when the
+  // WebContents is being attached into a SurfaceEmbed plugin via the connector.
+  void SetSurfaceEmbedConnector(
+      std::unique_ptr<content::SurfaceEmbedConnectorImpl> connector);
+  // Clears the SurfaceEmbedConnector for this WebContents. Called when the
+  // WebContents is being detached from a SurfaceEmbed plugin.
+  void ClearSurfaceEmbedConnector();
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2308,6 +2327,12 @@ class CONTENT_EXPORT WebContentsImpl
   // Manages the guest state for browser plugin, if this WebContents is a guest;
   // NULL otherwise.
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  // Helps connect to embedder when embedded in a SurfaceEmbed plugin.
+  // nullptr if not embedded.
+  std::unique_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   // Helper classes ------------------------------------------------------------
 

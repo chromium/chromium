@@ -58,7 +58,7 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<SurfaceEmbedConnectorImpl> CreateConnector(
       WebContents* child_web_contents,
-      WebContentsImpl* parent_web_contents,
+      WebContents* parent_web_contents,
       SurfaceEmbedConnector::Delegate* delegate) {
     return base::WrapUnique(new SurfaceEmbedConnectorImpl(
         child_web_contents, parent_web_contents, delegate));
@@ -161,13 +161,13 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Attach) {
                                 GetParentWebContents(), &delegate);
 
   // Verify the connector is attached to the child WebContents.
-  SurfaceEmbedConnectorImpl* connector =
-      SurfaceEmbedConnectorImpl::FromWebContents(child_web_contents.get());
+  auto* connector = child_web_contents->GetSurfaceEmbedConnector();
   ASSERT_TRUE(connector);
 
   // Verify properties.
   EXPECT_EQ(connector->GetDelegate(), &delegate);
-  EXPECT_EQ(connector->GetParentWebContentsView(),
+  EXPECT_EQ(static_cast<SurfaceEmbedConnectorImpl*>(connector)
+                ->GetParentWebContentsView(),
             GetParentWebContents()->GetView());
 }
 

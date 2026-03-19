@@ -1422,6 +1422,12 @@ WebContentsImpl::~WebContentsImpl() {
     GetOuterWebContents()->DetachUnownedInnerWebContents(this);
   }
 
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  if (surface_embed_connector_) {
+    ClearSurfaceEmbedConnector();
+  }
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+
   if (pointer_lock_widget_) {
     pointer_lock_widget_->RejectPointerLockOrUnlockIfNecessary(
         blink::mojom::PointerLockResult::kElementDestroyed);
@@ -3319,7 +3325,7 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
     // RWHV?
     if (RenderWidgetHostViewBase* prev_rwhv =
             static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
-      if (prev_rwhv && !prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
+      if (!prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
         prev_rwhv->Destroy();
       }
     }
@@ -3469,8 +3475,109 @@ void WebContentsImpl::DetachUnownedInnerWebContents(
 
 #if BUILDFLAG(ENABLE_SURFACE_EMBED)
 SurfaceEmbedConnector* WebContentsImpl::GetSurfaceEmbedConnector() const {
-  return SurfaceEmbedConnectorImpl::FromWebContents(
-      const_cast<WebContentsImpl*>(this));
+  return surface_embed_connector_.get();
+}
+
+void WebContentsImpl::SetSurfaceEmbedConnector(
+    std::unique_ptr<SurfaceEmbedConnectorImpl> connector) {
+  CHECK(connector);
+  // Can't attach an inner WebContents into SurfaceEmbed.
+  CHECK(!node_.outer_web_contents());
+
+  // Replace view with a WebContentsViewChildFrame view for the WebContents
+  // being embedded. The WebContentsViewChildFrame will connect visual to the
+  // embedder using SurfaceEmbedConnector from the provided `this` WebContents
+  // object.
+  view_ = std::make_unique<WebContentsViewChildFrame>(
+      this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
+      &render_view_host_delegate_view_);
+
+  // On platforms where destroying the WebContents' view does not also destroy
+  // the platform RenderWidgetHostView, we need to destroy it if it exists.
+  // TODO(mcnee): Should all platforms' WebContentsView destroy the platform
+  // RWHV?
+  // Do this for all outermost main frames including speculative render frame
+  // host and the ones in prerender and BFCache.
+  for (auto* rfh : GetOutermostMainFramesForViewChange()) {
+    if (RenderWidgetHostViewBase* prev_rwhv =
+            static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
+      if (!prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
+        prev_rwhv->Destroy();
+      }
+    }
+  }
+
+  // Must unregister before setting the connector as that will change the
+  // TextInputManager and InputEventRouter for this WebContents. Without doing
+  // this, child frames' RWHVs would fail to unregister from the previous
+  // TextInputManager and InputEventRouter.
+  RecursivelyUnregisterRenderWidgetHostViews();
+
+  // The new connector must be set before creating RWHVs as they need to get the
+  // new TextInputManager and InputEventRouter.
+  surface_embed_connector_ = std::move(connector);
+
+  // Recreate views for all outermost main frames impacted by the WebContents
+  // `view_` change, including speculative render frame host and the ones in
+  // prerender and BFCache.
+  for (auto* rfh : GetOutermostMainFramesForViewChange()) {
+    auto* render_manager = rfh->frame_tree_node()->render_manager();
+    RenderViewHostImpl* rvh = rfh->render_view_host();
+    render_manager->InitRenderView(rfh->GetSiteInstance()->group(), rvh,
+                                   /*proxy=*/nullptr,
+                                   /*navigation_metrics_token=*/std::nullopt);
+    if (!rfh->GetView()) {
+      CreateRenderWidgetHostViewForRenderManager(rvh);
+    }
+  }
+
+  RecursivelyRegisterRenderWidgetHostViews();
+}
+
+void WebContentsImpl::ClearSurfaceEmbedConnector() {
+  CHECK(surface_embed_connector_);
+
+  // RenderWidgetHostView of main frames that are of type
+  // RenderWidgetHostViewChildFrame should be re-created with appropriate
+  // platform views.
+  // Do this for all outermost main frames including speculative render frame
+  // host and the ones in prerender and BFCache.
+  std::vector<RenderViewHostImpl*> list_of_rvh_with_rwhv;
+  for (auto* rfh : GetOutermostMainFramesForViewChange()) {
+    auto* rvh = rfh->render_view_host();
+    if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
+      if (rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
+        list_of_rvh_with_rwhv.push_back(rvh);
+      }
+      rvh->GetWidget()->GetView()->Destroy();
+    }
+  }
+
+  if (!IsBeingDestroyed()) {
+    render_view_host_delegate_view_ = nullptr;
+    view_ = nullptr;
+  }
+
+  // Because there may be child frames, we need to unregister all RWHVs before
+  // clearing the connector, which will change the TextInputManager and
+  // InputEventRouter for this WebContents.
+  RecursivelyUnregisterRenderWidgetHostViews();
+
+  surface_embed_connector_.reset();
+
+  // Recreate and register RenderWidgetHostView.
+  if (!IsBeingDestroyed()) {
+    // Recreate WebContentsView.
+    view_ = CreateWebContentsView(
+        this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
+        &render_view_host_delegate_view_);
+    view_->CreateView(gfx::NativeView());
+
+    for (RenderViewHostImpl* rvh : list_of_rvh_with_rwhv) {
+      CreateRenderWidgetHostViewForRenderManager(rvh);
+    }
+    RecursivelyRegisterRenderWidgetHostViews();
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
@@ -4597,6 +4704,12 @@ WebContentsImpl::GetInputEventRouter() {
     if (GetOuterWebContents()) {
       return GetOuterWebContents()->GetInputEventRouter();
     }
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+    if (surface_embed_connector_) {
+      return surface_embed_connector_->GetInputEventRouter();
+    }
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
     if (!rwh_input_event_router_.get()) {
       rwh_input_event_router_ =
@@ -6200,6 +6313,12 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
   if (GetOuterWebContents()) {
     return GetOuterWebContents()->GetTextInputManager();
   }
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  if (surface_embed_connector_) {
+    return surface_embed_connector_->GetTextInputManager();
+  }
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   if (!text_input_manager_ && !browser_plugin_guest_) {
     text_input_manager_ = std::make_unique<TextInputManager>();

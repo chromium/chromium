@@ -38,6 +38,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -127,6 +128,11 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#include "content/browser/surface_embed/surface_embed_connector_impl.h"
+#include "ui/gfx/native_ui_types.h"
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace content {
 
@@ -5558,6 +5564,958 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+// SurfaceEmbedConnectorWebContentsBrowserTest tests are similar to
+// UnownedInnerWebContentsBrowserTest but for SurfaceEmbedConnector instead of
+// UnownedInnerWebContents. They test almost the same set of scenarios to ensure
+// that views of the embedded WebContents are properly updated when being
+// attached or detached. One scenario that is tested only in
+// SurfaceEmbedConnectorWebContentsBrowserTest is BFCache scenario which is
+// supported when embedding via SurfaceEmbedConnector but not supported for
+// unowned inner WebContents.
+class SurfaceEmbedConnectorWebContentsBrowserTest
+    : public WebContentsImplBrowserTest {
+ public:
+  SurfaceEmbedConnectorWebContentsBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SurfaceEmbedConnectorWebContentsBrowserTest::web_contents,
+            base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  }
+
+  // PrerenderTestHelper must be created at test creation time and requires
+  // WebContents::Getter.
+  WebContents* web_contents() { return prerender_target_web_contents_.get(); }
+
+  void set_prerender_target_web_contents(WebContents* web_contents) {
+    prerender_target_web_contents_ = web_contents->GetWeakPtr();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  std::unique_ptr<SurfaceEmbedConnectorImpl> CreateConnector(
+      WebContents* child_web_contents,
+      WebContents* parent_web_contents) {
+    return base::WrapUnique(
+        new SurfaceEmbedConnectorImpl(child_web_contents, parent_web_contents,
+                                      &surface_embed_connector_delegate_));
+  }
+
+ private:
+  // Mock SurfaceEmbedConnector::Delegate that does nothing (no-op)
+  class MockSurfaceEmbedConnectorDelegate
+      : public SurfaceEmbedConnector::Delegate {
+   public:
+    MockSurfaceEmbedConnectorDelegate() = default;
+    ~MockSurfaceEmbedConnectorDelegate() = default;
+
+    // SurfaceEmbedConnector::Delegate implementation - all no-ops
+    void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override {}
+    void UpdateLocalSurfaceIdFromChild(
+        const viz::LocalSurfaceId& local_surface_id) override {}
+    void DetachedByHost() override {}
+    bool IsAttachedForTesting() const override { return false; }
+  };
+
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::WeakPtr<WebContents> prerender_target_web_contents_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockSurfaceEmbedConnectorDelegate surface_embed_connector_delegate_;
+};
+
+// Test setting and clearing a SurfaceEmbedConnector
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SetAndClearSurfaceEmbedConnector) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("outer.com", "/simple_page.html"));
+  const GURL inner_url(
+      embedded_test_server()->GetURL("inner.com", "/title1.html"));
+
+  // Setup outer and inner WebContents
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
+
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
+
+  // Verify that WebContents has different native views before setting
+  // SurfaceEmbedConnector.
+  gfx::NativeView outer_native_view = outer_wc->GetNativeView();
+  ASSERT_TRUE(outer_native_view);
+  ASSERT_TRUE(inner_wc->GetNativeView());
+  EXPECT_NE(outer_native_view, inner_wc->GetNativeView());
+
+  // Verify that inner WebContents's RenderWidgetHostView has not changed to
+  // RenderWidgetHostViewChildFrame yet, and that views are registered in their
+  // respective WebContents for input event routing and text input management.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+    ASSERT_FALSE(inner_view->IsRenderWidgetHostViewChildFrame());
+
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(1U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(1U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(inner_view));
+  }
+
+  // Create the SurfaceEmbedConnector
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  // Set SurfaceEmbedConnector
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  // Verify that the connection is established.
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+  // Verify that the inner WebContents doesn't have outer WebContents set since
+  // it's not attached as an inner WebContents.
+  EXPECT_EQ(nullptr, inner_wc->GetOuterWebContents());
+
+  // Verify that inner WebContents now share the same native view with outer
+  // WebContents and the native view of outer WebContents has not changed.
+  EXPECT_EQ(outer_native_view, outer_wc->GetNativeView());
+  EXPECT_EQ(outer_native_view, inner_wc->GetNativeView());
+
+  // Verify that inner WebContents's RenderWidgetHostView has changed to
+  // RenderWidgetHostViewChildFrame, and that views are registered in outer
+  // WebContents after setting connector for input event routing and text input
+  // management.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+    ASSERT_TRUE(inner_view->IsRenderWidgetHostViewChildFrame());
+
+    EXPECT_EQ(2U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(2U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(inner_view));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+
+  // Clear the SurfaceEmbedConnector
+  inner_wc_impl->ClearSurfaceEmbedConnector();
+
+  // Verify that the connection is broken.
+  EXPECT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that WebContents has different native views after clearing
+  // SurfaceEmbedConnector and the native view of outer WebContents has not
+  // changed.
+  EXPECT_EQ(outer_native_view, outer_wc->GetNativeView());
+  ASSERT_TRUE(inner_wc->GetNativeView());
+  EXPECT_NE(outer_native_view, inner_wc->GetNativeView());
+
+  // Verify that inner WebContents's RenderWidgetHostView has changed to
+  // platform view and not RenderWidgetHostViewChildFrame, and that views are
+  // registered in their respective WebContents for input event routing and text
+  // input management.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+    ASSERT_FALSE(inner_view->IsRenderWidgetHostViewChildFrame());
+
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(1U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(1U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(inner_view));
+  }
+
+  // Verify inner WebContents still exists and is functional (e.g. can navigate)
+  EXPECT_FALSE(inner_wc->IsBeingDestroyed());
+  EXPECT_TRUE(NavigateToURL(inner_wc.get(), embedded_test_server()->GetURL(
+                                                "inner.com", "/title2.html")));
+  EXPECT_EQ(u"Title Of Awesomeness", inner_wc->GetTitle());
+
+  // Set the SurfaceEmbedConnector again to verify it works as expected.
+  auto connector2 = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr2 = connector2.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector2));
+  EXPECT_EQ(connector_ptr2, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that inner WebContents now share the same native view with outer
+  // WebContents and the native view of outer WebContents has not changed.
+  EXPECT_EQ(outer_native_view, outer_wc->GetNativeView());
+  EXPECT_EQ(outer_native_view, inner_wc->GetNativeView());
+
+  // Verify that views are registered in outer WebContents after setting
+  // connector for input event routing and text input management.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+
+    EXPECT_EQ(2U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(2U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(inner_view));
+
+    // Use RunUntil to wait for old view that is expected to be deleted
+    // asynchronously as part of the last navigation in the inner WebContents
+    // to be deleted and then release the registrations to input event router
+    // and text input manager.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return 0u == inner_event_router->RegisteredViewCountForTesting();
+    }));
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SurfaceEmbedConnectorWithOOPIF) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a),b)"));
+
+  // Setup outer WebContents
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
+
+  // Setup inner WebContents
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
+
+  // Verify RenderFrameHosts are created for the inner WebContents.
+  RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh_a);
+  RenderFrameHost* rfh_b1 = ChildFrameAt(rfh_a, 0);
+  ASSERT_TRUE(rfh_b1);
+  RenderFrameHost* rfh_a_nested = ChildFrameAt(rfh_b1, 0);
+  ASSERT_TRUE(rfh_a_nested);
+  RenderFrameHost* rfh_b2 = ChildFrameAt(rfh_a, 1);
+  ASSERT_TRUE(rfh_b2);
+
+  // Verify that views are registered in their respective WebContents for input
+  // event routing and text input management.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(4U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(4U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
+  // Set the SurfaceEmbedConnector
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that RenderFrameHosts are not changed after setting connector.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  ASSERT_TRUE(rfh_a);
+  EXPECT_EQ(rfh_b1, ChildFrameAt(rfh_a, 0));
+  EXPECT_EQ(rfh_a_nested, ChildFrameAt(rfh_b1, 0));
+  EXPECT_EQ(rfh_b2, ChildFrameAt(rfh_a, 1));
+
+  // Verify that views are registered appropriately after setting connector for
+  // input event routing and text input management.
+  {
+    EXPECT_EQ(5U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(5U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+
+  // Clear the SurfaceEmbedConnector
+  inner_wc_impl->ClearSurfaceEmbedConnector();
+  ASSERT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive.
+  EXPECT_TRUE(rfh_a->IsRenderFrameLive());
+  EXPECT_TRUE(rfh_b1->IsRenderFrameLive());
+  EXPECT_TRUE(rfh_a_nested->IsRenderFrameLive());
+  EXPECT_TRUE(rfh_b2->IsRenderFrameLive());
+
+  // Verify that views are registered in their respective WebContents for input
+  // event routing and text input management.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(4U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(4U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
+  // Verify that the inner WebContents's RenderViewHosts are still alive.
+  EXPECT_TRUE(static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost())
+                  ->IsRenderViewLive());
+  EXPECT_TRUE(static_cast<RenderViewHostImpl*>(rfh_b1->GetRenderViewHost())
+                  ->IsRenderViewLive());
+  EXPECT_TRUE(
+      static_cast<RenderViewHostImpl*>(rfh_a_nested->GetRenderViewHost())
+          ->IsRenderViewLive());
+  EXPECT_TRUE(static_cast<RenderViewHostImpl*>(rfh_b2->GetRenderViewHost())
+                  ->IsRenderViewLive());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SurfaceEmbedConnectorWithNavigationPendingOOPIF) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b()");
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
+
+  // Setup inner WebContents with a navigation pending OOPIF.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
+  // Navigate inner WebContents and pause after speculative render frame host is
+  // created for the OOP iframe at which time the view for the iframe is
+  // registered with input event router.
+  TestNavigationManager nav_manager_b(inner_wc_impl, url_b);
+  inner_wc->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(inner_url));
+  nav_manager_b.WaitForSpeculativeRenderFrameHostCreation();
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh_a);
+  // OOPIF should be using speculative render frame host for the navigation.
+  FrameTreeNode* tree_node_b =
+      inner_wc_impl->GetPrimaryFrameTree().root()->child_at(0);
+  RenderFrameHost* rfh_b =
+      tree_node_b->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+
+  // Verify that views for pending navigation are registered in their respective
+  // WebContents for input event routing and text input management.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(2U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(2U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+  }
+
+  // Set the SurfaceEmbedConnector.
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that RenderFrameHosts are not changed after setting connector.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_b, tree_node_b->render_manager()->speculative_frame_host());
+
+  // Verify that views are registered appropriately after setting connector for
+  // input event routing and text input management.
+  {
+    EXPECT_EQ(3U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(3U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+
+  // Clear the SurfaceEmbedConnector.
+  inner_wc_impl->ClearSurfaceEmbedConnector();
+  ASSERT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive.
+  EXPECT_TRUE(rfh_a->IsRenderFrameLive());
+  EXPECT_TRUE(rfh_b->IsRenderFrameLive());
+
+  // Verify that views are registered in their respective WebContents for input
+  // event routing and text input management.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(2U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(2U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+  }
+
+  // Set the SurfaceEmbedConnector again.
+  auto connector2 = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr2 = connector2.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector2));
+  ASSERT_EQ(connector_ptr2, inner_wc->GetSurfaceEmbedConnector());
+
+  // Let the navigation complete.
+  ASSERT_TRUE(nav_manager_b.WaitForNavigationFinished());
+  EXPECT_TRUE(WaitForLoadStop(inner_wc_impl));
+  // Verify the speculative rfh is switched to be current rfh.
+  ASSERT_EQ(rfh_b, ChildFrameAt(rfh_a, 0));
+
+  // Verify that views are still registered appropriately for input event
+  // routing and text input management.
+  {
+    EXPECT_EQ(3U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(3U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SetSurfaceEmbedConnectorWithPendingCrossSiteNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url_a(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL inner_url_b(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Setup inner WebContents with a pending cross site navigation.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url_a));
+  // Navigate inner WebContents and pause after speculative render frame host is
+  // is created for the cross site navigation at which time the view for it is
+  // also created.
+  TestNavigationManager nav_manager_b(inner_wc_impl, inner_url_b);
+  inner_wc->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(inner_url_b));
+  nav_manager_b.WaitForSpeculativeRenderFrameHostCreation();
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh_a);
+  // Cross site pending navigation should be using speculative render frame host
+  // for the navigation.
+  RenderFrameHost* rfh_b = inner_wc_impl->GetPrimaryFrameTree()
+                               .root()
+                               ->render_manager()
+                               ->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+
+  // Verify that RenderWidgetHostViews have not changed to
+  // RenderWidgetHostViewChildFrame yet.
+  {
+    auto* rwhv_a = static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView());
+    ASSERT_TRUE(rwhv_a);
+    ASSERT_FALSE(rwhv_a->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    ASSERT_FALSE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Set the SurfaceEmbedConnector.
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that RenderFrameHosts are not changed after setting connector.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_b, inner_wc_impl->GetPrimaryFrameTree()
+                       .root()
+                       ->render_manager()
+                       ->speculative_frame_host());
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv_a = static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView());
+    ASSERT_TRUE(rwhv_a);
+    EXPECT_TRUE(rwhv_a->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    EXPECT_TRUE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Let the navigation complete.
+  ASSERT_TRUE(nav_manager_b.WaitForNavigationFinished());
+  EXPECT_TRUE(WaitForLoadStop(inner_wc_impl));
+
+  // Verify the speculative rfh is switched to be current rfh.
+  ASSERT_EQ(rfh_b, inner_wc->GetPrimaryMainFrame());
+
+  // Verify that RenderWidgetHostViews is still RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    ASSERT_TRUE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SetSurfaceEmbedConnectorWithPrerender) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL prerender_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Setup inner WebContents with a prerender.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  // Setup Delegate for inner WebContents so that prerender request would not be
+  // dropped by PrerenderHostRegistry::CreateAndStartHost.
+  // In production code, inner WebContents is expected to have delegate set.
+  inner_wc->SetDelegate(outer_wc->GetDelegate());
+  set_prerender_target_web_contents(inner_wc.get());
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  // Add a prerender in inner WebContents.
+  PrerenderHostId prerender_host_id =
+      prerender_helper().AddPrerender(prerender_url);
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* inner_rfh = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(inner_rfh);
+  RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  // Verify that RenderWidgetHostViews have not changed to
+  // RenderWidgetHostViewChildFrame yet.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    ASSERT_FALSE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_FALSE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Set the SurfaceEmbedConnector.
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    EXPECT_TRUE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    EXPECT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Clear the SurfaceEmbedConnector.
+  inner_wc_impl->ClearSurfaceEmbedConnector();
+  ASSERT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have changed to platform views and not
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    ASSERT_FALSE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_FALSE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Set the SurfaceEmbedConnector again.
+  auto connector2 = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr2 = connector2.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector2));
+  EXPECT_EQ(connector_ptr2, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    EXPECT_TRUE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    EXPECT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Navigation to activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Verify the prerendered rfh is switched to be the current rfh.
+  ASSERT_EQ(prerender_rfh, inner_wc->GetPrimaryMainFrame());
+
+  // Verify that RenderWidgetHostViews are still RenderWidgetHostViewChildFrame.
+  {
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       SetSurfaceEmbedConnectorWithBFCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url1(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL inner_url2(
+      embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Setup inner WebContents with BFCache navigation.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  // Setup Delegate for inner WebContents so that IsBackForwardCacheSupported()
+  // for the inner WebContents delegate goes to content::Shell and returns true.
+  // In production code, inner WebContents is expected to have delegate setup
+  // correctly.
+  inner_wc->SetDelegate(outer_wc->GetDelegate());
+
+  // Navigate to first page, then second page to put first page in BFCache.
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url1));
+  auto* rfh1 = inner_wc_impl->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh1);
+
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url2));
+  auto* rfh2 = inner_wc_impl->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh2);
+  EXPECT_NE(rfh1, rfh2);
+
+  // Verify first page is in BFCache.
+  ASSERT_TRUE(rfh1->IsInBackForwardCache());
+  EXPECT_FALSE(rfh2->IsInBackForwardCache());
+
+  // Verify that RenderWidgetHostViews have not changed to
+  // RenderWidgetHostViewChildFrame yet.
+  {
+    auto* rwhv1 = static_cast<RenderWidgetHostViewBase*>(rfh1->GetView());
+    ASSERT_TRUE(rwhv1);
+    ASSERT_FALSE(rwhv1->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv2 = static_cast<RenderWidgetHostViewBase*>(rfh2->GetView());
+    ASSERT_TRUE(rwhv2);
+    ASSERT_FALSE(rwhv2->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Set the SurfaceEmbedConnector.
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr = connector.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+  EXPECT_EQ(connector_ptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(rfh1->IsRenderFrameLive());
+  EXPECT_TRUE(rfh2->IsRenderFrameLive());
+  EXPECT_EQ(rfh2, inner_wc->GetPrimaryMainFrame());
+  EXPECT_TRUE(rfh1->IsInBackForwardCache());
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv1 = static_cast<RenderWidgetHostViewBase*>(rfh1->GetView());
+    ASSERT_TRUE(rwhv1);
+    EXPECT_TRUE(rwhv1->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv2 = static_cast<RenderWidgetHostViewBase*>(rfh2->GetView());
+    ASSERT_TRUE(rwhv2);
+    EXPECT_TRUE(rwhv2->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Clear the SurfaceEmbedConnector.
+  inner_wc_impl->ClearSurfaceEmbedConnector();
+  ASSERT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(rfh1->IsRenderFrameLive());
+  EXPECT_TRUE(rfh2->IsRenderFrameLive());
+  EXPECT_EQ(rfh2, inner_wc->GetPrimaryMainFrame());
+  EXPECT_TRUE(rfh1->IsInBackForwardCache());
+
+  // Verify that RenderWidgetHostViews have changed to platform views and not
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv1 = static_cast<RenderWidgetHostViewBase*>(rfh1->GetView());
+    ASSERT_TRUE(rwhv1);
+    ASSERT_FALSE(rwhv1->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv2 = static_cast<RenderWidgetHostViewBase*>(rfh2->GetView());
+    ASSERT_TRUE(rwhv2);
+    ASSERT_FALSE(rwhv2->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Set the SurfaceEmbedConnector again.
+  auto connector2 = CreateConnector(inner_wc_impl, outer_wc);
+  auto* connector_ptr2 = connector2.get();
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector2));
+  EXPECT_EQ(connector_ptr2, inner_wc->GetSurfaceEmbedConnector());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(rfh1->IsRenderFrameLive());
+  EXPECT_TRUE(rfh2->IsRenderFrameLive());
+  EXPECT_EQ(rfh2, inner_wc->GetPrimaryMainFrame());
+  EXPECT_TRUE(rfh1->IsInBackForwardCache());
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv1 = static_cast<RenderWidgetHostViewBase*>(rfh1->GetView());
+    ASSERT_TRUE(rwhv1);
+    EXPECT_TRUE(rwhv1->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv2 = static_cast<RenderWidgetHostViewBase*>(rfh2->GetView());
+    ASSERT_TRUE(rwhv2);
+    EXPECT_TRUE(rwhv2->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Navigate back to activate the BFCached page.
+  {
+    TestNavigationObserver back_observer(inner_wc_impl);
+    inner_wc->GetController().GoBack();
+    back_observer.Wait();
+  }
+
+  // Verify the BFCached rfh is switched to be the current rfh.
+  ASSERT_EQ(rfh1, inner_wc->GetPrimaryMainFrame());
+  EXPECT_FALSE(rfh1->IsInBackForwardCache());
+  EXPECT_TRUE(rfh2->IsRenderFrameLive());
+  EXPECT_TRUE(rfh2->IsInBackForwardCache());
+
+  // Verify that RenderWidgetHostViews are still RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv1 = static_cast<RenderWidgetHostViewBase*>(rfh1->GetView());
+    ASSERT_TRUE(rwhv1);
+    ASSERT_TRUE(rwhv1->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv2 = static_cast<RenderWidgetHostViewBase*>(rfh2->GetView());
+    ASSERT_TRUE(rwhv2);
+    EXPECT_TRUE(rwhv2->IsRenderWidgetHostViewChildFrame());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        ShutdownDuringSpeculativeNavigation) {

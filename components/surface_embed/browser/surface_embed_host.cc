@@ -80,6 +80,7 @@ SurfaceEmbedHost::SurfaceEmbedHost(SurfaceEmbedHostCollection* collection)
     : collection_(*collection) {}
 
 SurfaceEmbedHost::~SurfaceEmbedHost() {
+  DetachConnector();
   if (destruction_callback_for_testing_) {
     std::move(destruction_callback_for_testing_).Run();
   }
@@ -112,12 +113,7 @@ void SurfaceEmbedHost::AttachConnector(
   // bound.
   CHECK(surface_embed_);
 
-  if (content_id.is_empty()) {
-    mojo::ReportBadMessage(
-        "Invalid content_id in SurfaceEmbedHost::AttachConnector");
-    return;
-  }
-
+  CHECK(!content_id.is_empty());
   guest_contents::GuestContentsHandle* guest_handle =
       guest_contents::GuestContentsHandle::FromID(content_id);
   CHECK(guest_handle);
@@ -131,17 +127,12 @@ void SurfaceEmbedHost::AttachConnector(
   // SurfaceEmbedWebPlugin stay in sync.
   if (auto* connector = web_contents_to_attach->GetSurfaceEmbedConnector()) {
     connector->GetDelegate()->DetachedByHost();
-    // TODO(surface-embed): Once content::SurfaceEmbedConnector::Detach() is
-    // implemented, call
-    // `CHECK(!web_contents_to_attach->GetSurfaceEmbedConnector());` here to
-    // ensure the detachment was successful.
+    CHECK(!web_contents_to_attach->GetSurfaceEmbedConnector());
   }
 
   // If this host already has a child attached, we need to detach it first. Note
   // that this request comes from the parent side, so we don't notify the
   // SurfaceEmbed as it initiated the detachment.
-  // Note that without a functioning Detach(), reattaching will fail because
-  // WCUD::CreateForWebContents would fail since the WCUD would already exist.
   DetachConnector();
 
   child_contents_ = web_contents_to_attach->GetWeakPtr();
@@ -168,10 +159,10 @@ void SurfaceEmbedHost::AttachConnector(
 }
 
 void SurfaceEmbedHost::DetachConnector() {
-  // TODO(surface-embed): When available, first call
-  // `content::SurfaceEmbedConnector::Detach(child_contents_.get());`.
-  child_contents_ = nullptr;
-  CHECK(!child_contents_);
+  if (GetConnector()) {
+    content::SurfaceEmbedConnector::Detach(child_contents_.get());
+    child_contents_ = nullptr;
+  }
 }
 
 void SurfaceEmbedHost::SynchronizeVisualProperties(

@@ -13,7 +13,6 @@
 #include "content/browser/renderer_host/frame_connector.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/surface_embed_connector.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -30,8 +29,6 @@ class RenderWidgetHostInputEventRouter;
 }  // namespace input
 
 namespace content {
-template <typename T>
-class WebContentsUserData;
 
 class DummySurfaceProvider;
 
@@ -43,7 +40,6 @@ class WebContentsView;
 
 class CONTENT_EXPORT SurfaceEmbedConnectorImpl
     : public SurfaceEmbedConnector,
-      public WebContentsUserData<SurfaceEmbedConnectorImpl>,
       public FrameConnector {
  public:
   ~SurfaceEmbedConnectorImpl() override;
@@ -121,28 +117,24 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
  private:
+  friend class SurfaceEmbedConnector;
   friend class SurfaceEmbedConnectorImplBrowserTest;
-  friend class WebContentsUserData<SurfaceEmbedConnectorImpl>;
+  friend class SurfaceEmbedConnectorWebContentsBrowserTest;
 
   // `child_web_contents` will have ownership of this. `delegate` is required to
   // outlive this. Assumes that `child_web_contents` is non-null.
-  //  Note: Since this will live on `child_web_contents`'s WebContentsUserData,
-  //  the constructor must have its first parameter be a `WebContents*` pointing
-  //  to the web contents that owns the WebContentsUserData.
-  // TODO(surface-embed): Remove the note above about WCUD once we land changes
-  // to store as a std::unique_ptr instead.
   SurfaceEmbedConnectorImpl(WebContents* child_web_contents,
-                            WebContentsImpl* parent_web_contents,
+                            WebContents* parent_web_contents,
                             SurfaceEmbedConnector::Delegate* delegate);
 
   WebContentsImpl* parent_web_contents() const;
-  // TODO(surface-embed): Style-wise this should be GetChildWebContents() as
-  // it's not a simple getter anymore. If it doesn't go back to a simple getter
-  // soon after switching away from WCUD, rename it.
-  WebContentsImpl* child_web_contents() const;
+  WebContentsImpl* child_web_contents() const {
+    return child_web_contents_.get();
+  }
 
   raw_ptr<SurfaceEmbedConnector::Delegate> delegate_ = nullptr;
 
+  raw_ptr<WebContentsImpl> child_web_contents_;  // Owns this object.
   base::WeakPtr<WebContents> parent_web_contents_;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
@@ -166,8 +158,6 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
 
   gfx::Size last_received_local_frame_size_;
   double last_received_css_zoom_factor_ = 1;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content

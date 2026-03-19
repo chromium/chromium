@@ -18,25 +18,33 @@
 
 namespace content {
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SurfaceEmbedConnectorImpl);
-
 // static
 void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
                                    WebContents* parent_web_contents,
                                    SurfaceEmbedConnector::Delegate* delegate) {
   CHECK(child_web_contents);
   CHECK(parent_web_contents);
-  auto* parent_impl = static_cast<WebContentsImpl*>(parent_web_contents);
-  WebContentsUserData<SurfaceEmbedConnectorImpl>::CreateForWebContents(
-      child_web_contents, parent_impl, delegate);
+  // Must Detach the child before re-Attaching.
+  CHECK(!child_web_contents->GetSurfaceEmbedConnector());
+  auto connector = base::WrapUnique(new SurfaceEmbedConnectorImpl(
+      child_web_contents, parent_web_contents, delegate));
+  static_cast<WebContentsImpl*>(child_web_contents)
+      ->SetSurfaceEmbedConnector(std::move(connector));
+}
+
+// static
+void SurfaceEmbedConnector::Detach(WebContents* child_web_contents) {
+  // Connector will be freed by ClearSurfaceEmbedConnector().
+  static_cast<WebContentsImpl*>(child_web_contents)
+      ->ClearSurfaceEmbedConnector();
 }
 
 SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     WebContents* child_web_contents,
-    WebContentsImpl* parent_web_contents,
+    WebContents* parent_web_contents,
     SurfaceEmbedConnector::Delegate* delegate)
-    : WebContentsUserData<SurfaceEmbedConnectorImpl>(*child_web_contents),
-      delegate_(delegate),
+    : delegate_(delegate),
+      child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
       parent_web_contents_(parent_web_contents->GetWeakPtr()),
       dummy_surface_provider_(std::make_unique<DummySurfaceProvider>()) {}
 
@@ -81,11 +89,6 @@ void SurfaceEmbedConnectorImpl::OnSynchronizeVisualProperties(
 
 WebContentsImpl* SurfaceEmbedConnectorImpl::parent_web_contents() const {
   return static_cast<WebContentsImpl*>(parent_web_contents_.get());
-}
-
-WebContentsImpl* SurfaceEmbedConnectorImpl::child_web_contents() const {
-  return static_cast<WebContentsImpl*>(
-      const_cast<WebContents*>(&GetWebContents()));
 }
 
 void SurfaceEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
