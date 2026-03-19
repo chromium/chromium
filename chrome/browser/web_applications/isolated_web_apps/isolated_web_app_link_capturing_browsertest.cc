@@ -5,9 +5,12 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -17,7 +20,10 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -25,6 +31,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
@@ -141,6 +148,21 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
 
   void SetUpOnMainThread() override {
     WebAppNavigationCapturingBrowserTestBase::SetUpOnMainThread();
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+
+    fake_origin_association_fetcher_ = origin_association_fetcher.get();
+
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+
+    clock_.SetNow(base::Time::Now());
+    provider().SetClockForTesting(&clock_);
+  }
+
+  void TearDownOnMainThread() override {
+    fake_origin_association_fetcher_ = nullptr;
+    WebAppNavigationCapturingBrowserTestBase::TearDownOnMainThread();
   }
 
  protected:
@@ -150,44 +172,38 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
         "index.html?q=fake_query_to_check_navigation");
   }
 
-  void SetFakeOriginAssociationFetcher(
-      url::Origin request_origin,
+  GURL GetCapturableUrl() {
+    return https_server()->GetURL(
+        "/web_apps/intent_picker_nav_capture/"
+        "index.html");
+  }
+
+  void SetFakeOriginAssociationFetcherData(
+      const url::Origin& origin,
       const web_package::SignedWebBundleId& bundle_id) {
-    auto origin_association_fetcher =
-        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
-
-    origin_association_fetcher->SetData(
-        {{std::move(request_origin),
-          OriginAssociationFileFromAppIdentity(bundle_id.id())}});
-
-    provider().origin_association_manager().SetFetcherForTest(
-        std::move(origin_association_fetcher));
+    fake_origin_association_fetcher_->SetData(
+        {{origin, OriginAssociationFileFromAppIdentity(bundle_id.id())}});
   }
 
   IsolatedWebAppUrlInfo InstallIsolatedWebApp(
       ManifestLaunchHandler_ClientMode client_mode,
       bool with_scope_extensions = true,
       std::string version = "1.0.0") {
-    const auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
-        web_package::test::GetDefaultEd25519KeyPair().public_key);
-
     auto manifest_builder = ManifestBuilder()
                                 .SetName("app_" + version)
                                 .SetVersion(version)
                                 .SetLaunchHandlerClientMode(client_mode);
 
     if (with_scope_extensions) {
-      const url::Origin scope_extended_origin =
-          url::Origin::Create(GetCapturableUrlWithQuery());
-      SetFakeOriginAssociationFetcher(scope_extended_origin, bundle_id);
-      manifest_builder.AddScopeExtension(scope_extended_origin,
-                                         /*has_origin_wildcard=*/false);
+      manifest_builder.AddScopeExtension(
+          url::Origin::Create(GetCapturableUrlWithQuery()),
+          /*has_origin_wildcard=*/false);
     }
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppBuilder(std::move(manifest_builder))
             .AddHtml("/", kIwaHtmlContent)
             .AddJs("script.js", kIwaJsContent)
-            .BuildBundle(bundle_id,
+            .BuildBundle(GetBundleId(),
                          {web_package::test::GetDefaultEd25519KeyPair()})
             ->InstallChecked(browser()->profile());
 
@@ -242,6 +258,17 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
 
   const webapps::AppId& app_id() const { return app_id_; }
   const GURL& app_start_url() const { return app_start_url_; }
+  base::SimpleTestClock& clock() { return clock_; }
+
+  const web_package::SignedWebBundleId GetBundleId() const {
+    return web_package::SignedWebBundleId::CreateForPublicKey(
+        web_package::test::GetDefaultEd25519KeyPair().public_key);
+  }
+
+  const webapps::TestWebAppOriginAssociationFetcher&
+  fake_origin_association_fetcher() {
+    return *fake_origin_association_fetcher_;
+  }
 
   content::WebContents* GetBrowserTab() {
     return browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -251,6 +278,9 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
   webapps::AppId app_id_;
   GURL app_start_url_;
+  raw_ptr<webapps::TestWebAppOriginAssociationFetcher>
+      fake_origin_association_fetcher_;
+  base::SimpleTestClock clock_;
 };
 
 // Capturing from a standard browser window.
@@ -263,6 +293,8 @@ class IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest
  public:
   void SetUpOnMainThread() override {
     IsolatedWebAppLinkCapturingBrowserTestBase::SetUpOnMainThread();
+    SetFakeOriginAssociationFetcherData(
+        url::Origin::Create(GetCapturableUrlWithQuery()), GetBundleId());
     InstallIsolatedWebApp(GetClientMode());
   }
 
@@ -400,6 +432,8 @@ class IsolatedWebAppLinkCapturingFromAppWindowBrowserTest
  public:
   void SetUpOnMainThread() override {
     IsolatedWebAppLinkCapturingBrowserTestBase::SetUpOnMainThread();
+    SetFakeOriginAssociationFetcherData(
+        url::Origin::Create(GetCapturableUrlWithQuery()), GetBundleId());
     InstallIsolatedWebApp(GetClientMode());
   }
 
@@ -575,6 +609,8 @@ using IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest =
 // Note, link capturing is disabled in ChromeOS by default for PWA.
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
                        TargetBlankClick) {
+  SetFakeOriginAssociationFetcherData(
+      url::Origin::Create(GetCapturableUrlWithQuery()), GetBundleId());
   InstallIsolatedWebApp(ManifestLaunchHandler_ClientMode::kNavigateNew);
   // Create link with target="_blank".
   GURL destination_url = GetCapturableUrlWithQuery();
@@ -604,6 +640,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
 // scope extensions.
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
                        LinkCaptureAfterUpdateWithScopeExtensions) {
+  SetFakeOriginAssociationFetcherData(
+      url::Origin::Create(GetCapturableUrlWithQuery()), GetBundleId());
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(
       ManifestLaunchHandler_ClientMode::kNavigateNew,
       /*with_scope_extensions=*/false, /*version=*/"1.0.0");
@@ -613,7 +651,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
   IsolatedWebAppTestUpdateServer update_server;
   url::Origin scope_extension_origin =
       url::Origin::Create(GetCapturableUrlWithQuery());
-  SetFakeOriginAssociationFetcher(scope_extension_origin, bundle_id);
 
   auto updated_app =
       IsolatedWebAppBuilder(
@@ -674,6 +711,71 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
       new_browser->tab_strip_model()->GetActiveWebContents();
 
   // Validate the launch params to ensure full end-to-end payload delivery.
+  WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(destination_url));
+}
+
+using IsolatedWebAppLinkCapturingAddValidatedOriginBrowserTest =
+    IsolatedWebAppLinkCapturingBrowserTestBase;
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingAddValidatedOriginBrowserTest,
+                       TargetBlankClickOpensAppWindow) {
+  // Install will not have validated origins.
+  InstallIsolatedWebApp(ManifestLaunchHandler_ClientMode::kNavigateNew);
+
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id(), WebAppFilter::IsIsolatedApp()));
+  EXPECT_THAT(
+      provider().registrar_unsafe().GetValidatedScopeExtensions(app_id()),
+      testing::IsEmpty());
+
+  // Opening IWA should trigger add validated origin associations command.
+  // Advance test clock to prevent throttling, because first validation happened
+  // during installation of an app.
+  clock().Advance(base::Days(2));
+  SetFakeOriginAssociationFetcherData(
+      url::Origin::Create(GetCapturableUrlWithQuery()), GetBundleId());
+  content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
+  content::WebContents* existing_app_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  Browser* existing_app_browser =
+      chrome::FindBrowserWithTab(existing_app_contents);
+  WaitForLaunchParams(existing_app_contents,
+                      /*min_launch_params_to_wait_for=*/1);
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id(), WebAppFilter::IsIsolatedApp()));
+  EXPECT_THAT(
+      provider().registrar_unsafe().GetValidatedScopeExtensions(app_id()),
+      testing::ElementsAre(ScopeExtensionInfo::CreateForScope(
+          GetCapturableUrl(), /*has_origin_wildcard=*/false)));
+
+  // We are already sure that validated scope extensions here, however,
+  // ensuring that links are captured is critical to know that
+  // this app is default user preference to handle links.
+
+  // Create link with target="_blank".
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(existing_app_contents, destination_url, "capture-link",
+                  /*target=*/"_blank");
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(existing_app_contents, "capture-link",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  Browser* new_browser = browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_NE(new_browser, existing_app_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id()));
+
+  content::WebContents* new_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+
   WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_contents, "launchParamsTargetUrls"),

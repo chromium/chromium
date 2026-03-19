@@ -57,6 +57,9 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
       const webapps::AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) {}
 
+  virtual void OnWebAppValidatedScopeExtensionsChanged(
+      const webapps::AppId& app_id) {}
+
   // Called after the WebAppSettings policy has been updated. If a policy is set
   // this event is also fired during browser startup after the policy has been
   // applied.

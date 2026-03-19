@@ -75,6 +75,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -1527,6 +1528,38 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     if (web_app) {
       delegate_->PublishWebApp(CreateWebApp(web_app));
     }
+  }
+}
+
+void WebAppPublisherHelper::OnWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id,
+    const WebAppScope& new_scope) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app) {
+    auto app = CreateWebApp(web_app);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+    bool iwa_capture_links_set_default =
+        registrar().AppMatches(app_id, WebAppFilter::IsIsolatedApp() |
+                                           WebAppFilter::IsIsolatedSubApp()) &&
+        (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
+         // IsPreferredAppForSupportedLinks returns false if app has 0 intent
+         // filters, regardless of SetSupportedLinksPreference was called on
+         // install.
+         (!AppHasSupportedLinks(proxy, app_id) &&
+          !AreOtherAppsPreferredForLinks(proxy, app_id, app->intent_filters)));
+
+#endif  //  BUILDFLAG(IS_CHROMEOS)
+
+    delegate_->PublishWebApp(std::move(app));
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (iwa_capture_links_set_default) {
+      proxy->SetSupportedLinksPreference(app_id);
+    }
+#endif  //  BUILDFLAG(IS_CHROMEOS)
   }
 }
 

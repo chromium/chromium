@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/common/web_app_id.h"
@@ -42,6 +43,15 @@ class MockWebAppCommandScheduler : public WebAppCommandScheduler {
   MOCK_METHOD(void,
               ScheduleResolveWebAppPendingMigrationInfo,
               (base::OnceClosure callback, const base::Location& location),
+              (override));
+};
+
+class MockWebAppRegistrarObserver : public WebAppRegistrarObserver {
+ public:
+  MOCK_METHOD(void, OnAppRegistrarDestroyed, (), (override));
+  MOCK_METHOD(void,
+              OnWebAppEffectiveScopeChanged,
+              (const webapps::AppId& app_id, const WebAppScope& new_scope),
               (override));
 };
 
@@ -116,6 +126,13 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, Success) {
 
   base::HistogramTester tester;
   fake_origin_association_manager()->set_pass_through(true);
+
+  MockWebAppRegistrarObserver observer;
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver> observation(
+      &observer);
+  observation.Observe(&provider().registrar_unsafe());
+
+  EXPECT_CALL(observer, OnWebAppEffectiveScopeChanged(app_id, _));
 
   base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
 

@@ -125,6 +125,7 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
 
   bool unvalidated_items_remain = false;
   bool migration_sources_updated = false;
+  bool scope_extensions_updated = false;
   {
     web_app::ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     web_app::WebApp& app = CHECK_DEREF(update->UpdateApp(app_id_));
@@ -145,6 +146,8 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
                app.scope_extensions(), final_validated)
                .empty();
 
+      scope_extensions_updated =
+          final_validated != app.validated_scope_extensions();
       app.SetValidatedScopeExtensions(std::move(final_validated));
     }
 
@@ -185,6 +188,11 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
     lock_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
         base::DoNothing());
   }
+
+  if (scope_extensions_updated) {
+    lock_->registrar().NotifyWebAppEffectiveScopeChanged(app_id_);
+  }
+
   if (unvalidated_items_remain) {
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,

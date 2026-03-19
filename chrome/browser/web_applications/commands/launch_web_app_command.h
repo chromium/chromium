@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Browser;
 class Profile;
@@ -54,7 +55,8 @@ class LaunchWebAppCommand
                      base::Value debug_value);
 
   apps::AppLaunchParams params_;
-  LaunchWebAppWindowSetting launch_setting_;
+  webapps::AppId app_id_;
+  const LaunchWebAppWindowSetting launch_setting_;
 
   std::unique_ptr<AppLock> lock_;
 
