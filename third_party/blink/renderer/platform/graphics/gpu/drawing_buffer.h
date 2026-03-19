@@ -312,9 +312,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // Keep track of low latency buffer status.
   bool low_latency_enabled() const { return low_latency_enabled_; }
-  void set_low_latency_enabled(bool low_latency_enabled) {
-    low_latency_enabled_ = low_latency_enabled;
-  }
 
   scoped_refptr<CanvasResource> ExportCanvasResource();
 

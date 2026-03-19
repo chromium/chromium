@@ -2236,7 +2236,6 @@ void WebGLRenderingContextBase::Reshape(int width, int height) {
 
   // We don't have to mark the canvas as dirty, since the newly created image
   // buffer will also start off clear (and this matches what reshape will do).
-  GetDrawingBuffer()->set_low_latency_enabled(Host()->LowLatencyEnabled());
   GetDrawingBuffer()->Resize(gfx::Size(width, height));
   GetDrawingBuffer()->MarkContentsChanged();
 
