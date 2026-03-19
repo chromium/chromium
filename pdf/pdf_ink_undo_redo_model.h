@@ -24,14 +24,6 @@ namespace chrome_pdf {
 // undo / redo requests and calculates what commands need to be applied.
 class PdfInkUndoRedoModel {
  public:
-  // TODO(crbug.com/408976048): Only used for testing. Remove once no longer
-  // used.
-  enum class CommandsType {
-    kNone,
-    kAdd,
-    kRemove,
-  };
-
   using IdSet = std::set<IdType, IdTypeComparator>;
 
   // A set of add and remove commands. IDs should be unique in the two sets.

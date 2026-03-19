@@ -23,21 +23,8 @@ using testing::Optional;
 
 namespace chrome_pdf {
 
-using enum PdfInkUndoRedoModel::CommandsType;
 
 namespace {
-
-PdfInkUndoRedoModel::CommandsType GetCommandsType(
-    const PdfInkUndoRedoModel::Commands& commands) {
-  const bool has_adds = !commands.adds.empty();
-  const bool has_removes = !commands.removes.empty();
-  if (has_adds) {
-    CHECK(!has_removes);
-    return PdfInkUndoRedoModel::CommandsType::kAdd;
-  }
-  return has_removes ? PdfInkUndoRedoModel::CommandsType::kRemove
-                     : PdfInkUndoRedoModel::CommandsType::kNone;
-}
 
 // InkStrokeId modification operators needed only for tests.
 InkStrokeId& operator--(InkStrokeId& id) {
@@ -111,7 +98,7 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousAddAfterUndo) {
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes, ElementsAreArray({InkStrokeId(4)}));
 
   ASSERT_FALSE(undo_redo.Add(InkStrokeId(1)));
@@ -122,7 +109,7 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishAfterUndo) {
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes, ElementsAreArray({InkStrokeId(4)}));
 
   ASSERT_FALSE(undo_redo.Finish());
@@ -133,7 +120,7 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousRemoveAfterUndo) {
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes, ElementsAreArray({InkStrokeId(4)}));
 
   ASSERT_FALSE(undo_redo.Remove(InkStrokeId(4)));
@@ -177,16 +164,20 @@ TEST(PdfInkUndoRedoModelTest, BadActionRemoveTwice) {
 TEST(PdfInkUndoRedoModelTest, Empty) {
   PdfInkUndoRedoModel undo_redo;
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Undo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Redo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Redo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 }
 
 TEST(PdfInkUndoRedoModelTest, EmptyAdd) {
@@ -194,10 +185,12 @@ TEST(PdfInkUndoRedoModelTest, EmptyAdd) {
   DoAddCommandsCycle(undo_redo, {});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Redo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 }
 
 TEST(PdfInkUndoRedoModelTest, EmptyRemove) {
@@ -209,10 +202,12 @@ TEST(PdfInkUndoRedoModelTest, EmptyRemove) {
   ASSERT_TRUE(undo_redo.Finish());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Redo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 }
 
 TEST(PdfInkUndoRedoModelTest, AddEnforcesIncreasingOrder) {
@@ -247,13 +242,13 @@ TEST(PdfInkUndoRedoModelTest, AddCanRepeatIdAfterUndo) {
                      {InkStrokeId(97), InkStrokeId(98), InkStrokeId(99)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(
       commands.removes,
       ElementsAreArray({InkStrokeId(97), InkStrokeId(98), InkStrokeId(99)}));
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(
       commands.removes,
       ElementsAreArray({InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)}));
@@ -272,21 +267,23 @@ TEST(PdfInkUndoRedoModelTest, AddUndoRedo) {
                      {InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(
       commands.removes,
       ElementsAreArray({InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)}));
 
   commands = undo_redo.Undo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAreArray({InkStrokeId(1), InkStrokeId(2),
                                                InkStrokeId(3)}));
 
   commands = undo_redo.Redo();
-  EXPECT_EQ(kNone, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_TRUE(commands.removes.empty());
 }
 
 TEST(PdfInkUndoRedoModelTest, AddAddRemoveUndoRedo) {
@@ -304,39 +301,39 @@ TEST(PdfInkUndoRedoModelTest, AddAddRemoveUndoRedo) {
   ASSERT_TRUE(undo_redo.Finish());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds,
               ElementsAreArray({InkStrokeId(1), InkStrokeId(4)}));
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes, ElementsAreArray({InkStrokeId(4)}));
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(
       commands.removes,
       ElementsAreArray({InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)}));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAreArray({InkStrokeId(1), InkStrokeId(2),
                                                InkStrokeId(3)}));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAreArray({InkStrokeId(4)}));
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes, ElementsAreArray({InkStrokeId(4)}));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAreArray({InkStrokeId(4)}));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes,
               ElementsAreArray({InkStrokeId(1), InkStrokeId(4)}));
 }
@@ -347,7 +344,7 @@ TEST(PdfInkUndoRedoModelTest, AddAddUndoRemoveUndo) {
   DoAddCommandsCycle(undo_redo, {InkStrokeId(6), InkStrokeId(8)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes,
               ElementsAreArray({InkStrokeId(6), InkStrokeId(8)}));
 
@@ -359,7 +356,7 @@ TEST(PdfInkUndoRedoModelTest, AddAddUndoRemoveUndo) {
   ASSERT_TRUE(undo_redo.Finish());
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAreArray({InkStrokeId(5)}));
 }
 
@@ -374,12 +371,12 @@ TEST(PdfInkUndoRedoModelTest, RemoveShapesUndoRedo) {
   ASSERT_TRUE(undo_redo.Finish());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds,
               ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1)));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes,
               ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1)));
 }
@@ -399,12 +396,12 @@ TEST(PdfInkUndoRedoModelTest, AddAddRemoveStrokesAndShapesUndoRedo) {
   ASSERT_TRUE(undo_redo.Finish());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds, ElementsAre(InkModeledShapeId(0),
                                          InkModeledShapeId(1), InkStrokeId(6)));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(
       commands.removes,
       ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1), InkStrokeId(6)));
@@ -420,8 +417,13 @@ TEST(PdfInkUndoRedoModelTest, AddRemoveAddUndoUndoStart) {
 
   DoAddCommandsCycle(undo_redo, {InkStrokeId(2)});
 
-  ASSERT_EQ(kRemove, GetCommandsType(undo_redo.Undo()));
-  ASSERT_EQ(kAdd, GetCommandsType(undo_redo.Undo()));
+  PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_FALSE(commands.removes.empty());
+
+  commands = undo_redo.Undo();
+  EXPECT_TRUE(commands.removes.empty());
+  EXPECT_FALSE(commands.adds.empty());
 
   // Discarded commands should be Remove(1), Add(2). The lowest discarded stroke
   // ID is 2.
@@ -437,7 +439,8 @@ TEST(PdfInkUndoRedoModelTest, AddUndoStrokeAndText) {
   DoAddCommandsCycle(undo_redo, {InkTextId(1)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_FALSE(commands.removes.empty());
 
   base::expected<std::optional<IdType>, std::monostate> lowest_discard =
       undo_redo.Start();
@@ -450,7 +453,8 @@ TEST(PdfInkUndoRedoModelTest, AddUndoStrokeAndText) {
   ASSERT_TRUE(undo_redo.Finish());
 
   commands = undo_redo.Undo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
+  EXPECT_FALSE(commands.removes.empty());
 
   lowest_discard = undo_redo.Start();
   ASSERT_TRUE(lowest_discard.has_value());
@@ -477,12 +481,12 @@ TEST(PdfInkUndoRedoModelTest, AddRemoveAllTypesUndoRedo) {
   ASSERT_TRUE(undo_redo.Finish());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-  ASSERT_EQ(kAdd, GetCommandsType(commands));
+  EXPECT_TRUE(commands.removes.empty());
   EXPECT_THAT(commands.adds,
               ElementsAre(InkStrokeId(5), InkModeledShapeId(5), InkTextId(6)));
 
   commands = undo_redo.Redo();
-  ASSERT_EQ(kRemove, GetCommandsType(commands));
+  EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes,
               ElementsAre(InkStrokeId(5), InkModeledShapeId(5), InkTextId(6)));
 }
@@ -519,7 +523,7 @@ TEST(PdfInkUndoRedoModelTest, Stress) {
   ASSERT_EQ(InkStrokeId(0), id);
   for (size_t i = 0; i < kCycles; ++i) {
     PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-    ASSERT_EQ(kAdd, GetCommandsType(commands));
+    EXPECT_TRUE(commands.removes.empty());
     EXPECT_THAT(commands.adds, ElementsAreArray({id, id + 1}));
     id += 2;
   }
@@ -528,7 +532,7 @@ TEST(PdfInkUndoRedoModelTest, Stress) {
   for (size_t i = 0; i < kCycles; ++i) {
     id -= 2;
     PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
-    ASSERT_EQ(kRemove, GetCommandsType(commands));
+    EXPECT_TRUE(commands.adds.empty());
     EXPECT_THAT(commands.removes, ElementsAreArray({id, id + 1}));
   }
 
