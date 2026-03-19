@@ -1877,6 +1877,12 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 
   assert(operator_loc.isValid());
 
+  // Exclude macros because spanifier will generate closing parenthesis in
+  // unexpected locations.
+  if (IsInExcludedMacro(operator_loc, *result.Context, source_manager)) {
+    return;
+  }
+
   // Get the source range of the operand (the 'ptr' part).
   clang::SourceRange operand_range =
       GetExprRange(*operand->IgnoreParenImpCasts(), source_manager, lang_opts);
