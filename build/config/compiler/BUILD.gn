@@ -1159,7 +1159,8 @@ config("linker") {
 
   # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
   # --no-undefined-version.
-  if (use_lld && !is_win && !is_mac && !is_ios && !is_wasm) {
+  if ((use_lld || experimental_linker_path != "") && !is_win && !is_mac &&
+      !is_ios && !is_wasm) {
     ldflags += [ "-Wl,--undefined-version" ]
   }
 
