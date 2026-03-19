@@ -57,6 +57,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -83,6 +84,7 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/referrer_policy.h"
@@ -95,6 +97,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/test/test_dns_util.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1847,6 +1850,35 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationDataPacBrowserTest, DataPac) {
   TestProxyConfigured(/*expect_success=*/true);
 }
 
+class WaitingHandshakeClient : public network::mojom::WebSocketHandshakeClient {
+ public:
+  WaitingHandshakeClient() = default;
+  WaitingHandshakeClient(const WaitingHandshakeClient&) = delete;
+  WaitingHandshakeClient& operator=(const WaitingHandshakeClient&) = delete;
+
+  mojo::PendingRemote<network::mojom::WebSocketHandshakeClient> Bind() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // Implementation of WebSocketHandshakeClient
+  void OnOpeningHandshakeStarted(
+      network::mojom::WebSocketHandshakeRequestPtr) override {}
+
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 int response_code) override {}
+
+  void OnConnectionEstablished(
+      mojo::PendingRemote<network::mojom::WebSocket> websocket,
+      mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,
+      network::mojom::WebSocketHandshakeResponsePtr,
+      mojo::ScopedDataPipeConsumerHandle readable,
+      mojo::ScopedDataPipeProducerHandle writable) override {}
+
+ private:
+  mojo::Receiver<network::mojom::WebSocketHandshakeClient> receiver_{this};
+};
+
 class NetworkContextConfigurationProxySettingsBrowserTest
     : public NetworkContextConfigurationHttpPacBrowserTest {
  public:
@@ -1875,22 +1907,31 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     return kDefaultMaxConnectionsPerProxy;
   }
 
+  virtual size_t GetExpectedMaxConnectionsPerProxyForWebSocket() const {
+    return kDefaultMaxConnectionsPerProxy;
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> TrackConnections(
       const net::test_server::HttpRequest& request) {
-    if (!base::StartsWith(request.relative_url, "/hung",
-                          base::CompareCase::INSENSITIVE_ASCII))
+    if (!base::StartsWith(request.relative_url,
+                          is_websocket_test_ ? "foo" : "/hung_",
+                          base::CompareCase::INSENSITIVE_ASCII)) {
       return nullptr;
+    }
+
+    size_t max_expected = is_websocket_test_
+                              ? GetExpectedMaxConnectionsPerProxyForWebSocket()
+                              : GetExpectedMaxConnectionsPerProxy();
 
     // Record the number of connections we're seeing.
-    CHECK(!observed_request_urls_.contains(request.GetURL().spec()));
-    observed_request_urls_.emplace(request.GetURL().spec());
-    CHECK_GE(GetExpectedMaxConnectionsPerProxy(),
-             observed_request_urls_.size());
+    CHECK(!observed_request_urls_.contains(request.relative_url));
+    observed_request_urls_.emplace(request.relative_url);
+    CHECK_GE(max_expected, observed_request_urls_.size());
 
     // Once we've seen at least as many connections as we expect, we can quit
     // the loop on the main test thread. The test may choose to wait for
     // longer to see if there are any additional unexpected connections.
-    if (GetExpectedMaxConnectionsPerProxy() == observed_request_urls_.size() &&
+    if (max_expected == observed_request_urls_.size() &&
         expected_connections_loop_ptr_.load() != nullptr) {
       expected_connections_loop_ptr_.load()->Quit();
     }
@@ -1912,9 +1953,9 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     base::RunLoop expected_connections_run_loop;
     expected_connections_loop_ptr_.store(&expected_connections_run_loop);
 
-    std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders(
-        GetExpectedMaxConnectionsPerProxy());
-    for (unsigned int i = 0; i < GetExpectedMaxConnectionsPerProxy() + 1; ++i) {
+    std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders;
+    for (unsigned int i = 0; i < GetExpectedMaxConnectionsPerProxy() + 10;
+         ++i) {
       std::unique_ptr<network::ResourceRequest> request =
           std::make_unique<network::ResourceRequest>();
       request->url =
@@ -1943,26 +1984,90 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
+  void RunMaxConnectionsPerProxyForWebSocketTest() {
+    // See the comment at the top of `RunMaxConnectionsPerProxyTest`, this is
+    // the same except that we have `TrackConnections` look for WebSockets
+    // requests.
+    is_websocket_test_ = true;
+
+    // First of all, we're going to want to wait for at least as many
+    // connections as we expect.
+    base::RunLoop expected_connections_run_loop;
+    expected_connections_loop_ptr_.store(&expected_connections_run_loop);
+
+    std::vector<std::unique_ptr<WaitingHandshakeClient>> waiters;
+    for (unsigned int i = 0;
+         i < GetExpectedMaxConnectionsPerProxyForWebSocket() + 10; ++i) {
+      const GURL url = net::test_server::GetWebSocketURL(
+          *embedded_test_server(), base::StringPrintf("foo%u.test", i),
+          base::StringPrintf("/hung_%u", i));
+
+      auto client = std::make_unique<WaitingHandshakeClient>();
+      content::RenderFrameHost* const frame = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveWebContents()
+                                                  ->GetPrimaryMainFrame();
+      content::RenderProcessHost* const process = frame->GetProcess();
+      const std::vector<std::string> requested_protocols;
+      std::vector<network::mojom::HttpHeaderPtr> additional_headers;
+      const url::Origin origin = url::Origin::Create(url);
+
+      process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
+          url, requested_protocols, net::StorageAccessApiStatus::kNone,
+          net::IsolationInfo::CreateForInternalRequest(origin),
+          std::move(additional_headers),
+          ToOriginatingProcessId(process->GetID()), origin,
+          network::mojom::ClientSecurityState::New(),
+          network::mojom::kWebSocketOptionNone,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          client->Bind(),
+          process->GetStoragePartition()
+              ->CreateURLLoaderNetworkObserverForFrame(
+                  content::GlobalRenderFrameHostId(process->GetID(),
+                                                   frame->GetRoutingID())),
+          mojo::NullRemote(), mojo::NullRemote(), std::nullopt);
+      waiters.emplace_back(std::move(client));
+    }
+    expected_connections_run_loop.Run();
+
+    // Then wait for any remaining connections that we should NOT get.
+    base::RunLoop ugly_100ms_wait;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, ugly_100ms_wait.QuitClosure(), base::Milliseconds(100));
+    ugly_100ms_wait.Run();
+
+    // Stop the server.
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  }
+
  private:
   std::atomic<base::RunLoop*> expected_connections_loop_ptr_{nullptr};
 
-  // In RunMaxConnectionsPerProxyTest(), we'll make several network requests
-  // that hang. These hung requests are assumed to last for the duration of the
-  // test. This member, which is only accessed from the server's IO thread,
-  // records each observed request to ensure we see only as many connections as
-  // we expect.
+  // In RunMaxConnectionsPerProxy(WebSocket)Test(), we'll make several network
+  // requests that hang. These hung requests are assumed to last for the
+  // duration of the test. This member, which is only accessed from the server's
+  // IO thread, records each observed request to ensure we see only as many
+  // connections as we expect.
   absl::flat_hash_set<std::string> observed_request_urls_;
+  bool is_websocket_test_ = false;
 };
 
-// Test failure on macOS: crbug.com/1287934
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
+                       MaxConnectionsPerProxy) {
+  RunMaxConnectionsPerProxyTest();
+}
+
+// Test failure on Windows: crbug.com/467278609
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MaxConnectionsPerProxyForWebSocket \
+  DISABLED_MaxConnectionsPerProxyForWebSocket
 #else
-#define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy
+#define MAYBE_MaxConnectionsPerProxyForWebSocket \
+  MaxConnectionsPerProxyForWebSocket
 #endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       MAYBE_MaxConnectionsPerProxy) {
-  RunMaxConnectionsPerProxyTest();
+                       MAYBE_MaxConnectionsPerProxyForWebSocket) {
+  RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
 class NetworkContextConfigurationManagedProxySettingsBrowserTest
@@ -1999,16 +2104,24 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   }
 };
 
-// crbug.com/1288780: flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
+IN_PROC_BROWSER_TEST_P(
+    NetworkContextConfigurationManagedProxySettingsBrowserTest,
+    MaxConnectionsPerManagedProxy) {
+  RunMaxConnectionsPerProxyTest();
+}
+
+// Test failure on Windows: crbug.com/467278609
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MaxConnectionsPerManagedProxyForWebSocket \
+  DISABLED_MaxConnectionsPerManagedProxyForWebSocket
 #else
-#define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy
+#define MAYBE_MaxConnectionsPerManagedProxyForWebSocket \
+  MaxConnectionsPerManagedProxyForWebSocket
 #endif
 IN_PROC_BROWSER_TEST_P(
     NetworkContextConfigurationManagedProxySettingsBrowserTest,
-    MAYBE_MaxConnectionsPerProxy) {
-  RunMaxConnectionsPerProxyTest();
+    MAYBE_MaxConnectionsPerManagedProxyForWebSocket) {
+  RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
