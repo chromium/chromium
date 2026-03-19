@@ -21,6 +21,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -79,7 +80,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
 
     page_content_annotations_service_ =
         page_content_annotations::TestPageContentAnnotationsService::Create(
-            &optimization_guide_model_provider_, /*history_service=*/nullptr);
+            &optimization_guide_model_provider_, &history_service_);
 
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service = page_content_annotations::
@@ -131,6 +132,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
   MockContentAnnotatorService* mock_service() { return mock_service_.get(); }
 
   base::test::ScopedFeatureList feature_list_;
+  history::HistoryService history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
       optimization_guide_model_provider_;
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
