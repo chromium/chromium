@@ -306,6 +306,8 @@ class GlicKeyedService : public KeyedService,
   void CaptureRegion(
       tabs::TabInterface* tab,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+  void DeleteCapturedRegion(tabs::TabInterface* tab,
+                            const base::UnguessableToken& id);
 #endif
 
   // Fetches the image for the context menu item (if possible, and potentially

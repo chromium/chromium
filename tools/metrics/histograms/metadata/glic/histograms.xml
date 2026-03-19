@@ -194,6 +194,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CreateSkill"/>
     <variant name="CreateTab"/>
     <variant name="CreateTask"/>
+    <variant name="DeleteCapturedRegion"/>
     <variant name="DetachPanel"/>
     <variant name="DropScrollToHighlight"/>
     <variant name="EnableDragResize"/>

@@ -793,6 +793,11 @@ void GlicKeyedService::CaptureRegion(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   region_capture_controller_->CaptureRegion(tab, std::move(observer));
 }
+
+void GlicKeyedService::DeleteCapturedRegion(tabs::TabInterface* tab,
+                                            const base::UnguessableToken& id) {
+  region_capture_controller_->DeleteRegion(tab, id);
+}
 #endif
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,

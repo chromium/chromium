@@ -1191,6 +1191,9 @@ interface WebClientHandler {
   // will be terminated and a new one will begin.
   CaptureRegion(pending_remote<CaptureRegionObserver> observer);
 
+  // Deletes a captured region.
+  DeleteCapturedRegion(int32 tab_id, mojo_base.mojom.UnguessableToken id);
+
   // Requests that audio ducking be enabled or disabled.
   // If enabled, audio from other sources will be attenuated.
   // If disabled, normal audio playout resumes.
@@ -1665,6 +1668,7 @@ union AdditionalContextPart {
   PdfDocumentData pdf_document_data;
   TabContext tab_context;
   CapturedRegion region;
+  PendingCapturedRegion pending_region;
 };
 
 // @generate glic_api
@@ -1974,7 +1978,15 @@ union CapturedRegion {
   gfx.mojom.Rect rect;
 };
 
+// The captured region with an ID.
+struct PendingCapturedRegion {
+  mojo_base.mojom.UnguessableToken id;
+  CapturedRegion region;
+};
+
 // The result of a successful region capture.
+// This result is deprecated, results for region capture are now
+// pushed via NotifyAdditionalContext with the source being kRegionSelection.
 struct CaptureRegionResult {
   // The ID of the tab from which the region was captured.
   int32 tab_id;

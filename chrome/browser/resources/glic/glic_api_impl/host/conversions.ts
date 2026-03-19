@@ -731,6 +731,18 @@ export function additionalContextPartToClient(
         },
       };
     }
+  } else if (part.pendingRegion) {
+    const regionMojo = part.pendingRegion.region;
+    if (regionMojo) {
+      return {
+        pendingRegion: {
+          id: part.pendingRegion.id,
+          region: {
+            rect: regionMojo.rect,
+          },
+        },
+      };
+    }
   }
   return result;
 }

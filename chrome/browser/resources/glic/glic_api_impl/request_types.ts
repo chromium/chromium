@@ -540,6 +540,13 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserDeleteCapturedRegion: {
+    request: {
+      tabId: string,
+      regionId: string,
+    },
+    backgroundAllowed: true,
+  },
 
   glicBrowserGetZeroStateSuggestionsForFocusedTab: {
     request: {
@@ -987,6 +994,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         AutofillSuggestionDialogOnFormConfirmed: 89,
         OnMicrophoneStatusChange: 90,
         RecordSkillsWebClientEvent: 91,
+        DeleteCapturedRegion: 92,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

@@ -365,7 +365,7 @@ void SelectionOverlayController::RenderRegions() {
   }
 
   std::vector<SkRect> regions;
-  std::vector<gfx::Rect> gfx_regions;
+  std::vector<std::pair<base::UnguessableToken, gfx::Rect>> gfx_regions;
   std::vector<selection::SelectedRegionPtr> regions_mojo;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
@@ -378,7 +378,7 @@ void SelectionOverlayController::RenderRegions() {
     if (!rect_on_canvas.isEmpty() &&
         redacted_screenshot_.bounds().contains(rect_on_canvas)) {
       regions.push_back(rect_on_canvas);
-      gfx_regions.push_back(gfx::ToEnclosingRect(gfx_rect_on_canvas));
+      gfx_regions.emplace_back(id, gfx::ToEnclosingRect(gfx_rect_on_canvas));
       regions_mojo.push_back(region.Clone());
     } else {
       // TODO(http://b/485358530): Record proper histograms for the error case.
@@ -436,15 +436,19 @@ void SelectionOverlayController::RenderRegions() {
 
 glic::mojom::AdditionalContextPtr
 SelectionOverlayController::CreateAdditionalContext(
-    const std::vector<gfx::Rect>& regions) {
+    const std::vector<std::pair<base::UnguessableToken, gfx::Rect>>& regions) {
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
   mojom::TabContextPtr tab_context = tab_context_.Clone();
   parts.push_back(glic::mojom::AdditionalContextPart::NewTabContext(
       std::move(tab_context)));
   for (const auto& region : regions) {
+    parts.push_back(glic::mojom::AdditionalContextPart::NewPendingRegion(
+        glic::mojom::PendingCapturedRegion::New(
+            region.first,
+            glic::mojom::CapturedRegion::NewRect(region.second))));
     parts.push_back(glic::mojom::AdditionalContextPart::NewRegion(
-        glic::mojom::CapturedRegion::NewRect(region)));
+        glic::mojom::CapturedRegion::NewRect(region.second)));
   }
   context->source = glic::mojom::AdditionalContextSource::kRegionSelection;
   context->tab_id = tab_->GetHandle().raw_value();

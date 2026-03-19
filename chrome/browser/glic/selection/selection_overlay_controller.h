@@ -65,6 +65,9 @@ class SelectionOverlayController
   void AddListener(Observer* observer);
   void RemoveListener(Observer* observer);
 
+  // `selection::SelectionOverlayPageHandler`:
+  void DeleteRegion(const base::UnguessableToken& id) override;
+
   std::optional<std::vector<uint8_t>>& GetEncodedData() { return encoded_; }
 
  private:
@@ -99,7 +102,6 @@ class SelectionOverlayController
   // `selection::SelectionOverlayPageHandler`:
   void DismissOverlay(selection::DismissOverlayReason reason) override;
   void AdjustRegion(selection::SelectedRegionPtr target) override;
-  void DeleteRegion(const base::UnguessableToken& id) override;
   void ClosePreselectionBubble() override;
   void AddBackgroundBlur() override;
   void SetLiveBlur(bool enabled) override;
@@ -120,7 +122,7 @@ class SelectionOverlayController
 
   void Reset();
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
-      const std::vector<gfx::Rect>& regions);
+      const std::vector<std::pair<base::UnguessableToken, gfx::Rect>>& regions);
 
   // Connections to and from the overlay WebUI. Only valid while
   // `OverlayBaseController::overlay_view_` is showing and the underlying

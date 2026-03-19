@@ -86,6 +86,7 @@ export declare interface AdditionalContextPart {
   pdf?: PdfDocumentData;
   tabContext?: TabContextResult;
   region?: CapturedRegion;
+  pendingRegion?: PendingCapturedRegion;
 }
 
 /** Options for invoking Glic. */
@@ -487,6 +488,14 @@ export declare interface GlicBrowserHost {
    * be terminated and a new one will begin.
    */
   captureRegion?(): ObservableValue<CaptureRegionResult>;
+
+  /**
+   * Deletes a captured region.
+   *
+   * @param tabId The ID of the tab from which the region was captured.
+   * @param id The ID of the captured region to delete.
+   */
+  deleteCapturedRegion?(tabId: string, id: string): void;
 
   /**
    * @todo All actuation should eventually be moved onto PerformActions.
@@ -1248,6 +1257,14 @@ export declare interface CapturedRegion {
    * document's bounds.
    */
   rect?: Rect;
+}
+
+/** The captured region with an ID. */
+export declare interface PendingCapturedRegion {
+  /** The ID of the captured region. */
+  id: string;
+  /** The captured region. */
+  region: CapturedRegion;
 }
 
 /** The result of a successful region capture. */

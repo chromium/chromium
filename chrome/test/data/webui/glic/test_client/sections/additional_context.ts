@@ -69,6 +69,16 @@ client.getInitialized().then(async () => {
               pre.innerText += `Region: present but no rect\n`;
             }
           }
+          if (part.pendingRegion) {
+            if (part.pendingRegion.region.rect) {
+              const rect = part.pendingRegion.region.rect;
+              const id = part.pendingRegion.id;
+              pre.innerText += `Pending Region ID ${id} Bounds: ${rect.x}, ${
+                  rect.y}, ${rect.width}, ${rect.height}\n`;
+            } else {
+              pre.innerText += `Pending Region: present but no rect\n`;
+            }
+          }
         }
       });
 });
