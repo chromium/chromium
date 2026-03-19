@@ -33,8 +33,16 @@ public final class SigninFeatureMap extends FeatureMap {
     public static final CachedFlag sSigninLevelUpButton =
             new CachedFlag(
                     sInstance, SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, /* defaultValue= */ false);
+    public static final CachedFlag sSupportForcedSigninPolicy =
+            new CachedFlag(
+                    sInstance,
+                    SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
+                    /* defaultValue= */ false);
     public static final List<CachedFlag> sCachedFlags =
-            List.of(sMigrateAccountManagerDelegate, sSigninLevelUpButton);
+            List.of(
+                    sMigrateAccountManagerDelegate,
+                    sSigninLevelUpButton,
+                    sSupportForcedSigninPolicy);
 
     /** Layout type for the sign-in promo. */
     @IntDef({
