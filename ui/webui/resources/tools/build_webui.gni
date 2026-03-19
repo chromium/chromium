@@ -720,6 +720,15 @@ template("build_webui") {
       }
       manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
       deps = [ ":build_code_cache" ]
+      if (bundle) {
+        resource_path_rewrites = []
+        foreach(f, invoker.optimize_webui_in_files) {
+          name = get_path_info(f, "name")
+          output_file = string_replace(f, "${name}.js", "${name}.rollup.js")
+          resource_path_rewrites +=
+              [ "${output_file}.code_cache|${f}.code_cache" ]
+        }
+      }
     }
 
     if (!generate_grdp) {
