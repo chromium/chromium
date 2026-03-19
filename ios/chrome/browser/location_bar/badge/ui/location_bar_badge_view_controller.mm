@@ -303,6 +303,22 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   }
 }
 
+// Updates the button container's configuration with the given background color.
+// Should only be used for pre-existing UIButtonConfigurations.
+- (void)updateButtonContainerBackgroundColor:(UIColor*)backgroundColor {
+  if (!_buttonContainer || !_buttonContainer.configuration) {
+    return;
+  }
+
+  if ([_buttonContainer.configuration.baseBackgroundColor
+          isEqual:backgroundColor]) {
+    return;
+  }
+
+  _buttonContainer.configuration =
+      [self buttonConfigurationWithBackgroundColor:backgroundColor];
+}
+
 // Returns the button configuration with the given background color.
 - (UIButtonConfiguration*)buttonConfigurationWithBackgroundColor:
     (UIColor*)backgroundColor {
@@ -527,6 +543,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // of using an image gradient layer.
 - (UIColor*)defaultBadgeTintColor {
   BOOL useImageGradient =
+      _badgeConfig &&
       _badgeConfig.badgeType == LocationBarBadgeType::kGeminiContextualCueChip;
   return useImageGradient ? nil : [UIColor colorNamed:kBlue600Color];
 }
@@ -944,8 +961,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   _label.textColor = foregroundColor;
 
   _buttonContainer.layer.shadowOpacity = 0;
-  _buttonContainer.configuration =
-      [self buttonConfigurationWithBackgroundColor:[UIColor clearColor]];
+  [self updateButtonContainerBackgroundColor:[UIColor clearColor]];
 }
 
 // Helper to refresh entrypoint visual elements for the single badge container.
@@ -969,8 +985,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   UIColor* buttonContainerBackgroundColor =
       _badgeTapped ? [UIColor colorNamed:kGrey100Color]
                    : untappedBackgroundColor;
-  _buttonContainer.configuration = [self
-      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+  [self updateButtonContainerBackgroundColor:buttonContainerBackgroundColor];
 }
 
 // Helper to update badge highlight for the unified container.
@@ -982,8 +997,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   // Update entrypoint container background.
   UIColor* buttonContainerBackgroundColor =
       highlighted ? [UIColor colorNamed:kBlue600Color] : [UIColor clearColor];
-  _buttonContainer.configuration = [self
-      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+  [self updateButtonContainerBackgroundColor:buttonContainerBackgroundColor];
 }
 
 // Helper to update badge highlight for the single badge container.
@@ -994,8 +1008,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   UIColor* buttonContainerBackgroundColor =
       highlighted ? [UIColor colorNamed:kBlue600Color]
                   : [UIColor colorNamed:kBackgroundColor];
-  _buttonContainer.configuration = [self
-      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+  [self updateButtonContainerBackgroundColor:buttonContainerBackgroundColor];
 }
 
 @end
