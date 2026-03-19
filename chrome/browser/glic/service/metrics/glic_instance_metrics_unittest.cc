@@ -304,6 +304,130 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.Other.SidePanelFirstOpenDuration", base::Minutes(5), 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+
+  // This causes a GlicInstanceEvent::kTurnCompleted to be logged.
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
+                           base::Milliseconds(100));
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.TopChromeButton.EventCounts",
+      GlicInstanceEvent::kTurnCompleted, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.TopChromeButton.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+
+  // Second event: only EventCounts increment, HadEvent does not.
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
+                           base::Milliseconds(100));
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kTurnCompleted, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.TopChromeButton.EventCounts",
+      GlicInstanceEvent::kTurnCompleted, 2);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.TopChromeButton.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       InstanceEvents_NoCrashWithoutInitialEntrypoint) {
+  // We ensure we don't crash before the initial entrypoint gets assigned.
+  // We bypass OnToggle so initial_entrypoint is null.
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TopChromeButton.EventCounts", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TopChromeButton.HadEvent",
+                                     0);
+
+  metrics_.OnReaction(mojom::MetricUserInputReactionType::kModel);
+  // We don't get entrypoint-specific logs, but we do get generic ones.
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kReaction, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.HadEvent",
+                                      GlicInstanceEvent::kReaction, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
+  ShowOptions show_options1{FloatingShowOptions{}};
+  // First toggle open with TopChromeButton.
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options1,
+                    /*is_showing=*/false);
+
+  // A turn completed event should increment TopChromeButton.
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
+                           base::Milliseconds(100));
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.TopChromeButton.EventCounts",
+      GlicInstanceEvent::kTurnCompleted, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.TopChromeButton.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+
+  // Simulate toggling with a different source later on.
+  ShowOptions show_options2{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options2,
+                    /*is_showing=*/true);
+
+  // Another turn completed event.
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
+                           base::Milliseconds(100));
+
+  // Should continue to log under the original TopChromeButton entrypoint.
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.TopChromeButton.EventCounts",
+      GlicInstanceEvent::kTurnCompleted, 2);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.TopChromeButton.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 1);
+
+  // Should NOT log under OsButton.
+  histogram_tester_.ExpectBucketCount("Glic.Instance.OsButton.EventCounts",
+                                      GlicInstanceEvent::kTurnCompleted, 0);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.OsButton.HadEvent",
+                                      GlicInstanceEvent::kTurnCompleted, 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Visible) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+  metrics_.OnVisibilityChanged(true);
+
+  metrics_.OnWebUiStateChanged(mojom::WebUiState::kBeginLoad);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  metrics_.OnWebUiStateChanged(mojom::WebUiState::kReady);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.WebUiLoadTime.Visible", base::Milliseconds(300), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TopChromeButton.WebUiLoadTime.Visible",
+      base::Milliseconds(300), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Nonvisible) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+  // Do not call OnVisibilityChanged(true) so it defaults to nonvisible.
+
+  metrics_.OnWebUiStateChanged(mojom::WebUiState::kBeginLoad);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  metrics_.OnWebUiStateChanged(mojom::WebUiState::kReady);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.WebUiLoadTime.Nonvisible", base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TopChromeButton.WebUiLoadTime.Nonvisible",
+      base::Milliseconds(150), 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);

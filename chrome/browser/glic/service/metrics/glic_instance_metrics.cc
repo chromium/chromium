@@ -659,6 +659,14 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
         base::UmaHistogramCustomTimes(
             base::StrCat({"Glic.Instance.WebUiLoadTime", visibility_suffix}),
             load_time, base::Milliseconds(1), base::Seconds(60), 50);
+        if (initial_entrypoint_.has_value()) {
+          std::string entrypoint_string =
+              GetEntrypointString(initial_entrypoint_.value());
+          base::UmaHistogramCustomTimes(
+              base::StrCat({"Glic.Instance.", entrypoint_string,
+                            ".WebUiLoadTime", visibility_suffix}),
+              load_time, base::Milliseconds(1), base::Seconds(60), 50);
+        }
         web_ui_load_start_time_ = base::TimeTicks();
       }
       break;
@@ -702,10 +710,22 @@ void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event) {
   base::UmaHistogramEnumeration("Glic.Instance.EventCounts", event);
+  if (initial_entrypoint_.has_value()) {
+    std::string entrypoint_string =
+        GetEntrypointString(initial_entrypoint_.value());
+    base::UmaHistogramEnumeration(
+        "Glic.Instance." + entrypoint_string + ".EventCounts", event);
+  }
   if (event_counts_[event] == 0) {
     // This is recorded only the first time an event occurs within this sessions
     // lifetime.
     base::UmaHistogramEnumeration("Glic.Instance.HadEvent", event);
+    if (initial_entrypoint_.has_value()) {
+      std::string entrypoint_string =
+          GetEntrypointString(initial_entrypoint_.value());
+      base::UmaHistogramEnumeration(
+          "Glic.Instance." + entrypoint_string + ".HadEvent", event);
+    }
   }
   event_counts_[event]++;
 
