@@ -121,7 +121,8 @@ std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
   return CanonicalCookie::CreateUnsafeCookieForTesting(
       pc.Name(), pc.Value(), "." + url.GetHost(), cookie_path, creation_time,
       cookie_expires, base::Time(), base::Time(), pc.IsSecure(),
-      pc.IsHttpOnly(), pc.SameSite().first, pc.Priority());
+      pc.IsHttpOnly(), pc.SameSite().first, pc.Priority(),
+      CookieSourceType::kOther);
 }
 
 void AddCookieToList(const GURL& url,
@@ -233,7 +234,8 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
         CanonicalCookie::CreateUnsafeCookieForTesting(
             "a", "1", base::StringPrintf("h%05d.izzle", i), "/path",
             creation_time, expiration_time, base::Time(), base::Time(), secure,
-            false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT);
+            false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+            CookieSourceType::kOther);
     cc->SetLastAccessDate(last_access_time);
     store->AddCookie(*cc);
   }

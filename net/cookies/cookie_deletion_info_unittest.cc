@@ -108,7 +108,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   auto session_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "session-cookie", "session-value", "session-domain", "session-path",
@@ -118,7 +118,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   CookieDeletionInfo delete_info;
   EXPECT_TRUE(delete_info.Matches(
@@ -169,7 +169,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchHost) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   auto host_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "host-cookie", "host-cookie-value",
@@ -180,7 +180,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchHost) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   EXPECT_TRUE(domain_cookie->IsDomainCookie());
   EXPECT_TRUE(host_cookie->IsHostCookie());
@@ -244,7 +244,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchName) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
   auto cookie2 = CanonicalCookie::CreateUnsafeCookieForTesting(
       "cookie2-name", "cookie2-value",
       /*domain=*/".example.com", "/path",
@@ -254,7 +254,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchName) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   CookieDeletionInfo delete_info;
   delete_info.name = "cookie1-name";
@@ -280,7 +280,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchValue) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
   auto cookie2 = CanonicalCookie::CreateUnsafeCookieForTesting(
       "cookie2-name", "cookie2-value",
       /*domain=*/".example.com", "/path",
@@ -290,7 +290,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchValue) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   CookieDeletionInfo delete_info;
   delete_info.value_for_testing = "cookie2-value";
@@ -316,7 +316,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchUrl) {
       /*last_update=*/base::Time::Now(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 
   CookieDeletionInfo delete_info;
   delete_info.url = GURL("https://www.example.com/path");
@@ -373,7 +373,8 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoDomainMatchesDomain) {
         /*secure=*/true,
         /*httponly=*/false,
         /*same_site=*/CookieSameSite::NO_RESTRICTION,
-        /*priority=*/CookiePriority::COOKIE_PRIORITY_DEFAULT);
+        /*priority=*/CookiePriority::COOKIE_PRIORITY_DEFAULT,
+        CookieSourceType::kOther);
   };
 
   // by default empty domain list and default match action will match.
@@ -441,7 +442,8 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
         /*secure=*/false,
         /*httponly=*/false,
         /*same_site=*/CookieSameSite::NO_RESTRICTION,
-        /*priority=*/CookiePriority::COOKIE_PRIORITY_DEFAULT);
+        /*priority=*/CookiePriority::COOKIE_PRIORITY_DEFAULT,
+        CookieSourceType::kOther);
   };
 
   // With two empty lists (default) should match any domain.
@@ -544,6 +546,7 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   // Cookie with unspecified SameSite.
   auto cookie = CanonicalCookie::CreateForTesting(
       GURL("https://www.example.com"), "cookie=1", base::Time::Now(),
+      CookieSourceType::kOther,
       /*server_time=*/std::nullopt,
       /*cookie_partition_key=*/std::nullopt);
 
@@ -613,6 +616,7 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
     auto cookie = CanonicalCookie::CreateForTesting(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
+        CookieSourceType::kOther,
         /*server_time=*/std::nullopt, test_case.cookie_partition_key);
     CookieDeletionInfo delete_info;
     delete_info.cookie_partition_key_collection =
@@ -660,6 +664,7 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
     auto cookie = CanonicalCookie::CreateForTesting(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
+        CookieSourceType::kOther,
         /*server_time=*/std::nullopt, test_case.cookie_partition_key);
     CookieDeletionInfo delete_info;
     delete_info.partitioned_state_only = test_case.partitioned_state_only;
