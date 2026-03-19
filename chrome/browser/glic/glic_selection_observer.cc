@@ -129,6 +129,17 @@ void GlicSelectionObserver::OnInputEvent(
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
     }
+    if (auto* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
+        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
+          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
+                                       /*anchored_message_text=*/std::string(),
+                                       GlicNudgeActivity::kNudgeDismissed,
+                                       base::DoNothing());
+        }
+      }
+    }
   } else if (event.GetType() == blink::WebInputEvent::Type::kMouseUp ||
              event.GetType() == blink::WebInputEvent::Type::kMouseLeave) {
     is_mouse_down_ = false;
@@ -145,6 +156,17 @@ void GlicSelectionObserver::OnInputEvent(
     if (selection_widget_) {
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
+    }
+    if (auto* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
+        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
+          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
+                                       /*anchored_message_text=*/std::string(),
+                                       GlicNudgeActivity::kNudgeDismissed,
+                                       base::DoNothing());
+        }
+      }
     }
   }
 }
@@ -369,22 +391,26 @@ void GlicSelectionObserver::ShowSelectionAffordance(
 
     if (!features::kGlicSelectionPromptUseWidget.Get()) {
       // Show selection nudge
-      base::UmaHistogramEnumeration(
-          base::StrCat({"Glic.Selection.Action", histogram_suffix}),
-          GlicSelectionAction::kNudgeShown);
-      auto invoke_glic = base::BindRepeating(
-          &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
-          base::UTF16ToUTF8(selected_text), selected_text.length(),
-          /*is_widget=*/false, web_contents()->GetWeakPtr());
-      controller->UpdateNudgeLabel(
-          web_contents(), base::UTF16ToUTF8(label),
-          std::make_optional(base::UTF16ToUTF8(title)),
-          /*anchored_message_text=*/std::string(), std::nullopt,
-          base::BindRepeating(
-              [](base::RepeatingCallback<void(GlicNudgeActivity)>
-                     invoke_glic_cb,
-                 GlicNudgeActivity activity) { invoke_glic_cb.Run(activity); },
-              std::move(invoke_glic)));
+      if (!is_mouse_down_) {
+        base::UmaHistogramEnumeration(
+            base::StrCat({"Glic.Selection.Action", histogram_suffix}),
+            GlicSelectionAction::kNudgeShown);
+        auto invoke_glic = base::BindRepeating(
+            &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
+            base::UTF16ToUTF8(selected_text), selected_text.length(),
+            /*is_widget=*/false, web_contents()->GetWeakPtr());
+        controller->UpdateNudgeLabel(
+            web_contents(), base::UTF16ToUTF8(label),
+            std::make_optional(base::UTF16ToUTF8(title)),
+            /*anchored_message_text=*/std::string(), std::nullopt,
+            base::BindRepeating(
+                [](base::RepeatingCallback<void(GlicNudgeActivity)>
+                       invoke_glic_cb,
+                   GlicNudgeActivity activity) {
+                  invoke_glic_cb.Run(activity);
+                },
+                std::move(invoke_glic)));
+      }
     } else {
       // Show selection widget
       if (!is_mouse_down_) {
