@@ -58,11 +58,6 @@ concept IsJavaRef =
     std::is_base_of_v<jni_zero::JavaRef<jobject>, std::remove_cvref_t<T>>;
 
 namespace internal {
-// Create an instance of JavaRef<T> without DCHECK'ing that it is a local ref.
-// Should only be used by the JNI Zero code generator.
-template <typename T>
-JavaRef<T> AsJavaRef(const T& obj);
-
 // Forward declaration of template class that contains @CalledByNative methods.
 template <typename T>
 class _CalledByNatives;
@@ -133,10 +128,6 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
 #if JNI_ZERO_ENABLE_COMPAT_API
  protected:
 #endif
-
-  // Alternative constructor that does not DCHECK that it is a local ref.
-  // Should only be used by the JNI Zero code generator.
-  explicit JavaRef(jobject obj) : obj_(obj) {}
 
   // Used for move semantics. obj_ must have been released first if non-null.
   void steal(JavaRef&& other) {
@@ -212,14 +203,6 @@ class JavaRef : public JavaRef<jobject> {
  protected:
 #endif
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
-
- private:
-  // Alternative constructor that does not DCHECK that it is a local ref.
-  // Should only be used by the JNI Zero code generator.
-  explicit JavaRef(T obj) : JavaRef<jobject>(obj) {}
-
-  template <typename U>
-  friend JavaRef<U> jni_zero::internal::AsJavaRef(const U& obj);
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
