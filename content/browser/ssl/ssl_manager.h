@@ -51,7 +51,7 @@ class SSLManager {
       bool is_primary_main_frame_request,
       const GURL& url,
       NavigationOrDocumentHandle* navigation_or_document,
-      int net_error,
+      net::Error net_error,
       const net::SSLInfo& ssl_info,
       bool fatal);
 

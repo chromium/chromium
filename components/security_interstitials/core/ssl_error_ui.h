@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -22,7 +23,7 @@ class ControllerClient;
 class SSLErrorUI {
  public:
   SSLErrorUI(const GURL& request_url,
-             int cert_error,
+             net::Error cert_error,
              const net::SSLInfo& ssl_info,
              int display_options,  // Bitmask of SSLErrorOptionsMask values.
              const base::Time& time_triggered,
@@ -41,14 +42,14 @@ class SSLErrorUI {
   const net::SSLInfo& ssl_info() const;
   const base::Time& time_triggered() const;
   ControllerClient* controller() const;
-  int cert_error() const;
+  net::Error cert_error() const;
 
  private:
   void PopulateOverridableStrings(base::DictValue& load_time_data);
   void PopulateNonOverridableStrings(base::DictValue& load_time_data);
 
   const GURL request_url_;
-  const int cert_error_;
+  const net::Error cert_error_;
   const net::SSLInfo ssl_info_;
   const base::Time time_triggered_;
   const GURL support_url_;

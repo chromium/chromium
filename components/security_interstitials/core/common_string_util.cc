@@ -23,7 +23,8 @@ std::u16string GetFormattedHostName(const GURL& gurl) {
   return host;
 }
 
-void PopulateSSLLayoutStrings(int cert_error, base::DictValue& load_time_data) {
+void PopulateSSLLayoutStrings(net::Error cert_error,
+                              base::DictValue& load_time_data) {
   load_time_data.Set("type", "SSL");
   load_time_data.Set("errorCode", net::ErrorToString(cert_error));
   load_time_data.Set("openDetails",

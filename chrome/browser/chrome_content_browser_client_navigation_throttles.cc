@@ -188,7 +188,7 @@ namespace {
 // parameters.
 void HandleSSLErrorWrapper(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     SSLErrorHandler::BlockingPageReadyCallback blocking_page_ready_callback) {

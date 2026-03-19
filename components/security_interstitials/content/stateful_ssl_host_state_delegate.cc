@@ -62,7 +62,7 @@ GURL GetSecureGURLForHost(const std::string& host) {
   return GURL(url);
 }
 
-std::string GetKey(const net::X509Certificate& cert, int error) {
+std::string GetKey(const net::X509Certificate& cert, net::Error error) {
   // Since a security decision will be made based on the fingerprint, Chrome
   // should use the SHA-256 fingerprint for the certificate.
   net::SHA256HashValue fingerprint = cert.CalculateChainFingerprint256();
@@ -102,7 +102,7 @@ StatefulSSLHostStateDelegate::~StatefulSSLHostStateDelegate() = default;
 void StatefulSSLHostStateDelegate::AllowCert(
     const std::string& host,
     const net::X509Certificate& cert,
-    int error,
+    net::Error error,
     content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
@@ -170,7 +170,7 @@ content::SSLHostStateDelegate::CertJudgment
 StatefulSSLHostStateDelegate::QueryPolicy(
     const std::string& host,
     const net::X509Certificate& cert,
-    int error,
+    net::Error error,
     content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {

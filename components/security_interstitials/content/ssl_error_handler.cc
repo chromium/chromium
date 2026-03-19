@@ -346,7 +346,7 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
       content::WebContents* web_contents,
       const net::SSLInfo& ssl_info,
       content::BrowserContext* const browser_context,
-      int cert_error,
+      net::Error cert_error,
       int options_mask,
       const GURL& request_url,
       captive_portal::CaptivePortalService* captive_portal_service,
@@ -400,7 +400,7 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
   raw_ptr<content::WebContents> web_contents_;
   const net::SSLInfo ssl_info_;
   const raw_ptr<content::BrowserContext> browser_context_;
-  const int cert_error_;
+  const net::Error cert_error_;
   const int options_mask_;
   const GURL request_url_;
   std::unique_ptr<CommonNameMismatchHandler> common_name_mismatch_handler_;
@@ -541,7 +541,7 @@ ConfigSingleton& GetConfig() {
 
 void SSLErrorHandler::HandleSSLError(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     base::OnceCallback<
@@ -643,7 +643,7 @@ void SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
 SSLErrorHandler::SSLErrorHandler(
     std::unique_ptr<Delegate> delegate,
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     network_time::NetworkTimeTracker* network_time_tracker,
     captive_portal::CaptivePortalService* captive_portal_service,

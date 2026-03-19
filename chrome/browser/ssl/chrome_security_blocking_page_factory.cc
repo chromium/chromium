@@ -139,7 +139,7 @@ void LogSafeBrowsingSecuritySensitiveAction(
 std::unique_ptr<SSLBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateSSLPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     int options_mask,
@@ -176,7 +176,7 @@ ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
     const GURL& request_url,
     const GURL& login_url,
     const net::SSLInfo& ssl_info,
-    int cert_error) {
+    net::Error cert_error) {
   auto page = std::make_unique<CaptivePortalBlockingPage>(
       web_contents, request_url, login_url,
       /*can_show_enhanced_protection_message=*/true, ssl_info,
@@ -193,7 +193,7 @@ ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
 std::unique_ptr<BadClockBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     const base::Time& time_triggered,
@@ -213,7 +213,7 @@ ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
 std::unique_ptr<MITMSoftwareBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const GURL& request_url,
     const net::SSLInfo& ssl_info,
     const std::string& mitm_software_name) {
@@ -239,7 +239,7 @@ ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
 std::unique_ptr<BlockedInterceptionBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateBlockedInterceptionBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const GURL& request_url,
     const net::SSLInfo& ssl_info) {
   LogSafeBrowsingSecuritySensitiveAction(

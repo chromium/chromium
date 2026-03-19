@@ -55,7 +55,7 @@ using content::Referrer;
 SSLErrorControllerClient::SSLErrorControllerClient(
     content::WebContents* web_contents,
     const net::SSLInfo& ssl_info,
-    int cert_error,
+    net::Error cert_error,
     const GURL& request_url,
     std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
     std::unique_ptr<security_interstitials::SettingsPageHelper>

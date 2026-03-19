@@ -133,7 +133,7 @@ class InterstitialHTMLSource : public content::URLDataSource {
 std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
     content::WebContents* web_contents) {
   // Random parameters for SSL blocking page.
-  int cert_error = net::ERR_CERT_CONTAINS_ERRORS;
+  net::Error cert_error = net::ERR_CERT_CONTAINS_ERRORS;
   GURL request_url("https://example.com");
   bool overridable = false;
   bool strict_enforcement = false;
@@ -185,7 +185,7 @@ std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
 
 std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
     content::WebContents* web_contents) {
-  const int cert_error = net::ERR_CERT_AUTHORITY_INVALID;
+  const net::Error cert_error = net::ERR_CERT_AUTHORITY_INVALID;
   const GURL request_url("https://example.com");
   const std::string mitm_software_name = "Misconfigured Antivirus";
   bool is_enterprise_managed = false;
@@ -207,7 +207,7 @@ std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
 
 std::unique_ptr<BlockedInterceptionBlockingPage>
 CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents) {
-  const int cert_error = net::ERR_CERT_AUTHORITY_INVALID;
+  const net::Error cert_error = net::ERR_CERT_AUTHORITY_INVALID;
   const GURL request_url("https://example.com");
 
   net::SSLInfo ssl_info;
@@ -220,7 +220,7 @@ CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents) {
 std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
     content::WebContents* web_contents) {
   // Set up a fake clock error.
-  int cert_error = net::ERR_CERT_DATE_INVALID;
+  net::Error cert_error = net::ERR_CERT_DATE_INVALID;
   GURL request_url("https://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",

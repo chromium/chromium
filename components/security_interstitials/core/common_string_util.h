@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -18,7 +19,8 @@ namespace security_interstitials::common_string_util {
 std::u16string GetFormattedHostName(const GURL& gurl);
 
 // For SSL-related errors that share a basic structure.
-void PopulateSSLLayoutStrings(int cert_error, base::DictValue& load_time_data);
+void PopulateSSLLayoutStrings(net::Error cert_error,
+                              base::DictValue& load_time_data);
 
 // For SSL-related errors that provide debugging information.
 void PopulateSSLDebuggingStrings(const net::SSLInfo& ssl_info,

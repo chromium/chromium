@@ -126,14 +126,14 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   // through the interstitial will continue the navigation in a regular browser
   // window.
   if (std::move(is_in_hosted_app_callback_).Run(handle->GetWebContents())) {
-    QueueShowInterstitial(std::move(handle_ssl_error_callback_),
-                          handle->GetWebContents(),
-                          // The navigation handle's net error code will be
-                          // net::OK, because the net stack has allowed the
-                          // response to proceed. Synthesize a net error from
-                          // the cert status instead.
-                          net::MapCertStatusToNetError(cert_status),
-                          cert_status, info, handle->GetURL());
+    QueueShowInterstitial(
+        std::move(handle_ssl_error_callback_), handle->GetWebContents(),
+        // The navigation handle's net error code will be
+        // net::OK, because the net stack has allowed the
+        // response to proceed. Synthesize a net error from
+        // the cert status instead.
+        static_cast<net::Error>(net::MapCertStatusToNetError(cert_status)),
+        cert_status, info, handle->GetURL());
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::DEFER);
   }
@@ -148,7 +148,7 @@ const char* SSLErrorNavigationThrottle::GetNameForLogging() {
 void SSLErrorNavigationThrottle::QueueShowInterstitial(
     HandleSSLErrorCallback handle_ssl_error_callback,
     content::WebContents* web_contents,
-    int net_error,
+    net::Error net_error,
     int cert_status,
     const net::SSLInfo& ssl_info,
     const GURL& request_url) {
@@ -162,7 +162,7 @@ void SSLErrorNavigationThrottle::QueueShowInterstitial(
 }
 
 void SSLErrorNavigationThrottle::ShowInterstitial(
-    int net_error,
+    net::Error net_error,
     std::unique_ptr<security_interstitials::SecurityInterstitialPage>
         blocking_page) {
   // Get the error page content before giving up ownership of |blocking_page|.
@@ -180,6 +180,5 @@ void SSLErrorNavigationThrottle::ShowInterstitial(
       handle, std::move(blocking_page));
 
   CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
-      content::NavigationThrottle::CANCEL, static_cast<net::Error>(net_error),
-      error_page_content));
+      content::NavigationThrottle::CANCEL, net_error, error_page_content));
 }

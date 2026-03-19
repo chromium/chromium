@@ -13,7 +13,7 @@
 namespace security_interstitials {
 
 BadClockUI::BadClockUI(const GURL& request_url,
-                       int cert_error,
+                       net::Error cert_error,
                        const net::SSLInfo& ssl_info,
                        const base::Time& time_triggered,
                        ssl_errors::ClockState clock_state,

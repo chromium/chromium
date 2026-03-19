@@ -54,9 +54,9 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
     options_mask &= ~SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
   }
 
-  ssl_error_ui_.reset(new SSLErrorUI(request_url, cert_error, ssl_info,
-                                     options_mask, time_triggered, GURL(),
-                                     controller_.get()));
+  ssl_error_ui_.reset(new SSLErrorUI(request_url, (net::Error)cert_error,
+                                     ssl_info, options_mask, time_triggered,
+                                     GURL(), controller_.get()));
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());

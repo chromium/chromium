@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
@@ -17,6 +18,8 @@
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "net/base/net_errors.h"
+#include "url/gurl.h"
 
 // An interface that the embedder implements to supply instances of security
 // blocking pages that are configured for that embedder.
@@ -34,7 +37,7 @@ class SecurityBlockingPageFactory {
   // SSLErrorUI::SSLErrorOptionsMask values.
   virtual std::unique_ptr<SSLBlockingPage> CreateSSLPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       int options_mask,
@@ -47,12 +50,12 @@ class SecurityBlockingPageFactory {
                                   const GURL& request_url,
                                   const GURL& login_url,
                                   const net::SSLInfo& ssl_info,
-                                  int cert_error) = 0;
+                                  net::Error cert_error) = 0;
 
   // Creates a bad clock blocking page.
   virtual std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       const base::Time& time_triggered,
@@ -61,7 +64,7 @@ class SecurityBlockingPageFactory {
   // Creates a man-in-the-middle software blocking page.
   virtual std::unique_ptr<MITMSoftwareBlockingPage>
   CreateMITMSoftwareBlockingPage(content::WebContents* web_contents,
-                                 int cert_error,
+                                 net::Error cert_error,
                                  const GURL& request_url,
                                  const net::SSLInfo& ssl_info,
                                  const std::string& mitm_software_name) = 0;
@@ -69,7 +72,7 @@ class SecurityBlockingPageFactory {
   // Creates a blocked interception blocking page.
   virtual std::unique_ptr<BlockedInterceptionBlockingPage>
   CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents,
-                                        int cert_error,
+                                        net::Error cert_error,
                                         const GURL& request_url,
                                         const net::SSLInfo& ssl_info) = 0;
 

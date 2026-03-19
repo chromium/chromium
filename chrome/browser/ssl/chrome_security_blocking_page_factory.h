@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_CHROME_SECURITY_BLOCKING_PAGE_FACTORY_H_
 #define CHROME_BROWSER_SSL_CHROME_SECURITY_BLOCKING_PAGE_FACTORY_H_
 
-#include "build/build_config.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
@@ -17,6 +16,7 @@
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "net/base/net_errors.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -34,7 +34,7 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
   // SecurityBlockingPageFactory:
   std::unique_ptr<SSLBlockingPage> CreateSSLPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       int options_mask,
@@ -45,23 +45,23 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
       const GURL& request_url,
       const GURL& login_url,
       const net::SSLInfo& ssl_info,
-      int cert_error) override;
+      net::Error cert_error) override;
   std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       const base::Time& time_triggered,
       ssl_errors::ClockState clock_state) override;
   std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const GURL& request_url,
       const net::SSLInfo& ssl_info,
       const std::string& mitm_software_name) override;
   std::unique_ptr<BlockedInterceptionBlockingPage>
   CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents,
-                                        int cert_error,
+                                        net::Error cert_error,
                                         const GURL& request_url,
                                         const net::SSLInfo& ssl_info) override;
   std::unique_ptr<security_interstitials::InsecureFormBlockingPage>

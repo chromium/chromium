@@ -5,10 +5,11 @@
 #ifndef CONTENT_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
 #define CONTENT_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
 
-#include "content/public/browser/ssl_host_state_delegate.h"
-
 #include <set>
 #include <string>
+
+#include "content/public/browser/ssl_host_state_delegate.h"
+#include "net/base/net_errors.h"
 
 namespace content {
 
@@ -19,7 +20,7 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
 
   void AllowCert(const std::string& host,
                  const net::X509Certificate& cert,
-                 int error,
+                 net::Error error,
                  StoragePartition* storage_partition) override;
 
   void Clear(
@@ -27,7 +28,7 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
 
   CertJudgment QueryPolicy(const std::string& host,
                            const net::X509Certificate& cert,
-                           int error,
+                           net::Error error,
                            StoragePartition* storage_partition) override;
 
   void HostRanInsecureContent(const std::string& host,

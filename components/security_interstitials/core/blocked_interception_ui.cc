@@ -17,7 +17,7 @@
 namespace security_interstitials {
 
 BlockedInterceptionUI::BlockedInterceptionUI(const GURL& request_url,
-                                             int cert_error,
+                                             net::Error cert_error,
                                              const net::SSLInfo& ssl_info,
                                              ControllerClient* controller)
     : request_url_(request_url),

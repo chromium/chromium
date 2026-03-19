@@ -47,7 +47,7 @@ void SSLBlockingPage::PopulateInterstitialStrings(
 // No error happening loading a sub-resource triggers an interstitial so far.
 SSLBlockingPage::SSLBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     int options_mask,

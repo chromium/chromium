@@ -30,7 +30,7 @@ bool IsMasked(int options, SSLErrorOptionsMask mask) {
 }  // namespace
 
 SSLErrorUI::SSLErrorUI(const GURL& request_url,
-                       int cert_error,
+                       net::Error cert_error,
                        const net::SSLInfo& ssl_info,
                        int display_options,
                        const base::Time& time_triggered,
@@ -109,7 +109,7 @@ ControllerClient* SSLErrorUI::controller() const {
   return controller_;
 }
 
-int SSLErrorUI::cert_error() const {
+net::Error SSLErrorUI::cert_error() const {
   return cert_error_;
 }
 

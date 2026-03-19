@@ -11,7 +11,7 @@ namespace security_interstitials {
 
 namespace {
 
-int IsCertErrorFatal(int cert_error) {
+int IsCertErrorFatal(net::Error cert_error) {
   switch (cert_error) {
     case net::ERR_CERT_COMMON_NAME_INVALID:
     case net::ERR_CERT_DATE_INVALID:
@@ -39,7 +39,7 @@ int IsCertErrorFatal(int cert_error) {
 
 }  // namespace
 
-int CalculateSSLErrorOptionsMask(int cert_error,
+int CalculateSSLErrorOptionsMask(net::Error cert_error,
                                  bool hard_override_disabled,
                                  bool should_ssl_errors_be_fatal) {
   int options_mask = 0;

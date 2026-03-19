@@ -16,7 +16,7 @@ SSLErrorHandler::SSLErrorHandler(WebContents* web_contents,
                                  const base::WeakPtr<Delegate>& delegate,
                                  bool is_primary_main_frame_request,
                                  const GURL& url,
-                                 int net_error,
+                                 net::Error net_error,
                                  const net::SSLInfo& ssl_info,
                                  bool fatal)
     : delegate_(delegate),

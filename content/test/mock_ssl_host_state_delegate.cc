@@ -15,7 +15,7 @@ MockSSLHostStateDelegate::~MockSSLHostStateDelegate() {}
 
 void MockSSLHostStateDelegate::AllowCert(const std::string& host,
                                          const net::X509Certificate& cert,
-                                         int error,
+                                         net::Error error,
                                          StoragePartition* storage_partition) {
   exceptions_.insert(host);
 }
@@ -40,7 +40,7 @@ void MockSSLHostStateDelegate::Clear(
 SSLHostStateDelegate::CertJudgment MockSSLHostStateDelegate::QueryPolicy(
     const std::string& host,
     const net::X509Certificate& cert,
-    int error,
+    net::Error error,
     StoragePartition* storage_partition) {
   if (!exceptions_.contains(host)) {
     return SSLHostStateDelegate::DENIED;

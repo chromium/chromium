@@ -32,21 +32,20 @@ namespace {}  // namespace
 // it leaks memory, so don't create it here.
 BlockedInterceptionBlockingPage::BlockedInterceptionBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const GURL& request_url,
     bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
-    : SSLBlockingPageBase(
-          web_contents,
-          ssl_info,
-          request_url,
-          true /* overridable */,
-          base::Time::Now(),
-          can_show_enhanced_protection_message,
-          std::move(controller_client)),
+    : SSLBlockingPageBase(web_contents,
+                          ssl_info,
+                          request_url,
+                          true /* overridable */,
+                          base::Time::Now(),
+                          can_show_enhanced_protection_message,
+                          std::move(controller_client)),
       ssl_info_(ssl_info),
       blocked_interception_ui_(
           new security_interstitials::BlockedInterceptionUI(request_url,

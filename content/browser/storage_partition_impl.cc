@@ -2514,7 +2514,8 @@ void StoragePartitionImpl::OnSSLCertificateError(
   bool is_primary_main_frame_request = context.IsPrimaryMainFrameRequest();
   SSLManager::OnSSLCertificateError(
       delegate->GetWeakPtr(), is_primary_main_frame_request, url,
-      context.navigation_or_document(), net_error, ssl_info, fatal);
+      context.navigation_or_document(), static_cast<net::Error>(net_error),
+      ssl_info, fatal);
 }
 
 void StoragePartitionImpl::OnLoadingStateUpdate(

@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/ssl_errors/error_classification.h"
+#include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -19,7 +20,7 @@ namespace security_interstitials {
 class BadClockUI {
  public:
   BadClockUI(const GURL& request_url,
-             int cert_error,  // Should correspond to a NET_ERROR
+             net::Error cert_error,
              const net::SSLInfo& ssl_info,
              const base::Time& time_triggered,  // Time the error was triggered
              ssl_errors::ClockState clock_state,
@@ -37,7 +38,7 @@ class BadClockUI {
   void PopulateClockStrings(base::DictValue& load_time_data);
 
   const GURL request_url_;
-  const int cert_error_;
+  const net::Error cert_error_;
   const net::SSLInfo ssl_info_;
   const base::Time time_triggered_;
   raw_ptr<ControllerClient> controller_;

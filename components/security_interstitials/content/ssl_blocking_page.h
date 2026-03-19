@@ -11,7 +11,9 @@
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
+#include "components/security_interstitials/core/ssl_error_ui.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -46,7 +48,7 @@ class SSLBlockingPage : public SSLBlockingPageBase {
 
   SSLBlockingPage(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       int options_mask,

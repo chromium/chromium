@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
+#include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -45,7 +46,7 @@ class SSLErrorHandler {
                   const base::WeakPtr<Delegate>& delegate,
                   bool is_primary_main_frame_request,
                   const GURL& url,
-                  int net_error,
+                  net::Error net_error,
                   const net::SSLInfo& ssl_info,
                   bool fatal);
 
@@ -64,7 +65,7 @@ class SSLErrorHandler {
 
   WebContents* web_contents() const { return web_contents_; }
 
-  int cert_error() const { return cert_error_; }
+  net::Error cert_error() const { return cert_error_; }
 
   bool fatal() const { return fatal_; }
 
@@ -95,7 +96,7 @@ class SSLErrorHandler {
   const net::SSLInfo ssl_info_;
 
   // A net error code describing the error that occurred.
-  const int cert_error_;
+  const net::Error cert_error_;
 
   // True if the error is from a host requiring certificate errors to be fatal.
   const bool fatal_;

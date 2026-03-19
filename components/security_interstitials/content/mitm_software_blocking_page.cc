@@ -35,7 +35,7 @@ const security_interstitials::SecurityInterstitialPage::TypeID
 // it leaks memory, so don't create it here.
 MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const GURL& request_url,
     bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,

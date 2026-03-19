@@ -41,7 +41,7 @@ class FakeSSLBlockingPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
   FakeSSLBlockingPage(content::WebContents* web_contents,
-                      int cert_error,
+                      net::Error cert_error,
                       const net::SSLInfo& ssl_info,
                       const GURL& request_url)
       : security_interstitials::SecurityInterstitialPage(
@@ -81,7 +81,7 @@ class FakeSSLBlockingPage
 void MockHandleSSLError(
     bool async,
     content::WebContents* web_contents,
-    int cert_error,
+    net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     base::OnceCallback<

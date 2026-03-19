@@ -149,7 +149,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   // shown.
   static void HandleSSLError(
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       BlockingPageReadyCallback blocking_page_ready_callback,
@@ -191,7 +191,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
  protected:
   SSLErrorHandler(std::unique_ptr<Delegate> delegate,
                   content::WebContents* web_contents,
-                  int cert_error,
+                  net::Error cert_error,
                   const net::SSLInfo& ssl_info,
                   network_time::NetworkTimeTracker* network_time_tracker,
                   captive_portal::CaptivePortalService* captive_portal_service,
@@ -246,7 +246,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   bool IsOnlyCertError(net::CertStatus only_cert_error_expected) const;
 
   std::unique_ptr<Delegate> delegate_;
-  const int cert_error_;
+  const net::Error cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
   raw_ptr<network_time::NetworkTimeTracker> network_time_tracker_;

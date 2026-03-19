@@ -133,7 +133,7 @@ class TestSSLErrorHandler : public SSLErrorHandler {
   TestSSLErrorHandler(
       std::unique_ptr<Delegate> delegate,
       content::WebContents* web_contents,
-      int cert_error,
+      net::Error cert_error,
       const net::SSLInfo& ssl_info,
       network_time::NetworkTimeTracker* network_time_tracker,
       const GURL& request_url,
@@ -320,7 +320,9 @@ class SSLErrorHandlerNameMismatchTest
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
     error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
-        net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
+        static_cast<net::Error>(
+            net::MapCertStatusToNetError(ssl_info_.cert_status)),
+        ssl_info_,
         /*network_time_tracker=*/nullptr, GURL() /*request_url*/,
         captive_portal_service_.get());
   }
@@ -584,7 +586,9 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
     error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
-        net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
+        static_cast<net::Error>(
+            net::MapCertStatusToNetError(ssl_info_.cert_status)),
+        ssl_info_,
         /*network_time_tracker=*/nullptr, GURL() /*request_url*/,
         captive_portal_service_.get());
   }
@@ -676,8 +680,9 @@ class SSLErrorHandlerDateInvalidTest
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
     error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
-        net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
-        tracker_.get(), GURL() /*request_url*/,
+        static_cast<net::Error>(
+            net::MapCertStatusToNetError(ssl_info_.cert_status)),
+        ssl_info_, tracker_.get(), GURL() /*request_url*/,
         /*captive_portal_service=*/nullptr);
 
     // Fix flakiness in case system time is off and triggers a bad clock
@@ -1417,7 +1422,9 @@ TEST_F(SSLErrorHandlerTest, BlockedInterceptionInterstitial) {
   TestSSLErrorHandlerDelegate* delegate_ptr = delegate.get();
   TestSSLErrorHandler error_handler(
       std::move(delegate), web_contents(),
-      net::MapCertStatusToNetError(ssl_info.cert_status), ssl_info,
+      static_cast<net::Error>(
+          net::MapCertStatusToNetError(ssl_info.cert_status)),
+      ssl_info,
       /*network_time_tracker=*/nullptr, GURL() /*request_url*/,
       /*captive_portal_service=*/nullptr);
 
@@ -1454,7 +1461,9 @@ TEST_F(SSLErrorHandlerTest, NonPrimaryMainframeShouldNotAffectSSLErrorHandler) {
 
   auto error_handler = std::make_unique<TestSSLErrorHandler>(
       std::move(delegate), web_contents(),
-      net::MapCertStatusToNetError(ssl_info.cert_status), ssl_info,
+      static_cast<net::Error>(
+          net::MapCertStatusToNetError(ssl_info.cert_status)),
+      ssl_info,
       /*network_time_tracker=*/nullptr, /*request_url=*/GURL(),
       /*captive_portal_service=*/nullptr);
 
