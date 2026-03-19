@@ -71,6 +71,35 @@ Vehicle& Vehicle::operator=(const Vehicle& other) = default;
 Vehicle& Vehicle::operator=(Vehicle&& other) = default;
 Vehicle::~Vehicle() = default;
 
+GmailSource::GmailSource() = default;
+GmailSource::GmailSource(const GmailSource& other) = default;
+GmailSource::GmailSource(GmailSource&& other) = default;
+GmailSource& GmailSource::operator=(const GmailSource& other) = default;
+GmailSource& GmailSource::operator=(GmailSource&& other) = default;
+GmailSource::~GmailSource() = default;
+
+CalendarSource::CalendarSource() = default;
+CalendarSource::CalendarSource(const CalendarSource& other) = default;
+CalendarSource::CalendarSource(CalendarSource&& other) = default;
+CalendarSource& CalendarSource::operator=(const CalendarSource& other) =
+    default;
+CalendarSource& CalendarSource::operator=(CalendarSource&& other) = default;
+CalendarSource::~CalendarSource() = default;
+
+PhotosSource::PhotosSource() = default;
+PhotosSource::PhotosSource(const PhotosSource& other) = default;
+PhotosSource::PhotosSource(PhotosSource&& other) = default;
+PhotosSource& PhotosSource::operator=(const PhotosSource& other) = default;
+PhotosSource& PhotosSource::operator=(PhotosSource&& other) = default;
+PhotosSource::~PhotosSource() = default;
+
+Source::Source() = default;
+Source::Source(const Source& other) = default;
+Source::Source(Source&& other) = default;
+Source& Source::operator=(const Source& other) = default;
+Source& Source::operator=(Source&& other) = default;
+Source::~Source() = default;
+
 Entity::Entity() = default;
 Entity::Entity(const Entity& other) = default;
 Entity::Entity(Entity&& other) = default;

@@ -154,6 +154,61 @@ struct Vehicle {
 
 // LINT.ThenChange(//core/browser/data_model/autofill_ai/from_accessibility_annotator.cc:AttributeConversions)
 
+struct GmailSource {
+  GmailSource();
+  GmailSource(const GmailSource& other);
+  GmailSource(GmailSource&& other);
+  GmailSource& operator=(const GmailSource& other);
+  GmailSource& operator=(GmailSource&& other);
+  ~GmailSource();
+
+  std::string thread_id;
+  std::string message_id;
+  std::string thread_locator;
+  base::Time received_time;
+};
+
+struct CalendarSource {
+  CalendarSource();
+  CalendarSource(const CalendarSource& other);
+  CalendarSource(CalendarSource&& other);
+  CalendarSource& operator=(const CalendarSource& other);
+  CalendarSource& operator=(CalendarSource&& other);
+  ~CalendarSource();
+
+  std::string event_id;
+  base::Time modified_time;
+};
+
+struct PhotosSource {
+  PhotosSource();
+  PhotosSource(const PhotosSource& other);
+  PhotosSource(PhotosSource&& other);
+  PhotosSource& operator=(const PhotosSource& other);
+  PhotosSource& operator=(PhotosSource&& other);
+  ~PhotosSource();
+
+  std::string photo_id;
+  base::Time creation_time;
+};
+
+// The source of an entity. This is a single source that is referenced by the
+// entity. For example, a Gmail message can be a source for an Order entity.
+struct Source {
+  using SourceSpecifics =
+      std::variant<GmailSource, CalendarSource, PhotosSource>;
+
+  Source();
+  Source(const Source& other);
+  Source(Source&& other);
+  Source& operator=(const Source& other);
+  Source& operator=(Source&& other);
+  ~Source();
+
+  GURL deeplink;
+  SourceSpecifics specifics;
+};
+
 struct Entity {
   using EntitySpecifics = std::variant<FlightReservation,
                                        Order,
@@ -174,6 +229,7 @@ struct Entity {
   EntityType GetType() const;
 
   std::string entity_id;
+  std::vector<Source> sources;
   EntitySpecifics specifics;
 };
 

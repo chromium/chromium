@@ -247,6 +247,69 @@ TEST(EntityConverterTest, ConvertVehicle) {
   EXPECT_EQ(entity_vehicle.owner, "Owner Name");
 }
 
+TEST(EntityConverterTest, ConvertWithSources) {
+  sync_pb::AccessibilityAnnotationSpecifics specifics;
+  specifics.set_id("entity_with_sources");
+  specifics.mutable_order()->set_order_id("order_123");
+
+  auto* source1 = specifics.add_sources();
+  source1->set_deeplink("https://mail.google.com/thread1");
+  auto* gmail = source1->mutable_gmail_source();
+  gmail->set_thread_id("thread_1");
+  gmail->set_message_id("msg_1");
+  gmail->set_thread_locator("locator_1");
+  gmail->set_received_time_unix_epoch_seconds(1600000000);
+
+  auto* source2 = specifics.add_sources();
+  source2->set_deeplink("https://calendar.google.com/event1");
+  auto* calendar = source2->mutable_calendar_source();
+  calendar->set_event_id("event_1");
+  calendar->set_modified_time_unix_epoch_seconds(1610000000);
+
+  auto* source3 = specifics.add_sources();
+  source3->set_deeplink("https://photos.google.com/photo1");
+  auto* photos = source3->mutable_photos_source();
+  photos->set_photo_id("photo_1");
+  photos->set_creation_time_unix_epoch_seconds(1620000000);
+
+  std::optional<Entity> result = CreateEntityFromSpecifics(specifics);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result->sources.size(), 3u);
+
+  EXPECT_EQ(result->sources[0].deeplink,
+            GURL("https://mail.google.com/thread1"));
+  ASSERT_TRUE(
+      std::holds_alternative<GmailSource>(result->sources[0].specifics));
+  const auto& gmail_result =
+      std::get<GmailSource>(result->sources[0].specifics);
+  EXPECT_EQ(gmail_result.thread_id, "thread_1");
+  EXPECT_EQ(gmail_result.message_id, "msg_1");
+  EXPECT_EQ(gmail_result.thread_locator, "locator_1");
+  EXPECT_EQ(gmail_result.received_time,
+            base::Time::FromSecondsSinceUnixEpoch(1600000000));
+
+  EXPECT_EQ(result->sources[1].deeplink,
+            GURL("https://calendar.google.com/event1"));
+  ASSERT_TRUE(
+      std::holds_alternative<CalendarSource>(result->sources[1].specifics));
+  const auto& calendar_result =
+      std::get<CalendarSource>(result->sources[1].specifics);
+  EXPECT_EQ(calendar_result.event_id, "event_1");
+  EXPECT_EQ(calendar_result.modified_time,
+            base::Time::FromSecondsSinceUnixEpoch(1610000000));
+
+  EXPECT_EQ(result->sources[2].deeplink,
+            GURL("https://photos.google.com/photo1"));
+  ASSERT_TRUE(
+      std::holds_alternative<PhotosSource>(result->sources[2].specifics));
+  const auto& photos_result =
+      std::get<PhotosSource>(result->sources[2].specifics);
+  EXPECT_EQ(photos_result.photo_id, "photo_1");
+  EXPECT_EQ(photos_result.creation_time,
+            base::Time::FromSecondsSinceUnixEpoch(1620000000));
+}
+
 TEST(EntityConverterTest, MissingId) {
   sync_pb::AccessibilityAnnotationSpecifics specifics;
   specifics.mutable_order()->set_order_id("order_123");
