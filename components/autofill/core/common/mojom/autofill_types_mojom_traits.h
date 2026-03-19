@@ -156,6 +156,11 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.value();
   }
 
+  static const std::optional<std::u16string>& selected_option_text(
+      const autofill::FormFieldData& r) {
+    return r.selected_option_text();
+  }
+
   static const std::u16string& selected_text(const autofill::FormFieldData& r) {
     return r.selected_text();
   }
@@ -304,6 +309,11 @@ struct StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
   static const std::u16string& value(
       const autofill::FormFieldData::FillData& r) {
     return r.value;
+  }
+
+  static const std::optional<std::u16string>& selected_option_text(
+      const autofill::FormFieldData::FillData& r) {
+    return r.selected_option_text;
   }
 
   static autofill::FieldRendererId renderer_id(

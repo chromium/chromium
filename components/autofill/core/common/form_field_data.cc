@@ -347,6 +347,8 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
     static const std::optional<AutocompleteParsingResult> kNoParsingResult =
         std::nullopt;
     static const FormRendererId kNoFormId = FormRendererId();
+    static const std::optional<std::u16string> kNoSelectedOptionText =
+        std::nullopt;
     // LINT.IfChange(IdenticalAndEquivalentDomElements)
     // clang-format off
     return std::tie(
@@ -355,6 +357,7 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         !e.contains(kNotRefillRelated) ? f.name_attribute_ : base::EmptyString16(),
         f.label_,
         !e.contains_any({kValue, kNotRefillRelated}) ? f.value_ : base::EmptyString16(),
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.selected_option_text_ : kNoSelectedOptionText,
         !e.contains_any({kValue, kNotRefillRelated}) ? f.selected_text_ : base::EmptyString16(),
         f.form_control_type_,
         f.autocomplete_attribute_,
@@ -407,6 +410,7 @@ FormFieldData::FillData::~FillData() = default;
 
 FormFieldData::FillData::FillData(const FormFieldData& field)
     : value(field.value()),
+      selected_option_text(field.selected_option_text()),
       renderer_id(field.renderer_id()),
       host_form_id(field.host_form_id()),
       is_autofilled(field.is_autofilled_according_to_renderer()),

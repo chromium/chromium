@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -51,6 +53,8 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/public/web/web_option_element.h"
+#include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_view.h"
 
 namespace autofill {
@@ -58,6 +62,12 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunOnceClosure;
+using ::blink::WebAutofillState;
+using ::blink::WebElement;
+using ::blink::WebFormControlElement;
+using ::blink::WebFormElement;
+using ::blink::WebOptionElement;
+using ::blink::WebSelectElement;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtMost;
@@ -232,15 +242,11 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     return static_cast<MockFormTracker&>(form_tracker());
   }
 
-  std::vector<FormFieldData::FillData> GetFieldsForFilling(
-      const std::vector<FormData>& forms) {
-    std::vector<FormFieldData::FillData> fields;
-    for (const FormData& form : forms) {
-      for (const FormFieldData& field : form.fields()) {
-        fields.emplace_back(field);
-      }
-    }
-    return fields;
+  std::vector<FormFieldData::FillData> GetFillData(
+      base::span<const FormFieldData> fields) {
+    return base::ToVector(fields, [](const FormFieldData& field) {
+      return FormFieldData::FillData(field);
+    });
   }
 };
 
@@ -823,7 +829,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kPreview,
-      GetFieldsForFilling({form}), FillId::Create(),
+      GetFillData(form.fields()), FillId::Create(),
       /*supports_refill=*/false);
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kPreviewed);
   autofill_agent().ClearPreviewedForm();
@@ -921,6 +927,156 @@ TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
   ASSERT_EQ(num_extracted_forms(), 2u);
 }
 
+struct SelectFillingTestCase {
+  std::string test_name;
+
+  // The block of HTML that represents the select element being tested.
+  std::string html_select;
+
+  // The value and text of the option that Autofill wants the agent to select.
+  std::u16string fill_value;
+  std::u16string fill_text;
+
+  // The expected id, value and text of the option finally selected upon
+  // autofilling, or `std::nullopt if no option` is selected.
+  std::optional<std::string> expected_option_id;
+  std::optional<std::u16string> expected_value;
+  std::optional<std::u16string> expected_text;
+};
+
+class AutofillAgentSelectFillingTest
+    : public AutofillAgentTest,
+      public ::testing::WithParamInterface<SelectFillingTestCase> {};
+
+// Tests that select elements are correctly filled upon instructions by
+// Autofill. Various examples are described in details below.
+TEST_P(AutofillAgentSelectFillingTest, FillingSelectElements) {
+  const auto& param = GetParam();
+  LoadHTML(("<form>" + param.html_select + "</form>").c_str());
+
+  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(forms.size(), 1u);
+
+  FormData form = *form_util::ExtractFormData(
+      forms[0].GetDocument(), forms[0],
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
+
+  // Set the filling data.
+  test_api(form).field(0).set_value(param.fill_value);
+  test_api(form).field(0).set_selected_option_text(param.fill_text);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+
+  autofill_agent().ApplyFieldsAction(
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+      GetFillData(form.fields()), FillId::Create(),
+      /*supports_refill=*/false);
+
+  // Verification Logic
+  auto select = GetWebElementById("select_id").DynamicTo<WebSelectElement>();
+  ASSERT_TRUE(select);
+  EXPECT_EQ(select.GetAutofillState(), param.expected_option_id
+                                           ? WebAutofillState::kAutofilled
+                                           : WebAutofillState::kNotFilled);
+
+  std::vector<WebElement> options = select.GetListItems();
+  auto it = std::ranges::find_if(options, [](WebElement e) {
+    return e.DynamicTo<WebOptionElement>() &&
+           e.DynamicTo<WebOptionElement>().IsSelected();
+  });
+
+  if (param.expected_option_id) {
+    ASSERT_NE(it, options.end());
+    auto selected_option = it->DynamicTo<WebOptionElement>();
+    EXPECT_EQ(selected_option.GetIdAttribute().Ascii(),
+              param.expected_option_id);
+    EXPECT_EQ(selected_option.Value().Utf16(), param.expected_value);
+    EXPECT_EQ(selected_option.GetText().Utf16(), param.expected_text);
+  } else {
+    ASSERT_EQ(it, options.end());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllScenarios,
+    AutofillAgentSelectFillingTest,
+    ::testing::Values(
+        // Everything is unique, filling info match a unique option, filling
+        // works as expected.
+        SelectFillingTestCase{.test_name = "UniqueMatch",
+                              .html_select = R"(
+              <select id="select_id">
+                <option id="1" value="val_a">Option A</option>
+                <option id="2" value="val_b">Option B</option>
+              </select>)",
+                              .fill_value = u"val_b",
+                              .fill_text = u"Option B",
+                              .expected_option_id = "2",
+                              .expected_value = u"val_b",
+                              .expected_text = u"Option B"},
+        // Value is equal for two options, but text disambiguates them. Filling
+        // info match a unique option, filling works as expected.
+        SelectFillingTestCase{.test_name = "DuplicateValueUniqueText",
+                              .html_select = R"(
+              <select id="select_id">
+                <option id="1" value="val_a">Option A</option>
+                <option id="2" value="val_b">Option B1</option>
+                <option id="3" value="val_b">Option B2</option>
+              </select>)",
+                              .fill_value = u"val_b",
+                              .fill_text = u"Option B2",
+                              .expected_option_id = "3",
+                              .expected_value = u"val_b",
+                              .expected_text = u"Option B2"},
+        // Value is equal for two options, but text disambiguates them. Filling
+        // value matches the two options, but filling text does not correspond
+        // to any of them. Filling then falls back to standard value-filling,
+        // resulting in the first of the two options being selected.
+        SelectFillingTestCase{
+            .test_name = "DuplicateValueMismatchedTextFallback",
+            .html_select = R"(
+              <select id="select_id">
+                <option id="1" value="val_a">Option A</option>
+                <option id="2" value="val_b">Option B1</option>
+                <option id="3" value="val_b">Option B2</option>
+              </select>)",
+            .fill_value = u"val_b",
+            .fill_text = u"Option A",
+            .expected_option_id = "2",
+            .expected_value = u"val_b",
+            .expected_text = u"Option B1"},
+        // Value and text are equal for two options. Filling selects the first
+        // of the two options.
+        SelectFillingTestCase{.test_name = "DuplicateValueAndText",
+                              .html_select = R"(
+              <select id="select_id">
+                <option id="1" value="val_a">Option A</option>
+                <option id="2" value="val_b">Option B</option>
+                <option id="3" value="val_b">Option B</option>
+              </select>)",
+                              .fill_value = u"val_b",
+                              .fill_text = u"Option B",
+                              .expected_option_id = "2",
+                              .expected_value = u"val_b",
+                              .expected_text = u"Option B"},
+        // Filling value is not found in the list. Field should remain unfilled.
+        SelectFillingTestCase{.test_name = "NoValueMatch",
+                              .html_select = R"(
+              <select id="select_id">
+                <option id="1" value="val_a">Option A</option>
+                <option id="2" value="val_b">Option B</option>
+              </select>)",
+                              .fill_value = u"val_c",
+                              .fill_text = u"Option B",
+                              .expected_option_id = std::nullopt,
+                              .expected_value = std::nullopt,
+                              .expected_text = std::nullopt}),
+    [](const ::testing::TestParamInfo<
+        AutofillAgentSelectFillingTest::ParamType>& info) {
+      // Makes test output readable in the console
+      return info.param.test_name;
+    });
+
 class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<int> {
  public:
@@ -1016,7 +1172,7 @@ TEST_P(AutofillAgentSubmissionTest,
   form.set_fields({form_field});
   autofill_agent().ApplyFieldsAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      GetFieldsForFilling({form}), FillId::Create(),
+      GetFillData(form.fields()), FillId::Create(),
       /*supports_refill=*/false);
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
@@ -1057,7 +1213,7 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      GetFieldsForFilling({form}), FillId::Create(),
+      GetFillData(form.fields()), FillId::Create(),
       /*supports_refill=*/false);
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
@@ -1284,7 +1440,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   autofill_agent().ApplyFieldsAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      GetFieldsForFilling({*form}), FillId::Create(),
+      GetFillData(form->fields()), FillId::Create(),
       /*supports_refill=*/false);
 
   for (const blink::WebFormControlElement& field_element : field_elements) {

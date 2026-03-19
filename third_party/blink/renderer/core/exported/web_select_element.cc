@@ -50,7 +50,13 @@ std::vector<WebElement> WebSelectElement::GetListItems() const {
 
 void WebSelectElement::SetAutofillOption(WebOptionElement* option,
                                          WebAutofillState autofill_state) {
+  if (!Focused()) {
+    DispatchFocusEvent();
+  }
   Unwrap<HTMLSelectElement>()->SetAutofillOption(*option, autofill_state);
+  if (!Focused()) {
+    DispatchBlurEvent();
+  }
 }
 
 void WebSelectElement::SetSuggestedOption(WebOptionElement* option) {

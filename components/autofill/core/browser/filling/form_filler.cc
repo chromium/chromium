@@ -1469,6 +1469,9 @@ std::optional<FieldType> FormFiller::FillField(
   field_data.set_value(filling_content.value);
   field_data.set_force_override(filling_content.value_is_an_override ||
                                 allow_suggestion_swapping);
+  if (field_data.IsSelectElement() && filling_content.select_text) {
+    field_data.set_selected_option_text(*filling_content.select_text);
+  }
 
   // Sometimes the field can be cleared by Autofill instead of being filled
   // (e.g. payments swapping) and in those cases

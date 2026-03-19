@@ -242,7 +242,47 @@ class FormFieldData {
   const std::u16string& value() const { return value_; }
   void set_value(std::u16string value) { value_ = std::move(value); }
 
-  // Returns the (first) selected option. Returns std::nullopt if none is found.
+  // The visible text of the currently selected <option> for <select> elements.
+  // Returns std::nullopt if no text is available or if the field is not a
+  // select element.
+  //
+  // Distinctions from similar properties:
+  //
+  // * vs. `value()`: `value()` returns the underlying technical value of the
+  //   option (the IDL "value" attribute), whereas `selected_option_text()`
+  //   returns the human-readable string displayed to the user in the UI.
+  //   For example, given `<option value="US">United States</option>`,
+  //   `value()` is "US", but `selected_option_text()` is "United States".
+  //   Effectively the difference is similar to the difference between
+  //   `SelectOption::value` and `SelectOption::text` (see `SelectOption`
+  //   documentation for more details).
+  //
+  // * vs. `selected_option()`: `selected_option()` searches for a
+  //   `SelectOption` object representing the approximated matched option from
+  //   the `options()` list (combining both value and text).
+  //   `selected_option_text()` is simply the standalone string extracted from
+  //   the DOM.
+  //
+  // * vs. `selected_text()`: `selected_text()` refers to the string of text
+  //   actively highlighted by the user's cursor within a text field or
+  //   contenteditable. `selected_option_text()` strictly refers to the label
+  //   of a chosen dropdown option, regardless of the user's cursor.
+  const std::optional<std::u16string>& selected_option_text() const {
+    return selected_option_text_;
+  }
+  void set_selected_option_text(std::u16string selected_option_text) {
+    selected_option_text_ = std::move(selected_option_text);
+  }
+
+  // Returns an approximation to the (first) selected option. Returns
+  // `std::nullopt` if none is found.
+  //
+  // This is an approximation since <select> elements can have duplicate options
+  // (which means options having both the same value and text, which are the
+  // only attributes extracted by Autofill) and Autofill does not have enough
+  // information to be able to tell them apart. Hence it returns the first
+  // option that matches its data the most or `std::nullopt` if none do.
+  //
   // The only field types that come with options are FormControlType::kSelect*
   // and FormControlType::kInput* with a datalist. But even their `value()` may
   // mismatch all `options()`, e.g., when JavaScript set the value to a
@@ -250,8 +290,10 @@ class FormFieldData {
   // limits during extraction.
   base::optional_ref<const SelectOption> selected_option() const LIFETIME_BOUND;
 
-  // The selected text, or the empty string if no text is selected.
+  // The selected (highlighted text in a text input element or contenteditable)
+  // text, or the empty string if no text is selected.
   // Truncated at `50 * kMaxStringLength`.
+  //
   // This is not necessarily a substring of `value` because both strings are
   // truncated, and because for rich-text contenteditables the selection and
   // text content differ in whitespace.
@@ -473,6 +515,7 @@ class FormFieldData {
   std::u16string name_attribute_;
   std::u16string label_;
   std::u16string value_;
+  std::optional<std::u16string> selected_option_text_;
   std::u16string selected_text_;
   FormControlType form_control_type_ = FormControlType::kInputText;
   std::string autocomplete_attribute_;
@@ -518,11 +561,14 @@ struct FormFieldData::FillData {
   explicit FillData(const FormFieldData& field);
   FillData(const FillData&);
   FillData& operator=(const FillData&);
-
   ~FillData();
 
   // The field value to be set by the renderer.
   std::u16string value;
+
+  // The `SelectOption::text` value of the option to be selected in a select
+  // field.
+  std::optional<std::u16string> selected_option_text;
 
   // Uniquely identifies the DOM element that this field represents among the
   // field DOM elements in the same document.
