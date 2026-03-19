@@ -283,15 +283,30 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   }
 
   /**
+   * Sends the PIN to the backend for validation.
+   * Includes a safeguard to drop stale callbacks if the user's input changes.
+   */
+  private quickUnlockPrivateCheckCredential_(pin: string): void {
+    this.quickUnlockPrivate.checkCredential(
+        QuickUnlockMode.PIN, pin, (credentialCheck) => {
+          // If the current input no longer matches the one we sent to the
+          // backend, this is a stale callback. Ignore it to prevent UI
+          // flakiness.
+          if (this.pinKeyboardValue_ !== pin) {
+            return;
+          }
+          this.onQuickUnlockPrivateCheckCredential_(credentialCheck);
+        });
+  }
+
+  /**
    * @param e Custom event containing the new pin.
    */
   private onPinChange_(e: CustomEvent<{pin: string}>): void {
     const newPin = e.detail.pin;
     if (!this.isConfirmStep) {
       if (newPin) {
-        this.quickUnlockPrivate.checkCredential(
-            QuickUnlockMode.PIN, newPin,
-            this.onQuickUnlockPrivateCheckCredential_.bind(this));
+        this.quickUnlockPrivateCheckCredential_(newPin);
       } else {
         this.enableSubmit = false;
         this.showProblem_(
