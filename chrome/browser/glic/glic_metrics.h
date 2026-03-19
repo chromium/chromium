@@ -358,7 +358,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // reason (e.g, an error happened, reached a login page instead of the web
   // client, etc).
   void OnGlicWindowOpenInterrupted();
-  // Called just after the the glic window has been loaded into the UI.
+  // Called just after the glic window has been loaded into the UI.
   void OnGlicWindowShown(Browser* browser,
                          std::optional<display::Display> glic_display,
                          const gfx::Rect& glic_bounds);
