@@ -362,10 +362,24 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
           (toolbars_size_.collapsedTopToolbarHeight -
            toolbars_size_.collapsedBottomToolbarHeight) >=
       content_height_;
+  // When `resizes_scroll_view_` is true, over-scrolls at the bottom boundary
+  // are safely ignored via `scrolling_past_bottom`.
+  // When `resizes_scroll_view_` is false (Smooth Scrolling), the elastic
+  // bounce-back (deceleration) from the bottom limit is mistakenly treated
+  // as a valid "scroll up", raising progress and causing the toolbars to flap.
+  // We completely freeze progress updates while rubber-banding at the bottom
+  // to prevent this UI jump.
+  bool was_scrolled_to_bottom = false;
+  if (!resizes_scroll_view_) {
+    was_scrolled_to_bottom =
+        from_offset + scroll_view_height_ >= content_height_;
+  }
   if (ignoring_current_scroll_ ||
       (scrolling_past_top && !scrolling_content_down) ||
       (content_fits && !scrolling_content_down) ||
-      (resizes_scroll_view_ && scrolling_past_bottom)) {
+      (resizes_scroll_view_ && scrolling_past_bottom) ||
+      (!resizes_scroll_view_ && was_scrolled_to_bottom &&
+       is_scrolled_to_bottom())) {
     return ScrollAction::kIgnore;
   }
 
