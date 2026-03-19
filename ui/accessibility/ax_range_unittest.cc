@@ -30,25 +30,25 @@ using TestPositionRange = AXRange<AXPosition<AXNodePosition, AXNode>>;
 
 namespace {
 
-constexpr AXNodeID ROOT_ID = 1;
-constexpr AXNodeID DIV1_ID = 2;
-constexpr AXNodeID BUTTON_ID = 3;
-constexpr AXNodeID DIV2_ID = 4;
-constexpr AXNodeID CHECK_BOX1_ID = 5;
-constexpr AXNodeID CHECK_BOX2_ID = 6;
-constexpr AXNodeID TEXT_FIELD_ID = 7;
-constexpr AXNodeID STATIC_TEXT1_ID = 8;
-constexpr AXNodeID INLINE_BOX1_ID = 9;
-constexpr AXNodeID LINE_BREAK1_ID = 10;
-constexpr AXNodeID INLINE_BOX_LINE_BREAK1_ID = 11;
-constexpr AXNodeID STATIC_TEXT2_ID = 12;
-constexpr AXNodeID INLINE_BOX2_ID = 13;
-constexpr AXNodeID LINE_BREAK2_ID = 14;
-constexpr AXNodeID INLINE_BOX_LINE_BREAK2_ID = 15;
-constexpr AXNodeID PARAGRAPH_ID = 16;
-constexpr AXNodeID STATIC_TEXT3_ID = 17;
-constexpr AXNodeID INLINE_BOX3_ID = 18;
-constexpr AXNodeID EMPTY_PARAGRAPH_ID = 19;
+constexpr AXNodeID kRootId = 1;
+constexpr AXNodeID kDiv1Id = 2;
+constexpr AXNodeID kButtonId = 3;
+constexpr AXNodeID kDiv2Id = 4;
+constexpr AXNodeID kCheckBox1Id = 5;
+constexpr AXNodeID kCheckBox2Id = 6;
+constexpr AXNodeID kTextFieldId = 7;
+constexpr AXNodeID kStaticText1Id = 8;
+constexpr AXNodeID kInlineBox1Id = 9;
+constexpr AXNodeID kLineBreak1Id = 10;
+constexpr AXNodeID kInlineBoxLineBreak1Id = 11;
+constexpr AXNodeID kStaticText2Id = 12;
+constexpr AXNodeID kInlineBox2Id = 13;
+constexpr AXNodeID kLineBreak2Id = 14;
+constexpr AXNodeID kInlineBoxLineBreak2Id = 15;
+constexpr AXNodeID kParagraphId = 16;
+constexpr AXNodeID kStaticText3Id = 17;
+constexpr AXNodeID kInlineBox3Id = 18;
+constexpr AXNodeID kEmptyParagraphId = 19;
 
 class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
  public:
@@ -192,25 +192,25 @@ void AXRangeTest::SetUp() {
   // [Empty paragraph]
   // {20, 140, 700, 0}
 
-  root_.id = ROOT_ID;
-  div1_.id = DIV1_ID;
-  div2_.id = DIV2_ID;
-  button_.id = BUTTON_ID;
-  check_box1_.id = CHECK_BOX1_ID;
-  check_box2_.id = CHECK_BOX2_ID;
-  text_field_.id = TEXT_FIELD_ID;
-  line_break1_.id = LINE_BREAK1_ID;
-  line_break2_.id = LINE_BREAK2_ID;
-  static_text1_.id = STATIC_TEXT1_ID;
-  static_text2_.id = STATIC_TEXT2_ID;
-  static_text3_.id = STATIC_TEXT3_ID;
-  inline_box1_.id = INLINE_BOX1_ID;
-  inline_box2_.id = INLINE_BOX2_ID;
-  inline_box3_.id = INLINE_BOX3_ID;
-  inline_box_line_break1_.id = INLINE_BOX_LINE_BREAK1_ID;
-  inline_box_line_break2_.id = INLINE_BOX_LINE_BREAK2_ID;
-  paragraph_.id = PARAGRAPH_ID;
-  empty_paragraph_.id = EMPTY_PARAGRAPH_ID;
+  root_.id = kRootId;
+  div1_.id = kDiv1Id;
+  div2_.id = kDiv2Id;
+  button_.id = kButtonId;
+  check_box1_.id = kCheckBox1Id;
+  check_box2_.id = kCheckBox2Id;
+  text_field_.id = kTextFieldId;
+  line_break1_.id = kLineBreak1Id;
+  line_break2_.id = kLineBreak2Id;
+  static_text1_.id = kStaticText1Id;
+  static_text2_.id = kStaticText2Id;
+  static_text3_.id = kStaticText3Id;
+  inline_box1_.id = kInlineBox1Id;
+  inline_box2_.id = kInlineBox2Id;
+  inline_box3_.id = kInlineBox3Id;
+  inline_box_line_break1_.id = kInlineBoxLineBreak1Id;
+  inline_box_line_break2_.id = kInlineBoxLineBreak2Id;
+  paragraph_.id = kParagraphId;
+  empty_paragraph_.id = kEmptyParagraphId;
 
   root_.role = ax::mojom::Role::kDialog;
   root_.AddState(ax::mojom::State::kFocusable);
@@ -418,16 +418,16 @@ void AXRangeTest::SetUp() {
 }  // namespace
 
 TEST_F(AXRangeTest, RangeOfContents) {
-  const AXNode* root = GetNode(ROOT_ID);
+  const AXNode* root = GetNode(kRootId);
   const TestPositionRange root_range =
       TestPositionRange::RangeOfContents(*root);
-  const AXNode* text_field = GetNode(TEXT_FIELD_ID);
+  const AXNode* text_field = GetNode(kTextFieldId);
   const TestPositionRange text_field_range =
       TestPositionRange::RangeOfContents(*text_field);
-  const AXNode* static_text = GetNode(STATIC_TEXT1_ID);
+  const AXNode* static_text = GetNode(kStaticText1Id);
   const TestPositionRange static_text_range =
       TestPositionRange::RangeOfContents(*static_text);
-  const AXNode* inline_box = GetNode(INLINE_BOX1_ID);
+  const AXNode* inline_box = GetNode(kInlineBox1Id);
   const TestPositionRange inline_box_range =
       TestPositionRange::RangeOfContents(*inline_box);
 
