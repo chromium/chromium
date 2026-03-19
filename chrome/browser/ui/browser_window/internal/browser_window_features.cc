@@ -274,6 +274,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<BookmarkBarController>(
           *browser, *browser, *browser->GetTabStripModel());
 
+  tab_strip_model_ = browser->GetTabStripModel();
+  tab_list_bridge_ = std::make_unique<TabListBridge>(
+      *tab_strip_model_, browser->GetUnownedUserDataHost());
+
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.
   // Ping erikchen for assistance. This comment will be deleted after there are
@@ -352,8 +356,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   lens_region_search_controller_ =
       std::make_unique<lens::LensRegionSearchController>();
 
-  tab_strip_model_ = browser->GetTabStripModel();
-
   tab_strip_service_feature_ = std::make_unique<TabStripServiceMojoHandler>(
       std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
           browser, tab_strip_model_));
@@ -423,9 +425,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   content_setting_bubble_model_delegate_ =
       std::make_unique<BrowserContentSettingBubbleModelDelegate>(browser);
-
-  tab_list_bridge_ = std::make_unique<TabListBridge>(
-      *tab_strip_model_, browser->GetUnownedUserDataHost());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_browser_window_helper_ =

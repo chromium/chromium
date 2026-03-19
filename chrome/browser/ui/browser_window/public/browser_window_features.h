@@ -522,6 +522,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<BookmarkBarController> bookmark_bar_controller_;
 
+  raw_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<TabListBridge> tab_list_bridge_;
+
   std::unique_ptr<BrowserInstantController> instant_controller_;
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarBubbleController>
@@ -593,8 +596,6 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;
-
-  raw_ptr<TabStripModel> tab_strip_model_;
 
   std::unique_ptr<AiOverlayDialogController> ai_overlay_dialog_controller_;
 
@@ -720,8 +721,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<FindBarController> find_bar_controller_;
 
   std::unique_ptr<DataSharingBubbleController> data_sharing_bubble_controller_;
-
-  std::unique_ptr<TabListBridge> tab_list_bridge_;
 
   // Note: Depends on TabListBridge, so should come after it in the member list.
   std::unique_ptr<extensions::BrowserExtensionWindowController>
