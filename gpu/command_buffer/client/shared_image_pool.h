@@ -104,6 +104,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientImage
   // Only used for testing purposes.
   const SharedImagePoolId& GetPoolIdForTesting() const;
 
+  // Dumps memoy allocation. Caller specified `parent_path` cannot be empty.
+  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                            const std::string& parent_path) const;
+
  protected:
   friend class base::RefCountedThreadSafe<ClientImage>;
   friend class SharedImagePoolBase;
@@ -270,6 +274,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePool
       result += image->GetSharedImage()->EstimatedSizeInBytes();
     }
     return result;
+  }
+
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    const std::string& parent_path) const {
+    for (const auto& image : image_pool_) {
+      image->OnMemoryDump(pmd, parent_path);
+    }
   }
 
   // Returns a weak pointer to this pool, allowing for safe reference without

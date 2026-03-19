@@ -218,7 +218,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   }
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    const std::string& parent_path) const;
+                    const std::string& parent_path) const override;
 
   SkImageInfo CreateSkImageInfo() const;
 

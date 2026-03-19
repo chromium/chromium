@@ -4,6 +4,10 @@
 
 #include "gpu/command_buffer/client/shared_image_pool.h"
 
+#include <inttypes.h>
+
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
 namespace {
@@ -47,6 +51,26 @@ void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
 
 const SharedImagePoolId& ClientImage::GetPoolIdForTesting() const {
   return pool_id_;
+}
+
+void ClientImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                               const std::string& parent_path) const {
+  CHECK(shared_image_);
+  CHECK(!parent_path.empty());
+
+  std::string dump_name = base::StringPrintf(
+      "%s/shared_image_pool_%s/client_image_0x%" PRIXPTR, parent_path,
+      pool_id_.ToString(), reinterpret_cast<uintptr_t>(this));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+  size_t memory_size =
+      shared_image_->format().EstimatedSizeInBytes(shared_image_->size());
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  memory_size);
+
+  shared_image_->OnMemoryDump(
+      pmd, dump->guid(),
+      static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
 SharedImagePoolBase::SharedImagePoolBase(
