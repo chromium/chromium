@@ -9,6 +9,19 @@ package org.chromium.chrome.browser.multiwindow;
 option java_package = "org.chromium.chrome.browser.multiwindow";
 option java_outer_classname = "MultiInstanceDataProto";
 
+// Procedures for modifying this file:
+//
+// Removing a field:
+//    a. Remove the field from the message definition.
+//    b. Add the field's tag number to the 'reserved' list to prevent reuse.
+//    c. Add the field's name to the 'reserved' list to prevent reuse.
+//    Example:
+//    message MultiInstanceData {
+//      reserved 1;
+//      reserved "old_field";
+//      ...
+//    }
+
 // Data representing the state of all Chrome instances for multi-instance
 // support.
 message MultiInstanceData {
@@ -72,7 +85,7 @@ message InstanceData {
 
   optional int32 latest_persistent_state_id = 8;
 
-  optional string url = 9;
+  optional string active_tab_url = 9;
 
   // The default window title, equivalent to the active tab title.
   optional string active_tab_title = 10;

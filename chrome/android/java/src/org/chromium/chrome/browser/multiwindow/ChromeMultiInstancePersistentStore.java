@@ -221,14 +221,14 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     static @Nullable String readActiveTabUrl(int instanceId) {
         if (sData != null) {
             InstanceData instance = sData.getInstancesMap().get(instanceId);
-            return instance != null ? instance.getUrl() : null;
+            return instance != null ? instance.getActiveTabUrl() : null;
         }
         return getManager().readString(urlKey(instanceId), null);
     }
 
     static void writeActiveTabUrl(int instanceId, String url) {
         if (sData != null) {
-            putInstance(instanceId, getInstanceFromProto(instanceId).setUrl(url));
+            putInstance(instanceId, getInstanceFromProto(instanceId).setActiveTabUrl(url));
         } else {
             getManager().writeString(urlKey(instanceId), url);
         }
