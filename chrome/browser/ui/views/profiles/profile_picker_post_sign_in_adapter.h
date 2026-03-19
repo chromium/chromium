@@ -102,6 +102,10 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
 
   content::WebContents* contents() const { return contents_.get(); }
 
+  signin_metrics::AccessPoint signin_access_point() const {
+    return signin_access_point_;
+  }
+
  protected:
   virtual void FinishAndOpenBrowserInternal(PostHostClearedCallback callback,
                                             bool is_continue_callback) = 0;

@@ -140,8 +140,13 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   if (enterprise_account_) {
     // First show the notice screen and only after that (if the user proceeds
     // with the flow) the sync consent.
-    ShowManagedUserNotice(
-        ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled);
+    ManagedUserProfileNoticeUI::ScreenType screen_type =
+        adapter_ && adapter_->signin_access_point() ==
+                        signin_metrics::AccessPoint::kForYouFre
+            ? ManagedUserProfileNoticeUI::ScreenType::kFirstRun
+            : ManagedUserProfileNoticeUI::ScreenType::
+                  kEntepriseAccountSyncEnabled;
+    ShowManagedUserNotice(screen_type);
     return;
   }
 
@@ -269,6 +274,7 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
 
   switch (type) {
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kFirstRun:
       ShowSyncConfirmationScreen();
       return;
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled:
@@ -289,7 +295,6 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
       NOTREACHED() << "The profile picker should not show a managed user "
                       "notice that prompts for profile creation";
     case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
-    case ManagedUserProfileNoticeUI::ScreenType::kFirstRun:
       NOTREACHED() << "Screen type is used only on the revamped history sync "
                       "helper flow";
   }
