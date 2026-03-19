@@ -31,7 +31,7 @@ AXPropertyNode Parse(const char* input) {
 
 AXPropertyNode GetArgumentNode(const char* input) {
   auto got = Parse(input);
-  if (got.arguments.size() == 0) {
+  if (got.arguments.empty()) {
     return AXPropertyNode();
   }
   return std::move(got.arguments[0]);

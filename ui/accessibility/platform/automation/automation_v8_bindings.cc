@@ -83,9 +83,9 @@ class GenericHandlerFunctionWrapper : public V8HandlerFunctionWrapper {
 // constructor.
 //
 
-typedef void (*TreeIDFunction)(v8::Isolate* isolate,
-                               v8::ReturnValue<v8::Value> result,
-                               AutomationAXTreeWrapper* tree_wrapper);
+using TreeIDFunction = void (*)(v8::Isolate* isolate,
+                                v8::ReturnValue<v8::Value> result,
+                                AutomationAXTreeWrapper* tree_wrapper);
 
 class TreeIDWrapper : public V8HandlerFunctionWrapper {
  public:
@@ -134,11 +134,11 @@ class TreeIDWrapper : public V8HandlerFunctionWrapper {
 // AutomationAXTreeWrapper and the AXNode and passes them to the function
 // passed to the constructor.
 //
-typedef base::RepeatingCallback<void(v8::Isolate* isolate,
-                                     v8::ReturnValue<v8::Value> result,
-                                     AutomationAXTreeWrapper* tree_wrapper,
-                                     AXNode* node)>
-    NodeIDFunction;
+using NodeIDFunction =
+    base::RepeatingCallback<void(v8::Isolate* isolate,
+                                 v8::ReturnValue<v8::Value> result,
+                                 AutomationAXTreeWrapper* tree_wrapper,
+                                 AXNode* node)>;
 
 class NodeIDWrapper : public V8HandlerFunctionWrapper {
  public:
@@ -193,11 +193,11 @@ class NodeIDWrapper : public V8HandlerFunctionWrapper {
 // them to the function passed to the constructor.
 //
 
-typedef void (*NodeIDPlusAttributeFunction)(v8::Isolate* isolate,
-                                            v8::ReturnValue<v8::Value> result,
-                                            AXTree* tree,
-                                            AXNode* node,
-                                            const std::string& attribute);
+using NodeIDPlusAttributeFunction = void (*)(v8::Isolate* isolate,
+                                             v8::ReturnValue<v8::Value> result,
+                                             AXTree* tree,
+                                             AXNode* node,
+                                             const std::string& attribute);
 
 class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
  public:
@@ -255,14 +255,14 @@ class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
 // passes them to the function passed to the constructor.
 //
 
-typedef base::RepeatingCallback<void(v8::Isolate* isolate,
-                                     v8::ReturnValue<v8::Value> result,
-                                     AutomationAXTreeWrapper* tree_wrapper,
-                                     AXNode* node,
-                                     int start,
-                                     int end,
-                                     bool clipped)>
-    NodeIDPlusRangeFunction;
+using NodeIDPlusRangeFunction =
+    base::RepeatingCallback<void(v8::Isolate* isolate,
+                                 v8::ReturnValue<v8::Value> result,
+                                 AutomationAXTreeWrapper* tree_wrapper,
+                                 AXNode* node,
+                                 int start,
+                                 int end,
+                                 bool clipped)>;
 
 class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
  public:
@@ -315,13 +315,13 @@ class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
   NodeIDPlusRangeFunction function_;
 };
 
-typedef base::RepeatingCallback<void(v8::Isolate* isolate,
-                                     v8::ReturnValue<v8::Value> result,
-                                     AutomationAXTreeWrapper* tree_wrapper,
-                                     AXNode* node,
-                                     const std::string& strVal,
-                                     bool boolVal)>
-    NodeIDPlusStringBoolFunction;
+using NodeIDPlusStringBoolFunction =
+    base::RepeatingCallback<void(v8::Isolate* isolate,
+                                 v8::ReturnValue<v8::Value> result,
+                                 AutomationAXTreeWrapper* tree_wrapper,
+                                 AXNode* node,
+                                 const std::string& strVal,
+                                 bool boolVal)>;
 
 class NodeIDPlusStringBoolWrapper : public V8HandlerFunctionWrapper {
  public:
@@ -437,13 +437,12 @@ class NodeIDPlusDimensionsWrapper : public V8HandlerFunctionWrapper {
   NodeIDPlusDimensionsFunction function_;
 };
 
-typedef base::RepeatingCallback<void(
+using NodeIDPlusEventFunction = base::RepeatingCallback<void(
     v8::Isolate* isolate,
     v8::ReturnValue<v8::Value> result,
     AutomationAXTreeWrapper* tree_wrapper,
     AXNode* node,
-    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type)>
-    NodeIDPlusEventFunction;
+    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type)>;
 
 class NodeIDPlusEventWrapper : public V8HandlerFunctionWrapper {
  public:

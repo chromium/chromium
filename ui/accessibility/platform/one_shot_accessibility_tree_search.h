@@ -21,9 +21,9 @@ class BrowserAccessibility;
 
 // A function that returns whether or not a given node matches, given the
 // start element of the search as an optional comparator.
-typedef bool (*AccessibilityMatchPredicate)(
-    BrowserAccessibility* start_element,
-    BrowserAccessibility* this_element);
+using AccessibilityMatchPredicate =
+    bool (*)(BrowserAccessibility* start_element,
+             BrowserAccessibility* this_element);
 
 #define DECLARE_ACCESSIBILITY_PREDICATE(PredicateName)                   \
   COMPONENT_EXPORT(AX_PLATFORM) bool PredicateName(                      \

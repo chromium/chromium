@@ -27,7 +27,7 @@ bool AXTreeFormatter::MatchesPropertyFilters(
     //   2) a property on the line is exactly equal to the filter pattern, for
     //      example, AXSubrole filter will match AXSubrole=AXTerm line.
     if (base::MatchPattern(text, filter.match_str) ||
-        (filter.match_str.length() > 0 &&
+        (!filter.match_str.empty() &&
          filter.match_str.find('=') == std::string::npos &&
          filter.match_str[filter.match_str.length() - 1] != '*' &&
          base::MatchPattern(text, filter.match_str + "=*"))) {

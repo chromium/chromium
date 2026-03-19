@@ -388,8 +388,7 @@ std::vector<int> AXInspectTestHelper::DiffLines(
   std::vector<int> diff_lines;
   int i = 0, j = 0;
   while (i < actual_lines_count && j < expected_lines_count) {
-    if (expected_lines[j].size() == 0 ||
-        expected_lines[j][0] == kCommentToken) {
+    if (expected_lines[j].empty() || expected_lines[j][0] == kCommentToken) {
       // Skip comment lines and blank lines in expected output.
       ++j;
       continue;

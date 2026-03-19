@@ -546,7 +546,7 @@ AtspiAccessible* FindAccessible(const AXTreeSelector& selector) {
     }
   }
 
-  if (matched_children.size() == 0) {
+  if (matched_children.empty()) {
     std::string selectorType;
     if (selector.widget) {
       selectorType = "the provided pid.";

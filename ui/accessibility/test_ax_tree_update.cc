@@ -328,7 +328,7 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
 
     auto elem = last_index_appearance_of_plus_count.find(plus_count);
     if (elem == last_index_appearance_of_plus_count.end() ||
-        (int)i > elem->second) {
+        static_cast<int>(i) > elem->second) {
       last_index_appearance_of_plus_count[plus_count] = i;
     }
 

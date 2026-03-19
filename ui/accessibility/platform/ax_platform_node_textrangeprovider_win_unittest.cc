@@ -811,10 +811,10 @@ class AXPlatformNodeTextRangeProviderTest : public AXPlatformNodeWinTest {
     // Marking `Paraaagraph` as a misspelled word modeled as a CSS highlight.
     paragraph4_data.AddIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerTypes,
-        {(int)ax::mojom::MarkerType::kHighlight});
+        {static_cast<int>(ax::mojom::MarkerType::kHighlight)});
     paragraph4_data.AddIntListAttribute(
         ax::mojom::IntListAttribute::kHighlightTypes,
-        {(int)ax::mojom::HighlightType::kSpellingError});
+        {static_cast<int>(ax::mojom::HighlightType::kSpellingError)});
     paragraph4_data.AddIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerStarts, {0});
     paragraph4_data.AddIntListAttribute(
@@ -4039,18 +4039,20 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_data.SetTextPosition(ax::mojom::TextPosition::kSubscript);
   text_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
   text_data.SetTextAlign(ax::mojom::TextAlign::kCenter);
-  text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
-                                {(int)ax::mojom::MarkerType::kGrammar,
-                                 (int)ax::mojom::MarkerType::kSpelling,
-                                 (int)ax::mojom::MarkerType::kHighlight,
-                                 (int)ax::mojom::MarkerType::kHighlight,
-                                 (int)ax::mojom::MarkerType::kHighlight});
-  text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
-                                {(int)ax::mojom::HighlightType::kNone,
-                                 (int)ax::mojom::HighlightType::kNone,
-                                 (int)ax::mojom::HighlightType::kHighlight,
-                                 (int)ax::mojom::HighlightType::kSpellingError,
-                                 (int)ax::mojom::HighlightType::kGrammarError});
+  text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kGrammar),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kHighlight),
+       static_cast<int>(ax::mojom::MarkerType::kHighlight),
+       static_cast<int>(ax::mojom::MarkerType::kHighlight)});
+  text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kHighlightTypes,
+      {static_cast<int>(ax::mojom::HighlightType::kNone),
+       static_cast<int>(ax::mojom::HighlightType::kNone),
+       static_cast<int>(ax::mojom::HighlightType::kHighlight),
+       static_cast<int>(ax::mojom::HighlightType::kSpellingError),
+       static_cast<int>(ax::mojom::HighlightType::kGrammarError)});
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
                                 {0, 5, 0, 14, 19});
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
@@ -4083,7 +4085,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   heading_text_data.SetTextAlign(ax::mojom::TextAlign::kJustify);
   heading_text_data.AddIntListAttribute(
       ax::mojom::IntListAttribute::kMarkerTypes,
-      {(int)ax::mojom::MarkerType::kSpelling});
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling)});
   heading_text_data.AddIntListAttribute(
       ax::mojom::IntListAttribute::kMarkerStarts, {5});
   heading_text_data.AddIntListAttribute(

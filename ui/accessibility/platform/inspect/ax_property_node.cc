@@ -37,8 +37,9 @@ AXPropertyNode AXPropertyNode::From(
   // lvalue
   AXPropertyNode lvalue_root;
   Parse(&lvalue_root, property.begin(), lvalue_end);
-  if (lvalue_root.arguments.size() == 0)  // Empty AXPropertyNode.
+  if (lvalue_root.arguments.empty()) {  // Empty AXPropertyNode.
     return lvalue_root;
+  }
 
   AXPropertyNode* lvalue = &lvalue_root.arguments[0];
   lvalue->original_property = std::string(property.begin(), lvalue_end);

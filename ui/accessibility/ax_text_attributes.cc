@@ -62,43 +62,9 @@ AXTextAttributes::AXTextAttributes(const AXNodeData& node_data) {
       ax::mojom::IntListAttribute::kHighlightTypes);
 }
 
-AXTextAttributes::AXTextAttributes(AXTextAttributes&& other)
-    : background_color(other.background_color),
-      color(other.color),
-      invalid_state(other.invalid_state),
-      overline_style(other.overline_style),
-      strikethrough_style(other.strikethrough_style),
-      text_direction(other.text_direction),
-      text_position(other.text_position),
-      text_style(other.text_style),
-      underline_style(other.underline_style),
-      font_size(other.font_size),
-      font_weight(other.font_weight),
-      font_family(std::move(other.font_family)),
-      marker_types(std::move(other.marker_types)),
-      highlight_types(std::move(other.highlight_types)) {}
+AXTextAttributes::AXTextAttributes(AXTextAttributes&&) = default;
 
-AXTextAttributes& AXTextAttributes::operator=(AXTextAttributes&& other) {
-  if (this == &other)
-    return *this;
-
-  background_color = other.background_color;
-  color = other.color;
-  invalid_state = other.invalid_state;
-  overline_style = other.overline_style;
-  strikethrough_style = other.strikethrough_style;
-  text_direction = other.text_direction;
-  text_position = other.text_position;
-  text_style = other.text_style;
-  underline_style = other.underline_style;
-  font_size = other.font_size;
-  font_weight = other.font_weight;
-  font_family = other.font_family;
-  marker_types = other.marker_types;
-  highlight_types = other.highlight_types;
-
-  return *this;
-}
+AXTextAttributes& AXTextAttributes::operator=(AXTextAttributes&&) = default;
 
 bool AXTextAttributes::IsUnset() const {
   return background_color == kUnsetValue && color == kUnsetValue &&
@@ -106,8 +72,7 @@ bool AXTextAttributes::IsUnset() const {
          strikethrough_style == kUnsetValue && text_position == kUnsetValue &&
          font_size == kUnsetValue && font_weight == kUnsetValue &&
          text_style == kUnsetValue && underline_style == kUnsetValue &&
-         font_family.length() == 0 && marker_types.size() == 0 &&
-         highlight_types.size() == 0;
+         font_family.empty() && marker_types.empty() && highlight_types.empty();
 }
 
 bool AXTextAttributes::HasTextStyle(
