@@ -24,9 +24,9 @@ struct AutofillAiErrorDialogContext {
       default;
   AutofillAiErrorDialogContext(AutofillAiErrorDialogContext&& other) = default;
   AutofillAiErrorDialogContext& operator=(const AutofillAiErrorDialogContext&) =
-      default;
+      delete;
   AutofillAiErrorDialogContext& operator=(AutofillAiErrorDialogContext&&) =
-      default;
+      delete;
 
   // The type of autofill ai error dialog that will be displayed.
   AutofillAiErrorDialogType type = AutofillAiErrorDialogType::kTypeLocalSave;

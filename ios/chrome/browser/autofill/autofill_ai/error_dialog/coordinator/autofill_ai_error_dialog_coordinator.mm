@@ -184,11 +184,12 @@ inline constexpr base::TimeDelta kErrorDialogPresentationRetryDelay =
 - (void)userDismissedAlert {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _alertController = nil;
-  [self dismissViewController];
 
   // If there are any more pending alerts, try to display the next one.
   if (_pendingAlerts.count > 0) {
     [self tryPresentPendingAlert];
+  } else {
+    [self dismissViewController];
   }
 }
 
