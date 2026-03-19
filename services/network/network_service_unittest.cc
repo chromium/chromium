@@ -1266,7 +1266,7 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
       "TestCookie", kSecretValue, "www.test.com", "/", base::Time::Now(),
       base::Time::Now() + base::Days(1), base::Time(), base::Time(),
       /*secure=*/true, /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT);
+      net::COOKIE_PRIORITY_DEFAULT, net::CookieSourceType::kOther);
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),

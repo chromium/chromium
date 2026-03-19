@@ -78,7 +78,8 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
       /*last_update=*/base::Time(),
       /*secure=*/true, /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      net::CookieSourceType::kOther, cookie_partition_key);
 }
 
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalSameSiteNoneCookie(
@@ -91,7 +92,8 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalSameSiteNoneCookie(
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
       /*last_update=*/base::Time(),
       /*secure=*/true, /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      net::CookieSourceType::kOther, cookie_partition_key);
 }
 
 // NOTE: Consider modifying
