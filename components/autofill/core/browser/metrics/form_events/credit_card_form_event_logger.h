@@ -248,6 +248,11 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_save_and_fill_suggestion_accepted_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
+  // Captures the `metadata_logging_context_` at the time of form filling. Used
+  // when logging submission metrics since `metadata_logging_context_` could get
+  // overwritten anytime a new suggestion fetch is triggered, e.g. a user
+  // focuses a CVC field after autofilling a card with benefits.
+  CardMetadataLoggingContext metadata_logging_context_at_fill_;
 
   // Set when a list of suggestion is shown.
   base::TimeTicks suggestion_shown_timestamp_;

@@ -65,6 +65,9 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
   suggestion_contains_card_info_retrieval_enrolled_card_ =
       with_card_info_retrieval_enrolled;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
+  // A new metadata logging context is received every time a suggestion is
+  // fetched, i.e. when a form field is focused and provides suggestions. The
+  // previous context gets overwritten.
   metadata_logging_context_ = std::move(metadata_logging_context);
   suggestions_.clear();
   for (const auto& suggestion : suggestions)
@@ -485,9 +488,11 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
   ++form_interaction_counts_.autofill_fills;
+  metadata_logging_context_at_fill_ = metadata_logging_context_;
 }
 
 void CreditCardFormEventLogger::OnDidUndoAutofill() {
+  metadata_logging_context_at_fill_ = CardMetadataLoggingContext();
   has_logged_undo_after_fill_ = true;
   base::RecordAction(base::UserMetricsAction("Autofill_UndoPaymentsAutofill"));
 }
@@ -701,11 +706,11 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
     LogCardWithMetadataFormEventMetric(CardMetadataLoggingEvent::kSubmitted,
-                                       metadata_logging_context_,
+                                       metadata_logging_context_at_fill_,
                                        HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
     // This event can only be triggered once per page load.
-    Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
+    Log(metadata_logging_context_at_fill_.SelectedCardHasMetadataAvailable()
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
         form);
@@ -713,9 +718,9 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
 
   // Log masked server card submitted events for benefits.
   if (latest_filled_card_was_masked_server_card_ &&
-      metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
+      metadata_logging_context_at_fill_.DidShowCardWithBenefitAvailable()) {
     LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSubmitted,
-                                   metadata_logging_context_);
+                                   metadata_logging_context_at_fill_);
   }
 
   // Log if a card info retrieval enrolled card was filled before form
@@ -724,6 +729,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     LogCardInfoRetrievalEnrolledFormEventMetric(
         CardInfoRetrievalEnrolledLoggingEvent::kSuggestionSubmittedOnce);
   }
+
+  metadata_logging_context_at_fill_ = CardMetadataLoggingContext();
 }
 
 void CreditCardFormEventLogger::LogUkmInteractedWithForm(
