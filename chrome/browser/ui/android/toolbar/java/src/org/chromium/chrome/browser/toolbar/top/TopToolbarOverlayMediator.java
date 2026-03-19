@@ -303,7 +303,7 @@ public class TopToolbarOverlayMediator {
                         }
                     }
                 };
-        if (progressBar != null) {
+        if (progressBar != null && ChromeFeatureList.sAndroidApb144Patch5.isEnabled()) {
             progressBar.addObserver(mProgressBarObserver);
         }
 

@@ -11244,6 +11244,7 @@ from previous Chrome versions.
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1096531645" label="InfiniteTabsFreezing:enabled"/>
+  <int value="-1096204531" label="Apb144Patch5:enabled"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
   <int value="-1093967431" label="ToolbarSnapshotRefactor:enabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
@@ -13136,6 +13137,7 @@ from previous Chrome versions.
   <int value="-457246393" label="FloatingWorkspaceV2:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>
   <int value="-456990813" label="Glanceables:enabled"/>
+  <int value="-456728205" label="Apb144Patch5:disabled"/>
   <int value="-456321929" label="ForceEnableSystemAec:disabled"/>
   <int value="-455823639" label="RetainOmniboxOnFocus:disabled"/>
   <int value="-455413094" label="FilesJsModules:enabled"/>

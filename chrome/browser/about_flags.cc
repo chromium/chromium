@@ -13123,6 +13123,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_auth::kAndroidEntraSSO)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"apb144-patch5", flag_descriptions::kApb144Patch5Name,
+     flag_descriptions::kApb144Patch5Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch5)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
