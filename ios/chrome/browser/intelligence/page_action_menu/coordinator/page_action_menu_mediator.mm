@@ -289,9 +289,13 @@ const CGFloat kFeatureRowIconSize = 20;
   switch (featureType) {
     case PageActionMenuCameraPermission:
       permission = web::PermissionCamera;
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kCameraPermission);
       break;
     case PageActionMenuMicrophonePermission:
       permission = web::PermissionMicrophone;
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kMicrophonePermission);
       break;
     default:
       return;
