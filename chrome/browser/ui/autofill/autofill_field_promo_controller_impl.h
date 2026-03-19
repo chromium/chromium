@@ -26,7 +26,7 @@ enum class SuggestionHidingReason;
 class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
  public:
   // Returns nullptr if trying to show `feature_promo` would fail.
-  // Internally calls `CanShowFeaturePromo(). Use this method if you want to
+  // Internally calls `WouldShowFeaturePromo()`. Use this method if you want to
   // know beforehand whether calling `Show()` would succeed.
   static std::unique_ptr<AutofillFieldPromoControllerImpl> MaybeCreate(
       content::WebContents* web_contents,
@@ -46,11 +46,11 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
   void Show(const gfx::RectF& bounds) override;
   void Hide() override;
   // TODO(crbug.com/374250832): This method relies on
-  // `BrowserUserEducationInterface`, which, according to `CanShowFeaturePromo`
-  // and `MaybeShowFeaturePromo` implementation may return `true` even if no
-  // bubble end up showing. This is supposed to happen rarely, and depending
-  // on this frequency, should be investigated together with the IPH team sooner
-  // or later.
+  // `BrowserUserEducationInterface`, which, according to
+  // `WouldShowFeaturePromo` and `MaybeShowFeaturePromo` implementation may
+  // return `true` even if no bubble end up showing. This is supposed to happen
+  // rarely, and depending on this frequency, should be investigated together
+  // with the IPH team sooner or later.
   bool IsMaybeShowing() const override;
   const base::Feature& GetFeaturePromo() const override;
 

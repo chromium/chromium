@@ -131,7 +131,7 @@ bool BrowserUserEducationInterfaceImpl::IsFeaturePromoActive(
 }
 
 user_education::FeaturePromoResult
-BrowserUserEducationInterfaceImpl::CanShowFeaturePromo(
+BrowserUserEducationInterfaceImpl::WouldShowFeaturePromoImpl(
     const base::Feature& iph_feature) const {
   if (state_ != State::kInitialized) {
     return user_education::FeaturePromoResult::kError;

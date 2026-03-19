@@ -563,7 +563,7 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   // This is not just used for smoother animation, but it gives the anchor
   // element enough time to become visible and display the IPH.
   // TODO(crbug.com/372689164): investigate alternative rescheduling,
-  // using `CanShowFeaturePromo`.
+  // using `WouldShowFeaturePromo`.
   base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
   if (time_since_creation < g_iph_min_delay_after_creation) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

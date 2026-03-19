@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -134,85 +135,6 @@ gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
   return centered_favicon;
 }
 
-bool ShouldShowIOSPriceTrackingPromo(content::WebContents* web_contents,
-                                     Browser* browser) {
-  auto* const interface =
-      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents);
-  IOSPromoController* controller = IOSPromoController::From(browser);
-  return ((interface &&
-           interface->CanShowFeaturePromo(
-               feature_engagement::kIPHiOSPriceTrackingDesktopFeature)) &&
-          (controller &&
-           controller->CanShowIOSPromo(
-               desktop_to_mobile_promos::PromoType::kPriceTracking)) &&
-          (MobilePromoOnDesktopTypeEnabled(
-              MobilePromoOnDesktopPromoType::kPriceTracking)));
-}
-
-base::OnceCallback<void()> CreatePriceTrackingCallback(
-    Browser* browser,
-    Profile* profile,
-    views::View* anchor_view,
-    content::WebContents* web_contents,
-    const bookmarks::BookmarkNode* bookmark) {
-  if (!profile) {
-    return base::DoNothing();
-  }
-
-  // If it is eligible, the Desktop to Mobile Price Tracking promo should
-  // replace the email promo because they have the same alerting purpose.
-  if (ShouldShowIOSPriceTrackingPromo(web_contents, browser)) {
-    IOSPromoTriggerService* const trigger_service =
-        IOSPromoTriggerServiceFactory::GetForProfile(profile);
-    if (trigger_service) {
-      return base::BindOnce(
-          &IOSPromoTriggerService::NotifyPromoShouldBeShown,
-          base::Unretained(trigger_service),
-          desktop_to_mobile_promos::PromoType::kPriceTracking);
-    }
-  }
-
-  if (commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
-    return base::DoNothing();
-  }
-
-  // Make sure we don't over-trigger the dialog.
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-  if (!tracker ||
-      !tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHPriceTrackingEmailConsentFeature)) {
-    return base::DoNothing();
-  }
-
-  base::OnceCallback<void()> show_dialog_callback = base::BindOnce(
-      [](base::WeakPtr<content::WebContents> web_contents, Profile* profile,
-         views::View* anchor) {
-        if (!web_contents || !profile || !anchor) {
-          return;
-        }
-        PriceTrackingEmailDialogCoordinator(anchor).Show(
-            web_contents.get(), profile, base::DoNothing());
-      },
-      web_contents->GetWeakPtr(), profile, anchor_view);
-
-  return base::BindOnce(
-      [](Profile* profile, const bookmarks::BookmarkNode* node,
-         base::OnceCallback<void()> show_dialog) {
-        commerce::IsBookmarkPriceTracked(
-            commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
-            BookmarkModelFactory::GetForBrowserContext(profile), node,
-            base::BindOnce(
-                [](base::OnceCallback<void()> show_dialog, bool is_tracked) {
-                  if (is_tracked) {
-                    std::move(show_dialog).Run();
-                  }
-                },
-                std::move(show_dialog)));
-      },
-      profile, bookmark, std::move(show_dialog_callback));
-}
-
 bool ShouldShowShoppingCollectionFootnote(Profile* profile,
                                           bookmarks::BookmarkModel* model,
                                           const bookmarks::BookmarkNode* node) {
@@ -280,6 +202,93 @@ void MaybeShowSignInPromo(bool already_bookmarked,
 #endif
 
 }  // namespace
+
+class BookmarkBubbleViewPromoHelper {
+ public:
+  BookmarkBubbleViewPromoHelper() = delete;
+
+  static bool ShouldShowIOSPriceTrackingPromo(
+      content::WebContents* web_contents,
+      Browser* browser) {
+    auto* const interface =
+        BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+            web_contents);
+    IOSPromoController* controller = IOSPromoController::From(browser);
+    return ((interface &&
+             interface->WouldShowFeaturePromo(
+                 feature_engagement::kIPHiOSPriceTrackingDesktopFeature,
+                 base::PassKey<BookmarkBubbleViewPromoHelper>())) &&
+            (controller &&
+             controller->CanShowIOSPromo(
+                 desktop_to_mobile_promos::PromoType::kPriceTracking)) &&
+            (MobilePromoOnDesktopTypeEnabled(
+                MobilePromoOnDesktopPromoType::kPriceTracking)));
+  }
+
+  static base::OnceCallback<void()> CreatePriceTrackingCallback(
+      Browser* browser,
+      Profile* profile,
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      const bookmarks::BookmarkNode* bookmark) {
+    if (!profile) {
+      return base::DoNothing();
+    }
+
+    // If it is eligible, the Desktop to Mobile Price Tracking promo should
+    // replace the email promo because they have the same alerting purpose.
+    if (ShouldShowIOSPriceTrackingPromo(web_contents, browser)) {
+      IOSPromoTriggerService* const trigger_service =
+          IOSPromoTriggerServiceFactory::GetForProfile(profile);
+      if (trigger_service) {
+        return base::BindOnce(
+            &IOSPromoTriggerService::NotifyPromoShouldBeShown,
+            base::Unretained(trigger_service),
+            desktop_to_mobile_promos::PromoType::kPriceTracking);
+      }
+    }
+
+    if (commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
+      return base::DoNothing();
+    }
+
+    // Make sure we don't over-trigger the dialog.
+    auto* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+    if (!tracker ||
+        !tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHPriceTrackingEmailConsentFeature)) {
+      return base::DoNothing();
+    }
+
+    base::OnceCallback<void()> show_dialog_callback = base::BindOnce(
+        [](base::WeakPtr<content::WebContents> web_contents, Profile* profile,
+           views::View* anchor) {
+          if (!web_contents || !profile || !anchor) {
+            return;
+          }
+          PriceTrackingEmailDialogCoordinator(anchor).Show(
+              web_contents.get(), profile, base::DoNothing());
+        },
+        web_contents->GetWeakPtr(), profile, anchor_view);
+
+    return base::BindOnce(
+        [](Profile* profile, const bookmarks::BookmarkNode* node,
+           base::OnceCallback<void()> show_dialog) {
+          commerce::IsBookmarkPriceTracked(
+              commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+              BookmarkModelFactory::GetForBrowserContext(profile), node,
+              base::BindOnce(
+                  [](base::OnceCallback<void()> show_dialog, bool is_tracked) {
+                    if (is_tracked) {
+                      std::move(show_dialog).Run();
+                    }
+                  },
+                  std::move(show_dialog)));
+        },
+        profile, bookmark, std::move(show_dialog_callback));
+  }
+};
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
@@ -446,8 +455,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
 
-  base::OnceCallback<void()> post_save_callback = CreatePriceTrackingCallback(
-      browser, profile, anchor_view, web_contents, bookmark_node);
+  base::OnceCallback<void()> post_save_callback =
+      BookmarkBubbleViewPromoHelper::CreatePriceTrackingCallback(
+          browser, profile, anchor_view, web_contents, bookmark_node);
 
   auto bubble_delegate_unique =
       std::make_unique<BookmarkBubbleDelegate>(browser, url);

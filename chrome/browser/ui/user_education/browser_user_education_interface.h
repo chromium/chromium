@@ -17,11 +17,13 @@
 #include "components/user_education/common/user_education_context.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BookmarkBubbleViewPromoHelper;
 class BrowserFeaturePromoController;
 class BrowserView;
 class BrowserWindowInterface;
 class NewTabPageUI;
 class NtpPromoHandler;
+class SidePanelHeaderController;
 
 namespace content {
 class WebContents;
@@ -82,20 +84,32 @@ class BrowserUserEducationInterface {
   // background.
   virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
 
-  // Returns whether `MaybeShowFeaturePromo()` would succeed if called now.
-  // In many cases, consider calling `HasFeaturePromoBeenDismissed()` instead
-  // since promos can be queued for a short time until conditions are right to
-  // show them, and this function does not take that into account.
+  // Returns whether `MaybeShowFeaturePromo()` would succeed immediately if
+  // called right now.
   //
-  // USAGE NOTE: Only call this method if figuring out whether to try to show an
-  // IPH would involve significant expense. This method may itself have
-  // non-trivial cost.
+  // Promos can be queued for a short time until conditions are right to show
+  // them, and this function does not take that into account, leading to false
+  // negatives (in addition to just failing during browser/Feature Engagement
+  // initialization).
   //
-  // ADDITIONAL NOTE: During browser startup, this may return `kError` or
-  // `kBlockedByConfig` if either the browser or the Feature Engagement Tracker
-  // is not fully initialized.
-  virtual user_education::FeaturePromoResult CanShowFeaturePromo(
-      const base::Feature& iph_feature) const = 0;
+  // In many cases, instead consider:
+  //  - If you want to know whether a promo is likely to show, just call
+  //    `MaybeShowFeaturePromo()` and look at the return value.
+  //  - For most promos, if you want to know whether the promo is permanently
+  //    dismissed, call `HasFeaturePromoBeenDismissed()`.
+  //
+  // Only call this method if figuring out whether to try to show an IPH would
+  // involve significant expense, and you do not mind the drawbacks/false
+  // negatives listed above. Because of the drawbacks and cost of this method,
+  // it is protected by a PassKey to prevent unnecessary usage.
+  template <typename T>
+    requires std::same_as<T, BookmarkBubbleViewPromoHelper> ||
+             std::same_as<T, SidePanelHeaderController>
+  user_education::FeaturePromoResult WouldShowFeaturePromo(
+      const base::Feature& iph_feature,
+      base::PassKey<T>) const {
+    return WouldShowFeaturePromoImpl(iph_feature);
+  }
 
   // Returns whether the promo for `iph_feature` has been dismissed in a way
   // that would prevent it from showing again (user action, toast timeout, etc.)
@@ -116,10 +130,6 @@ class BrowserUserEducationInterface {
   //
   // If this feature promo is likely to be shown at browser startup, prefer
   // calling `MaybeShowStartupFeaturePromo()` instead.
-  //
-  // If determining whether to call this method would involve significant
-  // expense, you *may* first call `CanShowFeaturePromo()` before doing the
-  // required computation; otherwise just call this method.
   //
   // Returns true if the promo is shown *or* queued; false if it was rejected
   // right away. This can be used to make snap decisions on whether to show UI
@@ -214,6 +224,10 @@ class BrowserUserEducationInterface {
  protected:
   virtual const user_education::UserEducationContextPtr&
   GetUserEducationContextImpl() const = 0;
+
+  // Implementation for `WouldShowFeaturePromo()`.
+  virtual user_education::FeaturePromoResult WouldShowFeaturePromoImpl(
+      const base::Feature& iph_feature) const = 0;
 
  private:
   ui::ScopedUnownedUserData<BrowserUserEducationInterface>

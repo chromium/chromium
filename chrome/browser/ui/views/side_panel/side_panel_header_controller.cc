@@ -390,9 +390,11 @@ void SidePanelHeaderController::MaybeQueuePinPromo(SidePanelEntryId id) {
 
   // Queue up the next promo to be shown, if there is one that can be shown.
   pending_pin_promo_ = iph_feature;
-  if (iph_feature && !BrowserUserEducationInterface::From(browser_)
-                          ->CanShowFeaturePromo(*iph_feature)
-                          .is_blocked_this_instance()) {
+  if (iph_feature &&
+      !BrowserUserEducationInterface::From(browser_)
+           ->WouldShowFeaturePromo(*iph_feature,
+                                   base::PassKey<SidePanelHeaderController>())
+           .is_blocked_this_instance()) {
     // Default to ten second delay, but allow setting a different parameter via
     // field trial.
     const base::TimeDelta delay = base::GetFieldTrialParamByFeatureAsTimeDelta(

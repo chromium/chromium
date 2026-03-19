@@ -31,8 +31,6 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   // BrowserUserEducationInterface:
   bool IsFeaturePromoQueued(const base::Feature& iph_feature) const override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
-  user_education::FeaturePromoResult CanShowFeaturePromo(
-      const base::Feature& iph_feature) const override;
   bool HasFeaturePromoBeenDismissed(
       const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(
@@ -49,6 +47,11 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) override;
   void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
+
+ protected:
+  // BrowserUserEducationInterface:
+  user_education::FeaturePromoResult WouldShowFeaturePromoImpl(
+      const base::Feature& iph_feature) const override;
 
  private:
   // BrowserUserEducationInterface private methods:
