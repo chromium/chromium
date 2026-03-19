@@ -16,13 +16,16 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 
 namespace autofill::payments {
 
@@ -36,14 +39,14 @@ struct BnplFetchUrlResponseDetails;
 // Owned by BrowserAutofillManager. There is one instance of this class per
 // frame. This class manages the flow for BNPL to complete a payment
 // transaction.
-class BnplManager {
+class BnplManager : public AutofillManager::Observer {
  public:
   using OnBnplVcnFetchedCallback = base::OnceCallback<void(const CreditCard&)>;
 
   explicit BnplManager(BrowserAutofillManager* browser_autofill_manager);
   BnplManager(const BnplManager& other) = delete;
   BnplManager& operator=(const BnplManager& other) = delete;
-  virtual ~BnplManager();
+  ~BnplManager() override;
 
   // Returns if `issuer_id` is a supported BNPL issuer.
   static bool IsBnplIssuerSupported(std::string_view issuer_id);
@@ -70,8 +73,8 @@ class BnplManager {
 
   // Notifies the BNPL manager that suggestion generation has been requested
   // with the given `trigger_source`. This must be called before
-  // `OnSuggestionsShown()` and `OnAmountExtractionReturned()`, so that the
-  // manager can update suggestions for buy-now-pay-later.
+  // `OnCreditCardSuggestionsShown()` and `OnAmountExtractionReturned()`, so
+  // that the manager can update suggestions for buy-now-pay-later.
   virtual void NotifyOfSuggestionGeneration(
       const AutofillSuggestionTriggerSource trigger_source);
 
@@ -79,7 +82,9 @@ class BnplManager {
   // shown suggestions and a callback for updating the suggestions. This must
   // be called after `NotifyOfSuggestionGeneration()`, so that the manager can
   // update suggestions for buy-now-pay-later.
-  virtual void OnSuggestionsShown(
+  // TODO(crbug.com/477689220): Refactor to reuse and override
+  // `AutofillManager::Observer::OnSuggestionsShown` instead.
+  virtual void OnCreditCardSuggestionsShown(
       base::span<const Suggestion> suggestions,
       UpdateSuggestionsCallback update_suggestions_callback);
 
@@ -97,6 +102,10 @@ class BnplManager {
   // Returns true if the issuer for the ongoing flow contains the required
   // action `PaymentInstrument::ActionRequired::kAcceptTos`.
   bool AcceptTosActionRequired() const;
+
+  // AutofillManager::Observer:
+  void OnSuggestionsHidden(AutofillManager& manager,
+                           SuggestionHidingReason reason) override;
 
  private:
   friend class BnplManagerTestApi;
@@ -333,6 +342,11 @@ class BnplManager {
   // Callback for updating the currently shown payments autofill suggestions.
   // Set when suggestions are shown, and reset when a BNPL flow is finished.
   UpdateSuggestionsCallback update_suggestions_callback_;
+
+  // Observes the AutofillManager so the BnplManager will be notified when
+  // autofill suggestions are hidden.
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      autofill_manager_observation_{this};
 
   base::WeakPtrFactory<BnplManager> weak_factory_{this};
 };

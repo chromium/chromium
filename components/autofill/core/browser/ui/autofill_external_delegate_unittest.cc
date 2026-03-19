@@ -904,11 +904,12 @@ TEST_F(AutofillExternalDelegateTest, DuplicateAutocompleteDatalistValues) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Test that `BnplManager::OnSuggestionsShown` will not be called if the
-// suggestion list doesn't contain a credit card entry.
+// Test that `BnplManager::OnCreditCardSuggestionsShown` will not be called if
+// the suggestion list doesn't contain a credit card entry.
 TEST_F(AutofillExternalDelegateTest,
        BnplSuggestionsNotShownWithoutCreditCardEntry) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(), OnSuggestionsShown)
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnCreditCardSuggestionsShown)
       .Times(0);
 
   const std::vector<Suggestion> suggestions = {
@@ -919,10 +920,11 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().OnSuggestionsShown(suggestions);
 }
 
-// Test that `BnplManager::OnSuggestionsShown` will be called if the
+// Test that `BnplManager::OnCreditCardSuggestionsShown` will be called if the
 // suggestion list contains a credit card entry.
 TEST_F(AutofillExternalDelegateTest, BnplSuggestionsShownWithCreditCardEntry) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(), OnSuggestionsShown);
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnCreditCardSuggestionsShown);
 
   const std::vector<Suggestion> suggestions = {
       CreateAutofillSuggestion(SuggestionType::kCreditCardEntry),

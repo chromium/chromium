@@ -87,7 +87,9 @@ BnplManager::OngoingFlowState::OngoingFlowState() = default;
 BnplManager::OngoingFlowState::~OngoingFlowState() = default;
 
 BnplManager::BnplManager(BrowserAutofillManager* browser_autofill_manager)
-    : browser_autofill_manager_(CHECK_DEREF(browser_autofill_manager)) {}
+    : browser_autofill_manager_(CHECK_DEREF(browser_autofill_manager)) {
+  autofill_manager_observation_.Observe(&*browser_autofill_manager_);
+}
 
 BnplManager::~BnplManager() = default;
 
@@ -229,7 +231,7 @@ void BnplManager::NotifyOfSuggestionGeneration(
   autofill_suggestion_trigger_source_ = trigger_source;
 }
 
-void BnplManager::OnSuggestionsShown(
+void BnplManager::OnCreditCardSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
   if (std::ranges::contains(suggestions, SuggestionType::kBnplEntry,
@@ -426,6 +428,16 @@ bool BnplManager::AcceptTosActionRequired() const {
          ongoing_flow_state_->issuer->payment_instrument()
              ->action_required()
              .contains(PaymentInstrument::ActionRequired::kAcceptTos);
+}
+
+void BnplManager::OnSuggestionsHidden(AutofillManager& manager,
+                                      SuggestionHidingReason reason) {
+  if (reason != SuggestionHidingReason::kHiddenByCaller &&
+      ongoing_flow_state_ &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    Reset();
+  }
 }
 
 bool BnplManager::HasSeenAmountExtractionAiTerms() const {
@@ -997,7 +1009,7 @@ void BnplManager::HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
     browser_autofill_manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kAcceptSuggestion);
+        SuggestionHidingReason::kHiddenByCaller);
   } else {
     payments_autofill_client()
         .GetBnplUiDelegate()

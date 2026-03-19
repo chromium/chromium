@@ -4274,6 +4274,8 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Expiration date did not match, masked server card"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillSuggestionHidingReason) -->
+
 <enum name="AutofillSuggestionHidingReason">
   <int value="0" label="A suggestion was accepted."/>
   <int value="1" label="An interstitial page displaces the popup."/>
@@ -4333,7 +4335,13 @@ Called by update_autofill_enums.py.-->
   <int value="26"
       label="The popup has faded due to an expired timer. Currently applied
              only to Compose suggestions."/>
+  <int value="27" label="The popup search bar lost focus."/>
+  <int value="28"
+      label="The caller requested to hide the popup (e.g., to transition to a
+             feature-specific UI flow)."/>
 </enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_hiding_reason.h:SuggestionHidingReason) -->
 
 <!-- LINT.IfChange(AutofillSyncDisabledReason) -->
 

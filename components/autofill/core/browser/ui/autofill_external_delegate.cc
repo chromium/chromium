@@ -1046,6 +1046,13 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void AutofillExternalDelegate::OnCreditCardFetched(
+    AutofillTriggerSource trigger_source,
+    const CreditCard& card) {
+  manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
+                              query_field_.global_id(), &card, trigger_source);
+}
+
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
@@ -1129,13 +1136,6 @@ void AutofillExternalDelegate::AutofillForm(
                                 query_field_.global_id(), &card_to_fill,
                                 trigger_source);
   }
-}
-
-void AutofillExternalDelegate::FillFetchedCreditCard(
-    AutofillTriggerSource trigger_source,
-    const CreditCard& card) {
-  manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
-                              query_field_.global_id(), &card, trigger_source);
 }
 
 void AutofillExternalDelegate::InsertDataListValues(
@@ -1329,7 +1329,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       CHECK(save_and_fill_manager);
 
       save_and_fill_manager->OnDidAcceptCreditCardSaveAndFillSuggestion(
-          base::BindOnce(&AutofillExternalDelegate::FillFetchedCreditCard,
+          base::BindOnce(&AutofillExternalDelegate::OnCreditCardFetched,
                          GetWeakPtr(),
                          AutofillTriggerSource::kCreditCardSaveAndFill));
 
@@ -1339,7 +1339,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     }
     case SuggestionType::kScanCreditCard:
       manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(
-          base::BindOnce(&AutofillExternalDelegate::FillFetchedCreditCard,
+          base::BindOnce(&AutofillExternalDelegate::OnCreditCardFetched,
                          GetWeakPtr(), AutofillTriggerSource::kScanCreditCard));
       break;
     case SuggestionType::kBnplEntry: {
@@ -1355,7 +1355,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
             /*final_checkout_amount=*/suggestion
                 .GetPayload<Suggestion::PaymentsPayload>()
                 .extracted_amount_in_micros,
-            base::BindOnce(&AutofillExternalDelegate::FillFetchedCreditCard,
+            base::BindOnce(&AutofillExternalDelegate::OnCreditCardFetched,
                            GetWeakPtr(), AutofillTriggerSource::kPopup));
       }
       break;

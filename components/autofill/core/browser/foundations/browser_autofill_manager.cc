@@ -2529,11 +2529,11 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   // Notify the BNPL manager about suggestion shown if the current shown
   // suggestion list contains a credit card entry.
-
   if (payments::BnplManager* bnpl_manager = GetPaymentsBnplManager();
       bnpl_manager &&
       shown_suggestion_types.contains(SuggestionType::kCreditCardEntry)) {
-    bnpl_manager->OnSuggestionsShown(suggestions, update_suggestions_callback);
+    bnpl_manager->OnCreditCardSuggestionsShown(suggestions,
+                                               update_suggestions_callback);
   }
 
   if (shown_suggestion_types.contains(SuggestionType::kDevtoolsTestAddresses)) {

@@ -8,10 +8,11 @@
 namespace autofill {
 
 // This reason is passed whenever a popup needs to be closed.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// When adding a value to this enum, please update
-// tools/metrics/histograms/metadata/autofill/enums.xml.
+//
+// LINT.IfChange(SuggestionHidingReason)
 enum class SuggestionHidingReason {
   // A suggestion was accepted.
   kAcceptSuggestion = 0,
@@ -80,8 +81,12 @@ enum class SuggestionHidingReason {
   kFadeTimerExpired = 26,
   // The popup search bar loses focus.
   kSearchBarFocusLost = 27,
-  kMaxValue = kSearchBarFocusLost
+  // The caller requested to hide the popup (e.g., to transition to a
+  // feature-specific UI flow).
+  kHiddenByCaller = 28,
+  kMaxValue = kHiddenByCaller
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionHidingReason)
 
 }  // namespace autofill
 
