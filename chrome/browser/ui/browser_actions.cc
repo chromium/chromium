@@ -200,6 +200,7 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, pinnable_state);
 }
+
 }  // namespace
 
 BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
@@ -244,285 +245,7 @@ void BrowserActions::InitializeBrowserActions() {
 
   InitializeSidePanelActions();
 
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::ShowOffersAndRewardsForPage(bwi);
-              },
-              bwi))
-          .SetActionId(kActionOffersAndRewardsForPage)
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
-              ui::SimpleMenuModel::kDefaultIconSize))
-          .Build());
-
-  // TODO(crbug.com/435220196): Ideally this action would have
-  // MemorySaverBubbleController passed in as a dependency directly.
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto* bubble_controller =
-                    bwi->GetFeatures().memory_saver_bubble_controller();
-                bubble_controller->InvokeAction(bwi, item);
-              },
-              bwi))
-          .SetActionId(kActionShowMemorySaverChip)
-          .SetText(l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL))
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              kPerformanceSpeedometerIcon, ui::kColorIcon,
-              ui::SimpleMenuModel::kDefaultIconSize))
-          .SetEnabled(true)
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                if (!bwi) {
-                  return;
-                }
-                if (auto* fedcm_view = AccountSelectionView::Get(
-                        bwi->GetActiveTabInterface()
-                            ->GetUnownedUserDataHost())) {
-                  fedcm_view->OnPageActionClicked();
-                }
-              },
-              bwi))
-          .SetActionId(kActionFederation)
-          .SetEnabled(true)
-          .Build());
-
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::
-              kBlockV8OptimizerOnUnfamiliarSitesSetting)) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  auto anchor =
-                      bwi->GetBrowserForMigrationOnly()
-                          ->GetBrowserView()
-                          .toolbar_button_provider()
-                          ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
-
-                  bwi->GetActiveTabInterface()
-                      ->GetTabFeatures()
-                      ->js_optimizations_page_action_controller()
-                      ->ShowBubble(anchor, item);
-                },
-                bwi))
-            .SetActionId(kActionShowJsOptimizationsIcon)
-            .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kV8OffIcon,
-#else
-                // TODO(crbug.com/457422266): Figure out which icon to use for
-                // non-branded builds.
-                vector_icons::kCodeIcon,
-#endif
-                ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-            .SetEnabled(true)
-            .Build());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          record_replay::features::kRecordReplayBase)) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  bwi->GetActiveTabInterface()
-                      ->GetTabFeatures()
-                      ->record_replay_page_action_controller()
-                      ->ExecuteAction(item);
-                },
-                bwi))
-            .SetActionId(kActionRecordReplay)
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                vector_icons::kScreenRecordIcon, ui::kColorIcon,
-                ui::SimpleMenuModel::kDefaultIconSize))
-            .SetEnabled(true)
-            .Build());
-  }
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                bwi->GetActiveTabInterface()
-                    ->GetTabFeatures()
-                    ->zoom_view_controller()
-                    ->UpdateBubbleVisibility(
-                        /*prefer_to_show_bubble=*/true,
-                        /*from_user_gesture=*/true);
-              },
-              bwi))
-          .SetActionId(kActionZoomNormal)
-          .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
-          .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
-          .Build());
-
-  // The action does nothing, but is used to configure the page action, which
-  // acts as an anchor for the find bar.
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(base::DoNothing())
-          .SetActionId(kActionFind)
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              omnibox::kFindInPageChromeRefreshIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                tabs::TabInterface* tab_interface =
-                    bwi->GetActiveTabInterface();
-                CHECK(tab_interface);
-
-                content::WebContents* web_contents =
-                    tab_interface->GetContents();
-                CHECK(web_contents);
-
-                autofill::VirtualCardEnrollBubbleControllerImpl* controller =
-                    autofill::VirtualCardEnrollBubbleControllerImpl::
-                        FromWebContents(web_contents);
-                CHECK(controller);
-
-                controller->ReshowBubble();
-              },
-              bwi))
-          .SetActionId(kActionVirtualCardEnroll)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP))
-          .SetImage(
-              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                tabs::TabInterface* tab_interface =
-                    bwi->GetActiveTabInterface();
-                CHECK(tab_interface);
-
-                content::WebContents* web_contents =
-                    tab_interface->GetContents();
-                CHECK(web_contents);
-
-                autofill::FilledCardInformationBubbleControllerImpl*
-                    controller =
-                        autofill::FilledCardInformationBubbleControllerImpl::
-                            FromWebContents(web_contents);
-                CHECK(controller);
-
-                controller->ReshowBubble();
-              },
-              bwi))
-          .SetActionId(kActionFilledCardInformation)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD))
-          .SetImage(
-              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto* tab_helper = bwi->GetActiveTabInterface()
-                                       ->GetTabFeatures()
-                                       ->commerce_ui_tab_helper();
-                CHECK(tab_helper);
-
-                tab_helper->OnPriceInsightsIconClicked();
-              },
-              bwi))
-          .SetActionId(kActionCommercePriceInsights)
-          // The tooltip text is used as a default text. The
-          // PriceInsightsPageActionViewController will override it based on its
-          // state.
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              vector_icons::kShoppingBagRefreshIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto* tab_features =
-                    bwi->GetActiveTabInterface()->GetTabFeatures();
-                CHECK(tab_features);
-                auto* page_action_controller =
-                    commerce::DiscountsPageActionViewController::From(
-                        *bwi->GetActiveTabInterface());
-                CHECK(page_action_controller);
-                page_action_controller->MaybeShowBubble(/*from_user=*/true);
-
-                auto* commerce_ui_tab_helper =
-                    tab_features->commerce_ui_tab_helper();
-                CHECK(commerce_ui_tab_helper);
-
-                commerce::metrics::DiscountsMetricCollector::
-                    RecordDiscountsPageActionIconClicked(
-                        commerce_ui_tab_helper->IsPageActionIconExpanded(
-                            PageActionIconType::kDiscounts),
-                        commerce_ui_tab_helper->GetDiscounts());
-              },
-              bwi))
-          .SetActionId(kActionCommerceDiscounts)
-          .SetText(l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
-          .SetImage(
-              ui::ImageModel::FromVectorIcon(vector_icons::kShoppingmodeIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto* tab_interface = bwi->GetActiveTabInterface();
-                CHECK(tab_interface);
-
-                autofill::MandatoryReauthBubbleControllerImpl::FromWebContents(
-                    tab_interface->GetContents())
-                    ->QueueOrShowBubble(/*force_show=*/true);
-              },
-              bwi))
-          .SetActionId(kActionAutofillMandatoryReauth)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP))
-          .SetImage(
-              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
-          .Build());
+  InitializePageActionIconActions();
 
   //------- Chrome Menu Actions --------//
   root_action_item_->AddChild(
@@ -1591,6 +1314,295 @@ void BrowserActions::InitializeSidePanelActions() {
             .SetProperty(actions::kActionItemPinnableKey, true)
             .Build());
   }
+}
+
+void BrowserActions::InitializePageActionIconActions() {
+  BrowserWindowInterface* const bwi = base::to_address(bwi_);
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowOffersAndRewardsForPage(bwi);
+              },
+              bwi))
+          .SetActionId(kActionOffersAndRewardsForPage)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .Build());
+
+  // TODO(crbug.com/435220196): Ideally this action would have
+  // MemorySaverBubbleController passed in as a dependency directly.
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* bubble_controller =
+                    bwi->GetFeatures().memory_saver_bubble_controller();
+                bubble_controller->InvokeAction(bwi, item);
+              },
+              bwi))
+          .SetActionId(kActionShowMemorySaverChip)
+          .SetText(l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kPerformanceSpeedometerIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .SetEnabled(true)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (!bwi) {
+                  return;
+                }
+                if (auto* fedcm_view = AccountSelectionView::Get(
+                        bwi->GetActiveTabInterface()
+                            ->GetUnownedUserDataHost())) {
+                  fedcm_view->OnPageActionClicked();
+                }
+              },
+              bwi))
+          .SetActionId(kActionFederation)
+          .SetEnabled(true)
+          .Build());
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::
+              kBlockV8OptimizerOnUnfamiliarSitesSetting)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  auto anchor =
+                      bwi->GetBrowserForMigrationOnly()
+                          ->GetBrowserView()
+                          .toolbar_button_provider()
+                          ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
+
+                  bwi->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->js_optimizations_page_action_controller()
+                      ->ShowBubble(anchor, item);
+                },
+                bwi))
+            .SetActionId(kActionShowJsOptimizationsIcon)
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                vector_icons::kV8OffIcon,
+#else
+                // TODO(crbug.com/457422266): Figure out which icon to use for
+                // non-branded builds.
+                vector_icons::kCodeIcon,
+#endif
+                ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+            .SetEnabled(true)
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          record_replay::features::kRecordReplayBase)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  bwi->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->record_replay_page_action_controller()
+                      ->ExecuteAction(item);
+                },
+                bwi))
+            .SetActionId(kActionRecordReplay)
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kScreenRecordIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
+            .SetEnabled(true)
+            .Build());
+  }
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                bwi->GetActiveTabInterface()
+                    ->GetTabFeatures()
+                    ->zoom_view_controller()
+                    ->UpdateBubbleVisibility(
+                        /*prefer_to_show_bubble=*/true,
+                        /*from_user_gesture=*/true);
+              },
+              bwi))
+          .SetActionId(kActionZoomNormal)
+          .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
+          .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
+          .Build());
+
+  // The action does nothing, but is used to configure the page action, which
+  // acts as an anchor for the find bar.
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(base::DoNothing())
+          .SetActionId(kActionFind)
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              omnibox::kFindInPageChromeRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                tabs::TabInterface* tab_interface =
+                    bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
+
+                content::WebContents* web_contents =
+                    tab_interface->GetContents();
+                CHECK(web_contents);
+
+                autofill::VirtualCardEnrollBubbleControllerImpl* controller =
+                    autofill::VirtualCardEnrollBubbleControllerImpl::
+                        FromWebContents(web_contents);
+                if (!controller) {
+                  return;
+                }
+                controller->ReshowBubble();
+              },
+              bwi))
+          .SetActionId(kActionVirtualCardEnroll)
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                tabs::TabInterface* tab_interface =
+                    bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
+
+                content::WebContents* web_contents =
+                    tab_interface->GetContents();
+                CHECK(web_contents);
+
+                autofill::FilledCardInformationBubbleControllerImpl*
+                    controller =
+                        autofill::FilledCardInformationBubbleControllerImpl::
+                            FromWebContents(web_contents);
+                if (!controller) {
+                  return;
+                }
+                controller->ReshowBubble();
+              },
+              bwi))
+          .SetActionId(kActionFilledCardInformation)
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_helper = bwi->GetActiveTabInterface()
+                                       ->GetTabFeatures()
+                                       ->commerce_ui_tab_helper();
+                CHECK(tab_helper);
+
+                tab_helper->OnPriceInsightsIconClicked();
+              },
+              bwi))
+          .SetActionId(kActionCommercePriceInsights)
+          // The tooltip text is used as a default text. The
+          // PriceInsightsPageActionViewController will override it based on its
+          // state.
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kShoppingBagRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_features =
+                    bwi->GetActiveTabInterface()->GetTabFeatures();
+                CHECK(tab_features);
+                auto* page_action_controller =
+                    commerce::DiscountsPageActionViewController::From(
+                        *bwi->GetActiveTabInterface());
+                CHECK(page_action_controller);
+                page_action_controller->MaybeShowBubble(/*from_user=*/true);
+
+                auto* commerce_ui_tab_helper =
+                    tab_features->commerce_ui_tab_helper();
+                CHECK(commerce_ui_tab_helper);
+
+                commerce::metrics::DiscountsMetricCollector::
+                    RecordDiscountsPageActionIconClicked(
+                        commerce_ui_tab_helper->IsPageActionIconExpanded(
+                            PageActionIconType::kDiscounts),
+                        commerce_ui_tab_helper->GetDiscounts());
+              },
+              bwi))
+          .SetActionId(kActionCommerceDiscounts)
+          .SetText(l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(vector_icons::kShoppingmodeIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_interface = bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
+
+                autofill::MandatoryReauthBubbleControllerImpl::FromWebContents(
+                    tab_interface->GetContents())
+                    ->QueueOrShowBubble(/*force_show=*/true);
+              },
+              bwi))
+          .SetActionId(kActionAutofillMandatoryReauth)
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+          .Build());
 }
 
 void BrowserActions::AddListeners() {
