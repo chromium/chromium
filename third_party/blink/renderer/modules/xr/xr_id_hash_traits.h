@@ -8,6 +8,7 @@
 #include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/layer_id.h"
+#include "device/vr/public/mojom/mesh_id.h"
 #include "device/vr/public/mojom/plane_id.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
@@ -30,6 +31,11 @@ struct XrIdHashTraits : GenericHashTraits<T> {
 
 template <>
 struct HashTraits<device::PlaneId> : XrIdHashTraits<device::PlaneId> {
+  STATIC_ONLY(HashTraits);
+};
+
+template <>
+struct HashTraits<device::MeshId> : XrIdHashTraits<device::MeshId> {
   STATIC_ONLY(HashTraits);
 };
 

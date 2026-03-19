@@ -290,6 +290,10 @@ struct PlaneId {
   uint64 id_value;
 };
 
+struct MeshId {
+  uint64 id_value;
+};
+
 struct XrVisibilityMaskId {
   uint64 id_value;
 };
@@ -462,6 +466,7 @@ enum XRReferenceSpaceType {
 union XRNativeOriginInformation {
   XRInputSourceSpaceInfo input_source_space_info;
   PlaneId plane_id;
+  MeshId mesh_id;
   AnchorId anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
@@ -548,6 +553,50 @@ struct XRPlaneDetectionData {
   // of all planes (i.e. for each plane found in updated_planes_data, its ID
   // will be present in all_planes_ids).
   array<XRPlaneData> updated_planes_data;
+};
+
+// Struct containing mesh-related information. A mesh describes a 3D surface
+// detected in the real world by the underlying system, represented as a
+// collection of vertices and indices that form a triangular mesh.
+struct XRMeshData {
+  // Unique (within a session) identifier of the mesh.
+  MeshId id;
+
+  // Pose of the mesh's coordinate space origin. Defines new coordinate space.
+  // Null if the device does not know where the mesh is located in the world
+  // space (tracking loss), but the tracking can still be recovered.
+  Pose? mojo_from_mesh;
+
+  // Vertices of the mesh. Each vertex is represented by 3 consecutive float
+  // values (x, y, z) in the mesh's local coordinate space. The array length
+  // must be a multiple of 3.
+  array<float> vertices;
+
+  // Indices defining the triangular faces of the mesh. Each group of 3
+  // consecutive indices forms a triangle. Indices reference vertices in the
+  // vertices array (0-based indexing). If empty, vertices should be interpreted
+  // as a triangle list where every 3 consecutive vertices form a triangle.
+  array<uint32> indices;
+
+  // A description of what the runtime has determined the mesh may actually
+  // represent (e.g., "floor", "wall", "table"). Null if the runtime does not
+  // support semantic labeling, or does not know what the given mesh represents.
+  XRSemanticLabel? semantic_label;
+};
+
+// Struct containing information about all tracked & updated meshes in a given
+// frame. If a mesh tracked in frame N-1 is no longer being tracked in frame N,
+// its ID will not be present in all_meshes_ids and its XRMeshData will not be
+// present in updated_meshes_data.
+struct XRMeshDetectionData {
+  // Array with ids of all tracked meshes.
+  array<MeshId> all_meshes_ids;
+
+  // Array with mesh data for all updated meshes. Mesh is considered updated
+  // if its vertices, indices, pose, or semantic label has changed. Updated
+  // meshes are always a subset of all meshes (i.e. for each mesh found in
+  // updated_meshes_data, its ID will be present in all_meshes_ids).
+  array<XRMeshData> updated_meshes_data;
 };
 
 // Struct containing anchor-related information. An anchor represents a pose
@@ -903,6 +952,8 @@ struct XRFrameData {
 
   // Detected plane information. Only present if plane detection is enabled.
   XRPlaneDetectionData? detected_planes_data;
+
+  XRMeshDetectionData? detected_meshes_data;
 
   // Tracked anchors information. Only present if anchors are enabled.
   XRAnchorsData? anchors_data;

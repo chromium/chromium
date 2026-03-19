@@ -201,6 +201,7 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
     case device::mojom::XRSessionFeature::FRONT_FACING:
+    case device::mojom::XRSessionFeature::MESH_DETECTION:
       return mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
     case device::mojom::XRSessionFeature::DEPTH:
       if (!session_init->hasDepthSensing()) {
@@ -231,6 +232,7 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::ANCHORS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
+    case device::mojom::XRSessionFeature::MESH_DETECTION:
     case device::mojom::XRSessionFeature::DEPTH:
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
     case device::mojom::XRSessionFeature::HAND_INPUT:
@@ -593,6 +595,8 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       GetFeatureRequestStatus(XRSessionFeature::ANCHORS, session);
   auto feature_request_hit_test =
       GetFeatureRequestStatus(XRSessionFeature::HIT_TEST, session);
+  auto feature_request_mesh_detection =
+      GetFeatureRequestStatus(XRSessionFeature::MESH_DETECTION, session);
 
   ukm::builders::XR_WebXR_SessionRequest(ukm_source_id_)
       .SetMode(static_cast<int64_t>(mode_))
@@ -626,6 +630,13 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
                << ": plane detection was requested, logging a UseCounter";
       UseCounter::Count(session->GetExecutionContext(),
                         WebFeature::kXRPlaneDetection);
+    }
+
+    if (IsFeatureRequested(feature_request_mesh_detection)) {
+      DVLOG(2) << __func__
+               << ": mesh detection was requested, logging a UseCounter";
+      UseCounter::Count(session->GetExecutionContext(),
+                        WebFeature::kXRMeshDetection);
     }
 
     if (IsFeatureRequested(feature_request_image_tracking)) {

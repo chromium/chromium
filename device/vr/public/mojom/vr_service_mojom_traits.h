@@ -8,6 +8,7 @@
 #include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/layer_id.h"
+#include "device/vr/public/mojom/mesh_id.h"
 #include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/rgb_tuple_f32.h"
@@ -28,6 +29,18 @@ struct StructTraits<device::mojom::PlaneIdDataView, device::PlaneId> {
 
   static bool Read(device::mojom::PlaneIdDataView data, device::PlaneId* out) {
     *out = device::PlaneId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::MeshIdDataView, device::MeshId> {
+  static uint64_t id_value(const device::MeshId& mesh_id) {
+    return mesh_id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::MeshIdDataView data, device::MeshId* out) {
+    *out = device::MeshId(data.id_value());
     return true;
   }
 };

@@ -76,6 +76,8 @@ export function sessionFeatureToString(feature: XRSessionFeature): string {
       return 'camera-access';
     case XRSessionFeature.PLANE_DETECTION:
       return 'plane-detection';
+    case XRSessionFeature.MESH_DETECTION:
+      return 'mesh-detection';
     case XRSessionFeature.DEPTH:
       return 'depth-sensing';
     case XRSessionFeature.IMAGE_TRACKING:

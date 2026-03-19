@@ -10323,6 +10323,7 @@ from previous Chrome versions.
   <int value="-1407251816" label="AutofillContentEditables:enabled"/>
   <int value="-1406306789"
       label="ApplyClientsideModelPredictionsForPasswordTypes:enabled"/>
+  <int value="-1405781912" label="WebXRMeshDetection:disabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404988115"
@@ -17192,6 +17193,7 @@ from previous Chrome versions.
   <int value="923752712" label="WelcomeTour:enabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>
+  <int value="924139708" label="WebXRMeshDetection:enabled"/>
   <int value="924769517" label="AppServiceAdaptiveIcon:disabled"/>
   <int value="925141856" label="ContextualTasksContext:disabled"/>
   <int value="925611968" label="ClearUndecryptablePasswords:enabled"/>

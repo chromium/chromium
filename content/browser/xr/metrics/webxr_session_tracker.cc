@@ -80,6 +80,7 @@ void WebXRSessionTracker::ReportFeatureUsed(
     case XRSessionFeature::ANCHORS:
     case XRSessionFeature::CAMERA_ACCESS:
     case XRSessionFeature::PLANE_DETECTION:
+    case XRSessionFeature::MESH_DETECTION:
     case XRSessionFeature::DEPTH:
     case XRSessionFeature::IMAGE_TRACKING:
     case XRSessionFeature::HAND_INPUT:
@@ -126,6 +127,7 @@ void WebXRSessionTracker::SetFeatureRequest(
     case XRSessionFeature::ANCHORS:
     case XRSessionFeature::CAMERA_ACCESS:
     case XRSessionFeature::PLANE_DETECTION:
+    case XRSessionFeature::MESH_DETECTION:
     case XRSessionFeature::DEPTH:
     case XRSessionFeature::IMAGE_TRACKING:
     case XRSessionFeature::HAND_INPUT:

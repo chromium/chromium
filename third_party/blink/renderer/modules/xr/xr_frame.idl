@@ -43,4 +43,7 @@
   // https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
   [RuntimeEnabled=WebXRPlaneDetection, RaisesException, MeasureAs=XRFrameDetectedPlanes]
   readonly attribute XRPlaneSet? detectedPlanes;
+
+  [RuntimeEnabled=WebXRMeshDetection, RaisesException, MeasureAs=XRFrameDetectedMeshes]
+  readonly attribute XRMeshSet? detectedMeshes;
 };

@@ -8219,6 +8219,10 @@ inline constexpr char kWebXrPlaneDetectionName[] = "WebXR Plane Detection";
 inline constexpr char kWebXrPlaneDetectionDescription[] =
     "Enables access to the WebXR plane-detection feature.";
 
+inline constexpr char kWebXrMeshDetectionName[] = "WebXR Mesh Detection";
+inline constexpr char kWebXrMeshDetectionDescription[] =
+    "Enables access to the WebXR mesh-detection feature.";
+
 inline constexpr char kOpenXrSpatialEntitiesName[] = "OpenXR Spatial Entities";
 inline constexpr char kOpenXrSpatialEntitiesDescription[] =
     "Allows the OpenXR runtime to use the spatial entities set of extensions "

@@ -12892,6 +12892,7 @@ interface XREquirectLayer : XRCompositionLayer
     setter upperVerticalAngle
 interface XRFrame
     attribute @@toStringTag
+    getter detectedMeshes
     getter detectedPlanes
     getter session
     getter trackedAnchors
@@ -13004,6 +13005,24 @@ interface XRLightProbe : EventTarget
     getter probeSpace
     method constructor
     setter onreflectionchange
+interface XRMesh
+    attribute @@toStringTag
+    getter indices
+    getter lastChangedTime
+    getter meshSpace
+    getter semanticLabel
+    getter vertices
+    method constructor
+interface XRMeshSet
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface XRPlane
     attribute @@toStringTag
     getter lastChangedTime

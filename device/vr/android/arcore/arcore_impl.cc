@@ -1295,6 +1295,8 @@ std::optional<HitTestSubscriptionId> ArCoreImpl::SubscribeToHitTest(
         return std::nullopt;
       }
       break;
+    case mojom::XRNativeOriginInformation::Tag::kMeshId:
+      return std::nullopt;
   }
 
   auto subscription_id = CreateHitTestSubscriptionId();
@@ -1530,6 +1532,8 @@ bool ArCoreImpl::NativeOriginExists(
       // TODO(crbug.com/40728355): Needed for anchor creation relaitve to
       // tracked images.
       return false;
+    case mojom::XRNativeOriginInformation::Tag::kMeshId:
+      return false;
   }
 }
 
@@ -1579,6 +1583,8 @@ std::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(crbug.com/40728355): Needed for hit test and anchors
       // support for tracked images.
+      return std::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::kMeshId:
       return std::nullopt;
   }
 }

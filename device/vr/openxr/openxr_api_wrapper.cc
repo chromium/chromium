@@ -600,6 +600,9 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         is_enabled = graphics_binding_->SupportsLayers();
         break;
 
+      case mojom::XRSessionFeature::MESH_DETECTION:
+        break;
+
       case mojom::XRSessionFeature::FRONT_FACING:
       case mojom::XRSessionFeature::IMAGE_TRACKING:
       case mojom::XRSessionFeature::CAMERA_ACCESS:
@@ -853,6 +856,8 @@ OpenXrApiWrapper::GetXrLocationFromNativeOriginInformation(
           native_origin_from_object);
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       NOTREACHED();
+    case mojom::XRNativeOriginInformation::Tag::kMeshId:
+      return std::nullopt;
   }
 }
 

@@ -10217,6 +10217,11 @@
     "expiry_milestone": 154
   },
   {
+    "name": "webxr-mesh-detection",
+    "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "webxr-plane-detection",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 154

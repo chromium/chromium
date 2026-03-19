@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_input_source_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_sources_change_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
+#include "third_party/blink/renderer/modules/xr/xr_mesh_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_ray.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
@@ -339,6 +340,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::ANCHORS:
     case XRSessionFeature::CAMERA_ACCESS:
     case XRSessionFeature::PLANE_DETECTION:
+    case XRSessionFeature::MESH_DETECTION:
     case XRSessionFeature::DEPTH:
     case XRSessionFeature::IMAGE_TRACKING:
     case XRSessionFeature::HAND_INPUT:
@@ -371,6 +373,9 @@ XRSession::XRSession(
           mode == device::mojom::blink::XRSessionMode::kImmersiveAr),
       device_config_(std::move(device_config)),
       enabled_feature_set_(std::move(enabled_feature_set)),
+      mesh_manager_(
+          MakeGarbageCollected<XRMeshManager>(base::PassKey<XRSession>{},
+                                              this)),
       plane_manager_(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
@@ -1377,6 +1382,10 @@ void XRSession::ProcessAnchorsData(
       << " anchors that have not been updated";
 }
 
+XRMeshSet* XRSession::GetDetectedMeshes() const {
+  return mesh_manager_->GetDetectedMeshes();
+}
+
 XRPlaneSet* XRSession::GetDetectedPlanes() const {
   return plane_manager_->GetDetectedPlanes();
 }
@@ -2125,6 +2134,8 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     const device::mojom::blink::XRFrameDataPtr& frame_data) {
   // Update objects that might change on per-frame basis.
   if (frame_data) {
+    mesh_manager_->ProcessMeshInformation(
+        frame_data->detected_meshes_data.get(), timestamp);
     plane_manager_->ProcessPlaneInformation(
         frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
@@ -2146,6 +2157,9 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       camera_image_size_ = frame_data->camera_image_size;
     }
   } else {
+    mesh_manager_->ProcessMeshInformation(
+        nullptr, timestamp);
+
     plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
@@ -2725,6 +2739,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(create_anchor_promises_);
   visitor->Trace(request_hit_test_source_promises_);
   visitor->Trace(reference_spaces_);
+  visitor->Trace(mesh_manager_);
   visitor->Trace(plane_manager_);
   visitor->Trace(anchor_ids_to_anchors_);
   visitor->Trace(anchor_ids_to_pending_anchor_promises_);

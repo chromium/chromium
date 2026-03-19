@@ -5153,6 +5153,8 @@ enum WebFeature {
   kCSSDiscardedEnvWithValidArgumentGrammar = 5836,
   kCSSDiscardedIfWithValidArgumentGrammar = 5837,
   kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned = 5838,
+  kXRMeshDetection = 5839,
+  kXRFrameDetectedMeshes = 5840,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

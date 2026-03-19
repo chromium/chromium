@@ -62,6 +62,8 @@ class XRHitTestOptionsInit;
 class XRHitTestSource;
 class XRImageTrackingResult;
 class XRLightProbe;
+class XRMeshSet;
+class XRMeshManager;
 class XRPlaneSet;
 class XRPlaneManager;
 class XRReferenceSpace;
@@ -95,6 +97,8 @@ class XRSession final : public EventTarget,
   static constexpr char kNoSpaceSpecified[] = "No XRSpace specified.";
   static constexpr char kAnchorsFeatureNotSupported[] =
       "Anchors feature is not supported by the session.";
+  static constexpr char kMeshesFeatureNotSupported[] =
+      "Mesh detection feature is not supported by the session.";
   static constexpr char kPlanesFeatureNotSupported[] =
       "Plane detection feature is not supported by the session.";
   static constexpr char kDepthSensingFeatureNotSupported[] =
@@ -388,6 +392,8 @@ class XRSession final : public EventTarget,
 
   XRPlaneSet* GetDetectedPlanes() const;
 
+  XRMeshSet* GetDetectedMeshes() const;
+
   // Creates presentation frame based on current state of the session.
   // The created XRFrame will store a reference to this XRSession and use it to
   // get the latest information out of it.
@@ -472,6 +478,7 @@ class XRSession final : public EventTarget,
   // Processes world understanding state for current frame:
   // - updates state of hit test sources & fills them out with results
   // - updates state of detected planes
+  // - updates state of detected meshes
   // - updates state of anchors
   // In order to correctly set the state of hit test sources, this *must* be
   // called after updating XRInputSourceArray (performed by
@@ -620,6 +627,7 @@ class XRSession final : public EventTarget,
   HashSet<device::HitTestSubscriptionId> hit_test_source_ids_;
   HashSet<device::HitTestSubscriptionId>
       hit_test_source_for_transient_input_ids_;
+  Member<XRMeshManager> mesh_manager_;
   Member<XRPlaneManager> plane_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session

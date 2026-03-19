@@ -198,6 +198,8 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::CAMERA_ACCESS;
   } else if (feature_string == "plane-detection") {
     return device::mojom::XRSessionFeature::PLANE_DETECTION;
+  } else if (feature_string == "mesh-detection") {
+    return device::mojom::XRSessionFeature::MESH_DETECTION;
   } else if (feature_string == "depth-sensing") {
     return device::mojom::XRSessionFeature::DEPTH;
   } else if (feature_string == "image-tracking") {
@@ -241,6 +243,8 @@ StringView XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
       return "camera-access";
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
       return "plane-detection";
+    case device::mojom::XRSessionFeature::MESH_DETECTION:
+      return "mesh-detection";
     case device::mojom::XRSessionFeature::DEPTH:
       return "depth-sensing";
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
@@ -265,6 +269,8 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
   switch (feature) {
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
       return RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context);
+    case device::mojom::XRSessionFeature::MESH_DETECTION:
+      return RuntimeEnabledFeatures::WebXRMeshDetectionEnabled(context);
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
       return RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context);
     case device::mojom::XRSessionFeature::LAYERS:
@@ -348,6 +354,26 @@ float ExcludeNegativeAndNoise(float value) {
     return 0.f;
   }
   return value;
+}
+
+String SemanticLabelToString(
+    const std::optional<device::mojom::blink::XRSemanticLabel>& label) {
+  if (!label) {
+    return String();
+  }
+
+  switch (*label) {
+    case device::mojom::blink::XRSemanticLabel::kOther:
+      return "other";
+    case device::mojom::blink::XRSemanticLabel::kFloor:
+      return "floor";
+    case device::mojom::blink::XRSemanticLabel::kWall:
+      return "wall";
+    case device::mojom::blink::XRSemanticLabel::kCeiling:
+      return "ceiling";
+    case device::mojom::blink::XRSemanticLabel::kTable:
+      return "table";
+  }
 }
 
 }  // namespace blink

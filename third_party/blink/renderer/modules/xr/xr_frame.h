@@ -34,6 +34,7 @@ class XRLightEstimate;
 class XRLightProbe;
 class XRJointSpace;
 class XRPlaneSet;
+class XRMeshSet;
 class XRPose;
 class XRReferenceSpace;
 class XRRigidTransform;
@@ -79,6 +80,7 @@ class XRFrame final : public ScriptWrappable {
       XRView* view,
       ExceptionState& exception_state) const;
   XRPlaneSet* detectedPlanes(ExceptionState& exception_state) const;
+  XRMeshSet* detectedMeshes(ExceptionState& exception_state) const;
 
   void Trace(Visitor*) const override;
 

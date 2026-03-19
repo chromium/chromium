@@ -84,6 +84,11 @@ uint16_t GetHorizontalViewCount(V8XRLayerLayout::Enum);
 // as float zero.
 float ExcludeNegativeAndNoise(float value);
 
+// Converts an XRSemanticLabel to its string representation as defined by the
+// WebXR Mesh Detection API spec. Returns an empty string if |label| is null.
+String SemanticLabelToString(
+    const std::optional<device::mojom::blink::XRSemanticLabel>& label);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

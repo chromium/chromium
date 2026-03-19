@@ -6552,6 +6552,12 @@
       base_feature: "none",
     },
     {
+      name: "WebXRMeshDetection",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WebXRPlaneDetection",
       depends_on: ["WebXR"],
       origin_trial_feature_name: "WebXRPlaneDetection",

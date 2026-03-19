@@ -124,6 +124,7 @@ bool IsArOnlyFeature(device::mojom::XRSessionFeature feature) {
     case device::mojom::XRSessionFeature::DEPTH:
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
     case device::mojom::XRSessionFeature::FRONT_FACING:
+    case device::mojom::XRSessionFeature::MESH_DETECTION:
       return true;
   }
 }

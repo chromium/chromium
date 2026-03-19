@@ -63,6 +63,7 @@ enum XRSessionFeature {
   LAYERS = 16,
   FRONT_FACING = 17,
   WEBGPU = 18,
+  MESH_DETECTION = 19,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

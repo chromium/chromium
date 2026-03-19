@@ -40,6 +40,10 @@ mojom_component("vr_service") {
         cpp = "::device::PlaneId"
       },
       {
+        mojom = "device.mojom.MeshId"
+        cpp = "::device::MeshId"
+      },
+      {
         mojom = "device.mojom.AnchorId"
         cpp = "::device::AnchorId"
       },
@@ -98,6 +102,7 @@ component("vr_public_typemaps") {
     "anchor_id.h",
     "hit_test_subscription_id.h",
     "layer_id.h",
+    "mesh_id.h",
     "plane_id.h",
     "pose.cc",
     "pose.h",

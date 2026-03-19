@@ -208,6 +208,8 @@ std::optional<gfx::Transform> OpenXrHitTestManager::GetMojoFromNativeOrigin(
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       return std::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::kMeshId:
+      return std::nullopt;
   }
 }
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_estimate.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
+#include "third_party/blink/renderer/modules/xr/xr_mesh_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
@@ -146,6 +147,18 @@ XRPlaneSet* XRFrame::detectedPlanes(ExceptionState& exception_state) const {
   }
 
   return session_->GetDetectedPlanes();
+}
+
+XRMeshSet* XRFrame::detectedMeshes(ExceptionState& exception_state) const {
+  DVLOG(3) << __func__;
+
+  if (!is_active_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveFrame);
+    return nullptr;
+  }
+
+  return session_->GetDetectedMeshes();
 }
 
 XRLightEstimate* XRFrame::getLightEstimate(
