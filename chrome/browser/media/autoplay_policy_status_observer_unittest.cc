@@ -49,6 +49,48 @@ TEST_F(AutoplayPolicyStatusObserverTest, RecordsMetricsOnPlay) {
                                       true, 1);
 }
 
+TEST_F(AutoplayPolicyStatusObserverTest, RecordsMediaEngagement) {
+  base::HistogramTester histogram_tester;
+
+  GetObserver()->SetPolicyStatus(
+      AutoplayPolicyStatusObserver::PolicyStatus::kAllowedByMediaEngagement);
+
+  content::WebContentsObserver::MediaPlayerInfo player_info(
+      false /* has_video */, false /* has_audio */);
+  content::MediaPlayerId player_id(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 0);
+
+  GetObserver()->MediaStartedPlaying(player_info, player_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.Autoplay.PolicyStatus",
+      AutoplayPolicyStatusObserver::PolicyStatus::kAllowedByMediaEngagement, 1);
+  histogram_tester.ExpectUniqueSample("Media.Autoplay.EnterprisePolicyOverride",
+                                      false, 1);
+}
+
+TEST_F(AutoplayPolicyStatusObserverTest, RecordsWouldBeMediaEngagement) {
+  base::HistogramTester histogram_tester;
+
+  GetObserver()->SetPolicyStatus(AutoplayPolicyStatusObserver::PolicyStatus::
+                                     kWouldBeAllowedByMediaEngagement);
+
+  content::WebContentsObserver::MediaPlayerInfo player_info(
+      false /* has_video */, false /* has_audio */);
+  content::MediaPlayerId player_id(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 0);
+
+  GetObserver()->MediaStartedPlaying(player_info, player_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.Autoplay.PolicyStatus",
+      AutoplayPolicyStatusObserver::PolicyStatus::
+          kWouldBeAllowedByMediaEngagement,
+      1);
+  histogram_tester.ExpectUniqueSample("Media.Autoplay.EnterprisePolicyOverride",
+                                      false, 1);
+}
+
 TEST_F(AutoplayPolicyStatusObserverTest, RecordsOnlyOnce) {
   base::HistogramTester histogram_tester;
 

@@ -26,6 +26,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 #include "chrome/browser/media/media_engagement_score.h"
+#include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -157,6 +159,16 @@ class MediaEngagementServiceTest : public ChromeRenderViewHostTestHarness,
           {media::kMediaEngagementHTTPSOnly});
     }
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // Prevent the factory from implicitly creating a second
+    // MediaEngagementService (e.g. during Autoplay policy checks), which would
+    // conflict with the manual test instance and double-process
+    // HistoryServiceObserver events.
+    MediaEngagementServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return nullptr;
+        }));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_temp_history_dir = temp_dir_.GetPath();

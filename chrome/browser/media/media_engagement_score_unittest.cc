@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,6 +47,12 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // Initialize the MediaEngagementService to ensure its schema version is set
+    // and it doesn't clear the HostContentSettingsMap when accessed later by
+    // the test harness' WebContents.
+    MediaEngagementService::Get(profile());
+
     test_clock.SetNow(GetReferenceTime());
     score_ = std::make_unique<MediaEngagementScore>(&test_clock, url::Origin(),
                                                     nullptr);
