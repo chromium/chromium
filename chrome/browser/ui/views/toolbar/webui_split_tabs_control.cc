@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -78,16 +79,12 @@ void WebUISplitTabsControl::HandleContextMenu(
     RunMenuAt(screen_location.x(), screen_location.y(), source_type);
   } else if (menu_type ==
              toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext) {
-    Browser* actual_browser =
-        chrome::FindBrowserWithWindow(browser->GetWindow()->GetNativeWindow());
-    if (actual_browser) {
-      // Destroy the old menu runner first to avoid a dangling pointer since it
-      // holds a raw_ptr to the old menu model.
-      menu_runner_.reset();
-      split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
-          actual_browser, kActionSplitTab);
-      RunMenuAt(screen_location.x(), screen_location.y(), source_type);
-    }
+    // Destroy the old menu runner first to avoid a dangling pointer since it
+    // holds a raw_ptr to the old menu model.
+    menu_runner_.reset();
+    split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
+        browser, kActionSplitTab);
+    RunMenuAt(screen_location.x(), screen_location.y(), source_type);
   }
 }
 

@@ -21,6 +21,9 @@ build_webui("build") {
     "back_forward_button.html.ts",
     "back_forward_button.ts",
     "browser_proxy.ts",
+    "home_button.html.ts",
+    "home_button.ts",
+    "home_button_icon.html.ts",
     "metrics_recorder.ts",
     "reload_button.html.ts",
     "reload_button.ts",
@@ -32,6 +35,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "back_forward_button.css",
+    "home_button.css",
     "reload_button.css",
     "split_tabs_button.css",
     "toolbar_button.css",

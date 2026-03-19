@@ -57,17 +57,6 @@ TabSplitStatus ComputeTabSplitStatus(
   return status;
 }
 
-bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    toolbar_ui_api::mojom::ToolbarButtonType type) {
-  switch (type) {
-    case toolbar_ui_api::mojom::ToolbarButtonType::kSplitTabs:
-      return browser_interface->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kPinSplitTabButton);
-    default:
-      return false;
-  }
-}
-
 void PopulateSplitTabsDataSource(content::WebUIDataSource* source,
                                  BrowserWindowInterface* browser_interface) {
   source->AddBoolean("enableSplitTabsButton",

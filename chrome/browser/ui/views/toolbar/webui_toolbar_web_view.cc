@@ -146,6 +146,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       controller_(controller),
       reload_control_(this),
       split_tabs_control_(this),
+      home_control_(this),
       location_bar_(std::move(location_bar)),
       back_control_(this, BackForwardButton::Direction::kBack),
       forward_control_(this, BackForwardButton::Direction::kForward),
@@ -159,6 +160,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::SplitTabsControlState::New();
   last_queued_state_.reload_control_state =
       toolbar_ui_api::mojom::ReloadControlState::New();
+  last_queued_state_.home_control_state =
+      toolbar_ui_api::mojom::HomeControlState::New();
   last_queued_state_.content_setting_state =
       toolbar_ui_api::mojom::ContentSettingState::New();
   last_queued_state_.layout_constants_version = 0;
@@ -218,6 +221,10 @@ void WebUIToolbarWebView::AddedToWidget() {
     split_tabs_control_.Init();
   }
 
+  if (features::IsWebUIHomeButtonEnabled()) {
+    home_control_.Init();
+  }
+
   // Do NOT call GetWebUIToolbarUI() here as it may be null.
   // The reload_control_ will be initialized once the WebUI is ready.
 }
@@ -231,6 +238,8 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
   button_count += features::IsWebUIBackForwardButtonEnabled();
   button_count += features::IsWebUIBackForwardButtonEnabled() &&
                   forward_control_.GetVisible();
+  button_count +=
+      features::IsWebUIHomeButtonEnabled() && home_control_.IsVisible();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   int width = button_count * size;
@@ -280,6 +289,9 @@ void WebUIToolbarWebView::HandleContextMenu(
     case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction:
     case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext:
       split_tabs_control_.HandleContextMenu(menu_type, screen_location, source);
+      break;
+    case toolbar_ui_api::mojom::ContextMenuType::kHome:
+      home_control_.HandleContextMenu(screen_location, source);
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
@@ -500,6 +512,14 @@ void WebUIToolbarWebView::OnBackForwardStateChanged() {
   auto state = GetBackForwardState();
   if (*state != *last_queued_state_.back_forward_control_state) {
     last_queued_state_.back_forward_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnHomeControlStateChanged(
+    toolbar_ui_api::mojom::HomeControlStatePtr state) {
+  if (*state != *last_queued_state_.home_control_state) {
+    last_queued_state_.home_control_state = std::move(state);
     PostPushNavigationState();
   }
 }

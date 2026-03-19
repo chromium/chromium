@@ -96,6 +96,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
               toolbar_ui_api::mojom::ReloadControlState::New(),
               toolbar_ui_api::mojom::SplitTabsControlState::New(),
               std::move(back_forward_state),
+              toolbar_ui_api::mojom::HomeControlState::New(),
               toolbar_ui_api::mojom::ContentSettingState::New(),
               /*layout_constants_version=*/0);
         }));

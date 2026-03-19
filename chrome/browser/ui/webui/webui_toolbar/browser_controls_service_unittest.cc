@@ -257,6 +257,66 @@ TEST_F(BrowserControlsServiceTest, BackButtonHovered) {
   EXPECT_TRUE(toy_browser().is_back_button_hovered());
 }
 
+// Tests that calling NavigateHome() by default executes the IDC_HOME
+// command with CURRENT_TAB.
+TEST_F(BrowserControlsServiceTest, NavigateHome_CurrentTab) {
+  service().NavigateHome({});
+  EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
+  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
+            toy_browser().received_commands().back().disposition);
+}
+
+// Tests that calling NavigateHome() with kMiddleMouseButton executes the
+// IDC_HOME command with NEW_BACKGROUND_TAB.
+TEST_F(BrowserControlsServiceTest, NavigateHome_MiddleClick) {
+  service().NavigateHome(
+      {browser_controls_api::mojom::ClickDispositionFlag::kMiddleMouseButton});
+  EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
+  EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            toy_browser().received_commands().back().disposition);
+}
+
+// Tests that calling NavigateHome() with the platform's background tab modifier
+// executes the IDC_HOME command with NEW_BACKGROUND_TAB. On macOS,
+// Ctrl+Click opens a context menu, so we test Meta+Click instead.
+TEST_F(BrowserControlsServiceTest, NavigateHome_MetaOrCtrlClick) {
+  service().NavigateHome(
+#if BUILDFLAG(IS_MAC)
+      {browser_controls_api::mojom::ClickDispositionFlag::kMetaKeyDown});
+#else
+      {browser_controls_api::mojom::ClickDispositionFlag::kControlKeyDown});
+#endif  // BUILDFLAG(IS_MAC)
+  EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
+  EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            toy_browser().received_commands().back().disposition);
+}
+
+// Tests that calling NavigateHome() with the platform's background tab modifier
+// and the Shift key executes the IDC_HOME command with NEW_FOREGROUND_TAB.
+TEST_F(BrowserControlsServiceTest, NavigateHome_MetaOrCtrlShiftClick) {
+  service().NavigateHome(
+#if BUILDFLAG(IS_MAC)
+      {browser_controls_api::mojom::ClickDispositionFlag::kMetaKeyDown,
+       browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+#else
+      {browser_controls_api::mojom::ClickDispositionFlag::kControlKeyDown,
+       browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+#endif  // BUILDFLAG(IS_MAC)
+  EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
+  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            toy_browser().received_commands().back().disposition);
+}
+
+// Tests that calling NavigateHome() with kShiftKeyDown executes the IDC_HOME
+// command with NEW_WINDOW.
+TEST_F(BrowserControlsServiceTest, NavigateHome_ShiftClick) {
+  service().NavigateHome(
+      {browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+  EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
+  EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW,
+            toy_browser().received_commands().back().disposition);
+}
+
 }  // namespace
 
 }  // namespace browser_controls_api

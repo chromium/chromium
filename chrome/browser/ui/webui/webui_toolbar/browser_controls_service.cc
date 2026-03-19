@@ -147,6 +147,13 @@ void BrowserControlsService::SplitActiveTab() {
   browser_adapter_->CreateNewSplitTab();
 }
 
+void BrowserControlsService::NavigateHome(
+    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+        click_flags) {
+  browser_adapter_->NavigateHome(
+      ui::DispositionFromEventFlags(ToUIEventFlags(click_flags)));
+}
+
 void BrowserControlsService::SetDelegate(
     BrowserControlsServiceDelegate* delegate) {
   delegate_ = delegate;

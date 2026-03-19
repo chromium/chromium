@@ -22,8 +22,14 @@ ${this.isBackForwardButtonEnabled_ ? html`
   </back-forward-button>` : ''}
   ${this.isReloadButtonEnabled_ ? html`
     <reload-button id="reload"
-        .state="${this.navigationControlsState_.reloadControlState}">
+      .state="${this.navigationControlsState_.reloadControlState}">
     </reload-button>
+  ` : ''}
+  ${this.isHomeButtonEnabled_ ? html`
+    <home-button id="home"
+      .state="${this.navigationControlsState_.homeControlState}"
+      .hidden="${!this.navigationControlsState_.homeControlState.isPinned}">
+    </home-button>
   ` : ''}
   ${this.isSplitTabsButtonEnabled_ ? html`
     <split-tabs-button id="split-tabs"

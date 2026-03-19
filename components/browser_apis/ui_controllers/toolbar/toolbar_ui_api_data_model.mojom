@@ -16,6 +16,7 @@ enum ContextMenuType {
   kSplitTabsContext = 3,
   kBack = 4,
   kForward = 5,
+  kHome = 6,
 };
 
 struct ButtonState {
@@ -32,6 +33,7 @@ enum SplitTabActiveLocation {
 
 enum ToolbarButtonType {
   kSplitTabs,
+  kHome,
 };
 
 struct ReloadControlState {
@@ -51,6 +53,11 @@ struct BackForwardControlState {
   ButtonState back_button_state;
   ButtonState forward_button_state;
   int32 back_button_leading_margin;
+};
+
+struct HomeControlState {
+  bool is_pinned;
+  bool is_context_menu_visible;
 };
 
 // The set of information about URL bar RHS content setting icons sent from
@@ -112,6 +119,7 @@ struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
+  HomeControlState home_control_state;
   ContentSettingState content_setting_state;
   // This is incremented every time a settings change may change the layout
   // constants.

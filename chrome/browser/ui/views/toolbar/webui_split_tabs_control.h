@@ -50,6 +50,8 @@ class WebUISplitTabsControl : public TabStripModelObserver {
                            CheckSplitTabsButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
                            CheckSplitTabsButtonSourceType);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
+                           RightClickSplitTabsButton);
 
   void UpdateVisibility(
       const toolbar_ui_api::mojom::SplitTabsControlState* state);

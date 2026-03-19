@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_home_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
@@ -107,13 +108,22 @@ class WebUIToolbarWebView
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckSplitTabsButtonColor);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           CheckHomeButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
                            CheckSplitTabsButtonSourceType);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
+                           RightClickSplitTabsButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
+                           RightClickHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
+                           LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
   friend WebUIBackForwardControl;
+  friend WebUIHomeControl;
   friend WebUIPinnedToolbarActions;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
@@ -145,6 +155,8 @@ class WebUIToolbarWebView
   void OnSplitTabsControlStateChanged(
       toolbar_ui_api::mojom::SplitTabsControlStatePtr state);
   void OnBackForwardStateChanged();
+  void OnHomeControlStateChanged(
+      toolbar_ui_api::mojom::HomeControlStatePtr state);
 
   void OnTouchUiChanged();
   void PostPushNavigationState();
@@ -161,6 +173,7 @@ class WebUIToolbarWebView
   const raw_ptr<chrome::BrowserCommandController> controller_;
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
+  WebUIHomeControl home_control_;
   std::unique_ptr<WebUILocationBar> location_bar_;
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;

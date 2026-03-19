@@ -5,6 +5,7 @@
 import './back_forward_button.js';
 import './reload_button.js';
 import './split_tabs_button.js';
+import './home_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -36,6 +37,7 @@ export class ToolbarAppElement extends CrLitElement {
     return {
       isReloadButtonEnabled_: {type: Boolean},
       isSplitTabsButtonEnabled_: {type: Boolean},
+      isHomeButtonEnabled_: {type: Boolean},
       isLocationBarEnabled_: {type: Boolean},
       navigationControlsState_: {type: Object},
       isBackForwardButtonEnabled_: {type: Boolean},
@@ -46,6 +48,8 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableReloadButton');
   protected accessor isSplitTabsButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableSplitTabsButton');
+  protected accessor isHomeButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableHomeButton');
   protected accessor isLocationBarEnabled_: boolean =
       loadTimeData.getBoolean('enableLocationBar');
   protected accessor isBackForwardButtonEnabled_: boolean =
@@ -66,6 +70,10 @@ export class ToolbarAppElement extends CrLitElement {
       backButtonState: {enabled: false, visible: true},
       forwardButtonState: {enabled: false, visible: true},
       backButtonLeadingMargin: 0,
+    },
+    homeControlState: {
+      isPinned: false,
+      isContextMenuVisible: false,
     },
     layoutConstantsVersion: 0,
     contentSettingState: {
@@ -118,6 +126,10 @@ export class ToolbarAppElement extends CrLitElement {
       this.trackedElementManager_.startTracking(
           reload, 'kReloadButtonElementId');
     }
+    const home = this.shadowRoot.querySelector<CrLitElement>('#home');
+    if (home) {
+      this.trackedElementManager_.startTracking(home, 'kToolbarHomeButtonElementId');
+    }
     const splitTabs =
         this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
     if (splitTabs) {
@@ -147,6 +159,16 @@ export class ToolbarAppElement extends CrLitElement {
     if (reload) {
       this.trackedElementManager_.stopTracking(reload);
     }
+
+    const splitTabs = this.shadowRoot.querySelector<HTMLElement>('#split-tabs');
+    if (splitTabs) {
+      this.trackedElementManager_.stopTracking(splitTabs);
+    }
+
+    const home = this.shadowRoot.querySelector<HTMLElement>('#home');
+    if (home) {
+      this.trackedElementManager_.stopTracking(home);
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -169,6 +191,10 @@ export class ToolbarAppElement extends CrLitElement {
         this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
     if (splitTabs) {
       promises.push(splitTabs.updateComplete);
+    }
+    const home = this.shadowRoot.querySelector<CrLitElement>('#home');
+    if (home) {
+      promises.push(home.updateComplete);
     }
     Promise.all(promises).then(() => {
       this.browserProxy_.toolbarUIHandler.onPageInitialized();

@@ -84,6 +84,7 @@ constexpr char kSplitTabsSelector[] = "split-tabs-button";
 constexpr char kReloadButtonSelector[] = "reload-button";
 constexpr char kBackSelector[] = "#back";
 constexpr char kForwardSelector[] = "#forward";
+constexpr char kHomeSelector[] = "#home";
 
 std::string GetButtonAppJS(const std::string& selector) {
   return base::StringPrintf(
@@ -131,13 +132,8 @@ WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
       ->GetWebUIToolbarViewForTesting();
 }
 
-void PinSplitTabsButton(Browser* browser, views::WebView* web_view) {
-  browser->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
-  content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
-}
-
-void PinForwardButton(Browser* browser, views::WebView* web_view) {
-  browser->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+void PinButton(Browser* browser, views::WebView* web_view, const char* pref) {
+  browser->profile()->GetPrefs()->SetBoolean(pref, true);
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
 
@@ -151,18 +147,20 @@ bool WaitForButtonEnabled(content::WebContents* web_contents,
   });
 }
 
-// Dispatches an event to the Split Tabs Button.
+// Dispatches an event to a WebUI toolbar button.
+// `selector`: The CSS selector for the button element.
 // `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
 // `type`: The event type string (e.g. 'click', 'contextmenu').
 // `options`: JS object string for event options (e.g. "detail: 1, button: 2").
-std::string DispatchEventScript(const std::string& event_class,
+std::string DispatchEventScript(const std::string& selector,
+                                const std::string& event_class,
                                 const std::string& type,
                                 const std::string& options = "") {
   return base::StringPrintf(
       "%s?.dispatchEvent(new %s('%s', "
       "{bubbles: true, cancelable: true, view: window, %s}));",
-      GetButtonIconJS(kSplitTabsSelector).c_str(), event_class.c_str(),
-      type.c_str(), options.c_str());
+      GetButtonIconJS(selector).c_str(), event_class.c_str(), type.c_str(),
+      options.c_str());
 }
 
 // Simulates a full physical click cycle (press + release) using PointerEvents.
@@ -208,7 +206,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
-         features::kWebUIPinnedToolbarActions,
+         features::kWebUIHomeButton, features::kWebUIPinnedToolbarActions,
          tabs::kHorizontalTabStripComboButton,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
@@ -401,6 +399,33 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
       "Click to go forward, hold to see history",
       forward.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
 
+  // Verify appropriate accessibility properties for home button.
+  std::string home_name =
+      content::EvalJs(web_view->GetWebContents(),
+                      "import('//resources/js/load_time_data.js').then(m => "
+                      "m.loadTimeData.getString('homeButtonAccName'))")
+          .ExtractString();
+  std::string home_tooltip =
+      content::EvalJs(web_view->GetWebContents(),
+                      "import('//resources/js/load_time_data.js').then(m => "
+                      "m.loadTimeData.getString('homeButtonTooltip'))")
+          .ExtractString();
+
+  // Pin home button first to make it visible
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), home_name);
+  find_criteria.name = home_name;
+  ui::AXPlatformNodeDelegate* home_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(home_node);
+  const ui::AXNodeData& home = home_node->GetData();
+  EXPECT_EQ(ax::mojom::Role::kButton, home.role);
+  EXPECT_EQ(home_name,
+            home.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(home_tooltip,
+            home.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+
   // Verify that setting mode to kStop is reflected in HasPopup attribute.
   webui_toolbar_view->GetReloadControl()->ChangeMode(ReloadControl::Mode::kStop,
                                                      true);
@@ -451,6 +476,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   gfx::Rect control_rect = element->GetScreenBounds();
   gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+  // Wait for the back and forward buttons to finish laying out, which should
+  // push the reload button over by at least two buttons width.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    control_rect = element->GetScreenBounds();
+    return (control_rect.x() - view_rect.x()) >
+           2 * GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  }));
+
   control_rect.Offset(-view_rect.OffsetFromOrigin());
 
   // Verify reload button background is transparent when not highlighted.
@@ -477,9 +510,61 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
-// TODO(crbug.com/493362471): Flaky pixel tests.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       DISABLED_CheckSplitTabsButtonColor) {
+                       CheckHomeButtonColor) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarHomeButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+
+  gfx::Rect control_rect = element->GetScreenBounds();
+  gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+  // Wait for the back, forward, and reload to finish laying out, which should
+  // push the home button over by at least three buttons width.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    control_rect = element->GetScreenBounds();
+    return (control_rect.x() - view_rect.x()) >
+           3 * GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  }));
+
+  control_rect.Offset(-view_rect.OffsetFromOrigin());
+
+  // Sample a point in the background area (e.g. 5,5 from top-left).
+  gfx::Rect background_probe_rect(control_rect.x() + 5, control_rect.y() + 5, 1,
+                                  1);
+
+  // Verify initial state is transparent.
+  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
+
+  // Show context menu.
+  home_control->HandleContextMenu(element->GetScreenBounds().bottom_right(),
+                                  ui::mojom::MenuSourceType::kMouse);
+
+  // Verify background is highlighted (NOT transparent).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) !=
+           SK_ColorTRANSPARENT;
+  }));
+
+  // Close context menu.
+  home_control->menu_runner_->Cancel();
+
+  // Verify home button background returns to transparent.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       CheckSplitTabsButtonColor) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
 
   ui::TrackedElement* element = nullptr;
@@ -494,12 +579,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   gfx::Rect control_rect = element->GetScreenBounds();
   gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
-  // Wait for the reload button to finish laying out, which should
-  // push the split tabs button over by at least one button width.
+  // Wait for the back, forward, and reload buttons to finish laying out, which
+  // should push the split tabs button over by at least three buttons width.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     control_rect = element->GetScreenBounds();
     return (control_rect.x() - view_rect.x()) >
-           GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+           3 * GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   }));
 
   control_rect.Offset(-view_rect.OffsetFromOrigin());
@@ -609,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
                                      &webui_toolbar_view, &web_view,
                                      browser()));
-  PinForwardButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kShowForwardButton);
 
   // Create navigation history.
   GURL url1("chrome://version/");
@@ -659,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
                                      &webui_toolbar_view, &web_view,
                                      browser()));
-  PinForwardButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kShowForwardButton);
 
   // Create navigation history.
   GURL url1("chrome://version/");
@@ -1088,7 +1173,7 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
   WebUIToolbarWebViewBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUISplitTabsButton,
+         features::kWebUISplitTabsButton, features::kWebUIHomeButton,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
          features::kInitialWebUISyncNavStartToCommit},
@@ -1105,45 +1190,90 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       ToggleSplitTabsButtonVisibility) {
+struct ButtonVisibilityToggleTestParam {
+  const char* test_name;
+  const char* button_acc_name_key;
+  const char* button_pref;
+  const char* button_selector;
+};
+
+class WebUIToolbarWebViewButtonVisibilityTest
+    : public WebUIToolbarWebViewBrowserTest,
+      public testing::WithParamInterface<ButtonVisibilityToggleTestParam> {};
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewButtonVisibilityTest,
+                       TogglesVisibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  const auto& param = GetParam();
+
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   ASSERT_TRUE(web_view);
 
-  // Initially, the button should NOT be visible (default is unpinned).
+  // Get button name from WebUI.
   std::string button_name =
-      l10n_util::GetStringUTF8(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED);
+      content::EvalJs(
+          web_view->GetWebContents(),
+          base::StringPrintf(
+              "import('//resources/js/load_time_data.js').then(m => "
+              "m.loadTimeData.getString('%s'))",
+              param.button_acc_name_key))
+          .ExtractString();
 
-  PinSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(
-      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
-
-  // Wait for it to appear in accessibility tree.
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), button_name);
-
-  // Verify accessibility properties.
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.name = button_name;
   find_criteria.role = ax::mojom::Role::kButton;
-  ui::AXPlatformNodeDelegate* split_tabs_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(split_tabs_node);
 
-  // Disable the button via pref.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
-                                               false);
-  // Wait for the tree to change.
+  // Wait for a known always-present node to ensure the accessibility tree is
+  // populated.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Reload");
+
+  // Verify the button is initially not found.
+  EXPECT_FALSE(content::FindAccessibilityNode(web_view->GetWebContents(),
+                                              find_criteria));
+
+  // Pin the button and wait for it to become visible.
+  PinButton(browser(), web_view, param.button_pref);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), param.button_selector));
+
+  // Wait for it to appear in the accessibility tree.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), button_name);
+
+  // Verify it now exists.
+  EXPECT_TRUE(content::FindAccessibilityNode(web_view->GetWebContents(),
+                                             find_criteria));
+
+  // Disable the button via pref and wait for the tree to update.
+  browser()->profile()->GetPrefs()->SetBoolean(param.button_pref, false);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
 
   // Verify it is gone.
-  split_tabs_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  EXPECT_FALSE(split_tabs_node);
+  EXPECT_FALSE(content::FindAccessibilityNode(web_view->GetWebContents(),
+                                              find_criteria));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebUIToolbarWebViewButtonVisibilityTest,
+    testing::Values(
+        ButtonVisibilityToggleTestParam{
+            .test_name = "SplitTabsButton",
+            .button_acc_name_key = "splitTabsButtonAccNamePinned",
+            .button_pref = prefs::kPinSplitTabButton,
+            .button_selector = kSplitTabsSelector},
+        ButtonVisibilityToggleTestParam{
+            .test_name = "HomeButton",
+            .button_acc_name_key = "homeButtonAccName",
+            .button_pref = prefs::kShowHomeButton,
+            .button_selector = kHomeSelector}),
+    [](const testing::TestParamInfo<ButtonVisibilityToggleTestParam>& info) {
+      // Use the custom test name for clarity in test results.
+      return info.param.test_name;
+    });
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
                        VerifyDynamicTouchModeUpdate) {
@@ -1151,7 +1281,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   ASSERT_TRUE(WaitForButtonVisible(web_contents, kReloadButtonSelector));
   ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
 
@@ -1319,30 +1449,36 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
     ui::mojom::MenuSourceType expected_source;
   } kTestCases[] = {
       {"Keyboard Click",
-       DispatchEventScript("MouseEvent", "click", "detail: 0"),
+       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
+                           "detail: 0"),
        ui::mojom::MenuSourceType::kKeyboard},
-      {"Mouse Click", DispatchEventScript("MouseEvent", "click", "detail: 1"),
+      {"Mouse Click",
+       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
+                           "detail: 1"),
        ui::mojom::MenuSourceType::kMouse},
       {"Touch Click",
-       DispatchEventScript("PointerEvent", "click",
+       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "click",
                            "pointerType: 'touch', detail: 1"),
        ui::mojom::MenuSourceType::kTouch},
       {"Pen Click",
-       DispatchEventScript("PointerEvent", "click",
+       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "click",
                            "pointerType: 'pen', detail: 1"),
        ui::mojom::MenuSourceType::kTouch},
       {"Keyboard Context Menu",
-       DispatchEventScript("MouseEvent", "contextmenu", "detail: 0"),
+       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "contextmenu",
+                           "detail: 0"),
        ui::mojom::MenuSourceType::kKeyboard},
       {"Mouse Context Menu",
-       DispatchEventScript("MouseEvent", "contextmenu", "button: 2"),
+       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "contextmenu",
+                           "button: 2"),
        ui::mojom::MenuSourceType::kMouse},
       {"Touch Context Menu",
-       DispatchEventScript("PointerEvent", "contextmenu",
+       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "contextmenu",
                            "pointerType: 'touch'"),
        ui::mojom::MenuSourceType::kTouch},
       {"Pen Context Menu",
-       DispatchEventScript("PointerEvent", "contextmenu", "pointerType: 'pen'"),
+       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "contextmenu",
+                           "pointerType: 'pen'"),
        ui::mojom::MenuSourceType::kTouch},
   };
 
@@ -1361,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        ClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
@@ -1382,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
 
   // Initially NOT split. aria-haspopup should be 'false'.
@@ -1392,7 +1528,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   EXPECT_EQ("false", content::EvalJs(web_contents, kGetAriaHasPopup));
 
   EXPECT_TRUE(content::ExecJs(
-      web_contents, DispatchEventScript("MouseEvent", "click", "detail: 1")));
+      web_contents, DispatchEventScript(kSplitTabsSelector, "MouseEvent",
+                                        "click", "detail: 1")));
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -1410,21 +1547,31 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        RightClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
-  EXPECT_TRUE(content::ExecJs(
-      web_view->GetWebContents(),
-      DispatchEventScript("MouseEvent", "contextmenu", "button: 2")));
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchEventScript(kSplitTabsSelector, "MouseEvent",
+                                          "contextmenu", "button: 2")));
 
-  // Verify no crash.
+  WebUISplitTabsControl* split_tabs_control =
+      &webui_toolbar_view->split_tabs_control_;
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return split_tabs_control->menu_runner_ &&
+           split_tabs_control->menu_runner_->IsRunning();
+  }));
+
+  // Clean up
+  split_tabs_control->menu_runner_->Cancel();
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        ClickSplitTabsButtonWhileSplit) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
@@ -1445,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        VerifySplitTabLocations) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
@@ -1495,7 +1642,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
-  PinSplitTabsButton(browser(), web_view);
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
   ASSERT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
@@ -1528,4 +1675,207 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
   EXPECT_EQ(
       "9px",
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+}
+
+class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
+ public:
+  WebUIToolbarWebViewHomeButtonBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIHomeButton,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kInitialWebUISyncNavStartToCommit},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ThemeServiceFactory::GetForProfile(browser()->profile())
+        ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
+  }
+
+ protected:
+  WebUIToolbarWebView* SetUpAndPinHomeButton() {
+    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+    PinButton(browser(), web_view, prefs::kShowHomeButton);
+    EXPECT_TRUE(
+        WaitForButtonVisible(web_view->GetWebContents(), kHomeSelector));
+    return webui_toolbar_view;
+  }
+
+  GURL GetHomeURL() {
+    GURL home_url(
+        browser()->profile()->GetPrefs()->GetString(prefs::kHomePage));
+    if (home_url.is_empty()) {
+      return GURL(chrome::kChromeUINewTabURL);
+    }
+    return home_url;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       ClickHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  GURL home_url = GetHomeURL();
+
+  // Navigate away so clicking home actually does something.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  // Click the button.
+  content::TestNavigationObserver nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchPointerClick(kHomeSelector, "button: 0")));
+  nav_observer.Wait();
+
+  EXPECT_EQ(home_url, browser()
+                          ->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       RightClickHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                              DispatchEventScript(kHomeSelector, "MouseEvent",
+                                                  "contextmenu", "button: 2")));
+
+  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return home_control->menu_runner_ &&
+           home_control->menu_runner_->IsRunning();
+  }));
+
+  // Clean up
+  home_control->menu_runner_->Cancel();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       LongPressHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                              DispatchEventScript(kHomeSelector, "PointerEvent",
+                                                  "pointerdown", "button: 0")));
+
+  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+
+  // Wait for the long press timer to trigger and show the menu.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return home_control->menu_runner_ &&
+           home_control->menu_runner_->IsRunning();
+  }));
+
+  // Clean up
+  home_control->menu_runner_->Cancel();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       CtrlClickHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  GURL home_url = GetHomeURL();
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
+
+#if BUILDFLAG(IS_MAC)
+  const char* kModifier = "metaKey: true";
+#else
+  const char* kModifier = "ctrlKey: true";
+#endif
+
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(kHomeSelector,
+                           base::StrCat({"button: 0, ", kModifier}))));
+
+  tab_add_waiter.Wait();
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  // Verify new tab is in the background.
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  content::WebContents* new_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(initial_tab_count);
+  content::TestNavigationObserver observer(new_tab);
+  if (new_tab->GetLastCommittedURL() != home_url) {
+    observer.WaitForNavigationFinished();
+  }
+  EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       CtrlShiftClickHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  GURL home_url = GetHomeURL();
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
+
+#if BUILDFLAG(IS_MAC)
+  const char* kModifier = "metaKey: true";
+#else
+  const char* kModifier = "ctrlKey: true";
+#endif
+
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(
+          kHomeSelector,
+          base::StrCat({"button: 0, ", kModifier, ", shiftKey: true"}))));
+
+  tab_add_waiter.Wait();
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  // Verify new tab is in the foreground.
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->active_index());
+
+  content::WebContents* new_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(new_tab);
+  if (new_tab->GetLastCommittedURL() != home_url) {
+    observer.WaitForNavigationFinished();
+  }
+  EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       ShiftClickHomeButton) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  GURL home_url = GetHomeURL();
+
+  ui_test_utils::BrowserCreatedObserver new_browser_observer;
+
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(kHomeSelector, "button: 0, shiftKey: true")));
+
+  Browser* new_browser = new_browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  content::WebContents* new_tab =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(new_tab);
+  if (new_tab->GetLastCommittedURL() != home_url) {
+    observer.WaitForNavigationFinished();
+  }
+  EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
 }

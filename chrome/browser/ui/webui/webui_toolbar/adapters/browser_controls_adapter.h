@@ -24,6 +24,7 @@ class BrowserControlsAdapter {
   virtual void Forward(WindowOpenDisposition disposition) = 0;
   virtual void BackButtonHovered() = 0;
   virtual void CreateNewSplitTab() = 0;
+  virtual void NavigateHome(WindowOpenDisposition disposition) = 0;
   // These should probably be pulled to their own adapter.
   virtual webui_toolbar::TabSplitStatus ComputeSplitTabStatus() = 0;
   virtual bool IsButtonPinned(

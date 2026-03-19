@@ -49,6 +49,8 @@ class BrowserControlsService
   void Forward(const std::vector<mojom::ClickDispositionFlag>& flags) override;
   void BackButtonHovered() override;
   void SplitActiveTab() override;
+  void NavigateHome(
+      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
 
  private:
   // Callback for `MetricsReporter::Measure()`. Records the resulting

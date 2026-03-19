@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -53,6 +54,11 @@ void BrowserControlsAdapterImpl::BackButtonHovered() {
 void BrowserControlsAdapterImpl::CreateNewSplitTab() {
   chrome::NewSplitTab(&browser_.get(),
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
+}
+
+void BrowserControlsAdapterImpl::NavigateHome(
+    WindowOpenDisposition disposition) {
+  command_updater_->ExecuteCommandWithDisposition(IDC_HOME, disposition);
 }
 
 webui_toolbar::TabSplitStatus

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 
 namespace browser_controls_api::testing {
 
@@ -46,6 +47,11 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
   }
 
   void CreateNewSplitTab() override { toy_browser_->is_split_tab_ = true; }
+
+  void NavigateHome(WindowOpenDisposition disposition) override {
+    toy_browser_->received_commands_.push_back(
+        {.command_id = IDC_HOME, .disposition = disposition});
+  }
 
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override {
     webui_toolbar::TabSplitStatus status;

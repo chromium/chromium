@@ -68,6 +68,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"backButtonTooltip", IDS_TOOLTIP_BACK},
       {"forwardButtonAccName", IDS_ACCNAME_FORWARD},
       {"forwardButtonTooltip", IDS_TOOLTIP_FORWARD},
+      {"homeButtonAccName", IDS_ACCNAME_HOME},
+      {"homeButtonTooltip", IDS_TOOLTIP_HOME},
       {"reloadButtonAccNameReload", IDS_ACCNAME_RELOAD},
       {"reloadButtonTooltipReload", IDS_TOOLTIP_RELOAD},
       {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
@@ -83,6 +85,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
+  source->AddBoolean("enableHomeButton", features::IsWebUIHomeButtonEnabled());
   source->AddBoolean("enableLocationBar",
                      features::IsWebUILocationBarEnabled());
   source->AddBoolean("enableBackForwardButtons",
@@ -234,5 +237,5 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 const std::vector<ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() const {
   return {kLocationBarElementId, kReloadButtonElementId,
-          kToolbarSplitTabsToolbarButtonElementId};
+          kToolbarSplitTabsToolbarButtonElementId, kToolbarHomeButtonElementId};
 }

@@ -20,6 +20,9 @@ interface BrowserControlsService {
   // `click_flags` contains the list of flag information about the click that
   // might affect the reload logic (e.g. whether it's clicked through the
   // middle mouse button, or whether the alt key is pressed).
+  // Note for reload button, the shift key and ctrl key are used to determine
+  // whether the reload is a bypass_cache reload, and will not be passed via
+  // `click_flags`.
   ReloadFromClick(bool bypass_cache, array<ClickDispositionFlag> click_flags);
 
   // Enters split view mode for the active tab. Only called when not in split.
@@ -33,4 +36,7 @@ interface BrowserControlsService {
 
   // Notifies that the back button was hovered.
   BackButtonHovered();
+
+  // Navigates to the user's home page.
+  NavigateHome(array<ClickDispositionFlag> click_flags);
 };

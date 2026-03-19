@@ -30,6 +30,7 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter {
   void Forward(WindowOpenDisposition disposition) override;
   void BackButtonHovered() override;
   void CreateNewSplitTab() override;
+  void NavigateHome(WindowOpenDisposition disposition) override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;
   bool IsButtonPinned(toolbar_ui_api::mojom::ToolbarButtonType type) override;
 

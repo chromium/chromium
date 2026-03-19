@@ -28,10 +28,6 @@ struct TabSplitStatus {
 // Calculates the split status of the active tab.
 TabSplitStatus ComputeTabSplitStatus(BrowserWindowInterface* browser_interface);
 
-// Gets the pin state from user prefs.
-bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    toolbar_ui_api::mojom::ToolbarButtonType type);
-
 // Populates the WebUI data source with split tabs specific strings and initial
 // state.
 void PopulateSplitTabsDataSource(content::WebUIDataSource* source,
