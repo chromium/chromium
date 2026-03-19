@@ -119,8 +119,9 @@ CreateContentBrowserURLLoaderThrottles(
     }
   }
 
-  if (auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
-          webid::SetIdpSigninStatus, browser_context, frame_tree_node_id))) {
+  if (auto throttle = MaybeCreateIdentityUrlLoaderThrottle(
+          base::BindRepeating(webid::SetIdpSigninStatus, browser_context,
+                              request.destination, frame_tree_node_id))) {
     throttles.push_back(std::move(throttle));
   }
 
@@ -144,12 +145,6 @@ CreateContentBrowserURLLoaderThrottlesForKeepAlive(
   // browser side, and we might be fine with Owner::kUnknown.
   variations::VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
       browser_context->GetVariationsClient(), &throttles);
-
-  auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
-      webid::SetIdpSigninStatus, browser_context, frame_tree_node_id));
-  if (throttle) {
-    throttles.push_back(std::move(throttle));
-  }
 
   return throttles;
 }
