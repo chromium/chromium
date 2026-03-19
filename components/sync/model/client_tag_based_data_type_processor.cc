@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -46,11 +45,6 @@
 
 namespace syncer {
 namespace {
-
-// A kill switch for clearing metadata for full update data types if they have
-// any unsynced entities.
-BASE_FEATURE(kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
@@ -1507,9 +1501,7 @@ bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
     }
   }
 
-  if (!bridge_->SupportsIncrementalUpdates() &&
-      base::FeatureList::IsEnabled(
-          kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes)) {
+  if (!bridge_->SupportsIncrementalUpdates()) {
     for (const auto& [_, entity_metadata] : metadata_map) {
       // Bridges that do not support incremental updates (i.e. full-update
       // types) must be read-only and therefore should not have any unsynced
