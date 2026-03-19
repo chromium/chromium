@@ -101,12 +101,12 @@ void CopyAndReplace(base::span<DestChar> dest,
 // Compute the new size for a string with the original length of `length` after
 // replacing `match_count` matches of `old_pattern_length` with
 // `new_pattern_length`. Used by the various Replace() variants.
-wtf_size_t ComputeSizeAfterReplacement(wtf_size_t length,
-                                       wtf_size_t match_count,
-                                       wtf_size_t old_pattern_length,
-                                       wtf_size_t new_pattern_length) {
-  const base::CheckedNumeric<wtf_size_t> checked_match_count(match_count);
-  base::CheckedNumeric<wtf_size_t> checked_new_size(length);
+string_size_t ComputeSizeAfterReplacement(string_size_t length,
+                                          string_size_t match_count,
+                                          string_size_t old_pattern_length,
+                                          string_size_t new_pattern_length) {
+  const base::CheckedNumeric<string_size_t> checked_match_count(match_count);
+  base::CheckedNumeric<string_size_t> checked_new_size(length);
   checked_new_size -= checked_match_count * old_pattern_length;
   checked_new_size += checked_match_count * new_pattern_length;
   return checked_new_size.ValueOrDie();
@@ -191,7 +191,7 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
     data = {};
     return empty_;
   }
-  const wtf_size_t narrowed_length = base::checked_cast<wtf_size_t>(length);
+  const size_type narrowed_length = base::checked_cast<size_type>(length);
 
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
@@ -211,7 +211,7 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
     data = {};
     return empty_;
   }
-  const wtf_size_t narrowed_length = base::checked_cast<wtf_size_t>(length);
+  const size_type narrowed_length = base::checked_cast<size_type>(length);
 
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
@@ -245,7 +245,7 @@ void StringImpl::FreezeStaticStrings() {
 #endif
 }
 
-wtf_size_t StringImpl::highest_static_string_length_ = 0;
+StringImpl::size_type StringImpl::highest_static_string_length_ = 0;
 
 DEFINE_GLOBAL(, StringImpl, g_global_empty);
 DEFINE_GLOBAL(, StringImpl, g_global_empty16_bit);
@@ -280,7 +280,7 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
               base::as_string_view(string));
     return it->value;
   }
-  const wtf_size_t narrowed_length = static_cast<wtf_size_t>(string.size());
+  const size_type narrowed_length = static_cast<size_type>(string.size());
 
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
@@ -380,11 +380,11 @@ bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
   });
 }
 
-scoped_refptr<StringImpl> StringImpl::Substring(wtf_size_t start,
-                                                wtf_size_t length) const {
+scoped_refptr<StringImpl> StringImpl::Substring(size_type start,
+                                                size_type length) const {
   if (start >= length_)
     return empty_;
-  wtf_size_t max_length = length_ - start;
+  size_type max_length = length_ - start;
   if (length >= max_length) {
     // RefPtr has trouble dealing with const arguments. It should be updated
     // so this const_cast is not necessary.
@@ -398,7 +398,7 @@ scoped_refptr<StringImpl> StringImpl::Substring(wtf_size_t start,
   return Create(Span16().subspan(start, length));
 }
 
-UChar32 StringImpl::CodePointAtOrZero(wtf_size_t i) {
+UChar32 StringImpl::CodePointAtOrZero(size_type i) {
   if (Is8Bit()) {
     return Span8()[i];
   }
@@ -406,7 +406,7 @@ UChar32 StringImpl::CodePointAtOrZero(wtf_size_t i) {
   return U_IS_SURROGATE(c) ? 0 : c;
 }
 
-size_t StringImpl::CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+size_t StringImpl::CopyTo(base::span<UChar> buffer, size_type start) const {
   size_t number_of_characters_to_copy =
       std::min<size_t>(length() - start, buffer.size());
   if (!number_of_characters_to_copy)
@@ -422,7 +422,7 @@ class StringImplAllocator {
   using ResultStringType = scoped_refptr<StringImpl>;
 
   template <typename CharType>
-  scoped_refptr<StringImpl> Alloc(wtf_size_t length,
+  scoped_refptr<StringImpl> Alloc(string_size_t length,
                                   base::span<CharType>& buffer) {
     return StringImpl::CreateUninitialized(length, buffer);
   }
@@ -457,7 +457,7 @@ scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
 }
 
 scoped_refptr<StringImpl> StringImpl::FoldCase() {
-  CHECK_LE(length_, static_cast<wtf_size_t>(numeric_limits<int32_t>::max()));
+  CHECK_LE(length_, static_cast<size_type>(numeric_limits<int32_t>::max()));
 
   if (Is8Bit()) {
     // Do a faster loop for the case where all the characters are ASCII.
@@ -552,7 +552,7 @@ class SpaceOrNewlinePredicate final {
   }
 };
 
-wtf_size_t StringImpl::LengthWithStrippedWhiteSpace() const {
+StringImpl::size_type StringImpl::LengthWithStrippedWhiteSpace() const {
   const auto [start, len] = VisitCharacters(*this, [](auto chars) {
     return internal::StrippedMatchedCharactersRange(chars,
                                                     SpaceOrNewlinePredicate());
@@ -614,15 +614,15 @@ scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
   return RemoveCharacters(Span16(), find_match);
 }
 
-scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
-                                             wtf_size_t length_to_remove) {
+scoped_refptr<StringImpl> StringImpl::Remove(size_type start,
+                                             size_type length_to_remove) {
   if (length_to_remove <= 0)
     return this;
   if (start >= length_)
     return this;
 
   length_to_remove = std::min(length_ - start, length_to_remove);
-  wtf_size_t removed_end = start + length_to_remove;
+  size_type removed_end = start + length_to_remove;
 
   return VisitCharacters(
       *this, [start, length_to_remove, removed_end](auto chars) {
@@ -788,41 +788,42 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   return true;
 }
 
-wtf_size_t StringImpl::Find(CharacterMatchFunctionPtr match_function,
-                            wtf_size_t start) const {
+StringImpl::size_type StringImpl::Find(CharacterMatchFunctionPtr match_function,
+                                       size_type start) const {
   if (Is8Bit())
     return blink::Find(Span8(), match_function, start);
   return blink::Find(Span16(), match_function, start);
 }
 
-wtf_size_t StringImpl::Find(base::RepeatingCallback<bool(UChar)> match_callback,
-                            wtf_size_t index) const {
-  return VisitCharacters(*this, [&](auto chars) {
+StringImpl::size_type StringImpl::Find(
+    base::RepeatingCallback<bool(UChar)> match_callback,
+    size_type index) const {
+  return VisitCharacters(*this, [&](auto chars) -> size_type {
     while (index < chars.size()) {
       if (match_callback.Run(chars[index])) {
         return index;
       }
       ++index;
     }
-    return kNotFound;
+    return npos;
   });
 }
 
-wtf_size_t StringImpl::Find(const StringView& match_string,
-                            wtf_size_t index) const {
+StringImpl::size_type StringImpl::Find(const StringView& match_string,
+                                       size_type index) const {
   return internal::Find(*this, match_string, index);
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
+ALWAYS_INLINE static string_size_t FindIgnoringCaseInternal(
     base::span<const SearchCharacterType> search,
     base::span<const MatchCharacterType> match,
-    wtf_size_t index) {
+    string_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = search.size() - match.size();
+  string_size_t delta = search.size() - match.size();
 
-  wtf_size_t i = 0;
+  string_size_t i = 0;
   const SearchCharacterType* search_data = search.data();
   // Keep looping until we match.
   // SAFETY: The `i == delta` check below guarantees the span is in `search`.
@@ -837,23 +838,23 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
   return index + i;
 }
 
-wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
+StringImpl::size_type StringImpl::DeprecatedFindIgnoringCase(
     const StringView& match_string,
-    wtf_size_t index) const {
+    size_type index) const {
   if (match_string.IsNull()) [[unlikely]] {
-    return kNotFound;
+    return npos;
   }
 
-  wtf_size_t match_length = match_string.length();
+  size_type match_length = match_string.length();
   if (!match_length)
     return std::min(index, length());
 
   // Check index & matchLength are in range.
   if (index > length())
-    return kNotFound;
-  wtf_size_t search_length = length() - index;
+    return npos;
+  size_type search_length = length() - index;
   if (match_length > search_length)
-    return kNotFound;
+    return npos;
 
   return VisitCharacters(*this, [&](auto chars) {
     auto split_chars = chars.subspan(index);
@@ -866,15 +867,15 @@ wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE static wtf_size_t FindIgnoringAsciiCaseInternal(
+ALWAYS_INLINE static string_size_t FindIgnoringAsciiCaseInternal(
     base::span<const SearchCharacterType> search,
     base::span<const MatchCharacterType> match,
-    wtf_size_t index) {
+    string_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = search.size() - match.size();
+  string_size_t delta = search.size() - match.size();
 
-  wtf_size_t i = 0;
+  string_size_t i = 0;
   const SearchCharacterType* search_data = search.data();
   // Keep looping until we match.
   // SAFETY: The `i == delta` check below guarantees the span is in `search`.
@@ -889,22 +890,23 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringAsciiCaseInternal(
   return index + i;
 }
 
-wtf_size_t StringImpl::FindIgnoringAsciiCase(const StringView& match_string,
-                                             wtf_size_t index) const {
+StringImpl::size_type StringImpl::FindIgnoringAsciiCase(
+    const StringView& match_string,
+    size_type index) const {
   if (match_string.IsNull()) [[unlikely]] {
-    return kNotFound;
+    return npos;
   }
 
-  wtf_size_t match_length = match_string.length();
+  size_type match_length = match_string.length();
   if (!match_length)
     return std::min(index, length());
 
   // Check index & matchLength are in range.
   if (index > length())
-    return kNotFound;
-  wtf_size_t search_length = length() - index;
+    return npos;
+  size_type search_length = length() - index;
   if (match_length > search_length)
-    return kNotFound;
+    return npos;
 
   return VisitCharacters(*this, [&](auto chars) {
     auto sub_span = chars.subspan(index);
@@ -915,20 +917,20 @@ wtf_size_t StringImpl::FindIgnoringAsciiCase(const StringView& match_string,
   });
 }
 
-wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
+StringImpl::size_type StringImpl::ReverseFind(UChar c, size_type index) const {
   if (Is8Bit())
     return internal::ReverseFind(Span8(), c, index);
   return internal::ReverseFind(Span16(), c, index);
 }
 
-wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
-                                   wtf_size_t index) const {
+StringImpl::size_type StringImpl::ReverseFind(const StringView& match_string,
+                                              size_type index) const {
   if (match_string.IsNull()) [[unlikely]] {
-    return kNotFound;
+    return npos;
   }
 
-  wtf_size_t match_length = match_string.length();
-  wtf_size_t our_length = length();
+  size_type match_length = match_string.length();
+  size_type our_length = length();
   if (!match_length)
     return std::min(index, our_length);
 
@@ -941,7 +943,7 @@ wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
 
   // Check index & matchLength are in range.
   if (match_length > our_length)
-    return kNotFound;
+    return npos;
 
   if (Is8Bit()) {
     if (match_string.Is8Bit())
@@ -1028,7 +1030,7 @@ bool StringImpl::DeprecatedEndsWithIgnoringCase(
     const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
-  wtf_size_t start_offset = length() - suffix.length();
+  size_type start_offset = length() - suffix.length();
   return VisitCharacters(*this, [&](auto chars) {
     auto split_chars = chars.subspan(start_offset);
     return suffix.Is8Bit()
@@ -1040,7 +1042,7 @@ bool StringImpl::DeprecatedEndsWithIgnoringCase(
 bool StringImpl::EndsWithIgnoringAsciiCase(const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
-  wtf_size_t start_offset = length() - suffix.length();
+  size_type start_offset = length() - suffix.length();
   return VisitCharacters(*this, [&](auto chars) {
     auto sub_span = chars.subspan(start_offset);
     return suffix.Is8Bit() ? EqualIgnoringAsciiCase(sub_span, suffix.Span8())
@@ -1052,8 +1054,9 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar old_c, UChar new_c) {
   if (old_c == new_c)
     return this;
 
-  if (Find(old_c) == kNotFound)
+  if (Find(old_c) == npos) {
     return this;
+  }
 
   if (Is8Bit()) {
     if (new_c <= 0xff) {
@@ -1081,8 +1084,8 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar old_c, UChar new_c) {
 // TODO(esprehn): Passing a null replacement is the same as empty string for
 // this method but all others treat null as a no-op. We should choose one
 // behavior.
-scoped_refptr<StringImpl> StringImpl::Replace(wtf_size_t position,
-                                              wtf_size_t length_to_replace,
+scoped_refptr<StringImpl> StringImpl::Replace(size_type position,
+                                              size_type length_to_replace,
                                               const StringView& string) {
   position = std::min(position, length());
   length_to_replace = std::min(length_to_replace, length() - position);
@@ -1090,7 +1093,7 @@ scoped_refptr<StringImpl> StringImpl::Replace(wtf_size_t position,
     return this;
   }
 
-  const wtf_size_t new_length = ComputeSizeAfterReplacement(
+  const size_type new_length = ComputeSizeAfterReplacement(
       length(), 1, length_to_replace, string.length());
 
   if (Is8Bit() && (string.IsNull() || string.Is8Bit())) {
@@ -1126,9 +1129,9 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar pattern,
     return this;
 
   // Count the matches.
-  wtf_size_t match_count = 0;
-  wtf_size_t search_index = 0;
-  while ((search_index = Find(pattern, search_index)) != kNotFound) {
+  size_type match_count = 0;
+  size_type search_index = 0;
+  while ((search_index = Find(pattern, search_index)) != npos) {
     ++match_count;
     ++search_index;
   }
@@ -1139,7 +1142,7 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar pattern,
   }
 
   // Construct the new data.
-  const wtf_size_t new_size = ComputeSizeAfterReplacement(
+  const size_type new_size = ComputeSizeAfterReplacement(
       length_, match_count, 1, replacement.length());
 
   if (Is8Bit() && replacement.Is8Bit()) {
@@ -1170,9 +1173,9 @@ void StringImpl::DoReplace(base::span<const SrcCharType> src,
                            UChar pattern,
                            base::span<const ReplacementCharType> replacement,
                            base::span<DestCharType> dest) const {
-  wtf_size_t src_segment_end;
-  wtf_size_t src_segment_start = 0;
-  while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
+  size_type src_segment_end;
+  size_type src_segment_start = 0;
+  while ((src_segment_end = Find(pattern, src_segment_start)) != npos) {
     auto src_before =
         src.subspan(src_segment_start, src_segment_end - src_segment_start);
 
@@ -1195,9 +1198,9 @@ scoped_refptr<StringImpl> StringImpl::Replace(const StringView& pattern,
   }
 
   // Count the matches.
-  wtf_size_t match_count = 0;
-  wtf_size_t search_index = 0;
-  while ((search_index = Find(pattern, search_index)) != kNotFound) {
+  size_type match_count = 0;
+  size_type search_index = 0;
+  while ((search_index = Find(pattern, search_index)) != npos) {
     ++match_count;
     search_index += pattern.length();
   }
@@ -1207,7 +1210,7 @@ scoped_refptr<StringImpl> StringImpl::Replace(const StringView& pattern,
     return this;
 
   // Construct the new data.
-  const wtf_size_t new_size = ComputeSizeAfterReplacement(
+  const size_type new_size = ComputeSizeAfterReplacement(
       length_, match_count, pattern.length(), replacement.length());
 
   // There are 4 cases:
@@ -1234,9 +1237,9 @@ template <typename DestCharType>
 void StringImpl::DoReplace(const StringView& pattern,
                            const StringView& replacement,
                            base::span<DestCharType> dest) const {
-  wtf_size_t src_segment_end;
-  wtf_size_t src_segment_start = 0;
-  while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
+  size_type src_segment_end;
+  size_type src_segment_start = 0;
+  while ((src_segment_end = Find(pattern, src_segment_start)) != npos) {
     const StringView source_before(*this, src_segment_start,
                                    src_segment_end - src_segment_start);
 
@@ -1257,8 +1260,8 @@ scoped_refptr<StringImpl> StringImpl::UpconvertedString() {
 
 static inline bool StringImplContentEqual(const StringImpl* a,
                                           const StringImpl* b) {
-  wtf_size_t a_length = a->length();
-  wtf_size_t b_length = b->length();
+  string_size_t a_length = a->length();
+  string_size_t b_length = b->length();
   if (a_length != b_length)
     return false;
 
@@ -1308,7 +1311,7 @@ template <typename StringType>
 UNSAFE_BUFFER_USAGE bool EqualToCString(const StringType* a, const LChar* b) {
   DCHECK(b);
   return VisitCharacters(*a, [b](auto chars) {
-    for (wtf_size_t i = 0; auto ac : chars) {
+    for (string_size_t i = 0; auto ac : chars) {
       LChar bc = b[i++];
       if (!bc || ac != bc) {
         return false;
