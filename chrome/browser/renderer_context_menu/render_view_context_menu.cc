@@ -1722,8 +1722,15 @@ void RenderViewContextMenu::AppendLinkItems() {
           IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
           in_app ? IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP
                  : IDS_CONTENT_CONTEXT_OPENLINKNEWTAB);
+    }
+
+    if (show_open_in_new_window) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                                      IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+    }
 
 #if !BUILDFLAG(IS_ANDROID)
+    if (show_open_in_new_tab) {
       // Opening a link in split view should also go through the same
       // constraints as opening a link in a new tab since a split view tab is a
       // new tab that is then joined with the current active tab.
@@ -1751,14 +1758,8 @@ void RenderViewContextMenu::AppendLinkItems() {
         menu_model_.SetElementIdentifierAt(command_index,
                                            kOpenLinkInSplitMenuItem);
       }
-
+    }
 #endif
-    }
-
-    if (show_open_in_new_window) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                                      IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
-    }
 
     if (params_.link_url.is_valid()) {
       AppendProtocolHandlerSubMenu();
