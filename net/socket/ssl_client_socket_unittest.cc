@@ -578,15 +578,14 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
  private:
   void OnComplete(int result) {
     if (socket_) {
-      delete socket_;
-      socket_ = nullptr;
+      delete socket_.ExtractAsDangling();
     } else {
       ADD_FAILURE() << "Deleting socket twice";
     }
     SetResult(result);
   }
 
-  raw_ptr<StreamSocket, DanglingUntriaged> socket_;
+  raw_ptr<StreamSocket> socket_;
 };
 
 class MockSCTAuditingDelegate : public SCTAuditingDelegate {
@@ -788,7 +787,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   RecordingNetLogObserver log_observer_;
-  raw_ptr<ClientSocketFactory, DanglingUntriaged> socket_factory_;
+  raw_ptr<ClientSocketFactory> socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<ParamRecordingMockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
@@ -920,6 +919,13 @@ class SSLClientSocketReadTest
               socket_factory_);
       socket_factory_ = wrapped_socket_factory_.get();
     }
+  }
+
+  ~SSLClientSocketReadTest() override {
+    // `socket_factory_` is a member in the base class and destroyed after
+    // `wrapped_socket_factory_` so manually clear it now to avoid dangling
+    // references.
+    socket_factory_ = nullptr;
   }
 
   // Convienient wrapper to call Read()/ReadIfReady() depending on whether
