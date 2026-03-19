@@ -32,10 +32,6 @@ inline constexpr char kGlicSelectionHotkey[] = "glic.selection_hotkey";
 // hotkey for toggling focus between Glic and the browser window.
 inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";
 
-// String pref that keeps track of whether any loaded profile is, or has ever
-// been, of a subscription tier that should enable multi-instance.
-inline constexpr char kGlicMultiInstanceEnabledBySubscriptionTier[] =
-    "glic.multi_instance_enabled_by_tier";
 
 // String prefs that keep track of user-configured Glic guest URL presets for
 // different environments.

@@ -1008,6 +1008,10 @@ constexpr char kTabDeclutterUsageCount[] = "tab_declutter.usage_count";
 // Deprecated 03/2026.
 inline constexpr char kTabSearchTabIndex[] = "tab_search.tab_index";
 
+// Deprecated 03/2026.
+constexpr char kGlicMultiInstanceEnabledBySubscriptionTier[] =
+    "glic.multi_instance_enabled_by_tier";
+
 // Deprecated 03/2026
 constexpr char kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref[] =
     "UnoDesktopBookmarksEnabledInAccountFromBubbleGroup";
@@ -1111,6 +1115,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
   registry->RegisterStringPref(kPrivacyBudgetSeenSurfaces, std::string());
   registry->RegisterStringPref(kPrivacyBudgetSelectedOffsets, std::string());
+
+  // Deprecated 03/2026.
+  registry->RegisterBooleanPref(kGlicMultiInstanceEnabledBySubscriptionTier,
+                                false);
   registry->RegisterIntegerPref(kPrivacyBudgetSelectedBlock, -1);
   registry->RegisterDoublePref(kPrivacyBudgetMetaExperimentActivationSalt, 0);
 
@@ -2448,6 +2456,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
     }
     local_state->ClearPref(kProfilesDeletedOld);
   }
+
+  // Added 03/2026.
+  local_state->ClearPref(kGlicMultiInstanceEnabledBySubscriptionTier);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

@@ -949,14 +949,6 @@ const char kGlicAlwaysShowWebActuationToggle[] =
 // panel, as a space-separated list.
 const char kGlicAdminRedirectPatterns[] = "glic-admin-redirect-patterns";
 
-// Reset local state pref kGlicMultiInstanceEnabledBySubscriptionTier to false.
-// Intended for manual testing only.
-const char kGlicResetMultiInstanceEnabledByTier[] =
-    "glic-reset-mi-enabled-by-tier";
-
-// Override actual AI subscription tier by forcing G1 status, specifically for
-// multi-instance enablement. Intended for manual testing only.
-const char kGlicForceG1StatusForMultiInstance[] = "glic-force-g1-for-mi";
 
 // Configure preset guest URLs for manual testing. These are saved to local
 // state prefs and can be selected to override the default glic guest URL

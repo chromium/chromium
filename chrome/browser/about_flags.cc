@@ -3960,13 +3960,6 @@ const FeatureEntry::FeatureVariation kGlicTrustFirstOnboardingVariations[] = {
     {"- Arm 3: In-Flow opt-in", kGlicTrustFirstOnboardingArm3Params, nullptr},
 };
 
-const FeatureEntry::Choice kGlicSetG1ForMultiInstance[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Force G1 status", switches::kGlicForceG1StatusForMultiInstance, "true"},
-    {"Force non-G1 status", switches::kGlicForceG1StatusForMultiInstance,
-     "false"},
-};
-
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
     {"glic-guest-url-preset-type", "0"}};
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeStaging[] = {
@@ -10855,17 +10848,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicDefaultTabContextSettingName,
      flag_descriptions::kGlicDefaultTabContextSettingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicDefaultTabContextSetting)},
-
-    {"glic-reset-mi-enablement-by-tier",
-     flag_descriptions::kGlicResetMultiInstanceEnabledByTierName,
-     flag_descriptions::kGlicResetMultiInstanceEnabledByTierDescription,
-     kOsDesktop,
-     SINGLE_VALUE_TYPE(switches::kGlicResetMultiInstanceEnabledByTier)},
-
-    {"glic-set-g1-for-mi",
-     flag_descriptions::kGlicForceG1StatusForMultiInstanceName,
-     flag_descriptions::kGlicForceG1StatusForMultiInstanceDescription,
-     kOsDesktop, MULTI_VALUE_TYPE(kGlicSetG1ForMultiInstance)},
 
     {"glic-guest-url-presets", flag_descriptions::kGlicGuestUrlPresetsName,
      flag_descriptions::kGlicGuestUrlPresetsDescription, kOsDesktop,

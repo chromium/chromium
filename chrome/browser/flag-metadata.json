@@ -5429,28 +5429,12 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-reset-mi-enablement-by-tier",
-    "owners": [
-      "cuianthony@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-selection-prompt",
     "owners": [
       "gklassen@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "glic-set-g1-for-mi",
-    "owners": [
-      "cuianthony@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "glic-share-image",

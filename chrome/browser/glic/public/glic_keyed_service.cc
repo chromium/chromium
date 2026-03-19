@@ -125,13 +125,6 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     GlicKeyedService* glic_service,
     GlicEnabling* glic_enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service) {
-  // Update the eligibility state for future runs of Chrome in case this
-  // newly loaded profile was not captured in the initial eligibility check.
-  // This will not affect the multi-instance eligibiltiy state of the current
-  // run.
-  GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
-      profile);
-
 #if !BUILDFLAG(IS_ANDROID)
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicWindowControllerImpl>(

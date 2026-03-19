@@ -1517,17 +1517,6 @@ inline constexpr char kGlicUseNonClientName[] = "Glic Use NonClientView";
 inline constexpr char kGlicUseNonClientDescription[] =
     "Renders the window using NonClientView/FrameView which grants the window "
     "access to standard window management features on ChromeOS.";
-inline constexpr char kGlicResetMultiInstanceEnabledByTierName[] =
-    "Glic Reset Multi-Instance Enablement By Tier";
-inline constexpr char kGlicResetMultiInstanceEnabledByTierDescription[] =
-    "Resets the local state boolean pref that tracks whether multi-instance "
-    "has been enabled based on subscription tier to false. Intended for "
-    "testing only.";
-inline constexpr char kGlicForceG1StatusForMultiInstanceName[] =
-    "Glic Force G1 Status for Multi-Instance";
-inline constexpr char kGlicForceG1StatusForMultiInstanceDescription[] =
-    "Overrides actual AI subscription tier by forcing G1 status, specifically "
-    "for multi-instance enablement. Intended for testing only.";
 inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
 inline constexpr char kGlicGuestUrlPresetsDescription[] =
     "Overrides the Bluebird environment URL used for Glic with user-configured "
