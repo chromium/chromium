@@ -9,6 +9,18 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 
+// The types of button for which a menu can be provided.
+typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
+  ToolbarButtonTypeBack,
+  ToolbarButtonTypeForward,
+  ToolbarButtonTypeReload,
+  ToolbarButtonTypeStop,
+  ToolbarButtonTypeShare,
+  ToolbarButtonTypeAssistantButton,
+  ToolbarButtonTypeTabGrid,
+  ToolbarButtonTypeTools,
+};
+
 // Protocol for implementing the toolbar view.
 @protocol ToolbarConsumer <NSObject>
 
@@ -26,6 +38,9 @@
 
 // Sets whether the toolbar is visible.
 - (void)setVisible:(BOOL)visible;
+
+// Sets the context menu for the Toolbar button with `buttonType`.
+- (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType;
 
 // Sets whether the location indicator should be visible.
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible

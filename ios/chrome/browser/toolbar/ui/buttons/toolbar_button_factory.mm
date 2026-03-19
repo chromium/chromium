@@ -118,6 +118,8 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
 }
 
 - (ToolbarButton*)makeAssistantButton {
+  /// TODO(crbug.com/493956100): Update the icon for the Assistant button in the
+  /// toolbar.
   ToolbarButton* button =
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       [self toolbarButtonForImageNamed:kGeminiBrandedLogoSymbol

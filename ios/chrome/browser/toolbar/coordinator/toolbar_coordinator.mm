@@ -1120,6 +1120,7 @@
       initWithWebStateList:browser->GetWebStateList()
       fullscreenController:FullscreenController::FromBrowser(browser)
                topPosition:topPosition];
+  toolbarMediator.incognito = self.profile->IsOffTheRecord();
   toolbarMediator.navigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(browser);
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -37,10 +38,13 @@ constexpr CGFloat kAnimationDuration = 0.2f;
 
 @implementation ToolbarViewController {
   ToolbarButton* _backButton;
+  UIMenu* _backButtonMenu;
   ToolbarButton* _forwardButton;
+  UIMenu* _forwardButtonMenu;
   ToolbarButton* _reloadButton;
   ToolbarButton* _stopButton;
   ToolbarButton* _shareButton;
+  ToolbarButton* _assistantButton;
   ToolbarButton* _tabGridButton;
   ToolbarButton* _toolsMenuButton;
 
@@ -204,6 +208,32 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
+- (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType {
+  switch (buttonType) {
+    case ToolbarButtonTypeBack:
+      _backButtonMenu = menu;
+      _backButton.menu = menu;
+      return;
+    case ToolbarButtonTypeForward:
+      _forwardButtonMenu = menu;
+      _forwardButton.menu = menu;
+      return;
+    case ToolbarButtonTypeReload:
+    case ToolbarButtonTypeStop:
+    case ToolbarButtonTypeShare:
+    case ToolbarButtonTypeAssistantButton:
+      /// TODO(crbug.com/484000556): Add a context menu for the assistant button
+      /// when it is implemented (iPad).
+    case ToolbarButtonTypeTabGrid:
+      /// TODO(crbug.com/493948951): Add a context menu for the tab grid button
+      /// (iPad).
+    case ToolbarButtonTypeTools:
+      NOTIMPLEMENTED() << "This button does not have a context menu";
+      return;
+  }
+  NOTREACHED();
+}
+
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
                     forNotification:(NSNotification*)notification {
   if (locationIndicatorVisible) {
@@ -358,10 +388,12 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
   _backButton = [self.buttonFactory makeBackButton];
+  _backButton.menu = _backButtonMenu;
   [_backButton addTarget:self
                   action:@selector(backButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
   _forwardButton = [self.buttonFactory makeForwardButton];
+  _forwardButton.menu = _forwardButtonMenu;
   [_forwardButton addTarget:self
                      action:@selector(forwardButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
@@ -380,6 +412,10 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   [_shareButton addTarget:self
                    action:@selector(shareButtonTapped:)
          forControlEvents:UIControlEventTouchUpInside];
+  _assistantButton = [self.buttonFactory makeAssistantButton];
+  [_assistantButton addTarget:self
+                       action:@selector(assistantButtonTapped)
+             forControlEvents:UIControlEventTouchUpInside];
   _tabGridButton = [self.buttonFactory makeTabGridButton];
   [_tabGridButton addTarget:self
                      action:@selector(tabGridTouchDown)
@@ -412,7 +448,7 @@ constexpr CGFloat kAnimationDuration = 0.2f;
     _stopButton,
   ]];
   _trailingStackView = [self makeStackViewWithButtons:@[
-    _shareButton, _tabGridButton, _toolsMenuButton
+    _shareButton, _assistantButton, _tabGridButton, _toolsMenuButton
   ]];
 
   [self.view addSubview:_leadingStackView];
@@ -513,6 +549,12 @@ constexpr CGFloat kAnimationDuration = 0.2f;
 // Handles share button tap.
 - (void)shareButtonTapped:(UIView*)sender {
   [self.activityServiceHandler showShareSheetFromShareButton:sender];
+}
+
+// Handles assistant button tap.
+- (void)assistantButtonTapped {
+  /// TODO(crbug.com/493956100): Implement this button (iPad).
+  NOTIMPLEMENTED();
 }
 
 // Handles tools menu button tap.
