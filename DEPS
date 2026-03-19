@@ -2174,9 +2174,21 @@ deps = {
   'src/third_party/googletest/src':
     Var('chromium_git') + '/external/github.com/google/googletest.git' + '@' + Var('googletest_revision'),
 
+  # TODO: crbug.com/431264806 - Switch to CIPD package for Windows builds.
   'src/third_party/gperf': {
       'url': Var('chromium_git') + '/chromium/deps/gperf.git' + '@' + 'e9eeea862a18e77b945d98eff7e1bf065d3daf8e',
       'condition': 'checkout_win',
+  },
+
+  'src/third_party/gperf/cipd': {
+      'packages': [
+        {
+          'package': 'infra/3pp/tools/gperf/${{platform}}',
+          'version': 'version:3@3.2',
+        },
+      ],
+      'condition': 'host_os == "linux"',
+      'dep_type': 'cipd',
   },
 
   'src/third_party/cardboard/src' : {

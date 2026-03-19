@@ -104,6 +104,7 @@ blink_python_runner("runtime_feature_state_override_context") {
 
 blink_python_runner("color_data") {
   script = "../build/scripts/gperf.py"
+  sources = [ gperf_exe ]
 
   color_data_gperf = "color_data.gperf"
   inputs = [
@@ -115,7 +116,7 @@ blink_python_runner("color_data") {
   outputs = [ output_file ]
 
   args = [
-    gperf_exe,
+    rebase_path(gperf_exe, root_build_dir),
     "--key-positions=*",
     "-D",
     "-s",
