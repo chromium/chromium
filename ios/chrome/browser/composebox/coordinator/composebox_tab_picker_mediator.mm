@@ -116,9 +116,13 @@
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
   CHECK_EQ(self.modeHolder.mode, TabGridMode::kSelection);
   CHECK_EQ(itemID.type, GridItemType::kTab);
+  Browser* browser = self.browser;
   if ([self attachmentLimitReached:itemID]) {
+    if (!browser) {
+      return;
+    }
     ComposeboxSnackbarPresenter* snackbar =
-        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:browser];
 
     if (EnableComposeboxServerSideState()) {
       [snackbar showSnackbarForTabAttachmentLimit:[_tabsAttachmentDelegate
@@ -126,42 +130,42 @@
     } else {
       [snackbar showSnackbarForAttachmentLimit:kAttachmentLimit];
     }
+    [snackbar stop];
 
     return;
   }
 
-    web::WebState* webState = GetWebState(
-        self.webStateList,
-        WebStateSearchCriteria{
-            .identifier = itemID.tabSwitcherItem.identifier,
-            .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
-    // If the tab's APC is cached avoid updating the snapshot.
-    BOOL cached =
-        webState && _validAPCwebStatesIDs.contains(base::NumberToString(
-                        webState->GetUniqueIdentifier().identifier()));
-    if (webState && !webState->IsRealized() && !cached) {
-      // If the web state is not realized, force it to realize in order to have
-      // the latest content and updated snapshot.
-      __weak ComposeboxTabPickerMediator* weakSelf = self;
-      [_webStateDeferredExecutor
-                     webState:webState
-          executeOnceRealized:^{
-            [weakSelf
-                cancelPlaceholderForRealizedWebState:webState->GetWeakPtr()];
-          }];
-      // Defer snapshot update and item reconfiguration until the web state is
-      // fully loaded.
-      [_webStateDeferredExecutor webState:webState
-                        executeOnceLoaded:^(BOOL success) {
-                          if (!success) {
-                            [weakSelf handleFailedTabLoad:itemID];
-                            return;
-                          }
-                          [weakSelf
-                              updateSnapshotForWebState:webState->GetWeakPtr()
-                                                 itemID:itemID];
-                        }];
-    }
+  web::WebState* webState = GetWebState(
+      self.webStateList,
+      WebStateSearchCriteria{
+          .identifier = itemID.tabSwitcherItem.identifier,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
+  // If the tab's APC is cached avoid updating the snapshot.
+  BOOL cached = webState && _validAPCwebStatesIDs.contains(base::NumberToString(
+                                webState->GetUniqueIdentifier().identifier()));
+  if (webState && !webState->IsRealized() && !cached) {
+    // If the web state is not realized, force it to realize in order to have
+    // the latest content and updated snapshot.
+    __weak ComposeboxTabPickerMediator* weakSelf = self;
+    [_webStateDeferredExecutor
+                   webState:webState
+        executeOnceRealized:^{
+          [weakSelf
+              cancelPlaceholderForRealizedWebState:webState->GetWeakPtr()];
+        }];
+    // Defer snapshot update and item reconfiguration until the web state is
+    // fully loaded.
+    [_webStateDeferredExecutor webState:webState
+                      executeOnceLoaded:^(BOOL success) {
+                        if (!success) {
+                          [weakSelf handleFailedTabLoad:itemID];
+                          return;
+                        }
+                        [weakSelf
+                            updateSnapshotForWebState:webState->GetWeakPtr()
+                                               itemID:itemID];
+                      }];
+  }
   [super userTappedOnItemID:itemID];
 }
 
@@ -342,9 +346,13 @@
 
 /// Handles the scenario where a tab fails to load.
 - (void)handleFailedTabLoad:(GridItemIdentifier*)itemID {
-  ComposeboxSnackbarPresenter* snackbar =
-      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
-  [snackbar showCannotReloadTabError];
+  Browser* browser = self.browser;
+  if (browser) {
+    ComposeboxSnackbarPresenter* snackbar =
+        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+    [snackbar showCannotReloadTabError];
+    [snackbar stop];
+  }
   [_failedLoadedItemIDs addObject:itemID];
   [self removeFromSelectionItemID:itemID];
   [self reconfigureGridItem:itemID];

@@ -36,6 +36,10 @@ class Browser;
 // Dismisses all presented snackbars.
 - (void)dismissAllSnackbars;
 
+// Informs the presenter it won’t be used anymore.
+// It does not stops the currently displayed snackbars.
+- (void)stop;
+
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

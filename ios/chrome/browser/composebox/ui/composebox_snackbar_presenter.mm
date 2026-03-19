@@ -18,9 +18,14 @@
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   if ((self = [super init])) {
+    CHECK(browser, base::NotFatalUntil::M155);
     _browser = browser;
   }
   return self;
+}
+
+- (void)stop {
+  _browser = nil;
 }
 
 - (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
