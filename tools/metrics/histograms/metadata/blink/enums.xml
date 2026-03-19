@@ -8897,11 +8897,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="424" label="DRAFT_InstallElement"/>
   <int value="425" label="LanguageDetector"/>
   <int value="426" label="Translator"/>
-  <int value="427" label="DRAFT_WebMCP"/>
+  <int value="427" label="NavigatorModelcontext"/>
   <int value="428" label="DRAFT_LoadingLazyMedia"/>
   <int value="429" label="ManifestLocalization"/>
   <int value="430" label="ContrastColor"/>
   <int value="431" label="DRAFT_WebAppMigration"/>
+  <int value="432" label="DeclarativeWebmcp"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

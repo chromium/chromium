@@ -474,9 +474,10 @@ GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kRewriter_RewriteStreaming, WebDXFeature::kRewriter},
           {WebFeature::kWriter_Write, WebDXFeature::kWriter},
           {WebFeature::kWriter_WriteStreaming, WebDXFeature::kWriter},
-          {WebFeature::kModelContextRegisterTool, WebDXFeature::kDRAFT_WebMCP},
+          {WebFeature::kModelContextRegisterTool,
+           WebDXFeature::kNavigatorModelcontext},
           {WebFeature::kModelContextRegisterDeclarativeTool,
-           WebDXFeature::kDRAFT_WebMCP},
+           WebDXFeature::kDeclarativeWebmcp},
           // Add new features above this line.
       }};
 
