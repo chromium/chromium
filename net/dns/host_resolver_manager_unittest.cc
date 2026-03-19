@@ -7363,9 +7363,9 @@ TEST_F(HostResolverManagerDnsTest, NotFoundTtl) {
   set_allow_fallback_to_systemtask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   // NODATA
   ResolveHostResponseHelper no_data_response(resolver_->CreateRequest(
@@ -12974,9 +12974,9 @@ TEST_F(HostResolverManagerDnsTest, SortFailure) {
   mock_dns_client_->SetAddressSorterForTesting(std::move(sorter));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13040,9 +13040,9 @@ TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
   mock_dns_client_->SetAddressSorterForTesting(std::move(sorter));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13137,9 +13137,9 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsTransactions) {
 
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair("ok", 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13187,9 +13187,9 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsAliasChains) {
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13253,9 +13253,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13315,9 +13315,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13372,9 +13372,9 @@ TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostCache) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13414,9 +13414,9 @@ TEST_F(HostResolverManagerDnsTest, PartialNetworkErrorsNotSavedInHostCache) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13462,9 +13462,9 @@ TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostResolverCache) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13504,9 +13504,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13563,9 +13563,9 @@ TEST_F(HostResolverManagerDnsTest, MalformedResponsesNotSavedInHostCache) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13605,9 +13605,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13651,9 +13651,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13692,9 +13692,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
@@ -13759,9 +13759,9 @@ TEST_F(HostResolverManagerDnsTest, HttpToHttpsUpgradeSavedInHostCache) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(
       resolver_->CreateRequest(url::SchemeHostPort(url::kHttpScheme, kHost, 80),
@@ -13819,9 +13819,9 @@ TEST_F(HostResolverManagerDnsTest,
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   set_allow_fallback_to_systemtask(false);
 
-  const SchemefulSite kSite(GURL("https://site.test/"));
+  SchemefulSite site(GURL("https://site.test/"));
   const auto kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateSameSite(kSite);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   ResolveHostResponseHelper response(
       resolver_->CreateRequest(url::SchemeHostPort(url::kHttpScheme, kHost, 80),

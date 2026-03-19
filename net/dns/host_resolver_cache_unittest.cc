@@ -1017,12 +1017,12 @@ TEST_F(HostResolverCacheTest, RespectsNetworkAnonymizationKey) {
       /*strings=*/std::vector<std::string>{},
       /*hosts=*/std::vector<HostPortPair>{});
 
-  const SchemefulSite kSite1(GURL("https://site1.test/"));
+  SchemefulSite site1(GURL("https://site1.test/"));
   const auto kNetworkAnonymizationKey1 =
-      NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const SchemefulSite kSite2(GURL("https://site2.test/"));
+      NetworkAnonymizationKey::CreateSameSite(std::move(site1));
+  SchemefulSite site2(GURL("https://site2.test/"));
   const auto kNetworkAnonymizationKey2 =
-      NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site2));
 
   cache.Set(std::move(result1), kNetworkAnonymizationKey1,
             HostResolverSource::DNS,

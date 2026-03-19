@@ -1495,12 +1495,12 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
-  const SchemefulSite kSiteFoo(GURL("http://foo.test/"));
-  const SchemefulSite kSiteBar(GURL("http://bar.test/"));
+  SchemefulSite site_foo(GURL("http://foo.test/"));
+  SchemefulSite site_bar(GURL("http://bar.test/"));
   const auto kNetworkAnonymizationKey1 =
-      NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site_foo));
   const auto kNetworkAnonymizationKey2 =
-      NetworkAnonymizationKey::CreateSameSite(kSiteBar);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site_bar));
 
   session_key_ = QuicSessionKey(
       kServerHostname, kServerPort, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),

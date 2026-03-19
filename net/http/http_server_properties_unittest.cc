@@ -102,10 +102,10 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
 
     SchemefulSite site1(GURL("https://foo.test/"));
     network_anonymization_key1_ =
-        NetworkAnonymizationKey::CreateSameSite(site1);
+        NetworkAnonymizationKey::CreateSameSite(std::move(site1));
     SchemefulSite site2(GURL("https://bar.test/"));
     network_anonymization_key2_ =
-        NetworkAnonymizationKey::CreateSameSite(site2);
+        NetworkAnonymizationKey::CreateSameSite(std::move(site2));
   }
 
   // This is a little awkward, but need to create and configure the

@@ -763,10 +763,10 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
 // Do a lookup with a NetworkIsolationKey, and then make sure the entry added to
 // the cache is in fact using that NetworkIsolationKey.
 TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
-  const SchemefulSite kSite(GURL("https://origin.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
-  auto kNetworkAnonymizationKey =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite);
+  SchemefulSite site(GURL("https://origin.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey(site, site);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

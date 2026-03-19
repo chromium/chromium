@@ -351,12 +351,12 @@ TEST(HttpAuthCacheTest, SeparateByTarget) {
 // treated separately if |key_entries_by_network_anonymization_key| is set to
 // true.
 TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
-  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  SchemefulSite site1(GURL("https://foo.test/"));
   auto kNetworkAnonymizationKey1 =
-      NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const SchemefulSite kSite2(GURL("https://bar.test/"));
+      NetworkAnonymizationKey::CreateSameSite(std::move(site1));
+  SchemefulSite site2(GURL("https://bar.test/"));
   auto kNetworkAnonymizationKey2 =
-      NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site2));
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";
@@ -459,12 +459,12 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
 // Make sure added proxy credentials ignore NetworkAnonymizationKey, even if if
 // |key_entries_by_network_anonymization_key| is set to true.
 TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkAnonymizationKey) {
-  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  SchemefulSite site1(GURL("https://foo.test/"));
   auto kNetworkAnonymizationKey1 =
-      NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const SchemefulSite kSite2(GURL("https://bar.test/"));
+      NetworkAnonymizationKey::CreateSameSite(std::move(site1));
+  SchemefulSite site2(GURL("https://bar.test/"));
   auto kNetworkAnonymizationKey2 =
-      NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(std::move(site2));
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";

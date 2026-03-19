@@ -35,9 +35,9 @@ class BrokenAlternativeServicesTest
     SchemefulSite site1(GURL("http://foo.test"));
     SchemefulSite site2(GURL("http://bar.test"));
     network_anonymization_key1_ =
-        NetworkAnonymizationKey::CreateSameSite(site1);
+        NetworkAnonymizationKey::CreateSameSite(std::move(site1));
     network_anonymization_key2_ =
-        NetworkAnonymizationKey::CreateSameSite(site2);
+        NetworkAnonymizationKey::CreateSameSite(std::move(site2));
   }
 
   // BrokenAlternativeServices::Delegate implementation
