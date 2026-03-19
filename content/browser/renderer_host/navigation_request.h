@@ -1962,11 +1962,9 @@ class CONTENT_EXPORT NavigationRequest
   void CommitPageActivation();
 
   // Checks whether this navigation is allowed based on the connection
-  // allowlist header, if present. This method can have two side effects:
+  // allowlist header, if present. Side effect:
   // - If a CA is configured to send reports and the request violates the CA,
   //   a report will be sent.
-  // - If CA is checked, the navigation request's
-  //  connection_allowlists_blocks_redirect_ will be set accordingly.
   bool IsAllowedByConnectionAllowlist(bool is_redirect);
 
   // Checks if the specified CSP context's relevant CSP directive
@@ -3437,11 +3435,6 @@ class CONTENT_EXPORT NavigationRequest
   // Set if there has been any cross-origin redirects in the lifetime of this
   // request.
   bool did_encounter_cross_origin_redirect_ = false;
-
-  // This field is checked to see if server-side redirects should be blocked.
-  // It is only used if Connection allowlists were consulted when this
-  // navigation started.
-  bool connection_allowlists_blocks_redirect_ = false;
 
   // A scoped reference on the ViewTransition resources generated for this
   // navigation. This is set after we received the cached results from the old

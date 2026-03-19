@@ -7477,8 +7477,12 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   }
 
   // Perform functional checks (redirects, same-document, local URLs) only after
-  // confirming the feature is active for this initiator.
-  if (is_redirect && connection_allowlists_blocks_redirect_) {
+  // confirming the feature is active for this initiator. Note:
+  // redirect_behavior defaults to kBlock if not explicitly set in the
+  // Connection-Allowlist header.
+  if (is_redirect &&
+      policies->connection_allowlists.enforced->redirect_behavior ==
+          network::ConnectionAllowlist::RedirectBehavior::kBlock) {
     // TODO(crbug.com/447954811): Implement reporting.
     return false;
   }
@@ -7508,11 +7512,6 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   if (network::ConnectionAllowlistMatchesUrl(
           policies->connection_allowlists.enforced.value(),
           common_params_->url)) {
-    // Default-block any server-side redirects.
-    // TODO(crbug.com/447954811): Implement allowing server-side redirects
-    // based on an attribute. Consider not having a bool on the
-    // NavigationRequest as part of that change.
-    connection_allowlists_blocks_redirect_ = true;
     return true;
   }
 
