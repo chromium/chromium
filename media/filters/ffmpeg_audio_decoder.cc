@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -89,10 +90,18 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   InitCB bound_init_cb = BindCallbackIfNeeded(std::move(init_cb));
 
   if (config.is_encrypted()) {
+    // FFmpegAudioDecoder does not support encrypted content.
     std::move(bound_init_cb)
-        .Run(DecoderStatus(
-            DecoderStatus::Codes::kUnsupportedEncryptionMode,
-            "FFmpegAudioDecoder does not support encrypted content"));
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedEncryptionMode));
+    return;
+  }
+
+  if (config.codec() == AudioCodec::kOpus &&
+      base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
+    // FFmpegAudioDecoder does not support Opus when this flag is enabled.
+    // OpusAudioDecoder should be used instead.
+    std::move(bound_init_cb)
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
     return;
   }
 

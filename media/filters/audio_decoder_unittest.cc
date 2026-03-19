@@ -36,6 +36,7 @@
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
+#include "media/filters/opus_audio_decoder.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,13 +145,14 @@ class AudioDecoderTest
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
-
+      case AudioDecoderType::kOpus:
+        decoder_ = std::make_unique<OpusAudioDecoder>();
+        break;
 #if BUILDFLAG(ENABLE_SYMPHONIA)
       case AudioDecoderType::kSymphonia:
         decoder_ = std::make_unique<SymphoniaAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
-
 #endif
 #if BUILDFLAG(IS_ANDROID)
       case AudioDecoderType::kMediaCodec:
@@ -462,16 +464,31 @@ constexpr DataExpectations kBearOpusExpectations = {{
     {14000, 10000, "0.10,0.24,0.23,0.04,-0.14,-0.23,"},
 }};
 
-// Test params to test decoder reinitialization. Choose opus because it is
-// supported on all platforms we test on.
-constexpr TestParams kReinitializeTestParams = {
+constexpr TestParams kSfxOpusParams = {
+    AudioCodec::kOpus,
+    "sfx-opus.ogg",
+    {{
+        {0, 13500, "-2.70,-1.41,-0.78,-1.27,-2.56,-3.73,"},
+        {13500, 20000, "5.48,5.93,6.05,5.83,5.54,5.46,"},
+        {33500, 20000, "-3.44,-3.34,-3.57,-4.11,-4.74,-5.13,"},
+    }},
+    -312,
+    48000,
+    CHANNEL_LAYOUT_MONO};
+
+constexpr TestParams kBearOpusParams = {
     AudioCodec::kOpus,    "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
     CHANNEL_LAYOUT_STEREO};
 
+constexpr TestParams kOpusTestParams[] = {kSfxOpusParams, kBearOpusParams};
+
+// Test params to test decoder reinitialization. Choose opus because it is
+// supported on all platforms we test on.
+constexpr const TestParams& kReinitializeTestParams = kBearOpusParams;
+
 #if BUILDFLAG(IS_ANDROID)
 constexpr TestParams kMediaCodecTestParams[] = {
-    {AudioCodec::kOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
-     CHANNEL_LAYOUT_STEREO},
+    kBearOpusParams,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {AudioCodec::kAAC,
      "sfx.adts",
@@ -617,18 +634,8 @@ constexpr TestParams kFFmpegTestParams[] = {
      -704,
      44100,
      CHANNEL_LAYOUT_STEREO},
-    {AudioCodec::kOpus,
-     "sfx-opus.ogg",
-     {{
-         {0, 13500, "-2.70,-1.41,-0.78,-1.27,-2.56,-3.73,"},
-         {13500, 20000, "5.48,5.93,6.05,5.83,5.54,5.46,"},
-         {33500, 20000, "-3.44,-3.34,-3.57,-4.11,-4.74,-5.13,"},
-     }},
-     -312,
-     48000,
-     CHANNEL_LAYOUT_MONO},
-    {AudioCodec::kOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
-     CHANNEL_LAYOUT_STEREO},
+    kSfxOpusParams,
+    kBearOpusParams,
 };
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
@@ -791,6 +798,11 @@ INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kFFmpeg),
                                  ValuesIn(kFFmpegTestParams)));
+
+INSTANTIATE_TEST_SUITE_P(Opus,
+                         AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kOpus),
+                                 ValuesIn(kOpusTestParams)));
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 INSTANTIATE_TEST_SUITE_P(Symphonia,

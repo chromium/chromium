@@ -83,6 +83,8 @@ const char* GetDecoderName(AudioDecoderType type) {
       return "MediaFoundationAudioDecoder";
     case AudioDecoderType::kSymphonia:
       return "SymphoniaAudioDecoder";
+    case AudioDecoderType::kOpus:
+      return "OpusAudioDecoder";
   }
 }
 

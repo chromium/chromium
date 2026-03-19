@@ -2942,6 +2942,62 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
   ASSERT_EQ(base::Microseconds(396000), demuxer_->GetStartTime());
 }
 
+class OpusPipelineIntegrationTest : public PipelineIntegrationTest {
+ public:
+  OpusPipelineIntegrationTest() {
+    scoped_feature_list_.InitAndEnableFeature(kDirectOpusAudioDecoding);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(OpusPipelineIntegrationTest, BasicPlaybackOpusWebmTrimmingHashed) {
+  ASSERT_EQ(PIPELINE_OK, Start("opus-trimming-test.webm", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_1);
+
+  // Seek within the pre-skip section, this should not cause a beep.
+  ASSERT_TRUE(Seek(base::Seconds(1)));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_2);
+
+  // Seek somewhere outside of the pre-skip / end-trim section, this should
+  // behave normally.
+  ASSERT_TRUE(Seek(base::Seconds(6.36)));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
+}
+
+TEST_F(OpusPipelineIntegrationTest, BasicPlaybackOpusOggTrimmingHashed) {
+  ASSERT_EQ(PIPELINE_OK, Start("opus-trimming-test.ogg", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_1);
+
+  // Seek within the pre-skip section, this should not cause a beep.
+  ASSERT_TRUE(Seek(base::Seconds(1)));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_2);
+
+  // Seek somewhere outside of the pre-skip / end-trim section, this should
+  // behave normally.
+  ASSERT_TRUE(Seek(base::Seconds(6.36)));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
+}
+
+TEST_F(OpusPipelineIntegrationTest, BasicPlayback_Opus441kHz) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx-opus-441.webm"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 // Tests that we signal ended even when audio runs longer than video track.

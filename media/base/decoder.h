@@ -27,9 +27,10 @@ enum class AudioDecoderType : int {
   kMediaFoundation = 8,  // MediaFoundationAudioDecoder
   kPassthroughDTS = 9,   // Passthrough DTS audio
   kSymphonia = 10,       // Symphonia Rust-backed SymphoniaAudioDecoder.
+  kOpus = 11,            // OpusAudioDecoder
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kSymphonia,
+  kMaxValue = kOpus,
 };
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new

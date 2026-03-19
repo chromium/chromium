@@ -1306,6 +1306,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Decode.OpusCodecDelayMismatch" units="packets"
+    expires_after="2026-09-17">
+  <owner>jophba@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    When there is a codec delay mismatch between the container and the decoder
+    for the OpusAudioDecoder, reports the absolute difference in value.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.DecoderType" enum="AudioDecoderType"
     expires_after="2026-06-30">
   <owner>jophba@chromium.org</owner>

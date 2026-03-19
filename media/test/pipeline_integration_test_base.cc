@@ -37,6 +37,8 @@
 #include "media/filters/dav1d_video_decoder.h"
 #endif
 
+#include "media/filters/opus_audio_decoder.h"
+
 #if BUILDFLAG(ENABLE_FFMPEG)
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/ffmpeg_demuxer.h"
@@ -133,6 +135,10 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
   if (prepend_audio_decoders_cb) {
     audio_decoders = prepend_audio_decoders_cb.Run();
     DCHECK(!audio_decoders.empty());
+  }
+
+  if (base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
+    audio_decoders.push_back(std::make_unique<OpusAudioDecoder>());
   }
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
