@@ -45,6 +45,11 @@ BASE_DECLARE_FEATURE(kDlpScanPastedImages);
 // Controls enabling bulk data entry support in Glic actuation logic.
 BASE_DECLARE_FEATURE(kGlicBulkDataEntrySupport);
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether WebProtect download on Clank is enabled.
+BASE_DECLARE_FEATURE(kEnableDownloadEnterpriseScanOnClank);
+#endif
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_
