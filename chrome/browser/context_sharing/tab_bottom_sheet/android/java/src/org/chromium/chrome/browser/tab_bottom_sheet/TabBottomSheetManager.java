@@ -69,18 +69,21 @@ public class TabBottomSheetManager implements Destroyable {
      *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
      *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
      *     subsequent showings.
+     * @param animate Whether to animate the bottom sheet.
+     * @param startsExpanded Whether the bottom sheet should start in the expanded state.
      * @return Whether the bottom sheet was shown.
      */
     boolean tryToShowBottomSheet(
             NativeInterfaceDelegate nativeInterfaceDelegate,
             CoBrowseViews coBrowseViews,
+            boolean animate,
             boolean startsExpanded) {
         // Close any existing bottom sheet before showing a new one.
         tryToCloseBottomSheet();
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(mBottomSheetController, coBrowseViews);
 
-        if (mTabBottomSheetCoordinator.tryToShowBottomSheet(startsExpanded)) {
+        if (mTabBottomSheetCoordinator.tryToShowBottomSheet(animate, startsExpanded)) {
             // Successfully showed bottom sheet.
             mBottomSheetController.addObserver(mBottomSheetObserver);
             mNativeInterfaceDelegate = nativeInterfaceDelegate;

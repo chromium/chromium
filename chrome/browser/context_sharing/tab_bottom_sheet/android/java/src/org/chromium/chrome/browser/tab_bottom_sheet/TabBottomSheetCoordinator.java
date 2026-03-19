@@ -51,7 +51,7 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Tries to show the bottom sheet. */
-    boolean tryToShowBottomSheet(boolean startsExpanded) {
+    boolean tryToShowBottomSheet(boolean animate, boolean startsExpanded) {
         if (mIsSheetCurrentlyManagedByController) {
             return false;
         }
@@ -63,7 +63,7 @@ public class TabBottomSheetCoordinator {
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
         mSheetContent = new TabBottomSheetContent(mContentView);
 
-        if (mBottomSheetController.requestShowContent(mSheetContent, true)) {
+        if (mBottomSheetController.requestShowContent(mSheetContent, animate)) {
             if (startsExpanded) {
                 mBottomSheetController.expandSheet();
             }
@@ -132,6 +132,9 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 mMediator.onSheetStateChanged(state);
+                if (state == SheetState.HIDDEN) {
+                    cleanupSheetResources();
+                }
             }
 
             @Override

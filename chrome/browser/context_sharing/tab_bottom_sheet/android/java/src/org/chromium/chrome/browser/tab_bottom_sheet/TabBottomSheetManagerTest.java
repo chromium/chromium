@@ -69,6 +69,7 @@ public class TabBottomSheetManagerTest {
                     mManager.tryToShowBottomSheet(
                             NativeInterfaceDelegate.getInstance(),
                             mCoBrowseViews,
+                            /* animate= */ true,
                             /* startsExpanded= */ true);
                 });
         assertEquals(

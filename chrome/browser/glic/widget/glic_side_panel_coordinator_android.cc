@@ -79,7 +79,7 @@ void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations,
   CreateCoBrowseViews();
   bool shown = Java_TabBottomSheetNativeInterface_show(
       AttachCurrentThread(), java_interface_, co_browse_views_,
-      starts_expanded);
+      !suppress_animations, starts_expanded);
   pending_starts_expanded_state_ = true;
   if (shown) {
     SetState(State::kShown);
