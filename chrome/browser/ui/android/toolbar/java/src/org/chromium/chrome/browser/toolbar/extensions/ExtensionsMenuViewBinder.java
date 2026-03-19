@@ -33,6 +33,12 @@ public class ExtensionsMenuViewBinder {
             closeButton.setOnClickListener(
                     model.get(ExtensionsMenuProperties.CLOSE_CLICK_LISTENER));
             ViewCompat.setTooltipText(closeButton, view.getContext().getString(R.string.close));
+        } else if (key == ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE) {
+            view.findViewById(R.id.extensions_menu_discover_extensions_button)
+                    .setVisibility(
+                            model.get(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE)
+                                    ? View.VISIBLE
+                                    : View.GONE);
         } else if (key == ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_discover_extensions_button)
                     .setOnClickListener(

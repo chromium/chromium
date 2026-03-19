@@ -172,6 +172,7 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, true);
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, false);
         verify(mOnReadyRunnable).run();
     }
 
@@ -196,6 +197,7 @@ public class ExtensionsMenuMediatorTest {
         assertItemAt(0, "Extension A", ICON_RED, ICON_KEEP);
         assertItemAt(1, "Extension B", ICON_BLUE, ICON_MORE);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, true);
         verify(mOnReadyRunnable).run();
     }
 
@@ -227,6 +229,7 @@ public class ExtensionsMenuMediatorTest {
         assertEquals(1, mActionModels.size());
         assertItemAt(0, "Extension A", ICON_RED, ICON_MORE);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, true);
 
         mediator.destroy();
     }
@@ -319,6 +322,7 @@ public class ExtensionsMenuMediatorTest {
         assertEquals(1, mActionModels.size());
         assertItemAt(0, "Extension A", ICON_RED, ICON_MORE);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, true);
     }
 
     /**
@@ -375,6 +379,7 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, true);
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, false);
     }
 
     /**

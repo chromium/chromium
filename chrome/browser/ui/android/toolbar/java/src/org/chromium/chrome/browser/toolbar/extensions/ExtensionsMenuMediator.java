@@ -270,10 +270,14 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void updateZeroState() {
         boolean isZeroState = mActionModels.size() == 0;
         mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
-        // If we are in zero state, hide the site settings toggle to keep the empty state clean.
         if (isZeroState) {
+            // If we are in zero state, hide the site settings toggle to keep the empty state clean.
             mMenuPropertyModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
+            // We also hide the discover extensions button in the main page, as there is already an
+            // open web store button present in the zero state view.
+            mMenuPropertyModel.set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, false);
         } else {
+            mMenuPropertyModel.set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, true);
             updateSiteSettingsToggle();
         }
     }

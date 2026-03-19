@@ -24,6 +24,9 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener>
             DISCOVER_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey DISCOVER_EXTENSIONS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     public static final org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<
                     org.chromium.base.Callback<String>>
             DISMISS_EXTENSION_CLICK_LISTENER =
@@ -77,6 +80,7 @@ class ExtensionsMenuProperties {
                 ALLOW_EXTENSION_CLICK_LISTENER,
                 CLOSE_CLICK_LISTENER,
                 DISCOVER_EXTENSIONS_CLICK_LISTENER,
+                DISCOVER_EXTENSIONS_VISIBLE,
                 DISMISS_EXTENSION_CLICK_LISTENER,
                 HOST_ACCESS_REQUESTS,
                 IS_ZERO_STATE,
