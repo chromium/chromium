@@ -210,9 +210,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.isConfirmStep = false;
     this.pinHasPassedMinimumLength_ = false;
     this.useRecoveryModeApi = false;
-    this.hideProblem_();
-    this.onPinChange_(
-        new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
+    this.showProblem_(MessageType.TOO_SHORT, ProblemType.WARNING);
   }
 
   /**
@@ -351,12 +349,12 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     if (!this.enableSubmit) {
       return;
     }
+    this.enableSubmit = false;
     this.initialPin_ = this.pinKeyboardValue_;
     this.pinKeyboardValue_ = '';
     this.isConfirmStep = true;
     this.$.pinKeyboard.resetPinVisibility();
-    this.onPinChange_(
-        new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
+    this.hideProblem_();
     this.$.pinKeyboard.focusInput();
     recordLockScreenProgress(LockScreenProgress.ENTER_PIN);
   }
