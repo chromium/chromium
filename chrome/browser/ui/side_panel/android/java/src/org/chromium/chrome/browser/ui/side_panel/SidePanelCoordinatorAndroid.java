@@ -6,6 +6,6 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Interface for the JNI bridge to the native {@code SidePanelCoordinatorAndroid}. */
+/** Interface for the Java counterpart of the native {@code SidePanelCoordinatorAndroid}. */
 @NullMarked
-public interface SidePanelCoordinatorAndroidBridge {}
+public interface SidePanelCoordinatorAndroid {}

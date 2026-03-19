@@ -26,7 +26,7 @@ class SidePanelCoordinatorAndroid {
  public:
   SidePanelCoordinatorAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_bridge);
+      const base::android::JavaRef<jobject>& java_coordinator);
 
   // TODO(crbug.com/491597112): This should override `SidePanelUIBase` virtual
   // destructor once this class inherits from it.
@@ -36,15 +36,15 @@ class SidePanelCoordinatorAndroid {
   SidePanelCoordinatorAndroid& operator=(const SidePanelCoordinatorAndroid&) =
       delete;
 
-  // Implements Java `SidePanelCoordinatorAndroidBridge.Natives#destroy`.
+  // Implements Java `SidePanelCoordinatorAndroid.Natives#destroy`.
   void Destroy(JNIEnv* env);
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> java_bridge() const;
+  base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
-  // A weak reference to the Java `SidePanelCoordinatorAndroidBridge`, which is
-  // the sole owner of `SidePanelCoordinatorAndroid`.
-  JavaObjectWeakGlobalRef java_bridge_;
+  // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
+  // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
+  JavaObjectWeakGlobalRef java_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_COORDINATOR_ANDROID_H_

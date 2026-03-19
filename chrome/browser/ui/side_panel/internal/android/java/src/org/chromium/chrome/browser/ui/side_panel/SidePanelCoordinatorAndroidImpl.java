@@ -9,29 +9,26 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Implements {@code SidePanelCoordinatorAndroidBridge}. */
+/** Implements {@code SidePanelCoordinatorAndroid}. */
 @NullMarked
-public final class SidePanelCoordinatorAndroidBridgeImpl
-        implements SidePanelCoordinatorAndroidBridge {
+public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinatorAndroid {
 
     /** Address of the native {@code SidePanelCoordinatorAndroid}. */
     private long mNativeSidePanelCoordinatorAndroid;
 
-    public SidePanelCoordinatorAndroidBridgeImpl() {}
+    public SidePanelCoordinatorAndroidImpl() {}
 
     /** Creates the native {@code SidePanelCoordinatorAndroid}. */
     public void createNativePtr() {
         assert mNativeSidePanelCoordinatorAndroid == 0
                 : "Native SidePanelCoordinatorAndroid already exists";
-        mNativeSidePanelCoordinatorAndroid =
-                SidePanelCoordinatorAndroidBridgeImplJni.get().create(this);
+        mNativeSidePanelCoordinatorAndroid = SidePanelCoordinatorAndroidImplJni.get().create(this);
     }
 
     /** Destroys all objects owned by this class. */
     public void destroy() {
         if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidBridgeImplJni.get()
-                    .destroy(mNativeSidePanelCoordinatorAndroid);
+            SidePanelCoordinatorAndroidImplJni.get().destroy(mNativeSidePanelCoordinatorAndroid);
         }
     }
 
@@ -52,7 +49,7 @@ public final class SidePanelCoordinatorAndroidBridgeImpl
          * @param caller The Java object calling this method.
          * @return The address of the native {@code SidePanelCoordinatorAndroid}.
          */
-        long create(SidePanelCoordinatorAndroidBridgeImpl caller);
+        long create(SidePanelCoordinatorAndroidImpl caller);
 
         /**
          * Destroys the native {@code SidePanelCoordinatorAndroid}.

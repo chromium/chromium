@@ -9,13 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidBridgeImpl_jni.h"
+#include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidImpl_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-// Implements Java `SidePanelCoordinatorAndroidBridgeImpl.Natives#create`.
-static int64_t JNI_SidePanelCoordinatorAndroidBridgeImpl_Create(
+// Implements Java `SidePanelCoordinatorAndroidImpl.Natives#create`.
+static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller) {
   return reinterpret_cast<intptr_t>(
@@ -24,27 +24,27 @@ static int64_t JNI_SidePanelCoordinatorAndroidBridgeImpl_Create(
 
 SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     JNIEnv* env,
-    const JavaRef<jobject>& java_bridge)
-    : java_bridge_(env, java_bridge) {}
+    const JavaRef<jobject>& java_coordinator)
+    : java_coordinator_(env, java_coordinator) {}
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
-  Java_SidePanelCoordinatorAndroidBridgeImpl_clearNativePtr(
-      base::android::AttachCurrentThread(), java_bridge());
+  Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(
+      base::android::AttachCurrentThread(), java_coordinator());
 }
 
 void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_bridge() const {
+ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
+    const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> local_ref = java_bridge_.get(env);
+  ScopedJavaLocalRef<jobject> local_ref = java_coordinator_.get(env);
 
-  CHECK(local_ref)
-      << "Java SidePanelCoordinatorAndroidBridge is the sole owner of "
-         "SidePanelCoordinatorAndroid, so it shouldn't be destroyed before "
-         "SidePanelCoordinatorAndroidBridge";
+  CHECK(local_ref) << "Java SidePanelCoordinatorAndroid is the sole owner of "
+                      "C++ SidePanelCoordinatorAndroid, so the Java object "
+                      "shouldn't be destroyed before the C++ object";
   return local_ref;
 }
 
-DEFINE_JNI(SidePanelCoordinatorAndroidBridgeImpl)
+DEFINE_JNI(SidePanelCoordinatorAndroidImpl)

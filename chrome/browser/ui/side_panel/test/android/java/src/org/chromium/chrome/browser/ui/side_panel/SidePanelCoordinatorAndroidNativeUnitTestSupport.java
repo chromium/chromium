@@ -14,33 +14,33 @@ import org.chromium.build.annotations.NullMarked;
  * <p>The native unit test will use this class to:
  *
  * <ul>
- *   <li>Instantiate a Java {@link SidePanelCoordinatorAndroidBridge} and its native {@code
+ *   <li>Instantiate a Java {@link SidePanelCoordinatorAndroid} and its native {@code
  *       SidePanelCoordinatorAndroid}; and
- *   <li>Test the Java {@link SidePanelCoordinatorAndroidBridge} methods.
+ *   <li>Test the Java {@link SidePanelCoordinatorAndroid} methods.
  * </ul>
  */
 @NullMarked
 final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
-    private final SidePanelCoordinatorAndroidBridgeImpl mBridge;
+    private final SidePanelCoordinatorAndroidImpl mCoordinator;
 
     @CalledByNativeForTesting
     private SidePanelCoordinatorAndroidNativeUnitTestSupport() {
-        mBridge = new SidePanelCoordinatorAndroidBridgeImpl();
+        mCoordinator = new SidePanelCoordinatorAndroidImpl();
     }
 
     @CalledByNativeForTesting
     private long invokeCreateNativePtr() {
-        mBridge.createNativePtr();
-        return mBridge.getNativePtrForTesting();
+        mCoordinator.createNativePtr();
+        return mCoordinator.getNativePtrForTesting();
     }
 
     @CalledByNativeForTesting
     private long invokeGetNativePtrForTesting() {
-        return mBridge.getNativePtrForTesting();
+        return mCoordinator.getNativePtrForTesting();
     }
 
     @CalledByNativeForTesting
     private void invokeDestroy() {
-        mBridge.destroy();
+        mCoordinator.destroy();
     }
 }

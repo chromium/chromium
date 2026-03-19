@@ -8,17 +8,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/** Factory for creating an {@link SidePanelCoordinatorAndroidBridge}. */
+/** Factory for creating a {@link SidePanelCoordinatorAndroid}. */
 @NullMarked
-public final class SidePanelCoordinatorAndroidBridgeFactory {
-    private SidePanelCoordinatorAndroidBridgeFactory() {}
+public final class SidePanelCoordinatorAndroidFactory {
+    private SidePanelCoordinatorAndroidFactory() {}
 
     @Nullable
-    public static SidePanelCoordinatorAndroidBridge create() {
+    public static SidePanelCoordinatorAndroid create() {
         if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
             return null;
         }
 
-        return new SidePanelCoordinatorAndroidBridgeImpl();
+        return new SidePanelCoordinatorAndroidImpl();
     }
 }
