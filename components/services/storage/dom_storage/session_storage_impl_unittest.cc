@@ -24,7 +24,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
@@ -50,27 +49,25 @@ std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-class SessionStorageImplTest : public base::test::WithFeatureOverride,
-                               public testing::Test {
+// Base test fixture for `SessionStorageImpl` tests. Provides common setup
+// including database initialization, storage area binding, and helper methods.
+// Subclasses can parameterize tests to run on SQLite or LevelDB using
+// `is_sqlite_enabled`.
+class SessionStorageImplTestBase : public testing::Test {
  public:
-  SessionStorageImplTest()
-      : base::test::WithFeatureOverride(kDomStorageSqlite) {
-    // Match the state of `kDomStorageSqliteInMemory` to the top level
-    // kDomStorageSqlite. That way in-memory databases will use the backend
-    // expected by the param state.
-    if (IsSqliteEnabled()) {
-      feature_list_.InitAndEnableFeature(kDomStorageSqliteInMemory);
-    } else {
-      feature_list_.InitAndDisableFeature(kDomStorageSqliteInMemory);
-    }
+  explicit SessionStorageImplTestBase(bool is_sqlite_enabled) {
+    feature_list_.InitWithFeatureStates(
+        {{kDomStorageSqlite, is_sqlite_enabled},
+         {kDomStorageSqliteInMemory, is_sqlite_enabled}});
     task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
-  SessionStorageImplTest(const SessionStorageImplTest&) = delete;
-  SessionStorageImplTest& operator=(const SessionStorageImplTest&) = delete;
+  SessionStorageImplTestBase(const SessionStorageImplTestBase&) = delete;
+  SessionStorageImplTestBase& operator=(const SessionStorageImplTestBase&) =
+      delete;
 
-  ~SessionStorageImplTest() override {
+  ~SessionStorageImplTestBase() override {
     // Flush all tasks to make sure the database is fully closed.
     RunUntilIdle();
     EXPECT_TRUE(temp_dir_.Delete());
@@ -78,7 +75,7 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
 
   void SetUp() override {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &SessionStorageImplTest::OnBadMessage, base::Unretained(this)));
+        &SessionStorageImplTestBase::OnBadMessage, base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -86,8 +83,6 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
       ShutDownSessionStorage();
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
-
-  bool IsSqliteEnabled() const { return GetParam(); }
 
   void OnBadMessage(const std::string& reason) { bad_message_called_ = true; }
 
@@ -195,6 +190,17 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
       SessionStorageImpl::BackingMode::kRestoreDiskState;
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
+};
+
+class SessionStorageImplTest
+    : public testing::WithParamInterface</*is_sqlite_enabled=*/bool>,
+      public SessionStorageImplTestBase {
+ public:
+  SessionStorageImplTest()
+      : SessionStorageImplTestBase(/*is_sqlite_enabled=*/GetParam()) {}
+  ~SessionStorageImplTest() override = default;
+
+  bool IsSqliteEnabled() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -595,7 +601,7 @@ TEST_P(SessionStorageImplTest, Scavenging) {
   EXPECT_EQ(0ul, data.size());
 }
 
-void SessionStorageImplTest::TestInvalidVersionOnDisk(
+void SessionStorageImplTestBase::TestInvalidVersionOnDisk(
     std::string invalid_version_string) {
   base::HistogramTester histograms;
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -1008,9 +1014,17 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   ShutDownSessionStorage();
 }
 
+// Test fixture for tests that use fake database implementations. These tests
+// do not depend on the real SQLite/LevelDB backend and run only once.
+class SessionStorageImplFakeDbTest : public SessionStorageImplTestBase {
+ public:
+  SessionStorageImplFakeDbTest()
+      : SessionStorageImplTestBase(/*is_sqlite_enabled=*/false) {}
+};
+
 // After recovery, some commit errors occur but resolve via a successful commit.
 // Verifies the kTransientErrorsAfterAttemptedRecovery histogram is emitted.
-TEST_P(SessionStorageImplTest, TransientErrorsAfterRecovery) {
+TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   base::HistogramTester histograms;
 
   // Each database starts with UpdateMaps returning IOError. The test switches
@@ -1135,7 +1149,7 @@ TEST_P(SessionStorageImplTest, TransientErrorsAfterRecovery) {
 }
 
 // Both disk opens fail, destroy succeeds, in-memory open succeeds.
-TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroySucceeded) {
+TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_DestroySucceeded) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
                                              /*num_destroy_failures=*/0);
@@ -1152,7 +1166,7 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroySucceeded) {
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.
-TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_DestroyFailed) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
                                              /*num_destroy_failures=*/2);
@@ -1169,7 +1183,7 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroyFailed) {
 }
 
 // All three opens fail (disk, disk retry, in-memory), destroys succeed.
-TEST_P(SessionStorageImplTest, GaveUp_DestroySucceeded) {
+TEST_F(SessionStorageImplFakeDbTest, GaveUp_DestroySucceeded) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/3,
                                              /*num_destroy_failures=*/0);
@@ -1185,7 +1199,7 @@ TEST_P(SessionStorageImplTest, GaveUp_DestroySucceeded) {
 }
 
 // All three opens fail, destroy also fails.
-TEST_P(SessionStorageImplTest, GaveUp_DestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, GaveUp_DestroyFailed) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/3,
                                              /*num_destroy_failures=*/1);
@@ -1198,7 +1212,7 @@ TEST_P(SessionStorageImplTest, GaveUp_DestroyFailed) {
 }
 
 // First open fails, destroy fails, second open succeeds on disk.
-TEST_P(SessionStorageImplTest, RecoveredToDisk_DestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, RecoveredToDisk_DestroyFailed) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(
       /*num_open_failures=*/1,
@@ -1215,7 +1229,7 @@ TEST_P(SessionStorageImplTest, RecoveredToDisk_DestroyFailed) {
 
 // Both disk opens fail, first destroy fails, second succeeds, in-memory open
 // succeeds.
-TEST_P(SessionStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_FirstDestroyFailed) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
                                              /*num_destroy_failures=*/1);
@@ -1234,7 +1248,7 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
 
 // Both disk opens fail, first destroy succeeds, second fails, in-memory open
 // succeeds.
-TEST_P(SessionStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_SecondDestroyFailed) {
   base::HistogramTester histograms;
   // First destroy succeeds, second fails.
   int destroy_count = 0;
@@ -1263,7 +1277,7 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
 }
 
 // All three opens fail, first destroy succeeds, second fails.
-TEST_P(SessionStorageImplTest, GaveUp_SecondDestroyFailed) {
+TEST_F(SessionStorageImplFakeDbTest, GaveUp_SecondDestroyFailed) {
   base::HistogramTester histograms;
   // First destroy succeeds, second fails.
   int destroy_count = 0;
@@ -1291,7 +1305,7 @@ TEST_P(SessionStorageImplTest, GaveUp_SecondDestroyFailed) {
 }
 
 // All three opens fail, both destroys fail.
-TEST_P(SessionStorageImplTest, GaveUp_BothDestroysFailed) {
+TEST_F(SessionStorageImplFakeDbTest, GaveUp_BothDestroysFailed) {
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(
       /*num_open_failures=*/3,
@@ -1308,7 +1322,7 @@ TEST_P(SessionStorageImplTest, GaveUp_BothDestroysFailed) {
 
 // In-memory open fails, retry succeeds. No Destroy() because there is nothing
 // on disk.
-TEST_P(SessionStorageImplTest, InMemoryRecovery_Succeeded) {
+TEST_F(SessionStorageImplFakeDbTest, InMemoryRecovery_Succeeded) {
   base::HistogramTester histograms;
   SetBackingMode(SessionStorageImpl::BackingMode::kNoDisk);
 
@@ -1325,7 +1339,7 @@ TEST_P(SessionStorageImplTest, InMemoryRecovery_Succeeded) {
 
 // Both in-memory opens fail, gave up. No Destroy() because there is nothing on
 // disk.
-TEST_P(SessionStorageImplTest, InMemoryRecovery_GaveUp) {
+TEST_F(SessionStorageImplFakeDbTest, InMemoryRecovery_GaveUp) {
   base::HistogramTester histograms;
   SetBackingMode(SessionStorageImpl::BackingMode::kNoDisk);
 
@@ -1342,7 +1356,7 @@ TEST_P(SessionStorageImplTest, InMemoryRecovery_GaveUp) {
 
 // ReadAllMetadata fails after a successful open, triggering recovery via the
 // MetadataReadFailure path.
-TEST_P(SessionStorageImplTest, MetadataReadFailure) {
+TEST_F(SessionStorageImplFakeDbTest, MetadataReadFailure) {
   base::HistogramTester histograms;
   bool first_create = true;
   ScopedDomStorageDatabaseFactoryForTesting scoped_factory(

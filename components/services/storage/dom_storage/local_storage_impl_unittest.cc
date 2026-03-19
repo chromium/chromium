@@ -40,7 +40,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
-#include "third_party/leveldatabase/env_chromium.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -1562,9 +1561,17 @@ TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
                                kCommitErrorThreshold + 1, 1);
 }
 
+// Test fixture for tests that use fake database implementations. These tests
+// do not depend on the real SQLite/LevelDB backend and run only once.
+class LocalStorageImplFakeDbTest : public LocalStorageImplTestBase {
+ public:
+  LocalStorageImplFakeDbTest()
+      : LocalStorageImplTestBase(/*is_sqlite_enabled=*/false) {}
+};
+
 // After recovery, some commit errors occur but resolve via a successful commit.
 // Verifies the kTransientErrorsAfterAttemptedRecovery histogram is emitted.
-TEST_P(LocalStorageImplTest, TransientErrorsAfterRecovery) {
+TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1700,7 +1707,7 @@ TEST_P(LocalStorageImplTest, TransientErrorsAfterRecovery) {
 }
 
 // Both disk opens fail, destroy succeeds, in-memory open succeeds.
-TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroySucceeded) {
+TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_DestroySucceeded) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1720,7 +1727,7 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroySucceeded) {
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.
-TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_DestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1740,7 +1747,7 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroyFailed) {
 }
 
 // All three opens fail (disk, disk retry, in-memory), destroys succeed.
-TEST_P(LocalStorageImplTest, GaveUp_DestroySucceeded) {
+TEST_F(LocalStorageImplFakeDbTest, GaveUp_DestroySucceeded) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1759,7 +1766,7 @@ TEST_P(LocalStorageImplTest, GaveUp_DestroySucceeded) {
 }
 
 // All three opens fail, destroy also fails.
-TEST_P(LocalStorageImplTest, GaveUp_DestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, GaveUp_DestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1775,7 +1782,7 @@ TEST_P(LocalStorageImplTest, GaveUp_DestroyFailed) {
 }
 
 // First open fails, destroy fails, second open succeeds on disk.
-TEST_P(LocalStorageImplTest, RecoveredToDisk_DestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, RecoveredToDisk_DestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1795,7 +1802,7 @@ TEST_P(LocalStorageImplTest, RecoveredToDisk_DestroyFailed) {
 
 // Both disk opens fail, first destroy fails, second succeeds, in-memory open
 // succeeds.
-TEST_P(LocalStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_FirstDestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1817,7 +1824,7 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
 
 // Both disk opens fail, first destroy succeeds, second fails, in-memory open
 // succeeds.
-TEST_P(LocalStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_SecondDestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1849,7 +1856,7 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
 }
 
 // All three opens fail, first destroy succeeds, second fails.
-TEST_P(LocalStorageImplTest, GaveUp_SecondDestroyFailed) {
+TEST_F(LocalStorageImplFakeDbTest, GaveUp_SecondDestroyFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1880,7 +1887,7 @@ TEST_P(LocalStorageImplTest, GaveUp_SecondDestroyFailed) {
 }
 
 // All three opens fail, both destroys fail.
-TEST_P(LocalStorageImplTest, GaveUp_BothDestroysFailed) {
+TEST_F(LocalStorageImplFakeDbTest, GaveUp_BothDestroysFailed) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1900,7 +1907,7 @@ TEST_P(LocalStorageImplTest, GaveUp_BothDestroysFailed) {
 
 // In-memory open fails, retry succeeds. No Destroy() because there is nothing
 // on disk.
-TEST_P(LocalStorageImplTest, InMemoryRecovery_Succeeded) {
+TEST_F(LocalStorageImplFakeDbTest, InMemoryRecovery_Succeeded) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1918,7 +1925,7 @@ TEST_P(LocalStorageImplTest, InMemoryRecovery_Succeeded) {
 
 // Both in-memory opens fail, gave up. No Destroy() because there is nothing on
 // disk.
-TEST_P(LocalStorageImplTest, InMemoryRecovery_GaveUp) {
+TEST_F(LocalStorageImplFakeDbTest, InMemoryRecovery_GaveUp) {
   base::HistogramTester histograms;
   ShutDownStorage();
 
