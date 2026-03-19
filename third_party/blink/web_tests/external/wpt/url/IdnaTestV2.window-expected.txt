@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 803 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--ab-j1t") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ab-m1t") C2
@@ -1038,8 +1038,6 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3j78f.xn--mkb20b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𲤱20.音.ꡦ1.") A4_2 (ignored)
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--dth6033bzbvx.xn--tsh9439b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("Ⴕ。۰≮ß݅")
@@ -1096,10 +1094,6 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0-z6jy93b.xn--8lh28773l") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("𲮚9ꍩ៓.ss")
-  Failed to construct 'URL': Invalid URL
-[FAIL] ToASCII("𲮚9ꍩ៓.SS")
-  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2

@@ -86,7 +86,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--3ck7a7g.jp", u"\u30ce\u30f3\u30bd.jp", kSafe},
     // Katakana + Latin (Japanese)
     {"xn--e-efusa1mzf.jp", u"e\u30b3\u30de\u30fc\u30b9.jp", kSafe},
-    {"xn--3bkxe.jp", u"\u30c8\u309a.jp", kSafe},
     // Hangul (Korean)
     {"www.xn--or3b17p6jjc.kr", u"www.\uc804\uc790\uc815\ubd80.kr", kSafe},
     // b<u-umlaut>cher (German)
@@ -206,14 +205,6 @@ const IDNTestCase kIdnCases[] = {
     //  Han + Hiragana + Katakana + Latin
     {"xn--kanji-ii4dpizfq59yuykqr4b.jp",
      u"\u632f\u308a\u4eee\u540d\u30ab\u30bfkanji.jp", kSafe},
-    // Han + Bopomofo
-    {"xn--5ekcde0577e87tc.tw", u"\u6ce8\u97f3\u3105\u3106\u3107\u3108.tw",
-     kSafe},
-    // Han + Latin + Bopomofo
-    {"xn--bopo-ty4cghi8509kk7xd.tw",
-     u"\u6ce8\u97f3bopo\u3105\u3106\u3107\u3108.tw", kSafe},
-    // Latin + Bopomofo
-    {"xn--bopomofo-hj5gkalm.tw", u"bopomofo\u3105\u3106\u3107\u3108.tw", kSafe},
     // Bopomofo + Katakana
     {"xn--lcka3d1bztghi.tw",
      u"\u3105\u3106\u3107\u3108\u30ab\u30bf\u30ab\u30ca.tw", kUnsafe},
@@ -411,7 +402,7 @@ const IDNTestCase kIdnCases[] = {
 
     // Combining Diacritic marks after a script other than Latin-Greek-Cyrillic
     {"xn--rsa2568fvxya.com", u"\ud55c\u0307\uae00.com", kUnsafe},  // 한́글.com
-    {"xn--rsa0336bjom.com", u"\u6f22\u0307\u5b57.com", kUnsafe},  // 漢̇字.com
+    {"xn--rsa0336bjom.com", u"\u6f22\u0307\u5b57.com", kUnsafe},   // 漢̇字.com
     // नागरी́.com
     {"xn--lsa922apb7a6do.com", u"\u0928\u093e\u0917\u0930\u0940\u0301.com",
      kUnsafe},
@@ -461,7 +452,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--77ba.com", u"\u09ed\u09ed.com", kUnsafe},
     // Gurmukhi:
     {"xn--qcce.com", u"\u0a68\u0a6a.com", kUnsafe},
-    {"xn--occe.com", u"\u0a66\u0a68.com", kUnsafe},
     {"xn--rccd.com", u"\u0a6b\u0a69.com", kUnsafe},
     {"xn--pcca.com", u"\u0a67\u0a67.com", kUnsafe},
     // Telugu:
@@ -487,8 +477,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--b1atdu1a.com", u"\u0448\u043c\u043d\u0442\u0432.com", kUnsafe},
     // шмԋтв.com
     {"xn--b1atsw09g.com", u"\u0448\u043c\u050b\u0442\u0432.com", kUnsafe},
-    // шмԧтв.com
-    {"xn--b1atsw03i.com", u"\u0448\u043c\u0527\u0442\u0432.com", kUnsafe},
     // шмԋԏв.com
     {"xn--b1at9a12dua.com", u"\u0448\u043c\u050b\u050f\u0432.com", kUnsafe},
     // ഠട345.com
@@ -497,8 +485,6 @@ const IDNTestCase kIdnCases[] = {
     // Test additional confusable LGC characters (most of them without
     // decomposition into base + diacritc mark). The corresponding ASCII
     // domain names are in the test top domain list.
-    // ϼκαωχ.com
-    {"xn--mxar4bh6w.com", u"\u03fc\u03ba\u03b1\u03c9\u03c7.com", kUnsafe},
     // þħĸŧƅ.com
     {"xn--vda6f3b2kpf.com", u"\u00fe\u0127\u0138\u0167\u0185.com", kUnsafe},
     // þhktb.com
@@ -511,62 +497,16 @@ const IDNTestCase kIdnCases[] = {
     {"xn--phkb-d7a.com", u"phk\u0167b.com", kUnsafe},
     // phktƅ.com
     {"xn--phkt-ocb.com", u"phkt\u0185.com", kUnsafe},
-    // ҏнкть.com
-    {"xn--j1afq4bxw.com", u"\u048f\u043d\u043a\u0442\u044c.com", kUnsafe},
-    // ҏћкть.com
-    {"xn--j1aq4a7cvo.com", u"\u048f\u045b\u043a\u0442\u044c.com", kUnsafe},
-    // ҏңкть.com
-    {"xn--j1aq4azund.com", u"\u048f\u04a3\u043a\u0442\u044c.com", kUnsafe},
-    // ҏҥкть.com
-    {"xn--j1aq4azuxd.com", u"\u048f\u04a5\u043a\u0442\u044c.com", kUnsafe},
-    // ҏӈкть.com
-    {"xn--j1aq4azuyj.com", u"\u048f\u04c8\u043a\u0442\u044c.com", kUnsafe},
-    // ҏԧкть.com
-    {"xn--j1aq4azu9z.com", u"\u048f\u0527\u043a\u0442\u044c.com", kUnsafe},
-    // ҏԩкть.com
-    {"xn--j1aq4azuq0a.com", u"\u048f\u0529\u043a\u0442\u044c.com", kUnsafe},
-    // ҏнқть.com
-    {"xn--m1ak4azu6b.com", u"\u048f\u043d\u049b\u0442\u044c.com", kUnsafe},
-    // ҏнҝть.com
-    {"xn--m1ak4azunc.com", u"\u048f\u043d\u049d\u0442\u044c.com", kUnsafe},
-    // ҏнҟть.com
-    {"xn--m1ak4azuxc.com", u"\u048f\u043d\u049f\u0442\u044c.com", kUnsafe},
-    // ҏнҡть.com
-    {"xn--m1ak4azu7c.com", u"\u048f\u043d\u04a1\u0442\u044c.com", kUnsafe},
-    // ҏнӄть.com
-    {"xn--m1ak4azu8i.com", u"\u048f\u043d\u04c4\u0442\u044c.com", kUnsafe},
-    // ҏнԟть.com
-    {"xn--m1ak4azuzy.com", u"\u048f\u043d\u051f\u0442\u044c.com", kUnsafe},
-    // ҏнԟҭь.com
-    {"xn--m1a4a4nnery.com", u"\u048f\u043d\u051f\u04ad\u044c.com", kUnsafe},
-    // ҏнԟҭҍ.com
-    {"xn--m1a4ne5jry.com", u"\u048f\u043d\u051f\u04ad\u048d.com", kUnsafe},
-    // ҏнԟҭв.com
-    {"xn--b1av9v8dry.com", u"\u048f\u043d\u051f\u04ad\u0432.com", kUnsafe},
-    // ҏӊԟҭв.com
-    {"xn--b1a9p8c1e8r.com", u"\u048f\u04ca\u051f\u04ad\u0432.com", kUnsafe},
     // wmŋr.com
     {"xn--wmr-jxa.com", u"wm\u014br.com", kUnsafe},
     // шмпґ.com
     {"xn--l1agz80a.com", u"\u0448\u043c\u043f\u0491.com", kUnsafe},
     // щмпґ.com
     {"xn--l1ag2a0y.com", u"\u0449\u043c\u043f\u0491.com", kUnsafe},
-    // щӎпґ.com
-    {"xn--o1at1tsi.com", u"\u0449\u04ce\u043f\u0491.com", kUnsafe},
     // ґғ.com
     {"xn--03ae.com", u"\u0491\u0493.com", kUnsafe},
-    // ґӻ.com
-    {"xn--03a6s.com", u"\u0491\u04fb.com", kUnsafe},
     // ҫұҳҽ.com
     {"xn--r4amg4b.com", u"\u04ab\u04b1\u04b3\u04bd.com", kUnsafe},
-    // ҫұӽҽ.com
-    {"xn--r4am0b8r.com", u"\u04ab\u04b1\u04fd\u04bd.com", kUnsafe},
-    // ҫұӿҽ.com
-    {"xn--r4am0b3s.com", u"\u04ab\u04b1\u04ff\u04bd.com", kUnsafe},
-    // ҫұӿҿ.com
-    {"xn--r4am6b4p.com", u"\u04ab\u04b1\u04ff\u04bf.com", kUnsafe},
-    // ҫұӿє.com
-    {"xn--91a7osa62a.com", u"\u04ab\u04b1\u04ff\u0454.com", kUnsafe},
     // ӏԃԍ.com
     {"xn--s5a8h4a.com", u"\u04cf\u0503\u050d.com", kUnsafe},
 
@@ -629,9 +569,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--6ca2t.com", u"\u00e6\u0153.com", kUnsafe},
     // ӕԥ.com
     {"xn--y5a4n.com", u"\u04d5\u0525.com", kUnsafe},
-
-    // ငၔဌ၂ဝ.com (entirely made of Myanmar characters)
-    {"xn--ridq5c9hnd.com", u"\u1004\u1054\u100c\u1042\u101d.com", kUnsafe},
 
     // ฟรฟร.com (made of two Thai characters. similar to wsws.com in
     // some fonts)
@@ -920,10 +857,7 @@ const IDNTestCase kIdnCases[] = {
     // non-CJK.
     {"xn--gamer-fg1hz05u.com", u"\u4e00\u751fgamer.com", kSafe},
     {"xn--gamer-kg1hy05u.com", u"gamer\u751f\u4e00.com", kSafe},
-    {"xn--gamer-f94d4426b.com", u"\u3127\u751fgamer.com", kSafe},
-    {"xn--gamer-k94d3426b.com", u"gamer\u751f\u3127.com", kSafe},
     {"xn--4gqz91g.com", u"\u4e00\u732b.com", kSafe},
-    {"xn--4fkv10r.com", u"\u3127\u732b.com", kSafe},
     // U+4E00 with another ideograph.
     {"xn--4gqc.com", u"\u4e00\u4e01.com", kSafe},
 
@@ -1062,10 +996,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--mxapd.com", u"\u03b9\u03ba\u03b1.com", kUnsafe},
     {"xn--mxapd.gr", u"\u03b9\u03ba\u03b1.gr", kSafe},
     {"xn--mxapd.xn--qxam", u"\u03b9\u03ba\u03b1.\u03b5\u03bb", kSafe},
-    // Georgian:
-    {"xn--gpd3ag.com", u"\u10fd\u10ff\u10ee.com", kUnsafe},
-    {"xn--gpd3ag.ge", u"\u10fd\u10ff\u10ee.ge", kSafe},
-    {"xn--gpd3ag.xn--node", u"\u10fd\u10ff\u10ee.\u10d2\u10d4", kSafe},
     // Hebrew:
     {"xn--7dbh4a.com", u"\u05d7\u05e1\u05d3.com", kUnsafe},
     {"xn--7dbh4a.il", u"\u05d7\u05e1\u05d3.il", kSafe},
@@ -1075,12 +1005,6 @@ const IDNTestCase kIdnCases[] = {
     {"xn--oidbbf41a.mm", u"\u1004\u1040\u1002\u1001\u1002.mm", kSafe},
     {"xn--oidbbf41a.xn--7idjb0f4ck",
      u"\u1004\u1040\u1002\u1001\u1002.\u1019\u103c\u1014\u103a\u1019\u102c",
-     kSafe},
-    // Myanmar Shan digits:
-    {"xn--rmdcmef.com", u"\u1090\u1091\u1095\u1096\u1097.com", kUnsafe},
-    {"xn--rmdcmef.mm", u"\u1090\u1091\u1095\u1096\u1097.mm", kSafe},
-    {"xn--rmdcmef.xn--7idjb0f4ck",
-     u"\u1090\u1091\u1095\u1096\u1097.\u1019\u103c\u1014\u103a\u1019\u102c",
      kSafe},
 // Thai:
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1142,6 +1066,90 @@ const IDNTestCase kIdnCases[] = {
 
     // Check that ı has multiple skeletons.
     {"xn--googe-q4a.com", u"goog\u0131e.com", kUnsafe},
+
+    // appӏe.com, apple with U+04CF
+    {"xn--appe-xre.com", u"xn--appe-xre.com", kUnsafe},
+
+    // After upgrading to Unicode 17, ICU 78.2 the following cases have been
+    // moved from the section above and are now failing and remain as
+    // A-Labels/"Punycode":
+    // TODO(https://crbug.com/492063443): Find new test cases / upgrade these?
+    {"xn--3bkxe.jp", u"xn--3bkxe.jp", kSafe},
+    // Han + Bopomofo
+    {"xn--5ekcde0577e87tc.tw", u"xn--5ekcde0577e87tc.tw", kSafe},
+    // Han + Latin + Bopomofo
+    {"xn--bopo-ty4cghi8509kk7xd.tw", u"xn--bopo-ty4cghi8509kk7xd.tw", kSafe},
+    // Latin + Bopomofo
+    {"xn--bopomofo-hj5gkalm.tw", u"xn--bopomofo-hj5gkalm.tw", kSafe},
+    {"xn--occe.com", u"xn--occe.com", kUnsafe},
+    // шмԧтв.com
+    {"xn--b1atsw03i.com", u"xn--b1atsw03i.com", kUnsafe},
+    // ϼκαωχ.com
+    {"xn--mxar4bh6w.com", u"xn--mxar4bh6w.com", kUnsafe},
+    // ҏнкть.com
+    {"xn--j1afq4bxw.com", u"xn--j1afq4bxw.com", kUnsafe},
+    // ҏћкть.com
+    {"xn--j1aq4a7cvo.com", u"xn--j1aq4a7cvo.com", kUnsafe},
+    // ҏңкть.com
+    {"xn--j1aq4azund.com", u"xn--j1aq4azund.com", kUnsafe},
+    // ҏҥкть.com
+    {"xn--j1aq4azuxd.com", u"xn--j1aq4azuxd.com", kUnsafe},
+    // ҏӈкть.com
+    {"xn--j1aq4azuyj.com", u"xn--j1aq4azuyj.com", kUnsafe},
+    // ҏԧкть.com
+    {"xn--j1aq4azu9z.com", u"xn--j1aq4azu9z.com", kUnsafe},
+    // ҏԩкть.com
+    {"xn--j1aq4azuq0a.com", u"xn--j1aq4azuq0a.com", kUnsafe},
+    // ҏнқть.com
+    {"xn--m1ak4azu6b.com", u"xn--m1ak4azu6b.com", kUnsafe},
+    // ҏнҝть.com
+    {"xn--m1ak4azunc.com", u"xn--m1ak4azunc.com", kUnsafe},
+    // ҏнҟть.com
+    {"xn--m1ak4azuxc.com", u"xn--m1ak4azuxc.com", kUnsafe},
+    // ҏнҡть.com
+    {"xn--m1ak4azu7c.com", u"xn--m1ak4azu7c.com", kUnsafe},
+    // ҏнӄть.com
+    {"xn--m1ak4azu8i.com", u"xn--m1ak4azu8i.com", kUnsafe},
+    // ҏнԟть.com
+    {"xn--m1ak4azuzy.com", u"xn--m1ak4azuzy.com", kUnsafe},
+    // ҏнԟҭь.com
+    {"xn--m1a4a4nnery.com", u"xn--m1a4a4nnery.com", kUnsafe},
+    // ҏнԟҭҍ.com
+    {"xn--m1a4ne5jry.com", u"xn--m1a4ne5jry.com", kUnsafe},
+    // ҏнԟҭв.com
+    {"xn--b1av9v8dry.com", u"xn--b1av9v8dry.com", kUnsafe},
+    // ҏӊԟҭв.com
+    {"xn--b1a9p8c1e8r.com", u"xn--b1a9p8c1e8r.com", kUnsafe},
+    // щӎпґ.com
+    {"xn--o1at1tsi.com", u"xn--o1at1tsi.com", kUnsafe},
+    // ґӻ.com
+    {"xn--03a6s.com", u"xn--03a6s.com", kUnsafe},
+    // ҫұӽҽ.com
+    {"xn--r4am0b8r.com", u"xn--r4am0b8r.com", kUnsafe},
+    // ҫұӿҽ.com
+    {"xn--r4am0b3s.com", u"xn--r4am0b3s.com", kUnsafe},
+    // ҫұӿҿ.com
+    {"xn--r4am6b4p.com", u"xn--r4am6b4p.com", kUnsafe},
+    // ҫұӿє.com
+    {"xn--91a7osa62a.com", u"xn--91a7osa62a.com", kUnsafe},
+    // ငၔဌ၂ဝ.com (entirely made of Myanmar characters)
+    {"xn--ridq5c9hnd.com", u"xn--ridq5c9hnd.com", kUnsafe},
+    {"xn--gamer-f94d4426b.com", u"xn--gamer-f94d4426b.com", kSafe},
+    {"xn--gamer-k94d3426b.com", u"xn--gamer-k94d3426b.com", kSafe},
+    {"xn--4fkv10r.com", u"xn--4fkv10r.com", kSafe},
+    // Georgian:
+    {"xn--gpd3ag.com", u"xn--gpd3ag.com", kUnsafe},
+    {"xn--gpd3ag.ge", u"xn--gpd3ag.ge", kSafe},
+    {"xn--gpd3ag.xn--node", u"xn--gpd3ag.\x10D2\x10D4", kSafe},
+    // Myanmar Shan digits:
+    {"xn--rmdcmef.com", u"xn--rmdcmef.com", kUnsafe},
+    {"xn--rmdcmef.mm", u"xn--rmdcmef.mm", kSafe},
+    {"xn--rmdcmef.xn--7idjb0f4ck",
+     u"xn--rmdcmef.\x1019\x103C\x1014\x103A\x1019\x102C", kSafe},
+    // U+200C(ZWNJ)
+    {"xn--h2by8byc123p.in", u"xn--h2by8byc123p.in", kUnsafe},
+    // U+200C(ZWJ)
+    {"xn--11b6iy14e.in", u"xn--11b6iy14e.in", kUnsafe},
 
     // New test cases go ↑↑ above.
 
@@ -1225,12 +1233,6 @@ TEST_F(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
       {"xn--fu-hia.de", u"fu\u00df.de", kSafe},
       // U+03C2(final-sigma)
       {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr", kSafe},
-
-      // Treat ZWJ and ZWNJ explicitly unsafe, even in Non-Transitional mode.
-      // U+200C(ZWNJ)
-      {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in", kUnsafe},
-      // U+200C(ZWJ)
-      {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kUnsafe},
 
       // youtuße.com is always unsafe:
       // - In Transitional mode, deviation characters are disallowed.
@@ -1421,22 +1423,15 @@ TEST(IDNSpoofCheckerNoFixtureTest, Skeletons) {
 
 TEST(IDNSpoofCheckerNoFixtureTest, MultipleSkeletons) {
   IDNSpoofChecker checker;
-  // apple with U+04CF (ӏ)
-  const GURL url1("http://appӏe.com");
-  const url_formatter::IDNConversionResult result1 =
-      UnsafeIDNToUnicodeWithDetails(url1.GetHost());
-  Skeletons skeletons1 = checker.GetSkeletons(result1.result);
-  EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons1);
-
-  const GURL url2("http://œxamþle.com");
-  const url_formatter::IDNConversionResult result2 =
-      UnsafeIDNToUnicodeWithDetails(url2.GetHost());
-  Skeletons skeletons2 = checker.GetSkeletons(result2.result);
+  const GURL url("http://œxamþle.com");
+  const url_formatter::IDNConversionResult result =
+      UnsafeIDNToUnicodeWithDetails(url.GetHost());
+  Skeletons skeletons = checker.GetSkeletons(result.result);
   // This skeleton set doesn't include strings with "œ" because it gets
   // converted to "oe" by ICU during skeleton extraction.
-  EXPECT_EQ(Skeletons({"oexarnþle.corn", "oexarnple.corn", "oexarnble.corn",
-                       "cexarnþle.corn", "cexarnple.corn", "cexarnble.corn"}),
-            skeletons2);
+  EXPECT_EQ(Skeletons({"oexarnple.corn", "oexarnble.corn", "cexarnple.corn",
+                       "cexarnble.corn"}),
+            skeletons);
 }
 
 TEST(IDNSpoofCheckerNoFixtureTest, AlternativeSkeletons) {

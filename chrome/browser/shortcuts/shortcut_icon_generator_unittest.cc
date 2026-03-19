@@ -18,16 +18,15 @@ TEST(ShortcutIconGeneratorTest, GenerateIconLetterFromUrl) {
   EXPECT_EQ(u"\u0645",
             GenerateIconLetterFromUrl(GURL("http://xn--mgbh0fb.example/")));
   // UTF-16 surrogate code units.
-  // "𨭎𨥫𨋍" (U+28B4E, U+2896B, U+282CD)
+  // "𠜎𠜱𠝹" (U+2070E, U+20731, U+20779)
   // (nonsensical sequence of non-BMP Chinese characters, IDNA-encoded)
-  EXPECT_EQ(u"\U00028b4e",
-            GenerateIconLetterFromUrl(GURL("http://xn--8h8k10hnsb.example/")));
-  // "🌏👍" (U+1F30F, U+1F44D)
-  // (sequence of non-BMP emoji characters, IDNA-encoded)
-  // Emoji are not allowed in IDNA domains, so the first character of this
-  // domain is simply 'X'.
-  EXPECT_EQ(u"X",
-            GenerateIconLetterFromUrl(GURL("http://xn--vg8h2t.example/")));
+  EXPECT_EQ(u"\U0002070E",
+            GenerateIconLetterFromUrl(GURL("http://xn--4m2igcqk.example/")));
+  // "£" (U+00A3) POUND SIGN
+  // Pound sign is not allowed as part of an identifier in IDNA domains, see
+  // Unicode's IdentifierStatus.txt so the first character of this domain is
+  // simply 'X'.
+  EXPECT_EQ(u"X", GenerateIconLetterFromUrl(GURL("http://xn--9a.example/")));
 }
 
 TEST(ShortcutIconGeneratorTest, GenerateIconLetterFromName) {

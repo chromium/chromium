@@ -10,28 +10,28 @@ some common locales.
 
 [ar] Arabic
   [default] 14‏/6‏/2023
-  [short] 14‏/6‏/2023 1:50 م
+  [short] 14‏/6‏/2023، 1:50 م
   [medium] 14‏/06‏/2023، 1:50:00 م
   [long] 14 يونيو 2023 في 1:50:00 م UTC
   [full] الأربعاء، 14 يونيو 2023 في 1:50:00 م التوقيت العالمي المنسق
 
 [ar-EG] Arabic (Egypt)
   [default] ١٤‏/٦‏/٢٠٢٣
-  [short] ١٤‏/٦‏/٢٠٢٣ ٤:٥٠ م
+  [short] ١٤‏/٦‏/٢٠٢٣، ٤:٥٠ م
   [medium] ١٤‏/٠٦‏/٢٠٢٣، ٤:٥٠:٠٠ م
   [long] ١٤ يونيو ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٣
   [full] الأربعاء، ١٤ يونيو ٢٠٢٣ في ٤:٥٠:٠٠ م توقيت شرق أوروبا الصيفي
 
 [ar-SD] Arabic (Sudan)
   [default] ١٤‏/٦‏/٢٠٢٣
-  [short] ١٤‏/٦‏/٢٠٢٣ ٣:٥٠ م
+  [short] ١٤‏/٦‏/٢٠٢٣، ٣:٥٠ م
   [medium] ١٤‏/٠٦‏/٢٠٢٣، ٣:٥٠:٠٠ م
   [long] ١٤ يونيو ٢٠٢٣ في ٣:٥٠:٠٠ م غرينتش+٢
   [full] الأربعاء، ١٤ يونيو ٢٠٢٣ في ٣:٥٠:٠٠ م توقيت وسط أفريقيا
 
 [ar-SY] Arabic (Syria)
   [default] ١٤‏/٦‏/٢٠٢٣
-  [short] ١٤‏/٦‏/٢٠٢٣ ٤:٥٠ م
+  [short] ١٤‏/٦‏/٢٠٢٣، ٤:٥٠ م
   [medium] ١٤‏/٠٦‏/٢٠٢٣، ٤:٥٠:٠٠ م
   [long] ١٤ حزيران ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٣
   [full] الأربعاء، ١٤ حزيران ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٠٣:٠٠
@@ -97,7 +97,7 @@ some common locales.
   [short] 14/06/2023, 14:50
   [medium] 14 Jun 2023, 14:50:00
   [long] 14 June 2023 at 14:50:00 WAT
-  [full] Wednesday, 14 June 2023 at 14:50:00 West Africa Standard Time
+  [full] Wednesday, 14 June 2023 at 14:50:00 West Africa Time
 
 [en-NZ] English (New Zealand)
   [default] 15/06/2023
@@ -145,28 +145,28 @@ some common locales.
   [default] 14/6/2023
   [short] 14/6/23, 13:50
   [medium] 14 jun 2023, 13:50:00
-  [long] 14 de junio de 2023, 13:50:00 UTC
+  [long] 14 de junio de 2023 a las 13:50:00 UTC
   [full] miércoles, 14 de junio de 2023, 13:50:00 (tiempo universal coordinado)
 
 [es-419] Latin American Spanish
   [default] 14/6/2023
   [short] 14/6/23, 7:50 a.m.
   [medium] 14 jun 2023, 7:50:00 a.m.
-  [long] 14 de junio de 2023, 7:50:00 a.m. GMT-6
+  [long] 14 de junio de 2023 a las 7:50:00 a.m. GMT-6
   [full] miércoles, 14 de junio de 2023, 7:50:00 a.m. hora estándar central
 
 [es-ES] European Spanish
   [default] 14/6/2023
   [short] 14/6/23, 15:50
   [medium] 14 jun 2023, 15:50:00
-  [long] 14 de junio de 2023, 15:50:00 CEST
+  [long] 14 de junio de 2023 a las 15:50:00 CEST
   [full] miércoles, 14 de junio de 2023, 15:50:00 (hora de verano de Europa central)
 
 [es-MX] Mexican Spanish
   [default] 14/6/2023
   [short] 14/06/23, 7:50 a.m.
   [medium] 14 jun 2023, 7:50:00 a.m.
-  [long] 14 de junio de 2023, 7:50:00 a.m. GMT-6
+  [long] 14 de junio de 2023 a las 7:50:00 a.m. GMT-6
   [full] miércoles, 14 de junio de 2023, 7:50:00 a.m. hora estándar central
 
 [fa] Persian
@@ -194,8 +194,8 @@ some common locales.
   [default] 14/6/2023
   [short] 14/6/23 07:20 PM
   [medium] 14 જૂન, 2023 07:20:00 PM
-  [long] 14 જૂન, 2023 એ 07:20:00 PM IST વાગ્યે
-  [full] બુધવાર, 14 જૂન, 2023 એ 07:20:00 PM ભારતીય માનક સમય વાગ્યે
+  [long] 14 જૂન, 2023 07:20:00 PM IST
+  [full] બુધવાર, 14 જૂન, 2023 07:20:00 PM ભારતીય માનક સમય
 
 [hi] Hindi
   [default] 14/6/2023
@@ -243,7 +243,7 @@ some common locales.
   [default] १४/६/२०२३
   [short] १४/६/२३, ७:२० PM
   [medium] १४ जून, २०२३, ७:२०:०० PM
-  [long] १४ जून, २०२३ रोजी ७:२०:०० PM IST
+  [long] १४ जून, २०२३ रोजी ७:२०:०० PM IST वाजता
   [full] बुधवार, १४ जून, २०२३ रोजी ७:२०:०० PM भारतीय प्रमाण वेळ
 
 [nl] Dutch
@@ -328,7 +328,7 @@ some common locales.
   [short] 14.06.2023 16:50
   [medium] 14 Haz 2023 16:50:00
   [long] 14 Haziran 2023 16:50:00 GMT+3
-  [full] 14 Haziran 2023 Çarşamba 16:50:00 GMT+03:00
+  [full] 14 Haziran 2023 Çarşamba 16:50:00 Türkiye Standart Saati
 
 [ur] Urdu
   [default] 14/6/2023

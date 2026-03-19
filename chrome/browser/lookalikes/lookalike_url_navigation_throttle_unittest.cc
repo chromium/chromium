@@ -28,9 +28,11 @@ TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
       // ASCII private domain.
       {"private.hostname", false, url_formatter::IDNSpoofCheckerResult::kNone},
 
-      // lɔlocked.com, fails ICU spoof checks.
-      {"xn--llocked-9bd.com", true,
-       url_formatter::IDNSpoofCheckerResult::kICUSpoofChecks},
+      // lɔlocked.com,
+      // Update for ICU 78.2, and IDNA updates in Unicode 17.
+      // this label no longer fails, compare: https://crbug.com/492063443
+      {"xn--llocked-9bd.com", false,
+       url_formatter::IDNSpoofCheckerResult::kSafe /*ICUSpoofChecks*/},
       // þook.com, contains a TLD specific character (þ).
       {"xn--ook-ooa.com", true,
        url_formatter::IDNSpoofCheckerResult::kTLDSpecificCharacters},

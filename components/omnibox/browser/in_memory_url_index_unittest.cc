@@ -542,28 +542,6 @@ TEST_F(InMemoryURLIndexTest, Retrieval) {
   EXPECT_EQ(u"Situation Normal -- FUBARED", matches[0].url_info.title());
 }
 
-// Regression test for crbug.com/1494484. Exercises a URL that is valid but may
-// become invalid if handled with url_formatter::FormatUrl().
-TEST_F(InMemoryURLIndexTest,
-       RetrievalWithInternationalizedDomainNameWithInvalidCodePoint) {
-  const GURL url("https://xn--b4ab3a0a.xn--b4aew.com/");
-
-  ASSERT_TRUE(url.is_valid());
-  ASSERT_FALSE(GURL(url_formatter::FormatUrl(
-                        url, url_formatter::kFormatUrlOmitUsernamePassword,
-                        base::UnescapeRule::NONE, nullptr, nullptr, nullptr))
-                   .is_valid());
-
-  history::URLID new_row_id = 87654321;  // Arbitrarily chosen large new row id.
-  history::URLRow new_row = history::URLRow(url, new_row_id++);
-  new_row.set_last_visit(base::Time::Now());
-
-  EXPECT_TRUE(UpdateURL(new_row));
-  EXPECT_EQ(1U, HistoryItemsForTerms(u"\u04a5\u049b\u049d",
-                                     std::u16string::npos, kProviderMaxMatches)
-                    .size());
-}
-
 TEST_F(InMemoryURLIndexTest, CursorPositionRetrieval) {
   // See if a very specific term with no cursor gives an empty result.
   ScoredHistoryMatches matches = HistoryItemsForTerms(

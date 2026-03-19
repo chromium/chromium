@@ -34,12 +34,12 @@ some common locales.
 [bn] Bangla
   [digital] ২:০০:৩৫
   [narrow] ২ ঘঃ, ৩৫ সেঃ
-  [short] ২ ঘন্টা, ৩৫ সেকেন্ড
-  [long] ২ ঘন্টা, ৩৫ সেকেন্ড
+  [short] ২ ঘণ্টা, ৩৫ সেকেন্ড
+  [long] ২ ঘণ্টা, ৩৫ সেকেন্ড
 
 [de] German
   [digital] 2:00:35
-  [narrow] 2 Std., 35 Sek.
+  [narrow] 2h, 35 Sek.
   [short] 2 Std., 35 Sek.
   [long] 2 Stunden, 35 Sekunden
 
@@ -256,8 +256,8 @@ some common locales.
 [ta] Tamil
   [digital] 2:00:35
   [narrow] 2 ம.நே. 35 வி.
-  [short] 2 மணிநேரம், 35 விநாடி
-  [long] 2 மணிநேரங்கள், 35 விநாடிகள்
+  [short] 2 ம., 35 விநாடி
+  [long] 2 ம., 35 விநாடிகள்
 
 [te] Telugu
   [digital] 2:00:35

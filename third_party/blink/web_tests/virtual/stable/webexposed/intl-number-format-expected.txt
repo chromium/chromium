@@ -99,7 +99,7 @@ some common locales.
   [default] 123
   [default] 1,234
   [default] 12,345
-  [PKR] Rs 12,345.00
+  [PKR] Rs 12,345
 
 [en-TZ] English (Tanzania)
   [default] 123
@@ -175,7 +175,7 @@ some common locales.
   [default] 123
   [default] 1.234
   [default] 12.345
-  [IDR] Rp 12.345,00
+  [IDR] Rp 12.345
 
 [it] Italian
   [default] 123
@@ -283,7 +283,7 @@ some common locales.
   [default] 123
   [default] 1,234
   [default] 12,345
-  [PKR] Rs 12,345.00
+  [PKR] Rs 12,345
 
 [vi] Vietnamese
   [default] 123
