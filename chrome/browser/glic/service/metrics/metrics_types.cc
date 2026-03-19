@@ -20,7 +20,7 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
       return "WebHandoff";
     case DaisyChainSource::kAutoOpenPdf:
       return "AutoOpenPdf";
-    default:
+    case DaisyChainSource::kUnknown:
       return "Unknown";
   }
 }
@@ -58,8 +58,14 @@ GlicEntrypoint GetEntrypointFromInvocationSource(
       return GlicEntrypoint::kAutoOpenedForPdf;
     case glic::mojom::InvocationSource::kIph:
       return GlicEntrypoint::kIph;
-    default:
-      // All other ones, including mojom::InvocationSource::kUnsupported.
+    case glic::mojom::InvocationSource::kFre:
+    case glic::mojom::InvocationSource::kProfilePicker:
+    case glic::mojom::InvocationSource::kUnsupported:
+    case glic::mojom::InvocationSource::kAfterSignIn:
+    case glic::mojom::InvocationSource::kActorTaskIcon:
+    case glic::mojom::InvocationSource::kHandoffButton:
+    case glic::mojom::InvocationSource::kCaptureRegionHotkey:
+    case glic::mojom::InvocationSource::kAnchoredContextualCue:
       return GlicEntrypoint::kOther;
   }
 }
@@ -96,8 +102,6 @@ std::string GetEntrypointString(GlicEntrypoint entrypoint) {
       return "TopChromeButton";
     case GlicEntrypoint::kWhatsNew:
       return "WhatsNew";
-    default:
-      return "Other";
   }
 }
 }  // namespace glic
