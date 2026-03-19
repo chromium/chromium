@@ -1030,7 +1030,8 @@ BrowserView::BrowserView(Browser* browser)
       ProjectsPanelStateController::From(browser_);
   if (projects_panel_state_controller) {
     auto projects_panel_container = std::make_unique<ProjectsPanelView>(
-        browser_.get(), browser_->GetActions()->root_action_item());
+        browser_.get(), browser_->GetActions()->root_action_item(),
+        projects_panel_state_controller);
     projects_panel_container_ =
         AddChildView(std::move(projects_panel_container));
     projects_panel_subscription_ =

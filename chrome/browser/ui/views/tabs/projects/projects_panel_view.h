@@ -60,7 +60,8 @@ class ProjectsPanelView : public views::View,
 
  public:
   ProjectsPanelView(BrowserWindowInterface* browser,
-                    actions::ActionItem* root_action_item);
+                    actions::ActionItem* root_action_item,
+                    ProjectsPanelStateController* state_controller);
   ProjectsPanelView(const ProjectsPanelView&) = delete;
   ProjectsPanelView& operator=(const ProjectsPanelView&) = delete;
   ~ProjectsPanelView() override;
@@ -190,6 +191,7 @@ class ProjectsPanelView : public views::View,
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::unique_ptr<ProjectsPanelController> panel_controller_;
+  const raw_ptr<ProjectsPanelStateController> state_controller_ = nullptr;
 
   // Animation when opening and closing the panel.
   gfx::SlideAnimation resize_animation_;

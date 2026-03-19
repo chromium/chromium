@@ -100,6 +100,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:test_support",
+    "//components/omnibox/browser:test_support",
+    "//components/prefs:test_support",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//components/sync/base",
@@ -134,6 +136,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":projects",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -142,6 +145,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs/projects",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public:test_support",
+    "//components/omnibox/browser:test_support",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//content/test:test_support",

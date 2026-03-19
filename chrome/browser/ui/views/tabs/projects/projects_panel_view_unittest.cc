@@ -84,7 +84,8 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
 
   void CreateView() {
     auto view = std::make_unique<ProjectsPanelView>(
-        &mock_browser_window_interface_, root_action_item_.get());
+        &mock_browser_window_interface_, root_action_item_.get(),
+        state_controller_.get());
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ = widget_->SetContentsView(std::move(view));
     widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
