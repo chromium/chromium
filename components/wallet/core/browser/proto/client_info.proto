@@ -14,6 +14,17 @@ message ClientInfo {
   message ChromeClientInfo {
     // The version of the Chrome client.
     optional string version = 1;
+
+    enum Platform {
+      PLATFORM_UNSPECIFIED = 0;
+      PLATFORM_WINDOWS = 1;
+      PLATFORM_MACOS = 2;
+      PLATFORM_LINUX = 3;
+      PLATFORM_CHROMEOS = 4;
+      PLATFORM_ANDROID = 5;
+      PLATFORM_IOS = 6;
+    }
+    optional Platform platform = 2;
   }
   // Information about Chrome Web Page Detection client.
   message ChromeWebPageDetectionClientInfo {
