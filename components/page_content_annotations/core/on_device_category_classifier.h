@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -38,6 +39,7 @@ class OnDeviceCategoryClassifier
    public:
     virtual void OnCategoriesClassified(
         const GURL& url,
+        ukm::SourceId source_id,
         const std::vector<Category>& categories) = 0;
   };
 
@@ -55,6 +57,7 @@ class OnDeviceCategoryClassifier
 
   // Invoked when an embedding has been successfully computed for the page.
   void OnPageEmbeddingAvailable(const GURL& url,
+                                ukm::SourceId source_id,
                                 const passage_embeddings::Embedding& embedding);
 
   // passage_embeddings::EmbedderMetadataObserver:
@@ -64,6 +67,7 @@ class OnDeviceCategoryClassifier
  private:
   void OnCategoryClassifiersCompleted(
       const GURL& url,
+      ukm::SourceId source_id,
       const std::vector<std::pair<CategoryType, std::optional<float>>>&
           classifier_outputs);
 

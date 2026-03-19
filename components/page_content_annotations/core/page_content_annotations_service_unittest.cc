@@ -501,7 +501,7 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
         EXPECT_EQ(results[1].score, 0.8f);
       });
 
-  service()->OnCategoriesClassified(url, categories);
+  service()->OnCategoriesClassified(url, /*source_id=*/0, categories);
 
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
 }

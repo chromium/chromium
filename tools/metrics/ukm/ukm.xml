@@ -17740,6 +17740,26 @@ be describing additional metrics about the same event.
     commit and has an annotation calculated on it. The metrics are recorded in a
     RAPPOR-style with low-entropy so only aggregate analysis can be performed.
   </summary>
+  <metric name="CategoryClassifier.EducationScore">
+    <summary>
+      Records a low entropy representation of the education category score from
+      the output of a page classifier model. The raw score is between 0 and 1,
+      which is scaled to between 0 and 100, then placed into one of 16 linearly
+      spaced buckets by dividing the score by the bucket size and taking the
+      floor. The resulting bucket value has noise added with a probability of .5
+      where the noise is randomly applied to each individual bit.
+    </summary>
+  </metric>
+  <metric name="CategoryClassifier.ShoppingScore">
+    <summary>
+      Records a low entropy representation of the shopping category score from
+      the output of a page classifier model. The raw score is between 0 and 1,
+      which is scaled to between 0 and 100, then placed into one of 16 linearly
+      spaced buckets by dividing the score by the bucket size and taking the
+      floor. The resulting bucket value has noise added with a probability of .5
+      where the noise is randomly applied to each individual bit.
+    </summary>
+  </metric>
   <metric name="VisibilityScore">
     <summary>
       Records a low entropy respresentation of the visibility score output by a

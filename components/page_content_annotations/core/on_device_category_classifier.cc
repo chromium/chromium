@@ -58,6 +58,7 @@ void OnDeviceCategoryClassifier::RemoveObserver(Observer* observer) {
 
 void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
     const GURL& url,
+    ukm::SourceId source_id,
     const passage_embeddings::Embedding& embedding) {
   // Run each of the category classifiers on the returned embedding.
   auto barrier_callback =
@@ -65,7 +66,7 @@ void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
           category_classifier_model_handlers_.size(),
           base::BindOnce(
               &OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted,
-              weak_ptr_factory_.GetWeakPtr(), url));
+              weak_ptr_factory_.GetWeakPtr(), url, source_id));
   for (const auto& [category_type, model_handler] :
        category_classifier_model_handlers_) {
     // Check if the model is compatible with the current embedder version.
@@ -95,6 +96,7 @@ void OnDeviceCategoryClassifier::EmbedderMetadataUpdated(
 
 void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
     const GURL& url,
+    ukm::SourceId source_id,
     const std::vector<std::pair<CategoryType, std::optional<float>>>&
         classifier_outputs) {
   std::vector<Category> outputs;
@@ -106,7 +108,7 @@ void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
   }
 
   for (auto& observer : observers_) {
-    observer.OnCategoriesClassified(url, outputs);
+    observer.OnCategoriesClassified(url, source_id, outputs);
   }
 }
 

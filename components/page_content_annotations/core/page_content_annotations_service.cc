@@ -121,7 +121,6 @@ void MaybeRecordVisibilityUKM(
 
   int64_t score =
       static_cast<int64_t>(100 * content_annotations->visibility_score);
-
   if (google_util::IsGoogleSearchUrl(visit.url)) {
     base::UmaHistogramPercentage(
         "OptimizationGuide.PageContentAnnotationsService."
@@ -129,20 +128,13 @@ void MaybeRecordVisibilityUKM(
         score);
   }
 
-  // We want 2^|num_bits| buckets, linearly spaced.
-  uint32_t num_buckets = std::pow(2, features::NumBitsForRAPPORMetrics());
-  DCHECK_GT(num_buckets, 0u);
-  float bucket_size = 100.0 / num_buckets;
-  uint32_t bucketed_score = static_cast<uint32_t>(floor(score / bucket_size));
-  DCHECK_LE(bucketed_score, num_buckets);
-  uint32_t noisy_score = NoisyMetricsRecorder().GetNoisyMetric(
-      features::NoiseProbabilityForRAPPORMetrics(), bucketed_score,
-      features::NumBitsForRAPPORMetrics());
+  int64_t noisy_score =
+      GenerateRapporNoisedScore(content_annotations->visibility_score);
   ukm::SourceId ukm_source_id = ukm::ConvertToSourceId(
       visit.navigation_id, ukm::SourceIdType::NAVIGATION_ID);
 
   ukm::builders::PageContentAnnotations2(ukm_source_id)
-      .SetVisibilityScore(static_cast<int64_t>(noisy_score))
+      .SetVisibilityScore(noisy_score)
       .Record(ukm::UkmRecorder::Get());
 }
 #endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
@@ -319,6 +311,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnCategoriesClassified(
     const GURL& url,
+    ukm::SourceId source_id,
     const std::vector<Category>& categories) {
   auto it = last_visit_for_url_.Peek(url);
   if (it == last_visit_for_url_.end()) {

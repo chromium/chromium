@@ -239,6 +239,7 @@ class PageContentAnnotationsService
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // OnDeviceCategoryClassifier::Observer:
   void OnCategoriesClassified(const GURL& url,
+                              ukm::SourceId source_id,
                               const std::vector<Category>& categories) override;
 #endif
 
