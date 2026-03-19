@@ -373,6 +373,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
     kTriggerAttachmentClass,
 
+    kRepeatClass,
+
     // List class types must appear after ValueListClass.
     kValueListClass,
     kFunctionClass,
@@ -381,7 +383,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridAutoRepeatClass,
     kGridIntegerRepeatClass,
     kAxisClass,
-    kRepeatClass,
     // Do not append non-list class types here.
   };
 

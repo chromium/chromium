@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>CSSRepeatValue type confusion via IsValueList() does not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id="target" style="column-rule-color: repeat(2, red);
+                        column-rule-width: repeat(2, 1px);
+                        column-rule-style: repeat(2, solid);"></div>
+<script>
+  test(() => {
+    const target = document.getElementById('target');
+    const newDoc = document.implementation.createHTMLDocument('');
+    newDoc.body.appendChild(target);
+  }, 'CSSRepeatValue type confusion via IsValueList does not crash when adopting node to new document');
+</script>
