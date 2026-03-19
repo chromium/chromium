@@ -21,8 +21,8 @@ bool IsButtonPinned(BrowserWindowInterface* browser_interface,
     case toolbar_ui_api::mojom::ToolbarButtonType::kHome:
       return browser_interface->GetProfile()->GetPrefs()->GetBoolean(
           prefs::kShowHomeButton);
-    default:
-      NOTREACHED();
+    case toolbar_ui_api::mojom::ToolbarButtonType::kUnspecified:
+      NOTREACHED() << "Unexpected ToolbarButtonType::kUnspecified.";
   }
 }
 

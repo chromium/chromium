@@ -10,13 +10,13 @@ import "mojo/public/mojom/base/string16.mojom";
 // The context menu types that can be opened with ToolbarUIService's
 // ShowContextMenu.
 enum ContextMenuType {
-  kUnspecified = 0,
-  kReload = 1,
-  kSplitTabsAction = 2,
-  kSplitTabsContext = 3,
-  kBack = 4,
-  kForward = 5,
-  kHome = 6,
+  kUnspecified,
+  kReload,
+  kSplitTabsAction,
+  kSplitTabsContext,
+  kBack,
+  kForward,
+  kHome,
 };
 
 struct ButtonState {
@@ -25,6 +25,7 @@ struct ButtonState {
 };
 
 enum SplitTabActiveLocation {
+  kUnspecified,
   kStart,
   kEnd,
   kTop,
@@ -32,6 +33,7 @@ enum SplitTabActiveLocation {
 };
 
 enum ToolbarButtonType {
+  kUnspecified,
   kSplitTabs,
   kHome,
 };

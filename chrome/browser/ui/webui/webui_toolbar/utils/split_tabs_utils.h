@@ -20,7 +20,7 @@ namespace webui_toolbar {
 struct TabSplitStatus {
   bool is_split = false;
   toolbar_ui_api::mojom::SplitTabActiveLocation location =
-      toolbar_ui_api::mojom::SplitTabActiveLocation::kStart;
+      toolbar_ui_api::mojom::SplitTabActiveLocation::kUnspecified;
 
   bool operator==(const TabSplitStatus& other) const = default;
 };
