@@ -18137,6 +18137,25 @@
             ]
         }
     ],
+    "PrivacySandboxAdPrivacyUxDeprecation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxAdPrivacyUxDeprecation"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxInternalsDevUI": [
         {
             "platforms": [

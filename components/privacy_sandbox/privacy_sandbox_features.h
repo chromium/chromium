@@ -153,6 +153,12 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxNoticeFramework);
 
+// If true, the Ad Topics, Site Suggested Ads, and Ad Measurement API prefs are
+// set to false for users on startup. The UX to access these Ad Privacy settings
+// will be removed from all surfaces.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAdPrivacyUxDeprecation);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
