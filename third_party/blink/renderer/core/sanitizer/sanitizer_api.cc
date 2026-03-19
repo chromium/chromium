@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
-#include "third_party/blink/renderer/core/sanitizer/streaming_sanitizer.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
@@ -85,16 +84,22 @@ void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
   }
 }
 
-StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizerInternal(
+StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizer(
+    Sanitizer::Mode mode,
     FragmentParserOptions options,
     ExceptionState& exception_state) {
   const Sanitizer* sanitizer =
-      SanitizerFromOptions(options, Sanitizer::Mode::kUnsafe, exception_state);
+      SanitizerFromOptions(options, mode, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
   CHECK(sanitizer);
-  return StreamingSanitizer::CreateUnsafe(sanitizer);
+  Sanitizer* clone = MakeGarbageCollected<Sanitizer>();
+  clone->setFrom(*sanitizer);
+  if (mode == Sanitizer::Mode::kSafe) {
+    clone->removeUnsafe();
+  }
+  return MakeGarbageCollected<StreamingSanitizer>(clone, mode);
 }
 
 }  // namespace blink

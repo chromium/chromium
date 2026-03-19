@@ -78,7 +78,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   DocumentFragment* fragment_target,
                   Element* fragment_context_element,
                   CustomElementRegistry* registry,
-                  StreamingSanitizer* sanitizer,
+                  StreamingSanitizer*,
                   ParserRootInsertionPoint* root_insertion_point);
 
  public:

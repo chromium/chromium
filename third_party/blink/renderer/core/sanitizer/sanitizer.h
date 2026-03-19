@@ -9,8 +9,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
-#include "third_party/blink/renderer/core/sanitizer/streaming_sanitizer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -174,6 +175,24 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   SanitizerNameMap remove_attrs_per_element_;
   SanitizerBoolWithAbsence data_attrs_;
   SanitizerBoolWithAbsence comments_;
+};
+
+class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
+ public:
+  StreamingSanitizer(Sanitizer* sanitizer, Sanitizer::Mode mode)
+      : sanitizer_(sanitizer), mode_(mode) {}
+  bool Sanitize(Node* node) {
+    return sanitizer_->SanitizeSingleNode(node, mode_);
+  }
+  bool ShouldReplaceWithChildren(Node* node) const {
+    return sanitizer_->ShouldReplaceNodeWithChildren(node);
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(sanitizer_); }
+
+ private:
+  Member<Sanitizer> sanitizer_;
+  Sanitizer::Mode mode_;
 };
 
 }  // namespace blink

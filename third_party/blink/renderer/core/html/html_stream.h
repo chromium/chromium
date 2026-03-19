@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_STREAM_H_
 
 #include "base/functional/callback.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 
 namespace blink {
 class AtomicString;
@@ -23,6 +24,7 @@ class HTMLStream {
   static WritableStream* Create(ScriptState*,
                                 ContainerNode* target,
                                 Node* ref_node,
+                                Sanitizer::Mode,
                                 const FragmentParserOptions& options,
                                 const AtomicString& interface_name,
                                 const AtomicString& property_name,
@@ -32,13 +34,15 @@ class HTMLStream {
   static WritableStream* Create(ScriptState* script_state,
                                 ContainerNode* target,
                                 Node* ref_node,
+                                Sanitizer::Mode sanitizer_mode,
                                 const FragmentParserOptions& options,
                                 const AtomicString& interface_name,
                                 const AtomicString& property_name,
                                 ExceptionState& exception_state,
                                 T on_start) {
-    auto* stream = Create(script_state, target, ref_node, options,
-                          interface_name, property_name, exception_state);
+    auto* stream =
+        Create(script_state, target, ref_node, sanitizer_mode, options,
+               interface_name, property_name, exception_state);
     if (stream) {
       on_start();
     }

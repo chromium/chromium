@@ -15,7 +15,6 @@ namespace blink {
 class ContainerNode;
 class ExceptionState;
 class FragmentParserOptions;
-class StreamingSanitizer;
 
 class CORE_EXPORT SanitizerAPI final {
  public:
@@ -24,7 +23,8 @@ class CORE_EXPORT SanitizerAPI final {
                                ContainerNode* root_element,
                                FragmentParserOptions options,
                                ExceptionState& exception_state);
-  static StreamingSanitizer* CreateStreamingSanitizerInternal(
+  static StreamingSanitizer* CreateStreamingSanitizer(
+      Sanitizer::Mode,
       FragmentParserOptions options,
       ExceptionState& exception_state);
 };
