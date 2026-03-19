@@ -201,10 +201,7 @@ void Resource::CheckResourceIntegrity() {
 
   // Check `Unencoded-Digest` headers. If the digest doesn't match, fail.
   // Otherwise, fall through to validating SRI.
-  const FeatureContext* feature_context =
-      loader_ ? loader_->GetFeatureContext() : nullptr;
-  if (RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context) &&
-      !SubresourceIntegrity::CheckUnencodedDigests(
+  if (!SubresourceIntegrity::CheckUnencodedDigests(
           GetResponse().GetUnencodedDigests(), Data())) {
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
@@ -214,6 +211,9 @@ void Resource::CheckResourceIntegrity() {
          "not match the resource's body."}));
     return;
   }
+
+  const FeatureContext* feature_context =
+      loader_ ? loader_->GetFeatureContext() : nullptr;
 
   HashMap<HashAlgorithm, String> integrity_hashes;
   bool is_cors_same_origin = response_.IsCorsSameOrigin();

@@ -5871,10 +5871,6 @@
       status: "experimental",
     },
     {
-      name: "UnencodedDigest",
-      status: "stable",
-    },
-    {
       name: "UnexposedTaskIds",
     },
     // This is a kill switch for the unprefixed Web Speech API.

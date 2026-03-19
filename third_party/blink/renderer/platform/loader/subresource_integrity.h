@@ -58,8 +58,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   static String GetSubresourceIntegrityHash(const SegmentedBuffer*,
                                             HashAlgorithm);
 
-  // The caller is responsible for ensuring that `Unencoded-Digests` are enabled
-  // by checking against `RuntimeEnabledFeatures::UnencodedDigestEnabled()`.
   static bool CheckUnencodedDigests(const Vector<IntegrityMetadata>& digests,
                                     const SegmentedBuffer* data);
 

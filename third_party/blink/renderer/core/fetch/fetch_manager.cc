@@ -532,9 +532,7 @@ class FetchManager::Loader final
       if (result == Result::kDone) {
         bool integrity_failed = false;
 
-        if (RuntimeEnabledFeatures::UnencodedDigestEnabled(
-                loader_->GetExecutionContext()) &&
-            !SubresourceIntegrity::CheckUnencodedDigests(unencoded_digests_,
+        if (!SubresourceIntegrity::CheckUnencodedDigests(unencoded_digests_,
                                                          &buffer_)) {
           integrity_failed = true;
           error_message =
@@ -795,8 +793,7 @@ void FetchManager::Loader::DidReceiveResponse(
                                  tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
   if (GetFetchRequestData()->Integrity().empty() &&
-      (!RuntimeEnabledFeatures::UnencodedDigestEnabled(GetExecutionContext()) ||
-       response.GetUnencodedDigests().empty())) {
+      response.GetUnencodedDigests().empty()) {
     response_resolver_->Resolve(r);
     response_resolver_.Clear();
   } else {
