@@ -671,6 +671,20 @@ public abstract class DisplayUtil {
         ResettersForTesting.register(() -> sCarmaPhase1Version2ComplianceForTesting = null);
     }
 
+    public static void setGlobalDefaultDisplaySizeInInchesForTesting( // IN-TEST
+            Double globalDefaultDisplaySizeInInches) {
+        Double oldValue = sGlobalDefaultDisplaySizeInInches;
+        sGlobalDefaultDisplaySizeInInches = globalDefaultDisplaySizeInInches;
+        ResettersForTesting.register(() -> sGlobalDefaultDisplaySizeInInches = oldValue);
+    }
+
+    public static void setGlobalDefaultDisplayTabletSizedForTesting( // IN-TEST
+            Boolean isGlobalDefaultDisplayTabletSized) {
+        Boolean oldValue = sIsGlobalDefaultDisplayTabletSized;
+        sIsGlobalDefaultDisplayTabletSized = isGlobalDefaultDisplayTabletSized;
+        ResettersForTesting.register(() -> sIsGlobalDefaultDisplayTabletSized = oldValue);
+    }
+
     public static void setIsDisplayCompatAppForTesting(boolean isDisplayCompatAppForTesting) {
         sIsDisplayCompatAppForTesting = isDisplayCompatAppForTesting;
         ResettersForTesting.register(() -> sIsDisplayCompatAppForTesting = null);

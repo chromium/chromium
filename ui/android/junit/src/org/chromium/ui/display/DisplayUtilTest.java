@@ -4,7 +4,10 @@
 package org.chromium.ui.display;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
@@ -65,6 +68,7 @@ public class DisplayUtilTest {
     private static final int TEST_NAVIGATION_BAR_HEIGHT = 100;
     private static final int TEST_LEFT_INSET = 100;
     private static final int TEST_RIGHT_INSET = 100;
+    private static final double LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES = 8.0;
     private static final Insets TEST_SYSTEM_BAR_INSETS =
             Insets.of(
                     TEST_LEFT_INSET,
@@ -770,5 +774,63 @@ public class DisplayUtilTest {
                 expectedGlobalCoordinatesDp,
                 DisplayUtil.convertLocalPxToGlobalDipCoordinates(
                         mDisplayAndroid, testLocalCoordinatesPx));
+    }
+
+    @Test
+    public void testIsGlobalDefaultDisplayTabletSized_tablet() {
+        DisplayUtil.setGlobalDefaultDisplayTabletSizedForTesting(null);
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        when(mDisplayAndroidManager.getDisplayAndroid(any())).thenReturn(mDisplayAndroid);
+
+        when(mDisplayAndroid.getDisplayWidth()).thenReturn(1600);
+        when(mDisplayAndroid.getDisplayHeight()).thenReturn(1200);
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+
+        assertTrue(DisplayUtil.isGlobalDefaultDisplayTabletSized());
+    }
+
+    @Test
+    public void testIsGlobalDefaultDisplayTabletSized_phone() {
+        DisplayUtil.setGlobalDefaultDisplayTabletSizedForTesting(null);
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        when(mDisplayAndroidManager.getDisplayAndroid(any())).thenReturn(mDisplayAndroid);
+
+        when(mDisplayAndroid.getDisplayWidth()).thenReturn(1000);
+        when(mDisplayAndroid.getDisplayHeight()).thenReturn(2000);
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+
+        assertFalse(DisplayUtil.isGlobalDefaultDisplayTabletSized());
+    }
+
+    @Test
+    public void testIsGlobalDefaultDisplayWithMinDiagonal_greater() {
+        DisplayUtil.setGlobalDefaultDisplaySizeInInchesForTesting(null);
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        when(mDisplayAndroidManager.getDisplayAndroid(any())).thenReturn(mDisplayAndroid);
+
+        when(mDisplayAndroid.getDisplayWidth()).thenReturn(1600);
+        when(mDisplayAndroid.getDisplayHeight()).thenReturn(1200);
+        when(mDisplayAndroid.getXdpi()).thenReturn(160.0f);
+        when(mDisplayAndroid.getYdpi()).thenReturn(160.0f);
+
+        assertTrue(
+                DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                        LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
+    }
+
+    @Test
+    public void testIsGlobalDefaultDisplayWithMinDiagonal_smaller() {
+        DisplayUtil.setGlobalDefaultDisplaySizeInInchesForTesting(null);
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        when(mDisplayAndroidManager.getDisplayAndroid(any())).thenReturn(mDisplayAndroid);
+
+        when(mDisplayAndroid.getDisplayWidth()).thenReturn(800);
+        when(mDisplayAndroid.getDisplayHeight()).thenReturn(600);
+        when(mDisplayAndroid.getXdpi()).thenReturn(160.0f);
+        when(mDisplayAndroid.getYdpi()).thenReturn(160.0f);
+
+        assertFalse(
+                DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                        LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
     }
 }
