@@ -177,6 +177,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
     public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
             "AndroidAppIntegrationMultiDataSource";
+    public static final String ANDROID_APP_RATING_PROMPT = "AndroidAppRatingPrompt";
     public static final String ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH =
             "AndroidAutofillSupportForHttpAuth";
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
@@ -733,6 +734,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
             newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, true);
+    public static final CachedFlag sAndroidAppRatingPrompt =
+            newCachedFlag(ANDROID_APP_RATING_PROMPT, false);
     public static final CachedFlag sAndroidAutoMintedTwa =
             newCachedFlag(ANDROID_AUTO_MINTED_TWA, false);
     public static final CachedFlag sAndroidBottomBar =
@@ -1166,6 +1169,7 @@ public abstract class ChromeFeatureList {
                     sAndroidApb144Patch4,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,
+                    sAndroidAppRatingPrompt,
                     sAndroidAutoMintedTwa,
                     sAndroidBottomBar,
                     sAndroidBottomToolbarV2,

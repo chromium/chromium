@@ -6437,6 +6437,11 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidAppIntegrationModuleVariations,
          "AndroidAppIntegrationModule")},
 
+    {"android-app-rating-prompt",
+     flag_descriptions::kAndroidAppRatingPromptName,
+     flag_descriptions::kAndroidAppRatingPromptDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppRatingPrompt)},
+
     {"android-media-picker", flag_descriptions::kAndroidMediaPickerName,
      flag_descriptions::kAndroidMediaPickerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(kAndroidMediaPicker)},

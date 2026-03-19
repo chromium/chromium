@@ -120,6 +120,11 @@ inline constexpr char kAndroidAppIntegrationModuleDescription[] =
     "If enabled, allows Chrome to show a notice card on the magic stack for "
     "Android App Search integration";
 
+inline constexpr char kAndroidAppRatingPromptName[] =
+    "Android App Rating Prompt";
+inline constexpr char kAndroidAppRatingPromptDescription[] =
+    "Enables the Android App Rating Prompt feature.";
+
 inline constexpr char kNewContentForCheckerboardedScrollsName[] =
     "Change scrolling scheduling to reduce checkerboarding";
 inline constexpr char kNewContentForCheckerboardedScrollsDescription[] =

@@ -14896,6 +14896,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioSuppressSetRTCAudioActive:enabled"/>
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>
   <int value="141830539" label="MediaAppPdfSignature:enabled"/>
+  <int value="143662169" label="AndroidAppRatingPrompt:disabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
   <int value="143972631" label="FetchGaiaHashOnSignIn:disabled"/>
   <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
@@ -19276,6 +19277,7 @@ from previous Chrome versions.
   <int value="1619842095" label="ColorProviderRedirection:enabled"/>
   <int value="1620369597" label="enable-unsafe-webgpu"/>
   <int value="1620668131" label="PageEntitiesPageContentAnnotations:disabled"/>
+  <int value="1620787928" label="AndroidAppRatingPrompt:enabled"/>
   <int value="1621298798" label="VrBrowserKeyboard:enabled"/>
   <int value="1622131033" label="ozone-test-single-overlay-support"/>
   <int value="1622672308" label="ReaderMode:enabled"/>
