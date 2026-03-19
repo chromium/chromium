@@ -337,7 +337,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     // regardless of CSS 'display'.
     return true;
   }
-  void UpdateFromStyle() final;
   bool AnonymousHasStylePropagationOverride() final {
     NOT_DESTROYED();
     return true;

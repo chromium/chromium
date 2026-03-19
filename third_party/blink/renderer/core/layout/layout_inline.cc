@@ -149,15 +149,6 @@ void LayoutInline::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
     ClearFirstInlineFragmentItemIndex();
 }
 
-void LayoutInline::UpdateFromStyle() {
-  NOT_DESTROYED();
-  LayoutBoxModelObject::UpdateFromStyle();
-
-  // FIXME: Support transforms and reflections on inline flows someday.
-  SetHasTransformRelatedProperty(false);
-  SetHasReflection(false);
-}
-
 void LayoutInline::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
