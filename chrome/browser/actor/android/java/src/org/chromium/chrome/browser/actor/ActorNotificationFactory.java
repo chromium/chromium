@@ -62,7 +62,8 @@ public class ActorNotificationFactory {
                                         notificationId))
                         .setSmallIcon(R.drawable.ic_spark_24dp)
                         .setGroup(NotificationConstants.GROUP_ACTOR)
-                        .setLocalOnly(true);
+                        .setLocalOnly(true)
+                        .setSilent(true);
 
         if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
             return buildRunningNotification(builder, context, task, notificationId);
