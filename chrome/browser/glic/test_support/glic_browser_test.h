@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -242,10 +243,11 @@ class GlicBrowserTestMixin : public T {
         GlicKeyedService::Get(T::GetProfile())->window_controller());
   }
 
-  // Opens a new tab with the given URL.
+  // Opens a new tab with the given URL and wait for load to complete.
   tabs::TabInterface* CreateAndActivateTab(const GURL& url) {
     tabs::TabInterface* new_tab = T::GetTabListInterface()->OpenTab(url, -1);
     T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
+    CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
   }
 

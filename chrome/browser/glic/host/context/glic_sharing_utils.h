@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -43,7 +44,8 @@ GlicPinnedTabUsage GetEmptyPinnedTabUsage();
 GlicUnpinEvent GetEmptyUnpinEvent();
 
 // Shared util for monitoring changes to "active tab" for a given profile.
-class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
+class GlicActiveTabForProfileTracker : public BrowserCollectionObserver,
+                                       public TabListInterfaceObserver {
  public:
   explicit GlicActiveTabForProfileTracker(Profile* profile);
   ~GlicActiveTabForProfileTracker() override;
@@ -65,8 +67,10 @@ class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
-  // Callback for changes to the active tab.
-  void OnActiveTabChanged(BrowserWindowInterface* browser);
+  // TabListInterfaceObserver.
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // Pulls the active tab and notifies if changed.
   void UpdateActiveTab();
@@ -74,7 +78,7 @@ class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
   // Notifies subscribers when active tab has changed.
   void NotifyActiveTabChanged(tabs::TabInterface* active_tab);
 
-  // Updates the active tab subscription (if any) for the given browser.
+  // Updates the active tab observation for the given browser.
   void UpdateActiveTabSubscription(BrowserWindowInterface* browser);
 
   // True if the browser is active and for the same profile.
@@ -87,8 +91,9 @@ class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
   base::RepeatingCallbackList<void(tabs::TabInterface* tab)>
       active_tab_changed_callback_list_;
 
-  // Subscription for listening to browser-specific active tab changes.
-  base::CallbackListSubscription active_tab_subscription_;
+  // Observation for listening to browser-specific active tab changes.
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
 
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
