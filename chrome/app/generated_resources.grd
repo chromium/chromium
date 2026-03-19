@@ -7701,29 +7701,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT" desc="The text displayed in the WebUI Omnibox when it is empty and unfocused.">
         Ask <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> or type a URL
       </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_TAB" desc="Label for a button that allows the user to ask a question about the content of their current tab.">
-        Ask Google about this tab
-      </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their current tab. The $1 is a placeholder for the tab title.">
-        Ask Google about this tab: <ph name="TAB_TITLE">$1</ph>
-      </message>
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE" desc="Label for a button that allows the user to ask a question about the content of their current page.">
         Ask Google about this page
       </message>
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their current page. The $1 is a placeholder for the page title.">
         Ask Google about this page: <ph name="PAGE_TITLE">$1</ph>
-      </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_SEARCH_THIS_TAB" desc="Label for a button that allows the user to search the content of their current tab with Google Lens">
-        Search this tab with Google Lens
-      </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_SEARCH_THIS_TAB_ARIA_LABEL" desc="The aria-label for the button that allows the user to search the content of their current tab with Google Lens. The $1 is a placeholder for the page title.">
-        Search this tab with Google Lens: <ph name="PAGE_TITLE">$1</ph>
-      </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_SEARCH_THIS_PAGE" desc="Label for a button that allows the user to search the content of their current page with Google Lens">
-        Search this page with Google Lens
-      </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_SEARCH_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to search the content of their current page with Google Lens. The $1 is a placeholder for the page title.">
-        Search this page with Google Lens: <ph name="PAGE_TITLE">$1</ph>
       </message>
 
       <!-- NTP -->
