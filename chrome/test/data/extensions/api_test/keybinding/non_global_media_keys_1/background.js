@@ -4,13 +4,13 @@
 
 // Called when the user activates the command.
 chrome.commands.onCommand.addListener(function(command) {
-  if (command == "MediaStop-non-global") {
+  if (command == 'MediaStop-non-global') {
     chrome.test.notifyPass();
     return;
   }
 
   // Everything else is a failure case.
-  chrome.test.notifyFail("Unexpected command received: " + command);
+  chrome.test.notifyFail(`Unexpected command received: ${command}`);
 });
 
 chrome.test.notifyPass();

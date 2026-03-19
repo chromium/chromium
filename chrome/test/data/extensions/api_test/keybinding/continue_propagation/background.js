@@ -4,7 +4,7 @@
 
 // Keeps track of who should be receiving keystrokes sent:
 // The 'webPage' or the 'backgroundPage'.
-var expectedListener = 'webPage';
+let expectedListener = 'webPage';
 
 function gotCommand(command) {
   if (expectedListener == 'backgroundPage') {

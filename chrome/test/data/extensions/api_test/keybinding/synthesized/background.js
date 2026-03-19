@@ -20,17 +20,17 @@ chrome.commands.getAll(function(commands) {
 
   // A browser actions gets a synthesized command with no shortcut and no
   // description.
-  chrome.test.assertEq("_execute_action", commands[0].name);
-  chrome.test.assertEq("",                        commands[0].description);
-  chrome.test.assertEq("",                        commands[0].shortcut);
+  chrome.test.assertEq('_execute_action', commands[0].name);
+  chrome.test.assertEq('', commands[0].description);
+  chrome.test.assertEq('', commands[0].shortcut);
 
   // This one on the other hand, has it all.
-  chrome.test.assertEq("unrelated-feature",       commands[1].name);
-  chrome.test.assertEq("Toggle feature foo",      commands[1].description);
-  if (navigator.platform == "MacIntel") {
-    chrome.test.assertEq("⌃⇧Y",                   commands[1].shortcut);
+  chrome.test.assertEq('unrelated-feature', commands[1].name);
+  chrome.test.assertEq('Toggle feature foo', commands[1].description);
+  if (navigator.platform == 'MacIntel') {
+    chrome.test.assertEq('⌃⇧Y', commands[1].shortcut);
   } else {
-    chrome.test.assertEq("Ctrl+Shift+Y",          commands[1].shortcut);
+    chrome.test.assertEq('Ctrl+Shift+Y', commands[1].shortcut);
   }
 
   chrome.test.notifyPass();

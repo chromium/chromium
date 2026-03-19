@@ -4,13 +4,13 @@
 
 // Called when the user activates the command.
 chrome.commands.onCommand.addListener(function(command) {
-  if (command == "Ctrl-Shift-8-Valid-Global-Shortcut") {
+  if (command == 'Ctrl-Shift-8-Valid-Global-Shortcut') {
     chrome.test.notifyPass();
     return;
   }
 
   // Everything else is a failure case.
-  chrome.test.notifyFail("Unexpected command received: " + command);
+  chrome.test.notifyFail(`Unexpected command received: ${command}`);
 });
 
 chrome.test.notifyPass();
