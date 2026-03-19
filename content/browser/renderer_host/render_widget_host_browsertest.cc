@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/gesture_detection/touch_disposition_gesture_filter.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/switches.h"
 #include "ui/latency/latency_info.h"
@@ -337,23 +338,33 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchStart, dispatched_events[0]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapDown, dispatched_events[1]);
 
-  // Mouse drag generates touch move, cancels tap and starts scroll.
-  SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 100, 0,
-                           true);
-  dispatched_events = observer.GetAndResetDispatchedEventTypes();
-  ASSERT_EQ(5u, dispatched_events.size());
-  EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove, dispatched_events[0]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapCancel,
-            dispatched_events[1]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
-            dispatched_events[2]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kTouchScrollStarted,
-            dispatched_events[3]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
-            dispatched_events[4]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove,
-            observer.acked_touch_event_type());
-  EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
+  {
+    // Override the reference timestamp for testing to avoid flakiness due to
+    // the CompensateGestureScrollUpdateLatency feature which can cause the
+    // GestureScrollUpdate and consequently TouchScrollStarted to not be
+    // dispatched.
+    auto ack_timestamp_override =
+        ui::TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(
+            GetNextSimulatedEventTime());
+
+    // Mouse drag generates touch move, cancels tap and starts scroll.
+    SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 100, 0,
+                             true);
+    dispatched_events = observer.GetAndResetDispatchedEventTypes();
+    ASSERT_EQ(5u, dispatched_events.size());
+    EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove, dispatched_events[0]);
+    EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapCancel,
+              dispatched_events[1]);
+    EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
+              dispatched_events[2]);
+    EXPECT_EQ(blink::WebInputEvent::Type::kTouchScrollStarted,
+              dispatched_events[3]);
+    EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+              dispatched_events[4]);
+    EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove,
+              observer.acked_touch_event_type());
+    EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
+  }
 
   // Mouse drag with shift becomes pinch.
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 95,
