@@ -8,6 +8,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_handler.h"

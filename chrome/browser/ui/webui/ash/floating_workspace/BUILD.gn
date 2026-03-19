@@ -26,6 +26,7 @@ static_library("floating_workspace") {
 
   deps = [
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/floating_workspace",
