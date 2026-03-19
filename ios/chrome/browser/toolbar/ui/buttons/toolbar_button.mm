@@ -4,13 +4,12 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
-constexpr CGFloat kSize = 38;
-constexpr CGFloat kCornerRadius = 13;
 constexpr CGFloat kDisabledOpacity = 0.4;
 }  // namespace
 
@@ -37,9 +36,9 @@ constexpr CGFloat kDisabledOpacity = 0.4;
       [self.heightAnchor constraintEqualToAnchor:self.widthAnchor],
     ]];
 
-    self.layer.cornerRadius = kCornerRadius;
-
     self.backgroundColor = ToolbarButtonColor();
+
+    ConfigureCornerRadiusForToolbarButtonContainer(self);
 
     ConfigureShadowForToolbarButton(self);
 
@@ -48,7 +47,7 @@ constexpr CGFloat kDisabledOpacity = 0.4;
     [self registerForTraitChanges:@[
       UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
     ]
-                       withAction:@selector(updateVisibility)];
+                       withAction:@selector(updateAppearance)];
   }
   return self;
 }
@@ -64,7 +63,7 @@ constexpr CGFloat kDisabledOpacity = 0.4;
 
 - (void)setForceHidden:(BOOL)forceHidden {
   _forceHidden = forceHidden;
-  [self updateVisibility];
+  [self updateAppearance];
 }
 
 - (void)setEnabled:(BOOL)enabled {
@@ -75,12 +74,12 @@ constexpr CGFloat kDisabledOpacity = 0.4;
     self.tintColor = [[UIColor colorNamed:kSolidBlackColor]
         colorWithAlphaComponent:kDisabledOpacity];
   }
-  [self updateVisibility];
+  [self updateAppearance];
 }
 
 - (void)setVisibilityMask:(ToolbarButtonVisibility)visibilityMask {
   _visibilityMask = visibilityMask;
-  [self updateVisibility];
+  [self updateAppearance];
 }
 
 #pragma mark - Private
@@ -92,8 +91,14 @@ constexpr CGFloat kDisabledOpacity = 0.4;
   }
 }
 
-// Updates the visibility of this button based on the current state and the
-// visibility mask.
+// Updates the appearance of this ToolbarButton.
+- (void)updateAppearance {
+  [self updateVisibility];
+  [self updateShape];
+}
+
+// Helper for `-updateAppearance`. Updates the visibility of this button based
+// on the current state and the visibility mask.
 - (void)updateVisibility {
   if (self.forceHidden) {
     self.hidden = YES;
@@ -117,6 +122,13 @@ constexpr CGFloat kDisabledOpacity = 0.4;
       break;
   }
   [self checkImageVisibility];
+}
+
+// Helper for `-updateAppearance`. Updates the shape of this button based on the
+// current size class of the UI. In windows with compact width, the
+// ToolbarButton should be square. Otherwise, they should be circular.
+- (void)updateShape {
+  ConfigureCornerRadiusForToolbarButtonContainer(self);
 }
 
 @end

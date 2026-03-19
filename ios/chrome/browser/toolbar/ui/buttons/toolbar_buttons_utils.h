@@ -17,4 +17,9 @@ UIColor* ToolbarLocationBarBackgroundColor(bool incognito);
 // Configures `button` to have the shadow of a toolbar button.
 void ConfigureShadowForToolbarButton(UIView* button);
 
+// Configures corner radius of the `container` so that it takes on a rounded
+// rectangle shape if the window has a compact width. Otherwise, a a pill/circle
+// shape.
+void ConfigureCornerRadiusForToolbarButtonContainer(UIView* container);
+
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_BUTTONS_UTILS_H_
