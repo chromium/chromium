@@ -47,11 +47,6 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
   return element && element->HasDisplayContentsStyle();
 }
 
-static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  return layout_object->IsInTopOrViewTransitionLayer() ||
-         layout_object->Style()->IsInternalOverscrollPositionAuto();
-}
-
 ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
   // TODO(hayato): Uncomment this once we can be sure
   // LayoutTreeBuilderTraversal::parent() is used only for a node which is
@@ -748,15 +743,59 @@ Node* LayoutTreeBuilderTraversal::FirstLayoutChild(const Node& node) {
   return NextLayoutSiblingInternal(FirstChild(node));
 }
 
-LayoutObject* LayoutTreeBuilderTraversal::NextSiblingLayoutObject(
-    const Node& node) {
-  for (Node* sibling = NextLayoutSibling(node); sibling;
-       sibling = NextLayoutSibling(*sibling)) {
+namespace {
+
+bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
+  return layout_object->IsInTopOrViewTransitionLayer() ||
+         layout_object->Style()->IsInternalOverscrollPositionAuto();
+}
+
+LayoutObject* NextSiblingLayoutObjectInternal(const Node& node) {
+  for (Node* sibling = LayoutTreeBuilderTraversal::NextLayoutSibling(node);
+       sibling;
+       sibling = LayoutTreeBuilderTraversal::NextLayoutSibling(*sibling)) {
     LayoutObject* layout_object = sibling->GetLayoutObject();
     if (layout_object && !IsLayoutObjectReparented(layout_object))
       return layout_object;
   }
   return nullptr;
+}
+
+bool IsAnonymousInline(const LayoutObject* object) {
+  return object && object->IsAnonymous() && object->IsInline();
+}
+
+}  // namespace
+
+LayoutObject* LayoutTreeBuilderTraversal::NextSiblingLayoutObject(
+    const Node& node) {
+  LayoutObject* next = NextSiblingLayoutObjectInternal(node);
+  // If a text node is wrapped in an anonymous inline for display:contents (see
+  // CreateInlineWrapperForDisplayContents()), use the wrapper as the next
+  // layout object. Otherwise we would need to add code to various AddChild()
+  // implementations to walk up the tree to find the correct layout tree
+  // parent/siblings.
+  if (!next || !next->IsText()) {
+    return next;
+  }
+
+  auto* const parent = next->Parent();
+  if (!IsAnonymousInline(parent)) {
+    return next;
+  }
+  // Should return a normal result for display:ruby though it can be an
+  // anonymous inline.
+  if (parent->IsInlineRuby()) [[unlikely]] {
+    return next;
+  }
+  if (!parent->IsLayoutTextCombine()) [[unlikely]] {
+    return parent;
+  }
+  auto* const text_combine_parent = parent->Parent();
+  if (IsAnonymousInline(text_combine_parent)) {
+    return text_combine_parent;
+  }
+  return parent;
 }
 
 LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
