@@ -96,10 +96,18 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         },
       },
 
+      isFedCmEmbedderInitiatedLoginEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('fedCmEmbedderInitiatedLoginEnabled');
+        },
+      },
+
       shouldShowActorLoginPermissions_: {
         type: Boolean,
         computed: 'computeShouldShowActorLoginPermissions_(' +
-            'actorLoginPermissions_.length, isActorLoginPermissionsEnabled_)',
+            'actorLoginPermissions_.length, isActorLoginPermissionsEnabled_, ' +
+            'isFedCmEmbedderInitiatedLoginEnabled_)',
       },
 
       // <if expr="is_win or is_macosx or is_chromeos">
@@ -207,6 +215,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private blockedSites_: BlockedSite[];
   declare private actorLoginPermissions_: ActorLoginPermission[];
   declare private isActorLoginPermissionsEnabled_: boolean;
+  declare private isFedCmEmbedderInitiatedLoginEnabled_: boolean;
   declare private shouldShowActorLoginPermissions_: boolean;
   // <if expr="is_win or is_macosx or is_chromeos">
   declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
@@ -507,8 +516,10 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private computeShouldShowActorLoginPermissions_(
       actorLoginPermissionsLength: number,
-      isActorLoginPermissionsEnabled: boolean): boolean {
-    return actorLoginPermissionsLength > 0 && isActorLoginPermissionsEnabled;
+      isActorLoginPermissionsEnabled: boolean,
+      isFedCmEmbedderInitiatedLoginEnabled: boolean): boolean {
+    return actorLoginPermissionsLength > 0 && isActorLoginPermissionsEnabled &&
+        !isFedCmEmbedderInitiatedLoginEnabled;
   }
 
   private onMovePasswordsClicked_(e: Event) {

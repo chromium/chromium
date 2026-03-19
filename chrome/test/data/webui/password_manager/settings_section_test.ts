@@ -534,8 +534,27 @@ suite('SettingsSectionTest', function() {
       });
 
   test(
+      'actor login permissions section hidden if fedcm support is enabled',
+      async function() {
+        loadTimeData.overrideValues({
+          enableActorLoginPermissions: true,
+          fedCmEmbedderInitiatedLoginEnabled: true,
+        });
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await flushTasks();
+
+        assertFalse(
+            !!settings.shadowRoot!.querySelector('#actorLoginPermissions'));
+      });
+
+
+  test(
       'actor login permissions section hidden when no sites', async function() {
-        loadTimeData.overrideValues({enableActorLoginPermissions: true});
+        loadTimeData.overrideValues({
+          enableActorLoginPermissions: true,
+          fedCmEmbedderInitiatedLoginEnabled: false,
+        });
         passwordManager.data.actorLoginPermissions = [];
         const settings = document.createElement('settings-section');
         document.body.appendChild(settings);
@@ -547,7 +566,10 @@ suite('SettingsSectionTest', function() {
       });
 
   test('settings section shows actor login permissions', async function() {
-    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    loadTimeData.overrideValues({
+      enableActorLoginPermissions: true,
+      fedCmEmbedderInitiatedLoginEnabled: false,
+    });
     passwordManager.data.actorLoginPermissions =
         [createActorLoginPermission('test.com', 'testuser')];
     const settings = document.createElement('settings-section');
@@ -561,7 +583,10 @@ suite('SettingsSectionTest', function() {
   test(
       'settings section shows multiple actor login permissions',
       async function() {
-        loadTimeData.overrideValues({enableActorLoginPermissions: true});
+        loadTimeData.overrideValues({
+          enableActorLoginPermissions: true,
+          fedCmEmbedderInitiatedLoginEnabled: false,
+        });
         const sites = [
           createActorLoginPermission('test.com', 'testuser'),
           createActorLoginPermission('test2.com', 'testuser2'),
@@ -599,7 +624,10 @@ suite('SettingsSectionTest', function() {
       });
 
   test('actor login permissions remove dialog', async function() {
-    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    loadTimeData.overrideValues({
+      enableActorLoginPermissions: true,
+      fedCmEmbedderInitiatedLoginEnabled: false,
+    });
     passwordManager.data.actorLoginPermissions =
         [createActorLoginPermission('test.com', 'testuser')];
     const settings = document.createElement('settings-section');
@@ -621,7 +649,10 @@ suite('SettingsSectionTest', function() {
   });
 
   test('actor login permission can be deleted', async function() {
-    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    loadTimeData.overrideValues({
+      enableActorLoginPermissions: true,
+      fedCmEmbedderInitiatedLoginEnabled: false,
+    });
     const site = createActorLoginPermission('test.com', 'testuser');
     passwordManager.data.actorLoginPermissions = [site];
     const settings = document.createElement('settings-section');
@@ -647,7 +678,10 @@ suite('SettingsSectionTest', function() {
   });
 
   test('actor login permissions updated on password change', async function() {
-    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    loadTimeData.overrideValues({
+      enableActorLoginPermissions: true,
+      fedCmEmbedderInitiatedLoginEnabled: false,
+    });
     const sites = [
       createActorLoginPermission('test.com', 'testuser'),
       createActorLoginPermission('test2.com', 'testuser2'),
