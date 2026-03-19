@@ -95,6 +95,9 @@ BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
 
 BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicRequireConversationIdForActorTask,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSuppressFocusOnReady, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr size_t kMaxRecentConversationsForPanel = 3;
@@ -569,15 +572,20 @@ void GlicInstanceImpl::CreateTask(
   // Conversation ID must be available since a turn is required to create a task
   // and an ID becomes available at first turn. If you hit this in a test you
   // probably need to call RegisterConversation on your GlicInstance.
+  // TODO(b/494212836) - The front end currently doesn't guarantee that
+  // RegisterConversation is called first. Allow creating a task without a
+  // conversationId until that's fixed (the conversationId in ActorTask isn't
+  // yet used).
   std::optional<std::string> id = conversation_id();
-  if (!id.has_value()) {
+  if (!id.has_value() &&
+      base::FeatureList::IsEnabled(kGlicRequireConversationIdForActorTask)) {
     std::move(callback).Run(base::unexpected(
         mojom::CreateTaskErrorReason::kConversationNotRegistered));
     return;
   }
 
   instance_metrics_.OnCreateTask();
-  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(), id.value(),
+  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(), id,
                                   std::move(options), std::move(callback));
 }
 
