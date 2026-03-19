@@ -26,18 +26,19 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <ImageView
-        android:id="@+id/finds_opt_in_illustration"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/finds_opt_in_lottie_animation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="33dp"
         android:paddingBottom="28dp"
         android:importantForAccessibility="no"
-        android:scaleType="fitCenter"
         app:layout_constraintTop_toBottomOf="@+id/drag_handle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/finds_opt_in_illustration"/>
+        app:lottie_rawRes="@raw/chrome_finds_opt_in_animation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
 
     <TextView
         android:id="@+id/opt_in_title_text"
@@ -49,7 +50,7 @@ found in the LICENSE file.
         android:gravity="center_horizontal|top"
         android:text="@string/chrome_finds_opt_in_bottom_sheet_title"
         android:accessibilityHeading="true"
-        app:layout_constraintTop_toBottomOf="@+id/finds_opt_in_illustration"
+        app:layout_constraintTop_toBottomOf="@+id/finds_opt_in_lottie_animation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
