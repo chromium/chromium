@@ -81,8 +81,8 @@ class CookieStoreTest : public testing::Test {
     GURL url(kDefaultUrl);
     base::test::TestFuture<net::CookieAccessResult> future;
     std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateForTesting(url, cookie_line,
-                                               base::Time::Now());
+        net::CanonicalCookie::CreateForTesting(
+            url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
     cookie_monster_.SetCanonicalCookieAsync(
         std::move(cookie), url, net::CookieOptions::MakeAllInclusive(),
         future.GetCallback());
