@@ -4344,6 +4344,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.TooManyRetriesOnConnectionErrors"
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Recorded when an HTTP network transaction has reached the maximum number of
+    retries for connection errors. Recorded every time when the retry reached
+    kMaxRetryAttemptsOnConnectionErrors (50).
+  </summary>
+</histogram>
+
 <histogram
     name="Net.NetworkTransaction.{Protocol}StreamCreationTime2.{NewOrExisting}"
     units="ms" expires_after="2026-06-28">
