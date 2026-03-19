@@ -29,10 +29,13 @@ enum RequestDigitalIdentityStatus {
   kSuccess,
   kError,
   kErrorTooManyRequests,
+  // The request was programmatically canceled (e.g. via an AbortSignal).
   kErrorCanceled,
   kErrorNoRequests,
   kErrorNoTransientUserActivation,
   kErrorInvalidJson,
+  // The user explicitly declined the request in the UI.
+  kErrorUserDeclined,
 };
 
 // Create a digital identity request using the specified request data.

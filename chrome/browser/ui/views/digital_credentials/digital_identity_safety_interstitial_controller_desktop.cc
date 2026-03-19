@@ -190,5 +190,5 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::OnDialogClosed(
   std::move(callback_).Run(
       closed_reason == DigitalIdentityInterstitialClosedReason::kOkButton
           ? RequestStatusForMetrics::kSuccess
-          : RequestStatusForMetrics::kErrorOther);
+          : RequestStatusForMetrics::kErrorUserDeclined);
 }

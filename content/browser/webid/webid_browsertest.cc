@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                     kErrorUserDeclined));
           }));
 
-  EXPECT_EQ("NetworkError: Error retrieving a token.",
+  EXPECT_EQ("NotAllowedError: Request is cancelled.",
             ExtractJsError(RunDigitalIdentityValidRequest(shell())));
 }
 

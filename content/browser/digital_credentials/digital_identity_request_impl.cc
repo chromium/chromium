@@ -341,9 +341,10 @@ blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
       return blink::mojom::RequestDigitalIdentityStatus::
           kErrorNoTransientUserActivation;
     case RequestStatusForMetrics::kErrorNoCredential:
-    case RequestStatusForMetrics::kErrorUserDeclined:
     case RequestStatusForMetrics::kErrorOther:
       return blink::mojom::RequestDigitalIdentityStatus::kError;
+    case RequestStatusForMetrics::kErrorUserDeclined:
+      return blink::mojom::RequestDigitalIdentityStatus::kErrorUserDeclined;
     case RequestStatusForMetrics::kErrorInvalidJson:
       return blink::mojom::RequestDigitalIdentityStatus::kErrorInvalidJson;
   }

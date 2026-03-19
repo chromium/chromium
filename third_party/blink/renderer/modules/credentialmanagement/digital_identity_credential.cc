@@ -126,6 +126,11 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                                  : "digital-credentials-get"))));
       return;
 
+    case RequestDigitalIdentityStatus::kErrorUserDeclined: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError, "Request is cancelled."));
+      return;
+    }
     case RequestDigitalIdentityStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNetworkError, "Error retrieving a token."));
