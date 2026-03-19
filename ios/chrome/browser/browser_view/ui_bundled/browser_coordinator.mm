@@ -2822,6 +2822,10 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showComposebox {
+  if (_fullscreenController) {
+    _fullscreenController->ExitFullscreen(FullscreenExitReason::kForcedByCode);
+  }
+
   if (IsComposeboxIOSEnabled()) {
     [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
                              withQuery:nil];
