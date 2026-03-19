@@ -191,6 +191,10 @@ BASE_FEATURE_PARAM(int,
                    0);
 
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
+  if (!IsPageActionMenuEnabled()) {
+    return PositionForExplainGeminiEditMenu::kDisabled;
+  }
+
   int param = kExplainGeminiEditMenuFeatureParam.Get();
   if (param == 1) {
     return PositionForExplainGeminiEditMenu::kAfterEdit;
