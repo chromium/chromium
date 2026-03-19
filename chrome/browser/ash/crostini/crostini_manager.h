@@ -222,6 +222,8 @@ class CrostiniManager : public KeyedService,
   // Returns true if concierge allows termina VM to be launched.
   static bool IsVmLaunchAllowed();
 
+  void MaybeResumeFromChromeCrash();
+
   // Installs termina using the DLC service.
   void InstallTermina(CrostiniResultCallback callback);
 
