@@ -3194,6 +3194,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+
+  if (kIPHAutofillAiValuablesFeature.name == feature->name) {
+    // Allows an IPH for showing information when an Autofill AI suggestion
+    // comes from Google Wallet.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("autofill_ai_valuables_feature_trigger",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("autofill_ai_valuables_feature_used", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   if (kIPHDummyFeature.name == feature->name) {

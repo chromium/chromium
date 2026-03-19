@@ -211,6 +211,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_WITH_CHROME" desc="Text in In-Product-Help bubble suggesting to use an autofill suggestion provided by Chrome.">
         Use Chrome autofill suggestion
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_IPH" desc="Text in In-Product-Help with an item from Google Wallet">
+        Now you can autofill more info from Google Wallet. Manage your information or turn these suggestions off in Settings.
+      </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION" desc="Text in the In-Product-Help bubble for a home or work Autofill profile suggestion.">
         Autofill your home and work addresses from your Google Account
       </message>
