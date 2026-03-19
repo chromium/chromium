@@ -12,6 +12,8 @@ export interface GlicBrowserProxy {
   setGlicFocusToggleShortcut(shortcut: string): Promise<void>;
   setShortcutSuspensionState(isSuspended: boolean): void;
   getDisallowedByAdmin(): Promise<boolean>;
+  getGlicSelectionShortcut(): Promise<string>;
+  setGlicSelectionShortcut(shortcut: string): Promise<void>;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -41,6 +43,14 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   getDisallowedByAdmin() {
     return sendWithPromise('getGlicDisallowedByAdmin');
+  }
+
+  getGlicSelectionShortcut() {
+    return sendWithPromise('getGlicSelectionShortcut');
+  }
+
+  setGlicSelectionShortcut(shortcut: string) {
+    return sendWithPromise('setGlicSelectionShortcut', shortcut);
   }
 
   static getInstance(): GlicBrowserProxy {

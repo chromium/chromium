@@ -827,10 +827,19 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_CLEAR_LABEL},
       {"glicNavigationShortcutSublabel",
        IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL},
+      {"glicSelectionShortcut", IDS_SETTINGS_GLIC_SELECTION_SHORTCUT},
+      {"glicSelectionShortcutEditLabel",
+       IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_EDIT_LABEL},
+      {"glicSelectionShortcutClearLabel",
+       IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_CLEAR_LABEL},
+      {"glicSelectionShortcutSublabel",
+       IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_SUBLABEL},
       {"glicKeyboardShortcutLearnMoreAriaLabel",
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_ARIA_LABEL},
       {"glicNavigationShortcutLearnMoreAriaLabel",
        IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_LEARN_MORE_ARIA_LABEL},
+      {"glicSelectionShortcutLearnMoreAriaLabel",
+       IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_LEARN_MORE_ARIA_LABEL},
       {"glicClosedCaptionsToggle", IDS_SETTINGS_GLIC_CLOSED_CAPTIONING},
       {"glicClosedCaptionsToggleSublabel",
        IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL},
@@ -975,6 +984,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "glicCanUseLive",
       glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive());
+  html_source->AddBoolean(
+      "glicSelectionFeatureEnabled",
+      base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
 }
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {

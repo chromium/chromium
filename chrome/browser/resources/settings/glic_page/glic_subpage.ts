@@ -91,6 +91,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         value: '',
       },
 
+      registeredSelectionShortcut_: {
+        type: String,
+        value: '',
+      },
+
       tabAccessToggleExpanded_: {
         type: Boolean,
         value: false,
@@ -126,6 +131,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('glicUserStatusCheckFeatureEnabled'),
+      },
+
+      glicSelectionFeatureEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('glicSelectionFeatureEnabled'),
       },
 
       showGlicDefaultTabContextSetting_: {
@@ -281,10 +291,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
   private shortcutInput_: string;
   private focusToggleShortcutInput_: string;
+  private selectionShortcutInput_: string;
   private removedShortcut_: string|null = null;
   declare private disallowedByAdmin_: boolean;
   declare private registeredShortcut_: string;
   declare private registeredFocusToggleShortcut_: string;
+  declare private registeredSelectionShortcut_: string;
   declare private fakePref_: chrome.settingsPrivate.PrefObject;
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -294,6 +306,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private closedCaptionsToggleEnabled_: boolean;
   declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
+  declare private glicSelectionFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
   declare private showGlicInstructionLink_: boolean;
@@ -330,6 +343,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     this.registeredFocusToggleShortcut_ =
         await this.browserProxy_.getGlicFocusToggleShortcut();
+    this.registeredSelectionShortcut_ =
+        await this.browserProxy_.getGlicSelectionShortcut();
     await CrSettingsPrefs.initialized;
   }
 
@@ -401,6 +416,15 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Glic.Focus.Settings.Shortcut.Customized',
         !!this.focusToggleShortcutInput_);
+  }
+
+  private async onSelectionShortcutUpdated_(event: CustomEvent<string>) {
+    this.selectionShortcutInput_ = event.detail;
+    await this.browserProxy_.setGlicSelectionShortcut(
+        this.selectionShortcutInput_);
+    this.registeredSelectionShortcut_ =
+        await this.browserProxy_.getGlicSelectionShortcut();
+    this.hideHelpBubble(OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID);
   }
 
   // Records whether the shortcut enablement state transitioned from disabled to

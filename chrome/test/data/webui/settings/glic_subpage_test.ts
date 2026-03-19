@@ -96,6 +96,8 @@ suite('GlicSubpage', function() {
       showAiPage: true,
       showGlicSettings: true,
       glicDisallowedByAdmin: false,
+      glicSelectionFeatureEnabled: true,
+
     });
     resetRouterForTesting();
     return CrSettingsPrefs.initialized;
@@ -145,29 +147,34 @@ suite('GlicSubpage', function() {
       // launcher is disabled and shown when the launcher is enabled.
       test('KeyboardShortcutVisibility' + clickTypeName, async () => {
         const mainShortcutSettingId = 'mainShortcutSetting';
+        const selectionShortcutSettingId = 'selectionShortcutSetting';
 
         // The pref starts off disabled, the keyboard shortcut row should be
         // hidden.
         page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
         await flushTasks();
         assertFalse(isVisible($(mainShortcutSettingId)));
+        assertFalse(isVisible($(selectionShortcutSettingId)));
 
         // Enable using the launcher toggle, the row should show.
         await clickType();
         assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertTrue(isVisible($(mainShortcutSettingId)));
+        assertTrue(isVisible($(selectionShortcutSettingId)));
 
         // Disable using the launcher toggle, the row should hide.
         await clickType();
         assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertFalse(isVisible($(mainShortcutSettingId)));
+        assertFalse(isVisible($(selectionShortcutSettingId)));
 
         // Enable via pref, the row should show.
         page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
         await flushTasks();
         assertTrue(isVisible($(mainShortcutSettingId)));
+        assertTrue(isVisible($(selectionShortcutSettingId)));
       });
     }
 
@@ -318,10 +325,13 @@ suite('GlicSubpage', function() {
       page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
 
       const shortcutInputSelector = 'mainShortcutSetting .shortcut-input';
+      const selectionShortcutInputSelector =
+          'selectionShortcutSetting .shortcut-input';
 
       // Page starts off with policy enabled. The shortcut editor, info card
       // expand, and activity button are all present.
       assertTrue(isVisible($(shortcutInputSelector)));
+      assertTrue(isVisible($(selectionShortcutInputSelector)));
       assertTrue(!!$('activityButton'));
       assertTrue(!!$('tabAccessExpandButton'));
       assertTrue(!!$('tabAccessInfoCollapse'));
@@ -337,6 +347,7 @@ suite('GlicSubpage', function() {
       // and activity button should be removed. Toggles should all show "off"
       // and be disabled.
       assertFalse(!!$(shortcutInputSelector));
+      assertFalse(!!$(selectionShortcutInputSelector));
       assertFalse(!!$('activityButton'));
       assertFalse(!!$('tabAccessExpandButton'));
       assertFalse(!!$('tabAccessInfoCollapse'));
@@ -349,6 +360,7 @@ suite('GlicSubpage', function() {
       await setDisallowedByAdminAndSimulateUpdate(false);
 
       assertTrue(isVisible($(shortcutInputSelector)));
+      assertTrue(isVisible($(selectionShortcutInputSelector)));
       assertTrue(!!$('activityButton'));
       assertTrue(!!$('tabAccessExpandButton'));
       assertTrue(!!$('tabAccessInfoCollapse'));

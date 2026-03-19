@@ -97,6 +97,33 @@
               on-shortcut-updated="onShortcutUpdated_">
           </cr-shortcut-input>
         </div>
+        <div class="cr-row keyboard-shortcut-setting"
+            hidden="[[!glicSelectionFeatureEnabled_]]"
+            id="selectionShortcutSetting">
+          <div class="flex cr-padded-text">
+            <div class="shortcut-label" aria-hidden>
+              $i18n{glicSelectionShortcut}
+            </div>
+            <div class="secondary">$i18n{glicSelectionShortcutSublabel}
+                <a id="shortcutsSelectionLearnMoreLabel"
+                    class="learn-more-label"
+                    href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
+                    aria-label="$i18n{glicSelectionShortcutLearnMoreAriaLabel}"
+                    aria-description="$i18n{opensInNewTab}"
+                    on-click="onShortcutsLearnMoreClick_" target="_blank">
+                  $i18n{glicKeyboardShortcutLearnMoreLabel}
+                </a>
+            </div>
+          </div>
+          <cr-shortcut-input class="cr-padded-text shortcut-input"
+              input-aria-label="$i18n{glicNavigationShortcut}"
+              edit-button-aria-label="$i18n{glicSelectionShortcutEditLabel}"
+              clear-button-aria-label="$i18n{glicSelectionShortcutClearLabel}"
+              shortcut="[[registeredSelectionShortcut_]]"
+              allow-ctrl-alt-shortcuts
+              on-shortcut-updated="onSelectionShortcutUpdated_">
+          </cr-shortcut-input>
+        </div>
       </cr-collapse>
       <div class="cr-row keyboard-shortcut-setting"
            id="focusToggleShortcutSetting">
