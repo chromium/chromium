@@ -51,6 +51,7 @@ import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -103,8 +104,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -142,6 +145,13 @@ public class ImeAdapterImpl
 
     // Color used by AOSP Android for a SuggestionSpan with FLAG_EASY_CORRECT set
     private static final int DEFAULT_SUGGESTION_SPAN_COLOR = 0x88C8C8C8;
+
+    // A map of native helper objects to their Java counterparts allows unlimited scaling in number
+    // of tabs. The UserDataHost owns the ImeAdapterImpl objects. This is used since
+    // UserData#destroy() is not always called when the WebContents are destroyed, leading to memory
+    // leaks.
+    private static final Map<Long, WeakReference<ImeAdapterImpl>> sNativeHelperMap =
+            new HashMap<>();
 
     private long mNativeImeAdapterAndroid;
     private InputMethodManagerWrapper mInputMethodManagerWrapper;
@@ -270,6 +280,12 @@ public class ImeAdapterImpl
                 ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
+    @CalledByNative
+    private static @Nullable ImeAdapterImpl get(long nativeObj) {
+        WeakReference<ImeAdapterImpl> imeAdapterRef = sNativeHelperMap.get(nativeObj);
+        return imeAdapterRef != null ? imeAdapterRef.get() : null;
+    }
+
     /** Returns an instance of the default {@link InputMethodManagerWrapper} */
     public static InputMethodManagerWrapper createDefaultInputMethodManagerWrapper(
             Context context,
@@ -280,9 +296,11 @@ public class ImeAdapterImpl
 
     /**
      * Create {@link ImeAdapterImpl} instance.
+     *
      * @param webContents WebContents instance.
      */
-    public ImeAdapterImpl(WebContents webContents) {
+    @VisibleForTesting
+    ImeAdapterImpl(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         assert viewDelegate != null;
@@ -328,7 +346,8 @@ public class ImeAdapterImpl
                             }
                         });
         mInputMethodManagerWrapper = wrapper;
-        mNativeImeAdapterAndroid = ImeAdapterImplJni.get().init(ImeAdapterImpl.this, mWebContents);
+        mNativeImeAdapterAndroid = ImeAdapterImplJni.get().init(mWebContents);
+        sNativeHelperMap.put(mNativeImeAdapterAndroid, new WeakReference<>(this));
         WindowEventObserverManager.from(mWebContents).addObserver(this);
         if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
             mAutocorrectManager = new AutocorrectManager(this);
@@ -1046,9 +1065,10 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
+    private void destroyFromNative() {
+        if (mNativeImeAdapterAndroid == 0) return;
+
         resetAndHideKeyboard();
-        mNativeImeAdapterAndroid = 0;
         mIsConnected = false;
         if (mCursorAnchorInfoController != null) {
             mCursorAnchorInfoController.focusedNodeChanged(false);
@@ -1057,6 +1077,11 @@ public class ImeAdapterImpl
         if (mWebContents.getStylusWritingHandler() != null) {
             mWebContents.getStylusWritingHandler().onImeAdapterDestroyed();
         }
+
+        WeakReference<ImeAdapterImpl> oldValue = sNativeHelperMap.remove(mNativeImeAdapterAndroid);
+        assert oldValue != null;
+        assert oldValue.get() == this;
+        mNativeImeAdapterAndroid = 0;
     }
 
     /**
@@ -2014,7 +2039,7 @@ public class ImeAdapterImpl
 
     @NativeMethods
     interface Natives {
-        long init(ImeAdapterImpl caller, WebContents webContents);
+        long init(@JniType("WebContents*") WebContents webContents);
 
         boolean sendKeyEvent(
                 long nativeImeAdapterAndroid,

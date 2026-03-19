@@ -45,10 +45,10 @@ class RenderWidgetHostViewAndroid;
 // corresponding host view.
 class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
  public:
-  ImeAdapterAndroid(JNIEnv* env,
-                    const base::android::JavaRef<jobject>& obj,
-                    WebContents* web_contents);
+  explicit ImeAdapterAndroid(WebContents* web_contents);
   ~ImeAdapterAndroid() override;
+
+  void Destroy(JNIEnv* env);
 
   // Called from java -> native
   bool SendKeyEvent(JNIEnv* env,
@@ -120,9 +120,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                             const base::android::JavaRef<jstring>& extension);
 
   base::android::ScopedJavaLocalRef<jobject> java_ime_adapter_for_testing(
-      JNIEnv* env) {
-    return java_ime_adapter_.get(env);
-  }
+      JNIEnv* env);
 
   void UpdateState(const ui::mojom::TextInputState& state);
   void UpdateOnTouchDown();
@@ -139,6 +137,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void ClearAllAutocorrectUnderlineSpans(JNIEnv* env);
 
  private:
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();
@@ -153,7 +152,6 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
 
   // Current RenderWidgetHostView connected to this instance. Can be null.
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
-  JavaObjectWeakGlobalRef java_ime_adapter_;
   base::WeakPtrFactory<ImeAdapterAndroid> weak_factory_{this};
 };
 
