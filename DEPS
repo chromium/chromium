@@ -2187,7 +2187,7 @@ deps = {
           'version': 'version:3@3.2',
         },
       ],
-      'condition': 'host_os == "linux"',
+      'condition': 'host_os == "linux" and non_git_source',
       'dep_type': 'cipd',
   },
 
