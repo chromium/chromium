@@ -158,11 +158,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
 
-  virtual bool WritePixels(const SkImageInfo& orig_info,
-                           const void* pixels,
-                           size_t row_bytes,
-                           int x,
-                           int y) = 0;
+  virtual bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
+                                      const void* pixels,
+                                      size_t row_bytes,
+                                      int x,
+                                      int y) = 0;
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
@@ -323,11 +323,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   void RasterRecord(cc::PaintRecord last_recording) override;
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override;
+  bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
+                              const void* pixels,
+                              size_t row_bytes,
+                              int x,
+                              int y) override;
 
   static std::unique_ptr<CanvasResourceProvider> CreateForTesting(
       gfx::Size size,
@@ -587,11 +587,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override;
+  bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
+                              const void* pixels,
+                              size_t row_bytes,
+                              int x,
+                              int y) override;
 
   // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
   // exists, after flushing the resource and signaling that an external write
@@ -683,11 +683,18 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // CanvasResourceProvider:
   void RasterRecord(cc::PaintRecord last_recording) override;
+  bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
+                              const void* pixels,
+                              size_t row_bytes,
+                              int x,
+                              int y) override {
+    NOTREACHED();
+  }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
                    int x,
-                   int y) override;
+                   int y);
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.

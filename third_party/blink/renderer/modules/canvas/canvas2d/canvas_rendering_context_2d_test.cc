@@ -615,7 +615,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
               (ImageOrientation orientation));
 
   MOCK_METHOD(bool,
-              WritePixels,
+              WritePixelsForCanvas2D,
               (const SkImageInfo& orig_info,
                const void* pixels,
                size_t row_bytes,
@@ -1364,7 +1364,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   // `WritePixels` is called.
   InSequence s;
   EXPECT_CALL(*provider, RasterRecord).Times(0);
-  EXPECT_CALL(*provider, WritePixels).Times(1);
+  EXPECT_CALL(*provider, WritePixelsForCanvas2D).Times(1);
 
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
@@ -1395,7 +1395,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   InSequence s;
   EXPECT_CALL(*provider, RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>())))
       .Times(1);
-  EXPECT_CALL(*provider, WritePixels).Times(1);
+  EXPECT_CALL(*provider, WritePixelsForCanvas2D).Times(1);
 
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 

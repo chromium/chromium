@@ -362,7 +362,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     }
   }
 
-  return provider->WritePixels(orig_info, pixels, row_bytes, x, y);
+  return provider->WritePixelsForCanvas2D(orig_info, pixels, row_bytes, x, y);
 }
 
 bool CanvasRenderingContext2D::ShouldAntialias() const {

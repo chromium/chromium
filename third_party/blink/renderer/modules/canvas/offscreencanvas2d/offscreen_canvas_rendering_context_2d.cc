@@ -478,7 +478,8 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     return false;
   }
 
-  return resource_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+  return resource_provider_->WritePixelsForCanvas2D(orig_info, pixels,
+                                                    row_bytes, x, y);
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {

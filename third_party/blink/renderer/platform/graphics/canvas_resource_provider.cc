@@ -169,11 +169,12 @@ void Canvas2DResourceProviderBitmap::RasterRecord(
   return UnacceleratedRasterRecord(last_recording);
 }
 
-bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
-                                                 const void* pixels,
-                                                 size_t row_bytes,
-                                                 int x,
-                                                 int y) {
+bool Canvas2DResourceProviderBitmap::WritePixelsForCanvas2D(
+    const SkImageInfo& orig_info,
+    const void* pixels,
+    size_t row_bytes,
+    int x,
+    int y) {
   return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
@@ -718,7 +719,7 @@ void CanvasNon2DResourceProviderSharedImage::PrepareForWebGPUDummyMailbox() {
   }
 }
 
-bool Canvas2DResourceProviderSharedImage::WritePixels(
+bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
     const SkImageInfo& orig_info,
     const void* pixels,
     size_t row_bytes,
@@ -1996,7 +1997,8 @@ void CanvasResourceProvider::RestoreBackBufferForCanvas2D(
   // We know this SkImage is software backed because it's guaranteed by
   // PaintImage::GetSwSkImage above
   sk_image->peekPixels(&map);
-  WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
+  WritePixelsForCanvas2D(map.info(), map.addr(), map.rowBytes(), /*x=*/0,
+                         /*y=*/0);
 }
 
 size_t CanvasResourceProvider::ComputeSurfaceSize() const {
