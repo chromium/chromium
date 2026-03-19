@@ -28,7 +28,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
@@ -60,10 +60,9 @@ bool WebUISplitTabsControl::IsVisible() const {
 
 void WebUISplitTabsControl::HandleContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
-    const gfx::Point& screen_location,
+    const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source_type) {
   BrowserWindowInterface* browser = toolbar_view_->browser_;
-  current_menu_type_ = menu_type;
   if (menu_type == toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction) {
     // Only show "Separate Views" menu if actually in split.
     auto* tab_strip_model = browser->GetTabStripModel();
@@ -76,7 +75,7 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_.reset();
     split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
         tab_strip_model, SplitTabMenuModel::MenuSource::kToolbarButton);
-    RunMenuAt(screen_location.x(), screen_location.y(), source_type);
+    RunMenuAt(screen_rect, source_type);
   } else if (menu_type ==
              toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext) {
     // Destroy the old menu runner first to avoid a dangling pointer since it
@@ -84,12 +83,11 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_.reset();
     split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
         browser, kActionSplitTab);
-    RunMenuAt(screen_location.x(), screen_location.y(), source_type);
+    RunMenuAt(screen_rect, source_type);
   }
 }
 
-void WebUISplitTabsControl::RunMenuAt(int x,
-                                      int y,
+void WebUISplitTabsControl::RunMenuAt(const gfx::Rect& screen_rect,
                                       ui::mojom::MenuSourceType source_type) {
   last_source_type_for_testing_ = source_type;
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -97,8 +95,7 @@ void WebUISplitTabsControl::RunMenuAt(int x,
       base::BindRepeating(&WebUISplitTabsControl::UpdateState,
                           base::Unretained(this)));
 
-  menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr,
-                          gfx::Rect(gfx::Point(x, y), gfx::Size()),
+  menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr, screen_rect,
                           views::MenuAnchorPosition::kTopLeft, source_type);
   UpdateState();
 }

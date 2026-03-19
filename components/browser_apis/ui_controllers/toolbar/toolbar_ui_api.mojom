@@ -32,11 +32,13 @@ interface ToolbarUIService {
   Bind() => result<InitialState, mojo_base.mojom.Error>;
 
   // Displays the context menu with the provided menu type at the provided
-  // offset in CSS pixels relative to the WebUIToolbarWebView's viewport origin.
+  // bounding rectangle in CSS pixels relative to the WebUIToolbarWebView's
+  // viewport origin. RectF is used to preserve subpixel precision from the
+  // WebUI (DOMRect) to avoid misalignment after scaling by the zoom factor.
   // The source indicates what triggered showing this menu (mouse, keyboard,
   // etc).
   ShowContextMenu(ContextMenuType menu_type,
-                  gfx.mojom.Point viewport_coordinate_css_pixels,
+                  gfx.mojom.RectF bounds_in_css_pixels,
                   ui.mojom.MenuSourceType source);
 
   // Called when the page finishes initialization.

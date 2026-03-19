@@ -78,7 +78,7 @@ export class SplitTabsButtonElement extends CrLitElement {
     if (this.state.isCurrentTabSplit) {
       // If already split, show the action menu.
       this.browserProxy_.toolbarUIHandler.showContextMenu(
-          ContextMenuType.kSplitTabsAction, this.menuPosition(),
+          ContextMenuType.kSplitTabsAction, getContextMenuPosition(this),
           getClickSourceType(e));
     } else {
       // If not split, enters split view.
@@ -89,12 +89,8 @@ export class SplitTabsButtonElement extends CrLitElement {
   protected onContextmenu(e: MouseEvent) {
     e.preventDefault();
     this.browserProxy_.toolbarUIHandler.showContextMenu(
-        ContextMenuType.kSplitTabsContext, this.menuPosition(),
+        ContextMenuType.kSplitTabsContext, getContextMenuPosition(this),
         getContextMenuSourceType(e));
-  }
-
-  protected menuPosition() {
-    return getContextMenuPosition(this);
   }
 }
 

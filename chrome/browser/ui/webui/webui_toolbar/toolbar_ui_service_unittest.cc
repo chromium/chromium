@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace toolbar_ui_api {
 
@@ -45,7 +46,7 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void,
               HandleContextMenu,
               (mojom::ContextMenuType type,
-               gfx::Point location,
+               const gfx::RectF& rect,
                ui::mojom::MenuSourceType source),
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
@@ -142,7 +143,8 @@ TEST_F(ToolbarUIServiceTest, TestShowContextMenu) {
   EXPECT_CALL(delegate(),
               HandleContextMenu(::testing::_, ::testing::_, ::testing::_));
 
-  service().ShowContextMenu(mojom::ContextMenuType::kReload, gfx::Point(1, 2),
+  service().ShowContextMenu(mojom::ContextMenuType::kReload,
+                            gfx::RectF(1, 2, 3, 4),
                             ui::mojom::MenuSourceType::kMouse);
 }
 

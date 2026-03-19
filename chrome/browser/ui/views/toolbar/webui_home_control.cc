@@ -39,7 +39,7 @@ bool WebUIHomeControl::IsVisible() const {
 }
 
 void WebUIHomeControl::HandleContextMenu(
-    const gfx::Point& screen_location,
+    const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source_type) {
   last_source_type_for_testing_ = source_type;
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -48,8 +48,8 @@ void WebUIHomeControl::HandleContextMenu(
                           base::Unretained(this)));
 
   menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
-                          gfx::Rect(screen_location, gfx::Size()),
-                          views::MenuAnchorPosition::kTopLeft, source_type);
+                          screen_rect, views::MenuAnchorPosition::kTopLeft,
+                          source_type);
   UpdateState();
 }
 

@@ -77,7 +77,7 @@ class WebUIToolbarWebView
 
   // ToolbarUIService::ToolbarUIServiceDelegate:
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                         gfx::Point viewport_coordinate_css_pixels,
+                         const gfx::RectF& bounds_in_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
 

@@ -13,6 +13,7 @@
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 class WebUIToolbarWebView;
@@ -35,7 +36,7 @@ class WebUISplitTabsControl : public TabStripModelObserver {
 
   // Handles context menu requests from the WebUI.
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                         const gfx::Point& screen_location,
+                         const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source);
 
   // TabStripModelObserver:
@@ -56,14 +57,13 @@ class WebUISplitTabsControl : public TabStripModelObserver {
   void UpdateVisibility(
       const toolbar_ui_api::mojom::SplitTabsControlState* state);
   void UpdateState();
-  void RunMenuAt(int x, int y, ui::mojom::MenuSourceType source_type);
+  void RunMenuAt(const gfx::Rect& screen_rect,
+                 ui::mojom::MenuSourceType source_type);
 
   raw_ptr<WebUIToolbarWebView> toolbar_view_;
   BooleanPrefMember pin_state_;
   bool is_visible_ = false;
 
-  toolbar_ui_api::mojom::ContextMenuType current_menu_type_ =
-      toolbar_ui_api::mojom::ContextMenuType::kUnspecified;
   ui::mojom::MenuSourceType last_source_type_for_testing_ =
       ui::mojom::MenuSourceType::kNone;
 

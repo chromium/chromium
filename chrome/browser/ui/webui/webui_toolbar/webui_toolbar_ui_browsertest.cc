@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace {
 
@@ -108,7 +109,7 @@ class ToolbarUIDelegate
   ~ToolbarUIDelegate() override = default;
 
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                         gfx::Point viewport_coordinate_css_pixels,
+                         const gfx::RectF& bounds,
                          ui::mojom::MenuSourceType source) override {}
   void OnPageInitialized() override {}
 };

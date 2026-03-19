@@ -68,11 +68,10 @@ void ToolbarUIService::Bind(BindCallback callback) {
 
 void ToolbarUIService::ShowContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
-    const gfx::Point& viewport_coordinate_css_pixels,
+    const gfx::RectF& bounds_in_css_pixels,
     ui::mojom::MenuSourceType source) {
   if (delegate_) {
-    delegate_->HandleContextMenu(menu_type, viewport_coordinate_css_pixels,
-                                 source);
+    delegate_->HandleContextMenu(menu_type, bounds_in_css_pixels, source);
   }
 }
 

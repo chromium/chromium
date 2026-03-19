@@ -131,10 +131,9 @@ export class PressHandler {
 }
 
 export function getContextMenuPosition(element: HTMLElement) {
-  const bounds = element.getBoundingClientRect();
-  const isRtl = document.dir === 'rtl';
-  const x = isRtl ? bounds.right : bounds.left;
-  return {x, y: bounds.bottom};
+  // Returns the element's bounding rectangle relative to the WebUI viewport in
+  // CSS pixels.
+  return element.getBoundingClientRect();
 }
 
 // Should match ui::GetMenuSourceTypeForEvent().

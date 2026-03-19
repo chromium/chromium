@@ -75,7 +75,7 @@ export class ReloadButtonElement extends CrLitElement {
   private onLongPress_(source: MenuSourceType) {
     if (this.state.canShowMenu) {
       this.browserProxy_.toolbarUIHandler.showContextMenu(
-          ContextMenuType.kReload, this.contextMenuPosition(), source);
+          ContextMenuType.kReload, getContextMenuPosition(this), source);
     }
   }
 
@@ -176,10 +176,6 @@ export class ReloadButtonElement extends CrLitElement {
       this.metricsRecorder_.onButtonPressedStart(e);
     }
     this.pressHandler_.onPointerup(e);
-  }
-
-  protected contextMenuPosition() {
-    return getContextMenuPosition(this);
   }
 }
 

@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 class MetricsReporter;
 
@@ -27,7 +28,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual ~ToolbarUIServiceDelegate() = default;
     virtual void HandleContextMenu(
         toolbar_ui_api::mojom::ContextMenuType menu_type,
-        gfx::Point viewport_coordinate_css_pixels,
+        const gfx::RectF& bounds_in_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
     virtual void OnPageInitialized() = 0;
   };
@@ -51,7 +52,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   // toolbar_ui_api::mojom::ToolbarUIService:
   void Bind(BindCallback callback) override;
   void ShowContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                       const gfx::Point& viewport_coordinate_css_pixels,
+                       const gfx::RectF& bounds_in_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
   void ShowContentSettingsBubble(::content_settings::mojom::ContentSettingsType

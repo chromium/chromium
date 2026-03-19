@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +46,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -60,17 +62,22 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -195,6 +202,26 @@ class NavigationCounter : public content::WebContentsObserver {
 
  private:
   size_t navigation_count_ = 0;
+};
+
+class TestMenuRunnerHandler : public views::MenuRunnerHandler {
+ public:
+  explicit TestMenuRunnerHandler(
+      base::RepeatingCallback<void(const gfx::Rect&)> callback)
+      : callback_(std::move(callback)) {}
+  ~TestMenuRunnerHandler() override = default;
+
+  void RunMenuAt(views::Widget* parent,
+                 views::MenuButtonController* button_controller,
+                 const gfx::Rect& bounds,
+                 views::MenuAnchorPosition anchor,
+                 ui::mojom::MenuSourceType source_type,
+                 int32_t types) override {
+    callback_.Run(bounds);
+  }
+
+ private:
+  base::RepeatingCallback<void(const gfx::Rect&)> callback_;
 };
 
 }  // namespace
@@ -492,9 +519,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show reload button context menu.
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   webui_toolbar_view->HandleContextMenu(
-      toolbar_ui_api::mojom::ContextMenuType::kReload,
-      element->GetScreenBounds().bottom_right(),
+      toolbar_ui_api::mojom::ContextMenuType::kReload, gfx::RectF(control_rect),
       ui::mojom::MenuSourceType::kMouse);
+
+  // Verify reload button state updates.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetButtonAppJS(kReloadButtonSelector),
+                                         ".state.isContextMenuVisible"}))
+        .ExtractBool();
+  }));
 
   // Verify reload button is now highlighted.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -544,8 +578,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
             SK_ColorTRANSPARENT);
 
   // Show context menu.
-  home_control->HandleContextMenu(element->GetScreenBounds().bottom_right(),
-                                  ui::mojom::MenuSourceType::kMouse);
+  webui_toolbar_view->HandleContextMenu(
+      toolbar_ui_api::mojom::ContextMenuType::kHome, gfx::RectF(control_rect),
+      ui::mojom::MenuSourceType::kMouse);
 
   // Verify background is highlighted (NOT transparent).
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -598,10 +633,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
             SK_ColorTRANSPARENT);
 
   // Show context menu.
-  split_tabs_control->HandleContextMenu(
+  webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext,
-      element->GetScreenBounds().bottom_right(),
-      ui::mojom::MenuSourceType::kMouse);
+      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse);
+
+  // Verify split tabs button state updates.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetButtonAppJS(kSplitTabsSelector),
+                                         ".state.isContextMenuVisible"}))
+        .ExtractBool();
+  }));
 
   // Verify background is highlighted (NOT transparent).
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -1377,6 +1419,72 @@ class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ContextMenuPositionE2E) {
+  // Setup the WebUI and wait for it to render.
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  EXPECT_TRUE(WaitForButtonVisible(web_contents, kReloadButtonSelector));
+
+  // Enable the context menu (requires devtools to be open).
+  WebUIReloadControl* reload_control =
+      static_cast<WebUIReloadControl*>(webui_toolbar_view->GetReloadControl());
+  reload_control->SetDevToolsStatus(true);
+
+  // Intercept the C++ MenuRunner to capture the bounds it receives.
+  // We use a RunLoop because the Mojo IPC from the WebUI is asynchronous.
+  gfx::Rect captured_bounds;
+  base::RunLoop run_loop;
+  auto handler = std::make_unique<TestMenuRunnerHandler>(
+      base::BindLambdaForTesting([&](const gfx::Rect& bounds) {
+        captured_bounds = bounds;
+        run_loop.Quit();
+      }));
+
+  views::test::MenuRunnerTestAPI(reload_control->menu_runner_.get())
+      .SetMenuRunnerHandler(std::move(handler));
+
+  // Ask JavaScript for the real bounding rect of the button.
+  content::EvalJsResult result = content::EvalJs(
+      web_contents, base::StrCat({GetButtonAppJS(kReloadButtonSelector),
+                                  ".getBoundingClientRect().toJSON()"}));
+  ASSERT_TRUE(result.is_ok());
+  const base::DictValue& css_bounds = result.ExtractDict();
+
+  std::optional<double> left = css_bounds.FindDouble("left");
+  std::optional<double> top = css_bounds.FindDouble("top");
+  std::optional<double> width = css_bounds.FindDouble("width");
+  std::optional<double> height = css_bounds.FindDouble("height");
+
+  ASSERT_TRUE(left.has_value()) << "left missing";
+  ASSERT_TRUE(top.has_value()) << "top missing";
+  ASSERT_TRUE(width.has_value()) << "width missing";
+  ASSERT_TRUE(height.has_value()) << "height missing";
+
+  // Calculate what the C++ screen coordinates should be.
+  double page_zoom_scale = blink::ZoomLevelToZoomFactor(
+      zoom::ZoomController::GetZoomLevelForWebContents(web_contents));
+  gfx::Rect expected_screen_bounds = gfx::ToEnclosingRect(gfx::ScaleRect(
+      gfx::RectF(*left, *top, *width, *height), page_zoom_scale));
+  expected_screen_bounds.Offset(
+      webui_toolbar_view->GetBoundsInScreen().origin().OffsetFromOrigin());
+
+  // Trigger the context menu via a real DOM Right-Click event.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "%s?.dispatchEvent(new MouseEvent('contextmenu', "
+          "{bubbles: true, cancelable: true, view: window, button: 2}));",
+          GetButtonIconJS(kReloadButtonSelector).c_str())));
+
+  // Wait for the Mojo IPC to reach C++ and trigger the menu runner.
+  run_loop.Run();
+
+  EXPECT_EQ(captured_bounds, expected_screen_bounds);
+}
 
 IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, NoCrashOnCommandUpdate) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());

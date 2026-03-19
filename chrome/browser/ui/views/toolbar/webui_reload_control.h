@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "content/public/browser/context_menu_params.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace views {
@@ -37,7 +37,7 @@ class WebUIReloadControl : public ReloadControl {
   void SetDevToolsStatus(bool is_dev_tools_connected) override;
 
   bool HandleContextMenu(views::Widget* widget,
-                         gfx::Point screen_location,
+                         const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source);
 
   // ui::SimpleMenuModel::Delegate:
@@ -53,6 +53,8 @@ class WebUIReloadControl : public ReloadControl {
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckReloadButtonColor);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
+                           ContextMenuPositionE2E);
 
   void UpdateState();
 

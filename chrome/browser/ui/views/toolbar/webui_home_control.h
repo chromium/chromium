@@ -35,7 +35,7 @@ class WebUIHomeControl {
   bool IsVisible() const;
 
   // Handles context menu requests from the WebUI.
-  void HandleContextMenu(const gfx::Point& screen_location,
+  void HandleContextMenu(const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source);
 
  private:

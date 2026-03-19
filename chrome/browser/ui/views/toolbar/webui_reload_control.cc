@@ -10,6 +10,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,12 +60,12 @@ void WebUIReloadControl::SetDevToolsStatus(bool is_dev_tools_connected) {
 }
 
 bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
-                                           gfx::Point screen_location,
+                                           const gfx::Rect& screen_rect,
                                            ui::mojom::MenuSourceType source) {
   if (is_dev_tools_connected_) {
     menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
-                            gfx::Rect(screen_location, gfx::Size()),
-                            views::MenuAnchorPosition::kTopLeft, source);
+                            screen_rect, views::MenuAnchorPosition::kTopLeft,
+                            source);
     UpdateState();
   }
   return true;
