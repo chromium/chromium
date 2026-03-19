@@ -123,11 +123,6 @@ constexpr char kExtensionsKey[] = "extensions";
 
 }  // namespace
 
-namespace features {
-BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
-
 PolicyUIHandler::PolicyUIHandler(Profile* profile) : profile_(*profile) {}
 
 PolicyUIHandler::PolicyUIHandler(

@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -32,12 +31,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class PrefChangeRegistrar;
-
-namespace features {
-// If enabled, the banner on the chrome://policy page to be shown only to
-// eligible users passing through the promotion eligibility checker.
-BASE_DECLARE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner);
-}  // namespace features
 
 namespace enterprise_management {
 class GetUserEligiblePromotionsResponse;
