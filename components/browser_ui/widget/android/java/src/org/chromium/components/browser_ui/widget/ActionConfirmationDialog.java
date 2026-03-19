@@ -38,6 +38,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /** Dialog that asks the user if they're certain they want to perform and action. */
 @NullMarked
@@ -276,7 +277,8 @@ public class ActionConfirmationDialog {
     }
 
     /** Parameters for the confirmation dialog. */
-    public class ConfirmationDialogParams {
+    public static class ConfirmationDialogParams {
+        private final Context mContext;
         // The title of the dialog.
         private String mTitle = "";
         // The description of the dialog.
@@ -288,7 +290,9 @@ public class ActionConfirmationDialog {
         // Whether to show the "don't show again" checkbox.
         private boolean mSupportStopShowing;
 
-        public ConfirmationDialogParams() {}
+        public ConfirmationDialogParams(Context context) {
+            mContext = context;
+        }
 
         public ConfirmationDialogParams withTitle(String title) {
             mTitle = title;
@@ -334,10 +338,52 @@ public class ActionConfirmationDialog {
             mSupportStopShowing = supportStopShowing;
             return this;
         }
-    }
 
-    public ConfirmationDialogParams createDialogParams() {
-        return new ConfirmationDialogParams();
+        @Override
+        public String toString() {
+            return "ConfirmationDialogParams{"
+                    + "mContext="
+                    + mContext
+                    + ", mTitle='"
+                    + mTitle
+                    + '\''
+                    + ", mDescription="
+                    + mDescription
+                    + ", mPositiveButtonText='"
+                    + mPositiveButtonText
+                    + '\''
+                    + ", mNegativeButtonText='"
+                    + mNegativeButtonText
+                    + '\''
+                    + ", mSupportStopShowing="
+                    + mSupportStopShowing
+                    + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null) return false;
+            if (!(o instanceof ConfirmationDialogParams)) return false;
+            ConfirmationDialogParams that = (ConfirmationDialogParams) o;
+            return mSupportStopShowing == that.mSupportStopShowing
+                    && Objects.equals(mContext, that.mContext)
+                    && Objects.equals(mTitle, that.mTitle)
+                    && Objects.equals(mDescription, that.mDescription)
+                    && Objects.equals(mPositiveButtonText, that.mPositiveButtonText)
+                    && Objects.equals(mNegativeButtonText, that.mNegativeButtonText);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(
+                    mContext,
+                    mTitle,
+                    mDescription,
+                    mPositiveButtonText,
+                    mNegativeButtonText,
+                    mSupportStopShowing);
+        }
     }
 
     /**

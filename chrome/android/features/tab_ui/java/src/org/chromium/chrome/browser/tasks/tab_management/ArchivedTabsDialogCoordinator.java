@@ -73,6 +73,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -853,8 +854,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 tabCount,
                                 tabCount);
         mActionConfirmationDialog.show(
-                mActionConfirmationDialog
-                        .createDialogParams()
+                new ConfirmationDialogParams(mActivity)
                         .withTitle(title)
                         .withDescription(
                                 R.string

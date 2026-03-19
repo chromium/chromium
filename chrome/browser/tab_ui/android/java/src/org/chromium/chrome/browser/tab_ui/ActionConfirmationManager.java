@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
@@ -224,7 +225,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                dialog.createDialogParams()
+                new ConfirmationDialogParams(mContext)
                         .withTitle(R.string.stop_actor_task_dialog_title)
                         .withDescription(R.string.stop_actor_task_dialog_description)
                         .withPositiveButton(R.string.leave_tab_group_menu_item)
@@ -272,7 +273,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                dialog.createDialogParams()
+                new ConfirmationDialogParams(mContext)
                         .withTitle(titleRes)
                         .withDescription(description)
                         .withPositiveButton(actionRes)
@@ -314,7 +315,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                dialog.createDialogParams()
+                new ConfirmationDialogParams(mContext)
                         .withTitle(titleRes)
                         .withDescription(desription)
                         .withPositiveButton(actionRes)
@@ -390,7 +391,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                dialog.createDialogParams()
+                new ConfirmationDialogParams(mContext)
                         .withTitle(titleRes)
                         .withDescription(desription)
                         .withPositiveButton(positiveButtonRes)

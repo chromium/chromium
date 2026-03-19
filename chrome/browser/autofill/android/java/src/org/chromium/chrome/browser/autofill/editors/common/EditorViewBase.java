@@ -60,6 +60,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
@@ -651,8 +652,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 };
 
         confirmationDialog.show(
-                confirmationDialog
-                        .createDialogParams()
+                new ConfirmationDialogParams(mContext)
                         .withTitle(confirmationTitle)
                         .withDescription(confirmationText)
                         .withPositiveButton(primaryButtonText)
