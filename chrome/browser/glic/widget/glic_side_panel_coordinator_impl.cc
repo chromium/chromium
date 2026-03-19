@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
+#include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
 
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"

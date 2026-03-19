@@ -70,6 +70,7 @@ source_set("glic") {
       "glic_tab_restore_data.h",
       "glic_tab_restore_helper.h",
       "host/context/glic_focused_tab_manager.h",
+      "public/widget/glic_side_panel_coordinator_impl.h",
       "widget/glic_window_controller.h",
     ]
 
@@ -132,7 +133,11 @@ source_set("glic") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/actor:types" ]
+    deps += [
+      "//chrome/browser:primitives",
+      "//chrome/browser/actor:types",
+      "//chrome/browser/ui/side_panel",
+    ]
   } else {  # is_android
     deps += [
       ":actor_types_for_migration",
@@ -304,6 +309,7 @@ source_set("impl") {
       "widget/glic_inactive_floating_ui.h",
       "widget/glic_inactive_side_panel_ui.cc",
       "widget/glic_inactive_side_panel_ui.h",
+      "widget/glic_side_panel_coordinator_impl.cc",
       "widget/glic_side_panel_ui.cc",
       "widget/glic_side_panel_ui.h",
       "widget/glic_view.cc",
@@ -422,6 +428,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
@@ -621,6 +628,7 @@ source_set("browser_tests") {
       "host/guest_util_browsertest.cc",
       "public/glic_enabling_browsertest.cc",
       "widget/application_hotkey_delegate_browsertest.cc",
+      "widget/glic_side_panel_coordinator_browsertest.cc",
     ]
   }
 
@@ -670,6 +678,8 @@ source_set("browser_tests") {
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",

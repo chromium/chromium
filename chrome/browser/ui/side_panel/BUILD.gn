@@ -46,8 +46,6 @@ source_set("side_panel") {
 
   if (is_android) {
     deps += [ "//chrome/browser/ui/side_panel/android" ]
-  } else {
-    deps += [ "//chrome/browser/ui/tabs:tab_model" ]
   }
 }
 

@@ -22,8 +22,6 @@ source_set("side_panel") {
     "extensions/extension_side_panel_manager.cc",
     "extensions/extension_side_panel_manager.h",
     "extensions/extension_side_panel_utils.cc",
-    "glic/glic_side_panel_coordinator_impl.cc",
-    "glic/glic_side_panel_coordinator_impl.h",
     "history/history_side_panel_coordinator.cc",
     "history/history_side_panel_coordinator.h",
     "history_clusters/history_clusters_side_panel_controller.cc",
@@ -186,5 +184,6 @@ source_set("side_panel") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/side_panel:side_panel",
+    "//chrome/browser/glic",
   ]
 }
