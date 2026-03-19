@@ -1498,7 +1498,9 @@ source_set("libmutter") {
     "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
   ]
 
-  libs = [ "//third_party/libei/cipd/lib64/libeis.a" ]
+  if (current_cpu == "x64") {
+    libs = [ "//third_party/libei/cipd/lib64/libeis.a" ]
+  }
 }
 
 shared_library("libdefault") {

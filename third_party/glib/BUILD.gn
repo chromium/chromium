@@ -34,6 +34,7 @@ config("glib_common_config") {
     "-Werror=implicit-function-declaration",
     "-Werror=missing-prototypes",
     "-Werror=pointer-sign",
+    "-fsigned-char",
   ]
 
   # gvariant.c triggers a -Walloc-size warning which seems benign; see

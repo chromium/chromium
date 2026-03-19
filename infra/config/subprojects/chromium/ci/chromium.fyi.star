@@ -1568,6 +1568,14 @@ ci.builder(
             "linux-jammy",
             "arm64",
         ],
+        per_test_modifications = {
+            "remoting_unittests": targets.remove(
+                reason = "Not supported on Linux arm64",
+            ),
+            "vr_common_unittests": targets.remove(
+                reason = "Not supported on Linux arm64",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
