@@ -346,7 +346,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="4441527683895888777">Painel de cores do Chrome aberto no tamanho máximo</translation>
 <translation id="4468959413250150279">Desativar o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
-<translation id="4478158430052450698">Facilitar a personalização do zoom para sites diferentes</translation>
+<translation id="4478158430052450698">Facilita a personalização do zoom para sites diferentes</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que sites usem sua câmera (recomendado)</translation>
 <translation id="4505788138578415521">URL expandido</translation>
 <translation id="4523472416386354622">Fazer login para começar</translation>
@@ -447,7 +447,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5621413808884657932">Quando essa configuração está ativada, os sites podem pedir para acessar outros apps e serviços neste dispositivo. Quando essa configuração está desativada, os sites não podem acessar outros apps e serviços neste dispositivo.</translation>
 <translation id="5632485077360054581">Saiba como</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
-<translation id="5668404140385795438">Aplicar zoom mesmo que o site tente impedir</translation>
+<translation id="5668404140385795438">Aplica zoom mesmo que o site tente impedir</translation>
 <translation id="5668843533782548925">Os sites ficam mais lentos, mas mais seguros</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Local</translation>
@@ -461,7 +461,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5753570386948603678">Excluir do histórico</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
-<translation id="5792627621688759634">Troque de página usando um touchpad</translation>
+<translation id="5792627621688759634">Trocar de página usando um touchpad</translation>
 <translation id="5801457289562671820">Recomendado pela sua organização</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5817042798620209981">Caixa de diálogo de informações do site</translation>
@@ -707,7 +707,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="83792324527827022">Um site está usando sua câmera e seu microfone</translation>
 <translation id="8380167699614421159">Neste site, há exibição de anúncios invasivos ou enganosos</translation>
 <translation id="8394832520002899662">Toque para voltar ao site</translation>
-<translation id="8409345997656833551">Receber uma notificação quando um artigo puder ser mostrado na visualização simplificada</translation>
+<translation id="8409345997656833551">Receba uma notificação quando um artigo puder ser mostrado na visualização simplificada</translation>
 <translation id="8416874502399604126">Microfone permitido apenas desta vez</translation>
 <translation id="8423565414844018592">Tamanho do texto definido como <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Configurações</translation>

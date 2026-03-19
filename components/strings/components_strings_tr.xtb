@@ -1052,7 +1052,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2658843814961855121">İş ve Çalışma Kanunu</translation>
 <translation id="2660779039299703961">Etkinlik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için)}other{# şifre (<ph name="DOMAIN_LIST" /> için)}}</translation>
-<translation id="2666092431469916601">Üst</translation>
+<translation id="2666092431469916601">Üstte</translation>
 <translation id="2666117266261740852">Diğer sekmeleri veya uygulamaları kapatın</translation>
 <translation id="266935134738038806">Siteye git</translation>
 <translation id="2672201172023654893">Tarayıcınız yönetilmemektedir.</translation>
@@ -1292,7 +1292,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" geçerli bir proxy değil.</translation>
 <translation id="3086269988715347183"><ph name="BLOCKED_URL" /> adresini daha önce onaylamadınız</translation>
 <translation id="3086579638707268289">Web'de etkinliğiniz izleniyor</translation>
-<translation id="3087734570205094154">Alt</translation>
+<translation id="3087734570205094154">Altta</translation>
 <translation id="3090667236485488075">Cam</translation>
 <translation id="3093122472063815077">"Şimdi al sonra öde" ilerleme ekranı ekranın yarısına kadar açıldı.</translation>
 <translation id="309381737510736393">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekmeleri paylaşamaz veya başkalarıyla ortak çalışamazsınız</translation>
@@ -2307,7 +2307,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - Siz sorun, <ph name="KEYWORD_SHORT_NAME" /> yanıtlasın</translation>
 <translation id="4698692901173737941">Dövüş Sporları</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
-<translation id="4702504834785592287">Taraf</translation>
+<translation id="4702504834785592287">Kenarda</translation>
 <translation id="4702656508969495934">Canlı Altyazı görünüyor, odaklamak için pencere değiştiriciyi kullanın</translation>
 <translation id="4703342001883078444">Aile ve İlişkiler</translation>
 <translation id="4704745399240123930">Bu satıcı tarafından kabul edilmeyen kartlar (ör. sanal kartlar) devre dışı bırakıldı.</translation>

@@ -1042,7 +1042,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1686785653877010442">Por lo general, los sitios envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="168715261339224929">Activa la sincronización para que tus favoritos estén en todos tus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe una letra</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Alias</translation>
 <translation id="168991973552362966">Agregar una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
@@ -8430,7 +8430,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Mover hacia abajo</translation>
 <translation id="67465227497040338">Mostrar contraseña de <ph name="DOMAIN" /></translation>
-<translation id="6746834324024491643">Para ver tus contraseñas y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
+<translation id="6746834324024491643">Para obtener tus contraseñas y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">¿Deseas restablecer los permisos?</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -10167,7 +10167,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
 <translation id="7925285046818567682">Esperando <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">No era yo.</translation>
-<translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
+<translation id="7926975587469166629">Alias de la tarjeta</translation>
 <translation id="7928175190925744466">¿Ya cambiaste esta contraseña?</translation>
 <translation id="7929468958996190828">Puedes <ph name="BEGIN_LINK" />actualizar ahora<ph name="END_LINK" /> o volver a intentarlo más tarde cuando abras nuevas pestañas similares</translation>
 <translation id="7929962904089429003">Abrir el menú</translation>
