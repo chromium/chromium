@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/to_string.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "net/http/http_request_headers.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -261,6 +263,10 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
     return false;
   }
 
+  if (!VerifyNavigationHeaders(process, params->extra_headers)) {
+    return false;
+  }
+
   if (params->initiator_base_url) {
     // `initiator_base_url` should only be defined for about:blank and
     // about:srcdoc navigations, and should never be an empty GURL (if it is not
@@ -453,6 +459,37 @@ bool VerifyNavigationInitiator(
     }
   }
 
+  return true;
+}
+
+bool VerifyNavigationHeaders(RenderProcessHost* process,
+                             const std::string& headers) {
+  net::HttpRequestHeaders parsed_headers;
+  parsed_headers.AddHeadersFromString(headers);
+  for (net::HttpRequestHeaders::Iterator header(parsed_headers);
+       header.GetNext();) {
+    // Headers should be strictly allowlisted because there can be security
+    // consequences if a compromised renderer can set arbitrary headers (e.g.,
+    // for CSRF prevention).
+    //
+    // This list allowlists `Origin`, but the value of the `Origin` header is
+    // further validated in NavigationRequest::AddAdditionalRequestHeaders.
+    if (header.name() != net::HttpRequestHeaders::kUpgradeInsecureRequests &&
+        header.name() != net::HttpRequestHeaders::kOrigin &&
+        header.name() != net::HttpRequestHeaders::kContentType &&
+        header.name() != net::HttpRequestHeaders::kUserAgent &&
+        header.name() != net::HttpRequestHeaders::kSecPurpose &&
+        header.name() != net::HttpRequestHeaders::kDNT) {
+      // TODO(https://crbug.com/40093290): Once we have enough data, this should
+      // be a `bad_message::ReceivedBadMessage` and return `false`.
+      SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                                header.name());
+      if (base::FeatureList::IsEnabled(
+              features::kDumpOnInvalidNavigationHeaders)) {
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+  }
   return true;
 }
 

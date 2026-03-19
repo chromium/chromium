@@ -173,6 +173,19 @@ BASE_FEATURE(kDocumentIsolationPolicyWithoutSiteIsolation,
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, DumpWithoutCrashing() is called if a renderer process provides
+// invalid (non-allowlisted) headers in a navigation request.
+BASE_FEATURE(kDumpOnInvalidNavigationHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, DumpWithoutCrashing() is called if a renderer process provides
+// an Origin header on a navigation request that doesn't match the expected
+// origin.
+BASE_FEATURE(kDumpOnOriginHeaderMismatch, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, DumpWithoutCrashing() is called if a renderer process provides
+// an Origin header on a navigation request that shouldn't have one.
+BASE_FEATURE(kDumpOnUnexpectedOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Requires documents embedded via <iframe>, etc, to explicitly opt-into the
 // embedding: https://github.com/mikewest/embedding-requires-opt-in.
 BASE_FEATURE(kEmbeddingRequiresOptIn, base::FEATURE_DISABLED_BY_DEFAULT);

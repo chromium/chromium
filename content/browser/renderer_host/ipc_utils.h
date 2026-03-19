@@ -87,6 +87,16 @@ bool VerifyNavigationInitiator(
     const std::optional<blink::LocalFrameToken>& initiator_frame_token,
     int initiator_process_id);
 
+// Verifies that |headers| are valid for a navigation request initiated by
+// |process|. For now, this always returns true, indicating that the |headers|
+// are valid. TODO(https://crbug.com/487795397): Later, after evaluating debug
+// data, this will be converted to terminate |process| and return false if
+// |headers| are invalid.
+//
+// This function has to be called on the UI thread.
+bool VerifyNavigationHeaders(RenderProcessHost* process,
+                             const std::string& headers);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_IPC_UTILS_H_

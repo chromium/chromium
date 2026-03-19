@@ -1152,7 +1152,7 @@ TEST_F(PrerenderHostRegistryTest,
 TEST_F(PrerenderHostRegistryTest, PurposeHeaderIsIgnoredForParamMatching) {
   EXPECT_TRUE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_request_headers("Purpose: Test");
+        navigation->set_request_headers("Sec-Purpose: Test");
       })));
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
       PrerenderHost::ActivationNavigationParamsMatch::kOk);

@@ -400,12 +400,47 @@ void AddAdditionalRequestHeaders(
   }
 
   // Next, set the HTTP Origin if needed.
+  std::optional<std::string> existing_origin =
+      headers->GetHeader(net::HttpRequestHeaders::kOrigin);
   if (NeedsHTTPOrigin(headers, method)) {
+    // TODO(https://crbug.com/491783215): investigate whether it is possible to
+    // set Origin headers (at least on navigation requests) exclusively in the
+    // browser process and kill any renderer that provides Origin itself.
     url::Origin origin_header_value = initiator_origin.value_or(url::Origin());
     origin_header_value = Referrer::SanitizeOriginForRequest(
         url, origin_header_value, referrer->policy);
-    headers->SetHeader(net::HttpRequestHeaders::kOrigin,
-                       origin_header_value.Serialize());
+    std::string serialized_origin = origin_header_value.Serialize();
+    if (existing_origin && existing_origin != serialized_origin) {
+      if (base::FeatureList::IsEnabled(features::kDumpOnOriginHeaderMismatch)) {
+        // TODO(https://crbug.com/487795397): this should
+        // be a `bad_message::ReceivedBadMessage` and return `false` once
+        // DumpWithoutCrashing data is evaluated.
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                                  net::HttpRequestHeaders::kOrigin);
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
+                                  existing_origin.value());
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "serialized_origin",
+                                  serialized_origin);
+        SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", true);
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+    headers->SetHeader(net::HttpRequestHeaders::kOrigin, serialized_origin);
+  } else {
+    if (existing_origin) {
+      if (base::FeatureList::IsEnabled(
+              features::kDumpOnUnexpectedOriginHeader)) {
+        // TODO(https://crbug.com/40093290): this should
+        // be a `bad_message::ReceivedBadMessage` and return `false` once
+        // DumpWithoutCrashing() data is evaluated.
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                                  net::HttpRequestHeaders::kOrigin);
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
+                                  existing_origin.value());
+        SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", false);
+        base::debug::DumpWithoutCrashing();
+      }
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kDocumentPolicyNegotiation)) {
