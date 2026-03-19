@@ -1173,6 +1173,9 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
     delegate.SpinAndExpectNoEvents();
   }
 
+  // Allow the watcher to update its watch list.
+  SpinEventLoopForABit();
+
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
   VLOG(1) << "Create File";
@@ -1235,6 +1238,9 @@ TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   VLOG(1) << "Waiting for file deletion";
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
+
+  // Allow the watcher to update its watch list.
+  SpinEventLoopForABit();
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   VLOG(1) << "Waiting for file creation + modification";
@@ -1368,6 +1374,9 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   }
   ASSERT_TRUE(setup_result);
 
+  // Allow the watcher to initialize its watch on the parent directory.
+  SpinEventLoopForABit();
+
   // TODO(crbug.com/40263777): Create a version of this test which also
   // verifies that the events occur on the correct file path if the watcher is
   // set up to record the target of the event.
@@ -1376,6 +1385,9 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   ASSERT_TRUE(CreateDirectory(dir));
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
+
+  // Ensure inotify has established the watch for the new 'dir'.
+  SpinEventLoopForABit();
 
   // Create "$dir/file1".
   base::FilePath file1(dir.AppendASCII("file1"));
@@ -1391,17 +1403,26 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
 
+  // Ensure inotify has established the watch for the new 'subdir'.
+  SpinEventLoopForABit();
+
   // Create "$dir/subdir/subdir2".
   base::FilePath subdir2(subdir.AppendASCII("subdir2"));
   ASSERT_TRUE(CreateDirectory(subdir2));
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
 
+  // Ensure inotify has established the watch for the new 'subdir2'.
+  SpinEventLoopForABit();
+
   // Rename "$dir/subdir/subdir2" to "$dir/subdir/subdir2b".
   base::FilePath subdir2b(subdir.AppendASCII("subdir2b"));
   Move(subdir2, subdir2b);
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
+
+  // Ensure inotify has established the watch for the new 'subdir2b'.
+  SpinEventLoopForABit();
 
   // Create "$dir/subdir/subdir_file1".
   base::FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
@@ -1416,6 +1437,9 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   ASSERT_TRUE(CreateDirectory(subdir_child_dir));
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
+
+  // Ensure inotify has established the watch for the new 'subdir_child_dir'.
+  SpinEventLoopForABit();
 
   // Create "$dir/subdir/subdir_child_dir/child_dir_file1".
   base::FilePath child_dir_file1(
@@ -1540,6 +1564,8 @@ TEST_F(FilePathWatcherTest, MoveChild) {
 
   // Move the directory into place, s.t. the watched file appears.
   ASSERT_TRUE(Move(source_dir, dest_dir));
+  // Allow the watcher to update its watch list.
+  SpinEventLoopForABit();
   file_event_expecter.AddExpectedEventForPath(dest_file);
   subdir_event_expecter.AddExpectedEventForPath(dest_subdir);
   file_delegate.RunUntilEventsMatch(file_event_expecter);
@@ -1559,9 +1585,13 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 
   ASSERT_TRUE(SetupWatch(temp_dir_.GetPath(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
+  // Allow the watcher to update its watch list.
+  SpinEventLoopForABit();
 
   // Move the directory into place, s.t. the watched file appears.
   Move(from_path, to_path);
+  // Allow the watcher to update its watch list.
+  SpinEventLoopForABit();
 
   // The move event.
   event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
