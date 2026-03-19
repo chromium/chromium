@@ -1271,6 +1271,104 @@ TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {
             std::make_optional<CellIndex>(3u, CellType::kContent));
 }
 
+TEST_F(PopupViewViewsTest, Show_A11yAnnouncesCurrentTab) {
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later Test"}});
+
+  controller().set_suggestions({SuggestionType::kCreditCardEntry});
+  CreateView(/*widget_params=*/std::nullopt, /*search_bar_config=*/std::nullopt,
+             std::move(tabbed_pane_config));
+
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run(std::u16string(u"Pay Now Test"), true));
+
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesCurrentTab) {
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later Test"}});
+
+  CreateAndShowView({SuggestionType::kCreditCardEntry},
+                    /*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run(std::u16string(u"Pay Now Test"), true));
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+}
+
+TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later Test"}});
+
+  CreateAndShowView({SuggestionType::kCreditCardEntry},
+                    /*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+
+  // Pressing right should navigate to the next tab.
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  SuggestionTabIndex(1)))));
+  SimulateKeyPress(ui::VKEY_RIGHT);
+
+  // Pressing right again should do nothing because we are at the last tab.
+  EXPECT_CALL(controller(), SetFilter).Times(0);
+  SimulateKeyPress(ui::VKEY_RIGHT);
+
+  // Pressing left should navigate back to the previous tab.
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  SuggestionTabIndex(0)))));
+  SimulateKeyPress(ui::VKEY_LEFT);
+}
+
+TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later Test"}});
+
+  CreateAndShowView({SuggestionType::kCreditCardEntry},
+                    /*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+
+  // In RTL, pressing left should navigate to the next tab.
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  SuggestionTabIndex(1)))));
+  SimulateKeyPress(ui::VKEY_LEFT);
+
+  // Pressing left again should do nothing because we are at the last tab.
+  EXPECT_CALL(controller(), SetFilter).Times(0);
+  SimulateKeyPress(ui::VKEY_LEFT);
+
+  // In RTL, pressing right should navigate to the previous tab.
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  SuggestionTabIndex(0)))));
+  SimulateKeyPress(ui::VKEY_RIGHT);
+
+  base::i18n::SetRTLForTesting(false);
+}
+
 TEST_F(PopupViewViewsTest, MovingSelectionSkipsSeparator) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
                      SuggestionType::kManageAddress});

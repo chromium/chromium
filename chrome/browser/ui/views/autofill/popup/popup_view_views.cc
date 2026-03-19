@@ -323,6 +323,7 @@ bool PopupViewViews::Show(
     }
   }
 
+  MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();
@@ -682,6 +683,15 @@ bool PopupViewViews::SelectNextHorizontalCell() {
       return true;
     }
   }
+
+  if (tabbed_pane_) {
+    const size_t current_tab = tabbed_pane_->GetSelectedTabIndex();
+    if (current_tab + 1 < tabbed_pane_->GetTabCount()) {
+      tabbed_pane_->SelectTabAt(current_tab + 1);
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -695,6 +705,15 @@ bool PopupViewViews::SelectPreviousHorizontalCell() {
         PopupCellSelectionSource::kKeyboard);
     return true;
   }
+
+  if (tabbed_pane_) {
+    const size_t current_tab = tabbed_pane_->GetSelectedTabIndex();
+    if (current_tab > 0) {
+      tabbed_pane_->SelectTabAt(current_tab - 1);
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -747,6 +766,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
+  MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();
@@ -932,6 +952,16 @@ void PopupViewViews::ShowIPHFeaturePromos() {
       BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
           std::move(params));
     }
+  }
+}
+
+void PopupViewViews::MaybeAnnounceCurrentTab() {
+  if (tabbed_pane_) {
+    a11y_announcer_.Run(
+        std::u16string(
+            tabbed_pane_->GetTabAt(tabbed_pane_->GetSelectedTabIndex())
+                ->GetTitleText()),
+        /*polite=*/true);
   }
 }
 

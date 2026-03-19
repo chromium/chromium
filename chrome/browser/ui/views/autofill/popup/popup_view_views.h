@@ -192,6 +192,10 @@ class PopupViewViews : public PopupBaseView,
   // metadata.
   void ShowIPHFeaturePromos();
 
+  // Announces the title of the currently selected tab in `tabbed_pane_`, if it
+  // exists.
+  void MaybeAnnounceCurrentTab();
+
   // If the current suggestions are for password recovery, announces it to the
   // user.
   void MaybeAnnouncePasswordRecoveryPopup();
