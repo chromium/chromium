@@ -32,12 +32,6 @@
 namespace net {
 class NetLogWithSource;
 
-namespace {
-
-constexpr int kWindowBits = 15;
-constexpr size_t kChunkSize = 4 * 1024;
-
-}  // namespace
 
 WebSocketDeflateStream::WebSocketDeflateStream(
     std::unique_ptr<WebSocketStream> stream,

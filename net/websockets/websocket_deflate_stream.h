@@ -43,6 +43,9 @@ class NetLogWithSource;
 // [1]: http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-12
 class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
  public:
+  static constexpr size_t kChunkSize = 32 * 1024;
+  static constexpr int kWindowBits = 15;
+
   WebSocketDeflateStream(std::unique_ptr<WebSocketStream> stream,
                          const WebSocketDeflateParameters& params,
                          std::unique_ptr<WebSocketDeflatePredictor> predictor);
