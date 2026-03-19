@@ -312,7 +312,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '940a08503b8234d3483a75589b0ef1b38a5fbf68',
+  'skia_revision': 'fd139e79fd4553ba16556c1bca6c0f4dd9bc6fa5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -3010,7 +3010,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'baa28d0aef79834abeef2074693d59bfc16274ed',
+    Var('webrtc_git') + '/src.git' + '@' + '8eea5736d1e0320318bf24295c1d4de91dfc6a68',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3793,7 +3793,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'd70f08151bc015112bf43d56a9a3d535e5d93674',
+        '09aef5f61bde2101efab89e76e4cb3e334b63420',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
