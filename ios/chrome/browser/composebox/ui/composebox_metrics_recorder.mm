@@ -170,6 +170,14 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
       base::UserMetricsAction("IOS.Omnibox.MobileFusebox.Action.QRScanner"));
 }
 
+- (void)recordAttachmentsMenuOpenedWithVisibleButtons:
+    (std::vector<FuseboxAttachmentButtonType>)visibleButtons {
+  [self recordAttachmentsMenuShown:YES];
+  for (FuseboxAttachmentButtonType buttonType : visibleButtons) {
+    [self recordAttachmentButtonShown:buttonType];
+  }
+}
+
 #pragma mark - private
 
 - (void)recordAttachmentButtonUsedInSession:

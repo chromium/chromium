@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 // LINT.IfChange(AiModeActivationSource)
 enum class AiModeActivationSource {
   kToolMenu = 0,
@@ -104,6 +106,10 @@ enum class ComposeboxDragAndDropType {
 - (void)recordVoiceSearchButtonUsed;
 - (void)recordLensSearchButtonUsed;
 - (void)recordQRScannerButtonUsed;
+
+// Records that the attachments menu was opened with the given visible buttons.
+- (void)recordAttachmentsMenuOpenedWithVisibleButtons:
+    (std::vector<FuseboxAttachmentButtonType>)visibleButtons;
 
 @end
 
