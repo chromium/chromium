@@ -248,5 +248,3 @@
 -keepclasseswithmembers class !cr_allowunused,**J.N {
   public long *_HASH;
 }
-# -------- Config Path: obj/third_party/androidx/androidx_annotation_annotation_experimental_java/proguard.txt --------
-# Intentionally empty proguard rules to indicate this library is safe to shrink

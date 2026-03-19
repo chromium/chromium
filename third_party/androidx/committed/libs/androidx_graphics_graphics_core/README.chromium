@@ -1,7 +1,7 @@
 Name: Graphics Core
 Short Name: graphics-core
-URL: https://androidx.dev/snapshots/builds/14995842/artifacts/repository/androidx/graphics/graphics-core/1.1.0-SNAPSHOT/graphics-core-1.1.0-20260309.122529-1.aar
-Version: 1.1.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/graphics/graphics-core/1.0.4/graphics-core-1.0.4.aar
+Version: 1.0.4
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Leverage graphics facilities across multiple Android platform releases
 
-See also: https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/graphics#1.0.4
 
 
 Local Modifications:

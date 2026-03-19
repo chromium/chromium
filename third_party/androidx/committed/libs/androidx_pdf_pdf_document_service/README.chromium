@@ -1,7 +1,7 @@
 Name: androidx.pdf:pdf-document-service
 Short Name: pdf-document-service
-URL: https://androidx.dev/snapshots/builds/14995842/artifacts/repository/androidx/pdf/pdf-document-service/1.0.0-SNAPSHOT/pdf-document-service-1.0.0-20260309.122529-1.aar
-Version: 1.0.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-document-service/1.0.0-alpha13/pdf-document-service-1.0.0-alpha13.aar
+Version: 1.0.0-alpha13
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Parse and process PDF documents providing the implementations of PdfDocument and PdfLoader sandboxing the underlying android PdfRenderer class.
 
-See also: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-alpha13
 
 
 Local Modifications:
