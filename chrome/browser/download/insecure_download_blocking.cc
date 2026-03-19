@@ -86,80 +86,6 @@ const char kSafeExtensions[] =
     ("txt,css,json,csv,tsv,jpg,jpeg,png,gif,tif,tiff,ico,webp,aac,midi,ogg,"
      "wav,webm,mp3,webm,mp4,mpeg,mov,wmv");
 
-// Map the string file extension to the corresponding histogram enum.
-InsecureDownloadExtensions GetExtensionEnumFromString(
-    const std::string& extension) {
-  if (extension.empty())
-    return InsecureDownloadExtensions::kNone;
-
-  auto lower_extension = base::ToLowerASCII(extension);
-  for (auto candidate : kExtensionsToEnum) {
-    if (candidate.extension == lower_extension)
-      return candidate.value;
-  }
-  return InsecureDownloadExtensions::kUnknown;
-}
-
-// Get the appropriate histogram metric name for the initiator/download security
-// state combo.
-std::string GetDownloadBlockingExtensionMetricName(
-    InsecureDownloadSecurityStatus status) {
-  switch (status) {
-    case InsecureDownloadSecurityStatus::kInitiatorUnknownFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorUnknown,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::kInitiatorUnknownFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorUnknown,
-          kInsecureDownloadHistogramTargetInsecure);
-    case InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorSecure,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorSecure,
-          kInsecureDownloadHistogramTargetInsecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInsecureFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInsecure,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInsecure,
-          kInsecureDownloadHistogramTargetInsecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInferredSecureFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInferredSecure,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInferredSecureFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInferredSecure,
-          kInsecureDownloadHistogramTargetInsecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInferredInsecureFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInferredInsecure,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::kInitiatorInferredInsecureFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInferredInsecure,
-          kInsecureDownloadHistogramTargetInsecure);
-    case InsecureDownloadSecurityStatus::kDownloadIgnored:
-      NOTREACHED();
-    case InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInsecureNonUnique,
-          kInsecureDownloadHistogramTargetSecure);
-    case InsecureDownloadSecurityStatus::
-        kInitiatorInsecureNonUniqueFileInsecure:
-      return GetDLBlockingHistogramName(
-          kInsecureDownloadExtensionInitiatorInsecureNonUnique,
-          kInsecureDownloadHistogramTargetInsecure);
-  }
-  NOTREACHED();
-}
-
 // Get appropriate enum value for the initiator/download security state combo
 // for histogram reporting. |dl_secure| signifies whether the download was
 // a secure source. |inferred| is whether the initiator value is our best guess.
@@ -312,10 +238,6 @@ struct InsecureDownloadData {
       auto security_status =
           GetDownloadBlockingEnum(initiator_, download_delivered_securely,
                                   initiator_inferred, insecure_nonunique);
-      std::string metric_name =
-          GetDownloadBlockingExtensionMetricName(security_status);
-      base::UmaHistogramEnumeration(metric_name,
-                                    GetExtensionEnumFromString(extension_));
       base::UmaHistogramEnumeration(kInsecureDownloadHistogramName,
                                     security_status);
 

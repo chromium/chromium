@@ -621,32 +621,6 @@ chromium-metrics-reviews@google.com.
       label="Download message not shown due to null message dispatcher"/>
 </enum>
 
-<enum name="InsecureDownloadExtensions">
-  <int value="0" label="kUnknown"/>
-  <int value="1" label="kNone"/>
-  <int value="2" label="kImage"/>
-  <int value="3" label="kArchive"/>
-  <int value="4" label="kAudio"/>
-  <int value="5" label="kVideo"/>
-  <int value="6" label="kMSExecutable"/>
-  <int value="7" label="kMacExecutable"/>
-  <int value="8" label="kWeb"/>
-  <int value="9" label="kText"/>
-  <int value="10" label="kMSOffice"/>
-  <int value="11" label="kPDF"/>
-  <int value="12" label="kCRX"/>
-  <int value="13" label="kAPK"/>
-  <int value="14" label="kBIN"/>
-  <int value="15" label="kSH"/>
-  <int value="16" label="kVB"/>
-  <int value="17" label="kSWF"/>
-  <int value="18" label="kICO"/>
-  <int value="19" label="kEPUB"/>
-  <int value="20" label="kICS"/>
-  <int value="21" label="kSVG"/>
-  <int value="22" label="kTest"/>
-</enum>
-
 <enum name="InsecureDownloadSecurityStatus">
   <int value="0" label="Secure download initiated by unknown source"/>
   <int value="1" label="Insecure download initiated by unknown source"/>
