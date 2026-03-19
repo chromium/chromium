@@ -19,6 +19,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -231,6 +232,26 @@ void ProjectsPanelTabGroupsItemView::OnMouseMoved(const ui::MouseEvent& event) {
   // Mouse enter and exit events are flaky on Linux, so this ensures the hover
   // state is still applied.
   UpdateHoverState();
+}
+
+bool ProjectsPanelTabGroupsItemView::OnMousePressed(
+    const ui::MouseEvent& event) {
+  // Right-clicking will trigger the context menu when the mouse is released.
+  if (event.IsRightMouseButton()) {
+    return true;
+  }
+  return views::Button::OnMousePressed(event);
+}
+
+void ProjectsPanelTabGroupsItemView::OnMouseReleased(
+    const ui::MouseEvent& event) {
+  if (event.IsRightMouseButton()) {
+    if (GetLocalBounds().Contains(event.location())) {
+      more_button_callback_.Run(group_guid_, *more_button_);
+    }
+    return;
+  }
+  views::Button::OnMouseReleased(event);
 }
 
 void ProjectsPanelTabGroupsItemView::OnDragDone() {

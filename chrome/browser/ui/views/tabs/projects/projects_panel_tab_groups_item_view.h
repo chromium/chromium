@@ -56,6 +56,8 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnDragDone() override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
