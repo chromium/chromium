@@ -2620,7 +2620,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '16803420bfeb0b7fdfd5ab169a67f927f1704b4a',
+    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + 'cc7b51d2e03c05961e2649f0db396f3179dd6def',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
