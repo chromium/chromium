@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -18,7 +18,7 @@ namespace glic {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
 
-class GlicPermissionEnforcementUiTest : public test::InteractiveGlicTest {
+class GlicPermissionEnforcementUiTest : public NonInteractiveGlicTest {
  public:
   GlicPermissionEnforcementUiTest()
       : geolocation_overrider_(
