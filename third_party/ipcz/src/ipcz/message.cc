@@ -131,20 +131,6 @@ DriverObject DeserializeDriverObject(
     return {};
   }
 
-  // If any driver handles have already claimed, the message is invalid.
-  for (auto i = object_data.first_driver_handle;
-       i < object_data.first_driver_handle + object_data.num_driver_handles;
-       ++i) {
-    if (is_handle_consumed[i]) {
-      return {};
-    }
-  }
-
-  // These two loops cannot be merged: returning early if some handles are
-  // already consumed can result in a handle marked as consumed even though it
-  // was never passed to `DriverObject::Deserialize()`. The cleanup logic in
-  // `DeserializeUnknownType()` would also skip the already-marked handle,
-  // leaking the object's resources.
   for (auto i = object_data.first_driver_handle;
        i < object_data.first_driver_handle + object_data.num_driver_handles;
        ++i) {
