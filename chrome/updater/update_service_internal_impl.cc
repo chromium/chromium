@@ -11,9 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_impl.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 
 namespace updater {

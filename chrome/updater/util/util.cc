@@ -195,14 +195,6 @@ std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
   return app_args ? app_args->install_data_index : std::string();
 }
 
-std::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
-  const std::optional<base::FilePath> log_dir = GetInstallDirectory(scope);
-  if (log_dir) {
-    return log_dir->Append(FILE_PATH_LITERAL("updater.log"));
-  }
-  return std::nullopt;
-}
-
 void InitLogging(UpdaterScope updater_scope) {
   std::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
   if (!log_file) {

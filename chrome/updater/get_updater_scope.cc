@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/get_updater_scope.h"
 
 #include <optional>
 
@@ -97,10 +97,6 @@ UpdaterScope GetUpdaterScope() {
 
 bool IsSystemInstall() {
   return IsSystemInstall(GetUpdaterScope());
-}
-
-bool IsSystemInstall(UpdaterScope scope) {
-  return scope == UpdaterScope::kSystem;
 }
 
 }  // namespace updater

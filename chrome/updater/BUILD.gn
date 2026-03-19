@@ -573,11 +573,37 @@ if (is_win || is_mac || is_linux) {
     deps = [ "//base" ]
   }
 
+  source_set("public_util") {
+    public = [
+      "updater_scope.h",
+      "util/path_util.h",
+    ]
+    sources = [ "util/path_util.cc" ]
+    if (is_linux) {
+      sources += [ "util/linux_path_util.cc" ]
+    }
+    if (is_mac) {
+      sources += [
+        "util/mac_path_util.h",
+        "util/mac_path_util.mm",
+      ]
+    }
+    if (is_win) {
+      sources += [ "util/win_path_util.cc" ]
+    }
+    deps = [
+      ":branding_header",
+      "//base",
+    ]
+  }
+
   source_set("public_sources") {
     sources = [
       "branded_constants.h",
       "constants.h",
       "enum_traits.h",
+      "get_updater_scope.cc",
+      "get_updater_scope.h",
       "ipc/ipc_names.h",
       "ipc/ipc_support.cc",
       "ipc/ipc_support.h",
@@ -591,11 +617,11 @@ if (is_win || is_mac || is_linux) {
       "service_proxy_factory.h",
       "update_service.cc",
       "update_service.h",
-      "updater_scope.cc",
-      "updater_scope.h",
       "util/util.cc",
       "util/util.h",
     ]
+
+    public_deps = [ ":public_util" ]
 
     deps = [
       ":branding_header",
@@ -878,6 +904,7 @@ if (is_win || is_mac || is_linux) {
       "external_constants_builder.h",
       "external_constants_builder_unittest.cc",
       "external_constants_override_unittest.cc",
+      "get_updater_scope_unittest.cc",
       "installer_unittest.cc",
       "net/fallback_net_fetcher_unittest.cc",
       "net/network_unittest.cc",
@@ -906,7 +933,6 @@ if (is_win || is_mac || is_linux) {
       "update_service_impl_impl_unittest.cc",
       "update_service_impl_inactive_unittest.cc",
       "update_service_unittest.cc",
-      "updater_scope_unittest.cc",
       "updater_unittest.cc",
       "usage_stats_permissions_unittest.cc",
       "util/util_unittest.cc",

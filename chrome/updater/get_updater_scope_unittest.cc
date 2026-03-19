@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/get_updater_scope.h"
 
 #include <string>
 #include <vector>

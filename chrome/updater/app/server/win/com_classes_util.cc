@@ -14,8 +14,8 @@
 #include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/registration_data.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
 namespace updater {

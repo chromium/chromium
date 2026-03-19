@@ -17,6 +17,7 @@
 #include "chrome/updater/activity.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_service.h"

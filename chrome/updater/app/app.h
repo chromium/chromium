@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/get_updater_scope.h"
 
 namespace updater {
 

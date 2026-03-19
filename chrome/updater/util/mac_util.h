@@ -17,10 +17,6 @@ class FilePath;
 
 namespace updater {
 
-// For user installations returns: the "~/Library" for the logged in user.
-// For system installations returns: "/Library".
-std::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
-
 // For user installations returns "~/Library/Application Support" for the
 // logged in user. For system installations returns
 // "/Library/Application Support".

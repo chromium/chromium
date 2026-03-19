@@ -1034,19 +1034,6 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
   return command_line;
 }
 
-std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
-  base::FilePath app_data_dir;
-  if (!base::PathService::Get(IsSystemInstall(scope)
-                                  ? base::DIR_PROGRAM_FILESX86
-                                  : base::DIR_LOCAL_APP_DATA,
-                              &app_data_dir)) {
-    LOG(ERROR) << "Can't retrieve app data directory.";
-    return std::nullopt;
-  }
-  return app_data_dir.AppendUTF8(COMPANY_SHORTNAME_STRING)
-      .AppendUTF8(PRODUCT_FULLNAME_STRING);
-}
-
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath::FromUTF8Unsafe(kExecutableName);
 }

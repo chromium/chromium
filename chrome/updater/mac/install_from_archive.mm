@@ -35,8 +35,8 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
 

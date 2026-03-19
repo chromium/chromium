@@ -22,6 +22,7 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/event_history.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"

@@ -18,6 +18,7 @@
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/ping_persisted_data.h"
 #include "chrome/updater/util/util.h"

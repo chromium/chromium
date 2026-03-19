@@ -32,9 +32,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -177,12 +178,6 @@ void SetWorldReadablePermissions(const base::FilePath& path) {
 }
 
 }  // namespace
-
-std::optional<base::FilePath> GetHistoryLogFilePath(UpdaterScope scope) {
-  return GetInstallDirectory(scope).transform([](const base::FilePath& path) {
-    return path.Append(FILE_PATH_LITERAL("updater_history.jsonl"));
-  });
-}
 
 void InitHistoryLogging(UpdaterScope updater_scope) {
   constexpr int kMaxFileSizeBytes = 1024 * 1024;  // 1 MiB.

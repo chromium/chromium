@@ -20,37 +20,9 @@
 #include "chrome/updater/util/util.h"
 
 namespace updater {
-namespace {
-
-constexpr base::FilePath::CharType kSystemDataPath[] =
-    FILE_PATH_LITERAL("/opt/");
-constexpr base::FilePath::CharType kUserRelativeDataPath[] =
-    FILE_PATH_LITERAL(".local/");
-
-base::FilePath GetUpdaterFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_LOWERCASE_STRING)
-      .Append(PRODUCT_FULLNAME_DASHED_LOWERCASE_STRING);
-}
-
-}  // namespace
 
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
-}
-
-std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
-  base::FilePath path;
-  switch (scope) {
-    case UpdaterScope::kUser:
-      if (base::PathService::Get(base::DIR_HOME, &path)) {
-        return path.Append(kUserRelativeDataPath)
-            .Append(GetUpdaterFolderName());
-      }
-      break;
-    case UpdaterScope::kSystem:
-      return base::FilePath(kSystemDataPath).Append(GetUpdaterFolderName());
-  }
-  return std::nullopt;
 }
 
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {

@@ -16,8 +16,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/policy/manager.h"
-#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 

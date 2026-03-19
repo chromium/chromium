@@ -22,7 +22,7 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "url/gurl.h"

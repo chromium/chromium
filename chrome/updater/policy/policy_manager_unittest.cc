@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/get_updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

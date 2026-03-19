@@ -109,6 +109,7 @@ if (is_win) {
       "//chrome/common:version_header",
       "//chrome/install_static:buildflags",
       "//chrome/install_static:install_static_util",
+      "//chrome/updater:public_util",
       "//components/base32",
       "//components/crash/core/app",
       "//components/crash/core/common",

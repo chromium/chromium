@@ -46,11 +46,6 @@
 
 namespace updater {
 
-// Returns the path to the history JSONL file for an updater installation. A
-// path is returned regardless of if the file exists. This method does not
-// perform any IO; it may be called from any sequence.
-std::optional<base::FilePath> GetHistoryLogFilePath(UpdaterScope scope);
-
 // Must be called before any events are written to initialize global logging
 // state. A log file at `path` is created if one does not already exist.
 //
