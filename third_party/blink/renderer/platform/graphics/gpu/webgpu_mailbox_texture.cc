@@ -89,7 +89,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   if (is_dummy_mailbox_texture) {
     resource_provider->PrepareForWebGPUDummyMailbox();
   } else {
-    if (!image->CopyToResourceProvider(resource_provider, image_sub_rect)) {
+    if (!image->CopyToResourceProvider(resource_provider, image_sub_rect.x(),
+                                       image_sub_rect.y())) {
       return nullptr;
     }
   }

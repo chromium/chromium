@@ -201,12 +201,17 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
 
 bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasNon2DResourceProviderSharedImage* resource_provider,
-    const gfx::Rect& copy_rect) {
+    uint32_t src_x,
+    uint32_t src_y) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_provider);
 
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
+
+  gfx::Rect copy_rect(src_x, src_y, resource_provider->Size().width(),
+                      resource_provider->Size().height());
 
   const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
   gpu::SyncToken completion_sync_token;

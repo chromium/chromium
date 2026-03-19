@@ -108,18 +108,24 @@ void UnacceleratedStaticBitmapImage::Transfer() {
 
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasNon2DResourceProviderSharedImage* resource_provider,
-    const gfx::Rect& copy_rect) {
+    uint32_t src_x,
+    uint32_t src_y) {
   DCHECK(resource_provider);
+
+  gfx::Rect copy_rect(src_x, src_y, resource_provider->Size().width(),
+                      resource_provider->Size().height());
 
   // Extract content to SkPixmap. Pixels are CPU backed resource and this
   // should be freed.
   sk_sp<SkImage> image = paint_image_.GetSwSkImage();
-  if (!image)
+  if (!image) {
     return false;
+  }
 
   SkPixmap pixmap;
-  if (!image->peekPixels(&pixmap))
+  if (!image->peekPixels(&pixmap)) {
     return false;
+  }
 
   base::span<const uint8_t> pixels = gfx::SkPixmapToSpan(pixmap);
   const size_t source_row_bytes = pixmap.rowBytes();

@@ -73,7 +73,8 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   virtual bool CopyToResourceProvider(
       CanvasNon2DResourceProviderSharedImage* resource_provider,
-      const gfx::Rect& copy_rect) = 0;
+      uint32_t src_x,
+      uint32_t src_y) = 0;
 
   virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const {
