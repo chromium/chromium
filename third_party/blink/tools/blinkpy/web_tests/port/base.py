@@ -95,94 +95,6 @@ from blinkpy.web_tests.servers import wptserve
 
 _log = logging.getLogger(__name__)
 
-# Path relative to the build directory.
-CONTENT_SHELL_FONTS_DIR = "test_fonts"
-
-FONT_FILES = [
-    [[CONTENT_SHELL_FONTS_DIR], 'Ahem.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Arimo-Bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Arimo-BoldItalic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Arimo-Italic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Arimo-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Cousine-Bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Cousine-BoldItalic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Cousine-Italic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Cousine-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'DejaVuSans.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'GardinerModBug.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'GardinerModCat.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Garuda.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Gelasio-Bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Gelasio-BoldItalic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Gelasio-Italic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Gelasio-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Lohit-Devanagari.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Lohit-Gurmukhi.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Lohit-Tamil.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'MuktiNarrow.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoColorEmoji.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansCJK-VF.otf.ttc', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansKhmer-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansSymbols2-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansTibetan-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Tinos-Bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Tinos-BoldItalic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Tinos-Italic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'Tinos-Regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-ascii.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-basic-bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-basic-bolditalic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-basic-italic.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-basic-regular.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-fallback.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-familyname-bold.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-familyname-funkyA.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-familyname-funkyB.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-familyname-funkyC.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-familyname.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-verify.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-100.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-1479-w1.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-1479-w4.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-1479-w7.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-1479-w9.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-15-w1.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-15-w5.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-200.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-24-w2.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-24-w4.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-2569-w2.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-2569-w5.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-2569-w6.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-2569-w9.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-258-w2.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-258-w5.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-258-w8.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-300.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-3589-w3.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-3589-w5.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-3589-w8.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-3589-w9.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-400.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-47-w4.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-47-w7.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-500.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-600.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-700.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-800.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-900.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w1.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w2.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w3.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w4.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w5.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w6.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w7.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w8.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights-full-w9.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'csstest-weights.ttf', None],
-]
-
 # This is the fingerprint of wpt's certificate found in
 # `//third_party/wpt_tools/certs/127.0.0.1.pem`. The following line is updated
 # by `//third_party/wpt_tools/update_certs.py`.
@@ -3109,32 +3021,6 @@ class Port(object):
         except OSError:
             pass
         return True
-
-    def _get_font_files(self):
-        """Returns list of font files that should be used by the test."""
-        # TODO(sergeyu): Currently FONT_FILES is valid only on Linux. Make it
-        # usable on other platforms if necessary.
-        result = []
-        for (font_dirs, font_file, package) in FONT_FILES:
-            exists = False
-            for font_dir in font_dirs:
-                font_path = self._filesystem.join(font_dir, font_file)
-                if not self._filesystem.isabs(font_path):
-                    font_path = self.build_path(font_path)
-                if self._check_file_exists(font_path, '', more_logging=False):
-                    result.append(font_path)
-                    exists = True
-                    break
-            if not exists:
-                message = 'You are missing %s under %s.' % (font_file,
-                                                            font_dirs)
-                if package:
-                    message += ' Try installing %s. See build instructions.' % package
-
-                _log.error(message)
-                raise TestRunException(exit_codes.SYS_DEPS_EXIT_STATUS,
-                                       message)
-        return result
 
 
 class VirtualTestSuite(object):
