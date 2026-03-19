@@ -38,6 +38,7 @@ class BrowserActions {
   void InitializeSidePanelActions();
   void InitializePageActionIconActions();
   void InitializeChromeMenuActions();
+  void InitializeToolbarAndMiscActions();
 
   // Creates all the listeners for the action items that update different states
   // and property of the action item.
