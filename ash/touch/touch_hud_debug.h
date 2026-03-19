@@ -22,7 +22,6 @@ class View;
 
 namespace ash {
 class TouchHudCanvas;
-class TouchLog;
 
 // A heads-up display to show touch traces on the screen and log touch events.
 // As a derivative of TouchObserverHud, objects of this class manage their own
@@ -67,8 +66,6 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
   static const int kMaxTouchPoints = 32;
 
   Mode mode_;
-
-  std::unique_ptr<TouchLog> touch_log_;
 
   raw_ptr<TouchHudCanvas> canvas_;
   raw_ptr<views::View> label_container_;
