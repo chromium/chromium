@@ -13,8 +13,9 @@
 #include "chrome/browser/actor/tools/load_and_extract_content_tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -25,17 +26,18 @@ namespace {
 // TODO(b/478282022): This is a temporary hack to get the active window's ID.
 // Remove this once we have a way to specify the window in the action.
 SessionID GetActiveWindowId(ToolDelegate& tool_delegate) {
-  std::vector<Browser*> browsers =
-      chrome::FindAllTabbedBrowsersWithProfile(&tool_delegate.GetProfile());
-
-  for (Browser* browser : browsers) {
-    if (browser->IsActive()) {
-      return browser->session_id();
-    }
-  }
-
-  // No active window found, so use an invalid ID.
-  return SessionID::InvalidValue();
+  SessionID active_window_id = SessionID::InvalidValue();
+  ProfileBrowserCollection::GetForProfile(&tool_delegate.GetProfile())
+      ->ForEach(
+          [&active_window_id](BrowserWindowInterface* browser) {
+            if (browser->IsActive()) {
+              active_window_id = browser->GetSessionID();
+              return false;
+            }
+            return true;
+          },
+          BrowserCollection::Order::kActivation);
+  return active_window_id;
 }
 
 }  // namespace

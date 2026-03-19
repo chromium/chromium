@@ -61,8 +61,9 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -1181,22 +1182,22 @@ void BuildActionsResultWithObservations(
   }
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  std::vector<Browser*> browsers =
-      chrome::FindAllTabbedBrowsersWithProfile(profile);
+  ProfileBrowserCollection::GetForProfile(profile)
+      ->ForEach([&response](BrowserWindowInterface* browser) {
+        apc::WindowObservation* window_observation = response->add_windows();
+        window_observation->set_id(browser->GetSessionID().id());
+        window_observation->set_active(browser->IsActive());
 
-  for (Browser* browser : browsers) {
-    apc::WindowObservation* window_observation = response->add_windows();
-    window_observation->set_id(browser->session_id().id());
-    window_observation->set_active(browser->IsActive());
+        if (tabs::TabInterface* tab = browser->GetActiveTabInterface()) {
+          window_observation->set_activated_tab_id(
+              tab->GetHandle().raw_value());
+        }
 
-    if (tabs::TabInterface* tab = browser->GetActiveTabInterface()) {
-      window_observation->set_activated_tab_id(tab->GetHandle().raw_value());
-    }
-
-    for (const tabs::TabInterface* tab : *browser->GetTabStripModel()) {
-      window_observation->add_tab_ids(tab->GetHandle().raw_value());
-    }
-  }
+        for (const tabs::TabInterface* tab : *browser->GetTabStripModel()) {
+          window_observation->add_tab_ids(tab->GetHandle().raw_value());
+        }
+        return true;
+      });
 #else
   // TODO(b/482430429): Use the same implementation in Desktop and Android once
   // ProfileBrowserCollection is implemented on Android.
