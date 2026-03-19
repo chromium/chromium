@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -361,7 +363,10 @@ class ManualCallbackEmptyHistoryService : public history::HistoryService {
 
 std::unique_ptr<KeyedService> BuildManualCallbackEmptyHistoryService(
     content::BrowserContext* browser_context) {
-  return std::make_unique<ManualCallbackEmptyHistoryService>();
+  TestingProfile* profile = static_cast<TestingProfile*>(browser_context);
+  auto service = std::make_unique<ManualCallbackEmptyHistoryService>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(profile->GetPath()));
+  return service;
 }
 
 // SiteFamiliarityProcessSelectionDeferringConditionTest subclass which uses a
