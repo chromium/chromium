@@ -3981,6 +3981,15 @@ const FeatureEntry::FeatureVariation kGlicGuestUrlPresetTypes[] = {
     {"Pre-prod", kGlicGuestUrlPresetTypePreprod, nullptr},
     {"Prod", kGlicGuestUrlPresetTypeProd, nullptr}};
 
+const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetTrue[] = {
+    {"use_widget", "true"}};
+const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetFalse[] = {
+    {"use_widget", "false"}};
+
+const FeatureEntry::FeatureVariation kGlicSelectionPromptVariations[] = {
+    {"with Widget", kGlicSelectionPromptUseWidgetTrue, nullptr},
+    {"with Nudge", kGlicSelectionPromptUseWidgetFalse, nullptr}};
+
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
 const FeatureEntry::FeatureVariation kAutofillShowTypePredictionsVariations[] =
@@ -10871,7 +10880,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicSelectionPrompt)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicSelectionPrompt,
+                                    kGlicSelectionPromptVariations,
+                                    "GlicSelectionPrompt")},
 
     {"glic-disable-actor-safety-checks",
      flag_descriptions::kGlicDisableActorSafetyChecksName,
