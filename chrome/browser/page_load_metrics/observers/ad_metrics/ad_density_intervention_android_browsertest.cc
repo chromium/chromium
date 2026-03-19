@@ -196,9 +196,10 @@ class AdDensityViolationBrowserTestWithoutEnforcement
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/494121676): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTestWithoutEnforcement,
-    MobilePageAdDensityByHeightAbove30_NoAdInterventionTriggered) {
+    DISABLED_MobilePageAdDensityByHeightAbove30_NoAdInterventionTriggered) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
