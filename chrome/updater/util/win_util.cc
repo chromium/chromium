@@ -13,6 +13,7 @@
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <sysinfoapi.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 #include <wtsapi32.h>
@@ -31,6 +32,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/cpu.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,6 +52,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -65,6 +68,7 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
@@ -78,6 +82,7 @@
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 // Linked from ntdll.lib.
@@ -611,6 +616,75 @@ std::string GetUACState() {
 
   base::StringAppendF(&s, "LUA: %d", base::win::UserAccountControlIsEnabled());
   return s;
+}
+
+std::string MemoryStatus() {
+  MEMORYSTATUSEX memory_status = {};
+  memory_status.dwLength = sizeof(memory_status);
+  return ::GlobalMemoryStatusEx(&memory_status)
+             ? base::StringPrintf("available: %dM, total: %dM, phys: %dG",
+                                  memory_status.ullAvailPageFile / (1 << 20),
+                                  memory_status.ullTotalPageFile / (1 << 20),
+                                  1 + memory_status.ullTotalPhys / (1 << 30))
+             : std::string("n/a");
+}
+
+void EnsureEnoughMemory() {
+  VLOG(1) << MemoryStatus();
+
+  MEMORYSTATUSEX memory_status = {};
+  memory_status.dwLength = sizeof(memory_status);
+  if (!::GlobalMemoryStatusEx(&memory_status)) {
+    VLOG(1) << "Can't memory stat: " << std::hex << ::GetLastError();
+    return;
+  }
+  constexpr SIZE_T kMinMemoryNeeded = 10'000'000;  // 10MB.
+  if (memory_status.ullAvailPageFile >= kMinMemoryNeeded) {
+    return;
+  }
+  if (void* alloc = [] -> void* {
+        constexpr int kMaxTries = 25;
+        constexpr int kDelayMs = 50;
+        for (int tries = 0; tries < kMaxTries; ++tries) {
+          void* ret = ::VirtualAlloc(NULL, kMinMemoryNeeded,
+                                     MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+          if (ret || [] {
+                switch (::GetLastError()) {
+                  case ERROR_COMMITMENT_MINIMUM:
+                  case ERROR_COMMITMENT_LIMIT:
+                  case ERROR_NOT_ENOUGH_MEMORY:
+                  case ERROR_PAGEFILE_QUOTA:
+                    return false;  // Retry on page file related errors.
+                  default:
+                    return true;  // Don't retry.
+                }
+              }()) {
+            return ret;
+          }
+          ::Sleep(kDelayMs);
+        }
+        return nullptr;
+      }();
+      alloc) {
+    ::VirtualFree(alloc, 0, MEM_RELEASE);
+  } else {
+    VLOG(1) << "Allocation failed: " << kMinMemoryNeeded / 1024 << "K, "
+            << std::hex << ::GetLastError();
+  }
+
+  VLOG(1) << MemoryStatus();
+}
+
+void RecordCpuFeaturesForCrash() {
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  static crash_reporter::CrashKeyString<6> crash_key_aesni("aesni");
+  crash_key_aesni.Set(base::ToString(cpu.has_aesni()));
+  static crash_reporter::CrashKeyString<6> crash_key_avx512f("avx512f");
+  crash_key_avx512f.Set(base::ToString(cpu.has_avx512_f()));
+  static crash_reporter::CrashKeyString<6> crash_key_in_vm("invm");
+  crash_key_in_vm.Set(base::ToString(cpu.is_running_in_vm()));
+#endif
 }
 
 std::wstring GetServiceName(bool is_internal_service,

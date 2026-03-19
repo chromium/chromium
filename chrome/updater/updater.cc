@@ -55,12 +55,8 @@
 #include "third_party/crashpad/crashpad/client/settings.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <sysinfoapi.h>
-
-#include "base/cpu.h"
 #include "base/debug/alias.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/to_string.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -321,83 +317,6 @@ void EnableLoggingByDefault() {
                                    kLoggingModuleSwitchValue);
   }
 }
-
-#if BUILDFLAG(IS_WIN)
-std::string MemoryStatus() {
-  MEMORYSTATUSEX memory_status = {};
-  memory_status.dwLength = sizeof(memory_status);
-  return ::GlobalMemoryStatusEx(&memory_status)
-             ? base::StringPrintf("available: %dM, total: %dM, phys: %dG",
-                                  memory_status.ullAvailPageFile / (1 << 20),
-                                  memory_status.ullTotalPageFile / (1 << 20),
-                                  1 + memory_status.ullTotalPhys / (1 << 30))
-             : std::string("n/a");
-}
-
-// Assumes that 10MB of available memory is needed for the process to run.
-// Windows may extend its page file when the total memory commitment gets
-// close to the commit limit. Tries a large allocation, and keeps looping
-// if the memory allocator returns an error indicating that the page file
-// is too small.
-void EnsureEnoughMemory() {
-  VLOG(1) << MemoryStatus();
-
-  MEMORYSTATUSEX memory_status = {};
-  memory_status.dwLength = sizeof(memory_status);
-  if (!::GlobalMemoryStatusEx(&memory_status)) {
-    VLOG(1) << "Can't memory stat: " << std::hex << ::GetLastError();
-    return;
-  }
-  constexpr SIZE_T kMinMemoryNeeded = 10'000'000;  // 10MB.
-  if (memory_status.ullAvailPageFile >= kMinMemoryNeeded) {
-    return;
-  }
-  if (void* alloc = [] -> void* {
-        constexpr int kMaxTries = 25;
-        constexpr int kDelayMs = 50;
-        for (int tries = 0; tries < kMaxTries; ++tries) {
-          void* ret = ::VirtualAlloc(NULL, kMinMemoryNeeded,
-                                     MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-          if (ret || [] {
-                switch (::GetLastError()) {
-                  case ERROR_COMMITMENT_MINIMUM:
-                  case ERROR_COMMITMENT_LIMIT:
-                  case ERROR_NOT_ENOUGH_MEMORY:
-                  case ERROR_PAGEFILE_QUOTA:
-                    return false;  // Retry on page file related errors.
-                  default:
-                    return true;  // Don't retry.
-                }
-              }()) {
-            return ret;
-          }
-          ::Sleep(kDelayMs);
-        }
-        return nullptr;
-      }();
-      alloc) {
-    ::VirtualFree(alloc, 0, MEM_RELEASE);
-  } else {
-    VLOG(1) << "Allocation failed: " << kMinMemoryNeeded / 1024 << "K, "
-            << std::hex << ::GetLastError();
-  }
-
-  VLOG(1) << MemoryStatus();
-}
-
-void RecordCpuFeaturesForCrash() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  base::CPU cpu;
-  static crash_reporter::CrashKeyString<6> crash_key_aesni("aesni");
-  crash_key_aesni.Set(base::ToString(cpu.has_aesni()));
-  static crash_reporter::CrashKeyString<6> crash_key_avx512f("avx512f");
-  crash_key_avx512f.Set(base::ToString(cpu.has_avx512_f()));
-  static crash_reporter::CrashKeyString<6> crash_key_in_vm("invm");
-  crash_key_in_vm.Set(base::ToString(cpu.is_running_in_vm()));
-#endif
-}
-
-#endif  // IS_WIN
 
 }  // namespace
 

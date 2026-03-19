@@ -298,6 +298,19 @@ bool IsElevatedWithUACOn();
 // caller. The value can be used for logging purposes.
 std::string GetUACState();
 
+// Returns a string representing the memory status of the system.
+std::string MemoryStatus();
+
+// Assumes that 10MB of available memory is needed for the process to run.
+// Windows may extend its page file when the total memory commitment gets
+// close to the commit limit. Tries a large allocation, and keeps looping
+// if the memory allocator returns an error indicating that the page file
+// is too small.
+void EnsureEnoughMemory();
+
+// Records CPU features for crash reporting.
+void RecordCpuFeaturesForCrash();
+
 // Returns the versioned service name in the following format:
 // "{ProductName}{InternalService/Service}{UpdaterVersion}".
 // For instance: "ChromiumUpdaterInternalService92.0.0.1".

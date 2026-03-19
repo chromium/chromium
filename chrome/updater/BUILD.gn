@@ -659,6 +659,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/app/server/win:updater_idl",
         "//chrome/updater/app/server/win:updater_internal_idl",
         "//chrome/windows_services/service_program:common",
+        "//components/crash/core/common",
       ]
 
       configs -= [ "//build/config/win:winver" ]
