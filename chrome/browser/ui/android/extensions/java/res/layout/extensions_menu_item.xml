@@ -31,14 +31,24 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/extensions_menu_item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_toggle"
         app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0" />
+
+    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+        android:id="@+id/extensions_menu_item_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/extensions_menu_item_context_menu"

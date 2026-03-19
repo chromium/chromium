@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState.Status;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,6 +43,26 @@ public class ExtensionsMenuItemViewBinder {
             view.findViewById(R.id.extensions_menu_item_context_menu)
                     .setOnClickListener(
                             model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK));
+        } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED) {
+            getMenuItemToggle(view)
+                    .setChecked(model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED));
+        } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK) {
+            getMenuItemToggle(view)
+                    .setOnCheckedChangeListener(
+                            model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK));
+        } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS) {
+            @Status int status = model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS);
+            MaterialSwitchWithText toggle = getMenuItemToggle(view);
+            toggle.setVisibility(status == Status.HIDDEN ? View.GONE : View.VISIBLE);
+            toggle.setEnabled(status == Status.ENABLED);
+        } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP) {
+            getMenuItemToggle(view)
+                    .setTooltipText(
+                            model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP));
         }
+    }
+
+    private static MaterialSwitchWithText getMenuItemToggle(View view) {
+        return view.findViewById(R.id.extensions_menu_item_toggle);
     }
 }

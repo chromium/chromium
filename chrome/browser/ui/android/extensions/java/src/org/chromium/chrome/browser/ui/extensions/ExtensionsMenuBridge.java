@@ -71,6 +71,17 @@ public class ExtensionsMenuBridge implements Destroyable {
     }
 
     /**
+     * Called when the site access toggle for an extension is changed in the UI.
+     *
+     * @param extensionId The ID of the extension.
+     * @param isOn Whether the toggle is on.
+     */
+    public void onExtensionToggleSelected(String extensionId, boolean isOn) {
+        ExtensionsMenuBridgeJni.get()
+                .onExtensionToggleSelected(mNativeExtensionsMenuDelegateAndroid, extensionId, isOn);
+    }
+
+    /**
      * Called when the site settings toggle is changed in the UI.
      *
      * @param isChecked Whether the toggle is checked.
@@ -259,6 +270,12 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Returns the optional section to display in the menu. */
         int getOptionalSection(long nativeExtensionsMenuDelegateAndroid);
+
+        /** Called when the site access toggle for an extension is changed in the UI. */
+        void onExtensionToggleSelected(
+                long nativeExtensionsMenuDelegateAndroid,
+                @JniType("std::string") String extensionId,
+                boolean isOn);
 
         /** Returns the list of host access requests. */
         @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")

@@ -181,8 +181,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         // Update the menu item model.
         ListItem item = mActionModels.get(oldIndex);
-        item.model.set(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text);
-        item.model.set(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon);
+        updateMenuItem(item.model, entry);
 
         // Update position if the index changed.
         if (oldIndex != newIndex) {
@@ -218,8 +217,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         PropertyModel model =
                 new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                         .with(ExtensionsMenuItemProperties.EXTENSION_ID, entry.id)
-                        .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
-                        .with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon)
                         .with(
                                 ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK,
                                 (view) ->
@@ -227,7 +224,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                         .with(
                                 ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON,
                                 contextMenuIcon)
+                        .with(
+                                ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK,
+                                (buttonView, isOn) ->
+                                        mMenuBridge.onExtensionToggleSelected(entry.id, isOn))
                         .build();
+        updateMenuItem(model, entry);
         return new ListItem(0, model);
     }
 
@@ -251,9 +253,25 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         }
     }
 
+    /** Updates the itemModel for an extension menu entry according to the given state. */
+    private void updateMenuItem(
+            PropertyModel itemModel, ExtensionsMenuTypes.MenuEntryState itemState) {
+        itemModel.set(ExtensionsMenuItemProperties.TITLE, itemState.actionButton.text);
+        itemModel.set(ExtensionsMenuItemProperties.ICON, itemState.actionButton.icon);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED,
+                itemState.siteAccessToggle.isOn);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS,
+                itemState.siteAccessToggle.status);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP,
+                itemState.siteAccessToggle.tooltipText);
+    }
+
     /**
-     * Pulls the list of menu entries from native and updates the action models list. Also updates
-     * the zero state visibility.
+     * Resets the menu items by pulling the list of menu entries from native and updating the action
+     * models list. Also updates the zero state visibility.
      */
     private void updateMenuEntries() {
         mActionModels.clear();

@@ -98,7 +98,8 @@ ExtensionsMenuDelegateAndroid::GetMenuEntry(JNIEnv* env, int action_index) {
 
   return Java_MenuEntryState_Constructor(
       env, id, CreateJavaControlState(env, state.action_button),
-      CreateJavaControlState(env, state.context_menu_button));
+      CreateJavaControlState(env, state.context_menu_button),
+      CreateJavaControlState(env, state.site_access_toggle));
 }
 
 int ExtensionsMenuDelegateAndroid::GetOptionalSection(JNIEnv* env) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -616,6 +617,119 @@ public class ExtensionsMenuMediatorTest {
         mMenuMediator.onReloadPageButtonClicked();
         verify(mExtensionsMenuBridgeJniMock)
                 .onReloadPageButtonClicked(EXTENSIONS_MENU_BRIDGE_POINTER);
+    }
+
+    /** Tests that the menu item's site access toggle properties are correctly updated. */
+    @Test
+    public void testMenuItemSiteAccessToggle() {
+        // Initialize an action with hidden toggle state.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        entries.add(
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu by simulating the native callback triggering onReady.
+        mBridgeCaptor.getValue().onReady();
+        clearInvocations(mMenuPropertyModel);
+
+        // Verify toggle is hidden for the menu item.
+        PropertyModel model = mActionModels.get(0).model;
+        assertEquals(1, mActionModels.size());
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS));
+
+        // Update the menu item to have a visible toggle, with disabled and on state.
+        toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.DISABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "Allowed on this site",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.MenuEntryState updatedEntry =
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify toggle is disabled and checked for the menu item
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.DISABLED,
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS));
+        assertTrue(model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED));
+        assertEquals(
+                "Allowed on this site",
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP));
+
+        // Update the item to have a visible toggle, with enabled and off state.
+        toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "Not allowed on this site",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        updatedEntry =
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify toggle is enabled and unchecked for the menu item.
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_STATUS));
+        assertFalse(model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED));
+        assertEquals(
+                "Not allowed on this site",
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP));
+    }
+
+    /** Tests that clicking the menu item's site access toggle calls the bridge. */
+    @Test
+    public void testMenuItemSiteAccessToggle_ClickCallsBridge() {
+        // Initialize an action with a visible toggle state.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        entries.add(
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu by simulating the native callback triggering onReady.
+        mBridgeCaptor.getValue().onReady();
+
+        // Get the toggle listener for the menu item.
+        PropertyModel model = mActionModels.get(0).model;
+        android.widget.CompoundButton.OnCheckedChangeListener listener =
+                model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK);
+
+        // Simulate a toggle change.
+        listener.onCheckedChanged(null, true);
+
+        // Verify that the bridge's onExtensionToggleSelected was called with the correct extension
+        // ID and value.
+        verify(mExtensionsMenuBridgeJniMock)
+                .onExtensionToggleSelected(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", true);
     }
 
     /** Helper to assert that the item at the given index has the correct information. */

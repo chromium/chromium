@@ -117,13 +117,33 @@ public class ExtensionTestUtils {
 
     /**
      * Helper to create a {@link ExtensionsMenuTypes.MenuEntryState} for a simple extension without
-     * host permissions. The entry will only have a disabled action button.
+     * host permissions. The entry will only have a disabled action button and a hidden site access
+     * toggle.
      */
     public static ExtensionsMenuTypes.MenuEntryState createSimpleMenuEntry(
             String extensionId,
             String extensionName,
             @Nullable Bitmap extensionIcon,
             boolean isPinned) {
+        ExtensionsMenuTypes.ControlState siteAccessToggle =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        return createMenuEntry(
+                extensionId, extensionName, extensionIcon, isPinned, siteAccessToggle);
+    }
+
+    /** Helper to create a {@link ExtensionsMenuTypes.MenuEntryState}. */
+    public static ExtensionsMenuTypes.MenuEntryState createMenuEntry(
+            String extensionId,
+            String extensionName,
+            @Nullable Bitmap extensionIcon,
+            boolean isPinned,
+            ExtensionsMenuTypes.ControlState siteAccessToggle) {
         ExtensionsMenuTypes.ControlState actionButton =
                 new ExtensionsMenuTypes.ControlState(
                         ExtensionsMenuTypes.ControlState.Status.DISABLED,
@@ -140,7 +160,8 @@ public class ExtensionTestUtils {
                         /* tooltipText= */ "",
                         /* isOn= */ isPinned,
                         /* icon= */ null);
-        return new ExtensionsMenuTypes.MenuEntryState(extensionId, actionButton, contextMenuButton);
+        return new ExtensionsMenuTypes.MenuEntryState(
+                extensionId, actionButton, contextMenuButton, siteAccessToggle);
     }
 
     /** Helper to create a simple icon with the given color. */
