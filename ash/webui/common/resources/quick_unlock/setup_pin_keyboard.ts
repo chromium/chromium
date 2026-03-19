@@ -266,44 +266,48 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
    * Processes the message received from the quick unlock api and hides/shows
    * the problem based on the message.
    */
-  private processPinProblems_(message: CredentialCheck) {
-    if (!message.errors.length && !message.warnings.length) {
-      this.hideProblem_();
+  private onQuickUnlockPrivateCheckCredential_({errors, warnings}:
+                                                   CredentialCheck) {
+    if (errors.length === 0) {
+      // Enable submission since there are no errors.
       this.enableSubmit = true;
       this.pinHasPassedMinimumLength_ = true;
+
+      if (warnings.length > 0) {
+        assert(warnings[0] === CredentialProblem.TOO_WEAK);
+        this.showProblem_(MessageType.TOO_WEAK, ProblemType.WARNING);
+        return;
+      }
+
+      // No errors or warnings, hide the problem text.
+      this.hideProblem_();
       return;
     }
 
-    if (!message.errors.length ||
-        message.errors[0] !== CredentialProblem.TOO_SHORT) {
+    // Disable submission since we have an error.
+    this.enableSubmit = false;
+    if (errors[0] !== CredentialProblem.TOO_SHORT) {
       this.pinHasPassedMinimumLength_ = true;
     }
 
-    if (message.warnings.length) {
-      assert(message.warnings[0] === CredentialProblem.TOO_WEAK);
-      this.showProblem_(MessageType.TOO_WEAK, ProblemType.WARNING);
-    }
-
-    if (message.errors.length) {
-      switch (message.errors[0]) {
-        case CredentialProblem.TOO_SHORT:
-          this.showProblem_(
-              MessageType.TOO_SHORT,
-              this.pinHasPassedMinimumLength_ ? ProblemType.ERROR :
-                                                ProblemType.WARNING);
-          break;
-        case CredentialProblem.TOO_LONG:
-          this.showProblem_(MessageType.TOO_LONG, ProblemType.ERROR);
-          break;
-        case CredentialProblem.TOO_WEAK:
-          this.showProblem_(MessageType.TOO_WEAK, ProblemType.ERROR);
-          break;
-        case CredentialProblem.CONTAINS_NONDIGIT:
-          this.showProblem_(MessageType.CONTAINS_NONDIGIT, ProblemType.ERROR);
-          break;
-        default:
-          assertNotReached();
-      }
+    switch (errors[0]) {
+      case CredentialProblem.TOO_SHORT:
+        this.showProblem_(
+            MessageType.TOO_SHORT,
+            this.pinHasPassedMinimumLength_ ? ProblemType.ERROR :
+                                              ProblemType.WARNING);
+        break;
+      case CredentialProblem.TOO_LONG:
+        this.showProblem_(MessageType.TOO_LONG, ProblemType.ERROR);
+        break;
+      case CredentialProblem.TOO_WEAK:
+        this.showProblem_(MessageType.TOO_WEAK, ProblemType.ERROR);
+        break;
+      case CredentialProblem.CONTAINS_NONDIGIT:
+        this.showProblem_(MessageType.CONTAINS_NONDIGIT, ProblemType.ERROR);
+        break;
+      default:
+        assertNotReached();
     }
   }
 
@@ -315,7 +319,8 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     if (!this.isConfirmStep) {
       if (newPin) {
         this.quickUnlockPrivate.checkCredential(
-            QuickUnlockMode.PIN, newPin, this.processPinProblems_.bind(this));
+            QuickUnlockMode.PIN, newPin,
+            this.onQuickUnlockPrivateCheckCredential_.bind(this));
       } else {
         this.enableSubmit = false;
         this.showProblem_(
