@@ -293,15 +293,6 @@ void AddExtensionInfo(const Extension* source_extension,
         CreateExtensionInfo(source_extension, extension, context));
   }
 }
-
-bool PlatformSupportsApprovalFlowForExtensions() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_WIN)
-  return true;
-#else
-  return false;
-#endif
-}
 }  // namespace
 
 ExtensionFunction::ResponseAction ManagementGetAllFunction::Run() {
@@ -477,8 +468,7 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  if (PlatformSupportsApprovalFlowForExtensions() &&
-      IsSupervisedExtensionApprovalFlowRequired(target_extension)) {
+  if (IsSupervisedExtensionApprovalFlowRequired(target_extension)) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
     auto approval_callback = base::BindOnce(

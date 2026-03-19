@@ -1411,13 +1411,10 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
       SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 2);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that if an extension still requires parental consent, the supervised
 // user approving it for permissions increase won't enable the extension and
 // bypass parental consent.
 // Prevents a regression to crbug/1070760.
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTest,
        SetEnabled_CustodianApprovalRequiredAndPermissionsIncrease) {
   // Preconditions.
@@ -1502,7 +1499,6 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The parent approval dialog should have appeared again.
   EXPECT_EQ(2, supervised_user_delegate_->show_dialog_count());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that trying to enable an extension with parent approval for supervised
 // users still fails, if there's unsupported requirements.
@@ -1550,11 +1546,8 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_UnsupportedRequirement) {
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests UMA metrics related to supervised users enabling and disabling
 // extensions.
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -1618,7 +1611,6 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
             user_action_tester.GetActionCount(
                 SupervisedUserExtensionsMetricsRecorder::kDisabledActionName));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests for supervised users (child accounts) with additional setup code.
 class ManagementApiSupervisedUserTestWithSetup
@@ -1650,9 +1642,6 @@ class ManagementApiSupervisedUserTestWithSetup
   scoped_refptr<const Extension> extension_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
   // Preconditions.
   ASSERT_TRUE(profile()->IsChild());
@@ -1705,7 +1694,6 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
   // Extension was not enabled.
   EXPECT_EQ(0, delegate_->enable_count_);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
   // Start with a disabled extension that needs parent permission.
@@ -1749,11 +1737,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_PreviouslyAllowed) {
   EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The parent approves the request.
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionApprovedFromBackgroundPage) {
   // Preconditions.
@@ -1786,8 +1771,6 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The parent cancels the request.
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionCanceledFromBackgroundPage) {
   // Preconditions.
@@ -1821,8 +1804,6 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
 // Tests launching the Parent Permission Dialog from a background page, where
 // there isn't active web contents. The request will fail due to some sort of
 // error, such as a network error.
-// TODO(crbug.com/402488726): Enable on desktop Android when supervised users
-// are fully supported, in particular the install approval dialog.
 TEST_F(ManagementApiSupervisedUserTestWithSetup,
        SetEnabled_ParentPermissionFailedFromBackgroundPage) {
   // Preconditions.
@@ -1852,7 +1833,6 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   // Extension was not enabled.
   EXPECT_EQ(0, delegate_->enable_count_);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions
