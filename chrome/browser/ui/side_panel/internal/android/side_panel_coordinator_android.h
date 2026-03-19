@@ -9,6 +9,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
 // Android implementation of `SidePanelUIBase`.
 //
@@ -19,18 +20,13 @@
 // The word "coordinator" does not refer to the "coordinator" component in
 // Chrome Android MVC UI Architecture:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_overview.md
-//
-// TODO(crbug.com/491597112): Inherit from `SidePanelUIBase` once it is compiled
-// into Android.
-class SidePanelCoordinatorAndroid {
+class SidePanelCoordinatorAndroid : public SidePanelUIBase {
  public:
   SidePanelCoordinatorAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& java_coordinator);
 
-  // TODO(crbug.com/491597112): This should override `SidePanelUIBase` virtual
-  // destructor once this class inherits from it.
-  ~SidePanelCoordinatorAndroid();
+  ~SidePanelCoordinatorAndroid() override;
 
   SidePanelCoordinatorAndroid(const SidePanelCoordinatorAndroid&) = delete;
   SidePanelCoordinatorAndroid& operator=(const SidePanelCoordinatorAndroid&) =
@@ -38,6 +34,33 @@ class SidePanelCoordinatorAndroid {
 
   // Implements Java `SidePanelCoordinatorAndroid.Natives#destroy`.
   void Destroy(JNIEnv* env);
+
+  // Implements `SidePanelUI`:
+  void ShowFrom(SidePanelEntryKey entry_key,
+                gfx::Rect starting_bounds_in_browser_coordinates) override;
+  void Close(SidePanelEntry::PanelType panel_type,
+             SidePanelEntryHideReason hide_reason,
+             bool suppress_animations) override;
+  void Toggle(SidePanelEntryKey key,
+              SidePanelOpenTrigger open_trigger) override;
+  content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
+  void DisableAnimationsForTesting() override;
+  void SetNoDelaysForTesting(bool no_delays_for_testing) override;
+
+ protected:
+  // Implements `SidePanelUIBase`:
+  void Show(const UniqueKey& entry,
+            std::optional<SidePanelOpenTrigger> open_trigger,
+            bool suppress_animations) override;
+  void PopulateSidePanel(
+      bool suppress_animations,
+      const UniqueKey& unique_key,
+      std::optional<SidePanelOpenTrigger> open_trigger,
+      SidePanelEntry* entry,
+      std::optional<SidePanelNativeView> content_view) override;
+  void MaybeShowEntryOnTabStripModelChanged(
+      SidePanelRegistry* old_contextual_registry,
+      SidePanelRegistry* new_contextual_registry) override;
 
  private:
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;

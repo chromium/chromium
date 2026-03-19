@@ -22,10 +22,13 @@ static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
       new SidePanelCoordinatorAndroid(env, caller));
 }
 
+// TODO(crbug.com/493930386): Pass a valid `BrowserWindowInterface` to
+// SidePanelUIBase.
 SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& java_coordinator)
-    : java_coordinator_(env, java_coordinator) {}
+    : SidePanelUIBase(/*browser=*/nullptr),
+      java_coordinator_(env, java_coordinator) {}
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(
@@ -34,6 +37,61 @@ SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
 
 void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
   delete this;
+}
+
+void SidePanelCoordinatorAndroid::ShowFrom(
+    SidePanelEntryKey entry_key,
+    gfx::Rect starting_bounds_in_browser_coordinates) {
+  // TODO(crbug.com/494001629): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::Close(SidePanelEntry::PanelType panel_type,
+                                        SidePanelEntryHideReason hide_reason,
+                                        bool suppress_animations) {
+  // TODO(crbug.com/493930383): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
+                                         SidePanelOpenTrigger open_trigger) {
+  // TODO(crbug.com/493931022): Implement this.
+}
+
+content::WebContents*
+SidePanelCoordinatorAndroid::GetWebContentsForTest(  // IN-TEST
+    SidePanelEntryId id) {
+  // TODO(crbug.com/494001633): Implement this.
+  return nullptr;
+}
+
+void SidePanelCoordinatorAndroid::DisableAnimationsForTesting() {
+  // TODO(crbug.com/494000532): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::SetNoDelaysForTesting(  // IN-TEST
+    bool no_delays_for_testing) {
+  // TODO(crbug.com/494000480): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::Show(
+    const UniqueKey& entry,
+    std::optional<SidePanelOpenTrigger> open_trigger,
+    bool suppress_animations) {
+  // TODO(crbug.com/493931047): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::PopulateSidePanel(
+    bool suppress_animations,
+    const UniqueKey& unique_key,
+    std::optional<SidePanelOpenTrigger> open_trigger,
+    SidePanelEntry* entry,
+    std::optional<SidePanelNativeView> content_view) {
+  // TODO(crbug.com/494001968): Implement this.
+}
+
+void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
+    SidePanelRegistry* old_contextual_registry,
+    SidePanelRegistry* new_contextual_registry) {
+  // TODO(crbug.com/494002625): Implement this.
 }
 
 ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
