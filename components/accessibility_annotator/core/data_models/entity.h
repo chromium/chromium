@@ -24,6 +24,8 @@ struct Date {
   int year = 0;
 };
 
+// LINT.IfChange(AttributeDefinitions)
+
 struct FlightReservation {
   FlightReservation();
   FlightReservation(const FlightReservation& other);
@@ -149,6 +151,8 @@ struct Vehicle {
   std::string plate_state;
   std::string vin;
 };
+
+// LINT.ThenChange(//core/browser/data_model/autofill_ai/from_accessibility_annotator.cc:AttributeConversions)
 
 struct Entity {
   using EntitySpecifics = std::variant<FlightReservation,

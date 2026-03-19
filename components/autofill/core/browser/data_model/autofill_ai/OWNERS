@@ -1,2 +1,7 @@
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# For trivial changes of the Accessibility-Annotator-to-Autofill-AI conversion
+# in FromAccessibilityAnnotator(const aa::Entity& entity).
+per-file from_accessibility_annotator.cc=file://components/accessibility_annotator/OWNERS
+per-file from_accessibility_annotator_unittest.cc=file://components/accessibility_annotator/OWNERS
