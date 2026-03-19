@@ -185,6 +185,8 @@ source_set("gmock") {
     "src/googlemock/src/gmock.cc",
   ]
 
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   # googlemock only needs `absl`, but this makes gn check happier.
   deps = [ "//third_party/abseil-cpp:absl_full" ]
 

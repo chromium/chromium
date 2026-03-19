@@ -53,7 +53,6 @@ src:*{/,\\}third_party{/,\\}crc32c{/,\\}src{/,\\}src{/,\\}*
 src:*{/,\\}third_party{/,\\}dawn{/,\\}*
 src:*{/,\\}third_party{/,\\}fuzztest{/,\\}src{/,\\}*
 src:*{/,\\}third_party{/,\\}gemmlowp{/,\\}*
-src:*{/,\\}third_party{/,\\}googletest{/,\\}src{/,\\}googlemock{/,\\}src{/,\\}*
 src:*{/,\\}third_party{/,\\}grpc{/,\\}source{/,\\}src{/,\\}*
 src:*{/,\\}third_party{/,\\}libprotobuf-mutator{/,\\}src{/,\\}src{/,\\}libfuzzer{/,\\}*
 src:*{/,\\}third_party{/,\\}openscreen{/,\\}src{/,\\}*
