@@ -24,10 +24,6 @@ class PopupBnplFootnoteView : public views::View {
   PopupBnplFootnoteView(const PopupBnplFootnoteView&) = delete;
   PopupBnplFootnoteView& operator=(const PopupBnplFootnoteView&) = delete;
   ~PopupBnplFootnoteView() override;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
 };
 
 }  // namespace autofill

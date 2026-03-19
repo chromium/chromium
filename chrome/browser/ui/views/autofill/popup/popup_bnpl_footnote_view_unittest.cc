@@ -59,13 +59,4 @@ TEST_F(PopupBnplFootnoteViewTest, AccessibilityWrapperRole) {
   EXPECT_EQ(ax::mojom::Role::kUnknown, node_data.role);
 }
 
-TEST_F(PopupBnplFootnoteViewTest, PreferredSizeWidthIsZeroWhenUnbounded) {
-  ShowView();
-
-  views::SizeBounds unbounded_size;
-  gfx::Size preferred_size = view().CalculatePreferredSize(unbounded_size);
-
-  EXPECT_EQ(0, preferred_size.width());
-}
-
 }  // namespace autofill

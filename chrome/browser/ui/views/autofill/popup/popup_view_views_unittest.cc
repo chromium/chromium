@@ -2501,6 +2501,29 @@ TEST_F(PopupViewViewsTest, TabbedPane_SuggestionFilteredForInitialShow) {
                     std::move(tabbed_pane_config));
 }
 
+TEST_F(PopupViewViewsTest, TabbedPane_InitialWidthMaintainedWhenSwitchingTabs) {
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later"}});
+
+  CreateAndShowView({SuggestionType::kCreditCardEntry},
+                    /*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+
+  int initial_width = widget().GetWindowBoundsInScreen().width();
+  EXPECT_LE(initial_width, TestPopupViewViews::kAutofillPopupMaxWidth);
+
+  // Simulate tab switch by manually changing suggestions.
+  Suggestion bnpl_footnote(SuggestionType::kBnplFootnote);
+  controller().set_suggestions({bnpl_footnote});
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(
+      /*prefer_prev_arrow_side=*/false);
+
+  EXPECT_EQ(widget().GetWindowBoundsInScreen().width(), initial_width);
+}
+
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kMixedFormMessage});

@@ -1225,17 +1225,26 @@ void PopupViewViews::CreateSuggestionViews() {
 
 gfx::Size PopupViewViews::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  gfx::Size size = views::View::CalculatePreferredSize(available_size);
-  if (size.width() > kAutofillPopupMaxWidth) {
-    // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
-    // BoxLayout will occupy the entire vertical axis size. Two calculations are
-    // needed to correct this.
-    //
-    // Following crrev.com/c/5828724, the dialog box will fit the text more
-    // closely. But this will break the pixel test, so make it a fixed size.
+  gfx::Size size;
+  // Use the original popup width if a tabbed pane is present to maintain the
+  // same popup width during tab switches.
+  if (tabbed_pane_initial_width_.has_value()) {
     size = views::View::CalculatePreferredSize(
-        views::SizeBounds(kAutofillPopupMaxWidth, {}));
-    size.set_width(kAutofillPopupMaxWidth);
+        views::SizeBounds(tabbed_pane_initial_width_.value(), {}));
+    size.set_width(tabbed_pane_initial_width_.value());
+  } else {
+    size = views::View::CalculatePreferredSize(available_size);
+    if (size.width() > kAutofillPopupMaxWidth) {
+      // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
+      // BoxLayout will occupy the entire vertical axis size. Two calculations
+      // are needed to correct this.
+      //
+      // Following crrev.com/c/5828724, the dialog box will fit the text more
+      // closely. But this will break the pixel test, so make it a fixed size.
+      size = views::View::CalculatePreferredSize(
+          views::SizeBounds(kAutofillPopupMaxWidth, {}));
+      size.set_width(kAutofillPopupMaxWidth);
+    }
   }
 
   if (controller_ &&
@@ -1293,6 +1302,13 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
 bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
   gfx::Size preferred_size = CalculatePreferredSize({});
+
+  // Store the original width if a tabbed pane is present to maintain the same
+  // popup width during tab switches.
+  if (tabbed_pane_ && !tabbed_pane_initial_width_) {
+    tabbed_pane_initial_width_ = preferred_size.width();
+  }
+
   gfx::Rect popup_bounds;
 
   const gfx::Rect content_area_bounds = GetContentAreaBounds();

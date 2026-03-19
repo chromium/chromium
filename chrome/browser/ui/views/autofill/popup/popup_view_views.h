@@ -324,6 +324,9 @@ class PopupViewViews : public PopupBaseView,
   // is required to maintain the invariant of at most one such a row.
   std::optional<size_t> row_with_open_sub_popup_;
 
+  // Stores the initial width of the popup to maintain when switching tabs.
+  std::optional<int> tabbed_pane_initial_width_ = std::nullopt;
+
   std::vector<RowPointer> rows_;
   const std::optional<const AutofillPopupView::SearchBarConfig>
       search_bar_config_;
