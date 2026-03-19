@@ -320,10 +320,14 @@ class DiscardableImageMap::Generator {
     }
 
     if (paint_image.ShouldAnimate()) {
-      map_.animated_images_metadata_.emplace_back(
-          paint_image.stable_id(), paint_image.completion_state(),
-          paint_image.GetFrameMetadata(), paint_image.repetition_count(),
-          paint_image.reset_animation_sequence_id());
+      map_.animated_images_metadata_.try_emplace(
+          paint_image.stable_id(),
+          AnimatedImageMetadata(
+              paint_image.stable_id(), paint_image.completion_state(),
+              paint_image.GetFrameMetadata(), paint_image.repetition_count(),
+              paint_image.reset_animation_sequence_id(),
+              paint_image.sync_animation_target_id(),
+              paint_image.sync_animation_sequence_id()));
     }
 
     bool add_image = true;
@@ -405,8 +409,12 @@ DiscardableImageMap::AnimatedImageMetadata::AnimatedImageMetadata(
     PaintImage::CompletionState completion_state,
     std::vector<FrameMetadata> frames,
     int repetition_count,
-    PaintImage::AnimationSequenceId reset_animation_sequence_id)
+    PaintImage::AnimationSequenceId reset_animation_sequence_id,
+    PaintImage::Id sync_animation_target_id,
+    PaintImage::AnimationSequenceId sync_animation_sequence_id)
     : paint_image_id(paint_image_id),
+      sync_animation_target_id(sync_animation_target_id),
+      sync_animation_sequence_id(sync_animation_sequence_id),
       completion_state(completion_state),
       frames(std::move(frames)),
       repetition_count(repetition_count),

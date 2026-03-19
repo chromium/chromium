@@ -45,11 +45,16 @@ class CC_PAINT_EXPORT DiscardableImageMap
         PaintImage::CompletionState completion_state,
         std::vector<FrameMetadata> frames,
         int repetition_count,
-        PaintImage::AnimationSequenceId reset_animation_sequence_id);
+        PaintImage::AnimationSequenceId reset_animation_sequence_id,
+        PaintImage::Id sync_animation_target_id,
+        PaintImage::AnimationSequenceId sync_animation_sequence_id);
     AnimatedImageMetadata(const AnimatedImageMetadata& other);
     ~AnimatedImageMetadata();
 
     PaintImage::Id paint_image_id;
+    PaintImage::Id sync_animation_target_id;
+    PaintImage::AnimationSequenceId sync_animation_sequence_id;
+
     PaintImage::CompletionState completion_state;
     std::vector<FrameMetadata> frames;
     int repetition_count;
@@ -79,7 +84,8 @@ class CC_PAINT_EXPORT DiscardableImageMap
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const;
   const Rects& GetRectsForImage(PaintImage::Id image_id) const;
-  const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
+  const base::flat_map<PaintImage::Id, AnimatedImageMetadata>&
+  animated_images_metadata() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return animated_images_metadata_;
   }
@@ -93,7 +99,8 @@ class CC_PAINT_EXPORT DiscardableImageMap
   ~DiscardableImageMap();
 
   base::flat_map<PaintImage::Id, Rects> image_id_to_rects_;
-  std::vector<AnimatedImageMetadata> animated_images_metadata_;
+  base::flat_map<PaintImage::Id, AnimatedImageMetadata>
+      animated_images_metadata_;
   std::vector<std::pair<DrawImage, gfx::Rect>> images_;
   // This r-tree is built lazily. The entries are DrawImage pointers in images_.
   mutable std::unique_ptr<RTree<const DrawImage*>> images_rtree_;

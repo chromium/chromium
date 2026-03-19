@@ -124,6 +124,17 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     return std::move(*this);
   }
 
+  PaintImageBuilder&& set_sync_animation_sequence_id(
+      PaintImage::AnimationSequenceId id) {
+    paint_image_.sync_animation_sequence_id_ = id;
+    return std::move(*this);
+  }
+
+  PaintImageBuilder&& set_sync_animation_target_id(PaintImage::Id id) {
+    paint_image_.sync_animation_target_id_ = id;
+    return std::move(*this);
+  }
+
   PaintImageBuilder&& set_decoding_mode(
       PaintImage::DecodingMode decoding_mode) {
     paint_image_.decoding_mode_ = decoding_mode;

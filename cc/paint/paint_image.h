@@ -298,6 +298,7 @@ class CC_PAINT_EXPORT PaintImage {
   gpu::Mailbox GetMailbox() const;
 
   Id stable_id() const { return id_; }
+  Id sync_animation_target_id() const { return sync_animation_target_id_; }
   SkImageInfo GetSkImageInfo(AuxImage aux_image = AuxImage::kDefault) const;
   AnimationType animation_type() const { return animation_type_; }
   CompletionState completion_state() const { return completion_state_; }
@@ -309,6 +310,9 @@ class CC_PAINT_EXPORT PaintImage {
   bool ShouldAnimate() const;
   AnimationSequenceId reset_animation_sequence_id() const {
     return reset_animation_sequence_id_;
+  }
+  AnimationSequenceId sync_animation_sequence_id() const {
+    return sync_animation_sequence_id_;
   }
   DecodingMode decoding_mode() const { return decoding_mode_; }
 
@@ -481,6 +485,13 @@ class CC_PAINT_EXPORT PaintImage {
   // will reset this animation in the compositor for the first frame which has a
   // recording with a PaintImage storing the updated sequence id.
   AnimationSequenceId reset_animation_sequence_id_ = 0u;
+
+  // The target paint image id to synchronize the frame index.
+  PaintImage::Id sync_animation_target_id_ = kInvalidId;
+  // An incrementing sequence number by the painter to indicate if the animation
+  // should be synced. This will track if it is up-to-date already synced or
+  // not.
+  PaintImage::AnimationSequenceId sync_animation_sequence_id_ = 0;
 
   DecodingMode decoding_mode_ = DecodingMode::kSync;
 

@@ -149,6 +149,9 @@ class CC_EXPORT ImageAnimationController {
   std::optional<ConsistentFrameDuration> GetConsistentContentFrameDuration();
 
  private:
+  class AnimationState;
+  using AnimationStateMap = base::flat_map<PaintImage::Id, AnimationState>;
+
   class AnimationState {
    public:
     AnimationState();
@@ -163,7 +166,9 @@ class CC_EXPORT ImageAnimationController {
     bool ShouldAnimate(int repetitions_completed, size_t pending_index) const;
     bool AdvanceFrame(const viz::BeginFrameArgs& args,
                       bool enable_image_animation_resync);
-    void UpdateMetadata(const DiscardableImageMap::AnimatedImageMetadata& data);
+
+    void UpdateMetadata(const DiscardableImageMap::AnimatedImageMetadata& data,
+                        const AnimationStateMap&);
     void PushPendingToActive();
     // If all frames have same frame duration, return that duration.
     std::optional<base::TimeDelta> GetConsistentContentFrameDuration();
@@ -262,6 +267,8 @@ class CC_EXPORT ImageAnimationController {
     // The last synchronized sequence id for resetting this animation.
     PaintImage::AnimationSequenceId reset_animation_sequence_id_ = 0;
 
+    PaintImage::AnimationSequenceId sync_animation_sequence_id_ = 0;
+
     // Whether the image is known to be completely loaded in the most recent
     // recording received.
     PaintImage::CompletionState completion_state_ =
@@ -318,7 +325,6 @@ class CC_EXPORT ImageAnimationController {
   // it moves out of the interest rect for instance, the state retained is
   // necessary to resume the animation.
   // TODO(khushalsagar): Implement clearing of state on navigations.
-  using AnimationStateMap = base::flat_map<PaintImage::Id, AnimationState>;
   AnimationStateMap animation_state_map_;
 
   // The set of animations with registered drivers.

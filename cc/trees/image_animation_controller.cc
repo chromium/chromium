@@ -51,7 +51,7 @@ ImageAnimationController::~ImageAnimationController() = default;
 void ImageAnimationController::UpdateAnimatedImage(
     const DiscardableImageMap::AnimatedImageMetadata& data) {
   AnimationState& animation_state = animation_state_map_[data.paint_image_id];
-  animation_state.UpdateMetadata(data);
+  animation_state.UpdateMetadata(data, animation_state_map_);
 }
 
 void ImageAnimationController::RegisterAnimationDriver(
@@ -281,6 +281,8 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
       if (repetitions_completed >= 1)
         return false;
       break;
+    case kAnimationPaused:
+      return false;
     case kAnimationNone:
       NOTREACHED() << "We shouldn't be tracking kAnimationNone images";
     case kAnimationLoopInfinite:
@@ -441,7 +443,8 @@ ImageAnimationController::AnimationState::AdvanceAnimationState(
 }
 
 void ImageAnimationController::AnimationState::UpdateMetadata(
-    const DiscardableImageMap::AnimatedImageMetadata& data) {
+    const DiscardableImageMap::AnimatedImageMetadata& data,
+    const AnimationStateMap& animation_state_map) {
   paint_image_id_ = data.paint_image_id;
 
   DCHECK_NE(data.repetition_count, kAnimationNone);
@@ -465,6 +468,21 @@ void ImageAnimationController::AnimationState::UpdateMetadata(
   if (current_state_.pending_index == last_frame_index && is_complete() &&
       current_state_.repetitions_completed == 0)
     current_state_.repetitions_completed++;
+
+  if (data.repetition_count == kAnimationPaused) {
+    current_state_.next_desired_frame_time = base::TimeTicks();
+    if (data.sync_animation_target_id != PaintImage::kInvalidId &&
+        sync_animation_sequence_id_ != data.sync_animation_sequence_id) {
+      if (const auto& it =
+              animation_state_map.find(data.sync_animation_target_id);
+          it != animation_state_map.end()) {
+        sync_animation_sequence_id_ = data.sync_animation_sequence_id;
+        current_state_.pending_index = it->second.active_index();
+        animation_started_ = true;
+        PushPendingToActive();
+      }
+    }
+  }
 
   // Reset the animation if the sequence id received in this recording was
   // incremented.

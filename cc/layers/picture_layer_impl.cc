@@ -264,8 +264,9 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
                                                       : WhichTree::ACTIVE_TREE;
   for (const auto& image_data :
        discardable_image_map_->animated_images_metadata()) {
-    image_animation_map[image_data.paint_image_id] =
-        controller->GetFrameIndexForImage(image_data.paint_image_id, tree);
+    image_animation_map[image_data.second.paint_image_id] =
+        controller->GetFrameIndexForImage(image_data.second.paint_image_id,
+                                          tree);
   }
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
@@ -962,6 +963,14 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   //  paused once they are not visible.
   if (!HasValidTilePriorities())
     return false;
+
+  if (auto it = discardable_image_map_->animated_images_metadata().find(
+          paint_image_id);
+      it != discardable_image_map_->animated_images_metadata().end()) {
+    if (it->second.repetition_count == kAnimationPaused) {
+      return false;
+    }
+  }
 
   const auto& rects = discardable_image_map_->GetRectsForImage(paint_image_id);
   for (const auto& r : rects) {
@@ -2003,8 +2012,8 @@ void PictureLayerImpl::RegisterAnimatedImages() {
   for (const auto& data : discardable_image_map_->animated_images_metadata()) {
     // Only update the metadata from updated recordings received from a commit.
     if (layer_tree_impl()->IsSyncTree())
-      controller->UpdateAnimatedImage(data);
-    controller->RegisterAnimationDriver(data.paint_image_id, this);
+      controller->UpdateAnimatedImage(data.second);
+    controller->RegisterAnimationDriver(data.second.paint_image_id, this);
   }
 }
 
@@ -2015,7 +2024,7 @@ void PictureLayerImpl::UnregisterAnimatedImages() {
 
   auto* controller = layer_tree_impl()->image_animation_controller();
   for (const auto& data : discardable_image_map_->animated_images_metadata()) {
-    controller->UnregisterAnimationDriver(data.paint_image_id, this);
+    controller->UnregisterAnimationDriver(data.second.paint_image_id, this);
   }
 }
 

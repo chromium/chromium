@@ -781,13 +781,17 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   const auto& animated_images_metadata = image_map->animated_images_metadata();
 
   ASSERT_EQ(animated_images_metadata.size(), 1u);
-  EXPECT_EQ(animated_images_metadata[0].paint_image_id,
+  EXPECT_EQ(animated_images_metadata.at(animation_loop_infinite.stable_id())
+                .paint_image_id,
             animation_loop_infinite.stable_id());
-  EXPECT_EQ(animated_images_metadata[0].completion_state,
+  EXPECT_EQ(animated_images_metadata.at(animation_loop_infinite.stable_id())
+                .completion_state,
             animation_loop_infinite.completion_state());
-  EXPECT_EQ(animated_images_metadata[0].frames,
-            animation_loop_infinite.GetFrameMetadata());
-  EXPECT_EQ(animated_images_metadata[0].repetition_count,
+  EXPECT_EQ(
+      animated_images_metadata.at(animation_loop_infinite.stable_id()).frames,
+      animation_loop_infinite.GetFrameMetadata());
+  EXPECT_EQ(animated_images_metadata.at(animation_loop_infinite.stable_id())
+                .repetition_count,
             animation_loop_infinite.repetition_count());
 
   std::vector<const DrawImage*> images =
