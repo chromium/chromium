@@ -13,6 +13,8 @@ source_set("elements") {
     "fade_truncating_label.mm",
     "home_waiting_view.h",
     "home_waiting_view.mm",
+    "invisible_arrow_popover_background_view.h",
+    "invisible_arrow_popover_background_view.mm",
     "new_feature_badge_view.h",
     "new_feature_badge_view.mm",
     "passthrough_stack_view.h",

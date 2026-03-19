@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/invisible_arrow_popover_background_view.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -349,21 +350,16 @@ using base::UserMetricsAction;
   UILayoutGuide* layoutGuide =
       [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
   [self.baseViewController.view addLayoutGuide:layoutGuide];
-  CGRect frame = layoutGuide.layoutFrame;
   menu.modalPresentationStyle = UIModalPresentationPopover;
 
   UIPopoverPresentationController* popoverPresentationController =
       menu.popoverPresentationController;
-
-  // Hides the arrow on the popover.
-  popoverPresentationController.permittedArrowDirections = 0;
+  popoverPresentationController.popoverBackgroundViewClass =
+      [InvisibleArrowPopoverBackgroundView class];
   popoverPresentationController.sourceView = self.baseViewController.view;
-  // With permittedArrowDirections = 0 (no arrow), apply an offset to position
-  // the popover approximately where it would be with an arrow-up.
-  popoverPresentationController.sourceRect =
-      CGRectMake(frame.origin.x, frame.origin.y + 360, frame.size.width,
-                 frame.size.height);
-
+  popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
+  popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp;
   popoverPresentationController.delegate = self;
   popoverPresentationController.backgroundColor =
       [UIColor colorNamed:kBackgroundColor];
