@@ -27,7 +27,7 @@ class ProjectsPanelControllerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     controller_ = std::make_unique<ProjectsPanelController>(
         browser(), /*state_controller=*/nullptr, &mock_tab_group_sync_service_,
-        &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
+        &mock_contextual_tasks_service_);
   }
 
   void TearDownOnMainThread() override {
@@ -60,8 +60,6 @@ class ProjectsPanelControllerBrowserTest : public InProcessBrowserTest {
       mock_tab_group_sync_service_;
   testing::NiceMock<contextual_tasks::MockContextualTasksService>
       mock_contextual_tasks_service_;
-  testing::NiceMock<contextual_tasks::MockContextualTasksUiService>
-      mock_contextual_tasks_ui_service_;
   std::unique_ptr<ProjectsPanelController> controller_;
 };
 
@@ -88,9 +86,11 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
   int initial_tab_count = browser()->tab_strip_model()->count();
 
   // Mock the UI service to return the thread URL.
-  EXPECT_CALL(mock_contextual_tasks_ui_service_,
-              GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_))
-      .WillOnce([thread_url](base::Uuid task_id,
+  EXPECT_CALL(mock_contextual_tasks_service_,
+              GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_,
+                                     testing::_, testing::_))
+      .WillOnce([thread_url](base::Uuid task_id, const std::string&,
+                             omnibox::ChromeAimEntryPoint,
                              base::OnceCallback<void(GURL)> callback) {
         std::move(callback).Run(thread_url);
       });
@@ -122,9 +122,11 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
   int initial_tab_count = browser()->tab_strip_model()->count();
 
   // Mock the UI service to return the thread URL.
-  EXPECT_CALL(mock_contextual_tasks_ui_service_,
-              GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_))
-      .WillOnce([thread_url](base::Uuid task_id,
+  EXPECT_CALL(mock_contextual_tasks_service_,
+              GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_,
+                                     testing::_, testing::_))
+      .WillOnce([thread_url](base::Uuid task_id, const std::string&,
+                             omnibox::ChromeAimEntryPoint,
                              base::OnceCallback<void(GURL)> callback) {
         std::move(callback).Run(thread_url);
       });
