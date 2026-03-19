@@ -215,7 +215,7 @@ TraceConfig::EventFilterConfig& TraceConfig::EventFilterConfig::operator=(
 bool TraceConfig::EventFilterConfig::IsEquivalentTo(
     const EventFilterConfig& other) const {
   return predicate_name_ == other.predicate_name_ &&
-         category_filter_.IsEquivalentTo(category_filter_) &&
+         category_filter_.IsEquivalentTo(other.category_filter_) &&
          args_ == other.args_;
 }
 
