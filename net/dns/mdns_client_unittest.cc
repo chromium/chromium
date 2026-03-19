@@ -364,6 +364,58 @@ const uint8_t kSamplePacketAPrivet[] = {
     0xc0, 0x0c, 0x00, 0x02,
 };
 
+const uint8_t kSamplePacketAPrivetMaxTTL[] = {
+    // Header
+    0x00,
+    0x00,  // ID is zeroed out
+    0x81,
+    0x80,  // Standard query response, RA, no error
+    0x00,
+    0x00,  // No questions (for simplicity)
+    0x00,
+    0x01,  // 1 RR (answers)
+    0x00,
+    0x00,  // 0 authority RRs
+    0x00,
+    0x00,  // 0 additional RRs
+
+    // Answer 1
+    0x07,
+    '_',
+    'p',
+    'r',
+    'i',
+    'v',
+    'e',
+    't',
+    0x04,
+    '_',
+    't',
+    'c',
+    'p',
+    0x05,
+    'l',
+    'o',
+    'c',
+    'a',
+    'l',
+    0x00,
+    0x00,
+    0x01,  // TYPE is A.
+    0x00,
+    0x01,  // CLASS is IN.
+    0xFF,
+    0xFF,  // TTL (4 bytes) is 0xFFFFFFFF seconds
+    0xFF,
+    0xFF,
+    0x00,
+    0x04,  // RDLENGTH is 4 bytes.
+    0xc0,
+    0x0c,
+    0x00,
+    0x02,
+};
+
 const uint8_t kSamplePacketGoodbye[] = {
     // Header
     0x00, 0x00,  // ID is zeroed out
@@ -456,6 +508,13 @@ class MockTimer : public base::MockOneShotTimer {
 }  // namespace
 
 class MDnsTest : public TestWithTaskEnvironment {
+ protected:
+  // Use mock time to prevent the HostResolverManager's injected IPv6 probe
+  // result from timing out.
+  MDnsTest()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  public:
   void SetUp() override;
   void DeleteTransaction();
@@ -1283,6 +1342,31 @@ TEST_F(MDnsTest, MAYBE_RefreshQuery) {
   EXPECT_CALL(delegate_privet, OnRecordUpdate(MDnsListener::RECORD_REMOVED, _));
 
   RunFor(base::Seconds(6));
+}
+
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RefreshQueryMaxTTL DISABLED_RefreshQueryMaxTTL
+#else
+#define MAYBE_RefreshQueryMaxTTL RefreshQueryMaxTTL
+#endif
+TEST_F(MDnsTest, MAYBE_RefreshQueryMaxTTL) {
+  StrictMock<MockListenerDelegate> delegate_privet;
+  std::unique_ptr<MDnsListener> listener_privet = test_client_->CreateListener(
+      dns_protocol::kTypeA, "_privet._tcp.local", &delegate_privet);
+
+  listener_privet->SetActiveRefresh(true);
+  ASSERT_TRUE(listener_privet->Start());
+
+  EXPECT_CALL(delegate_privet, OnRecordUpdate(MDnsListener::RECORD_ADDED, _));
+
+  SimulatePacketReceive(kSamplePacketAPrivetMaxTTL);
+
+  // Clear out any quick tasks, we're interested in the REALLY long refreshes
+  // that got scheduled.
+  RunFor(base::Seconds(10));
+
+  // Check the delay for the long-ttl refreshes.
+  EXPECT_GT(NextMainThreadPendingTaskDelay(), base::Seconds(0x00FFFFFF));
 }
 
 // MDnsSocketFactory implementation that creates a single socket that will
