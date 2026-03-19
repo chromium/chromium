@@ -166,6 +166,14 @@ TEST_P(BookmarkStorageWithSingleFileTest, ShouldSaveFileToDiskAfterDelay) {
       base::StrCat(
           {"ImportantFile.WriteDuration", GetHistogramImportantFileSuffix()}),
       1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Bookmarks.Storage.TimeToSerialize",
+                    GetHistogramImportantFileSuffix()}),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Bookmarks.BookmarksSerializationResult",
+                    GetHistogramImportantFileSuffix()}),
+      metrics::BookmarksSerializationResult::kSuccess, 1);
   EXPECT_FALSE(base::PathExists(GetSecondaryFilepath()));
 }
 
@@ -328,6 +336,13 @@ class BookmarkStorageWithSecondayFileTest
     test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
   }
 
+  std::string GetHistogramImportantFileSuffix() {
+    if (GetParam() == BookmarkEncryptionStage::kWriteBothReadPreferEncrypted) {
+      return ".BookmarkStorageEncrypted";
+    }
+    return ".BookmarkStorage";
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -370,6 +385,18 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
       "ImportantFile.WriteDuration.BookmarkStorage", 1);
   histogram_tester.ExpectTotalCount(
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"ImportantFile.WriteDuration", GetHistogramImportantFileSuffix()}),
+      1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Bookmarks.Storage.TimeToSerialize",
+                    GetHistogramImportantFileSuffix()}),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Bookmarks.BookmarksSerializationResult",
+                    GetHistogramImportantFileSuffix()}),
+      metrics::BookmarksSerializationResult::kSuccess, 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,
@@ -457,6 +484,12 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
   EXPECT_EQ(expected_file_content, *decrypted_file_content);
   histogram_tester.ExpectTotalCount(
       "ImportantFile.WriteDuration.BookmarkStorageEncryptedImmediate", 1);
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.Storage.TimeToSerialize.BookmarkStorageEncryptedImmediate", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.BookmarksSerializationResult."
+      "BookmarkStorageEncryptedImmediate",
+      metrics::BookmarksSerializationResult::kSuccess, 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,
@@ -493,6 +526,11 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
   EXPECT_EQ(expected_file_content, *file_content);
   histogram_tester.ExpectTotalCount(
       "ImportantFile.WriteDuration.BookmarkStorageImmediate", 1);
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.Storage.TimeToSerialize.BookmarkStorageImmediate", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.BookmarksSerializationResult.BookmarkStorageImmediate",
+      metrics::BookmarksSerializationResult::kSuccess, 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,

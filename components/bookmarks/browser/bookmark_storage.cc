@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -45,6 +46,29 @@ std::string GetHistogramSuffix(StorageFileEncryptionType encryption_type) {
       return kBookmarkStorageHistogramSuffix;
     case StorageFileEncryptionType::kEncrypted:
       return kBookmarkStorageEncryptedHistogramSuffix;
+  }
+  NOTREACHED();
+}
+
+metrics::ImportantFileWriterType GetImportantFileWriterTypeForMetrics(
+    StorageFileEncryptionType encryption_type) {
+  switch (encryption_type) {
+    case StorageFileEncryptionType::kClearText:
+      return metrics::ImportantFileWriterType::kBookmarkStorage;
+    case StorageFileEncryptionType::kEncrypted:
+      return metrics::ImportantFileWriterType::kBookmarkStorageEncrypted;
+  }
+  NOTREACHED();
+}
+
+metrics::ImportantFileWriterType GetImmediateImportantFileWriterTypeForMetrics(
+    StorageFileEncryptionType encryption_type) {
+  switch (encryption_type) {
+    case StorageFileEncryptionType::kClearText:
+      return metrics::ImportantFileWriterType::kBookmarkStorageImmediate;
+    case StorageFileEncryptionType::kEncrypted:
+      return metrics::ImportantFileWriterType::
+          kBookmarkStorageEncryptedImmediate;
   }
   NOTREACHED();
 }
@@ -102,28 +126,50 @@ bool ShouldSaveBackupFile(
   NOTREACHED();
 }
 
+void RecordSerializationResult(
+    const base::TimeTicks& start_time,
+    metrics::ImportantFileWriterType important_file_writer_type,
+    metrics::BookmarksSerializationResult result) {
+  if (result == metrics::BookmarksSerializationResult::kSuccess) {
+    metrics::RecordTimeToSerialize(important_file_writer_type,
+                                   base::TimeTicks::Now() - start_time);
+  }
+  metrics::RecordBookmarksSerializationResult(important_file_writer_type,
+                                              result);
+}
+
 void SaveDictionaryToFile(
     base::DictValue value,
     scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
     StorageFileEncryptionType encryption_type,
     const base::FilePath file_path) {
-  // TODO(crbug.com/435317726): Add metrics to measure the success/failure and
-  // impact on write duration of encrypting the bookmarks file.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   CHECK(encryptor);
   std::string json_content;
   if (!base::JSONWriter::WriteWithOptions(
           value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content)) {
+    RecordSerializationResult(
+        start_time,
+        GetImmediateImportantFileWriterTypeForMetrics(encryption_type),
+        metrics::BookmarksSerializationResult::kJSONParsingFailed);
     return;
   }
   if (encryption_type == StorageFileEncryptionType::kEncrypted) {
     std::string encrypted_json_content;
     if (!encryptor->data.EncryptString(json_content, &encrypted_json_content)) {
+      RecordSerializationResult(
+          start_time,
+          GetImmediateImportantFileWriterTypeForMetrics(encryption_type),
+          metrics::BookmarksSerializationResult::kEncryptionFailed);
       return;
     }
     json_content = std::move(encrypted_json_content);
   }
-
+  RecordSerializationResult(
+      start_time,
+      GetImmediateImportantFileWriterTypeForMetrics(encryption_type),
+      metrics::BookmarksSerializationResult::kSuccess);
   base::ImportantFileWriter::WriteFileAtomically(
       file_path, std::move(json_content),
       base::StrCat({GetHistogramSuffix(encryption_type), "Immediate"}));
@@ -197,11 +243,15 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
          StorageFileEncryptionType primary_file_encryption_type,
          const base::FilePath secondary_file_path)
           -> std::optional<std::string> {
-        // TODO(crbug.com/435317726): Add metrics to measure the success/failure
-        // and impact on write duration of encrypting the bookmarks file.
+        const base::TimeTicks start_time = base::TimeTicks::Now();
         std::string json_content;
         if (!base::JSONWriter::WriteWithOptions(
                 value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content)) {
+          RecordSerializationResult(
+              start_time,
+              GetImportantFileWriterTypeForMetrics(
+                  primary_file_encryption_type),
+              metrics::BookmarksSerializationResult::kJSONParsingFailed);
           return std::nullopt;
         }
 
@@ -211,6 +261,10 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
             std::string encrypted_json_content;
             if (!encryptor->data.EncryptString(json_content,
                                                &encrypted_json_content)) {
+              RecordSerializationResult(
+                  start_time,
+                  metrics::ImportantFileWriterType::kBookmarkStorageEncrypted,
+                  metrics::BookmarksSerializationResult::kEncryptionFailed);
               return std::nullopt;
             }
 
@@ -225,10 +279,15 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
                       secondary_file_path, std::move(json_content),
                       kBookmarkStorageHistogramSuffix));
             }
-
+            RecordSerializationResult(
+                start_time,
+                metrics::ImportantFileWriterType::kBookmarkStorageEncrypted,
+                metrics::BookmarksSerializationResult::kSuccess);
             return encrypted_json_content;
           }
           case StorageFileEncryptionType::kClearText: {
+            metrics::BookmarksSerializationResult result =
+                metrics::BookmarksSerializationResult::kSuccess;
             if (ShouldWriteBookmarksToSecondaryFileOnDisk()) {
               CHECK(encryptor);
               std::string encrypted_json_content;
@@ -243,9 +302,14 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
                             &base::ImportantFileWriter::WriteFileAtomically),
                         secondary_file_path, std::move(encrypted_json_content),
                         kBookmarkStorageEncryptedHistogramSuffix));
+              } else {
+                result =
+                    metrics::BookmarksSerializationResult::kEncryptionFailed;
               }
             }
-
+            RecordSerializationResult(
+                start_time, metrics::ImportantFileWriterType::kBookmarkStorage,
+                result);
             return json_content;
           }
         }

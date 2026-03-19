@@ -67,6 +67,22 @@ std::string_view GetStorageFileEncryptionTypeSuffixForMetrics(
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/histograms.xml:EncryptionType)
 
+// LINT.IfChange(ImportantFileWriter)
+std::string_view GetImportantFileWriterTypeSuffixForMetrics(
+    ImportantFileWriterType important_file_writer_type) {
+  switch (important_file_writer_type) {
+    case ImportantFileWriterType::kBookmarkStorage:
+      return ".BookmarkStorage";
+    case ImportantFileWriterType::kBookmarkStorageEncrypted:
+      return ".BookmarkStorageEncrypted";
+    case ImportantFileWriterType::kBookmarkStorageImmediate:
+      return ".BookmarkStorageImmediate";
+    case ImportantFileWriterType::kBookmarkStorageEncryptedImmediate:
+      return ".BookmarkStorageEncryptedImmediate";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/histograms.xml:ImportantFileWriter)
 }  // namespace
 
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
@@ -296,6 +312,25 @@ void RecordClearTextFileDeletionResult(StorageFileForUma storage_file,
       base::StrCat({"Bookmarks.DeleteClearTextFile",
                     GetStorageFileSuffixForMetrics(storage_file)}),
       deletion_result);
+}
+
+void RecordBookmarksSerializationResult(
+    ImportantFileWriterType important_file_writer_type,
+    BookmarksSerializationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Bookmarks.BookmarksSerializationResult",
+                    GetImportantFileWriterTypeSuffixForMetrics(
+                        important_file_writer_type)}),
+      result);
+}
+
+void RecordTimeToSerialize(ImportantFileWriterType important_file_writer_type,
+                           base::TimeDelta delta) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Bookmarks.Storage.TimeToSerialize",
+                    GetImportantFileWriterTypeSuffixForMetrics(
+                        important_file_writer_type)}),
+      delta);
 }
 
 }  // namespace bookmarks::metrics

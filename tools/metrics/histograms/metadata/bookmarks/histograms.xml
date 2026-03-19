@@ -25,9 +25,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(BookmarksFileType) -->
 
 <variants name="BookmarksFileType">
-  <variant name="Account" summary="JSON file containing account bookmarks."/>
-  <variant name="LocalOrSyncable"
-      summary="JSON file containing local-or-syncable bookmarks."/>
+  <variant name="Account" summary="account node"/>
+  <variant name="LocalOrSyncable" summary="local-or-syncable node"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:BookmarksFileType) -->
@@ -35,11 +34,25 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(EncryptionType) -->
 
 <variants name="EncryptionType">
-  <variant name="ClearText" summary="Clear text, no encryption."/>
-  <variant name="Encrypted" summary="Encryption is used."/>
+  <variant name="ClearText" summary="clear text"/>
+  <variant name="Encrypted" summary="encrypted"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:EncryptionType) -->
+
+<!-- LINT.IfChange(ImportantFileWriter) -->
+
+<variants name="ImportantFileWriter">
+  <variant name="BookmarkStorage" summary="bookmarks storage for user actions"/>
+  <variant name="BookmarkStorage.Immediate"
+      summary="bookmarks storage for profile load"/>
+  <variant name="BookmarkStorageEncrypted"
+      summary="encrypted bookmarks storage for user actions"/>
+  <variant name="BookmarkStorageEncrypted.Immediate"
+      summary="encrypted bookmarks storage for profile load"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:ImportantFileWriter) -->
 
 <histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
     expires_after="never">
@@ -368,6 +381,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of the load of the {EncryptionType} file of the
     {BookmarksFileType} bookmarks when loading them from disk at startup.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarksSerializationResult.{ImportantFileWriter}"
+    enum="BookmarksSerializationResult" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the result of the serialization that occurred when
+    {ImportantFileWriter} saves bookmarks to disk.
   </summary>
 </histogram>
 
@@ -787,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2026-07-26">
+    expires_after="2027-02-24">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -798,6 +821,21 @@ chromium-metrics-reviews@google.com.
     histogram even though guest sessions don't typically allow bookmarks. (The
     value emitted is typically zero.) Under certain enterpise configuration,
     guest sessions can have bookmarks.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Storage.TimeToSerialize.{ImportantFileWriter}"
+    units="ms" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Time it takes {ImportantFileWriter} to serialize the bookmark model to a
+    string that will be saved to disk. This time includes encoding JSON object
+    to a string and encryption (if any). It's only reported if serialization is
+    successful.
+
+    It doesn't include time to write to disk which is reported by
+    ImportantFile.WriteDuration.*
   </summary>
 </histogram>
 

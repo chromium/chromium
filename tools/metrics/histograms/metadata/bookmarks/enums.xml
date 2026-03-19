@@ -187,6 +187,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksFileLoadResult) -->
 
+<!-- LINT.IfChange(BookmarksSerializationResult) -->
+
+<enum name="BookmarksSerializationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="JSON Encoding Failed"/>
+  <int value="2" label="Encryption Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksSerializationResult) -->
+
 <enum name="BookmarksSidePanelSearchCTREvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Searched"/>

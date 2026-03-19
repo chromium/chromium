@@ -184,6 +184,37 @@ void RecordFallbackToClearTextFileOnLoadResult(StorageFileForUma storage_file,
 void RecordClearTextFileDeletionResult(StorageFileForUma storage_file,
                                        bool deletion_result);
 
+// Indicates what writer is used to save the bookmarks to disk.
+enum class ImportantFileWriterType {
+  kBookmarkStorage = 0,
+  kBookmarkStorageEncrypted = 1,
+  kBookmarkStorageImmediate = 2,
+  kBookmarkStorageEncryptedImmediate = 3,
+};
+
+// LINT.IfChange(BookmarksSerializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Indicates the outcome of the bookmarks serialization to disk.
+enum class BookmarksSerializationResult {
+  kSuccess = 0,
+  kJSONParsingFailed = 1,
+  kEncryptionFailed = 2,
+  kMaxValue = kEncryptionFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarksSerializationResult)
+
+void RecordBookmarksSerializationResult(
+    ImportantFileWriterType important_file_writer_type,
+    BookmarksSerializationResult result);
+
+// Records the time it takes to serialize the bookmark model to a string that
+// will be saved to disk. This time includes encoding the JSON object to a
+// string and encryption (if any).
+void RecordTimeToSerialize(ImportantFileWriterType important_file_writer_type,
+                           base::TimeDelta delta);
+
 }  // namespace metrics
 
 }  // namespace bookmarks
