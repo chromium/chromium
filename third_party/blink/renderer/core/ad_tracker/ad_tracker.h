@@ -108,6 +108,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       std::optional<AdProvenance> known_ad_provenance,
       bool scan_stack_for_ads);
 
+  // Retrieves the ancestry chain of a given ad script (inclusive) and the
+  // triggering filterlist rule. See `AdScriptAncestry` for more details on the
+  // populated fields.
+  AdScriptAncestry GetAncestry(V8ScriptId script_id);
+
   // Called when an async task is created. Check at this point for ad script on
   // the stack and annotate the task if so.
   void DidCreateAsyncTask(probe::AsyncTaskContext* task_context);
@@ -220,11 +225,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       const v8::Local<v8::Context>& v8_context,
       const String& script_name,
       V8ScriptId script_id);
-
-  // Retrieves the ancestry chain of a given ad script (inclusive) and and the
-  // triggering filterlist rule. See `AdScriptAncestry` for more details on the
-  // populated fields.
-  AdScriptAncestry GetAncestry(const AdScriptIdentifier& ad_script);
 
   Member<LocalFrame> local_root_;
 

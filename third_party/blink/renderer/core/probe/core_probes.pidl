@@ -243,7 +243,7 @@ interface CoreProbes {
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
   void DidInitializeFrameWidget(LocalFrame* document);
   void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
-  void UpdateAdRelatedState([Keep] Node& node, bool is_ad_related);
+  void UpdateAdRelatedState([Keep] Node& node, std::optional<AdProvenance> ad_provenance);
   void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
   void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
   void WebMCPToolAdded([Keep] Document* document, const ToolData& tool);

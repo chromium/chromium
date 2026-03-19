@@ -43,7 +43,10 @@
   const event = await dp.DOM.onceAdRelatedStateUpdated();
   testRunner.log('Event Triggered: DOM.adRelatedStateUpdated');
   testRunner.log(`Event nodeId matches target: ${event.params.nodeId === dynamicNodeId}`);
-  testRunner.log(`Event isAdRelated: ${event.params.isAdRelated}`);
+  testRunner.log(`Event isAdRelated: ${event.params.adProvenance !== undefined}`);
+  if (event.params.adProvenance) {
+    testRunner.log(`Event filterlistRule contains 'ad-image.png': ${event.params.adProvenance.filterlistRule.includes('ad-image.png')}`);
+  }
 
   testRunner.log('\n--- Testing Static Serialization ---');
 
@@ -78,7 +81,59 @@
   // Verify that the initial serialization successfully includes the boolean flag.
   const nodeInfo = await dp.DOM.describeNode({nodeId: staticNodeId});
   testRunner.log(`Node localName: ${nodeInfo.result.node.localName}`);
-  testRunner.log(`Node isAdRelated (via describeNode): ${nodeInfo.result.node.isAdRelated}`);
+  testRunner.log(`Node isAdRelated (via describeNode): ${nodeInfo.result.node.adProvenance !== undefined}`);
+  if (nodeInfo.result.node.adProvenance) {
+    testRunner.log(`Node filterlistRule contains 'ad-image.png': ${nodeInfo.result.node.adProvenance.filterlistRule.includes('ad-image.png')}`);
+  }
+
+  testRunner.log('\n--- Testing Script Ancestry ---');
+
+  // Mark 'insert-image.js' as an ad.
+  session.evaluate(`
+    testRunner.setDisallowedSubresourcePathSuffixes(["insert-image.js"], false /* block_subresources */);
+  `);
+
+  const scriptUrl = testRunner.url('resources/insert-image.js');
+
+  // Dynamically append the ad script.
+  await session.evaluateAsync(`
+    new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = "${scriptUrl}";
+      script.onload = () => {
+        const img = document.getElementById('ad-script-inserted-img');
+        if (img.complete) {
+          // The image was cached and loaded instantly.
+          resolve();
+        } else {
+          // The image is still fetching over the network.
+          img.onload = img.onerror = resolve;
+        }
+      };
+      document.body.appendChild(script);
+    });
+  `);
+
+  // Map the script-inserted image node in DevTools.
+  const queryResult3 = await dp.DOM.querySelector({
+    nodeId: docResult.root.nodeId,
+    selector: '#ad-script-inserted-img'
+  });
+  const scriptInsertedNodeId = queryResult3.result.nodeId;
+
+  // Verify provenance via describeNode.
+  const scriptNodeInfo = await dp.DOM.describeNode({nodeId: scriptInsertedNodeId});
+  testRunner.log(`Node localName: ${scriptNodeInfo.result.node.localName}`);
+  testRunner.log(`Node isAdRelated: ${scriptNodeInfo.result.node.adProvenance !== undefined}`);
+  if (scriptNodeInfo.result.node.adProvenance) {
+    const provenance = scriptNodeInfo.result.node.adProvenance;
+    testRunner.log(`Has filterlistRule: ${provenance.filterlistRule !== undefined}`);
+    testRunner.log(`Has adScriptAncestry: ${provenance.adScriptAncestry !== undefined}`);
+    if (provenance.adScriptAncestry) {
+      testRunner.log(`Ancestry chain length > 0: ${provenance.adScriptAncestry.ancestryChain.length > 0}`);
+      testRunner.log(`rootScriptFilterlistRule contains 'insert-image.js': ${provenance.adScriptAncestry.rootScriptFilterlistRule.includes('insert-image.js')}`);
+    }
+  }
 
   testRunner.completeTest();
 })

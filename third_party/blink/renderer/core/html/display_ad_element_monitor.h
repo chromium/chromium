@@ -46,6 +46,8 @@ class CORE_EXPORT DisplayAdElementMonitor final
 
   bool ShouldHighlight() const { return should_highlight_; }
 
+  const AdProvenance& GetAdProvenance() const { return ad_provenance_; }
+
   void Trace(Visitor*) const override;
 
  private:

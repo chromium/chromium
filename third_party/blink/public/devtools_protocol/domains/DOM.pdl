@@ -13,6 +13,7 @@
 # corresponding document elements as their child nodes.
 domain DOM
   depends on Runtime
+  depends on Network
 
   # Unique DOM node identifier.
   type NodeId extends integer
@@ -184,7 +185,7 @@ domain DOM
       experimental optional boolean isScrollable
       experimental optional boolean affectedByStartingStyles
       experimental optional array of StyleSheetId adoptedStyleSheets
-      experimental optional boolean isAdRelated
+      experimental optional Network.AdProvenance adProvenance
 
   # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
   type DetachedElementInfo extends object
@@ -919,8 +920,8 @@ domain DOM
     parameters
       # The id of the node.
       DOM.NodeId nodeId
-      # If the node is ad related.
-      boolean isAdRelated
+      # The provenance of the ad related node, if it is ad related.
+      optional Network.AdProvenance adProvenance
 
   # Fired when a node's starting styles changes.
   experimental event affectedByStartingStylesFlagUpdated

@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/inspector/ad_tagging_utils.h"
 #include "third_party/blink/renderer/core/inspector/dom_editor.h"
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -2319,8 +2320,10 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       force_push_children = true;
     }
 
-    if (element->IsAdRelated()) {
-      value->setIsAdRelated(true);
+    if (std::optional<AdProvenance> ad_provenance =
+            element->GetAdProvenance()) {
+      value->setAdProvenance(
+          CreateAdProvenanceProtocolObject(*element, *ad_provenance));
     }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
@@ -2966,14 +2969,21 @@ void InspectorDOMAgent::UpdateScrollableFlag(
                                                    : isNodeScrollable(node));
 }
 
-void InspectorDOMAgent::UpdateAdRelatedState(Node& node, bool is_ad_related) {
+void InspectorDOMAgent::UpdateAdRelatedState(
+    Node& node,
+    std::optional<AdProvenance> ad_provenance) {
   int nodeId = BoundNodeId(&node);
   // If node is not mapped yet -> ignore the event.
   if (!nodeId) {
     return;
   }
 
-  GetFrontend()->adRelatedStateUpdated(nodeId, is_ad_related);
+  // Elements are currently never untagged, so `ad_provenance` is guaranteed to
+  // be valid.
+  CHECK(ad_provenance);
+
+  GetFrontend()->adRelatedStateUpdated(
+      nodeId, CreateAdProvenanceProtocolObject(node, *ad_provenance));
 }
 
 void InspectorDOMAgent::UpdateAffectedByStartingStylesFlag(

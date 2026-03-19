@@ -4,8 +4,18 @@ Tests ad-tagging on arbitrary node elements via DOM.adRelatedStateUpdated and DO
 Event Triggered: DOM.adRelatedStateUpdated
 Event nodeId matches target: true
 Event isAdRelated: true
+Event filterlistRule contains 'ad-image.png': true
 
 --- Testing Static Serialization ---
 Node localName: span
 Node isAdRelated (via describeNode): true
+Node filterlistRule contains 'ad-image.png': true
+
+--- Testing Script Ancestry ---
+Node localName: img
+Node isAdRelated: true
+Has filterlistRule: false
+Has adScriptAncestry: true
+Ancestry chain length > 0: true
+rootScriptFilterlistRule contains 'insert-image.js': true
 

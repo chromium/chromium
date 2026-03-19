@@ -1776,6 +1776,9 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns true if the element is considered ad-related.
   virtual bool IsAdRelated() const;
 
+  // Returns the AdProvenance if the element is ad-related.
+  virtual std::optional<AdProvenance> GetAdProvenance() const;
+
   // Returns true if a paint-time ad highlight should be drawn.
   // This is the authoritative check for painters, encapsulating:
   // 1. The element's ad status (i.e., `IsAdRelated()`).

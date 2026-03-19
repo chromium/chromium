@@ -8893,10 +8893,10 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 void Element::SetIsAdRelated(AdProvenance ad_provenance) {
   DCHECK(!IsA<HTMLFrameOwnerElement>(this));
 
-  UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(
-      this, std::move(ad_provenance)));
+  UnpackAndRefresh(
+      EnsureRareData().EnsureDisplayAdElementMonitor(this, ad_provenance));
 
-  probe::UpdateAdRelatedState(*this, /*is_ad_related=*/true);
+  probe::UpdateAdRelatedState(*this, std::move(ad_provenance));
 }
 
 bool Element::IsAdRelated() const {
@@ -8904,6 +8904,16 @@ bool Element::IsAdRelated() const {
     return data->GetDisplayAdElementMonitor();
   }
   return false;
+}
+
+std::optional<AdProvenance> Element::GetAdProvenance() const {
+  if (const ElementRareDataVector* data = RareData()) {
+    if (const DisplayAdElementMonitor* monitor =
+            data->GetDisplayAdElementMonitor()) {
+      return monitor->GetAdProvenance();
+    }
+  }
+  return std::nullopt;
 }
 
 bool Element::ShouldHighlightAd() const {

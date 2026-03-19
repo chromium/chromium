@@ -396,7 +396,7 @@ bool AdTracker::IsAdScriptInStack(StackType stack_type,
   if (out_ad_script.has_value()) {
     CHECK(out_ad_script_ancestry);
     CHECK(is_ad_script_in_stack);
-    *out_ad_script_ancestry = GetAncestry(out_ad_script.value());
+    *out_ad_script_ancestry = GetAncestry(out_ad_script.value().id);
   }
 
   return is_ad_script_in_stack;
@@ -696,13 +696,12 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
                    ad_provenance));
 }
 
-AdTracker::AdScriptAncestry AdTracker::GetAncestry(
-    const AdScriptIdentifier& ad_script) {
+AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
   AdTracker::AdScriptAncestry ancestry;
 
   // TODO(yaoxia): Determine if we should CHECK that that the script ID in each
   // step is guaranteed to be present in `ad_script_data_`.
-  auto provenance_it = ad_script_data_.find(ad_script.id);
+  auto provenance_it = ad_script_data_.find(script_id);
   if (provenance_it == ad_script_data_.end()) {
     return ancestry;
   }
