@@ -93,57 +93,73 @@ views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
 
   // Calculate the height available for tab groups and threads.
   int available_height = std::max(0, host_height - fixed_height);
-  int tg_height = 0;
-  int th_height = 0;
+  int groups_height = 0;
+  int threads_height = 0;
 
   // Determine the heights for tab groups and threads.
   if (tab_groups_container_ && tab_groups_container_->GetVisible() &&
       threads_container_ && threads_container_->GetVisible()) {
-    int pref_height_tg = tab_groups_container_->GetPreferredSize().height();
-    int pref_height_th = threads_container_->GetPreferredSize().height();
+    // Calculate the preferred heights of each container at the width of the
+    // panel. This is necessary for the ProjectsPanelNoTabGroupsView, which has
+    // multi-line text that changes height depending on the width of its
+    // container.
+    const int pref_height_groups =
+        tab_groups_container_
+            ->GetPreferredSize(views::SizeBounds(host_width, {}))
+            .height();
+    const int pref_height_threads =
+        threads_container_->GetPreferredSize(views::SizeBounds(host_width, {}))
+            .height();
 
     // If the combined preferred heights of the tab groups and threads
     // sections are taller than the panel can fit,
-    if (pref_height_tg + pref_height_th <= available_height) {
-      tg_height = pref_height_tg;
-      th_height = pref_height_th;
+    if (pref_height_groups + pref_height_threads <= available_height) {
+      groups_height = pref_height_groups;
+      threads_height = pref_height_threads;
     } else {
       // Shrink the taller section by the amount over the panel height. If
       // that makes the taller section shorter than the shorter section, split
       // the space evenly.
       int height_overflow =
-          (pref_height_tg + pref_height_th) - available_height;
-      if (pref_height_tg > pref_height_th &&
-          pref_height_tg - height_overflow > pref_height_th) {
-        tg_height = pref_height_tg - height_overflow;
-        th_height = pref_height_th;
-      } else if (pref_height_th > pref_height_tg &&
-                 pref_height_th - height_overflow > pref_height_tg) {
-        tg_height = pref_height_tg;
-        th_height = pref_height_th - height_overflow;
+          (pref_height_groups + pref_height_threads) - available_height;
+      if (pref_height_groups > pref_height_threads &&
+          pref_height_groups - height_overflow > pref_height_threads) {
+        groups_height = pref_height_groups - height_overflow;
+        threads_height = pref_height_threads;
+      } else if (pref_height_threads > pref_height_groups &&
+                 pref_height_threads - height_overflow > pref_height_groups) {
+        groups_height = pref_height_groups;
+        threads_height = pref_height_threads - height_overflow;
       } else {
-        tg_height = available_height / 2;
-        th_height = available_height - tg_height;
+        groups_height = available_height / 2;
+        threads_height = available_height - groups_height;
       }
     }
   } else if (tab_groups_container_ && tab_groups_container_->GetVisible()) {
-    tg_height = available_height;
+    groups_height = available_height;
   } else if (threads_container_ && threads_container_->GetVisible()) {
-    th_height = available_height;
+    threads_height = available_height;
   }
 
   // Place the tab groups section.
-  place_container_child(tab_groups_container_, tg_height);
+  place_container_child(tab_groups_container_, groups_height);
 
-  // Place the separator.
+  // Place the separator with its custom margins.
   if (separator_view_ && separator_view_->GetVisible()) {
     y += projects_panel::kListsSeparatorMargins.top();
-    place_child(separator_view_, separator_view_->GetPreferredSize().height());
-    y += projects_panel::kListsSeparatorMargins.bottom();
+    const int separator_x = x + projects_panel::kListsSeparatorMargins.left();
+    const int separator_width =
+        width - projects_panel::kListsSeparatorMargins.width();
+    const int separator_height = separator_view_->GetPreferredSize().height();
+    layout.child_layouts.emplace_back(
+        separator_view_.get(), separator_view_->GetVisible(),
+        gfx::Rect(separator_x, y, std::max(0, separator_width),
+                  separator_height));
+    y += separator_height + projects_panel::kListsSeparatorMargins.bottom();
   }
 
   // Place the threads section.
-  place_container_child(threads_container_, th_height);
+  place_container_child(threads_container_, threads_height);
 
   return layout;
 }
