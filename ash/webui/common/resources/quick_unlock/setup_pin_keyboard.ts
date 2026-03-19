@@ -180,24 +180,20 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
 
   private pinKeyboardValue_: string;
   private initialPin_: string;
-  private problemMessageId_: string;
+  private problemMessageId_: MessageType|'';
   private problemMessageParameters_: string;
-  private problemClass_: string|undefined;
+  private problemClass_: ProblemType|''|undefined;
   private pinHasPassedMinimumLength_: boolean;
   private isSetPinCallPending_: boolean;
+  private credentialRequirements_: CredentialRequirements|undefined;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
   }
 
   override connectedCallback(): void {
+    this.fetchCredentialRequirements_();
     this.resetState();
-
-    // Show the pin is too short error when first displaying the PIN dialog.
-    this.problemClass_ = ProblemType.WARNING;
-    chrome.quickUnlockPrivate.getCredentialRequirements(
-        QuickUnlockMode.PIN,
-        this.processPinRequirements_.bind(this, MessageType.TOO_SHORT));
   }
 
   /**
@@ -214,43 +210,22 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   }
 
   /**
-   * Handles writing the appropriate message to |problemMessageId_| &&
-   * |problemMessageParameters_|.
-   * @param messageId
-   * @param requirements
-   *     The requirements received from getCredentialRequirements.
-   */
-  private processPinRequirements_(
-      messageId: MessageType, requirements: CredentialRequirements): void {
-    let additionalInformation = '';
-    switch (messageId) {
-      case MessageType.TOO_SHORT:
-        additionalInformation = requirements.minLength.toString();
-        break;
-      case MessageType.TOO_LONG:
-        additionalInformation = (requirements.maxLength + 1).toString();
-        break;
-      case MessageType.TOO_WEAK:
-      case MessageType.CONTAINS_NONDIGIT:
-      case MessageType.MISMATCH:
-      case MessageType.INTERNAL_ERROR:
-        break;
-      default:
-        assertNotReached();
-    }
-    this.problemMessageId_ = messageId;
-    this.problemMessageParameters_ = additionalInformation;
-  }
-
-  /**
    * Notify the user about a problem.
    */
   private showProblem_(messageId: MessageType, problemClass: ProblemType):
       void {
-    this.quickUnlockPrivate.getCredentialRequirements(
-        QuickUnlockMode.PIN,
-        this.processPinRequirements_.bind(this, messageId));
+    this.problemMessageId_ = messageId;
     this.problemClass_ = problemClass;
+
+    let params = '';
+    if (this.credentialRequirements_ !== undefined) {
+      if (messageId === MessageType.TOO_SHORT) {
+        params = this.credentialRequirements_.minLength.toString();
+      } else if (messageId === MessageType.TOO_LONG) {
+        params = (this.credentialRequirements_.maxLength + 1).toString();
+      }
+    }
+    this.problemMessageParameters_ = params;
   }
 
   private hideProblem_(): void {
@@ -411,6 +386,27 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.resetState();
     this.dispatchEvent(new Event('set-pin-done'));
     recordLockScreenProgress(LockScreenProgress.CONFIRM_PIN);
+  }
+
+  /**
+   * Fetches the PIN credential requirements and caches them locally.
+   * Re-evaluates any pending problem messages once the fetch completes.
+   *
+   * Note: Caching these values means that if the policy updates while the
+   * PIN dialog is already displayed, the messaging will continue to use the
+   * old requirements. We accept this highly unlikely edge case.
+   */
+  private fetchCredentialRequirements_(): void {
+    this.quickUnlockPrivate.getCredentialRequirements(
+        QuickUnlockMode.PIN, (requirements: CredentialRequirements) => {
+          this.credentialRequirements_ = requirements;
+
+          // If we are currently showing an error/warning, re-trigger it now
+          // that we have the requirements to format the string properly.
+          if (this.problemMessageId_ && this.problemClass_) {
+            this.showProblem_(this.problemMessageId_, this.problemClass_);
+          }
+        });
   }
 
   private hasError_(problemMessageId: string, problemClass: ProblemType):
