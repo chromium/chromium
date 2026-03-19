@@ -4,9 +4,9 @@
 
 const FRIEND_EXTENSION_ID = 'knldjmfmopnpolahpmmgbagdohdnhkik';
 
-var assertCorrectLog = function(activityType, apiCall, result) {
+const assertCorrectLog = function(activityType, apiCall, result) {
   chrome.test.assertEq(1, result.activities.length);
-  var activity = result.activities[0];
+  const activity = result.activities[0];
   chrome.test.assertEq(activityType, activity.activityType);
   chrome.test.assertEq(apiCall, activity.apiCall);
 };

@@ -5,6 +5,6 @@
 'use strict';
 
 self.onfetch = function(event) {
-  let url = new URL(event.request.url);
-  event.respondWith(new Response('Caught a fetch for ' + url.pathname));
+  const url = new URL(event.request.url);
+  event.respondWith(new Response(`Caught a fetch for ${url.pathname}`));
 };

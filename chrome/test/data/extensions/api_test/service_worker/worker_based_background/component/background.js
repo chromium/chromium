@@ -4,8 +4,8 @@
 
 chrome.test.runTests([
   async function basicTest() {
-    let config = await chrome.test.getConfig();
-    let testUrl =
+    const config = await chrome.test.getConfig();
+    const testUrl =
         `http://b.com:${config.testServer.port}/extensions/test_file.html`;
     chrome.tabs.onCreated.addListener((tab) => {
       if (tab.pendingUrl == testUrl)

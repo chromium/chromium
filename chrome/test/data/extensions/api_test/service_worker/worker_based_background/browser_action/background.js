@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var initialUserGesture = chrome.test.isProcessingUserGesture();
+const initialUserGesture = chrome.test.isProcessingUserGesture();
 
 chrome.browserAction.onClicked.addListener(() => {
   chrome.test.assertFalse(initialUserGesture);

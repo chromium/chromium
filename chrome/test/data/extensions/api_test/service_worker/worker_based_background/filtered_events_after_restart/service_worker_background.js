@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TEST_DIR =
+const TEST_DIR =
     '/extensions/api_test/service_worker/worker_based_background/' +
     'filtered_events_after_restart/';
 
 function getURL(port, filename) {
-  return 'http://127.0.0.1:' + port + TEST_DIR + filename;
+  return `http://127.0.0.1:${port}${TEST_DIR}${filename}`;
 }
 
 function pass() { chrome.test.sendMessage('PASS_FROM_WORKER'); }
 function fail() { chrome.test.sendMessage('FAIL_FROM_WORKER'); }
 
-var seenURLs = [];
-var recordCommitAndVerify = function(committedURL, filename) {
-  var url = new URL(committedURL);
+const seenURLs = [];
+const recordCommitAndVerify = function(committedURL, filename) {
+  const url = new URL(committedURL);
   if (url.pathname != TEST_DIR + filename) {
     fail();
     return;
@@ -31,25 +31,25 @@ var recordCommitAndVerify = function(committedURL, filename) {
   }
 
   chrome.test.getConfig(function(config) {
-    var port = config.testServer.port;
-    var passed =
+    const port = config.testServer.port;
+    const passed =
         seenURLs[0].href == getURL(port, 'a.html') &&
         seenURLs[1].href == getURL(port, 'b.html');
     passed ? pass() : fail();
   });
 };
 
-var registerFilteredEventListeners = function() {
+const registerFilteredEventListeners = function() {
   // We expect a.html to commit first and then b.html to commit.
   chrome.webNavigation.onCommitted.addListener(function(details) {
     fail();
   }, {url: [{pathSuffix: 'never-navigated.html'}]});
   chrome.webNavigation.onCommitted.addListener(function(details) {
-    chrome.test.log('webNavigation.onCommitted, a.html: ' + details.url);
+    chrome.test.log(`webNavigation.onCommitted, a.html: ${details.url}`);
     recordCommitAndVerify(details.url, 'a.html');
   }, {url: [{pathSuffix: 'a.html'}]});
   chrome.webNavigation.onCommitted.addListener(function(details) {
-    chrome.test.log('webNavigation.onCommitted, b.html: ' + details.url);
+    chrome.test.log(`webNavigation.onCommitted, b.html: ${details.url}`);
     recordCommitAndVerify(details.url, 'b.html');
   }, {url: [{pathSuffix: 'b.html'}]});
 };

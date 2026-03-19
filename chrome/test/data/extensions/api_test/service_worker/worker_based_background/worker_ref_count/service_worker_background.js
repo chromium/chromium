@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var numMessagesReceived = 0;
+let numMessagesReceived = 0;
 self.onmessage = function(e) {
-  var fail = function() {
+  const fail = function() {
     e.ports[0].postMessage('FAILURE');
   };
   if (e.data == 'sendMessageTest') {
@@ -16,7 +16,7 @@ self.onmessage = function(e) {
         if (numMessagesReceived == 2) {
           chrome.test.sendMessage('SUCCESS_FROM_WORKER');
         }
-        e.ports[0].postMessage('Worker reply: ' + reply);
+        e.ports[0].postMessage(`Worker reply: ${reply}`);
       });
     } catch (e) {
       fail();

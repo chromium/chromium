@@ -6,7 +6,7 @@ chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     async function fetchFileSchemeResource() {
       try {
-        var url = config.testDataDirectory + '/../test_file.txt';
+        const url = `${config.testDataDirectory}/../test_file.txt`;
         await fetch(url);
         // The above call should fail, so this line should never be reached.
         chrome.test.fail();

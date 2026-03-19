@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var startServiceWorker = function() {
+const startServiceWorker = function() {
   return new Promise(function(resolve, reject) {
     navigator.serviceWorker.register('sw.js').then(function() {
       // Wait until the service worker is active.
@@ -15,20 +15,20 @@ var startServiceWorker = function() {
   });
 };
 
-var test = function(messageToSend) {
+const test = function(messageToSend) {
   return new Promise(function(resolve, reject) {
     startServiceWorker().then(function(serviceWorker) {
-      var mc = new MessageChannel();
+      const mc = new MessageChannel();
       mc.port1.onmessage = function(e) {
         if (e.data == 'OK') {
           resolve();
         } else {
-          reject('Received bad response from ServiceWorker: ' + e.data);
+          reject(`Received bad response from ServiceWorker: ${e.data}`);
         }
       };
       serviceWorker.postMessage(messageToSend, [mc.port2]);
     }).catch(function(err) {
-      reject('Failed to start ServiceWorker, error: ' + err);
+      reject(`Failed to start ServiceWorker, error: ${err}`);
     });
   });
 };

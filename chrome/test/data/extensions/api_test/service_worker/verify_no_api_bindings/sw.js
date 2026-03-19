@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var expectedKeys = ['csi', 'loadTimes', 'runtime'];
+const expectedKeys = ['csi', 'loadTimes', 'runtime'];
 
 self.onmessage = function(e) {
-  var message = 'SUCCESS';
+  let message = 'SUCCESS';
   if (e.data != 'checkBindingsTest') {
     message = 'FAILURE';
   } else {
-    for (var key in chrome) {
+    for (const key in chrome) {
       if (!expectedKeys.includes(key)) {
-        console.log('Unexpected key: ' + key);
+        console.log(`Unexpected key: ${key}`);
         message = 'FAILURE';
         break;
       }

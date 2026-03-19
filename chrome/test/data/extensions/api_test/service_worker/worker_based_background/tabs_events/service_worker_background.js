@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tabProps = [];
+const tabProps = [];
 const NEW_TAB_URL = 'chrome://newtab/';
 
 chrome.test.runTests([
@@ -43,8 +43,8 @@ chrome.test.runTests([
   },
   // Test the chrome.tabs.onUpdated listener through the loading cycle.
   function testTabOnUpdatedListener() {
-    var newUrl = 'chrome://version/';
-    var gotLoading = false;
+    const newUrl = 'chrome://version/';
+    let gotLoading = false;
     chrome.tabs.onUpdated.addListener(function localListener(
         tabId, changeInfo, tab) {
       if (changeInfo.status === 'loading') {
@@ -67,7 +67,7 @@ chrome.test.runTests([
   },
   // Check the chrome.tabs.onMoved listener.
   function testTabMove() {
-    var expectedId = tabProps[0].id
+    const expectedId = tabProps[0].id
     chrome.test.listenOnce(chrome.tabs.onMoved,
                            function localListener(tabId, moveInfo) {
       chrome.test.assertEq(expectedId, tabId);
@@ -80,7 +80,7 @@ chrome.test.runTests([
   },
   // Check the chrome.tabs.onActivated listener.
   function testTabActivated() {
-    var tabId = tabProps[1].id;
+    const tabId = tabProps[1].id;
     chrome.tabs.onActivated.addListener(function localListener(activeInfo) {
       chrome.tabs.onActivated.removeListener(localListener);
       chrome.test.assertEq(tabId, activeInfo.tabId);
@@ -95,7 +95,7 @@ chrome.test.runTests([
   },
   // Check the chrome.tabs.onRemoved listener.
   function testTabRemoved() {
-    var tabIdToClose = tabProps[1].id;
+    const tabIdToClose = tabProps[1].id;
     chrome.tabs.onRemoved.addListener(function localListener(
         tabId, removeInfo) {
       chrome.tabs.onRemoved.removeListener(localListener);

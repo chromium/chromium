@@ -6,7 +6,7 @@ chrome.test.sendMessage('ready', () => {
   syntaxError();
 });
 
-var syntaxError = function() {
+const syntaxError = function() {
   // Intentional syntax error.
   console.lg('test');
 };

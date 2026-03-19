@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var getOnSyncWorkerPromise = function() {
+const getOnSyncWorkerPromise = function() {
   return new Promise(function(resolve, reject) {
-    var serviceWorker;
+    let serviceWorker;
     navigator.serviceWorker.register('sw.js').then(function() {
       // Wait until the service worker is active.
       return navigator.serviceWorker.ready;
@@ -21,7 +21,7 @@ var getOnSyncWorkerPromise = function() {
 
 window.runServiceWorker = function() {
   return getOnSyncWorkerPromise().then(function(serviceWorker) {
-    var mc = new MessageChannel();
+    const mc = new MessageChannel();
     // Called when ServiceWorker.onsync fires.
     return new Promise(resolve => {
       mc.port1.onmessage = function(e) {
@@ -30,7 +30,7 @@ window.runServiceWorker = function() {
           return;
         }
         if (e.data != 'SYNC: send-chats') {
-          console.log('SW returned incorrect data: ' + e.data);
+          console.log(`SW returned incorrect data: ${e.data}`);
           chrome.test.sendMessage('FAIL');  // Fails the test fast.
           return;
         }

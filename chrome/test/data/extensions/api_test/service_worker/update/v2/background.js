@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var controllerChangePromise = new Promise(function(resolve, reject) {
+const controllerChangePromise = new Promise(function(resolve, reject) {
   navigator.serviceWorker.oncontrollerchange = function(e) {
     navigator.serviceWorker.ready.then(function(registration) {
       resolve(registration.active);
@@ -13,9 +13,9 @@ var controllerChangePromise = new Promise(function(resolve, reject) {
 });
 
 controllerChangePromise.then(function(serviceWorker) {
-  var channel = new MessageChannel();
+  const channel = new MessageChannel();
   channel.port1.onmessage = function(e) {
-    chrome.test.log('Message received from SW: ' + e.data);
+    chrome.test.log(`Message received from SW: ${e.data}`);
     chrome.test.sendMessage(e.data);
   };
   serviceWorker.postMessage('ping', [channel.port2]);

@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 this.onmessage = function(e) {
-  var respond = function(message) {
+  const respond = function(message) {
     e.ports[0].postMessage(message);
   };
 
   switch (e.data) {
     case 'checknotification':
-      var permission = Notification.permission;
+      const permission = Notification.permission;
       respond(permission == 'granted' ?
-          'OK' : ('Unexpected Notification.permission: ' + permission));
+          'OK' : (`Unexpected Notification.permission: ${permission}`));
       break;
     case 'shownotification':
-      var result = registration.showNotification(
+      const result = registration.showNotification(
           'Hello title.', {body: 'Hello body.'});
       e.waitUntil(result.then(function() {
         respond('OK');
@@ -23,7 +23,7 @@ this.onmessage = function(e) {
       }));
       break;
     default:
-      respond('Received unexpected message: ' + e.data);
+      respond(`Received unexpected message: ${e.data}`);
       break;
   }
 };

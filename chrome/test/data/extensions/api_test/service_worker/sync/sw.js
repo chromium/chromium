@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var port = null;
+let port = null;
 this.onsync = function(e) {
   if (port) {
     e.waitUntil(new Promise(function(resolve) {
@@ -12,7 +12,7 @@ this.onsync = function(e) {
       // is here to just demonstrate that the test passes with a bit of
       // asynchrony.
       setTimeout(function() {
-        port.postMessage('SYNC: ' + e.tag);
+        port.postMessage(`SYNC: ${e.tag}`);
         resolve();
       }, 0);
     }));

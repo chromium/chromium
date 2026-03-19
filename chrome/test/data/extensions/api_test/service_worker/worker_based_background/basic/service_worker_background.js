@@ -9,8 +9,8 @@ const isInstanceOfServiceWorkerGlobalScope =
 chrome.tabs.onCreated.addListener(tab => {
   console.log('onCreated');
   console.log(tab.pendingUrl);
-  var url = new URL(tab.pendingUrl);
-  var isAboutBlank = url.href == 'about:blank';
+  const url = new URL(tab.pendingUrl);
+  const isAboutBlank = url.href == 'about:blank';
 
   // Note: Ignore 'about:blank' navigations.
   if (url.pathname == '/extensions/test_file.html') {

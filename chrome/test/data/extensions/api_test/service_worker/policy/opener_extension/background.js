@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Connects to another extension via a persistent port.
-var port = chrome.runtime.connect('eagjmgdicfmccfhiiihnaehbfheheidk');
+const port = chrome.runtime.connect('eagjmgdicfmccfhiiihnaehbfheheidk');
 
 port.onDisconnect.addListener(() => {
   chrome.test.sendMessage('Persistent port disconnected');

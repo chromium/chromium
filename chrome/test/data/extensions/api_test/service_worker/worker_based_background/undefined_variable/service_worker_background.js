@@ -6,7 +6,7 @@ chrome.test.sendMessage('ready', () => {
   undefinedVariableError();
 });
 
-var undefinedVariableError = function() {
+const undefinedVariableError = function() {
   // Intentional undefined variable
   console.log(undefined_variable);
 };

@@ -9,7 +9,7 @@
 // ServiceWorkerTest (service_worker_apitest.cc).
 
 // Namespace for all testing utilities and state.
-var test = {
+const test = {
   // The service worker that was registered.
   registeredServiceWorker: null,
   // The last message's data fired on window.onmessage.

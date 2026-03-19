@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testSetStorage = function(storageArea, key, value) {
-  var options = {};
+const testSetStorage = function(storageArea, key, value) {
+  const options = {};
   options[key] = value;
   try {
     storageArea.set(options, function() {
@@ -16,7 +16,7 @@ var testSetStorage = function(storageArea, key, value) {
   }
 };
 
-var testGetStorage = function(storageArea, key, expectedValue) {
+const testGetStorage = function(storageArea, key, expectedValue) {
   try {
     storageArea.get([key], function(result) {
       chrome.test.assertNoLastError();
@@ -29,7 +29,7 @@ var testGetStorage = function(storageArea, key, expectedValue) {
   }
 };
 
-var testGetStorageBytesInUse = function(storageArea, key) {
+const testGetStorageBytesInUse = function(storageArea, key) {
   try {
     storageArea.getBytesInUse([key], function(bytes) {
       chrome.test.assertNoLastError();
@@ -42,7 +42,7 @@ var testGetStorageBytesInUse = function(storageArea, key) {
   }
 };
 
-var testRemoveStorage = function(storageArea, key) {
+const testRemoveStorage = function(storageArea, key) {
   try {
     storageArea.remove([key], function(result) {
       chrome.test.assertNoLastError();
@@ -58,7 +58,7 @@ var testRemoveStorage = function(storageArea, key) {
   }
 };
 
-var testClearStorage = function(storageArea, key) {
+const testClearStorage = function(storageArea, key) {
   try {
     storageArea.clear(function() {
       chrome.test.assertNoLastError();
@@ -74,17 +74,17 @@ var testClearStorage = function(storageArea, key) {
   }
 };
 
-var testOnStorageChanged = function(storageArea) {
+const testOnStorageChanged = function(storageArea) {
   try {
-    var changedKey = '_changed_key';
-    var changedValue = 'changed_value';
+    const changedKey = '_changed_key';
+    const changedValue = 'changed_value';
     storageArea.onChanged.addListener(function callback(changes) {
       storageArea.onChanged.removeListener(callback);
       chrome.test.assertNoLastError();
       chrome.test.assertEq(changes[changedKey].newValue, changedValue);
       chrome.test.succeed();
     });
-    var options = {};
+    const options = {};
     options[changedKey] = changedValue;
     storageArea.set(options);
   }
@@ -93,47 +93,47 @@ var testOnStorageChanged = function(storageArea) {
   }
 };
 
-let namespaces = [
+const namespaces = [
   {
-    storage_area: chrome.storage.local,
+    storageArea: chrome.storage.local,
     key: '_local_key',
     value: 'this is a local value',
   },
   {
-    storage_area: chrome.storage.sync,
+    storageArea: chrome.storage.sync,
     key: '_sync_key',
     value: 'this is a sync value',
   },
   {
-    'storage_area': chrome.storage.session,
-    'key': '_session_key',
-    'value': 'this is a session value',
+    storageArea: chrome.storage.session,
+    key: '_session_key',
+    value: 'this is a session value',
   }
 ];
 
-let tests = [];
+const tests = [];
 for (const namespace of namespaces) {
   tests.push(
       function testSet() {
-        testSetStorage(namespace.storage_area, namespace.key, namespace.value);
+        testSetStorage(namespace.storageArea, namespace.key, namespace.value);
       },
       function testGet() {
-        testGetStorage(namespace.storage_area, namespace.key, namespace.value);
+        testGetStorage(namespace.storageArea, namespace.key, namespace.value);
       },
       function testGetBytesInUse() {
-        testGetStorageBytesInUse(namespace.storage_area, namespace.key);
+        testGetStorageBytesInUse(namespace.storageArea, namespace.key);
       },
       function testRemove() {
-        testRemoveStorage(namespace.storage_area, namespace.key);
+        testRemoveStorage(namespace.storageArea, namespace.key);
       },
       function testClearSetup() {
-        testSetStorage(namespace.storage_area, namespace.key, namespace.value);
+        testSetStorage(namespace.storageArea, namespace.key, namespace.value);
       },
       function testClear() {
-        testClearStorage(namespace.storage_area, namespace.key);
+        testClearStorage(namespace.storageArea, namespace.key);
       },
       function testChanges() {
-        testOnStorageChanged(namespace.storage_area);
+        testOnStorageChanged(namespace.storageArea);
       })
 }
 

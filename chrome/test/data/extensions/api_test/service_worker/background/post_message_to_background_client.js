@@ -5,9 +5,9 @@
 'use strict';
 
 (async () => {
-  let foundClients =
+  const foundClients =
       await clients.matchAll({includeUncontrolled: true, type: 'window'});
-  let background =
+  const background =
       foundClients.find((client) => {
         return new URL(client.url).pathname == '/background.html';
       });

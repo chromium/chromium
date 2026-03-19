@@ -4,10 +4,10 @@
 
 chrome.test.runTests([
   function testWebNavigationOnCommitted() {
-    var getURL = chrome.runtime.getURL;
+    const getURL = chrome.runtime.getURL;
     chrome.tabs.create({url: 'about:blank'}, function(tab) {
-      var tabId = tab.id;
-      var aVisited = false;
+      const tabId = tab.id;
+      let aVisited = false;
       chrome.webNavigation.onCommitted.addListener(function(details) {
         chrome.test.fail();
       }, {url: [{pathSuffix: 'never-navigated.html'}]});

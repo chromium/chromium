@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var expectUpdate = false;
+let expectUpdate = false;
 
-var registerServiceWorkerPromise = new Promise(function(resolve, reject) {
+const registerServiceWorkerPromise = new Promise(function(resolve, reject) {
   expectUpdate = window.location.hash == '#expect_update';
-  var serviceWorkerRegistration;
+  let serviceWorkerRegistration;
   navigator.serviceWorker.register('sw.js').then(function() {
     return navigator.serviceWorker.ready;
   }).then(function(registration) {
     serviceWorkerRegistration = registration;
 
-    var promises = [registration.update()];
+    const promises = [registration.update()];
     if (expectUpdate) {
       promises.push(new Promise(function(resolve) {
         registration.onupdatefound = function(e) {
@@ -23,7 +23,7 @@ var registerServiceWorkerPromise = new Promise(function(resolve, reject) {
 
     return Promise.all(promises);
   }).then(function() {
-    var installingWorker = serviceWorkerRegistration.installing;
+    const installingWorker = serviceWorkerRegistration.installing;
     if (installingWorker) {
       // If there's an installing worker, wait for waiting worker to exist
       // first.
@@ -44,10 +44,10 @@ var registerServiceWorkerPromise = new Promise(function(resolve, reject) {
 });
 
 registerServiceWorkerPromise.then(function(serviceWorker) {
-  var channel = new MessageChannel();
+  const channel = new MessageChannel();
   channel.port1.onmessage = function(e) {
-    chrome.test.log('Message received from SW: ' + e.data);
-    var response = e.data;
+    chrome.test.log(`Message received from SW: ${e.data}`);
+    let response = e.data;
     if (expectUpdate)
       response += ' (with update)';
     chrome.test.sendMessage(response);

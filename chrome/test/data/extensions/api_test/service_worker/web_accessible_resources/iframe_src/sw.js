@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var swIframeHTMLResponse =
-    '<script src="iframe_sw.js"></script>';
+const swIframeHTMLResponse =
+    `<script src="iframe_sw.js"></script>`;
 
-var swIframeNonExistentHTMLResponse =
-    '<script src="iframe_non_existent.js"></script>';
+const swIframeNonExistentHTMLResponse =
+    `<script src="iframe_non_existent.js"></script>`;
 
-var swIframeJSResponse =
-    'window.onmessage = function(e) {' +
-    '  if (e.data == "ping") {' +
-    '    e.source.postMessage("FROM_SW_RESOURCE", "*")' +
-    '  }' +
-    '};';
+const swIframeJSResponse =
+    `window.onmessage = function(e) {
+  if (e.data == 'ping') {
+    e.source.postMessage('FROM_SW_RESOURCE', '*');
+  }
+};`;
 
 self.onfetch = function(e) {
-  var url = new URL(e.request.url);
+  const url = new URL(e.request.url);
   if (url.pathname == '/iframe.html') {
     e.respondWith(new Response(swIframeHTMLResponse, {
       headers: {'Content-Type': 'text/html'}

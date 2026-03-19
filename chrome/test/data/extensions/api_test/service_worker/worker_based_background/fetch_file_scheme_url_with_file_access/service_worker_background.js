@@ -5,7 +5,7 @@
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     async function fetchFileSchemeResource() {
-      var url = config.testDataDirectory + '/../test_file.txt';
+      const url = `${config.testDataDirectory}/../test_file.txt`;
       const response = await fetch(url);
       const text = await response.text();
       chrome.test.assertEq('Hello!', text);

@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 self.onfetch = function(e) {
-  var url = new URL(e.request.url);
+  const url = new URL(e.request.url);
   if (url.pathname == '/data_for_extension') {
     e.respondWith(new Response('SW served data'));
   }
 };
 
 self.onmessage = function(e) {
-  var request = e.data;
+  const request = e.data;
   switch (request) {
     case 'claim':
       self.clients.claim().then(function() {
         e.ports[0].postMessage('clients claimed');
       }).catch(function(err) {
-        e.ports[0].postMessage('FAIL' + err);
+        e.ports[0].postMessage(`FAIL${err}`);
       });
       break;
     default:
