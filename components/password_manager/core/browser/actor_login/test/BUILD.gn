@@ -10,6 +10,8 @@ source_set("test_support") {
     "actor_login_test_util.h",
     "mock_actor_login_delegate.cc",
     "mock_actor_login_delegate.h",
+    "mock_actor_login_permission_service.cc",
+    "mock_actor_login_permission_service.h",
     "mock_actor_login_quality_logger.cc",
     "mock_actor_login_quality_logger.h",
   ]

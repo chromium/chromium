@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
@@ -53,27 +54,6 @@ class MockIdentityCredentialSource
                base::OnceCallback<void(content::webid::FederatedLoginResult)>),
               (override));
   MOCK_METHOD(bool, HasPendingRequest, (), (override));
-};
-
-class MockActorLoginPermissionService : public ActorLoginPermissionService {
- public:
-  MOCK_METHOD(void,
-              ListPermissions,
-              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
-              (override));
-  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, const std::string&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              GrantPermission,
-              (const FederatedPermission&, GrantPermissionResult),
-              (override));
 };
 
 scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(

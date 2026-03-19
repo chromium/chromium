@@ -30,7 +30,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
@@ -120,23 +120,6 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
 
  private:
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
-};
-
-class MockActorLoginPermissionService : public ActorLoginPermissionService {
- public:
-  MOCK_METHOD(void,
-              ListPermissions,
-              (const std::vector<FederatedOrigins>&, ListPermissionsResult));
-  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, DeletePermissionResult));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, const std::string&, DeletePermissionResult));
-  MOCK_METHOD(void,
-              GrantPermission,
-              (const FederatedPermission&, GrantPermissionResult));
 };
 
 }  // namespace

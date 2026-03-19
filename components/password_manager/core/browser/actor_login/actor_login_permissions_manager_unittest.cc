@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/sync/test/test_sync_service.h"
@@ -37,26 +38,6 @@ class MockObserver : public ActorLoginPermissionsManager::Observer {
   MOCK_METHOD(void, OnPermissionsChanged, (), (override));
 };
 
-class MockActorLoginPermissionService : public ActorLoginPermissionService {
- public:
-  MOCK_METHOD(void,
-              ListPermissions,
-              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
-              (override));
-  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, const std::string&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              GrantPermission,
-              (const FederatedPermission&, GrantPermissionResult),
-              (override));
-};
 
 PasswordForm CreateApprovedForm(const std::string& signon_realm,
                                 const std::u16string& username) {

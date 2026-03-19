@@ -20,9 +20,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -139,27 +139,6 @@ class MockPasswordManagerDriver
   MOCK_METHOD(void,
               CheckViewAreaVisible,
               (autofill::FieldRendererId, base::OnceCallback<void(bool)>),
-              (override));
-};
-
-class MockActorLoginPermissionService : public ActorLoginPermissionService {
- public:
-  MOCK_METHOD(void,
-              ListPermissions,
-              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
-              (override));
-  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              DeletePermission,
-              (const url::Origin&, const std::string&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              GrantPermission,
-              (const FederatedPermission&, GrantPermissionResult),
               (override));
 };
 
