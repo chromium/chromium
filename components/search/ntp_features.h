@@ -282,6 +282,10 @@ extern const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam;
 // dismissal UI.
 extern const base::FeatureParam<bool> kNtpNextShowDismissalUIParam;
 
+// Parameter determining if right-clicking an action chip should display the
+// disablement context menu.
+extern const base::FeatureParam<bool> kNtpNextDisablementContextMenuParam;
+
 // Parameter determining if the tab upload should be delayed when tab context is
 // added from an action chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
