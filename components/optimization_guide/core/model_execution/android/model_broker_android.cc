@@ -182,8 +182,8 @@ class ModelBrokerAndroid::SolutionFactory final
 
  private:
   // UsageTracker::Observer
-  void OnDeviceEligibleFeatureFirstUsed(
-      mojom::OnDeviceFeature feature) override;
+  void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
+                                   bool is_first_usage) override;
 
   // Asks AICore to download the base model.
   void MaybeStartDownload(mojom::OnDeviceFeature feature);
@@ -243,9 +243,18 @@ ModelBrokerAndroid::SolutionFactory::~SolutionFactory() {
   parent_->usage_tracker_.RemoveObserver(this);
 }
 
-void ModelBrokerAndroid::SolutionFactory::OnDeviceEligibleFeatureFirstUsed(
-    mojom::OnDeviceFeature feature) {
-  MaybeStartDownload(feature);
+void ModelBrokerAndroid::SolutionFactory::OnDeviceEligibleUseCaseUsed(
+    const std::string& use_case_name,
+    bool is_first_usage) {
+  if (!is_first_usage) {
+    return;
+  }
+  auto feature = GetFeatureForUseCase(use_case_name);
+  if (!feature) {
+    return;
+  }
+
+  MaybeStartDownload(*feature);
 }
 
 void ModelBrokerAndroid::SolutionFactory::MaybeStartDownload(

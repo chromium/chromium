@@ -50,7 +50,8 @@ class OnDeviceAssetManager final
   void StateChanged(MaybeOnDeviceModelComponentState state) override;
 
   // UsageTracker::Observer:
-  void OnDeviceEligibleFeatureFirstUsed(mojom::OnDeviceFeature feature) final;
+  void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
+                                   bool is_first_usage) override;
 
   raw_ref<PrefService> local_state_;
   raw_ref<UsageTracker> usage_tracker_;

@@ -377,7 +377,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   void OnGenAILocalFoundationalModelUserSettingChanged();
 
   // UsageTracker::Observer:
-  void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) override;
+  void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
+                                   bool is_first_usage) override;
 
   // Installs the component installer if it needs installed.
   void BeginUpdateRegistration();

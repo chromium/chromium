@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -426,11 +427,17 @@ void OnDeviceModelComponentStateManager::
   BeginUpdateRegistration();
 }
 
-void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
-    mojom::OnDeviceFeature feature) {
+void OnDeviceModelComponentStateManager::OnDeviceEligibleUseCaseUsed(
+    const std::string& use_case_name,
+    bool is_first_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (GetOnDeviceModelType(feature) != model_type_) {
+  auto feature = GetFeatureForUseCase(use_case_name);
+  if (!feature) {
+    return;
+  }
+
+  if (GetOnDeviceModelType(*feature) != model_type_) {
     return;
   }
 

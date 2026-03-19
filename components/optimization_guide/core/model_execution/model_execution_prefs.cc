@@ -102,7 +102,6 @@ const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
 // A boolean pref for the on-device GenAI foundational model user settings.
 const char kOnDeviceAiUserSettingsEnabled[] =
     "optimization_guide.on_device_foundational_model_user_settings";
-
 }  // namespace localstate
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -152,6 +151,35 @@ bool WasFeatureRecentlyUsed(const PrefService* local_state,
     return false;
   }
   return IsUseRecent(base::ValueToTime(*value));
+}
+
+void RecordUseCaseUsage(PrefService* local_state,
+                        const std::string& use_case_name) {
+  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
+                                             localstate::kLastUsageByFeature);
+  update->Set(use_case_name, base::TimeToValue(base::Time::Now()));
+}
+
+bool WasUseCaseRecentlyUsed(const PrefService* local_state,
+                            const std::string& use_case_name) {
+  const auto& dict = local_state->GetDict(localstate::kLastUsageByFeature);
+
+  const auto* value = dict.Find(use_case_name);
+  if (value && IsUseRecent(base::ValueToTime(*value))) {
+    return true;
+  }
+
+  // Fallback to legacy integer keys mapped to this use case.
+  // TODO(crbug.com/489511499): Remove this fallback once all features have
+  // migrated to using RecordUseCaseUsage with string names.
+  if (std::optional<mojom::OnDeviceFeature> feature =
+          GetFeatureForUseCase(use_case_name)) {
+    value = dict.Find(PrefKey(*feature));
+    if (value && IsUseRecent(base::ValueToTime(*value))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace optimization_guide::model_execution::prefs

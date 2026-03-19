@@ -145,4 +145,51 @@ std::optional<mojom::OnDeviceFeature> ToOnDeviceFeature(
   return it->second;
 }
 
+std::string ToUseCaseName(mojom::OnDeviceFeature feature) {
+  switch (feature) {
+    case mojom::OnDeviceFeature::kCompose:
+      return "compose";
+    case mojom::OnDeviceFeature::kTest:
+      return "test";
+    case mojom::OnDeviceFeature::kPromptApi:
+      return "prompt_api";
+    case mojom::OnDeviceFeature::kHistorySearch:
+      return "history_search";
+    case mojom::OnDeviceFeature::kSummarize:
+      return "summarizer_api";
+    case mojom::OnDeviceFeature::kHistoryQueryIntent:
+      return "history_query_intent";
+    case mojom::OnDeviceFeature::kScamDetection:
+      return "scam_detection";
+    case mojom::OnDeviceFeature::kPermissionsAi:
+      return "permissions_ai";
+    case mojom::OnDeviceFeature::kWritingAssistanceApi:
+      return "writer_assistance_api";
+    case mojom::OnDeviceFeature::kProofreaderApi:
+      return "proofreader_api";
+    case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
+      return "speech_recognition";
+    case mojom::OnDeviceFeature::kClassifier:
+      return "classifier_api";
+  }
+}
+
+std::optional<mojom::OnDeviceFeature> GetFeatureForUseCase(
+    const std::string& use_case_name) {
+  static base::NoDestructor<base::flat_map<std::string, mojom::OnDeviceFeature>>
+      lookup{[]() {
+        base::flat_map<std::string, mojom::OnDeviceFeature> map;
+        for (auto feature : OnDeviceFeatureSet::All()) {
+          map[ToUseCaseName(feature)] = feature;
+        }
+        return map;
+      }()};
+
+  auto it = lookup->find(use_case_name);
+  if (it == lookup->end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
 }  // namespace optimization_guide

@@ -49,6 +49,16 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<mojom::OnDeviceFeature> ToOnDeviceFeature(
     proto::ModelExecutionFeature feature);
 
+// Maps a feature to its corresponding use case name.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::string ToUseCaseName(mojom::OnDeviceFeature feature);
+
+// Returns the feature that maps to the given use case name.
+// Returns std::nullopt if no feature maps to the use case.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::optional<mojom::OnDeviceFeature> GetFeatureForUseCase(
+    const std::string& use_case_name);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_FEATURES_H_

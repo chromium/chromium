@@ -21,16 +21,12 @@ class UsageTracker {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when on-device eligible `feature` was used.
-    // TODO(holte): Update ComponentStateManager metrics and remove this.
-    virtual void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) {}
-
-    // Called when on-device eligible `feature` was used and that usage will
-    // change the "was recently used" state from false to true.
-    virtual void OnDeviceEligibleFeatureFirstUsed(
-        mojom::OnDeviceFeature feature) {}
+    // Called when on-device eligible `use_case_name` was used.
+    // `is_first_usage` is true if this use case is being used for the first
+    // time and changes the "was recently used" from false to true.
+    virtual void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
+                                             bool is_first_usage) {}
   };
-
   explicit UsageTracker(PrefService* local_state);
   ~UsageTracker();
 
@@ -40,10 +36,17 @@ class UsageTracker {
   // Notifies the usage tracker that the `feature` was (attempted to be) used.
   void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature);
 
+  // Notifies the usage tracker that the `use_case_name` was (attempted to be)
+  // used.
+  void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name);
+
   // Returns true if `feature` was recently used and is an on-device eligible
   // feature.
   bool WasOnDeviceEligibleFeatureRecentlyUsed(
       mojom::OnDeviceFeature feature) const;
+
+  // Returns true if `use_case_name` was recently used.
+  bool WasUseCaseRecentlyUsed(const std::string& use_case_name) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
