@@ -210,13 +210,11 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
     return false;
   }
 
-  gfx::Rect copy_rect(src_x, src_y, resource_provider->Size().width(),
-                      resource_provider->Size().height());
-
   const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
   gpu::SyncToken completion_sync_token;
-  if (!resource_provider->CopyToBackingSharedImage(
-          shared_image_, copy_rect, ready_sync_token, completion_sync_token)) {
+  if (!resource_provider->CopyToBackingSharedImage(shared_image_, src_x, src_y,
+                                                   ready_sync_token,
+                                                   completion_sync_token)) {
     return false;
   }
 
@@ -225,7 +223,6 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   mailbox_ref_->set_sync_token(completion_sync_token);
   return true;
 }
-
 PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
   // TODO(ccameron): This function should not ignore |colorBehavior|.
   // https://crbug.com/672306

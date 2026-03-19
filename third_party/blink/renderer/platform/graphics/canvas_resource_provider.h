@@ -727,7 +727,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // `completion_sync_token` which will satisfy after the image copy completes.
   bool CopyToBackingSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      const gfx::Rect& copy_rect,
+      uint32_t src_x,
+      uint32_t src_y,
       const gpu::SyncToken& ready_sync_token,
       gpu::SyncToken& completion_sync_token);
 

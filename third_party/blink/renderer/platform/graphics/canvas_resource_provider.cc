@@ -807,7 +807,8 @@ bool CanvasNon2DResourceProviderSharedImage::WritePixels(
 
 bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    const gfx::Rect& copy_rect,
+    uint32_t src_x,
+    uint32_t src_y,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
   gpu::raster::RasterInterface* raster = RasterInterface();
@@ -818,6 +819,8 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
   if (IsGpuContextLost()) {
     return false;
   }
+
+  gfx::Rect copy_rect(src_x, src_y, Size().width(), Size().height());
 
   EndWriteAccess();
   auto dst_access = WillDrawInternal();
