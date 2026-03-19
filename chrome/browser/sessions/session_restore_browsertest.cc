@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/model/display_override.h"
@@ -372,6 +373,12 @@ class SessionRestoreTest : public InProcessBrowserTest {
     } else {
       NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
       Navigate(&params);
+      if (params.browser) {
+        if (auto* manager = InitialWebUIManager::From(
+                params.browser->GetBrowserForMigrationOnly())) {
+          manager->OnWebUIToolbarLoaded();
+        }
+      }
     }
 
     Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
@@ -383,8 +390,15 @@ class SessionRestoreTest : public InProcessBrowserTest {
     }
     restore_observer.Wait();
 
+    Browser* active_browser = chrome::FindLastActive();
+    if (active_browser) {
+      new_browser = active_browser;
+    }
+
     if (no_memory_pressure)
       WaitForTabsToLoad(new_browser);
+
+    ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
     keep_alive.reset();
     profile_keep_alive.reset();
