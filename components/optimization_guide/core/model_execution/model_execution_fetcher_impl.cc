@@ -467,7 +467,6 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
-    case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
     case ModelBasedCapabilityKey::kSkills:
     case ModelBasedCapabilityKey::kContentAnnotation:
@@ -483,6 +482,12 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return !base::FeatureList::IsEnabled(
           features::kOptimizationGuideBypassPasswordChangeAuth);
+    case ModelBasedCapabilityKey::kAmountExtraction:
+#if BUILDFLAG(IS_ANDROID)
+      return false;
+#else
+      return true;
+#endif
   }
 }
 
