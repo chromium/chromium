@@ -27,13 +27,4 @@ ChromeExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
   return nullptr;
 }
 
-std::vector<KeyedServiceBaseFactory*>
-ChromeExtensionsAPIClient::GetFactoryDependencies() {
-  // TODO(crbug.com/402488726): Delete this stub and use the version from
-  // _non_android.cc when we have supervised user support on desktop Android.
-  // Don't use NOTIMPLEMENTED() here because this is the correct implementation
-  // for this stub class.
-  return {};
-}
-
 }  // namespace extensions

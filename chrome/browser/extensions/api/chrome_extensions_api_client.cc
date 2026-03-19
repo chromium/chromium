@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -435,6 +436,11 @@ ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
       browser_context);
 }
 
+std::unique_ptr<DisplayInfoProvider>
+ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
+  return CreateChromeDisplayInfoProvider();
+}
+
 MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
   if (!metrics_private_delegate_) {
     metrics_private_delegate_ =
@@ -516,6 +522,16 @@ void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+std::vector<KeyedServiceBaseFactory*>
+ChromeExtensionsAPIClient::GetFactoryDependencies() {
+  std::vector<KeyedServiceBaseFactory*> dependencies;
+#if !BUILDFLAG(IS_ANDROID)
+  dependencies.push_back(InstantServiceFactory::GetInstance());
+#endif
+  dependencies.push_back(SupervisedUserServiceFactory::GetInstance());
+  return dependencies;
+}
+
 std::unique_ptr<NativeMessagePortDispatcher>
 ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
     std::unique_ptr<NativeMessageHost> host,
@@ -523,11 +539,6 @@ ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
     scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
   return std::make_unique<ChromeNativeMessagePortDispatcher>(
       std::move(host), std::move(port), std::move(message_service_task_runner));
-}
-
-std::unique_ptr<DisplayInfoProvider>
-ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
-  return CreateChromeDisplayInfoProvider();
 }
 
 }  // namespace extensions

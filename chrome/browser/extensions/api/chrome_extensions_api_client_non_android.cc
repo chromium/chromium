@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <vector>
 
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -25,16 +22,6 @@ std::unique_ptr<UsbDevicePermissionsPrompt>
 ChromeExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
   return std::make_unique<ChromeUsbDevicePermissionsPrompt>(web_contents);
-}
-
-std::vector<KeyedServiceBaseFactory*>
-ChromeExtensionsAPIClient::GetFactoryDependencies() {
-  // clang-format off
-  return {
-      InstantServiceFactory::GetInstance(),
-      SupervisedUserServiceFactory::GetInstance(),
-  };
-  // clang-format on
 }
 
 }  // namespace extensions
