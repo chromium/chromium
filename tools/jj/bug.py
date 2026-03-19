@@ -174,7 +174,7 @@ if __name__ == '__main__':
       type=lambda x: x.upper(),
   )
 
-  subparsers = parser.add_subparsers()
+  subparsers = parser.add_subparsers(required=True)
 
   parser_add = subparsers.add_parser('add')
   parser_add.set_defaults(func=_add_handler)
