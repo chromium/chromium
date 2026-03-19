@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -995,7 +996,7 @@ int main(int argc, char** argv) {
     }
 
     // Write the `proto_text` data to the file.
-    if (file.Write(0, proto_text.data(), proto_text.length()) < 0) {
+    if (!file.WriteAndCheck(0, base::as_byte_span(proto_text))) {
       LOG(FATAL) << "Failed to write to file " << file_path;
     }
   }
