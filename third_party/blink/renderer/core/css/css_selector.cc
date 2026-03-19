@@ -339,6 +339,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdBefore;
     case kPseudoAfter:
       return kPseudoIdAfter;
+    case kPseudoExpandIcon:
+      return kPseudoIdExpandIcon;
     case kPseudoPickerIcon:
       return kPseudoIdPickerIcon;
     case kPseudoInterestHint:
@@ -635,6 +637,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"empty", CSSSelector::kPseudoEmpty},
     {"enabled", CSSSelector::kPseudoEnabled},
     {"end", CSSSelector::kPseudoEnd},
+    {"expand-icon", CSSSelector::kPseudoExpandIcon},
     {"file-selector-button", CSSSelector::kPseudoFileSelectorButton},
     {"filtered", CSSSelector::kPseudoFiltered},
     {"first", CSSSelector::kPseudoFirstPage},
@@ -868,6 +871,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoExpandIcon &&
+      !RuntimeEnabledFeatures::MenuElementsEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
@@ -942,6 +950,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       }
       [[fallthrough]];
     // For pseudo-elements
+    case kPseudoExpandIcon:
     case kPseudoPickerIcon:
     case kPseudoInterestHint:
     case kPseudoCheckMark:
@@ -1709,6 +1718,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
          (GetPseudoType() == kPseudoCheckMark ||
           GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
+          GetPseudoType() == kPseudoExpandIcon ||
           GetPseudoType() == kPseudoPickerIcon ||
           GetPseudoType() == kPseudoInterestHint ||
           GetPseudoType() == kPseudoMarker ||
@@ -1749,6 +1759,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoCheckMark:
     case kPseudoBefore:
     case kPseudoAfter:
+    case kPseudoExpandIcon:
     case kPseudoPickerIcon:
     case kPseudoInterestHint:
     case kPseudoPlaceholder:

@@ -58,6 +58,7 @@ InspectorStyleResolver::InspectorStyleResolver(
       !(element_pseudo_id == kPseudoIdCheckMark ||
         element_pseudo_id == kPseudoIdBefore ||
         element_pseudo_id == kPseudoIdAfter ||
+        element_pseudo_id == kPseudoIdExpandIcon ||
         element_pseudo_id == kPseudoIdPickerIcon ||
         element_pseudo_id == kPseudoIdInterestHint ||
         element_pseudo_id == kPseudoIdMarker ||

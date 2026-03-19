@@ -712,6 +712,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoEmpty:
     case CSSSelector::kPseudoEnabled:
     case CSSSelector::kPseudoEnd:
+    case CSSSelector::kPseudoExpandIcon:
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoFiltered:
     case CSSSelector::kPseudoFirstChild:

@@ -547,4 +547,8 @@ void HTMLMenuItemElement::RemovedFrom(ContainerNode& insertion_point) {
   return;
 }
 
+bool HTMLMenuItemElement::ShouldHaveExpandIcon() const {
+  return HasOwnerMenuList() && GetInvokedSubmenu();
+}
+
 }  // namespace blink

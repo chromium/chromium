@@ -387,6 +387,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::before");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
       class_names.Append("::after");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdExpandIcon) {
+      class_names.Append("::expand-icon");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
       class_names.Append("::picker-icon");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdInterestHint) {
@@ -2298,7 +2300,7 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-            kPseudoIdPickerIcon, kPseudoIdInterestHint,
+            kPseudoIdExpandIcon, kPseudoIdPickerIcon, kPseudoIdInterestHint,
             kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarker,
             kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
             kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd}) {

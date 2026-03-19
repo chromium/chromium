@@ -5241,6 +5241,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                             child_recalc_context);
       }
 
+      if (auto* menuitem = DynamicTo<HTMLMenuItemElement>(this)) {
+        if (menuitem->ShouldHaveExpandIcon()) {
+          UpdatePseudoElement(kPseudoIdExpandIcon, child_change,
+                              child_recalc_context);
+        }
+      }
+
       if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
               GetExecutionContext())) {
         UpdatePseudoElement(kPseudoIdInterestHint, child_change,
@@ -5906,6 +5913,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildTransitionLayoutTree(*child_attacher);
     RebuildOverscrollAreaLayoutTree(*child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
     if (GetShadowRoot()) {
@@ -10754,8 +10762,8 @@ const ComputedStyle* Element::StyleForPseudoElement(
 
   const bool is_before_or_after_like =
       pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
-      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdPickerIcon ||
-      pseudo_id == kPseudoIdInterestHint;
+      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdExpandIcon ||
+      pseudo_id == kPseudoIdPickerIcon || pseudo_id == kPseudoIdInterestHint;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -13362,6 +13370,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
+      case kPseudoIdExpandIcon:
       case kPseudoIdPickerIcon:
       case kPseudoIdInterestHint:
       case kPseudoIdBackdrop:

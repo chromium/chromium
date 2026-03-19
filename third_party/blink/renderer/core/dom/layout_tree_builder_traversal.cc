@@ -224,6 +224,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
         return next;
       }
@@ -325,6 +330,12 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdPickerIcon:
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return previous;
       }
@@ -433,6 +444,9 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
   if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return last;
   }
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
+    return last;
+  }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
     return last;
   if (Node* last = FlatTreeTraversal::LastChild(*current_element))
@@ -536,6 +550,9 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (Node* first = FlatTreeTraversal::FirstChild(node))
     return first;
   if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+    return first;
+  }
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
     return first;
   }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {

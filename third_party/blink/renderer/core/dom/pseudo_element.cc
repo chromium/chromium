@@ -104,6 +104,15 @@ PseudoElement* PseudoElement::Create(Element* parent,
     }
   }
 
+  if (pseudo_id == kPseudoIdExpandIcon) {
+    // The ::expand-icon pseudo-element should only be created for menuitem
+    // elements which are inside a menulist and are set up to invoke a submenu.
+    auto* menuitem = DynamicTo<HTMLMenuItemElement>(parent);
+    if (!menuitem || !menuitem->ShouldHaveExpandIcon()) {
+      return nullptr;
+    }
+  }
+
   if (pseudo_id == kPseudoIdInterestHint) {
     CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
         parent->GetDocument().GetExecutionContext()));
@@ -134,6 +143,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdPickerIcon ||
+         pseudo_id == kPseudoIdExpandIcon ||
          pseudo_id == kPseudoIdInterestHint || pseudo_id == kPseudoIdBackdrop ||
          pseudo_id == kPseudoIdMarker || pseudo_id == kPseudoIdColumn ||
          pseudo_id == kPseudoIdOverscrollAreaParent);
@@ -159,6 +169,11 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, picker_icon,
                           (AtomicString("::picker-icon")));
       return picker_icon;
+    }
+    case kPseudoIdExpandIcon: {
+      DEFINE_STATIC_LOCAL(QualifiedName, expand_icon,
+                          (AtomicString("::expand-icon")));
+      return expand_icon;
     }
     case kPseudoIdInterestHint: {
       DEFINE_STATIC_LOCAL(QualifiedName, interest_hint,
@@ -556,6 +571,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
+    case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
     case kPseudoIdInterestHint:
     case kPseudoIdScrollMarker:
@@ -638,6 +654,7 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
+    case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
     case kPseudoIdInterestHint:
     case kPseudoIdScrollMarker:
@@ -785,6 +802,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
+    case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
     case kPseudoIdInterestHint:
       return !pseudo_style.ContentPreventsBoxGeneration();

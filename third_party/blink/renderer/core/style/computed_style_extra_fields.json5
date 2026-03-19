@@ -258,7 +258,7 @@
       field_template: "primitive",
       // See the definition of the PseudoId enum for details. This field_size
       // must be updated when public IDs are added or removed.
-      field_size: 24,
+      field_size: 25,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,

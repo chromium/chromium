@@ -72,6 +72,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_check_);
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
+    visitor->Trace(generated_expand_icon_);
     visitor->Trace(generated_picker_icon_);
     visitor->Trace(generated_interest_hint_);
     visitor->Trace(generated_marker_);
@@ -94,6 +95,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_check_;
   Member<PseudoElement> generated_before_;
   Member<PseudoElement> generated_after_;
+  Member<PseudoElement> generated_expand_icon_;
   Member<PseudoElement> generated_picker_icon_;
   Member<PseudoElement> generated_interest_hint_;
   Member<PseudoElement> generated_marker_;
@@ -119,9 +121,10 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
 inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
-         generated_picker_icon_ || generated_interest_hint_ ||
-         generated_marker_ || backdrop_ || generated_first_letter_ ||
-         transition_data_ || generated_overscroll_area_parent_ ||
+         generated_expand_icon_ || generated_picker_icon_ ||
+         generated_interest_hint_ || generated_marker_ || backdrop_ ||
+         generated_first_letter_ || transition_data_ ||
+         generated_overscroll_area_parent_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_button_block_start_ ||
@@ -135,6 +138,7 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdCheckMark, nullptr);
   SetPseudoElement(kPseudoIdBefore, nullptr);
   SetPseudoElement(kPseudoIdAfter, nullptr);
+  SetPseudoElement(kPseudoIdExpandIcon, nullptr);
   SetPseudoElement(kPseudoIdPickerIcon, nullptr);
   SetPseudoElement(kPseudoIdInterestHint, nullptr);
   SetPseudoElement(kPseudoIdMarker, nullptr);
@@ -177,6 +181,10 @@ inline void PseudoElementData::SetPseudoElement(
     case kPseudoIdAfter:
       previous_element = generated_after_;
       generated_after_ = element;
+      break;
+    case kPseudoIdExpandIcon:
+      previous_element = generated_expand_icon_;
+      generated_expand_icon_ = element;
       break;
     case kPseudoIdPickerIcon:
       previous_element = generated_picker_icon_;
@@ -262,6 +270,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return generated_before_.Get();
   if (kPseudoIdAfter == pseudo_id)
     return generated_after_.Get();
+  if (kPseudoIdExpandIcon == pseudo_id) {
+    return generated_expand_icon_.Get();
+  }
   if (kPseudoIdPickerIcon == pseudo_id) {
     return generated_picker_icon_.Get();
   }

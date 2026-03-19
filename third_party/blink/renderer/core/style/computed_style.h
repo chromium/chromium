@@ -2558,8 +2558,8 @@ class ComputedStyle final : public ComputedStyleBase {
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
     return pseudo == kPseudoIdCheckMark || pseudo == kPseudoIdBefore ||
-           pseudo == kPseudoIdAfter || pseudo == kPseudoIdPickerIcon ||
-           pseudo == kPseudoIdInterestHint;
+           pseudo == kPseudoIdAfter || pseudo == kPseudoIdExpandIcon ||
+           pseudo == kPseudoIdPickerIcon || pseudo == kPseudoIdInterestHint;
   }
 
   bool HasScrollMarkerGroupBefore() const {

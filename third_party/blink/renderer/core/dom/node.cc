@@ -426,6 +426,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdPickerIcon:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
       if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
         return next;
       }
@@ -608,6 +613,11 @@ Node* Node::PseudoAwareNextSibling() const {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
       if (Node* next = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
         return next;
       }
@@ -741,6 +751,9 @@ Node* Node::PseudoAwareFirstChild() const {
     if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
       return first;
     }
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
+      return first;
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
       return first;
     }
@@ -808,6 +821,9 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+      return last;
+    }
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
@@ -2994,6 +3010,10 @@ static void AppendMarkedTree(const String& base_indent,
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdAfter))
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdExpandIcon)) {
+        AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                         marked_node2, marked_label2, builder);
+      }
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdPickerIcon)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);

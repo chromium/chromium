@@ -277,6 +277,7 @@ bool ShouldStopExtractingAtPseudoElement(
   switch (pseudo_type) {
     case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoPickerIcon:
+    case CSSSelector::kPseudoExpandIcon:
     case CSSSelector::kPseudoFirstLetter:
     case CSSSelector::kPseudoScrollButton:
     case CSSSelector::kPseudoScrollMarker:

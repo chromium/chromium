@@ -449,6 +449,7 @@ bool HTMLCapabilityElementBase::CanGeneratePseudoElement(PseudoId id) const {
     case PseudoId::kPseudoIdBefore:
     case PseudoId::kPseudoIdCheckMark:
     case PseudoId::kPseudoIdPickerIcon:
+    case PseudoId::kPseudoIdExpandIcon:
     case PseudoId::kPseudoIdInterestHint:
       return false;
     default:

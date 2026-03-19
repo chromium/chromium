@@ -2488,6 +2488,13 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
     visibility: hidden;
   }
 
+  menuitem::expand-icon {
+    content: counter(fake-counter-name, disclosure-closed);
+    /* margin-inline-start adds a gap in between the text inside the menuitem
+     * and the ::expand-icon. This matches select::picker-icon. */
+    margin-inline-start: auto;
+  }
+
   /* We can use the direct child selector for menuitems in menubars, because the
    * menubar content model does not allow for fieldset as an intermediate to
    * group menuitems in menubars. */

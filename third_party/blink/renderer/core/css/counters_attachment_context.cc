@@ -38,6 +38,7 @@ bool IsForbiddenForCounter(PseudoId style_type) {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
+    case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
     case kPseudoIdInterestHint:
     case kPseudoIdMarker:

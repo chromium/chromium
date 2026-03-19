@@ -276,6 +276,8 @@ String ToString(PseudoId pseudo_id) {
       return "kPseudoIdBefore";
     case kPseudoIdAfter:
       return "kPseudoIdAfter";
+    case kPseudoIdExpandIcon:
+      return "kPseudoIdExpandIcon";
     case kPseudoIdPickerIcon:
       return "kPseudoIdPickerIcon";
     case kPseudoIdInterestHint:

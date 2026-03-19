@@ -1377,6 +1377,11 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     if (node.IsCheckPseudoElement()) {
       return false;
     }
+    // ::expand-icon should not generate anything in the a11y tree for the same
+    // reason as ::picker-icon.
+    if (node.GetPseudoId() == kPseudoIdExpandIcon) {
+      return false;
+    }
     // Scroll control pseudo-elements are always relevant when they have a
     // layout object (which is checked above).
     if (node.IsScrollControlPseudoElement()) {

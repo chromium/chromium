@@ -760,6 +760,10 @@ String CounterValueForElement(Element* element) {
   }
   if (LayoutObject* after = element->PseudoElementLayoutObject(kPseudoIdAfter))
     WriteCounterValuesFromChildren(stream, after, is_first_counter);
+  if (LayoutObject* expand_icon =
+          element->PseudoElementLayoutObject(kPseudoIdExpandIcon)) {
+    WriteCounterValuesFromChildren(stream, expand_icon, is_first_counter);
+  }
   if (LayoutObject* picker_icon =
           element->PseudoElementLayoutObject(kPseudoIdPickerIcon)) {
     WriteCounterValuesFromChildren(stream, picker_icon, is_first_counter);

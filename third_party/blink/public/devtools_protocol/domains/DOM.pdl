@@ -41,6 +41,7 @@ domain DOM
       checkmark
       before
       after
+      expand-icon
       picker-icon
       interest-hint
       marker
