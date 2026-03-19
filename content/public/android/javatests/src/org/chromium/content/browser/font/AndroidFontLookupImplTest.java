@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetFileDescriptor;
@@ -40,6 +39,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.OngoingStubbing;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -61,6 +62,7 @@ import java.util.Map;
 /** Tests the {@link AndroidFontLookup} implementation. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public final class AndroidFontLookupImplTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String FULL_FONT_NAME_1 = "foo";
     private static final String FONT_QUERY_1 = "name=Foo&weight=400";
     private static final String FULL_FONT_NAME_2 = "bar";
@@ -95,7 +97,6 @@ public final class AndroidFontLookupImplTest {
 
     @Before
     public void setUp() throws IOException {
-        initMocks(this);
         mMockContext = new AdvancedMockContext();
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();

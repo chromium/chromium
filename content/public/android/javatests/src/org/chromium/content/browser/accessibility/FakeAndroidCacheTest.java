@@ -12,11 +12,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -27,6 +29,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 @Batch(Batch.UNIT_TESTS)
 @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
 public class FakeAndroidCacheTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebContentsAccessibilityImpl mWebContentsAccessibility;
     private FakeAndroidCache mFakeAndroidCache;
     private final int mFirstNodeId = 1;
@@ -36,7 +39,6 @@ public class FakeAndroidCacheTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(Mockito.anyInt()))
                 .thenReturn(new int[] {});
         Mockito.when(mWebContentsAccessibility.getCurrentRootIdForExperiment()).thenReturn(-1);
