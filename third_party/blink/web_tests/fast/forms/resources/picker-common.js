@@ -88,7 +88,7 @@ function openPickerAppearanceOnly(element, runAfterOpening) {
     });
 }
 
-// Do NOT use openPickerDeprecatedJsTest for any new tests. See crbug.com/1299212.
+// Do NOT use openPickerDeprecatedJsTest for any new tests. See crbug.com/40215845.
 // This is here to support old tests only.
 let waitedForLoad=false;
 function openPickerDeprecatedJsTest(element, successCallback, failureCallback) {
