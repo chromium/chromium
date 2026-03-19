@@ -315,6 +315,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
     "//chrome/browser/finds",
+    "//chrome/browser/first_party_sets",
     "//chrome/browser/glic",
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",

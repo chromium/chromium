@@ -445,11 +445,6 @@ static_library("browser") {
     "file_select_helper.h",
     "file_util_service.cc",
     "file_util_service.h",
-    "first_party_sets/first_party_sets_navigation_throttle.cc",
-    "first_party_sets/first_party_sets_navigation_throttle.h",
-    "first_party_sets/first_party_sets_policy_service.cc",
-    "first_party_sets/first_party_sets_policy_service_factory.cc",
-    "first_party_sets/first_party_sets_policy_service_factory.h",
     "font_family_cache.cc",
     "font_family_cache.h",
     "global_features.cc",
@@ -1254,6 +1249,7 @@ static_library("browser") {
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access:impl",
+    "//chrome/browser/first_party_sets:impl",
     "//chrome/browser/google",
 
     # TODO(crbug.com/486309771): Remove this circular dependency when
@@ -1592,6 +1588,7 @@ static_library("browser") {
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
     "//chrome/browser/first_party_sets",
+    "//chrome/browser/first_party_sets:impl",
     "//chrome/browser/gcm",
     "//chrome/browser/geolocation",
     "//chrome/browser/geolocation:impl",

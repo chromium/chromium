@@ -5,20 +5,12 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("first_party_sets") {
-  visibility = [
-    ":*",
-    "//chrome",
-    "//chrome/browser:*",
-    "//chrome/browser/*",
-    "//chrome/test:*",
-  ]
   sources = [
-    "first_party_sets_overrides_policy_handler.cc",
+    "first_party_sets_navigation_throttle.h",
     "first_party_sets_overrides_policy_handler.h",
     "first_party_sets_policy_service.h",
-    "first_party_sets_pref_names.cc",
+    "first_party_sets_policy_service_factory.h",
     "first_party_sets_pref_names.h",
-    "scoped_mock_first_party_sets_handler.cc",
     "scoped_mock_first_party_sets_handler.h",
   ]
   deps = [
@@ -41,10 +33,113 @@ source_set("first_party_sets") {
   public_deps = [ "//content/public/browser" ]
 }
 
+source_set("policy_handler_impl") {
+  sources = [
+    "first_party_sets_overrides_policy_handler.cc",
+    "first_party_sets_pref_names.cc",
+  ]
+  deps = [
+    ":first_party_sets",
+    "//base",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "first_party_sets_navigation_throttle.cc",
+    "first_party_sets_policy_service.cc",
+    "first_party_sets_policy_service_factory.cc",
+    "scoped_mock_first_party_sets_handler.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":first_party_sets",
+    ":policy_handler_impl",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/content",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/content/",
+    "//components/policy/core/browser",
+    "//components/policy/proto",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/privacy_sandbox",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "first_party_sets_navigation_throttle_unittest.cc",
+    "first_party_sets_overrides_policy_handler_unittest.cc",
+    "first_party_sets_policy_service_factory_unittest.cc",
+    "first_party_sets_policy_service_unittest.cc",
+  ]
+  deps = [
+    ":first_party_sets",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/keyed_service/content",
+    "//components/policy:generated",
+    "//components/policy/core/browser:test_support",
+    "//components/prefs",
+    "//components/privacy_sandbox",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "first_party_sets_browsertest.cc",
+      "first_party_sets_policy_browsertest.cc",
+    ]
+    deps = [
+      ":first_party_sets",
+      ":impl",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/policy:test_support",
+      "//chrome/test:test_support",
+      "//components/component_updater/installer_policies:installer_policies_no_content_deps",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gtest",
+    ]
+  }
+}
+
 fuzzer_test("first_party_sets_overrides_policy_handler_fuzzer") {
   sources = [ "test/first_party_sets_overrides_policy_handler_fuzzer.cc" ]
   deps = [
     ":first_party_sets",
+    ":policy_handler_impl",
     "//base",
     "//base:i18n",
     "//components/policy:generated",

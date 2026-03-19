@@ -58,7 +58,9 @@ MATCHER_P2(CarryingConfigAndCacheFilter, config, cache_filter, "") {
 namespace first_party_sets {
 
 namespace {
-const base::Version kVersion("1.2.3");
+base::Version GetVersion() {
+  return base::Version("1.2.3");
+}
 }
 
 class MockFirstPartySetsAccessDelegate
@@ -302,7 +304,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByPref) {
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {
           {associate1_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
@@ -338,7 +340,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {
           {primary_site, {primary_entry}},
           {associate1_site, {associate1_entry}},
@@ -379,7 +381,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {
           {primary_site, {primary_entry}},
           {associate_site, {associate_entry}},
@@ -412,7 +414,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {
           {primary_site, {primary_entry}},
           {associate_site, {associate_entry}},
@@ -437,7 +439,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
@@ -483,7 +485,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
       {}));
 
@@ -527,7 +529,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
-      kVersion,
+      GetVersion(),
       {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
       {}));
   // The context config adds a service site to the above set.
