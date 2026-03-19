@@ -16,4 +16,10 @@ interface PageHandler {
   // without the key being specified on the command line this returns an empty
   // string.
   GetApiKey() => (string api_key);
+
+  // Returns the data for the pre-canned mock audio file specified on the
+  // command line. Returns null if no file was specified or the file couldn't
+  // be read. This is used during development to test the component on devices
+  // without a microphone.
+  GetMockAudioData() => (array<uint8>? data);
 };

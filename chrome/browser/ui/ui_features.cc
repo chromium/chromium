@@ -477,6 +477,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kAiOverlayDialog,
                    "api_key",
                    "");
+BASE_FEATURE_PARAM(std::string,
+                   kAiOverlayDialogMockAudioPath,
+                   &kAiOverlayDialog,
+                   "mock_audio_path",
+                   "");
 
 BASE_FEATURE(kTabGroupsFocusing, base::FEATURE_DISABLED_BY_DEFAULT);
 

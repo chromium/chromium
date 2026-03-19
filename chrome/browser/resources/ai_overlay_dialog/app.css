@@ -8,10 +8,16 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#state {
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   bottom: 20px;
   inset-inline-end: 20px;
+}
+
+#state {
   /* Allow clicks on the character UI only */
   pointer-events: auto;
   width: 100px;
@@ -25,4 +31,11 @@
 /* Example states */
 :host([is-listening]) #state {
   border-color: var(--color-sys-positive);
+}
+
+#inject-audio {
+  margin-top: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  pointer-events: auto;
 }

@@ -19,6 +19,7 @@ class AiOverlayDialogPageHandler
 
   // overlay_dialog::mojom::PageHandler interface
   void GetApiKey(GetApiKeyCallback callback) override;
+  void GetMockAudioData(GetMockAudioDataCallback callback) override;
 
  private:
   mojo::Receiver<ai_overlay_dialog::mojom::PageHandler> receiver_{this};

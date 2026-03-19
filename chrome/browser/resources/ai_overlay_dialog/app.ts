@@ -9,7 +9,7 @@ import {ApiSession, SessionState} from './api_session.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AudioCapturer} from './audio_capturer.js';
-import {MicrophoneAudioCapturer} from './audio_capturer.js';
+import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 
 export class AppElement extends CrLitElement {
   static get is() {
@@ -26,8 +26,16 @@ export class AppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      // If a mock microphone is being used, this property is set to a callback
+      // injects a pre-canned message usable for development on devices without
+      // a microphone.
+      onInjectPrecannedAudio_: {
+        type: Object,
+      },
     };
   }
+
+  private accessor onInjectPrecannedAudio_: (() => void)|undefined;
 
   private pageHandler: PageHandlerRemote;
   // API key to use to connect to backend. Only used for development when
@@ -56,6 +64,14 @@ export class AppElement extends CrLitElement {
     });
   }
 
+  protected get hasMic(): boolean {
+    return !this.onInjectPrecannedAudio_;
+  }
+
+  protected onInjectAudioClick_() {
+    this.onInjectPrecannedAudio_?.();
+  }
+
   protected async onStateClick_() {
     if (!this.apiKey) {
       console.warn('API key not yet available');
@@ -72,6 +88,20 @@ export class AppElement extends CrLitElement {
         capturer = new MicrophoneAudioCapturer(stream);
       } catch (e) {
         console.warn('No Microphone Found', e);
+
+        try {
+          const {data} = await this.pageHandler.getMockAudioData();
+          if (data) {
+            const blob = new Blob([new Uint8Array(data)], {type: 'audio/wav'});
+            const blobCapturer = new BlobAudioCapturer(blob);
+            this.onInjectPrecannedAudio_ = () => blobCapturer.send();
+            capturer = blobCapturer;
+          } else {
+            console.warn('No mock audio data provided or found');
+          }
+        } catch (mojoError) {
+          console.error('Failed to get mock audio data', mojoError);
+        }
       }
 
       if (capturer) {
@@ -91,6 +121,10 @@ export class AppElement extends CrLitElement {
 
     console.info('SetState: ', state);
     this.state = state;
+
+    if (state === SessionState.IDLE) {
+      this.onInjectPrecannedAudio_ = undefined;
+    }
   }
 }
 
