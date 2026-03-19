@@ -68,6 +68,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/search",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_navigator_params_headers",

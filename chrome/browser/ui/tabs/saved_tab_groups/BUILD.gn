@@ -96,6 +96,7 @@ source_set("impl") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

@@ -2695,6 +2695,7 @@ if (!is_android) {
       "//chrome/browser/reading_list",
       "//chrome/browser/reduce_accept_language:browser_tests",
       "//chrome/browser/regional_capabilities:browser_tests",
+      "//chrome/browser/renderer_host",
       "//chrome/browser/resource_coordinator:mojo_bindings",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
@@ -8021,6 +8022,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/android/locale",
       "//chrome/browser/image_fetcher",
+      "//chrome/browser/renderer_host",
       "//components/image_fetcher/core:test_support",
       "//components/offline_pages/content/background_loader:test_support",
       "//components/offline_pages/core:test_support",

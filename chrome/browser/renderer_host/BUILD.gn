@@ -2,6 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("renderer_host") {
+  sources = [
+    "chrome_navigation_ui_data.cc",
+    "chrome_navigation_ui_data.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//components/offline_pages/buildflags",
+    "//components/offline_pages/core/request_header",
+    "//content/public/browser",
+    "//extensions/buildflags",
+  ]
+  deps = [
+    "//chrome/browser/actor",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+  ]
+
+  if (enable_extensions) {
+    public_deps += [ "//extensions/browser" ]
+  }
+
+  if (is_android) {
+    sources += [ "android/chrome_navigation_ui_data_android.cc" ]
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+}
+
 if (is_mac) {
   import("//build/config/mac/rules.gni")
   import("//build/util/branding.gni")

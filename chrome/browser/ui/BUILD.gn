@@ -351,6 +351,7 @@ static_library("ui") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiling_host",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/resources",
     "//chrome/browser/resources:dev_ui_resources",
     "//chrome/browser/safe_browsing",

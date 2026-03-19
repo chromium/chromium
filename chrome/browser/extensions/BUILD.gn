@@ -529,6 +529,7 @@ source_set("extensions") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
