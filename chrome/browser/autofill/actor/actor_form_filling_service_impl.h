@@ -11,6 +11,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
@@ -82,10 +84,19 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   };
 
  private:
-  // Forwards a fill/preview signal to `AutofillManager`.
-  void FillOrPreviewFormImpl(const tabs::TabInterface& tab,
-                             ActorSuggestionId suggestion_id,
-                             mojom::ActionPersistence action_persistence);
+  friend class ActorFormFillingServiceImplTestApi;
+
+  // Forwards a fill/preview signal to `AutofillManager`. Returns the error that
+  // led to the filling failure if any, and `std::nullopt` otherwise.
+  std::optional<ActorFormFillingError> FillOrPreviewFormImpl(
+      const tabs::TabInterface& tab,
+      ActorSuggestionId suggestion_id,
+      mojom::ActionPersistence action_persistence);
+
+  // Contains, within a single sequence of filling operations (all belonging to
+  // a single round of suggestion generation), the errors (if any) that
+  // prevented filling (not preview).
+  std::vector<ActorFormFillingError> errors_per_session_;
 
   // A running counter used to generate `ActorSuggestionId`s.
   ActorSuggestionId::Generator suggestion_id_generator_;
@@ -94,6 +105,10 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   // for performing the form fill.
   base::flat_map<ActorSuggestionId, FillData> fill_data_;
 
+  // Observes for the completion of the filling operations triggered by
+  // `ActorFormFillingService::FillForm()`.
+  std::unique_ptr<ActorFillingObserver> filling_observer_;
+
   // Contains the `FieldGlobalId` of the trigger field that was used to generate
   // suggestions during `ActorFormFillingServiceImpl::GetSuggestions()`.
   // The `i`th ID in that list corresponds to the `i`th generated
@@ -101,6 +116,8 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   // TODO(crbug.com/448398227): Consider dropping the ordering and instead
   // identify a `FormFillingRequest` by a `FormFillingRequestId`.
   std::vector<FieldGlobalId> suggestion_trigger_field_id_;
+
+  base::WeakPtrFactory<ActorFormFillingServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

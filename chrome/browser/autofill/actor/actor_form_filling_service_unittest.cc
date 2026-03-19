@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -164,31 +165,6 @@ void ExpectGetSuggestionsOutcome(ActorFormFillingError error,
                                       error, 1, location);
   histogram_tester.ExpectTotalCount("Autofill.Actor.GetSuggestions.Latency", 1,
                                     location);
-}
-
-void ExpectFillSuggestionsOutcome(bool is_payments_fill,
-                                  ActorFormFillingError error,
-                                  base::HistogramTester& histogram_tester,
-                                  const base::Location& location = FROM_HERE) {
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Actor.FillSuggestions.Any.Outcome", error, 1, location);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Actor.FillSuggestions.Any.Latency", 1, location);
-  if (is_payments_fill) {
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Actor.FillSuggestions.WithPaymentInformation.Outcome", error,
-        1, location);
-    histogram_tester.ExpectTotalCount(
-        "Autofill.Actor.FillSuggestions.WithPaymentInformation.Latency", 1,
-        location);
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Actor.FillSuggestions.WithoutPaymentInformation.Outcome",
-        error, 1, location);
-    histogram_tester.ExpectTotalCount(
-        "Autofill.Actor.FillSuggestions.WithoutPaymentInformation.Latency", 01,
-        location);
-  }
 }
 
 class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
@@ -400,7 +376,7 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     return static_cast<TestBrowserAutofillManagerWithTestCCAM&>(
         driver().GetAutofillManager());
   }
-  ActorFormFillingService& service() { return service_; }
+  ActorFormFillingServiceImpl& service() { return service_; }
   tabs::TabInterface& tab() { return mock_tab; }
 
   // Returns an address that is available in `AddressDataManager`.
@@ -479,20 +455,15 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
                       FormFillingRequest_RequestedData_ADDRESS))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+
   EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(GetProfile1(), NAME_FULL))));
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
-  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
-                               kActorFormFillingSuccessForMetrics,
-                               histogram_tester);
 }
 
 // Tests that the origin of the web contents is returned in the form filling
@@ -532,11 +503,8 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
                       FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(
       last_filled_values(),
       IsSupersetOf({std::pair(form.fields()[0].global_id(),
@@ -546,9 +514,6 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
-  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
-                               kActorFormFillingSuccessForMetrics,
-                               histogram_tester);
 }
 
 // Tests that a `CONTACT_INFORMATION` request on a mixed form still fills all
@@ -570,11 +535,8 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
                       FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Expect that all fields, including address fields, are filled.
   EXPECT_THAT(
@@ -610,11 +572,8 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
                             ActorFormFillingRequest::RequestedData::
                                 FormFillingRequest_RequestedData_ADDRESS)));
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Everything should be filled.
   EXPECT_THAT(last_filled_values(),
@@ -657,13 +616,10 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
 
   // Mock out the user having selected profile #2 for the contact part, and
   // profile #1 for the address part.
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(),
-      {ActorFormFillingSelection(requests[0].suggestions[1].id),
-       ActorFormFillingSelection(requests[1].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[1].id));
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[1].suggestions[0].id));
 
   // Verify that fields were filled accordingly; Name and Email with profile
   // #2, and the address fields with profile #1.
@@ -770,11 +726,8 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
                       FormFillingRequest_RequestedData_ADDRESS))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(last_filled_values(),
               IsSupersetOf({std::pair(form_1_trigger_id,
                                       GetFillValue(GetProfile1(), NAME_FIRST)),
@@ -804,21 +757,15 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
                       FormFillingRequest_RequestedData_CREDIT_CARD))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  EXPECT_THAT(fill_future.Get(), HasValue());
   EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(card, CREDIT_CARD_NAME_FULL))));
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
-  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/true,
-                               kActorFormFillingSuccessForMetrics,
-                               histogram_tester);
 }
 
 // Tests that our suggestion generation simulates triggering on the credit card
@@ -945,6 +892,7 @@ TEST_F(ActorFormFillingServiceTest, CreditCardFormWithCardArtIcon) {
                   &ActorFormFillingRequest::suggestions,
                   Each(ActorSuggestionIconEquals(std::move(test_image)))))));
 }
+
 // Tests that filling a credit card after fetching it from the server works.
 TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
   const CreditCard card = test::GetMaskedServerCard();
@@ -964,21 +912,21 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
                       FormFillingRequest_RequestedData_CREDIT_CARD))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  // Now we notify observers that a credit card fetch was started.
+  using Observer = CreditCardAccessManager::Observer;
+  test_api(credit_card_access_manager())
+      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
 
-  ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(2));
-  task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(fill_future.IsReady());
-
-  // Now we notify observers that a credit card fetch was started.
-  using Observer = CreditCardAccessManager::Observer;
-  test_api(credit_card_access_manager())
-      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+  ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(1));
   task_environment()->FastForwardBy(ActorFillingObserver::GetMaximumTimeout() -
-                                    base::Seconds(2));
+                                    base::Seconds(1));
   EXPECT_FALSE(fill_future.IsReady());
 
   // Simulate successful fetching.
@@ -1015,6 +963,14 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
                       FormFillingRequest_RequestedData_CREDIT_CARD))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  // Now we notify observers that a credit card fetch was started.
+  test_api(credit_card_access_manager())
+      .NotifyObservers(
+          &CreditCardAccessManager::Observer::OnCreditCardFetchStarted, card);
+
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
@@ -1023,11 +979,6 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
   ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(2));
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(fill_future.IsReady());
-
-  // Now we notify observers that a credit card fetch was started.
-  test_api(credit_card_access_manager())
-      .NotifyObservers(
-          &CreditCardAccessManager::Observer::OnCreditCardFetchStarted, card);
   task_environment()->FastForwardBy(ActorFillingObserver::GetMaximumTimeout() -
                                     base::Seconds(2));
   EXPECT_FALSE(fill_future.IsReady());
@@ -1039,49 +990,16 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
-  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/true,
-                               ActorFormFillingError::kNoForm,
-                               histogram_tester);
 }
 
 // Tests that a `kOther` error is returned if an invalid suggestion id is passed
 // for filling.
 TEST_F(ActorFormFillingServiceTest, FillWithInvalidSuggestionId) {
   FillSuggestionsFuture fill_future;
-  service().FillSuggestions(tab(),
-                            {ActorFormFillingSelection(ActorSuggestionId(123))},
-                            fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kOther));
-}
-
-// Tests that a `kOther` error is returned if an invalid suggestion id is passed
-// for filling.
-TEST_F(ActorFormFillingServiceTest, FillButFormIsGone) {
-  base::HistogramTester histogram_tester;
-  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
-                                      {.server_type = ADDRESS_HOME_LINE1},
-                                      {.server_type = ADDRESS_HOME_CITY}}});
-
-  GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
-                           {AddressFillRequest({form.fields()[0].global_id()})},
-                           future.GetCallback());
-  EXPECT_THAT(future.Get(), ValueIs(SizeIs(1)));
-
-  manager().OnFormsSeen(/*updated_forms=*/{},
-                        /*removed_forms=*/{form.global_id()});
-  std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
-
-  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
-                              histogram_tester);
-  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
-                               ActorFormFillingError::kNoForm,
-                               histogram_tester);
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(ActorSuggestionId(123)));
+  EXPECT_THAT(test_api(service()).FillingErrors(),
+              ElementsAre(ActorFormFillingError::kOther));
 }
 
 // Tests that suggestions are generated and filled if the trigger field is a
@@ -1108,11 +1026,8 @@ TEST_F(ActorFormFillingServiceTest, TriggerOnSelect) {
 
   std::vector<ActorFormFillingRequest> requests = request_future.Take().value();
   ASSERT_THAT(requests, Not(IsEmpty()));
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(last_filled_values(),
               Contains(Pair(form.fields()[0].global_id(), u"US")));
 }
@@ -1272,11 +1187,8 @@ TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_AddressFilled) {
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectUniqueSample(
@@ -1322,12 +1234,9 @@ TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_CreditCardFilled) {
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  EXPECT_THAT(fill_future.Get(), HasValue());
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectUniqueSample(
@@ -1347,11 +1256,8 @@ TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_AddressCorrect) {
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate all fields being submitted as autofilled (unchanged).
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1379,11 +1285,8 @@ TEST_F(ActorFormFillingServiceTest,
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate one field being modified.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1414,12 +1317,9 @@ TEST_F(ActorFormFillingServiceTest,
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  EXPECT_THAT(fill_future.Get(), HasValue());
 
   // Simulate all fields being submitted as autofilled.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1449,12 +1349,9 @@ TEST_F(ActorFormFillingServiceTest,
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  EXPECT_THAT(fill_future.Get(), HasValue());
 
   // Simulate one field being modified.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1487,11 +1384,9 @@ TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_MixedForm) {
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
-  FillSuggestionsFuture addr_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      addr_fill_future.GetCallback());
-  EXPECT_THAT(addr_fill_future.Get(), HasValue());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
@@ -1499,12 +1394,10 @@ TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_MixedForm) {
       tab(), {CreditCardFillRequest({form.fields()[2].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
-  FillSuggestionsFuture cc_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      cc_fill_future.GetCallback());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  EXPECT_THAT(cc_fill_future.Get(), HasValue());
 
   // Simulate address being modified, but CC remains unchanged.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1538,11 +1431,8 @@ TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_PartialFilling) {
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Verify that only the NAME_FULL field was filled by the actor.
   EXPECT_THAT(last_filled_values(),
@@ -1586,11 +1476,8 @@ TEST_F(ActorFormFillingServiceTest,
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  EXPECT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectUniqueSample(
@@ -1688,11 +1575,8 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_Address_Perfect) {
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  ASSERT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate perfect filling (no user edits).
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1719,11 +1603,8 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_Address_Imperfect) {
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  ASSERT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate imperfect filling (user edit).
   manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
@@ -1756,12 +1637,9 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_CreditCard_Perfect) {
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate perfect filling.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1790,12 +1668,9 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_CreditCard_Imperfect) {
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate imperfect filling.
   manager().OnTextFieldValueChanged(form, form.fields()[1].global_id(),
@@ -1827,11 +1702,9 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_MixedForm_Perfect) {
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
-  FillSuggestionsFuture addr_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      addr_fill_future.GetCallback());
-  ASSERT_THAT(addr_fill_future.Get(), HasValue());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
@@ -1839,12 +1712,10 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_MixedForm_Perfect) {
       tab(), {CreditCardFillRequest({form.fields()[1].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
-  FillSuggestionsFuture cc_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      cc_fill_future.GetCallback());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  ASSERT_THAT(cc_fill_future.Get(), HasValue());
 
   // Perfect filling.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1876,11 +1747,9 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_MixedForm_Imperfect) {
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
-  FillSuggestionsFuture addr_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      addr_fill_future.GetCallback());
-  ASSERT_THAT(addr_fill_future.Get(), HasValue());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
@@ -1888,12 +1757,10 @@ TEST_F(ActorFormFillingServiceTest, PerfectFilling_MixedForm_Imperfect) {
       tab(), {CreditCardFillRequest({form.fields()[1].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
-  FillSuggestionsFuture cc_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      cc_fill_future.GetCallback());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
-  ASSERT_THAT(cc_fill_future.Get(), HasValue());
 
   // Imperfect filling (address field edited).
   manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
@@ -1929,11 +1796,8 @@ TEST_F(ActorFormFillingServiceTest,
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  ASSERT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate submission.
   std::vector<FormFieldData> fields = form.ExtractFields();
@@ -1970,11 +1834,9 @@ TEST_F(ActorFormFillingServiceTest,
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
-  FillSuggestionsFuture addr_fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      addr_fill_future.GetCallback());
-  ASSERT_THAT(addr_fill_future.Get(), HasValue());
+  service().FillForm(
+      tab(), /*form_index=*/0,
+      ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
 
   // Manually add the kAutofill modifier to the cached field to perfectly
   // simulate standard Autofill stepping in where the Actor left off.
@@ -2013,11 +1875,8 @@ TEST_F(ActorFormFillingServiceTest,
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  FillSuggestionsFuture fill_future;
-  service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
-  ASSERT_THAT(fill_future.Get(), HasValue());
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Simulate submission. The actor fields are marked as autofilled.
   // The UNKNOWN_TYPE field is completely untouched (empty modifiers).

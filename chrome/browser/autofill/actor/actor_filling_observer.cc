@@ -22,20 +22,11 @@
 
 namespace autofill {
 
-ActorFillingObserver::ActorFillingObserver(
-    AutofillClient& autofill_client,
-    base::span<const FieldGlobalId> field_ids,
-    Callback callback)
-    : remaining_field_ids_(field_ids.begin(), field_ids.end()),
-      callback_(std::move(callback)) {
+ActorFillingObserver::ActorFillingObserver(AutofillClient& autofill_client) {
   autofill_managers_observation_.Observe(
       &autofill_client, ScopedAutofillManagersObservation::
                             InitializationPolicy::kObservePreexistingManagers);
   credit_card_access_managers_observation_.Observe(&autofill_client);
-  // If `remaining_field_ids_` is empty, this will stop the observation and
-  // execute `callback_`.
-  FinalizeIfComplete();
-  UpdateTimeout();
 }
 
 ActorFillingObserver::~ActorFillingObserver() {
@@ -57,6 +48,23 @@ std::optional<bool> ActorFillingObserver::IsCreditCardFetchOngoing() const {
     return std::nullopt;
   }
   return ongoing_credit_card_fetches_ > 0;
+}
+
+void ActorFillingObserver::ObserveNewFilling(
+    base::span<const FieldGlobalId> field_ids) {
+  for (FieldGlobalId field_id : field_ids) {
+    remaining_field_ids_.insert(field_id);
+  }
+}
+
+void ActorFillingObserver::Activate(Callback callback) {
+  callback_ = std::move(callback);
+  FinalizeIfComplete();
+  UpdateTimeout();
+
+  maximum_timeout_timer_.Start(FROM_HERE, GetMaximumTimeout(),
+                               base::BindRepeating(&ActorFillingObserver::Reset,
+                                                   base::Unretained(this)));
 }
 
 void ActorFillingObserver::OnFillOrPreviewForm(
@@ -104,7 +112,7 @@ void ActorFillingObserver::DecreaseOngoingCreditCardFetches() {
 }
 
 void ActorFillingObserver::FinalizeIfComplete() {
-  if (!remaining_field_ids_.empty()) {
+  if (!remaining_field_ids_.empty() || callback_.is_null()) {
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -129,14 +137,18 @@ void ActorFillingObserver::Reset() {
 }
 
 void ActorFillingObserver::UpdateTimeout() {
-  if (IsCreditCardFetchOngoing().value_or(false)) {
-    timeout_timer_.Stop();
+  if (!callback_) {
     return;
   }
-  if (!timeout_timer_.IsRunning()) {
-    timeout_timer_.Start(FROM_HERE, GetFillingTimeout(),
-                         base::BindRepeating(&ActorFillingObserver::Reset,
-                                             base::Unretained(this)));
+  if (IsCreditCardFetchOngoing().value_or(false)) {
+    filling_timeout_timer_.Stop();
+    return;
+  }
+  if (!filling_timeout_timer_.IsRunning()) {
+    filling_timeout_timer_.Start(
+        FROM_HERE, GetFillingTimeout(),
+        base::BindRepeating(&ActorFillingObserver::Reset,
+                            base::Unretained(this)));
   }
 }
 
