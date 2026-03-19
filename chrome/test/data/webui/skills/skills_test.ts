@@ -44,7 +44,7 @@ suite('SkillsAppPage', function() {
 
     await browserProxy.handler.whenCalled('recordSkillsManagementAction')
         .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+          assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
           assertEquals(SkillsManagementAction.kPageOpened, args[1]);
         });
   });
@@ -56,28 +56,27 @@ suite('SkillsAppPage', function() {
 
     tabs[0]!.click();
     await microtasksFinished();
-    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
 
     tabs[1]!.click();
     await microtasksFinished();
-    assertEquals('/browse', CrRouter.getInstance().getPath());
+    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
   });
 
-  test('UndefinedRouteNavigatesToUserSkills', async function() {
+  test('UndefinedRouteNavigatesToBrowseSkills', async function() {
     navigateTo('/test');
     await microtasksFinished();
     const selectedTab =
         app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
-    assertEquals('chrome://skills/yourSkills', window.location.href);
+    assertEquals('chrome://skills/browse', window.location.href);
     assertEquals(
-        loadTimeData.getString('userSkillsTitle'),
+        loadTimeData.getString('browseSkillsTitle'),
         selectedTab!.querySelector('.name')!.textContent.trim());
   });
 
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
     browserProxy.handler.resetResolver('recordSkillsManagementAction');
     navigateTo('/browse');
-    await eventToPromise('iron-select', app.$.menu);
     assertEquals('chrome://skills/browse', window.location.href);
     await microtasksFinished();
     const selectedTab =
@@ -137,8 +136,8 @@ suite('SkillsAppPage', function() {
 
     const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
         '.cr-nav-menu-item');
-    const userSkillsTab = tabs[0]!;
-    const discoverSkillsTab = tabs[1]!;
+    const discoverSkillsTab = tabs[0]!;
+    const userSkillsTab = tabs[1]!;
 
     discoverSkillsTab.click();
     await microtasksFinished();
