@@ -22,9 +22,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -256,21 +253,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
 
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
-
-  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandOrganizeTabs));
-
-  // Execute CommandOrganizeTabs once. Expect a request to have been started.
-  tab_strip_model->ExecuteContextMenuCommand(
-      0, TabStripModel::CommandOrganizeTabs);
-
-  TabOrganizationService* const service =
-      TabOrganizationServiceFactory::GetForProfile(browser()->profile());
-  const TabOrganizationSession* const session =
-      service->GetSessionForBrowser(browser());
-  EXPECT_NE(session, nullptr);
-  EXPECT_EQ(session->request()->state(),
-            TabOrganizationRequest::State::NOT_STARTED);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,

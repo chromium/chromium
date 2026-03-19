@@ -769,7 +769,6 @@ class TabStripModel {
     CommandRemoveFromGroup,
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,
-    CommandOrganizeTabs,
     CommandCopyURL,
     CommandGoBack,
     CommandCloseAllTabs,

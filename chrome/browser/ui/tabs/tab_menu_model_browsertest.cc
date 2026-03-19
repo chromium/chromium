@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
@@ -54,13 +53,6 @@
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
-  TabMenuModelBrowserTest() {
-    // Enable tab organization before KeyedServices are instantiated, otherwise
-    // TabOrganizationServiceFactory::GetForProfile() will return nullptr.
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
-    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-  }
-
   Profile* profile() { return browser()->profile(); }
 
   void ActivateSwapWithSplitSubmenuCommand(
@@ -97,17 +89,6 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
   EXPECT_GT(item_count, 0);
   EXPECT_EQ(item_count, delegate_.execute_count_);
   EXPECT_EQ(item_count, delegate_.enable_count_);
-}
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, OrganizeTabs) {
-  chrome::NewTab(browser());
-  TabMenuModel model(&delegate_,
-                     browser()->GetFeatures().tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-
-  // Verify that CommandOrganizeTabs is in the menu.
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandOrganizeTabs)
-                  .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MoveToNewWindow) {

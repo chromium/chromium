@@ -73,8 +73,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -990,9 +988,8 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  // Tablet mode does not have a Tab Search button, so tab organization is
-  // unavailable. We should not show tablet mode users these menu
-  // items.
+  // Tablet mode does not have a Tab Search button. We should not show tablet
+  // mode users these menu items.
   bool is_tablet_mode = false;
 #if BUILDFLAG(IS_CHROMEOS)
   is_tablet_mode = display::Screen::Get()->InTabletMode();

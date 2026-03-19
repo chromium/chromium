@@ -17,9 +17,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -78,12 +75,6 @@ TabSearchBubbleHost::TabSearchBubbleHost(
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
       })) {
-  auto* const tab_organization_service =
-      TabOrganizationServiceFactory::GetForProfile(profile_.get());
-  if (tab_organization_service) {
-    tab_organization_observation_.Observe(tab_organization_service);
-  }
-
   // LINT.IfChange(menu_button_controller)
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
       button,
@@ -145,24 +136,6 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
 
   for (auto& observer : observers_) {
     observer.OnBubbleDestroying();
-  }
-}
-
-void TabSearchBubbleHost::OnOrganizationAccepted(Browser* browser) {
-  if (browser != GetBrowser()) {
-    return;
-  }
-  // Don't show IPH if the user already has other tab groups.
-  if (browser->tab_strip_model()->group_model()->ListTabGroups().size() > 1) {
-    return;
-  }
-  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
-      feature_engagement::kIPHTabOrganizationSuccessFeature);
-}
-
-void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
-  if (browser == GetBrowser()) {
-    ShowTabSearchBubble(false);
   }
 }
 

@@ -98,9 +98,6 @@
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/new_tab_grouping_user_data.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -1931,13 +1928,6 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
   if (controller) {
     controller->ReshowBubble();
   }
-}
-
-void StartTabOrganizationRequest(Browser* browser) {
-  TabOrganizationService* service =
-      TabOrganizationServiceFactory::GetForProfile(browser->profile());
-
-  service->RestartSessionAndShowUI(browser);
 }
 
 void ShowTranslateBubble(BrowserWindowInterface* bwi) {

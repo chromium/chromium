@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -25,13 +24,11 @@ class Widget;
 
 class BrowserWindowInterface;
 class Profile;
-class TabOrganizationService;
 class TabSearchBubbleHostObserver;
 
 // TabSearchBubbleHost assumes responsibility for configuring its button,
 // showing / hiding the tab search bubble and handling metrics collection.
 class TabSearchBubbleHost : public views::WidgetObserver,
-                            public TabOrganizationObserver,
                             public WebUIBubbleManagerObserver {
  public:
   TabSearchBubbleHost(views::Button* button,
@@ -43,10 +40,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetDestroying(views::Widget* widget) override;
-
-  // TabOrganizationObserver:
-  void OnOrganizationAccepted(Browser* browser) override;
-  void OnUserInvokedFeature(const Browser* browser) override;
 
   // WebUIBubbleManagerObserver:
   void BeforeBubbleWidgetShowed(views::Widget* widget) override;
@@ -100,9 +93,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};
-
-  base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
-      tab_organization_observation_{this};
 
   base::ScopedObservation<WebUIBubbleManager, WebUIBubbleManagerObserver>
       webui_bubble_manager_observer_{this};

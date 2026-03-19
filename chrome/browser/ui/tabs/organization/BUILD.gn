@@ -11,8 +11,6 @@ source_set("organization") {
     "tab_organization.h",
     "tab_organization_observer.h",
     "tab_organization_request.h",
-    "tab_organization_service.h",
-    "tab_organization_service_factory.h",
     "tab_organization_session.h",
     "tab_organization_utils.h",
   ]
@@ -42,8 +40,6 @@ source_set("impl") {
     "tab_data.cc",
     "tab_organization.cc",
     "tab_organization_request.cc",
-    "tab_organization_service.cc",
-    "tab_organization_service_factory.cc",
     "tab_organization_session.cc",
     "tab_organization_utils.cc",
   ]
@@ -92,10 +88,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "tab_organization_service_unittest.cc",
-    "tab_organization_unittest.cc",
-  ]
+  sources = [ "tab_organization_unittest.cc" ]
   deps = [
     ":organization",
     "//base",
