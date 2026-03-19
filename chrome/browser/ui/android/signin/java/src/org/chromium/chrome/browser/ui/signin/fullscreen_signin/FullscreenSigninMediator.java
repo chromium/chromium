@@ -725,6 +725,7 @@ public class FullscreenSigninMediator
             mModel.set(
                     FullscreenSigninProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(mSelectedAccount.getEmail()));
+            mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, !mIsChild);
         }
     }
 
@@ -744,6 +745,7 @@ public class FullscreenSigninMediator
             mDefaultAccount = null;
             mSelectedAccount = null;
             mModel.set(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA, null);
+            mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, false);
             if (mDialogCoordinator != null) {
                 mDialogCoordinator.dismissDialog();
             }
@@ -773,6 +775,9 @@ public class FullscreenSigninMediator
             // Subtitle is hidden for child accounts.
             mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, null);
         }
+        mModel.set(
+                FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION,
+                !mIsChild && mSelectedAccount != null);
         updateShouldHideDismissButton();
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(

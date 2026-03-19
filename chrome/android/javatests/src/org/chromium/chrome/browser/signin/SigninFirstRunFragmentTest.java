@@ -1506,7 +1506,8 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void checkFragmentWhenSigninIsForcedByPolicy(String continueButtonText) {
-        waitForDisabledSelectedAccountView();
+        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_selected_account));
+        onView(withId(R.id.signin_fre_selected_account_expand_icon)).check(matches(isDisplayed()));
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         onView(

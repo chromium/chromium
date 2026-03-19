@@ -67,13 +67,13 @@ class FullscreenSigninViewBinder {
             updateTitleAndSubtitleVisibility(view, model);
             updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON) {
-            final boolean shouldHideDismissButton =
-                    model.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON);
-            // TODO(crbug.com/467707243): Support selecting from multiple accounts when signin is
-            // forced by policy.
-            view.getSelectedAccountView().setEnabled(!shouldHideDismissButton);
-
             updateBottomGroupVisibility(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION) {
+            final boolean enableAccountSelection =
+                    model.get(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION);
+            view.getExpandIconView()
+                    .setVisibility(enableAccountSelection ? View.VISIBLE : View.GONE);
+            view.getSelectedAccountView().setEnabled(enableAccountSelection);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
@@ -231,15 +231,8 @@ class FullscreenSigninViewBinder {
                         : View.GONE;
         view.getSelectedAccountView().setVisibility(selectedAccountVisibility);
 
-        // TODO(crbug.com/467707243): Support selecting from multiple accounts when signin is forced
-        // by policy.
         final boolean shouldHideDismissButton =
                 model.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON);
-        view.getExpandIconView()
-                .setVisibility(
-                        selectedAccountVisibility == View.VISIBLE && shouldHideDismissButton
-                                ? View.INVISIBLE
-                                : View.VISIBLE);
         final int dismissButtonVisibility =
                 showInitialLoadProgressSpinner
                                 || shouldHideDismissButton

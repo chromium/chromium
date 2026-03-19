@@ -55,6 +55,8 @@ class FullscreenSigninProperties {
 
     static final WritableBooleanPropertyKey SHOULD_HIDE_DISMISS_BUTTON =
             new WritableBooleanPropertyKey("should_hide_dismiss_button");
+    static final WritableBooleanPropertyKey ENABLE_ACCOUNT_SELECTION =
+            new WritableBooleanPropertyKey("enable_account_selection");
 
     // TODO(crbug.com/489365330): Consider replacing this property with view-scoped logic.
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
@@ -105,6 +107,7 @@ class FullscreenSigninProperties {
                 SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
                 SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 SHOULD_HIDE_DISMISS_BUTTON,
+                ENABLE_ACCOUNT_SELECTION,
                 IS_SIGNIN_SUPPORTED,
                 LOGO_DRAWABLE_ID,
                 PROFILE_PICTURE,
@@ -137,6 +140,7 @@ class FullscreenSigninProperties {
                 .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, showInitialLoadProgressSpinner)
                 .with(SHOW_ENTERPRISE_MANAGEMENT_NOTICE, false)
                 .with(SHOULD_HIDE_DISMISS_BUTTON, false)
+                .with(ENABLE_ACCOUNT_SELECTION, false)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
                 .with(LOGO_DRAWABLE_ID, logoDrawableId)
                 .with(TITLE_STRING, titleString)
