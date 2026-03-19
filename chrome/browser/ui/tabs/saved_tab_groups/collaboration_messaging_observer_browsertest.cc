@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
 
   views::View* attention_indicator_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          /*id=*/TabGroupHeader::kAttentionIndicatorViewElementId,
+          /*id=*/kTabGroupHeaderAttentionIndicatorElementId,
           /*context=*/views::ElementTrackerViews::GetContextForView(
               tab_group_header));
 

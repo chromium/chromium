@@ -136,6 +136,8 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
       delegate_(delegate),
       editor_bubble_tracker_(state_controller) {
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
+  attention_indicator_->SetProperty(views::kElementIdentifierKey,
+                                    kTabGroupHeaderAttentionIndicatorElementId);
   SetNotifyEnterExitOnChild(true);
 
   ConfigureEditorBubbleButton(editor_bubble_button_);

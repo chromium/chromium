@@ -189,7 +189,7 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
 
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
   attention_indicator_->SetProperty(views::kElementIdentifierKey,
-                                    kAttentionIndicatorViewElementId);
+                                    kTabGroupHeaderAttentionIndicatorElementId);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -828,9 +828,6 @@ void TabGroupHeader::UpdateAccessibleName() {
   }
   GetViewAccessibility().SetName(final_name);
 }
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
-                                      kAttentionIndicatorViewElementId);
 
 BEGIN_METADATA(TabGroupHeader)
 ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)

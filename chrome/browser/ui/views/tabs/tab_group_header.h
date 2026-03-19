@@ -47,8 +47,6 @@ class TabGroupHeader : public TabSlotView,
   METADATA_HEADER(TabGroupHeader, TabSlotView)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAttentionIndicatorViewElementId);
-
   TabGroupHeader(TabSlotController& tab_slot_controller,
                  const tab_groups::TabGroupId& group,
                  const TabGroupStyle& style);
