@@ -1972,6 +1972,7 @@ fuzzer_test("svg_path_parser_fuzzer") {
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "permissions_policy/feature_policy_fuzzer.cc" ]
   deps = [
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
@@ -1984,6 +1985,7 @@ fuzzer_test("feature_policy_fuzzer") {
 fuzzer_test("permissions_policy_attr_fuzzer") {
   sources = [ "permissions_policy/permissions_policy_attr_fuzzer.cc" ]
   deps = [
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
@@ -1996,6 +1998,7 @@ fuzzer_test("permissions_policy_attr_fuzzer") {
 fuzzer_test("document_policy_fuzzer") {
   sources = [ "permissions_policy/document_policy_fuzzer.cc" ]
   deps = [
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
@@ -2007,6 +2010,7 @@ fuzzer_test("document_policy_fuzzer") {
 fuzzer_test("permissions_policy_fuzzer") {
   sources = [ "permissions_policy/permissions_policy_fuzzer.cc" ]
   deps = [
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -17,16 +18,13 @@
 
 namespace blink {
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
-  // SAFETY: Just wraps the data from libFuzzer in a span.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
-
   FontDescription::VariantLigatures ligatures;
-  Font* math = test::CreateTestFont(AtomicString("MathTestFont"), data_span,
-                                    1000, &ligatures);
+  Font* math = test::CreateTestFont(AtomicString("MathTestFont"), data, 1000,
+                                    &ligatures);
 
   // HasMathData should be used by other API functions below for early return.
   // Explicitly call it here for exhaustivity, since it is fast anyway.
@@ -74,6 +72,3 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
 }  // namespace blink
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return blink::LLVMFuzzerTestOneInput(data, size);
-}

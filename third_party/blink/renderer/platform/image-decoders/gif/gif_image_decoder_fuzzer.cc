@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -27,13 +28,11 @@ std::unique_ptr<ImageDecoder> CreateGIFDecoder() {
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static BlinkFuzzerTestSupport test_support;
   test::TaskEnvironment task_environment;
 
-  // SAFETY: Just wrapping the input from libFuzzer in a span.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
-  auto buffer = SharedBuffer::Create(data_span);
+  auto buffer = SharedBuffer::Create(data);
   auto decoder = CreateGIFDecoder();
   const bool kAllDataReceived = true;
   decoder->SetData(buffer.get(), kAllDataReceived);

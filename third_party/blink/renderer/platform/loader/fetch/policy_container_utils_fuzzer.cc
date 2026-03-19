@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -16,23 +18,20 @@
 
 namespace blink {
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
-  // SAFETY: Making a span from the input provided by libFuzzer.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
-
   // We need two pieces of input: a URL and a CSP string. Split |data| in two at
   // the first whitespace.
-  auto it = std::ranges::find_if(data_span, [](uint8_t c) {
+  auto it = std::ranges::find_if(data, [](uint8_t c) {
     return base::IsAsciiWhitespace(static_cast<char>(c));
   });
-  if (it == data_span.end()) {
+  if (it == data.end()) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
-  const size_t url_length = it - data_span.begin();
+  const size_t url_length = it - data.begin();
   if (url_length > 250) {
     // Origins should not be too long. The origin of size 'N' is copied into 'M'
     // policies. The fuzzer can send an input of size N+M and use O(N*M) memory.
@@ -42,8 +41,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return EXIT_SUCCESS;
   }
 
-  String url(data_span.first(url_length));
-  String header(data_span.subspan(url_length + 1));
+  String url(data.first(url_length));
+  String header(data.subspan(url_length + 1));
   unsigned hash = header.IsNull() ? 0 : header.Impl()->GetHash();
 
   // Use the 'hash' value to pick header_type and header_source input.
@@ -81,6 +80,3 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
 }  // namespace blink
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return blink::LLVMFuzzerTestOneInput(data, size);
-}

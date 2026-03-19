@@ -336,6 +336,7 @@ source_set("test_support") {
 fuzzer_test("policy_container_utils_fuzzer") {
   sources = [ "fetch/policy_container_utils_fuzzer.cc" ]
   deps = [
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -13,22 +15,18 @@
 
 namespace blink {
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size > 4096)
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  if (data.size() > 4096) {
     return 0;
+  }
 
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   DummyExceptionStateForTesting exception_state;
-  // SAFETY: libfuzzer guarantees `data` ad `size` are safe.
-  auto* input = MakeGarbageCollected<V8URLPatternInput>(
-      String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size))));
+  auto* input = MakeGarbageCollected<V8URLPatternInput>(String::FromUTF8(data));
   URLPattern::Create(task_environment.isolate(), input, exception_state);
   return 0;
 }
 
 }  // namespace blink
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return blink::LLVMFuzzerTestOneInput(data, size);
-}

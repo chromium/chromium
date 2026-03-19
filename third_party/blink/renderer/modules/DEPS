@@ -56,7 +56,7 @@ specific_include_rules = {
         "+base/run_loop.h",
     ],
     ".*_fuzzer.cc": [
-        "+testing/libfuzzer/proto/lpm_interface.h",
+        "+testing/libfuzzer",
     ],
     ".*_(unit)?test\.cc": [
         "+base/run_loop.h",

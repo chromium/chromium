@@ -116,4 +116,7 @@ specific_include_rules = {
     "search_engine_utils.cc": [
         "+components/search_engines/search_engine_utils.h"
     ],
+    ".*_fuzzer.cc": [
+        "+testing/libfuzzer",
+    ],
 }

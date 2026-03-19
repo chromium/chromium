@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -14,7 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static blink::BlinkFuzzerTestSupport test_support =
       blink::BlinkFuzzerTestSupport();
   blink::test::TaskEnvironment task_environment;
@@ -24,9 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       blink::SecurityOrigin::CreateFromString("https://example.com/");
   scoped_refptr<const blink::SecurityOrigin> child_origin =
       blink::SecurityOrigin::CreateFromString("https://example.net/");
-  // SAFETY: Just make a span from the function arguments provided by libfuzzer.
   blink::PermissionsPolicyParser::ParseAttribute(
-      blink::String(UNSAFE_BUFFERS(base::span(data, size))), *parent_origin,
-      *child_origin, logger);
+      blink::String(data), *parent_origin, *child_origin, logger);
   return 0;
 }
