@@ -1203,6 +1203,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(
       return nullptr;
     }
 
+    bool isolation_location_dev_mode = location->dev_mode();
     auto isolation_data_builder =
         IsolationData::Builder(*std::move(location), *std::move(iwa_version));
 
@@ -1226,7 +1227,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(
             << pending_location.error();
         return nullptr;
       }
-      if (pending_location->dev_mode() != location->dev_mode()) {
+      if (pending_location->dev_mode() != isolation_location_dev_mode) {
         RecordProtoParseResult(
             ProtoParseResult::kDevModeMismatchInIsolationData);
         DLOG(ERROR) << "WebApp proto isolation_data.pending_update_info "
