@@ -185,7 +185,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // state.
   void RecreateWebUIWrapper();
 
-  // Artitficially sets the time when the user entered a page for testing the
+  // Artificially sets the time when the user entered a page for testing the
   // omnibox entry point.
   void SetDwellTimeForTesting(base::TimeTicks test_time);
 
