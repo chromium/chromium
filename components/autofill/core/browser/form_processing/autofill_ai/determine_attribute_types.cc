@@ -46,7 +46,7 @@ static_assert(!kNonInjectiveFieldTypes.contains_any(
 static_assert(!kNonInjectiveFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
-// Checks that AttributeType::field_type() is mostly injective:
+// AttributeType::field_type() must be mostly injective.
 // distinct AttributeTypes other than those having field_type() in
 // `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
 consteval bool IsMostlyInjective() {

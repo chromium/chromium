@@ -332,8 +332,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
-    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
-    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
     case FieldType::NAME_SUFFIX:
     case FieldType::MERCHANT_EMAIL_SIGNUP:
@@ -371,10 +369,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::ORDER_ID:
     case FieldType::ORDER_DATE:
     case FieldType::ORDER_MERCHANT_NAME:
-    case FieldType::ORDER_MERCHANT_DOMAIN:
-    case FieldType::ORDER_PRODUCT_NAMES:
-    case FieldType::ORDER_ACCOUNT:
-    case FieldType::ORDER_GRAND_TOTAL:
     case FieldType::MAX_VALID_FIELD_TYPE:
       LOG(ERROR) << "The field created by " << __func__ << "("
                  << FieldTypeToStringView(role)
@@ -485,8 +479,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
-    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
-    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
     case FieldType::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
     case FieldType::NAME_SUFFIX:
@@ -524,10 +516,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::ORDER_ID:
     case FieldType::ORDER_DATE:
     case FieldType::ORDER_MERCHANT_NAME:
-    case FieldType::ORDER_MERCHANT_DOMAIN:
-    case FieldType::ORDER_PRODUCT_NAMES:
-    case FieldType::ORDER_ACCOUNT:
-    case FieldType::ORDER_GRAND_TOTAL:
     case FieldType::MAX_VALID_FIELD_TYPE:
       LOG(ERROR) << "The field created by " << __func__ << "("
                  << FieldTypeToStringView(role)

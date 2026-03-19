@@ -228,9 +228,9 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
     case AttributeTypeName::kFlightReservationConfirmationCode:
       return FLIGHT_RESERVATION_CONFIRMATION_CODE;
     case AttributeTypeName::kFlightReservationDepartureAirport:
-      return FLIGHT_RESERVATION_DEPARTURE_AIRPORT;
+      return std::nullopt;
     case AttributeTypeName::kFlightReservationArrivalAirport:
-      return FLIGHT_RESERVATION_ARRIVAL_AIRPORT;
+      return std::nullopt;
     case AttributeTypeName::kFlightReservationDepartureDate:
       return FLIGHT_RESERVATION_DEPARTURE_DATE;
 
@@ -253,19 +253,19 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
       return NATIONAL_ID_CARD_EXPIRATION_DATE;
 
     case AttributeTypeName::kOrderAccount:
-      return ORDER_ACCOUNT;
+      return std::nullopt;
     case AttributeTypeName::kOrderDate:
       return ORDER_DATE;
     case AttributeTypeName::kOrderGrandTotal:
-      return ORDER_GRAND_TOTAL;
+      return std::nullopt;
     case AttributeTypeName::kOrderId:
       return ORDER_ID;
     case AttributeTypeName::kOrderMerchantDomain:
-      return ORDER_MERCHANT_DOMAIN;
+      return std::nullopt;
     case AttributeTypeName::kOrderMerchantName:
       return ORDER_MERCHANT_NAME;
     case AttributeTypeName::kOrderProductNames:
-      return ORDER_PRODUCT_NAMES;
+      return std::nullopt;
 
     case AttributeTypeName::kPassportName:
       return NAME_FULL;

@@ -1364,16 +1364,6 @@ Called by update_autofill_enums.py.-->
              autofilled value edited"/>
   <int value="12993"
       label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Autofilled value accepted"/>
-  <int value="13056"
-      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Not autofilled or
-             autofilled value edited"/>
-  <int value="13057"
-      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Autofilled value accepted"/>
-  <int value="13120"
-      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Not autofilled or autofilled
-             value edited"/>
-  <int value="13121"
-      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Autofilled value accepted"/>
   <int value="13184"
       label="FLIGHT_RESERVATION_DEPARTURE_DATE: Not autofilled or autofilled
              value edited"/>
@@ -1393,18 +1383,6 @@ Called by update_autofill_enums.py.-->
   <int value="13440"
       label="ORDER_MERCHANT_NAME: Not autofilled or autofilled value edited"/>
   <int value="13441" label="ORDER_MERCHANT_NAME: Autofilled value accepted"/>
-  <int value="13504"
-      label="ORDER_MERCHANT_DOMAIN: Not autofilled or autofilled value edited"/>
-  <int value="13505" label="ORDER_MERCHANT_DOMAIN: Autofilled value accepted"/>
-  <int value="13568"
-      label="ORDER_PRODUCT_NAMES: Not autofilled or autofilled value edited"/>
-  <int value="13569" label="ORDER_PRODUCT_NAMES: Autofilled value accepted"/>
-  <int value="13632"
-      label="ORDER_ACCOUNT: Not autofilled or autofilled value edited"/>
-  <int value="13633" label="ORDER_ACCOUNT: Autofilled value accepted"/>
-  <int value="13696"
-      label="ORDER_GRAND_TOTAL: Not autofilled or autofilled value edited"/>
-  <int value="13697" label="ORDER_GRAND_TOTAL: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -1694,10 +1672,6 @@ Called by update_autofill_enums.py.-->
   <int value="3233" label="ADDRESS_HOME_ZIP_SUFFIX: accepted"/>
   <int value="3248" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: edited"/>
   <int value="3249" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: accepted"/>
-  <int value="3264" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: edited"/>
-  <int value="3265" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: accepted"/>
-  <int value="3280" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: edited"/>
-  <int value="3281" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: accepted"/>
   <int value="3296" label="FLIGHT_RESERVATION_DEPARTURE_DATE: edited"/>
   <int value="3297" label="FLIGHT_RESERVATION_DEPARTURE_DATE: accepted"/>
   <int value="3312" label="ADDRESS_HOME_ZIP_AND_CITY: edited"/>
@@ -1708,14 +1682,6 @@ Called by update_autofill_enums.py.-->
   <int value="3345" label="ORDER_DATE: accepted"/>
   <int value="3360" label="ORDER_MERCHANT_NAME: edited"/>
   <int value="3361" label="ORDER_MERCHANT_NAME: accepted"/>
-  <int value="3376" label="ORDER_MERCHANT_DOMAIN: edited"/>
-  <int value="3377" label="ORDER_MERCHANT_DOMAIN: accepted"/>
-  <int value="3392" label="ORDER_PRODUCT_NAMES: edited"/>
-  <int value="3393" label="ORDER_PRODUCT_NAMES: accepted"/>
-  <int value="3408" label="ORDER_ACCOUNT: edited"/>
-  <int value="3409" label="ORDER_ACCOUNT: accepted"/>
-  <int value="3424" label="ORDER_GRAND_TOTAL: edited"/>
-  <int value="3425" label="ORDER_GRAND_TOTAL: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2604,17 +2570,11 @@ Called by update_autofill_enums.py.-->
   <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
   <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
   <int value="203" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
-  <int value="204" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
-  <int value="205" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
   <int value="206" label="FLIGHT_RESERVATION_DEPARTURE_DATE"/>
   <int value="207" label="ADDRESS_HOME_ZIP_AND_CITY"/>
   <int value="208" label="ORDER_ID"/>
   <int value="209" label="ORDER_DATE"/>
   <int value="210" label="ORDER_MERCHANT_NAME"/>
-  <int value="211" label="ORDER_MERCHANT_DOMAIN"/>
-  <int value="212" label="ORDER_PRODUCT_NAMES"/>
-  <int value="213" label="ORDER_ACCOUNT"/>
-  <int value="214" label="ORDER_GRAND_TOTAL"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -5109,10 +5069,6 @@ Called by update_autofill_enums.py.-->
   <int value="809" label="ADDRESS_HOME_ZIP_SUFFIX: Accepted"/>
   <int value="812" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Ignored"/>
   <int value="813" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Accepted"/>
-  <int value="816" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Ignored"/>
-  <int value="817" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Accepted"/>
-  <int value="820" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Ignored"/>
-  <int value="821" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Accepted"/>
   <int value="824" label="FLIGHT_RESERVATION_DEPARTURE_DATE: Ignored"/>
   <int value="825" label="FLIGHT_RESERVATION_DEPARTURE_DATE: Accepted"/>
   <int value="828" label="ADDRESS_HOME_ZIP_AND_CITY: Ignored"/>
@@ -5123,14 +5079,6 @@ Called by update_autofill_enums.py.-->
   <int value="837" label="ORDER_DATE: Accepted"/>
   <int value="840" label="ORDER_MERCHANT_NAME: Ignored"/>
   <int value="841" label="ORDER_MERCHANT_NAME: Accepted"/>
-  <int value="844" label="ORDER_MERCHANT_DOMAIN: Ignored"/>
-  <int value="845" label="ORDER_MERCHANT_DOMAIN: Accepted"/>
-  <int value="848" label="ORDER_PRODUCT_NAMES: Ignored"/>
-  <int value="849" label="ORDER_PRODUCT_NAMES: Accepted"/>
-  <int value="852" label="ORDER_ACCOUNT: Ignored"/>
-  <int value="853" label="ORDER_ACCOUNT: Accepted"/>
-  <int value="856" label="ORDER_GRAND_TOTAL: Ignored"/>
-  <int value="857" label="ORDER_GRAND_TOTAL: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

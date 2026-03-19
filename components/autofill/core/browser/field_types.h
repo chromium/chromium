@@ -547,8 +547,10 @@ enum FieldType {
   FLIGHT_RESERVATION_FLIGHT_NUMBER = 198,
   FLIGHT_RESERVATION_CONFIRMATION_CODE = 199,
   FLIGHT_RESERVATION_TICKET_NUMBER = 200,
-  FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
-  FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
+  // The following two types were never predicted by the Autofill server.
+  // The numeric values may therefore be recycled:
+  // FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
+  // FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
   FLIGHT_RESERVATION_DEPARTURE_DATE = 206,
 
   // Combination of types ADDRESS_HOME_ZIP and ADDRESS_HOME_CITY.
@@ -561,10 +563,12 @@ enum FieldType {
   ORDER_ID = 208,
   ORDER_DATE = 209,
   ORDER_MERCHANT_NAME = 210,
-  ORDER_MERCHANT_DOMAIN = 211,
-  ORDER_PRODUCT_NAMES = 212,
-  ORDER_ACCOUNT = 213,
-  ORDER_GRAND_TOTAL = 214,
+  // The following two types were never predicted by the Autofill server.
+  // The numeric values may therefore be recycled:
+  // ORDER_MERCHANT_DOMAIN = 211,
+  // ORDER_PRODUCT_NAMES = 212,
+  // ORDER_ACCOUNT = 213,
+  // ORDER_GRAND_TOTAL = 214,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -711,7 +715,11 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            (187 <= t && t <= 188) ||
            // Types for date of birth and gender are not used yet, but will
            // likely be added in the future.
-           (196 <= t && t <= 197);
+           (196 <= t && t <= 197) ||
+           // Unused Forms AI types: These types were never predicted by the
+           // Autofill server and never used. They may be recycled in the
+           // future.
+           (204 <= t && t <= 205) || (211 <= t && t <= 214);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);  // nocheck
@@ -853,16 +861,10 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FLIGHT_RESERVATION_TICKET_NUMBER:
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
-    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
-    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FLIGHT_RESERVATION_DEPARTURE_DATE:
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
-    case ORDER_MERCHANT_DOMAIN:
-    case ORDER_PRODUCT_NAMES:
-    case ORDER_ACCOUNT:
-    case ORDER_GRAND_TOTAL:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:

@@ -546,9 +546,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="EMAIL_ADDRESS"/>
   <variant name="EMAIL_OR_LOYALTY_MEMBERSHIP_ID"/>
   <variant name="EMPTY_TYPE"/>
-  <variant name="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
   <variant name="FLIGHT_RESERVATION_CONFIRMATION_CODE"/>
-  <variant name="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
   <variant name="FLIGHT_RESERVATION_DEPARTURE_DATE"/>
   <variant name="FLIGHT_RESERVATION_FLIGHT_NUMBER"/>
   <variant name="FLIGHT_RESERVATION_TICKET_NUMBER"/>
@@ -584,13 +582,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NOT_USERNAME"/>
   <variant name="NUMERIC_QUANTITY"/>
   <variant name="ONE_TIME_CODE"/>
-  <variant name="ORDER_ACCOUNT"/>
   <variant name="ORDER_DATE"/>
-  <variant name="ORDER_GRAND_TOTAL"/>
   <variant name="ORDER_ID"/>
-  <variant name="ORDER_MERCHANT_DOMAIN"/>
   <variant name="ORDER_MERCHANT_NAME"/>
-  <variant name="ORDER_PRODUCT_NAMES"/>
   <variant name="PASSPORT_EXPIRATION_DATE"/>
   <variant name="PASSPORT_ISSUE_DATE"/>
   <variant name="PASSPORT_ISSUING_COUNTRY"/>

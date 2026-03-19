@@ -272,16 +272,10 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case autofill::FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case autofill::FLIGHT_RESERVATION_TICKET_NUMBER:
-    case autofill::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
-    case autofill::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case autofill::FLIGHT_RESERVATION_DEPARTURE_DATE:
     case autofill::ORDER_ID:
     case autofill::ORDER_DATE:
     case autofill::ORDER_MERCHANT_NAME:
-    case autofill::ORDER_MERCHANT_DOMAIN:
-    case autofill::ORDER_PRODUCT_NAMES:
-    case autofill::ORDER_ACCOUNT:
-    case autofill::ORDER_GRAND_TOTAL:
       return AutofillFieldRedactionReason::kNoRedactionNeeded;
 
     // These cases are not produced by field classification, but have to be
