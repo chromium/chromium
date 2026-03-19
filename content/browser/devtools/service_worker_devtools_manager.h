@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
@@ -52,7 +53,7 @@ class ServiceWorkerDevToolsManager {
       delete;
 
   ServiceWorkerDevToolsAgentHost* GetDevToolsAgentHostForWorker(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id);
   ServiceWorkerDevToolsAgentHost* GetDevToolsAgentHostForNewInstallingWorker(
       const ServiceWorkerContextWrapper* context_wrapper,
@@ -84,7 +85,7 @@ class ServiceWorkerDevToolsManager {
   //
   // `client_security_state` may be nullptr.
   void WorkerStarting(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id,
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int64_t version_id,
@@ -99,33 +100,34 @@ class ServiceWorkerDevToolsManager {
       base::UnguessableToken* devtools_worker_token,
       bool* pause_on_start);
   void WorkerReadyForInspection(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id,
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
 
-  void WorkerVersionInstalled(int worker_process_id, int worker_route_id);
+  void WorkerVersionInstalled(ChildProcessId worker_process_id,
+                              int worker_route_id);
   // If the worker instance is stopped its worker_process_id and
   // worker_route_id will be invalid. For that case we pass context
   // and version_id as well.
   void WorkerVersionDoomed(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id,
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int64_t version_id);
-  void WorkerStopped(int worker_process_id, int worker_route_id);
-  void NavigationPreloadRequestSent(int worker_process_id,
+  void WorkerStopped(ChildProcessId worker_process_id, int worker_route_id);
+  void NavigationPreloadRequestSent(ChildProcessId worker_process_id,
                                     int worker_route_id,
                                     const std::string& request_id,
                                     const network::ResourceRequest& request);
   void NavigationPreloadResponseReceived(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id,
       const std::string& request_id,
       const GURL& url,
       const network::mojom::URLResponseHead& head);
   void NavigationPreloadCompleted(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       int worker_route_id,
       const std::string& request_id,
       const network::URLLoaderCompletionStatus& status);
@@ -143,7 +145,7 @@ class ServiceWorkerDevToolsManager {
   friend class base::NoDestructor<ServiceWorkerDevToolsManager>;
   friend class ServiceWorkerDevToolsAgentHost;
 
-  using WorkerId = std::pair<int, int>;
+  using WorkerId = std::pair<ChildProcessId, int>;
 
   ServiceWorkerDevToolsManager();
   ~ServiceWorkerDevToolsManager();

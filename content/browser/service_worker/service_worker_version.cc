@@ -465,12 +465,10 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   if (router_evaluator_) {
     router_rules = router_evaluator_->ToString();
   }
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   ServiceWorkerVersionInfo info(
       running_status(), status(), fetch_handler_type_,
       navigation_preload_state_, script_url(), scope(), key(),
-      registration_id(), version_id(),
-      ChildProcessId::FromUnsafeValue(embedded_worker()->process_id()),
+      registration_id(), version_id(), embedded_worker()->process_id(),
       embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
       ancestor_frame_type_, router_rules);
@@ -1242,7 +1240,7 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
 
   // If we have allocated the process we can tell the client to register
   // services.
-  if (embedded_worker()->process_id() != ChildProcessHost::kInvalidUniqueID) {
+  if (embedded_worker()->process_id()) {
     GetContentClient()
         ->browser()
         ->RegisterAssociatedInterfaceBindersForServiceWorker(
@@ -1939,8 +1937,9 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   // possible to receive such requests since the renderer-side checks are
   // slightly different. For example, the view-source scheme will not be
   // filtered out by Blink.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
-          embedded_worker_->process_id(), url)) {
+          embedded_worker_->process_id().GetUnsafeValue(), url)) {
     std::move(callback).Run(
         false /* success */, nullptr /* client */,
         "The service worker is not allowed to access URL: " + url.spec());
@@ -2098,16 +2097,18 @@ void ServiceWorkerVersion::OpenWindow(
   // possible to receive such requests since the renderer-side checks are
   // slightly different. For example, the view-source scheme will not be
   // filtered out by Blink.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
-          embedded_worker_->process_id(), url)) {
+          embedded_worker_->process_id().GetUnsafeValue(), url)) {
     std::move(callback).Run(false /* success */, nullptr /* client */,
                             url.spec() + " cannot be opened.");
     return;
   }
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   service_worker_client_utils::OpenWindow(
       url, script_url_, key_, embedded_worker_->embedded_worker_id(),
-      embedded_worker_->process_id(), context_, type,
+      embedded_worker_->process_id().GetUnsafeValue(), context_, type,
       base::BindOnce(&OnOpenWindowFinished, std::move(callback)));
 
   NotifyWindowOpened(script_url_, url);

@@ -54,9 +54,10 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
         blink::mojom::ScriptType::kClassic);
     DCHECK(version_);
 
-    worker_host_ = CreateServiceWorkerHost(helper_->mock_render_process_id(),
-                                           true /* is_parent_frame_secure */,
-                                           *version_, context->AsWeakPtr());
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    worker_host_ = CreateServiceWorkerHost(
+        helper_->mock_render_process_id().GetUnsafeValue(),
+        true /* is_parent_frame_secure */, *version_, context->AsWeakPtr());
 
     factory_ = std::make_unique<ServiceWorkerScriptLoaderFactory>(
         helper_->context()->AsWeakPtr(), worker_host_->GetWeakPtr(),

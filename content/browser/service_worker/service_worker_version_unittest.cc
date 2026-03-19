@@ -198,12 +198,12 @@ class ServiceWorkerVersionTest
       bool in_different_process = false) {
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
-    int controllee_process_id = ChildProcessHost::kInvalidUniqueID;
+    ChildProcessId controllee_process_id;
 
     if (in_different_process) {
       auto client_render_process_host =
           std::make_unique<MockRenderProcessHost>(helper_->browser_context());
-      controllee_process_id = client_render_process_host->GetDeprecatedID();
+      controllee_process_id = client_render_process_host->GetID();
       client_render_process_hosts_.push_back(
           std::move(client_render_process_host));
     } else {

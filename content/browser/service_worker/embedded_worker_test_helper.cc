@@ -100,8 +100,8 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
                            net::OK),
       user_data_directory_(user_data_directory),
       next_thread_id_(0),
-      mock_render_process_id_(render_process_host_->GetDeprecatedID()),
-      new_mock_render_process_id_(new_render_process_host_->GetDeprecatedID()),
+      mock_render_process_id_(render_process_host_->GetID()),
+      new_mock_render_process_id_(new_render_process_host_->GetID()),
       url_loader_factory_(base::MakeRefCounted<ReconnectableURLLoaderFactory>(
           base::BindRepeating(&CreateURLLoaderFactory))) {
   wrapper_->SetStorageControlBinderForTest(base::BindRepeating(

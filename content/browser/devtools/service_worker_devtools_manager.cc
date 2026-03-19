@@ -30,7 +30,7 @@ ServiceWorkerDevToolsManager* ServiceWorkerDevToolsManager::GetInstance() {
 
 ServiceWorkerDevToolsAgentHost*
 ServiceWorkerDevToolsManager::GetDevToolsAgentHostForWorker(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id) {
   auto it = live_hosts_.find(WorkerId(worker_process_id, worker_route_id));
   return it == live_hosts_.end() ? nullptr : it->second.get();
@@ -142,7 +142,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingFailed(
 }
 
 void ServiceWorkerDevToolsManager::WorkerStarting(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int64_t version_id,
@@ -164,9 +164,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
       TakeStoppedHost(context_wrapper.get(), version_id);
   if (agent_host) {
     live_hosts_[worker_id] = agent_host;
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    agent_host->WorkerStarted(
-        ChildProcessId::FromUnsafeValue(worker_process_id), worker_route_id);
+    agent_host->WorkerStarted(worker_process_id, worker_route_id);
     *pause_on_start =
         agent_host->IsAttached() && agent_host->should_pause_on_start();
     *devtools_worker_token = agent_host->devtools_worker_token();
@@ -176,9 +174,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
   agent_host = TakeNewInstallingHost(context_wrapper.get(), version_id);
   if (agent_host) {
     live_hosts_[worker_id] = agent_host;
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    agent_host->WorkerStarted(
-        ChildProcessId::FromUnsafeValue(worker_process_id), worker_route_id);
+    agent_host->WorkerStarted(worker_process_id, worker_route_id);
     *pause_on_start = agent_host->should_pause_on_start();
     *devtools_worker_token = agent_host->devtools_worker_token();
 
@@ -193,8 +189,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
 
   *devtools_worker_token = base::UnguessableToken::Create();
   auto host = base::MakeRefCounted<ServiceWorkerDevToolsAgentHost>(
-      ChildProcessId::FromUnsafeValue(worker_process_id), worker_route_id,
-      std::move(context_wrapper), version_id, url, scope, is_installed_version,
+      worker_process_id, worker_route_id, std::move(context_wrapper),
+      version_id, url, scope, is_installed_version,
       std::move(client_security_state), std::move(coep_reporter),
       std::move(dip_reporter), *devtools_worker_token);
   live_hosts_[worker_id] = host;
@@ -208,7 +204,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
 }
 
 void ServiceWorkerDevToolsManager::WorkerReadyForInspection(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
@@ -225,8 +221,9 @@ void ServiceWorkerDevToolsManager::WorkerReadyForInspection(
     host->Inspect();
 }
 
-void ServiceWorkerDevToolsManager::WorkerVersionInstalled(int worker_process_id,
-                                                          int worker_route_id) {
+void ServiceWorkerDevToolsManager::WorkerVersionInstalled(
+    ChildProcessId worker_process_id,
+    int worker_route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
@@ -236,7 +233,7 @@ void ServiceWorkerDevToolsManager::WorkerVersionInstalled(int worker_process_id,
 }
 
 void ServiceWorkerDevToolsManager::WorkerVersionDoomed(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int64_t version_id) {
@@ -258,8 +255,9 @@ void ServiceWorkerDevToolsManager::WorkerVersionDoomed(
     observer.WorkerDestroyed(host.get());
 }
 
-void ServiceWorkerDevToolsManager::WorkerStopped(int worker_process_id,
-                                                 int worker_route_id) {
+void ServiceWorkerDevToolsManager::WorkerStopped(
+    ChildProcessId worker_process_id,
+    int worker_route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
@@ -306,7 +304,7 @@ ServiceWorkerDevToolsManager::ServiceWorkerDevToolsManager()
 ServiceWorkerDevToolsManager::~ServiceWorkerDevToolsManager() = default;
 
 void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     const std::string& request_id,
     const network::ResourceRequest& request) {
@@ -329,7 +327,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     const std::string& request_id,
     const GURL& url,
@@ -348,7 +346,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     int worker_route_id,
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status) {

@@ -226,7 +226,7 @@ TEST_F(EmbeddedWorkerInstanceTest, DetachAfterSendingStartWorkerMessage) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
-  EXPECT_EQ(ChildProcessHost::kInvalidUniqueID, worker->process_id());
+  EXPECT_FALSE(worker->process_id());
 
   // "STARTED" event should not be recorded.
   ASSERT_EQ(1u, events_.size());
@@ -258,7 +258,7 @@ TEST_F(EmbeddedWorkerInstanceTest, StopAfterSendingStartWorkerMessage) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
-  EXPECT_EQ(ChildProcessHost::kInvalidUniqueID, worker->process_id());
+  EXPECT_FALSE(worker->process_id());
 
   // "STARTED" event should not be recorded.
   ASSERT_EQ(1u, events_.size());

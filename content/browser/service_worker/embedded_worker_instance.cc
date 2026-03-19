@@ -99,7 +99,7 @@ bool HasSentStartWorker(EmbeddedWorkerInstance::StartingPhase phase) {
   return false;
 }
 
-void NotifyForegroundServiceWorker(bool added, int process_id) {
+void NotifyForegroundServiceWorker(bool added, ChildProcessId process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderProcessHost* rph = RenderProcessHost::FromID(process_id);
@@ -123,7 +123,7 @@ void NotifyForegroundServiceWorker(bool added, int process_id) {
 // ServiceWorkerOnUI.
 class EmbeddedWorkerInstance::DevToolsProxy {
  public:
-  DevToolsProxy(int process_id,
+  DevToolsProxy(ChildProcessId process_id,
                 int agent_route_id,
                 const base::UnguessableToken& devtools_id)
       : process_id_(process_id),
@@ -165,7 +165,7 @@ class EmbeddedWorkerInstance::DevToolsProxy {
   const base::UnguessableToken& devtools_id() const { return devtools_id_; }
 
  private:
-  const int process_id_;
+  const ChildProcessId process_id_;
   const int agent_route_id_;
   const base::UnguessableToken devtools_id_;
   bool worker_stop_ignored_notified_ = false;
@@ -180,12 +180,12 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
   WorkerProcessHandle(
       const base::WeakPtr<ServiceWorkerProcessManager>& process_manager,
       int embedded_worker_id,
-      int process_id)
+      ChildProcessId process_id)
       : process_manager_(process_manager),
         embedded_worker_id_(embedded_worker_id),
         process_id_(process_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id_);
+    DCHECK(process_id_);
   }
 
   WorkerProcessHandle(const WorkerProcessHandle&) = delete;
@@ -196,13 +196,13 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
     process_manager_->ReleaseWorkerProcess(embedded_worker_id_);
   }
 
-  int process_id() const { return process_id_; }
+  ChildProcessId process_id() const { return process_id_; }
 
  private:
   base::WeakPtr<ServiceWorkerProcessManager> process_manager_;
 
   const int embedded_worker_id_;
-  const int process_id_;
+  const ChildProcessId process_id_;
 };
 
 // Info that is recorded as UMA on OnStarted().
@@ -291,7 +291,7 @@ void EmbeddedWorkerInstance::Start(
     OnSetupFailed(std::move(callback), status);
     return;
   }
-  const int process_id = process_info->process_id;
+  const ChildProcessId process_id = process_info->process_id;
   RenderProcessHost* rph = RenderProcessHost::FromID(process_id);
   // TODO(falken): This CHECK should no longer fail, so turn to a DCHECK it if
   // crash reports agree. Consider also checking for
@@ -302,8 +302,9 @@ void EmbeddedWorkerInstance::Start(
   // the worker's URL. This is needed so that the worker process can access data
   // belonging to that origin.
   const url::Origin origin = url::Origin::Create(params->script_url);
-  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(process_id,
-                                                                    origin);
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+      process_id.GetUnsafeValue(), origin);
 
   // Pass the cross-origin isolated capability of the worker.
   params->cross_origin_isolated =
@@ -593,8 +594,9 @@ void EmbeddedWorkerInstance::SendStartWorker(
   inflight_start_info_->start_worker_sent_time = base::TimeTicks::Now();
 
   // The host must be alive as long as |params->provider_info| is alive.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   owner_version_->worker_host()->CompleteStartWorkerPreparation(
-      process_id(),
+      process_id().GetUnsafeValue(),
       params->provider_info->browser_interface_broker
           .InitWithNewPipeAndPassReceiver(),
       params->interface_provider.InitWithNewPipeAndPassRemote());
@@ -773,8 +775,9 @@ void EmbeddedWorkerInstance::UpdateForegroundPriority() {
     return;
   }
 
-  if (process_handle_ &&
-      owner_version_->ShouldRequireForegroundPriority(process_id())) {
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (process_handle_ && owner_version_->ShouldRequireForegroundPriority(
+                             process_id().GetUnsafeValue())) {
     NotifyForegroundServiceWorkerAdded();
   } else {
     NotifyForegroundServiceWorkerRemoved();
@@ -989,10 +992,10 @@ void EmbeddedWorkerInstance::OnReportConsoleMessage(
   }
 }
 
-int EmbeddedWorkerInstance::process_id() const {
+ChildProcessId EmbeddedWorkerInstance::process_id() const {
   if (process_handle_)
     return process_handle_->process_id();
-  return ChildProcessHost::kInvalidUniqueID;
+  return ChildProcessId();
 }
 
 int EmbeddedWorkerInstance::worker_devtools_agent_route_id() const {

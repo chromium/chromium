@@ -53,9 +53,10 @@ namespace {
 
 bool g_force_disable_high_priority_fetch_response_callback = false;
 
-void NotifyNavigationPreloadRequestSent(const network::ResourceRequest& request,
-                                        const std::pair<int, int>& worker_id,
-                                        const std::string& request_id) {
+void NotifyNavigationPreloadRequestSent(
+    const network::ResourceRequest& request,
+    const std::pair<ChildProcessId, int>& worker_id,
+    const std::string& request_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ServiceWorkerDevToolsManager::GetInstance()->NavigationPreloadRequestSent(
       worker_id.first, worker_id.second, request_id, request);
@@ -64,7 +65,7 @@ void NotifyNavigationPreloadRequestSent(const network::ResourceRequest& request,
 void NotifyNavigationPreloadResponseReceived(
     const GURL& url,
     network::mojom::URLResponseHeadPtr response,
-    const std::pair<int, int>& worker_id,
+    const std::pair<ChildProcessId, int>& worker_id,
     const std::string& request_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ServiceWorkerDevToolsManager::GetInstance()
@@ -74,7 +75,7 @@ void NotifyNavigationPreloadResponseReceived(
 
 void NotifyNavigationPreloadCompleted(
     const network::URLLoaderCompletionStatus& status,
-    const std::pair<int, int>& worker_id,
+    const std::pair<ChildProcessId, int>& worker_id,
     const std::string& request_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ServiceWorkerDevToolsManager::GetInstance()->NavigationPreloadCompleted(
@@ -87,7 +88,7 @@ void NotifyNavigationPreloadCompleted(
 // DevTools.
 class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
  public:
-  using WorkerId = std::pair<int, int>;
+  using WorkerId = std::pair<ChildProcessId, int>;
   explicit DelegatingURLLoaderClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const network::ResourceRequest& request)
@@ -220,7 +221,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
   const GURL url_;
   const bool devtools_enabled_;
 
-  std::optional<std::pair<int, int>> worker_id_;
+  std::optional<std::pair<ChildProcessId, int>> worker_id_;
   std::string devtools_request_id_;
   base::queue<base::OnceCallback<void(const WorkerId&, const std::string&)>>
       devtools_callbacks;
@@ -436,7 +437,7 @@ class ServiceWorkerFetchDispatcher::URLLoaderAssets
   URLLoaderAssets(const URLLoaderAssets&) = delete;
   URLLoaderAssets& operator=(const URLLoaderAssets&) = delete;
 
-  void MaybeReportToDevTools(std::pair<int, int> worker_id,
+  void MaybeReportToDevTools(std::pair<ChildProcessId, int> worker_id,
                              int fetch_event_id) {
     url_loader_client_->MaybeReportToDevTools(worker_id, fetch_event_id);
   }
@@ -568,8 +569,10 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
               perfetto::Flow::FromPointer(this));
   // Grant the service worker's process access to files in the request body.
   if (request_->body) {
-    GrantFileAccessToProcess(version_->embedded_worker()->process_id(),
-                             request_->body->GetReferencedFiles());
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    GrantFileAccessToProcess(
+        version_->embedded_worker()->process_id().GetUnsafeValue(),
+        request_->body->GetReferencedFiles());
   }
 
   // Run callback to say that the fetch event will be dispatched.

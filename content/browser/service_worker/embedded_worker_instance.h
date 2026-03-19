@@ -21,6 +21,7 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -185,7 +186,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   }
   void SetPauseInitializingGlobalScope();
   void ResumeInitializingGlobalScope();
-  int process_id() const;
+  ChildProcessId process_id() const;
   int thread_id() const { return thread_id_; }
   int worker_devtools_agent_route_id() const;
   base::UnguessableToken WorkerDevtoolsId() const;

@@ -136,11 +136,9 @@ void DidStartWorker(
     return;
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   std::move(info_callback)
-      .Run(version->version_id(),
-           ChildProcessId::FromUnsafeValue(instance->process_id()),
-           instance->thread_id(), version->worker_host()->token());
+      .Run(version->version_id(), instance->process_id(), instance->thread_id(),
+           version->worker_host()->token());
 }
 
 void FoundRegistrationForStartWorker(

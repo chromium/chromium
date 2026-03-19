@@ -1578,7 +1578,7 @@ WillCreateURLLoaderFactoryParams::ForServiceWorker(RenderProcessHost& rph,
                                                    int routing_id) {
   ServiceWorkerDevToolsAgentHost* agent_host =
       ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(rph.GetDeprecatedID(), routing_id);
+          ->GetDevToolsAgentHostForWorker(rph.GetID(), routing_id);
   CHECK(agent_host);
   return WillCreateURLLoaderFactoryParams(
       agent_host, agent_host->devtools_worker_token(), rph.GetDeprecatedID(),

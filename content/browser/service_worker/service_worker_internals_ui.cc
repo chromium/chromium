@@ -637,7 +637,7 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(
                      callback_id);
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host(
       ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(*process_host_id,
+          ->GetDevToolsAgentHostForWorker(ChildProcessId(*process_host_id),
                                           *devtools_agent_route_id));
   if (!agent_host.get()) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorNotFound);

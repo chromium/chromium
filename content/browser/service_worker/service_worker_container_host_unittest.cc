@@ -690,9 +690,11 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
           helper_->context()->AsWeakPtr());
   registration1_->SetActiveVersion(version);
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
-      helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-      *version, helper_->context()->AsWeakPtr());
+      helper_->mock_render_process_id().GetUnsafeValue(),
+      true /* is_parent_frame_secure */, *version,
+      helper_->context()->AsWeakPtr());
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
   ServiceWorkerTestContentBrowserClient test_browser_client;
@@ -1017,16 +1019,14 @@ class ServiceWorkerContainerHostTestByClientType
             helper_->context()
                 ->service_worker_client_owner()
                 .CreateServiceWorkerClientForWorker(
-                    ChildProcessId::FromUnsafeValue(
-                        helper_->mock_render_process_id()),
+                    helper_->mock_render_process_id(),
                     ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
       case ClientType::kSharedWorker:
         return ScopedServiceWorkerClient(
             helper_->context()
                 ->service_worker_client_owner()
                 .CreateServiceWorkerClientForWorker(
-                    ChildProcessId::FromUnsafeValue(
-                        helper_->mock_render_process_id()),
+                    helper_->mock_render_process_id(),
                     ServiceWorkerClientInfo(blink::SharedWorkerToken())));
     }
   }
@@ -1304,9 +1304,11 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
             helper_->context()->AsWeakPtr());
     registration1_->SetActiveVersion(version);
 
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     worker_host = CreateServiceWorkerHost(
-        helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        *version, helper_->context()->AsWeakPtr());
+        helper_->mock_render_process_id().GetUnsafeValue(),
+        true /* is_parent_frame_secure */, *version,
+        helper_->context()->AsWeakPtr());
     ASSERT_TRUE(worker_host);
   }
   {

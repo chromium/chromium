@@ -404,10 +404,9 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
                 version.script_response_time.InSecondsFSinceUnixEpoch())
             .SetControlledClients(std::move(clients))
             .Build();
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     scoped_refptr<DevToolsAgentHostImpl> host(
         ServiceWorkerDevToolsManager::GetInstance()
-            ->GetDevToolsAgentHostForWorker(version.process_id.GetUnsafeValue(),
+            ->GetDevToolsAgentHostForWorker(version.process_id,
                                             version.devtools_agent_route_id));
     if (host) {
       version_value->SetTargetId(host->GetId());
