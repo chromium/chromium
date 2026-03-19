@@ -1030,11 +1030,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     return ActionType.NAVIGATE_BACK;
                                 }
                                 if (TabAssociatedApp.isOpenedFromExternalApp(tab)) {
-                                    return ActionType.EXIT_APP;
+                                    return ActionType.EXIT_APP_AND_CLOSE_TAB;
                                 }
                                 return mBackButtonShouldCloseTabFn.apply(tab)
                                         ? ActionType.CLOSE_TAB
-                                        : ActionType.EXIT_APP;
+                                        : ActionType.EXIT_APP_ONLY;
                             }
 
                             @Override
@@ -1055,8 +1055,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                         TabClosureParams.closeTab(tab).build(),
                                                         /* allowDialog= */ false);
                                         break;
-                                    case ActionType.EXIT_APP:
+                                    case ActionType.EXIT_APP_AND_CLOSE_TAB:
                                         mSendToBackground.onResult(tab);
+                                        break;
+                                    case ActionType.EXIT_APP_ONLY:
+                                        mSendToBackground.onResult(null);
                                         break;
                                 }
                             }

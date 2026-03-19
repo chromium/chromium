@@ -391,7 +391,7 @@ class NavigationHandler implements TouchEventObserver {
         @ActionType int type = mBackActionDelegate.getBackActionType(mTab);
         if (type == ActionType.CLOSE_TAB) {
             return CloseTarget.TAB;
-        } else if (type == ActionType.EXIT_APP) {
+        } else if (type == ActionType.EXIT_APP_AND_CLOSE_TAB || type == ActionType.EXIT_APP_ONLY) {
             return CloseTarget.APP;
         } else {
             return CloseTarget.NONE;
