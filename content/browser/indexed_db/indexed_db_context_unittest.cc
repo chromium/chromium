@@ -6,29 +6,22 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
+#include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "storage/browser/test/mock_quota_manager.h"
-#include "storage/browser/test/mock_quota_manager_proxy.h"
-#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +30,7 @@
 namespace content::indexed_db {
 namespace {
 
-class IndexedDBContextTest : public testing::Test {
+class IndexedDBContextTest : public IndexedDBTestBase {
  public:
   class MockIndexedDBClientStateChecker
       : public storage::mojom::IndexedDBClientStateChecker {
@@ -59,39 +52,9 @@ class IndexedDBContextTest : public testing::Test {
   };
 
   IndexedDBContextTest()
-      : special_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
-  ~IndexedDBContextTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        special_storage_policy_);
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_,
-        /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault());
-  }
+      : IndexedDBTestBase(/*use_default_buckets=*/true, /*use_sqlite=*/false) {}
 
  protected:
-  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
-
-  base::ScopedTempDir temp_dir_;
-
-  // These tests need a full TaskEnvironment because IndexedDBContextImpl
-  // uses the thread pool for querying QuotaDatabase.
-  base::test::TaskEnvironment task_environment_;
-
-  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-
   MockIndexedDBClientStateChecker example_checker_;
 
   const blink::StorageKey example_storage_key_ =
@@ -104,7 +67,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
   mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
       example_checker_receiver(&example_checker_);
-  indexed_db_context_->BindIndexedDB(
+  context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       storage::BucketClientInfo{},
       example_checker_receiver.BindNewPipeAndPassRemote(),
@@ -113,7 +76,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::Remote<blink::mojom::IDBFactory> google_remote;
   mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
       google_checker_receiver(&example_checker_);
-  indexed_db_context_->BindIndexedDB(
+  context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(google_storage_key_),
       storage::BucketClientInfo{},
       google_checker_receiver.BindNewPipeAndPassRemote(),
@@ -160,7 +123,7 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
   mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
       example_checker_receiver(&example_checker_);
-  indexed_db_context_->BindIndexedDB(
+  context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       storage::BucketClientInfo{},
       example_checker_receiver.BindNewPipeAndPassRemote(),
@@ -213,14 +176,14 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
 
 // Regression test for crbug.com/1472826
 TEST_F(IndexedDBContextTest, DontChokeOnBadLegacyFiles) {
-  base::CreateDirectory(indexed_db_context_->GetFirstPartyDataPathForTesting()
+  base::CreateDirectory(context()
+                            ->GetFirstPartyDataPathForTesting()
                             .AppendASCII("invalid_storage_key")
                             .AddExtension(indexed_db::kIndexedDBExtension)
                             .AddExtension(indexed_db::kLevelDBExtension));
 
   base::RunLoop run_loop;
-  indexed_db_context_->ForceInitializeFromFilesForTesting(
-      run_loop.QuitClosure());
+  context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
   run_loop.Run();
 }
 
