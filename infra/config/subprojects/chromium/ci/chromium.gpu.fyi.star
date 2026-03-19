@@ -1279,6 +1279,49 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Linux FYI Experimental Release (AMD 9900X)",
+    description_html = "GPU tests on exp Linux AMD 9900X configs",
+    parent = "GPU FYI Linux Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+        ],
+        mixins = [
+            "very_limited_capacity_bot",
+            "gpu_amd_9900x_linux_experimental",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
+    gardener_rotations = args.ignore_default(None),
+    # Experimental only so don't alert GPU gardners when it fails.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Linux|AMD",
+    #     short_name = "9900X",
+    # ),
+    list_view = "chromium.gpu.experimental",
+    execution_timeout = 12 * time.hour,
+)
+
+ci.thin_tester(
     name = "Linux FYI Experimental Release (Intel Arc 140V)",
     description_html = "GPU tests on exp Linux Intel Arc 140V configs",
     parent = "GPU FYI Linux Builder",
@@ -3167,6 +3210,49 @@ ci.thin_tester(
         category = "Windows|10|x64|Nvidia",
         short_name = "rel",
     ),
+)
+
+ci.thin_tester(
+    name = "Win11 FYI x64 Experimental Release (AMD 9900X)",
+    description_html = "GPU tests on exp Windows 11 AMD 9900X configs",
+    parent = "GPU FYI Win x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+        ],
+        mixins = [
+            "very_limited_capacity_bot",
+            "gpu_amd_9900x_win_experimental",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    gardener_rotations = args.ignore_default(None),
+    # Experimental only so don't alert GPU gardners when it fails.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|11|x64|AMD",
+    #     short_name = "9900X",
+    # ),
+    list_view = "chromium.gpu.experimental",
+    execution_timeout = 12 * time.hour,
 )
 
 ci.thin_tester(

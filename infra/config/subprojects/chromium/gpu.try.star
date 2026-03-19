@@ -239,6 +239,17 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-9900x-exp",
+    description_html = "Runs release GPU tests on experimental Linux/AMD 9900X configs",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (AMD 9900X)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+    execution_timeout = 12 * time.hour,
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-arc-140v-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
@@ -662,6 +673,17 @@ gpu_win_builder(
         "ci/Win11 FYI x64 Experimental Release (AMD 890M)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-x64-amd-9900x-exp",
+    description_html = "Runs release GPU tests on experimental Win/AMD 9900X configs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (AMD 9900X)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+    execution_timeout = 12 * time.hour,
 )
 
 gpu_win_builder(

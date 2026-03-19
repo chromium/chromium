@@ -94,6 +94,7 @@ ci/Linux Debug (NVIDIA)
 ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (AMD 780M)
 ci/Linux FYI Experimental Release (AMD 890M)
+ci/Linux FYI Experimental Release (AMD 9900X)
 ci/Linux FYI Experimental Release (Intel Arc 140V)
 ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
@@ -143,6 +144,7 @@ ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
 ci/Win11 FYI x64 Experimental Release (AMD 890M)
+ci/Win11 FYI x64 Experimental Release (AMD 9900X)
 ci/Win11 FYI x64 Experimental Release (AMD RX 5500XT)
 ci/Win11 FYI x64 Experimental Release (Intel Arc 140V)
 ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)
@@ -205,6 +207,7 @@ try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
 try/gpu-fyi-try-linux-amd-780m-exp
 try/gpu-fyi-try-linux-amd-890m-exp
+try/gpu-fyi-try-linux-amd-9900x-exp
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-arc-140v-exp
@@ -251,6 +254,7 @@ try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
 try/gpu-fyi-try-win11-x64-amd-890m-exp
+try/gpu-fyi-try-win11-x64-amd-9900x-exp
 try/gpu-fyi-try-win11-x64-intel-arc-140v-exp
 try/gpu-try-android-pixel-2-64
 try/gpu-try-linux-nvidia-dbg

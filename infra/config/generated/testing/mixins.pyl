@@ -181,6 +181,28 @@
       },
     },
   },
+  'gpu_amd_9900x_linux_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '1002:13c0',
+        'os': 'Ubuntu',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
+  'gpu_amd_9900x_win_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '1002:13c0',
+        'os': 'Windows-11',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'gpu_enable_metal_debug_layers': {
     'args': [
       '--enable-metal-debug-layers',
