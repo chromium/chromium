@@ -195,7 +195,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestHibernateOnMemoryUsage",
       "GlicApiTestWithDaisyChain",
       "GlicApiTestWithSkills",
-      "GlicApiTestWithDragAndDrop",
   };
 }
 
@@ -3993,66 +3992,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
   ContinueJsTest();
 }
 
-class GlicApiTestWithDragAndDrop : public GlicApiTest {
- public:
-  GlicApiTestWithDragAndDrop() {
-    feature_list_.InitAndEnableFeature(features::kGlicDragAndDropFileUpload);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/488607379): Disabled due to flakiness on multiple builders.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDragAndDrop, DISABLED_testDragAndDrop) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-
-  ExecuteJsTest();
-
-  Host* glic_host = GetHost();
-  ASSERT_TRUE(glic_host);
-  content::WebContents* guest_contents = glic_host->web_client_contents();
-  ASSERT_TRUE(guest_contents);
-
-  content::DropData drop_data;
-  GURL drop_url = page_url();
-  drop_data.url_infos.emplace_back(drop_url, std::u16string());
-  drop_data.operation = ui::mojom::DragOperation::kCopy;
-  drop_data.document_is_handling_drag = true;
-
-  content::RenderWidgetHost* rwh =
-      glic_host->GetGuestMainFrame()->GetRenderWidgetHost();
-
-  // Filter the data to authorize the renderer.
-  rwh->FilterDropData(&drop_data);
-  drop_data.view_id = rwh->GetRoutingID();
-
-  // Verify that the delegate bridge correctly authorizes the drag.
-  EXPECT_TRUE(guest_contents->GetDelegate()->CanDragEnter(
-      guest_contents, drop_data, blink::kDragOperationCopy));
-
-  guest_contents->Focus();
-
-  // Use the center of the guest view for the drop.
-  gfx::Rect view_bounds = rwh->GetView()->GetViewBounds();
-  gfx::PointF client_pt(view_bounds.width() / 2, view_bounds.height() / 2);
-  gfx::PointF screen_pt =
-      rwh->GetView()->TransformPointToRootCoordSpaceF(client_pt);
-
-  // Simulate the full sequence. Using DragOperationsMask::kDragOperationEvery
-  // matches standard browser behavior.
-  rwh->DragTargetDragEnter(drop_data, client_pt, screen_pt,
-                           blink::kDragOperationEvery, 0, base::DoNothing());
-  rwh->DragTargetDragOver(client_pt, screen_pt, blink::kDragOperationEvery, 0,
-                          base::DoNothing());
-  rwh->DragTargetDrop(drop_data, client_pt, screen_pt, 0, base::DoNothing());
-
-  ContinueJsTest();
-  // Verify that the guest received the drop event with the correct data.
-  EXPECT_EQ(step_data()->GetString(), drop_url.spec());
-
-  ContinueJsTest();
-}
 
 INSTANTIATE_TEST_SUITE_P(
     ,
@@ -4172,10 +4111,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithSkills,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithDragAndDrop,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 }  // namespace

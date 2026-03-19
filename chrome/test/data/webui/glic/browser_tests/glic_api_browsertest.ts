@@ -32,26 +32,6 @@ class ApiTests extends ApiTestFixtureBase {
         HostCapability.MULTI_INSTANCE);
   }
 
-  async testDragAndDrop() {
-    const {promise, resolve} = Promise.withResolvers<string>();
-
-    // Set up a drop event listener, and ignore dragover.
-    document.addEventListener('drop', (e: DragEvent) => {
-      e.preventDefault();
-      resolve(e.dataTransfer?.getData('text/uri-list') || '');
-    }, {once: true});
-
-    document.addEventListener('dragover', (e: DragEvent) => {
-      e.preventDefault();
-    });
-
-    await this.advanceToNextStep();
-
-    // Wait for drop event, and sent the result back to C++.
-    const droppedData = await waitFor(promise);
-
-    await this.advanceToNextStep(droppedData);
-  }
 
   // WARNING: Remember to update
   // chrome/browser/glic/host/glic_api_browsertest.cc if you add a new test!

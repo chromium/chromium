@@ -955,7 +955,16 @@ static_library("test_support") {
   }
 
   if (use_aura) {
-    deps += [ "//ui/events:test_support" ]
+    sources += [
+      "base/drag_and_drop_test_utils.cc",
+      "base/drag_and_drop_test_utils.h",
+    ]
+    deps += [
+      "//ui/aura:test_support",
+      "//ui/base/dragdrop:types",
+      "//ui/base/dragdrop/mojom",
+      "//ui/events:test_support",
+    ]
   }
 
   if (is_win) {

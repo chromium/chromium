@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -20,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
@@ -165,6 +167,27 @@ GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
 bool IsGlicWebUI(const content::WebContents* web_contents) {
   return web_contents &&
          web_contents->GetLastCommittedURL() == chrome::kChromeUIGlicURL;
+}
+
+content::WebContents* GetGlicGuestWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      web_contents->GetBrowserContext());
+  if (!service) {
+    return nullptr;
+  }
+
+  for (Host* host : service->host_manager().GetAllHosts()) {
+    if (host->webui_contents() == web_contents) {
+      content::RenderFrameHost* guest_rfh = host->GetGuestMainFrame();
+      return guest_rfh ? content::WebContents::FromRenderFrameHost(guest_rfh)
+                       : nullptr;
+    }
+  }
+  return nullptr;
 }
 
 bool OnGuestAdded(content::WebContents* guest_contents) {

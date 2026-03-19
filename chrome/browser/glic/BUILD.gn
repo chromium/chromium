@@ -5,6 +5,7 @@
 import("//build/config/gclient_args.gni")
 import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -750,6 +751,10 @@ if (!is_android) {
       "widget/glic_window_resize_animation_interactive_uitest.cc",
     ]
 
+    if (!is_mac && enterprise_cloud_content_analysis) {
+      sources += [ "host/glic_drag_and_drop_interactive_uitest.cc" ]
+    }
+
     # ChromeOS disallows multi profile. So, ProfileManager is not supported.
     # See also crbug.com/450679848.
     if (!is_chromeos) {
@@ -767,6 +772,7 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:test_support",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui:interactive_ui_tests",
       "//chrome/browser/glic/fre",
