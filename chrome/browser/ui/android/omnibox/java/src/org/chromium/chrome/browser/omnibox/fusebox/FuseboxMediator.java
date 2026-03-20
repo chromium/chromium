@@ -852,35 +852,32 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private void onInputStateChange(InputState inputState) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
 
-        boolean deepSearchVisible =
-                inputState.allowedTools.contains(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
-        boolean canvasVisible = inputState.allowedTools.contains(ToolMode.TOOL_MODE_CANVAS_VALUE);
+        boolean deepSearchVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
+        boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);
 
         mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, deepSearchVisible);
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED,
-                !inputState.disabledTools.contains(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+                inputState.isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
 
         mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, canvasVisible);
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED,
-                !inputState.disabledTools.contains(ToolMode.TOOL_MODE_CANVAS_VALUE));
+                inputState.isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
 
         boolean autoVisible =
-                inputState.allowedModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
-        boolean proVisible =
-                inputState.allowedModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+                inputState.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+        boolean proVisible = inputState.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
         mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, autoVisible);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_AUTO_ENABLED,
-                !inputState.disabledModels.contains(
-                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
+                inputState.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
 
         mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, proVisible);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_PRO_ENABLED,
-                !inputState.disabledModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
+                inputState.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_AUTO_SELECTED,

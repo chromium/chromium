@@ -1182,4 +1182,42 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
     }
+
+    @Test
+    public void testOnInputStateChange_ActiveOverridesDisabled() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .build();
+        mInputStateSupplier.set(state);
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
+    }
+
+    @Test
+    public void testOnInputStateChange_ActiveOverridesAllowed() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .build();
+        mInputStateSupplier.set(state);
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
+    }
 }

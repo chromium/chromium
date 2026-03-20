@@ -5,7 +5,9 @@
 package org.chromium.components.contextual_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,5 +72,36 @@ public class InputStateTest {
 
         assertNotEquals(state1, state3);
         assertNotEquals(state1.hashCode(), state3.hashCode());
+    }
+
+    @Test
+    public void testVisibilityAndEnablement() {
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .build();
+
+        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(state.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+
+        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+        assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+
+        assertFalse(state.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE));
+        assertTrue(state.isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+
+        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
+        assertTrue(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
+
+        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE));
+        assertFalse(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE));
+
+        assertFalse(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
+        assertTrue(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
     }
 }
