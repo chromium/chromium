@@ -32,10 +32,10 @@ def _param_type_cpp_non_mirror(java_type, use_const=False):
 
 
 def _param_type_cpp_mirror(native, java_type, use_const=False):
-  if java_type.enable_mirror(native.java_class):
-    return f'const jni_zero::JavaRef<J{native.java_class.nested_name}>&'
-  else:
-    return _param_type_cpp_non_mirror(java_type, use_const)
+  if java_type.enable_mirror():
+    jobject_type = java_type.to_mirror_cpp()
+    return f'const jni_zero::JavaRef<{jobject_type}>&'
+  return _param_type_cpp_non_mirror(java_type, use_const)
 
 
 def _impl_forward_declaration(sb, native, params):
@@ -88,8 +88,8 @@ def _prep_param(sb, param, native, include_forward_declaration):
   if java_type.is_primitive():
     return orig_name
 
-  if java_type.enable_mirror(native.java_class):
-    cpp_type = f'J{native.java_class.nested_name}'
+  if java_type.enable_mirror():
+    cpp_type = java_type.to_mirror_cpp()
     orig_name = f'static_cast<{cpp_type}>({orig_name})'
   else:
     cpp_type = java_type.to_cpp()
@@ -99,8 +99,8 @@ def _prep_param(sb, param, native, include_forward_declaration):
 
   ret = f'{param.name}_ref'
   with sb.statement():
-    sb(f'jni_zero::JavaRef<{cpp_type}> {ret} = ')
-    sb(f'jni_zero::JavaRef<{cpp_type}>::CreateLeaky(env, {orig_name})')
+    sb(f'auto {ret} = jni_zero::JavaRef<{cpp_type}>::CreateLeaky(env,\n')
+    sb(f'    {orig_name})')
   return ret
 
 

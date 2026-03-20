@@ -261,8 +261,7 @@ OptimizationGuideKeyedService::CreateModelBrokerClient() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<
-    optimization_guide::android::JOptimizationGuideBridge>
+base::android::ScopedJavaLocalRef<JOptimizationGuideBridge>
 OptimizationGuideKeyedService::GetJavaObject() {
   if (!android_bridge_) {
     android_bridge_ =

@@ -39,7 +39,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     JNIEnv* env,
     jclass jcaller,
     jobject sample) {
-  jni_zero::JavaRef<JSampleForAnnotationProcessor> sample_ref = jni_zero::JavaRef<JSampleForAnnotationProcessor>::CreateLeaky(env, static_cast<JSampleForAnnotationProcessor>(sample));
+  auto sample_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForAnnotationProcessor>(sample));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -490,7 +491,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse) {
-  jni_zero::JavaRef<jstring> stringToReverse_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(stringToReverse));
+  auto stringToReverse_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      static_cast<jstring>(stringToReverse));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -519,7 +521,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     JNIEnv* env,
     jclass jcaller,
     jobject strs) {
-  jni_zero::JavaRef<jobjectArray> strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strs));
+  auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(strs));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -548,7 +551,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     JNIEnv* env,
     jclass jcaller,
     jobject strs) {
-  jni_zero::JavaRef<jobjectArray> strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strs));
+  auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(strs));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -611,14 +615,21 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
   std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(
       env,
       jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(ints)));
-  jni_zero::JavaRef<jlongArray> longs_ref = jni_zero::JavaRef<jlongArray>::CreateLeaky(env, static_cast<jlongArray>(longs));
-  jni_zero::JavaRef<jshortArray> shorts_ref = jni_zero::JavaRef<jshortArray>::CreateLeaky(env, static_cast<jshortArray>(shorts));
+  auto longs_ref = jni_zero::JavaRef<jlongArray>::CreateLeaky(env,
+      static_cast<jlongArray>(longs));
+  auto shorts_ref = jni_zero::JavaRef<jshortArray>::CreateLeaky(env,
+      static_cast<jshortArray>(shorts));
   int zchar_converted = jni_zero::internal::PrimitiveConvert<int, jchar>::FromJniType(env, zchar);
-  jni_zero::JavaRef<jcharArray> chars_ref = jni_zero::JavaRef<jcharArray>::CreateLeaky(env, static_cast<jcharArray>(chars));
-  jni_zero::JavaRef<jbyteArray> bytes_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes));
-  jni_zero::JavaRef<jdoubleArray> doubles_ref = jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env, static_cast<jdoubleArray>(doubles));
-  jni_zero::JavaRef<jfloatArray> floats_ref = jni_zero::JavaRef<jfloatArray>::CreateLeaky(env, static_cast<jfloatArray>(floats));
-  jni_zero::JavaRef<jbooleanArray> bools_ref = jni_zero::JavaRef<jbooleanArray>::CreateLeaky(env, static_cast<jbooleanArray>(bools));
+  auto chars_ref = jni_zero::JavaRef<jcharArray>::CreateLeaky(env,
+      static_cast<jcharArray>(chars));
+  auto bytes_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,
+      static_cast<jbyteArray>(bytes));
+  auto doubles_ref = jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env,
+      static_cast<jdoubleArray>(doubles));
+  auto floats_ref = jni_zero::JavaRef<jfloatArray>::CreateLeaky(env,
+      static_cast<jfloatArray>(floats));
+  auto bools_ref = jni_zero::JavaRef<jbooleanArray>::CreateLeaky(env,
+      static_cast<jbooleanArray>(bools));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -750,12 +761,18 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
     jobject view,
     jobject context,
     jobject convertedObjects) {
-  jni_zero::JavaRef<jclass> clazz_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env, static_cast<jclass>(clazz));
-  jni_zero::JavaRef<jobjectArray> classes_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(classes));
-  jni_zero::JavaRef<jthrowable> throwable_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env, static_cast<jthrowable>(throwable));
-  jni_zero::JavaRef<jobjectArray> throwables_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(throwables));
-  jni_zero::JavaRef<jstring> string_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(string));
-  jni_zero::JavaRef<jobjectArray> strings_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strings));
+  auto clazz_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env,
+      static_cast<jclass>(clazz));
+  auto classes_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(classes));
+  auto throwable_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,
+      static_cast<jthrowable>(throwable));
+  auto throwables_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(throwables));
+  auto string_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      static_cast<jstring>(string));
+  auto strings_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(strings));
   std::string convertedString_converted = jni_zero::FromJniType<std::string>(
       env,
       jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedString));
@@ -768,16 +785,23 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
   std::optional<void(*)(const std::vector<bool>&)> funcType_converted = jni_zero::FromJniType<std::optional<void(*)(const std::vector<bool>&)>>(
       env,
       jni_zero::JavaRef<jobject>::CreateLeaky(env, funcType));
-  jni_zero::JavaRef<jobject> tStruct_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, tStruct);
-  jni_zero::JavaRef<jobjectArray> structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(structs));
-  jni_zero::JavaRef<jobject> obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, obj);
+  auto tStruct_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>(tStruct));
+  auto structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(structs));
+  auto obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
+      obj);
   jni_zero::tests::CPPClass convertedObj_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass>(
       env,
       jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedObj));
-  jni_zero::JavaRef<jobjectArray> objects_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(objects));
-  jni_zero::JavaRef<jobject> nestedInterface_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, nestedInterface);
-  jni_zero::JavaRef<jobject> view_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, view);
-  jni_zero::JavaRef<jobject> context_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, context);
+  auto objects_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(objects));
+  auto nestedInterface_ref = jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>::CreateLeaky(env,
+      static_cast<::org::stubs::JMyClass_SecondNestedInterface>(nestedInterface));
+  auto view_ref = jni_zero::JavaRef<::android::view::JView>::CreateLeaky(env,
+      static_cast<::android::view::JView>(view));
+  auto context_ref = jni_zero::JavaRef<::android::content::JContext>::CreateLeaky(env,
+      static_cast<::android::content::JContext>(context));
   std::vector<jni_zero::tests::CPPClass> convertedObjects_converted = jni_zero::FromJniArray<std::vector<jni_zero::tests::CPPClass>>(
       env,
       jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedObjects)));
@@ -877,19 +901,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
   dependent_context(0);
 }
 
-
-// Lazy definition of C++ classes JMyClass:
-
-// Actual implementations of C++ classes JMyClass:
-namespace jni_zero_internal {
-
-template<>
-class _CalledByNatives<JSampleForAnnotationProcessor> {
-  public:
-};
-
-
-}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

@@ -62,8 +62,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jlong nativeCPPClass,
     jobject caller,
     jobject b) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
-  jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
+  auto b_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests_InnerStructB>(b));
   CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
@@ -92,7 +94,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     JNIEnv* env,
     jclass jcaller,
     jobject arg) {
-  jni_zero::JavaRef<jobject> arg_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, arg);
+  auto arg_ref = jni_zero::JavaRef<::org::jni_zero::JSampleUnderSamePackage>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleUnderSamePackage>(arg));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -117,7 +120,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jlong nativeCPPClass,
     jobject caller,
     jobject bytes) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
   std::vector<uint8_t> bytes_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(
       env,
       jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));
@@ -149,7 +153,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     JNIEnv* env,
     jclass jcaller,
     jobject _env) {
-  jni_zero::JavaRef<jclass> env_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env, static_cast<jclass>(_env));
+  auto env_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env,
+      static_cast<jclass>(_env));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -178,7 +183,8 @@ JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN
     JNIEnv* env,
     jclass jcaller,
     jobject ret) {
-  jni_zero::JavaRef<JSampleForTests> ret_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(ret));
+  auto ret_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(ret));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -232,7 +238,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     JNIEnv* env,
     jclass jcaller,
     jobject _jcaller) {
-  jni_zero::JavaRef<JSampleForTests> jcaller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(_jcaller));
+  auto jcaller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(_jcaller));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -261,7 +268,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     JNIEnv* env,
     jclass jcaller,
     jobject arg0) {
-  jni_zero::JavaRef<jthrowable> arg0_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env, static_cast<jthrowable>(arg0));
+  auto arg0_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,
+      static_cast<jthrowable>(arg0));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -298,8 +306,10 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1
     jobject bytes,
     jobject convertedType,
     jobject nonConvertedArray) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
-  jni_zero::JavaRef<jstring> param_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(param));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
+  auto param_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      static_cast<jstring>(param));
   jni_zero::ByteArrayView bytes_converted = jni_zero::FromJniArray<jni_zero::ByteArrayView>(
       env,
       jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));
@@ -355,7 +365,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jclass jcaller,
     jlong nativeCPPClass,
     jobject caller) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
   CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
@@ -445,7 +456,8 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jlong nativeCPPClass,
     jobject caller,
     jobject strings) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
   std::vector<std::string> strings_converted = jni_zero::FromJniArray<std::vector<std::string>>(
       env,
       jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strings)));
@@ -474,7 +486,8 @@ JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jclass jcaller,
     jlong nativePtr,
     jobject caller) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
   CPPClass::InnerClass* _ptr = reinterpret_cast<CPPClass::InnerClass*>(nativePtr);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
@@ -592,7 +605,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jclass jcaller,
     jlong nativeCPPClass,
     jobject caller) {
-  jni_zero::JavaRef<JSampleForTests> caller_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(caller));
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
   CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
@@ -652,8 +666,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jclass jcaller,
     jobject obj,
     jobject rect) {
-  jni_zero::JavaRef<JSampleForTests> obj_ref = jni_zero::JavaRef<JSampleForTests>::CreateLeaky(env, static_cast<JSampleForTests>(obj));
-  jni_zero::JavaRef<jobject> rect_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, rect);
+  auto obj_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(obj));
+  auto rect_ref = jni_zero::JavaRef<::android::graphics::JRect>::CreateLeaky(env,
+      static_cast<::android::graphics::JRect>(rect));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -674,52 +690,52 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
 
 
 // Native to Java functions
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(
     JNIEnv* env,
     JniIntWrapper foo,
     JniIntWrapper bar) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "<init>",
       "(II)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), as_jint(foo), as_jint(bar));
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_addStructA(
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_addStructA(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jobject>& a,
-    const jni_zero::JavaRef<jobject>& b) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& a,
+    const ::jni_zero::JavaRef<jobject>& b) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "addStructA",
       "(Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;Lthis/is/a/package/prefix/org/jni_zero/extrapackage/ImportsTinySample;)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;",
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), a.obj(), b.obj());
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
+static ::jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jclass>& arg0) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jclass>& arg0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "getClass",
@@ -727,19 +743,19 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), arg0.obj());
   jclass _ret2 = static_cast<jclass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
+  return ::jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
 }
 
 static std::string Java_SampleForTests_getFirstString(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& obj,
     std::vector<const char*> const& array,
     const char* const& finalArg) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "getFirstString",
@@ -762,62 +778,62 @@ static std::string Java_SampleForTests_getFirstString(
       jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret));
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "getInnerEnum",
       "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerEnum;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
     JNIEnv* env,
     JniIntWrapper a) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "getInnerEnum",
       "(I)Lthis/is/a/package/prefix/org/jni_zero/extrapackage/ImportsTinySample;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), as_jint(a));
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "getInnerInterface",
       "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerInterface;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(
+static ::jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jthrowable>& arg0) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jthrowable>& arg0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "getThrowable",
@@ -825,17 +841,17 @@ static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), arg0.obj());
   jthrowable _ret2 = static_cast<jthrowable>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jthrowable>::Adopt(env, _ret2);
+  return ::jni_zero::ScopedJavaLocalRef<jthrowable>::Adopt(env, _ret2);
 }
 
 static void Java_SampleForTests_iterateAndDoSomething(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "iterateAndDoSomething",
@@ -846,14 +862,14 @@ static void Java_SampleForTests_iterateAndDoSomething(
 
 static jint Java_SampleForTests_javaMethod(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper _jcaller,
     JniIntWrapper ret) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "javaMethod",
@@ -869,7 +885,7 @@ static jint Java_SampleForTests_javaMethod(
 
 static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& obj,
     MyEnum foo,
     std::vector<int32_t> const& bar,
     JniIntWrapper baz,
@@ -877,8 +893,8 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "jniTypesAndAnnotations",
@@ -905,8 +921,8 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_li
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "listTest1",
@@ -927,8 +943,8 @@ static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "mapTest1",
@@ -943,12 +959,12 @@ static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
 
 static void Java_SampleForTests_methodThatThrowsException(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<false> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<false> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "methodThatThrowsException",
@@ -959,12 +975,12 @@ static void Java_SampleForTests_methodThatThrowsException(
 
 static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "methodWithAnnotationParamAssignment",
@@ -976,14 +992,14 @@ static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(
 
 static void Java_SampleForTests_methodWithGenericParams(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jobject>& _env,
-    const jni_zero::JavaRef<jobject>& bar) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& _env,
+    const ::jni_zero::JavaRef<jobject>& bar) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "methodWithGenericParams",
@@ -994,12 +1010,12 @@ static void Java_SampleForTests_methodWithGenericParams(
 
 static void Java_SampleForTests_packagePrivateJavaMethod(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "packagePrivateJavaMethod",
@@ -1020,8 +1036,8 @@ static std::vector<bool> Java_SampleForTests_primitiveArrays(
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "primitiveArrays",
@@ -1053,8 +1069,8 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, false);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "staticJavaMethod",
@@ -1064,31 +1080,31 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
   return _ret;
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(
+static ::jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(
     JNIEnv* env,
     jlong l,
     JniIntWrapper i,
-    const jni_zero::JavaRef<jstring>& s) {
+    const ::jni_zero::JavaRef<jstring>& s) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "create",
       "(JILjava/lang/String;)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), l, as_jint(i), s.obj());
-  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj) {
+static jlong Java_InnerStructB_getKey(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "getKey",
@@ -1098,14 +1114,14 @@ static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobje
   return _ret;
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
+static ::jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "getValue",
@@ -1113,87 +1129,45 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
   jstring _ret2 = static_cast<jstring>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
+  return ::jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
 }
 
 
 
 }  // namespace jni_zero::tests
 
-// Lazy definition of C++ classes JMyClass:
-#ifndef _JNI_ZERO_java_util_JLinkedList_DEFINED
-namespace java::util {
-class _JLinkedList : public _jobject {};
-using JLinkedList = _JLinkedList*;
-}  // namespace java::util
-#define _JNI_ZERO_java_util_JLinkedList_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_java_util_JMap_DEFINED
-namespace java::util {
-class _JMap : public _jobject {};
-using JMap = _JMap*;
-}  // namespace java::util
-#define _JNI_ZERO_java_util_JMap_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerEnum_DEFINED
-namespace this::is::a::package::prefix::org::jni_zero {
-class _JInnerEnum : public _jobject {};
-using JInnerEnum = _JInnerEnum*;
-}  // namespace this::is::a::package::prefix::org::jni_zero
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerEnum_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerInterface_DEFINED
-namespace this::is::a::package::prefix::org::jni_zero {
-class _JInnerInterface : public _jobject {};
-using JInnerInterface = _JInnerInterface*;
-}  // namespace this::is::a::package::prefix::org::jni_zero
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerInterface_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
-namespace this::is::a::package::prefix::org::jni_zero::extrapackage {
-class _JImportsTinySample : public _jobject {};
-using JImportsTinySample = _JImportsTinySample*;
-}  // namespace this::is::a::package::prefix::org::jni_zero::extrapackage
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
-#endif
-
-
-// Actual implementations of C++ classes JMyClass:
-// Declare the namespace so that it can be used by "using namespace"
+// jobject-subclass-aware definitions:
+// Ensure namespace exists for "using namespace"
 namespace jni_zero::tests {}
 
 namespace jni_zero_internal {
 
-using namespace jni_zero::tests;
+using namespace ::jni_zero::tests;
 
 template<>
-class _CalledByNatives<JSampleForTests> {
+class _CalledByNatives<::org::jni_zero::JSampleForTests> {
   public:
-  static jni_zero::ScopedJavaLocalRef<JSampleForTests> New(
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests> New(
       JNIEnv* env,
       JniIntWrapper foo,
       JniIntWrapper bar) {
     return Java_SampleForTests_Constructor(env, foo, bar)
-        .As<::this::is::a::package::prefix::org::jni_zero::JSampleForTests>();
+        .As<::org::jni_zero::JSampleForTests>();
   }
 
-  jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerStructA> addStructA(
+  ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests_InnerStructA> addStructA(
       JNIEnv* env,
-      const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>& a,
-      const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>& b) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+      const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructA>& a,
+      const ::jni_zero::JavaRef<::org::jni_zero::extrapackage::JImportsTinySample>& b) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_addStructA(env, *this_obj, a, b)
-        .As<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>();
+        .As<::org::jni_zero::JSampleForTests_InnerStructA>();
   }
 
-  jni_zero::ScopedJavaLocalRef<jclass> getClass(
+  ::jni_zero::ScopedJavaLocalRef<jclass> getClass(
       JNIEnv* env,
-      const jni_zero::JavaRef<jclass>& arg0) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+      const ::jni_zero::JavaRef<jclass>& arg0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_getClass(env, *this_obj, arg0);
   }
 
@@ -1201,7 +1175,7 @@ class _CalledByNatives<JSampleForTests> {
       JNIEnv* env,
       std::vector<const char*> const& array,
       const char* const& finalArg) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_getFirstString(
         env,
         *this_obj,
@@ -1209,39 +1183,39 @@ class _CalledByNatives<JSampleForTests> {
         std::move(finalArg));
   }
 
-  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerEnum> getInnerEnum(
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests_InnerEnum> getInnerEnum(
       JNIEnv* env) {
     return Java_SampleForTests_getInnerEnum(env)
-        .As<::this::is::a::package::prefix::org::jni_zero::JInnerEnum>();
+        .As<::org::jni_zero::JSampleForTests_InnerEnum>();
   }
 
-  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample> getInnerEnum(
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::extrapackage::JImportsTinySample> getInnerEnum(
       JNIEnv* env,
       JniIntWrapper a) {
     return Java_SampleForTests_getInnerEnum(env, a)
-        .As<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>();
+        .As<::org::jni_zero::extrapackage::JImportsTinySample>();
   }
 
-  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerInterface> getInnerInterface(
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests_InnerInterface> getInnerInterface(
       JNIEnv* env) {
     return Java_SampleForTests_getInnerInterface(env)
-        .As<::this::is::a::package::prefix::org::jni_zero::JInnerInterface>();
+        .As<::org::jni_zero::JSampleForTests_InnerInterface>();
   }
 
-  jni_zero::ScopedJavaLocalRef<jthrowable> getThrowable(
+  ::jni_zero::ScopedJavaLocalRef<jthrowable> getThrowable(
       JNIEnv* env,
-      const jni_zero::JavaRef<jthrowable>& arg0) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+      const ::jni_zero::JavaRef<jthrowable>& arg0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_getThrowable(env, *this_obj, arg0);
   }
 
   void iterateAndDoSomething(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
-    return Java_SampleForTests_iterateAndDoSomething(env, *this_obj);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    Java_SampleForTests_iterateAndDoSomething(env, *this_obj);
   }
 
   jint javaMethod(JNIEnv* env, JniIntWrapper _jcaller, JniIntWrapper ret) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_javaMethod(env, *this_obj, _jcaller, ret);
   }
 
@@ -1251,7 +1225,7 @@ class _CalledByNatives<JSampleForTests> {
       std::vector<int32_t> const& bar,
       JniIntWrapper baz,
       long bat) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_jniTypesAndAnnotations(
         env,
         *this_obj,
@@ -1274,26 +1248,26 @@ class _CalledByNatives<JSampleForTests> {
   }
 
   void methodThatThrowsException(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
-    return Java_SampleForTests_methodThatThrowsException(env, *this_obj);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    Java_SampleForTests_methodThatThrowsException(env, *this_obj);
   }
 
   jboolean methodWithAnnotationParamAssignment(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
     return Java_SampleForTests_methodWithAnnotationParamAssignment(env, *this_obj);
   }
 
   void methodWithGenericParams(
       JNIEnv* env,
-      const jni_zero::JavaRef<::java::util::JMap>& _env,
-      const jni_zero::JavaRef<::java::util::JLinkedList>& bar) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
-    return Java_SampleForTests_methodWithGenericParams(env, *this_obj, _env, bar);
+      const ::jni_zero::JavaRef<::java::util::JMap>& _env,
+      const ::jni_zero::JavaRef<::java::util::JLinkedList>& bar) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    Java_SampleForTests_methodWithGenericParams(env, *this_obj, _env, bar);
   }
 
   void packagePrivateJavaMethod(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleForTests>*>(this);
-    return Java_SampleForTests_packagePrivateJavaMethod(env, *this_obj);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    Java_SampleForTests_packagePrivateJavaMethod(env, *this_obj);
   }
 
   static std::vector<bool> primitiveArrays(
@@ -1323,29 +1297,29 @@ class _CalledByNatives<JSampleForTests> {
 };
 
 template<>
-class _CalledByNatives<JInnerStructA> {
+class _CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructA> {
   public:
-  static jni_zero::ScopedJavaLocalRef<JInnerStructA> create(
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests_InnerStructA> create(
       JNIEnv* env,
       jlong l,
       JniIntWrapper i,
-      const jni_zero::JavaRef<jstring>& s) {
+      const ::jni_zero::JavaRef<jstring>& s) {
     return Java_InnerStructA_create(env, l, i, s)
-        .As<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>();
+        .As<::org::jni_zero::JSampleForTests_InnerStructA>();
   }
 
 };
 
 template<>
-class _CalledByNatives<JInnerStructB> {
+class _CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructB> {
   public:
   jlong getKey(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JInnerStructB>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>*>(this);
     return Java_InnerStructB_getKey(env, *this_obj);
   }
 
-  jni_zero::ScopedJavaLocalRef<jstring> getValue(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JInnerStructB>*>(this);
+  ::jni_zero::ScopedJavaLocalRef<jstring> getValue(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>*>(this);
     return Java_InnerStructB_getValue(env, *this_obj);
   }
 
@@ -1353,6 +1327,25 @@ class _CalledByNatives<JInnerStructB> {
 
 
 }  // namespace jni_zero_internal
+
+namespace org::jni_zero {
+using JSampleForTestsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests>;
+using JSampleForTests_InnerStructAJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructA>;
+using JSampleForTests_InnerStructBJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructB>;
+}
+
+#ifndef _JNI_ZERO_JSampleForTestsJni_DEFINED
+using org::jni_zero::JSampleForTestsJni;
+#define _JNI_ZERO_JSampleForTestsJni_DEFINED
+#endif
+#ifndef _JNI_ZERO_JSampleForTests_InnerStructAJni_DEFINED
+using org::jni_zero::JSampleForTests_InnerStructAJni;
+#define _JNI_ZERO_JSampleForTests_InnerStructAJni_DEFINED
+#endif
+#ifndef _JNI_ZERO_JSampleForTests_InnerStructBJni_DEFINED
+using org::jni_zero::JSampleForTests_InnerStructBJni;
+#define _JNI_ZERO_JSampleForTests_InnerStructBJni_DEFINED
+#endif
 
 
 #endif  // this_is_a_package_prefix_org_jni_1zero_SampleForTests_JNI

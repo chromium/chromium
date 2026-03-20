@@ -17,6 +17,27 @@ import zipfile
 # limit.
 _TARGET_LINE_LENGTH = 100
 
+_CPP_RESERVED_KEYWORDS = {
+    "alignas", "alignof", "and", "and_eq", "asm", "atomic_cancel",
+    "atomic_commit", "atomic_noexcept", "auto", "bitand", "bitor", "bool",
+    "break", "case", "catch", "char", "char16_t", "char32_t", "char8_t",
+    "class", "compl", "concept", "const", "const_cast", "consteval",
+    "constexpr", "constinit", "continue", "contract_assert", "co_await",
+    "co_return", "co_yield", "decltype", "default", "delete", "do", "double",
+    "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false",
+    "final", "float", "for", "friend", "goto", "if", "import", "inline", "int",
+    "long", "module", "mutable", "namespace", "new", "noexcept", "not",
+    "not_eq", "nullptr", "operator", "or", "or_eq", "override", "post", "pre",
+    "private", "protected", "public", "reflexpr", "register",
+    "reinterpret_cast", "replaceable_if_eligible", "requires", "return",
+    "short", "signed", "sizeof", "static", "static_assert", "static_cast",
+    "struct", "switch", "synchronized", "template", "this", "thread_local",
+    "throw", "transaction_safe", "transaction_safe_dynamic",
+    "trivially_relocatable_if_eligible", "true", "try", "typedef", "typeid",
+    "typename", "union", "unsigned", "using", "virtual", "void", "volatile",
+    "wchar_t", "while", "xor", "xor_eq"
+}
+
 
 @dataclasses.dataclass(frozen=True)
 class JniMode:
@@ -116,12 +137,14 @@ class StringBuilder:
     if not skip_newline:
       self('\n')
     yield
-    if not skip_newline:
-      self('\n')
-    if self._in_cpp_macro:
-      self(f'}}  /* namespace{value} */\n')
+    if skip_newline:
+      self(f'}}\n')
     else:
-      self(f'}}  // namespace{value}\n')
+      self('\n')
+      if self._in_cpp_macro:
+        self(f'}}  /* namespace{value} */\n')
+      else:
+        self(f'}}  // namespace{value}\n')
 
   @contextlib.contextmanager
   def block(self, *, indent=2, after=None, no_trailing_newline=False):
@@ -180,6 +203,17 @@ def jni_mangle(name):
   """Performs JNI mangling on the given name."""
   # https://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/design.html#wp615
   return name.replace('_', '_1').replace('/', '_').replace('$', '_00024')
+
+
+def sanitize_cpp_keywords(value):
+  """
+  Add the string 1 to the method name if it is a C++ reserved keyword.
+  This is necessary because some strings are reserved keywords in C++ but not
+  Java, so we need to ensure these strings are not used in generated C++ code.
+  """
+  if value in _CPP_RESERVED_KEYWORDS:
+    return value + '1'
+  return value
 
 
 @contextlib.contextmanager

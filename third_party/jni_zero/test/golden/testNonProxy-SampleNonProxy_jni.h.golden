@@ -34,8 +34,10 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookma
     jstring title,
     jboolean isFolder,
     jlong parentId) {
-  jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);
-  jni_zero::JavaRef<jstring> title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, title);
+  auto url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      url);
+  auto title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      title);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -105,13 +107,20 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookma
     jbyteArray favicon,
     jstring title,
     jobject visits) {
-  jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);
-  jni_zero::JavaRef<jobject> created_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, created);
-  jni_zero::JavaRef<jobject> isBookmark_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, isBookmark);
-  jni_zero::JavaRef<jobject> date_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, date);
-  jni_zero::JavaRef<jbyteArray> favicon_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, favicon);
-  jni_zero::JavaRef<jstring> title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, title);
-  jni_zero::JavaRef<jobject> visits_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, visits);
+  auto url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      url);
+  auto created_ref = jni_zero::JavaRef<::java::lang::JLong>::CreateLeaky(env,
+      static_cast<::java::lang::JLong>(created));
+  auto isBookmark_ref = jni_zero::JavaRef<::java::lang::JBoolean>::CreateLeaky(env,
+      static_cast<::java::lang::JBoolean>(isBookmark));
+  auto date_ref = jni_zero::JavaRef<::java::lang::JLong>::CreateLeaky(env,
+      static_cast<::java::lang::JLong>(date));
+  auto favicon_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,
+      favicon);
+  auto title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      title);
+  auto visits_ref = jni_zero::JavaRef<::java::lang::JInteger>::CreateLeaky(env,
+      static_cast<::java::lang::JInteger>(visits));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -180,7 +189,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHist
     jclass jcaller,
     jbyteArray state,
     jint tabIndex) {
-  jni_zero::JavaRef<jbyteArray> state_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, state);
+  auto state_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,
+      state);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -247,7 +257,8 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
     JNIEnv* env,
     jobject jcaller,
     jstring find) {
-  jni_zero::JavaRef<jstring> find_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, find);
+  auto find_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      find);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -307,7 +318,8 @@ JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDoma
     JNIEnv* env,
     jclass jcaller,
     jstring url) {
-  jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);
+  auto url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      url);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -362,7 +374,8 @@ JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetS
     JNIEnv* env,
     jobject jcaller,
     jobject view) {
-  jni_zero::JavaRef<jobject> view_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, view);
+  auto view_ref = jni_zero::JavaRef<::android::view::JView>::CreateLeaky(env,
+      static_cast<::android::view::JView>(view));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -508,7 +521,8 @@ JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMess
     JNIEnv* env,
     jclass jcaller,
     jthrowable e) {
-  jni_zero::JavaRef<jthrowable> e_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env, e);
+  auto e_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,
+      e);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -546,10 +560,14 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBi
     jstring selection,
     jobjectArray selectionArgs,
     jstring sortOrder) {
-  jni_zero::JavaRef<jobjectArray> projection_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, projection);
-  jni_zero::JavaRef<jstring> selection_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, selection);
-  jni_zero::JavaRef<jobjectArray> selectionArgs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, selectionArgs);
-  jni_zero::JavaRef<jstring> sortOrder_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, sortOrder);
+  auto projection_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      projection);
+  auto selection_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      selection);
+  auto selectionArgs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      selectionArgs);
+  auto sortOrder_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
+      sortOrder);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -607,7 +625,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecogni
     jobject jcaller,
     jint sessionId,
     jobjectArray results) {
-  jni_zero::JavaRef<jobjectArray> results_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, results);
+  auto results_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      results);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -640,19 +659,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecogni
   dependent_context(0);
 }
 
-
-// Lazy definition of C++ classes JMyClass:
-
-// Actual implementations of C++ classes JMyClass:
-namespace jni_zero_internal {
-
-template<>
-class _CalledByNatives<JSampleNonProxy> {
-  public:
-};
-
-
-}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleNonProxy_JNI

@@ -24,7 +24,8 @@ JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1T
     jclass jcaller,
     jint a,
     jobject b) {
-  jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);
+  auto b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
+      b);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -52,7 +53,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinyS
     jclass jcaller,
     jobject a,
     jint b) {
-  jni_zero::JavaRef<jobject> a_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, a);
+  auto a_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
+      a);
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -71,19 +73,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinyS
   dependent_context(0);
 }
 
-
-// Lazy definition of C++ classes JMyClass:
-
-// Actual implementations of C++ classes JMyClass:
-namespace jni_zero_internal {
-
-template<>
-class _CalledByNatives<JTinySample> {
-  public:
-};
-
-
-}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_TinySample_JNI

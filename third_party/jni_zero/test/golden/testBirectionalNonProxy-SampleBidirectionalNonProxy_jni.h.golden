@@ -164,14 +164,14 @@ inline jclass org_jni_1zero_SampleBidirectionalNonProxy_clazz(JNIEnv* env) {
 // Native to Java functions
 static void Java_SampleBidirectionalNonProxy_addStructB(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jobject>& caller,
-    const jni_zero::JavaRef<jobject>& b) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& caller,
+    const ::jni_zero::JavaRef<jobject>& b) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "addStructB",
@@ -182,14 +182,14 @@ static void Java_SampleBidirectionalNonProxy_addStructB(
 
 static void Java_SampleBidirectionalNonProxy_setBool(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jobject>& b,
-    const jni_zero::JavaRef<jobject>& i) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& b,
+    const ::jni_zero::JavaRef<jobject>& i) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "setBool",
@@ -200,13 +200,13 @@ static void Java_SampleBidirectionalNonProxy_setBool(
 
 static void Java_SampleBidirectionalNonProxy_setStringBuilder(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const jni_zero::JavaRef<jobject>& sb) {
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& sb) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "setStringBuilder",
@@ -219,8 +219,8 @@ static double Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "testMethodWithNoParam",
@@ -232,13 +232,13 @@ static double Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env
 
 static void Java_SampleBidirectionalNonProxy_testMethodWithParam(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper iParam) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "testMethodWithParam",
@@ -247,15 +247,15 @@ static void Java_SampleBidirectionalNonProxy_testMethodWithParam(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), as_jint(iParam));
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_testMethodWithParamAndReturn(
+static ::jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_testMethodWithParamAndReturn(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper iParam) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
       env,
       clazz,
       "testMethodWithParamAndReturn",
@@ -263,16 +263,16 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(iParam));
   jstring _ret2 = static_cast<jstring>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
+  return ::jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(
+static ::jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(
     JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "testStaticMethodWithNoParam",
@@ -280,7 +280,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
   jstring _ret2 = static_cast<jstring>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
+  return ::jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
 }
 
 static int32_t Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
@@ -289,8 +289,8 @@ static int32_t Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "testStaticMethodWithParam",
@@ -301,73 +301,31 @@ static int32_t Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
 }
 
 
-// Lazy definition of C++ classes JMyClass:
-#ifndef _JNI_ZERO_java_lang_JInteger_DEFINED
-namespace java::lang {
-class _JInteger : public _jobject {};
-using JInteger = _JInteger*;
-}  // namespace java::lang
-#define _JNI_ZERO_java_lang_JInteger_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_java_lang_JStringBuilder_DEFINED
-namespace java::lang {
-class _JStringBuilder : public _jobject {};
-using JStringBuilder = _JStringBuilder*;
-}  // namespace java::lang
-#define _JNI_ZERO_java_lang_JStringBuilder_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_org_jni_zero_JBoolean_DEFINED
-namespace org::jni_zero {
-class _JBoolean : public _jobject {};
-using JBoolean = _JBoolean*;
-}  // namespace org::jni_zero
-#define _JNI_ZERO_org_jni_zero_JBoolean_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
-namespace org::jni_zero {
-class _JSampleForTests : public _jobject {};
-using JSampleForTests = _JSampleForTests*;
-}  // namespace org::jni_zero
-#define _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_org_jni_zero_JInnerStructB_DEFINED
-namespace org::jni_zero {
-class _JInnerStructB : public _jobject {};
-using JInnerStructB = _JInnerStructB*;
-}  // namespace org::jni_zero
-#define _JNI_ZERO_org_jni_zero_JInnerStructB_DEFINED
-#endif
-
-
-// Actual implementations of C++ classes JMyClass:
+// jobject-subclass-aware definitions:
 namespace jni_zero_internal {
 
 template<>
-class _CalledByNatives<JSampleBidirectionalNonProxy> {
+class _CalledByNatives<::org::jni_zero::JSampleBidirectionalNonProxy> {
   public:
   void addStructB(
       JNIEnv* env,
-      const jni_zero::JavaRef<::org::jni_zero::JSampleForTests>& caller,
-      const jni_zero::JavaRef<::org::jni_zero::JInnerStructB>& b) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleBidirectionalNonProxy>*>(this);
-    return Java_SampleBidirectionalNonProxy_addStructB(env, *this_obj, caller, b);
+      const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>& caller,
+      const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>& b) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleBidirectionalNonProxy>*>(this);
+    Java_SampleBidirectionalNonProxy_addStructB(env, *this_obj, caller, b);
   }
 
   void setBool(
       JNIEnv* env,
-      const jni_zero::JavaRef<::org::jni_zero::JBoolean>& b,
-      const jni_zero::JavaRef<::java::lang::JInteger>& i) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleBidirectionalNonProxy>*>(this);
-    return Java_SampleBidirectionalNonProxy_setBool(env, *this_obj, b, i);
+      const ::jni_zero::JavaRef<::org::jni_zero::JBoolean>& b,
+      const ::jni_zero::JavaRef<::java::lang::JInteger>& i) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleBidirectionalNonProxy>*>(this);
+    Java_SampleBidirectionalNonProxy_setBool(env, *this_obj, b, i);
   }
 
-  void setStringBuilder(JNIEnv* env, const jni_zero::JavaRef<::java::lang::JStringBuilder>& sb) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleBidirectionalNonProxy>*>(this);
-    return Java_SampleBidirectionalNonProxy_setStringBuilder(env, *this_obj, sb);
+  void setStringBuilder(JNIEnv* env, const ::jni_zero::JavaRef<::java::lang::JStringBuilder>& sb) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleBidirectionalNonProxy>*>(this);
+    Java_SampleBidirectionalNonProxy_setStringBuilder(env, *this_obj, sb);
   }
 
   static double testMethodWithNoParam(JNIEnv* env) {
@@ -375,18 +333,18 @@ class _CalledByNatives<JSampleBidirectionalNonProxy> {
   }
 
   void testMethodWithParam(JNIEnv* env, JniIntWrapper iParam) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleBidirectionalNonProxy>*>(this);
-    return Java_SampleBidirectionalNonProxy_testMethodWithParam(env, *this_obj, iParam);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleBidirectionalNonProxy>*>(this);
+    Java_SampleBidirectionalNonProxy_testMethodWithParam(env, *this_obj, iParam);
   }
 
-  jni_zero::ScopedJavaLocalRef<jstring> testMethodWithParamAndReturn(
+  ::jni_zero::ScopedJavaLocalRef<jstring> testMethodWithParamAndReturn(
       JNIEnv* env,
       JniIntWrapper iParam) const {
-    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JSampleBidirectionalNonProxy>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleBidirectionalNonProxy>*>(this);
     return Java_SampleBidirectionalNonProxy_testMethodWithParamAndReturn(env, *this_obj, iParam);
   }
 
-  static jni_zero::ScopedJavaLocalRef<jstring> testStaticMethodWithNoParam(JNIEnv* env) {
+  static ::jni_zero::ScopedJavaLocalRef<jstring> testStaticMethodWithNoParam(JNIEnv* env) {
     return Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(env);
   }
 
@@ -398,6 +356,15 @@ class _CalledByNatives<JSampleBidirectionalNonProxy> {
 
 
 }  // namespace jni_zero_internal
+
+namespace org::jni_zero {
+using JSampleBidirectionalNonProxyJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleBidirectionalNonProxy>;
+}
+
+#ifndef _JNI_ZERO_JSampleBidirectionalNonProxyJni_DEFINED
+using org::jni_zero::JSampleBidirectionalNonProxyJni;
+#define _JNI_ZERO_JSampleBidirectionalNonProxyJni_DEFINED
+#endif
 
 
 #endif  // org_jni_1zero_SampleBidirectionalNonProxy_JNI

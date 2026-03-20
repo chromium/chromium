@@ -27,8 +27,10 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jclass jcaller,
     jobject caller,
     jobject b) {
-  jni_zero::JavaRef<jobject> caller_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, caller);
-  jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);
+  auto caller_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests>(caller));
+  auto b_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleForTests_InnerStructB>(b));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -59,8 +61,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jclass jcaller,
     jobject a,
     jobject b) {
-  jni_zero::JavaRef<jintArray> a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a));
-  jni_zero::JavaRef<jobjectArray> b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b));
+  auto a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env,
+      static_cast<jintArray>(a));
+  auto b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(b));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -91,8 +95,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jclass jcaller,
     jobject a,
     jobject b) {
-  jni_zero::JavaRef<jintArray> a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a));
-  jni_zero::JavaRef<jobjectArray> b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b));
+  auto a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env,
+      static_cast<jintArray>(a));
+  auto b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(b));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -145,7 +151,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     JNIEnv* env,
     jclass jcaller,
     jobject arg) {
-  jni_zero::JavaRef<jobjectArray> arg_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg));
+  auto arg_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
+      static_cast<jobjectArray>(arg));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -176,8 +183,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jclass jcaller,
     jobject b,
     jobject i) {
-  jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);
-  jni_zero::JavaRef<jobject> i_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, i);
+  auto b_ref = jni_zero::JavaRef<::org::jni_zero::internal::JBoolean>::CreateLeaky(env,
+      static_cast<::org::jni_zero::internal::JBoolean>(b));
+  auto i_ref = jni_zero::JavaRef<::org::jni_zero::JSampleProxyEdgeCases_Integer>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleProxyEdgeCases_Integer>(i));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -205,7 +214,8 @@ JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
     JNIEnv* env,
     jclass jcaller,
     jobject sb) {
-  jni_zero::JavaRef<jobject> sb_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, sb);
+  auto sb_ref = jni_zero::JavaRef<::java::lang::JStringBuilder>::CreateLeaky(env,
+      static_cast<::java::lang::JStringBuilder>(sb));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -373,19 +383,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStat
   dependent_context(0);
 }
 
-
-// Lazy definition of C++ classes JMyClass:
-
-// Actual implementations of C++ classes JMyClass:
-namespace jni_zero_internal {
-
-template<>
-class _CalledByNatives<JSampleProxyEdgeCases> {
-  public:
-};
-
-
-}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleProxyEdgeCases_JNI

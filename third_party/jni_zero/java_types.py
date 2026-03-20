@@ -21,6 +21,7 @@ CPP_TYPE_BY_JAVA_TYPE = {
     'short': 'jshort',
     'void': 'void',
     'java/lang/Class': 'jclass',
+    'java/lang/Object': 'jobject',
     'java/lang/String': 'jstring',
     'java/lang/Throwable': 'jthrowable',
 }
@@ -98,6 +99,16 @@ class JavaClass:
     return self.name.rsplit('$', 1)[-1]
 
   @property
+  def jobject_name(self):
+    name_with_underscores = self.name.replace('$', '_')
+    return CPP_TYPE_BY_JAVA_TYPE.get(self.full_name_with_slashes,
+                                     f'J{name_with_underscores}')
+
+  @property
+  def mirror_namespace(self):
+    return self.class_without_prefix.package_with_colons
+
+  @property
   def package_with_slashes(self):
     return self._fqn.rsplit('/', 1)[0]
 
@@ -108,6 +119,10 @@ class JavaClass:
   @property
   def package_with_colons(self):
     return self.package_with_slashes.replace('/', '::')
+
+  @property
+  def package_with_underscores(self):
+    return self.package_with_slashes.replace('/', '_')
 
   @property
   def full_name_with_slashes(self):
@@ -151,6 +166,14 @@ class JavaClass:
 
   def to_cpp(self):
     return common.jni_mangle(self.full_name_with_slashes)
+
+  def enable_mirror(self):
+    return self.full_name_with_slashes not in CPP_TYPE_BY_JAVA_TYPE
+
+  def to_mirror_cpp(self):
+    if not self.enable_mirror():
+      return self.jobject_name
+    return f'::{self.mirror_namespace}::{self.jobject_name}'
 
   def as_type(self):
     return JavaType(java_class=self)
@@ -267,6 +290,11 @@ class JavaType:
     return CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(
         self.non_array_full_name_with_slashes, 'jobject')
 
+  def to_mirror_cpp(self):
+    if self.enable_mirror():
+      return self.java_class.to_mirror_cpp()
+    return self.to_cpp()
+
   def to_cpp_default_value(self):
     """Returns a valid C return value for the given java type."""
     if self.is_primitive():
@@ -277,12 +305,10 @@ class JavaType:
     """Converts to types used over JNI boundary."""
     return self if self.is_primitive() else OBJECT
 
-  def enable_mirror(self, java_class=None):
+  def enable_mirror(self):
     """Whether to use a jobject subclass e.g. JMyClass."""
-    return (self.java_class and self.java_class.full_name_with_slashes
-            not in CPP_TYPE_BY_JAVA_TYPE and not self.converted_type
-            and self.array_dimensions == 0
-            and (not java_class or self.java_class == java_class))
+    return (self.java_class and self.java_class.enable_mirror()
+            and not self.converted_type and self.array_dimensions == 0)
 
 
 @dataclasses.dataclass(frozen=True)

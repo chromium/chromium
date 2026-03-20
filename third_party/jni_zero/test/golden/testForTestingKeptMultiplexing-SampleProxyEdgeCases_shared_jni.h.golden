@@ -11,17 +11,90 @@
 #include "overridden/jni_zero_internal.h"
 #include "extra_include.h"
 
-// C++ classes that mirror the Java classes:
+// Relevant jobject subclasses:
+#ifndef _JNI_ZERO_java_lang_JStringBuilder_DEFINED
+namespace java::lang {
+class _JStringBuilder : public _jobject {};
+using JStringBuilder = _JStringBuilder*;
+}
+#define _JNI_ZERO_java_lang_JStringBuilder_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JStringBuilder_DEFINED
+using ::java::lang::JStringBuilder;
+#define _JNI_ZERO_JStringBuilder_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
+namespace org::jni_zero {
+class _JSampleForTests : public _jobject {};
+using JSampleForTests = _JSampleForTests*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleForTests_DEFINED
+using ::org::jni_zero::JSampleForTests;
+#define _JNI_ZERO_JSampleForTests_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+namespace org::jni_zero {
+class _JSampleForTests_InnerStructB : public _jobject {};
+using JSampleForTests_InnerStructB = _JSampleForTests_InnerStructB*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerStructB;
+#define _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
 namespace org::jni_zero {
 class _JSampleProxyEdgeCases : public _jobject {};
 using JSampleProxyEdgeCases = _JSampleProxyEdgeCases*;
-}  // namespace org::jni_zero
+}
 #define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
 #endif
 
-using JSampleProxyEdgeCases = ::org::jni_zero::JSampleProxyEdgeCases;
-using JSampleProxyEdgeCasesJni = ::jni_zero_internal::_CalledByNatives<JSampleProxyEdgeCases>;
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleProxyEdgeCases_DEFINED
+using ::org::jni_zero::JSampleProxyEdgeCases;
+#define _JNI_ZERO_JSampleProxyEdgeCases_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_Integer_DEFINED
+namespace org::jni_zero {
+class _JSampleProxyEdgeCases_Integer : public _jobject {};
+using JSampleProxyEdgeCases_Integer = _JSampleProxyEdgeCases_Integer*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_Integer_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleProxyEdgeCases_Integer_DEFINED
+using ::org::jni_zero::JSampleProxyEdgeCases_Integer;
+#define _JNI_ZERO_JSampleProxyEdgeCases_Integer_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_internal_JBoolean_DEFINED
+namespace org::jni_zero::internal {
+class _JBoolean : public _jobject {};
+using JBoolean = _JBoolean*;
+}
+#define _JNI_ZERO_org_jni_zero_internal_JBoolean_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JBoolean_DEFINED
+using ::org::jni_zero::internal::JBoolean;
+#define _JNI_ZERO_JBoolean_DEFINED
+#endif
 
 
 

@@ -11,17 +11,104 @@
 #include "overridden/jni_zero_internal.h"
 #include "extra_include.h"
 
-// C++ classes that mirror the Java classes:
+// Relevant jobject subclasses:
+#ifndef _JNI_ZERO_android_graphics_JBitmap_DEFINED
+namespace android::graphics {
+class _JBitmap : public _jobject {};
+using JBitmap = _JBitmap*;
+}
+#define _JNI_ZERO_android_graphics_JBitmap_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JBitmap_DEFINED
+using ::android::graphics::JBitmap;
+#define _JNI_ZERO_JBitmap_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_android_view_JView_DEFINED
+namespace android::view {
+class _JView : public _jobject {};
+using JView = _JView*;
+}
+#define _JNI_ZERO_android_view_JView_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JView_DEFINED
+using ::android::view::JView;
+#define _JNI_ZERO_JView_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_java_lang_JBoolean_DEFINED
+namespace java::lang {
+class _JBoolean : public _jobject {};
+using JBoolean = _JBoolean*;
+}
+#define _JNI_ZERO_java_lang_JBoolean_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JBoolean_DEFINED
+using ::java::lang::JBoolean;
+#define _JNI_ZERO_JBoolean_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_java_lang_JInteger_DEFINED
+namespace java::lang {
+class _JInteger : public _jobject {};
+using JInteger = _JInteger*;
+}
+#define _JNI_ZERO_java_lang_JInteger_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JInteger_DEFINED
+using ::java::lang::JInteger;
+#define _JNI_ZERO_JInteger_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_java_lang_JLong_DEFINED
+namespace java::lang {
+class _JLong : public _jobject {};
+using JLong = _JLong*;
+}
+#define _JNI_ZERO_java_lang_JLong_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JLong_DEFINED
+using ::java::lang::JLong;
+#define _JNI_ZERO_JLong_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_org_jni_zero_JSampleNonProxy_DEFINED
 namespace org::jni_zero {
 class _JSampleNonProxy : public _jobject {};
 using JSampleNonProxy = _JSampleNonProxy*;
-}  // namespace org::jni_zero
+}
 #define _JNI_ZERO_org_jni_zero_JSampleNonProxy_DEFINED
 #endif
 
-using JSampleNonProxy = ::org::jni_zero::JSampleNonProxy;
-using JSampleNonProxyJni = ::jni_zero_internal::_CalledByNatives<JSampleNonProxy>;
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleNonProxy_DEFINED
+using ::org::jni_zero::JSampleNonProxy;
+#define _JNI_ZERO_JSampleNonProxy_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleNonProxy_OnFrameAvailableListener_DEFINED
+namespace org::jni_zero {
+class _JSampleNonProxy_OnFrameAvailableListener : public _jobject {};
+using JSampleNonProxy_OnFrameAvailableListener = _JSampleNonProxy_OnFrameAvailableListener*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleNonProxy_OnFrameAvailableListener_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleNonProxy_OnFrameAvailableListener_DEFINED
+using ::org::jni_zero::JSampleNonProxy_OnFrameAvailableListener;
+#define _JNI_ZERO_JSampleNonProxy_OnFrameAvailableListener_DEFINED
+#endif
 
 
 

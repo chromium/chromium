@@ -11,17 +11,90 @@
 #include "overridden/jni_zero_internal.h"
 #include "extra_include.h"
 
-// C++ classes that mirror the Java classes:
+// Relevant jobject subclasses:
+#ifndef _JNI_ZERO_java_lang_JInteger_DEFINED
+namespace java::lang {
+class _JInteger : public _jobject {};
+using JInteger = _JInteger*;
+}
+#define _JNI_ZERO_java_lang_JInteger_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JInteger_DEFINED
+using ::java::lang::JInteger;
+#define _JNI_ZERO_JInteger_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_java_lang_JStringBuilder_DEFINED
+namespace java::lang {
+class _JStringBuilder : public _jobject {};
+using JStringBuilder = _JStringBuilder*;
+}
+#define _JNI_ZERO_java_lang_JStringBuilder_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JStringBuilder_DEFINED
+using ::java::lang::JStringBuilder;
+#define _JNI_ZERO_JStringBuilder_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JBoolean_DEFINED
+namespace org::jni_zero {
+class _JBoolean : public _jobject {};
+using JBoolean = _JBoolean*;
+}
+#define _JNI_ZERO_org_jni_zero_JBoolean_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JBoolean_DEFINED
+using ::org::jni_zero::JBoolean;
+#define _JNI_ZERO_JBoolean_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_org_jni_zero_JSampleBidirectionalNonProxy_DEFINED
 namespace org::jni_zero {
 class _JSampleBidirectionalNonProxy : public _jobject {};
 using JSampleBidirectionalNonProxy = _JSampleBidirectionalNonProxy*;
-}  // namespace org::jni_zero
+}
 #define _JNI_ZERO_org_jni_zero_JSampleBidirectionalNonProxy_DEFINED
 #endif
 
-using JSampleBidirectionalNonProxy = ::org::jni_zero::JSampleBidirectionalNonProxy;
-using JSampleBidirectionalNonProxyJni = ::jni_zero_internal::_CalledByNatives<JSampleBidirectionalNonProxy>;
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleBidirectionalNonProxy_DEFINED
+using ::org::jni_zero::JSampleBidirectionalNonProxy;
+#define _JNI_ZERO_JSampleBidirectionalNonProxy_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
+namespace org::jni_zero {
+class _JSampleForTests : public _jobject {};
+using JSampleForTests = _JSampleForTests*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleForTests_DEFINED
+using ::org::jni_zero::JSampleForTests;
+#define _JNI_ZERO_JSampleForTests_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+namespace org::jni_zero {
+class _JSampleForTests_InnerStructB : public _jobject {};
+using JSampleForTests_InnerStructB = _JSampleForTests_InnerStructB*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerStructB;
+#define _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
+#endif
 
 
 

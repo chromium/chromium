@@ -64,7 +64,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     JNIEnv* env,
     jclass jcaller,
     jobject handle) {
-  jni_zero::JavaRef<jobject> handle_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, handle);
+  auto handle_ref = jni_zero::JavaRef<::org::jni_zero::JSampleUniqueAnnotations_Handle>::CreateLeaky(env,
+      static_cast<::org::jni_zero::JSampleUniqueAnnotations_Handle>(handle));
   /* Lambda required to make "if constexpr" work properly. */
   auto dependent_context = [&](auto) {
     /* Lambda required to disambiguate overloads. */
@@ -140,12 +141,12 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeC
 // Native to Java functions
 static void Java_SampleUniqueAnnotations_useBar1(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& inner) {
+    const ::jni_zero::JavaRef<jobject>& inner) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleUniqueAnnotations_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "useBar1",
@@ -155,30 +156,29 @@ static void Java_SampleUniqueAnnotations_useBar1(
 }
 
 
-// Lazy definition of C++ classes JMyClass:
-#ifndef _JNI_ZERO_org_jni_zero_JInner_DEFINED
-namespace org::jni_zero {
-class _JInner : public _jobject {};
-using JInner = _JInner*;
-}  // namespace org::jni_zero
-#define _JNI_ZERO_org_jni_zero_JInner_DEFINED
-#endif
-
-
-// Actual implementations of C++ classes JMyClass:
+// jobject-subclass-aware definitions:
 namespace jni_zero_internal {
 
 template<>
-class _CalledByNatives<JSampleUniqueAnnotations> {
+class _CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations> {
   public:
-  static void useBar1(JNIEnv* env, const jni_zero::JavaRef<::org::jni_zero::JInner>& inner) {
-    return Java_SampleUniqueAnnotations_useBar1(env, inner);
+  static void useBar1(JNIEnv* env, const ::jni_zero::JavaRef<::org::jni_zero::JBar1_Inner>& inner) {
+    Java_SampleUniqueAnnotations_useBar1(env, inner);
   }
 
 };
 
 
 }  // namespace jni_zero_internal
+
+namespace org::jni_zero {
+using JSampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations>;
+}
+
+#ifndef _JNI_ZERO_JSampleUniqueAnnotationsJni_DEFINED
+using org::jni_zero::JSampleUniqueAnnotationsJni;
+#define _JNI_ZERO_JSampleUniqueAnnotationsJni_DEFINED
+#endif
 
 
 #endif  // org_jni_1zero_SampleUniqueAnnotations_JNI

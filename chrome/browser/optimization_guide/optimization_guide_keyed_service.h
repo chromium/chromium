@@ -111,9 +111,7 @@ class OptimizationGuideKeyedService
   ~OptimizationGuideKeyedService() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<
-      optimization_guide::android::JOptimizationGuideBridge>
-  GetJavaObject();
+  base::android::ScopedJavaLocalRef<JOptimizationGuideBridge> GetJavaObject();
 #endif
 
   // Constructs a ModelBrokerClient with remote fallback capability.
