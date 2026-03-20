@@ -8,10 +8,8 @@
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
-#include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
-#include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -29,13 +27,9 @@ class MockMultistepFilterService : public MultistepFilterService {
  public:
   MockMultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
-      std::unique_ptr<FilterStore> filter_store,
-      std::unique_ptr<FilterExtractor> filter_extractor,
-      std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator)
+      std::unique_ptr<FilterStore> filter_store)
       : MultistepFilterService(std::move(annotation_index_client),
                                std::move(filter_store),
-                               std::move(filter_extractor),
-                               std::move(filter_suggestion_generator),
                                /*identity_manager=*/nullptr) {
     ON_CALL(*this, GenerateFilterSuggestions)
         .WillByDefault(
@@ -72,17 +66,9 @@ class FilterNavigationObserverTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    auto annotation_index_client =
-        std::make_unique<MockAnnotationIndexClient>();
-    auto filter_store = std::make_unique<FilterStore>();
-    auto filter_extractor = std::make_unique<FilterExtractor>(
-        *annotation_index_client, *filter_store);
-    auto filter_suggestion_generator =
-        std::make_unique<FilterSuggestionGenerator>(*annotation_index_client,
-                                                    *filter_store);
     mock_service_ = std::make_unique<MockMultistepFilterService>(
-        std::move(annotation_index_client), std::move(filter_store),
-        std::move(filter_extractor), std::move(filter_suggestion_generator));
+        std::make_unique<MockAnnotationIndexClient>(),
+        std::make_unique<FilterStore>());
     auto delegate = std::make_unique<MockUiDelegate>();
     delegate_ = delegate.get();
 

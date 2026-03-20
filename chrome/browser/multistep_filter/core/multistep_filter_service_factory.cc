@@ -13,7 +13,6 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
-#include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -48,19 +47,8 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  std::unique_ptr<AnnotationIndexClient> annotation_index_client =
-      AnnotationIndexClient::Create();
-  std::unique_ptr<FilterStore> filter_store = std::make_unique<FilterStore>();
-  std::unique_ptr<FilterExtractor> filter_extractor =
-      std::make_unique<FilterExtractor>(*annotation_index_client,
-                                        *filter_store);
-  std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator =
-      std::make_unique<FilterSuggestionGenerator>(*annotation_index_client,
-                                                  *filter_store);
-
   return std::make_unique<MultistepFilterService>(
-      std::move(annotation_index_client), std::move(filter_store),
-      std::move(filter_extractor), std::move(filter_suggestion_generator),
+      AnnotationIndexClient::Create(), std::make_unique<FilterStore>(),
       identity_manager);
 }
 

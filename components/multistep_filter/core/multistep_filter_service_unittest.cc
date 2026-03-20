@@ -15,6 +15,7 @@
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/multistep_filter_service_test_api.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -31,28 +32,20 @@ class MockFilterExtractor : public FilterExtractor {
   MockFilterExtractor(AnnotationIndexClient& annotation_index_client,
                       FilterStore& filter_store)
       : FilterExtractor(annotation_index_client, filter_store) {}
-  MOCK_METHOD(void, ExtractAnnotationFromUrl, (const GURL&), (override));
+  MOCK_METHOD(void, ExtractAnnotationFromUrl, (const GURL& url), (override));
 };
 
 class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
  public:
-  MockFilterSuggestionGenerator(AnnotationIndexClient& client,
-                                FilterStore& store)
-      : FilterSuggestionGenerator(client, store) {
-    ON_CALL(*this, GenerateSuggestion)
-        .WillByDefault(
-            [](const GURL& url,
-               base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-                   callback) {
-              CHECK(callback);
-              std::move(callback).Run(std::nullopt);
-            });
-  }
-  MOCK_METHOD(void,
-              GenerateSuggestion,
-              (const GURL&,
-               base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>),
-              (override));
+  MockFilterSuggestionGenerator(AnnotationIndexClient& annotation_index_client,
+                                FilterStore& filter_store)
+      : FilterSuggestionGenerator(annotation_index_client, filter_store) {}
+  MOCK_METHOD(
+      void,
+      GenerateSuggestion,
+      (const GURL& url,
+       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
+      (override));
 };
 
 class MultistepFilterServiceTest : public testing::Test {
@@ -65,20 +58,22 @@ class MultistepFilterServiceTest : public testing::Test {
     auto annotation_index_client =
         std::make_unique<MockAnnotationIndexClient>();
     auto filter_store = std::make_unique<FilterStore>();
-
     auto filter_extractor = std::make_unique<MockFilterExtractor>(
         *annotation_index_client, *filter_store);
-    mock_extractor_ = filter_extractor.get();
-
     auto filter_suggestion_generator =
         std::make_unique<MockFilterSuggestionGenerator>(
             *annotation_index_client, *filter_store);
+
+    mock_extractor_ = filter_extractor.get();
     mock_generator_ = filter_suggestion_generator.get();
 
     service_ = std::make_unique<MultistepFilterService>(
         std::move(annotation_index_client), std::move(filter_store),
-        std::move(filter_extractor), std::move(filter_suggestion_generator),
         identity_test_env_.identity_manager());
+
+    test_api(*service_).set_filter_extractor(std::move(filter_extractor));
+    test_api(*service_).set_filter_suggestion_generator(
+        std::move(filter_suggestion_generator));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -113,7 +108,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
   CreateService();
   const GURL kUrl("http://example.com");
 
-  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(_)).Times(0);
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
 
   service_->ExtractAnnotation(kUrl);
 }
@@ -142,19 +137,14 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion(kUrl, _));
 
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
-      callback;
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));
-
-  service_->GenerateFilterSuggestions(kUrl, callback.Get());
+  service_->GenerateFilterSuggestions(kUrl, base::DoNothing());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
   CreateService();
   const GURL kUrl("http://example.com");
 
-  EXPECT_CALL(*mock_generator_, GenerateSuggestion(_, _)).Times(0);
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
 
   base::MockCallback<
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
@@ -188,8 +178,6 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullCallback) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
-  auto mock_client = std::make_unique<MockAnnotationIndexClient>();
-  auto store = std::make_unique<FilterStore>();
 
   CreateService();
   const GURL kUrl("http://example.com");

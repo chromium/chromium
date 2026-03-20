@@ -22,6 +22,7 @@ class IdentityManager;
 namespace multistep_filter {
 
 class AnnotationIndexClient;
+class MultistepFilterServiceTestApi;
 class FilterExtractor;
 class FilterStore;
 class FilterSuggestionGenerator;
@@ -37,9 +38,8 @@ class MultistepFilterService : public KeyedService {
   MultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
       std::unique_ptr<FilterStore> filter_store,
-      std::unique_ptr<FilterExtractor> filter_extractor,
-      std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator,
       signin::IdentityManager* identity_manager);
+
   MultistepFilterService(const MultistepFilterService&) = delete;
   MultistepFilterService& operator=(const MultistepFilterService&) = delete;
 
@@ -56,6 +56,8 @@ class MultistepFilterService : public KeyedService {
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 
  private:
+  friend class MultistepFilterServiceTestApi;
+
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
   bool IsUserSignedIn() const;

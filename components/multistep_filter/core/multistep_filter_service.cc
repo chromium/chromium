@@ -18,18 +18,16 @@ namespace multistep_filter {
 MultistepFilterService::MultistepFilterService(
     std::unique_ptr<AnnotationIndexClient> annotation_index_client,
     std::unique_ptr<FilterStore> filter_store,
-    std::unique_ptr<FilterExtractor> filter_extractor,
-    std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator,
     signin::IdentityManager* identity_manager)
     : annotation_index_client_(std::move(annotation_index_client)),
       filter_store_(std::move(filter_store)),
-      filter_extractor_(std::move(filter_extractor)),
-      filter_suggestion_generator_(std::move(filter_suggestion_generator)),
       identity_manager_(identity_manager) {
   CHECK(annotation_index_client_);
   CHECK(filter_store_);
-  CHECK(filter_extractor_);
-  CHECK(filter_suggestion_generator_);
+  filter_extractor_ = std::make_unique<FilterExtractor>(
+      *annotation_index_client_, *filter_store_);
+  filter_suggestion_generator_ = std::make_unique<FilterSuggestionGenerator>(
+      *annotation_index_client_, *filter_store_);
 }
 
 MultistepFilterService::~MultistepFilterService() = default;
