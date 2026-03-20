@@ -194,6 +194,14 @@ void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
   }
   simple_url_loader_.reset();
 
+  // On network errors, retry once.
+  if (net_error_code != net::OK && !has_retried_on_network_error_) {
+    has_retried_on_network_error_ = true;
+    state_ = State::kNotStarted;  // Avoid CHECK() in Start().
+    Start(std::move(callback_));
+    return;
+  }
+
   // If the response code indicates that the token might not be valid,
   // invalidate the token and try again.
   if (http_response_code == net::HTTP_UNAUTHORIZED &&

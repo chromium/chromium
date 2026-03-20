@@ -89,9 +89,11 @@ class DeviceStatisticsRequestImpl : public DeviceStatisticsRequest {
   base::OnceClosure callback_;
 
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
-  bool has_retried_authorization_ = false;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  bool has_retried_authorization_ = false;
+  bool has_retried_on_network_error_ = false;
 
   std::vector<sync_pb::SyncEntity> results_;
 };

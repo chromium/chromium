@@ -55,6 +55,12 @@ class DeviceStatisticsRequestImplTest : public testing::Test {
         GURL(kTestUrl), std::move(unauthorized_head), "", unauthorized_status);
   }
 
+  void SetNetworkErrorResponse() {
+    network::URLLoaderCompletionStatus status(net::ERR_FAILED);
+    test_url_loader_factory_.AddResponse(
+        GURL(kTestUrl), network::mojom::URLResponseHead::New(), "", status);
+  }
+
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -97,14 +103,39 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleAuthError) {
   EXPECT_EQ(DeviceStatisticsRequest::State::kFailed, request.GetState());
 }
 
-TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleNetworkError) {
-  auto head = network::mojom::URLResponseHead::New();
-  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      "HTTP/1.1 500 Internal Server Error\nContent-Type: "
-      "application/octet-stream");
-  network::URLLoaderCompletionStatus status(net::ERR_FAILED);
-  test_url_loader_factory_.AddResponse(GURL(kTestUrl), std::move(head), "",
-                                       status);
+TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnNetworkError) {
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
+
+  // First response is a network error.
+  SetNetworkErrorResponse();
+
+  base::test::TestFuture<void> future;
+  request.Start(future.GetCallback());
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id_token",
+          {GaiaConstants::kChromeSyncOAuth2Scope});
+
+  // The request should retry (which includes requesting an access token again).
+  // Set up the second server response as "OK".
+  SetOkResponse("test_client");
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id_token",
+          {GaiaConstants::kChromeSyncOAuth2Scope});
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(DeviceStatisticsRequest::State::kComplete, request.GetState());
+  ASSERT_EQ(1u, request.GetResults().size());
+  EXPECT_EQ("test_client",
+            request.GetResults()[0].specifics().device_info().client_name());
+}
+
+TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnlyOnceOnNetworkError) {
+  // The server always responds with a network error.
+  SetNetworkErrorResponse();
 
   DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
                                       shared_url_loader_factory_, "user_agent",
@@ -116,6 +147,14 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleNetworkError) {
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           "token", base::Time::Max(), "id_token",
           {GaiaConstants::kChromeSyncOAuth2Scope});
+
+  // The request should retry exactly once (which includes requesting an access
+  // token again).
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id_token",
+          {GaiaConstants::kChromeSyncOAuth2Scope});
+
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(DeviceStatisticsRequest::State::kFailed, request.GetState());
 }
