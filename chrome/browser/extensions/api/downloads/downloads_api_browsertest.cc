@@ -92,6 +92,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
@@ -102,14 +106,14 @@
 #include "chrome/test/base/ui_test_utils.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/download/download_display.h"
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#endif
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -147,6 +151,17 @@ bool IsDownloadExternallyRemoved(download::DownloadItem* item) {
 void OnFileDeleted(bool success) {}
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_ANDROID)
+// Returns the base filename or the empty string on error.
+std::string FilenameFromContentUri(const base::FilePath& content_uri) {
+  std::u16string display_name;
+  if (base::MaybeGetFileDisplayName(content_uri, &display_name)) {
+    return base::UTF16ToUTF8(display_name);
+  }
+  return std::string();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Comparator that orders download items by their ID. Can be used with
 // std::sort.
@@ -3384,11 +3399,9 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Tests that overriding a dangerous file extension to a safe extension will
 // trigger the dangerous prompt and will not change the extension.
-// TODO(crbug.com/405219117): Port to desktop Android when the dangerous
-// download prompt is ported.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_SafeOverride) {
@@ -3460,10 +3473,18 @@ IN_PROC_BROWSER_TEST_F(
                           "    \"previous\": \"in_progress\","
                           "    \"current\": \"complete\"}}]",
                           result_id)));
+#if BUILDFLAG(IS_ANDROID)
+  // Android uses content URIs for downloads.
+  std::string filename = FilenameFromContentUri(item->GetTargetFilePath());
+  // Sometimes the downloads directory isn't empty, so the filename may be
+  // of the form "overridden (1).swf". http://crbug.com/494021088
+  EXPECT_TRUE(re2::RE2::FullMatch(filename, "overridden.*swf"));
+#else
   EXPECT_EQ(downloads_directory().AppendASCII("overridden.swf"),
             item->GetTargetFilePath());
+#endif
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
@@ -4628,6 +4649,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   // TODO(benjhayden) Test that browsers associated with other profiles are not
   // affected.
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(benjhayden) Figure out why DisableExtension() does not fire
 // OnListenerRemoved.
@@ -4707,8 +4729,6 @@ class DownloadsSafeBrowsingTest : public DownloadExtensionTest {
       test_safe_browsing_factory_;
 };
 
-// TODO(crbug.com/450662444): Enable this test on desktop Android when the
-// download danger dialog is enabled on it.
 IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, AcceptDanger) {
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
@@ -4737,13 +4757,15 @@ IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, AcceptDanger) {
 
   // Wait until the download completes.
   observer->WaitForFinished();
+  // Re-fetch the item, in case the original one was mistakenly deleted. This
+  // has caused tricky test failures in the past.
+  item = GetCurrentManager()->GetDownload(result_id);
+  ASSERT_TRUE(item);
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
 
   VerifySafeBrowsingReport(/*expect_proceed=*/true);
 }
 
-// TODO(crbug.com/450662444): Enable this test on desktop Android when the
-// download danger dialog is enabled on it.
 IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, CancelDanger) {
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
@@ -4773,6 +4795,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, CancelDanger) {
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that file deletion event is correctly generated after download
 // completion.
 // TODO(crbug.com/405219117): Fix on desktop Android. Currently crashes in

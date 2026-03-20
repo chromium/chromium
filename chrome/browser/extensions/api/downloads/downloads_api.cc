@@ -39,6 +39,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_file_icon_extractor.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
@@ -53,8 +54,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -86,13 +85,17 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1062,6 +1065,28 @@ bool IsDownloadDeltaField(const std::string& field) {
           (field == kFileSizeKey) || (field == kExistsKey));
 }
 
+// Maybe triggers a trust-and-safety survey on the new tab page. `profile` is
+// the current profile. `accept` is whether the user chose to keep a
+// dangerous download.
+// NOTE: Android does not support the TrustSafetySentimentService.
+void MaybeTriggerTrustSafetySentimentSurvey(Profile* profile, bool accept) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Survey triggered on ACCEPT action, since this is where the user
+  // confirms their choice to keep a dangerous download, rather than
+  // triggering a survey after selecting to KEEP in the downloads page UI.
+  if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs()) &&
+      accept) {
+    TrustSafetySentimentService* trust_safety_sentiment_service =
+        TrustSafetySentimentServiceFactory::GetForProfile(profile);
+    if (trust_safety_sentiment_service) {
+      trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
+          DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+          DownloadItemWarningData::WarningAction::PROCEED);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 const char DownloadedByExtension::kKey[] = "DownloadItem DownloadedByExtension";
@@ -1458,7 +1483,6 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
   }
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionAcceptDanger);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // For testing, callers can use TriggerDangerPromptActionForTesting() to
   // pre-determine the dialog's result. This bypasses showing the dialog.
   if (g_danger_prompt_action_for_testing.has_value()) {
@@ -1472,10 +1496,6 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
       base::BindOnce(&DownloadsAcceptDangerFunction::DangerPromptCallback, this,
                      download_id));
   // Function finishes in DangerPromptCallback().
-#else
-  NOTIMPLEMENTED();
-  Respond(Error("DownloadDangerPrompt not implemented"));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void DownloadsAcceptDangerFunction::DangerPromptCallback(
@@ -1497,19 +1517,7 @@ void DownloadsAcceptDangerFunction::DangerPromptCallback(
   // If this download is no longer dangerous, is already canceled or
   // completed, don't send any report.
   if (download_item->IsDangerous() && !download_item->IsDone()) {
-    // Survey triggered on ACCEPT action, since this is where the user
-    // confirms their choice to keep a dangerous download, rather than
-    // triggering a survey after selecting to KEEP in the downloads page UI.
-    if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs()) &&
-        accept) {
-      TrustSafetySentimentService* trust_safety_sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile);
-      if (trust_safety_sentiment_service) {
-        trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
-            DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
-            DownloadItemWarningData::WarningAction::PROCEED);
-      }
-    }
+    MaybeTriggerTrustSafetySentimentSurvey(profile, accept);
     // Log here for "Shown" unconditionally, and for "Proceed" iff the dialog
     // was accepted. This assumes the dialog cannot be dismissed once it is
     // shown without taking some action on it.

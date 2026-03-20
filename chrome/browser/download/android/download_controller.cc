@@ -50,6 +50,7 @@
 #include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_source.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
@@ -459,6 +460,12 @@ void DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
 }
 
 void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
+  // The chrome.downloads extension API uses the dangerous download prompt
+  // shared by all extensions platforms (see download_danger_dialog.cc).
+  if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
+    return;
+  }
+
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents) {
     ScheduleRemoveDownloadItem(item);
