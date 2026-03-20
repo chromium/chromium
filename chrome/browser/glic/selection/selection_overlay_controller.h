@@ -20,6 +20,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}
 
 namespace glic {
 
@@ -79,6 +88,10 @@ class SelectionOverlayController
   void TabDeactivated(tabs::TabInterface* tab);
 
   void InitializeOverlay();
+
+  // `content::WebContentsDelegate`:
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // OverlayBaseController overrides:
   void CloseUI() override;
@@ -148,6 +161,8 @@ class SelectionOverlayController
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Must be the last member.
   base::WeakPtrFactory<SelectionOverlayController> weak_factory_{this};
