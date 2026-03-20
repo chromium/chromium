@@ -2947,7 +2947,7 @@ bool GraphBuilderTflite::AreConstantOperandsEqual(OperandId lhs_operand_id,
 auto GraphBuilderTflite::FinishAndTakeResult(
     base::span<const OperandId> input_operands,
     base::span<const OperandId> output_operands,
-    bool graph_requires_fp32_precision) -> Result {
+    bool graph_requires_fp32_precision) -> base::expected<Result, std::string> {
   CHECK(!is_created_model_);
 
   auto get_index = [&](OperandId operand_id) {
@@ -2962,6 +2962,10 @@ auto GraphBuilderTflite::FinishAndTakeResult(
         TensorDescriptor{.tensor_index = info.index,
                          .descriptor = GetOperand(operand_id).descriptor});
   };
+
+  if (builder_.GetSize() > kFlatbufferSafetyThreshold) {
+    return base::unexpected("Model too large.");
+  }
 
   TensorIndex* graph_input_ids = nullptr;
   auto graph_input_ids_index = builder_.CreateUninitializedVector<TensorIndex>(
@@ -3039,9 +3043,9 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;
 
-  return {builder_.Release(), std::move(input_name_to_descriptor),
-          std::move(output_name_to_descriptor), std::move(weights_file_),
-          graph_requires_fp32_precision};
+  return Result(builder_.Release(), std::move(input_name_to_descriptor),
+                std::move(output_name_to_descriptor), std::move(weights_file_),
+                graph_requires_fp32_precision);
 }
 
 auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
@@ -7162,6 +7166,13 @@ auto GraphBuilderTflite::SerializeQuantizeParams(
     }
     zero_point_offset = *expanded_zero_point;
   } else {
+    if (scale_value.size() * sizeof(float) > kMaxInlineBufferSize ||
+        zero_point_value.size() * sizeof(int64_t) > kMaxInlineBufferSize) {
+      return std::nullopt;
+    }
+    if (builder_.GetSize() > kFlatbufferSafetyThreshold) {
+      return std::nullopt;
+    }
     scale_offset = builder_.CreateVector<float>(scale_value);
     zero_point_offset = builder_.CreateVector<int64_t>(zero_point_value);
   }
