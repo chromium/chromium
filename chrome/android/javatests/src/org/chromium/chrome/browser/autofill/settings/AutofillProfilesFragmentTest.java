@@ -234,6 +234,7 @@ public class AutofillProfilesFragmentTest {
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         Intents.init();
         when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
+        when(sEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
                 AutofillProfile.builder()
@@ -1127,6 +1128,38 @@ public class AutofillProfilesFragmentTest {
         assertNull(
                 autofillProfileFragment.findPreference(
                         AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_notRenderedIfCannotListEntityInstancesInSettings()
+            throws Exception {
+        EntityType vehicleType = TestUtils.getVehicleEntityType();
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        vehicleType,
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Arrays.asList(entity1));
+
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(sEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    Preference category = fragment.findPreference("Vehicle");
+                    Criteria.checkThat(
+                            "Vehicle category should NOT exist", category, Matchers.nullValue());
+                });
     }
 
     @Test

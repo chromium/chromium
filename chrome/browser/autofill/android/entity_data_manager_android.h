@@ -98,6 +98,10 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // See `AutofillAiAction::kEnableOrDisable` for details.
   bool CanEnableOrDisableAutofillAi(JNIEnv* env);
 
+  // Returns whether the user might perform
+  // `AutofillAiAction::kListEntityInstancesInSettings`.
+  bool CanListEntityInstancesInSettings(JNIEnv* env);
+
   bool IsWalletPublicPassStorageEnabled(JNIEnv* env);
 
  private:

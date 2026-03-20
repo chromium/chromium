@@ -184,9 +184,14 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
 [[nodiscard]] bool SatisfiesFeatureRequirements(
     FeatureCheck is_enabled,
+    bool has_entity_data_saved,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
     std::string* debug_message) {
+  if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
+    return true;
+  }
+
   // Everything requires that `kAutofillAiWithDataSchema` is enabled.
   if (!is_enabled(features::kAutofillAiWithDataSchema)) {
     MaybeOutputReason(debug_message,
@@ -504,16 +509,16 @@ bool MayPerformAutofillAiAction(
 #endif
   };
 
-  if (!SatisfiesFeatureRequirements(feature_check, action, entity_type,
-                                    debug_message)) {
-    return false;
-  }
-
   if (!edm) {
     MaybeOutputReason(debug_message, "No EDM.");
     return false;
   }
   const bool has_entity_data_saved = !edm->GetEntityInstances().empty();
+
+  if (!SatisfiesFeatureRequirements(feature_check, has_entity_data_saved,
+                                    action, entity_type, debug_message)) {
+    return false;
+  }
 
   if (!SatisfiesAccountRequirements(identity_manager, has_entity_data_saved,
                                     action, debug_message)) {

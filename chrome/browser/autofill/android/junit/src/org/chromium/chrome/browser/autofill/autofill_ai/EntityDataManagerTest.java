@@ -183,6 +183,13 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testCanListEntityInstancesInSettings() {
+        when(mEntityDataManagerJniMock.canListEntityInstancesInSettings(NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.canListEntityInstancesInSettings());
+    }
+
+    @Test
     public void testGetAutofillAiOptInStatus() {
         when(mEntityDataManagerJniMock.getAutofillAiOptInStatus(NATIVE_PTR)).thenReturn(true);
         assertTrue(mEntityDataManager.getAutofillAiOptInStatus());

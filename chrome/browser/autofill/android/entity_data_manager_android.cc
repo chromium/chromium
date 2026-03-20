@@ -234,6 +234,11 @@ bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAi(JNIEnv* env) {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kEnableOrDisable);
 }
 
+bool EntityDataManagerAndroid::CanListEntityInstancesInSettings(JNIEnv* env) {
+  return RunMayPerformAutofillAiAction(
+      AutofillAiAction::kListEntityInstancesInSettings);
+}
+
 bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() {
   return account_setting_service_ &&
          account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();

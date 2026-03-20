@@ -476,6 +476,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (entityDataManager == null) {
             return;
         }
+        if (!entityDataManager.canListEntityInstancesInSettings()) {
+            return;
+        }
 
         Map<EntityType, List<EntityInstanceWithLabels>> instancesToList =
                 entityDataManager.getInstancesToList();

@@ -189,6 +189,15 @@ public class EntityDataManager implements Destroyable {
                 .canEnableOrDisableAutofillAi(mNativeEntityDataManagerAndroid);
     }
 
+    /**
+     * Returns whether the user might perform `AutofillAiAction::kListEntityInstancesInSettings`.
+     */
+    public boolean canListEntityInstancesInSettings() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .canListEntityInstancesInSettings(mNativeEntityDataManagerAndroid);
+    }
+
     /** Returns the opt-in status for Autofill AI. */
     public boolean getAutofillAiOptInStatus() {
         ThreadUtils.assertOnUiThread();
@@ -238,6 +247,8 @@ public class EntityDataManager implements Destroyable {
         boolean isEligibleToAutofillAi(long nativeEntityDataManagerAndroid);
 
         boolean canEnableOrDisableAutofillAi(long nativeEntityDataManagerAndroid);
+
+        boolean canListEntityInstancesInSettings(long nativeEntityDataManagerAndroid);
 
         boolean getAutofillAiOptInStatus(long nativeEntityDataManagerAndroid);
 

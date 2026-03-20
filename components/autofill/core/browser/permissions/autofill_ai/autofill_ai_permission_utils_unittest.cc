@@ -171,6 +171,21 @@ TEST_P(AutofillAiMayPerformActionTest, ReturnsFalseWhenMainFeatureIsOff) {
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
+// Tests that transparency actions are allowed even when the main feature is off
+// if data is saved.
+TEST_P(AutofillAiMayPerformActionTest,
+       TransparencyActionsAllowedWhenMainFeatureIsOff) {
+  AddEntity();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiWithDataSchema);
+
+  const bool is_transparency_action =
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()),
+            is_transparency_action);
+}
+
 // Tests that when `kAutofillAiAvailableByDefault` and the user is opted out,
 // everything but IPH, wallet data sharing promotion, and model related actions
 // is permitted.
