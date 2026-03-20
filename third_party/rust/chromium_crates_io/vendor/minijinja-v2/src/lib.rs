@@ -169,7 +169,7 @@
 //!
 //! - `fuel`: enables the `fuel` feature which makes the engine track fuel consumption which
 //!   can be used to better protect against expensive templates.
-//! - `loader`: enables owned and dynamic template loading of templates.
+//! - `loader`: retained for backwards compatibility and now a no-op.
 //! - `custom_syntax`: when this feature is enabled, custom delimiters are supported by
 //!   the parser.
 //! - `preserve_order`: When enable the internal value implementation uses an indexmap
@@ -217,6 +217,7 @@ mod format_utils;
 mod output;
 mod template;
 mod utils;
+mod vendor;
 mod vm;
 
 pub mod filters;
@@ -225,10 +226,8 @@ pub mod syntax;
 pub mod tests;
 pub mod value;
 
-#[cfg(feature = "loader")]
 mod loader;
 
-#[cfg(feature = "loader")]
 pub use loader::path_loader;
 
 #[cfg(feature = "debug")]
@@ -239,7 +238,7 @@ pub use self::environment::Environment;
 pub use self::error::{Error, ErrorKind};
 pub use self::expression::Expression;
 pub use self::output::Output;
-pub use self::template::Template;
+pub use self::template::{Captured, Template};
 pub use self::utils::{AutoEscape, HtmlEscape, UndefinedBehavior};
 
 #[cfg(feature = "builtins")]

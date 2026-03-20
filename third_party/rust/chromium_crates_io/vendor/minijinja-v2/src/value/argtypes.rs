@@ -561,6 +561,9 @@ impl<'a> ArgType<'a> for Cow<'_, str> {
             Some(value) => Ok(match value.0 {
                 ValueRepr::String(ref s, _) => Cow::Borrowed(s as &str),
                 ValueRepr::SmallStr(ref s) => Cow::Borrowed(s.as_str()),
+                ValueRepr::U64(v) => Cow::Owned(v.to_string()),
+                ValueRepr::I64(v) => Cow::Owned(v.to_string()),
+                ValueRepr::Bool(v) => Cow::Owned(v.to_string()),
                 _ => {
                     if value.is_kwargs() {
                         return Err(Error::new(

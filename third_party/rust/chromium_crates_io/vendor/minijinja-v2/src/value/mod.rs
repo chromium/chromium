@@ -211,7 +211,6 @@ use serde::ser::{Serialize, SerializeTupleStruct, Serializer};
 
 use crate::error::{Error, ErrorKind};
 use crate::functions;
-use crate::utils::OnDrop;
 use crate::value::ops::as_f64;
 use crate::value::serialize::transform;
 use crate::vm::State;
@@ -257,13 +256,50 @@ pub(crate) fn value_map_with_capacity(capacity: usize) -> ValueMap {
     }
 }
 
+pub(crate) struct ValueHandleRegistry {
+    single: Option<(u32, Value)>,
+    overflow: BTreeMap<u32, Value>,
+}
+
+impl ValueHandleRegistry {
+    const fn new() -> Self {
+        Self {
+            single: None,
+            overflow: BTreeMap::new(),
+        }
+    }
+
+    #[inline(always)]
+    pub(crate) fn insert(&mut self, handle: u32, value: Value) {
+        if self.single.is_none() && self.overflow.is_empty() {
+            self.single = Some((handle, value));
+            return;
+        }
+
+        if let Some((other_handle, other_value)) = self.single.take() {
+            self.overflow.insert(other_handle, other_value);
+        }
+        self.overflow.insert(handle, value);
+    }
+
+    #[inline(always)]
+    pub(crate) fn remove(&mut self, handle: u32) -> Option<Value> {
+        if let Some((single_handle, _)) = self.single {
+            if single_handle == handle {
+                return self.single.take().map(|(_, value)| value);
+            }
+        }
+        self.overflow.remove(&handle)
+    }
+}
+
 thread_local! {
     static INTERNAL_SERIALIZATION: Cell<bool> = const { Cell::new(false) };
 
     // This should be an AtomicU64 but sadly 32bit targets do not necessarily have
     // AtomicU64 available.
     static LAST_VALUE_HANDLE: Cell<u32> = const { Cell::new(0) };
-    static VALUE_HANDLES: RefCell<BTreeMap<u32, Value>> = const { RefCell::new(BTreeMap::new()) };
+    static VALUE_HANDLES: RefCell<ValueHandleRegistry> = const { RefCell::new(ValueHandleRegistry::new()) };
 }
 
 /// Function that returns true when serialization for [`Value`] is taking place.
@@ -286,17 +322,17 @@ pub fn serializing_for_value() -> bool {
     INTERNAL_SERIALIZATION.with(|flag| flag.get())
 }
 
-fn mark_internal_serialization() -> impl Drop {
-    let old = INTERNAL_SERIALIZATION.with(|flag| {
-        let old = flag.get();
-        flag.set(true);
-        old
-    });
-    OnDrop::new(move || {
-        if !old {
-            INTERNAL_SERIALIZATION.with(|flag| flag.set(false));
+struct InternalSerializationGuard<'a> {
+    flag: &'a Cell<bool>,
+    reset_on_drop: bool,
+}
+
+impl Drop for InternalSerializationGuard<'_> {
+    fn drop(&mut self) {
+        if self.reset_on_drop {
+            self.flag.set(false);
         }
-    })
+    }
 }
 
 /// Describes the kind of value.
@@ -738,8 +774,14 @@ impl Value {
     /// [`deserialize`](serde::Deserialize::deserialize) method of a type that supports
     /// serde deserialization.
     pub fn from_serialize<T: Serialize>(value: T) -> Value {
-        let _serialization_guard = mark_internal_serialization();
-        transform(value)
+        INTERNAL_SERIALIZATION.with(|flag| {
+            let old = flag.replace(true);
+            let _serialization_guard = InternalSerializationGuard {
+                flag,
+                reset_on_drop: !old,
+            };
+            transform(value)
+        })
     }
 
     /// Extracts a contained error.
@@ -1254,7 +1296,7 @@ impl Value {
     pub fn get_attr(&self, key: &str) -> Result<Value, Error> {
         let value = match self.0 {
             ValueRepr::Undefined(_) => return Err(Error::from(ErrorKind::UndefinedError)),
-            ValueRepr::Object(ref dy) => dy.get_value(&Value::from(key)),
+            ValueRepr::Object(ref dy) => dy.get_value_by_str(key),
             _ => None,
         };
 
@@ -1269,7 +1311,7 @@ impl Value {
     /// also not be created.
     pub(crate) fn get_attr_fast(&self, key: &str) -> Option<Value> {
         match self.0 {
-            ValueRepr::Object(ref dy) => dy.get_value(&Value::from(key)),
+            ValueRepr::Object(ref dy) => dy.get_value_by_str(key),
             _ => None,
         }
     }

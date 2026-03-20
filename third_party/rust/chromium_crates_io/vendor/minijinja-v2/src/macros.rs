@@ -23,22 +23,23 @@ macro_rules! some {
 /// Hidden utility module for the [`context!`](crate::context!) macro.
 #[doc(hidden)]
 pub mod __context {
-    use crate::value::{Value, ValueMap};
+    use crate::value::Value;
     use crate::Environment;
+    use std::collections::BTreeMap;
     use std::rc::Rc;
 
     #[inline(always)]
-    pub fn make() -> ValueMap {
-        ValueMap::default()
+    pub fn make() -> BTreeMap<&'static str, Value> {
+        BTreeMap::default()
     }
 
     #[inline(always)]
-    pub fn add(ctx: &mut ValueMap, key: &'static str, value: Value) {
-        ctx.insert(key.into(), value);
+    pub fn add(ctx: &mut BTreeMap<&'static str, Value>, key: &'static str, value: Value) {
+        ctx.insert(key, value);
     }
 
     #[inline(always)]
-    pub fn build(ctx: ValueMap) -> Value {
+    pub fn build(ctx: BTreeMap<&'static str, Value>) -> Value {
         Value::from_object(ctx)
     }
 
@@ -166,6 +167,15 @@ macro_rules! __context_pair {
     ($ctx:ident, $key:ident) => {{
         $crate::__context_pair!($ctx, $key => $key);
     }};
+    ($ctx:ident, $key:ident => $value:literal) => {
+        $crate::__context::add(&mut $ctx, stringify!($key), $crate::value::Value::from($value));
+    };
+    ($ctx:ident, $key:ident => context! { $($inner:tt)* }) => {
+        $crate::__context::add(&mut $ctx, stringify!($key), $crate::context! { $($inner)* });
+    };
+    ($ctx:ident, $key:ident => context!($($inner:tt)*)) => {
+        $crate::__context::add(&mut $ctx, stringify!($key), $crate::context!($($inner)*));
+    };
     ($ctx:ident, $key:ident => $value:expr) => {
         $crate::__context::add(
             &mut $ctx,

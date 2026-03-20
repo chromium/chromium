@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::collections::BTreeMap;
+use std::sync::{Arc, OnceLock};
 
 use crate::error::Error;
 use crate::filters;
@@ -61,7 +62,7 @@ pub fn escape_formatter(out: &mut Output, state: &State, value: &Value) -> Resul
     write_escaped(out, state.auto_escape(), value)
 }
 
-pub(crate) fn get_builtin_filters() -> BTreeMap<Cow<'static, str>, Value> {
+fn build_builtin_filters() -> BTreeMap<Cow<'static, str>, Value> {
     let mut rv = BTreeMap::new();
     rv.insert("safe".into(), Value::from_function(filters::safe));
     let escape = Value::from_function(filters::escape);
@@ -137,7 +138,14 @@ pub(crate) fn get_builtin_filters() -> BTreeMap<Cow<'static, str>, Value> {
     rv
 }
 
-pub(crate) fn get_builtin_tests() -> BTreeMap<Cow<'static, str>, Value> {
+pub(crate) fn get_builtin_filters() -> Arc<BTreeMap<Cow<'static, str>, Value>> {
+    static FILTERS: OnceLock<Arc<BTreeMap<Cow<'static, str>, Value>>> = OnceLock::new();
+    FILTERS
+        .get_or_init(|| Arc::new(build_builtin_filters()))
+        .clone()
+}
+
+fn build_builtin_tests() -> BTreeMap<Cow<'static, str>, Value> {
     let mut rv = BTreeMap::new();
     rv.insert(
         "undefined".into(),
@@ -208,7 +216,14 @@ pub(crate) fn get_builtin_tests() -> BTreeMap<Cow<'static, str>, Value> {
     rv
 }
 
-pub(crate) fn get_globals() -> BTreeMap<Cow<'static, str>, Value> {
+pub(crate) fn get_builtin_tests() -> Arc<BTreeMap<Cow<'static, str>, Value>> {
+    static TESTS: OnceLock<Arc<BTreeMap<Cow<'static, str>, Value>>> = OnceLock::new();
+    TESTS
+        .get_or_init(|| Arc::new(build_builtin_tests()))
+        .clone()
+}
+
+fn build_globals() -> BTreeMap<Cow<'static, str>, Value> {
     #[allow(unused_mut)]
     let mut rv = BTreeMap::new();
     #[cfg(feature = "builtins")]
@@ -233,6 +248,11 @@ pub(crate) fn get_globals() -> BTreeMap<Cow<'static, str>, Value> {
     }
 
     rv
+}
+
+pub(crate) fn get_globals() -> Arc<BTreeMap<Cow<'static, str>, Value>> {
+    static GLOBALS: OnceLock<Arc<BTreeMap<Cow<'static, str>, Value>>> = OnceLock::new();
+    GLOBALS.get_or_init(|| Arc::new(build_globals())).clone()
 }
 
 #[cfg(test)]

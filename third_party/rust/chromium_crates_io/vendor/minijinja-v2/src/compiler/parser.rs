@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::collections::BTreeSet;
 use std::fmt;
+use std::mem;
 
 use crate::compiler::ast::{self, Spanned};
 use crate::compiler::lexer::{Tokenizer, WhitespaceConfig};
@@ -95,7 +96,7 @@ enum SetParseResult<'a> {
 
 struct TokenStream<'a> {
     tokenizer: Tokenizer<'a>,
-    current: Option<Result<(Token<'a>, Span), Error>>,
+    current: Result<Option<(Token<'a>, Span)>, Error>,
     last_span: Span,
 }
 
@@ -110,7 +111,7 @@ impl<'a> TokenStream<'a> {
     ) -> TokenStream<'a> {
         let mut tokenizer =
             Tokenizer::new(source, filename, in_expr, syntax_config, whitespace_config);
-        let current = tokenizer.next_token().transpose();
+        let current = tokenizer.next_token();
         TokenStream {
             tokenizer,
             current,
@@ -119,21 +120,33 @@ impl<'a> TokenStream<'a> {
     }
 
     /// Advance the stream.
+    #[inline(always)]
     pub fn next(&mut self) -> Result<Option<(Token<'a>, Span)>, Error> {
-        let rv = self.current.take();
-        self.current = self.tokenizer.next_token().transpose();
-        if let Some(Ok((_, span))) = rv {
-            self.last_span = span;
+        let rv = mem::replace(&mut self.current, self.tokenizer.next_token());
+        match rv {
+            Ok(Some((token, span))) => {
+                self.last_span = span;
+                Ok(Some((token, span)))
+            }
+            Ok(None) => Ok(None),
+            Err(err) => Err(err),
         }
-        rv.transpose()
     }
 
     /// Look at the current token
+    #[inline(always)]
     pub fn current(&mut self) -> Result<Option<(&Token<'a>, Span)>, Error> {
+        if self.current.is_err() {
+            return match mem::replace(&mut self.current, Ok(None)) {
+                Err(err) => Err(err),
+                _ => unreachable!(),
+            };
+        }
+
         match self.current {
-            Some(Ok(ref tok)) => Ok(Some((&tok.0, tok.1))),
-            Some(Err(_)) => Err(self.current.take().unwrap().unwrap_err()),
-            None => Ok(None),
+            Ok(Some((ref token, span))) => Ok(Some((token, span))),
+            Ok(None) => Ok(None),
+            Err(_) => unreachable!(),
         }
     }
 
@@ -149,10 +162,9 @@ impl<'a> TokenStream<'a> {
     /// Returns the current span.
     #[inline(always)]
     pub fn current_span(&self) -> Span {
-        if let Some(Ok((_, span))) = self.current {
-            span
-        } else {
-            self.last_span
+        match self.current {
+            Ok(Some((_, span))) => span,
+            _ => self.last_span,
         }
     }
 
@@ -406,11 +418,34 @@ impl<'a> Parser<'a> {
             match ok!(self.stream.current()) {
                 Some((Token::Dot, _)) => {
                     ok!(self.stream.next());
-                    let (name, _) = expect_token!(self, Token::Ident(name) => name, "identifier");
-                    expr = ast::Expr::GetAttr(Spanned::new(
-                        ast::GetAttr { name, expr },
-                        self.stream.expand_span(span),
-                    ));
+                    match ok!(self.stream.next()) {
+                        Some((Token::Ident(name), _)) => {
+                            expr = ast::Expr::GetAttr(Spanned::new(
+                                ast::GetAttr { name, expr },
+                                self.stream.expand_span(span),
+                            ));
+                        }
+                        Some((Token::Int(idx), idx_span)) => {
+                            expr = ast::Expr::GetItem(Spanned::new(
+                                ast::GetItem {
+                                    expr,
+                                    subscript_expr: make_const(Value::from(idx), idx_span),
+                                },
+                                self.stream.expand_span(span),
+                            ));
+                        }
+                        Some((Token::Int128(idx), idx_span)) => {
+                            expr = ast::Expr::GetItem(Spanned::new(
+                                ast::GetItem {
+                                    expr,
+                                    subscript_expr: make_const(Value::from(*idx), idx_span),
+                                },
+                                self.stream.expand_span(span),
+                            ));
+                        }
+                        Some((token, _)) => return Err(unexpected(token, "identifier or integer")),
+                        None => return Err(unexpected_eof("identifier or integer")),
+                    }
                 }
                 Some((Token::BracketOpen, _)) => {
                     ok!(self.stream.next());
@@ -472,14 +507,35 @@ impl<'a> Parser<'a> {
         Ok(expr)
     }
 
+    fn parse_filter_test_name(&mut self) -> Result<(&'a str, Span), Error> {
+        let (first_segment, span) = expect_token!(self, Token::Ident(name) => name, "identifier");
+        let start_offset = span.start_offset as usize;
+        let mut end_offset = span.end_offset as usize;
+        let mut is_dotted = false;
+
+        while skip_token!(self, Token::Dot) {
+            let (_, segment_span) = expect_token!(self, Token::Ident(name) => name, "identifier");
+            end_offset = segment_span.end_offset as usize;
+            is_dotted = true;
+        }
+
+        if is_dotted {
+            Ok((
+                &self.stream.tokenizer.source()[start_offset..end_offset],
+                self.stream.expand_span(span),
+            ))
+        } else {
+            Ok((first_segment, span))
+        }
+    }
+
     fn parse_filter_expr(&mut self, expr: ast::Expr<'a>) -> Result<ast::Expr<'a>, Error> {
         let mut expr = expr;
         loop {
             match ok!(self.stream.current()) {
                 Some((Token::Pipe, _)) => {
                     ok!(self.stream.next());
-                    let (name, span) =
-                        expect_token!(self, Token::Ident(name) => name, "identifier");
+                    let (name, span) = ok!(self.parse_filter_test_name());
                     let args = if matches_token!(self, Token::ParenOpen) {
                         ok!(self.parse_args())
                     } else {
@@ -497,8 +553,7 @@ impl<'a> Parser<'a> {
                 Some((Token::Ident("is"), _)) => {
                     ok!(self.stream.next());
                     let negated = skip_token!(self, Token::Ident("not"));
-                    let (name, span) =
-                        expect_token!(self, Token::Ident(name) => name, "identifier");
+                    let (name, span) = ok!(self.parse_filter_test_name());
                     let args = if matches_token!(self, Token::ParenOpen) {
                         ok!(self.parse_args())
                     } else if matches_token!(
@@ -673,7 +728,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_list_expr(&mut self, span: Span) -> Result<ast::Expr<'a>, Error> {
-        let mut items = Vec::new();
+        let mut items = Vec::with_capacity(4);
         loop {
             if skip_token!(self, Token::BracketClose) {
                 break;
@@ -693,8 +748,8 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_map_expr(&mut self, span: Span) -> Result<ast::Expr<'a>, Error> {
-        let mut keys = Vec::new();
-        let mut values = Vec::new();
+        let mut keys = Vec::with_capacity(4);
+        let mut values = Vec::with_capacity(4);
         loop {
             if skip_token!(self, Token::BraceClose) {
                 break;
@@ -839,7 +894,7 @@ impl<'a> Parser<'a> {
 
     fn parse_assignment(&mut self, dotted: bool) -> Result<ast::Expr<'a>, Error> {
         let span = self.stream.current_span();
-        let mut items = Vec::new();
+        let mut items = Vec::with_capacity(2);
         let mut is_tuple = false;
 
         loop {
@@ -934,7 +989,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_with_block(&mut self) -> Result<ast::WithBlock<'a>, Error> {
-        let mut assignments = Vec::new();
+        let mut assignments = Vec::with_capacity(2);
 
         while !matches_token!(self, Token::BlockEnd) {
             if !assignments.is_empty() {
@@ -1048,7 +1103,7 @@ impl<'a> Parser<'a> {
             if filter.is_some() {
                 expect_token!(self, Token::Pipe, "`|`");
             }
-            let (name, span) = expect_token!(self, Token::Ident(name) => name, "identifier");
+            let (name, span) = ok!(self.parse_filter_test_name());
             let args = if matches_token!(self, Token::ParenOpen) {
                 ok!(self.parse_args())
             } else {
@@ -1113,7 +1168,7 @@ impl<'a> Parser<'a> {
     #[cfg(feature = "multi_template")]
     fn parse_from_import(&mut self) -> Result<ast::FromImport<'a>, Error> {
         let expr = ok!(self.parse_expr());
-        let mut names = Vec::new();
+        let mut names = Vec::with_capacity(4);
         expect_token!(self, Token::Ident("import"), "import");
         loop {
             if ok!(self.skip_context_marker()) || matches_token!(self, Token::BlockEnd) {
@@ -1204,8 +1259,8 @@ impl<'a> Parser<'a> {
     fn parse_macro(&mut self) -> Result<ast::Macro<'a>, Error> {
         let (name, _) = expect_token!(self, Token::Ident(name) => name, "identifier");
         expect_token!(self, Token::ParenOpen, "`(`");
-        let mut args = Vec::new();
-        let mut defaults = Vec::new();
+        let mut args = Vec::with_capacity(4);
+        let mut defaults = Vec::with_capacity(4);
         ok!(self.parse_macro_args_and_defaults(&mut args, &mut defaults));
         self.parse_macro_or_call_block_body(args, defaults, Some(name))
     }
@@ -1213,8 +1268,8 @@ impl<'a> Parser<'a> {
     #[cfg(feature = "macros")]
     fn parse_call_block(&mut self) -> Result<ast::CallBlock<'a>, Error> {
         let span = self.stream.last_span();
-        let mut args = Vec::new();
-        let mut defaults = Vec::new();
+        let mut args = Vec::with_capacity(4);
+        let mut defaults = Vec::with_capacity(4);
         if skip_token!(self, Token::ParenOpen) {
             ok!(self.parse_macro_args_and_defaults(&mut args, &mut defaults));
         }
@@ -1247,7 +1302,7 @@ impl<'a> Parser<'a> {
         &mut self,
         end_check: &dyn Fn(&Token) -> bool,
     ) -> Result<Vec<ast::Stmt<'a>>, Error> {
-        let mut rv = Vec::new();
+        let mut rv = Vec::with_capacity(16);
         while let Some((token, span)) = ok!(self.stream.next()) {
             match token {
                 Token::TemplateData(raw) => {

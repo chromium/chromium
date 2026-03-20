@@ -48,6 +48,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/value/ops.rs",
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/value/serialize.rs",
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/value/type_erase.rs",
+    "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vendor/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vendor/self_cell/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vendor/self_cell/unsafe_self_cell.rs",
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vm/closure_object.rs",
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vm/context.rs",
     "//third_party/rust/chromium_crates_io/vendor/minijinja-v2/src/vm/fuel.rs",
@@ -66,11 +69,14 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "a powerful template engine for Rust with minimal dependencies"
   cargo_pkg_repository = "https://github.com/mitsuhiko/minijinja"
-  cargo_pkg_version = "2.17.1"
+  cargo_pkg_version = "2.18.0"
 
   allow_unsafe = true
 
-  deps = [ "//third_party/rust/serde/v1:lib" ]
+  deps = [
+    "//third_party/rust/memo_map/v0_3:lib",
+    "//third_party/rust/serde/v1:lib",
+  ]
   features = [
     "adjacent_loop_items",
     "builtins",

@@ -7,8 +7,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use crate::vendor::self_cell::self_cell;
 use memo_map::MemoMap;
-use self_cell::self_cell;
 
 use crate::compiler::instructions::Instructions;
 use crate::error::{Error, ErrorKind};
@@ -204,7 +204,6 @@ pub fn safe_join(base: &Path, template: &str) -> Option<PathBuf> {
 ///     env
 /// }
 /// ```
-#[cfg_attr(docsrs, doc(cfg(feature = "loader")))]
 pub fn path_loader<'x, P: AsRef<Path> + 'x>(
     dir: P,
 ) -> impl for<'a> Fn(&'a str) -> Result<Option<String>, Error> + Send + Sync + 'static {

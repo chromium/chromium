@@ -187,7 +187,10 @@ impl Object for Loop {
     }
 
     fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
-        let key = some!(key.as_str());
+        self.get_value_by_str(some!(key.as_str()))
+    }
+
+    fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
         let idx = self.idx.load(Ordering::Relaxed) as u64;
         // if we never iterated, then all attributes are undefined.
         // this can happen in some rare circumstances where the engine
@@ -195,10 +198,14 @@ impl Object for Loop {
         if idx == !0 {
             return Some(Value::UNDEFINED);
         }
+
+        if key == "index" {
+            return Some(Value::from(idx + 1));
+        }
+
         let len = self.len.map(|x| x as u64);
         match key {
             "index0" => Some(Value::from(idx)),
-            "index" => Some(Value::from(idx + 1)),
             "length" => Some(len.map(Value::from).unwrap_or(Value::UNDEFINED)),
             "revindex" => Some(
                 len.map(|len| Value::from(len.saturating_sub(idx)))

@@ -136,14 +136,13 @@ checksum = "38d1115007560874e373613744c6fba374c17688327a71c1476d1a5954cc857b"
 
 [[package]]
 name = "minijinja"
-version = "2.17.1"
+version = "2.18.0"
 dependencies = [
  "aho-corasick",
  "indexmap",
  "insta",
  "memo-map",
  "percent-encoding",
- "self_cell",
  "serde",
  "serde_json",
  "similar-asserts",
@@ -223,12 +222,6 @@ checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
 ]
-
-[[package]]
-name = "self_cell"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f7d95a54511e0c7be3f51e8867aa8cf35148d7b9445d44de2f943e2b206e749"
 
 [[package]]
 name = "serde"

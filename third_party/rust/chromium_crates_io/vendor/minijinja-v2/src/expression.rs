@@ -40,7 +40,6 @@ pub struct Expression<'env, 'source> {
 
 enum ExpressionBacking<'source> {
     Borrowed(Instructions<'source>),
-    #[cfg(feature = "loader")]
     Owned(crate::loader::OwnedInstructions),
 }
 
@@ -63,7 +62,6 @@ impl<'env, 'source> Expression<'env, 'source> {
         }
     }
 
-    #[cfg(feature = "loader")]
     pub(crate) fn new_owned(
         env: &'env Environment<'source>,
         instructions: crate::loader::OwnedInstructions,
@@ -77,7 +75,6 @@ impl<'env, 'source> Expression<'env, 'source> {
     fn instructions(&self) -> &Instructions<'_> {
         match self.instr {
             ExpressionBacking::Borrowed(ref x) => x,
-            #[cfg(feature = "loader")]
             ExpressionBacking::Owned(ref x) => x.borrow_dependent(),
         }
     }

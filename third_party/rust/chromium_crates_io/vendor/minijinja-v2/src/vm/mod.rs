@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::mem;
 
@@ -10,9 +11,11 @@ use crate::compiler::instructions::{
 use crate::environment::Environment;
 use crate::error::{Error, ErrorKind};
 use crate::output::{CaptureMode, Output};
-use crate::utils::{untrusted_size_hint, AutoEscape, UndefinedBehavior};
+use crate::utils::{untrusted_size_hint, write_escaped, AutoEscape, UndefinedBehavior};
 use crate::value::namespace_object::Namespace;
-use crate::value::{ops, value_map_with_capacity, Kwargs, ObjectRepr, Value, ValueMap};
+use crate::value::{
+    ops, value_map_with_capacity, Kwargs, ObjectRepr, UndefinedType, Value, ValueMap, ValueRepr,
+};
 use crate::vm::context::{Frame, Stack};
 use crate::vm::loop_object::{Loop, LoopState};
 use crate::vm::state::BlockStack;
@@ -70,6 +73,16 @@ where
         let val = some!(f());
         vec[idx as usize] = Some(val);
         Some(val)
+    }
+}
+
+fn normalize_filter_test_name(name: &str) -> Cow<'_, str> {
+    if name.as_bytes().iter().any(|b| b.is_ascii_whitespace()) {
+        let mut normalized = String::with_capacity(name.len());
+        normalized.extend(name.chars().filter(|c| !c.is_ascii_whitespace()));
+        Cow::Owned(normalized)
+    } else {
+        Cow::Borrowed(name)
     }
 }
 
@@ -183,6 +196,10 @@ impl<'env> Vm<'env> {
     ) -> Result<Option<Value>, Error> {
         let initial_auto_escape = state.auto_escape.get();
         let undefined_behavior = state.undefined_behavior();
+        let strict_undefined = matches!(
+            undefined_behavior,
+            UndefinedBehavior::Strict | UndefinedBehavior::SemiStrict
+        );
         let mut auto_escape_stack = vec![];
         let mut next_loop_recursion_jump = None;
         let mut loaded_filters = [None; MAX_LOCALS];
@@ -314,7 +331,17 @@ impl<'env> Vm<'env> {
                     ok!(out.write_str(val).map_err(Error::from));
                 }
                 Instruction::Emit => {
-                    ctx_ok!(self.env.format(&stack.pop(), state, out));
+                    let value = stack.pop();
+                    if self.env.is_default_formatter() {
+                        if strict_undefined
+                            && matches!(value.0, ValueRepr::Undefined(UndefinedType::Default))
+                        {
+                            bail!(Error::from(ErrorKind::UndefinedError));
+                        }
+                        ctx_ok!(write_escaped(out, state.auto_escape.get(), &value));
+                    } else {
+                        ctx_ok!(self.env.format(&value, state, out));
+                    }
                 }
                 Instruction::StoreLocal(name) => {
                     state.ctx.store(name, stack.pop());
@@ -534,14 +561,15 @@ impl<'env> Vm<'env> {
                     stack.push(out.end_capture(state.auto_escape.get()));
                 }
                 Instruction::ApplyFilter(name, arg_count, local_id) => {
+                    let normalized_name = normalize_filter_test_name(name);
                     let filter =
                         ctx_ok!(get_or_lookup_local(&mut loaded_filters, *local_id, || {
-                            state.env().get_filter(name)
+                            state.env().get_filter(normalized_name.as_ref())
                         })
                         .ok_or_else(|| {
                             Error::new(
                                 ErrorKind::UnknownFilter,
-                                format!("filter {name} is unknown"),
+                                format!("filter {} is unknown", normalized_name.as_ref()),
                             )
                         }));
                     let args = stack.get_call_args(*arg_count);
@@ -551,11 +579,15 @@ impl<'env> Vm<'env> {
                     stack.push(a);
                 }
                 Instruction::PerformTest(name, arg_count, local_id) => {
+                    let normalized_name = normalize_filter_test_name(name);
                     let test = ctx_ok!(get_or_lookup_local(&mut loaded_tests, *local_id, || {
-                        state.env().get_test(name)
+                        state.env().get_test(normalized_name.as_ref())
                     })
                     .ok_or_else(|| {
-                        Error::new(ErrorKind::UnknownTest, format!("test {name} is unknown"))
+                        Error::new(
+                            ErrorKind::UnknownTest,
+                            format!("test {} is unknown", normalized_name.as_ref()),
+                        )
                     }));
                     let args = stack.get_call_args(*arg_count);
                     let arg_count = args.len();

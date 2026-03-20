@@ -80,7 +80,7 @@ pub(crate) struct Stack {
 impl Default for Stack {
     fn default() -> Stack {
         Stack {
-            values: Vec::with_capacity(16),
+            values: Vec::with_capacity(24),
         }
     }
 }
@@ -153,7 +153,7 @@ impl<'env> Context<'env> {
     pub fn new(env: &'env Environment<'env>) -> Context<'env> {
         Context {
             env,
-            stack: Vec::with_capacity(32),
+            stack: Vec::with_capacity(40),
             outer_stack_depth: 0,
             recursion_limit: env.recursion_limit(),
         }

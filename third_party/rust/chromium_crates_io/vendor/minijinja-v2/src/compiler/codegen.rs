@@ -1,4 +1,6 @@
+use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::mem;
 
 use crate::compiler::ast;
 use crate::compiler::instructions::{
@@ -46,6 +48,58 @@ enum PendingBlock {
     },
 }
 
+const CODEGEN_POOL_MAX_ITEMS: usize = 64;
+const CODEGEN_POOLED_MAX_CAPACITY: usize = 64;
+
+thread_local! {
+    static PENDING_BLOCK_POOL: RefCell<Vec<Vec<PendingBlock>>> = const { RefCell::new(Vec::new()) };
+    static SPAN_STACK_POOL: RefCell<Vec<Vec<Span>>> = const { RefCell::new(Vec::new()) };
+}
+
+#[inline(always)]
+fn take_pending_block_buffer() -> Vec<PendingBlock> {
+    let mut buf = PENDING_BLOCK_POOL
+        .with(|pool| pool.borrow_mut().pop())
+        .unwrap_or_else(|| Vec::with_capacity(8));
+    buf.clear();
+    buf
+}
+
+#[inline(always)]
+fn take_span_stack_buffer() -> Vec<Span> {
+    let mut buf = SPAN_STACK_POOL
+        .with(|pool| pool.borrow_mut().pop())
+        .unwrap_or_else(|| Vec::with_capacity(8));
+    buf.clear();
+    buf
+}
+
+#[inline(always)]
+fn recycle_pending_block_buffer(mut buf: Vec<PendingBlock>) {
+    if buf.capacity() <= CODEGEN_POOLED_MAX_CAPACITY {
+        buf.clear();
+        PENDING_BLOCK_POOL.with(|pool| {
+            let mut pool = pool.borrow_mut();
+            if pool.len() < CODEGEN_POOL_MAX_ITEMS {
+                pool.push(buf);
+            }
+        });
+    }
+}
+
+#[inline(always)]
+fn recycle_span_stack_buffer(mut buf: Vec<Span>) {
+    if buf.capacity() <= CODEGEN_POOLED_MAX_CAPACITY {
+        buf.clear();
+        SPAN_STACK_POOL.with(|pool| {
+            let mut pool = pool.borrow_mut();
+            if pool.len() < CODEGEN_POOL_MAX_ITEMS {
+                pool.push(buf);
+            }
+        });
+    }
+}
+
 /// Provides a convenient interface to creating instructions for the VM.
 pub struct CodeGenerator<'source> {
     instructions: Instructions<'source>,
@@ -64,9 +118,9 @@ impl<'source> CodeGenerator<'source> {
         CodeGenerator {
             instructions: Instructions::new(file, source),
             blocks: BTreeMap::new(),
-            pending_block: Vec::with_capacity(32),
+            pending_block: take_pending_block_buffer(),
             current_line: 0,
-            span_stack: Vec::with_capacity(32),
+            span_stack: take_span_stack_buffer(),
             filter_local_ids: BTreeMap::new(),
             test_local_ids: BTreeMap::new(),
             raw_template_bytes: 0,
@@ -915,12 +969,14 @@ impl<'source> CodeGenerator<'source> {
 
     /// Converts the compiler into the instructions.
     pub fn finish(
-        self,
+        mut self,
     ) -> (
         Instructions<'source>,
         BTreeMap<&'source str, Instructions<'source>>,
     ) {
         assert!(self.pending_block.is_empty());
+        recycle_pending_block_buffer(mem::take(&mut self.pending_block));
+        recycle_span_stack_buffer(mem::take(&mut self.span_stack));
         (self.instructions, self.blocks)
     }
 }

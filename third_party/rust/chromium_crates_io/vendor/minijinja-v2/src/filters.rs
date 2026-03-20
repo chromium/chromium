@@ -195,6 +195,9 @@ mod builtins {
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
     pub fn upper(v: Cow<'_, str>) -> String {
+        if v.is_ascii() && !v.bytes().any(|x| x.is_ascii_lowercase()) {
+            return v.into_owned();
+        }
         v.to_uppercase()
     }
 
@@ -261,7 +264,18 @@ mod builtins {
         from: Cow<'_, str>,
         to: Cow<'_, str>,
     ) -> String {
-        v.replace(&from as &str, &to as &str)
+        let from = from.as_ref();
+        let to = to.as_ref();
+
+        if from == to {
+            return v.into_owned();
+        }
+
+        if from.len() > 1 && !v.contains(from) {
+            return v.into_owned();
+        }
+
+        v.replace(from, to)
     }
 
     /// Returns the "length" of the value
@@ -988,7 +1002,7 @@ mod builtins {
     /// This filter is only available if the `json` feature is enabled.  The resulting
     /// value is safe to use in HTML as well as it will not contain any special HTML
     /// characters.  The optional parameter to the filter can be set to `true` to enable
-    /// pretty printing.  Not that the `"` character is left unchanged as it's the
+    /// pretty printing.  Note that the `"` character is left unchanged as it's the
     /// JSON string delimiter.  If you want to pass JSON serialized this way into an
     /// HTTP attribute use single quoted HTML attributes:
     ///
@@ -1054,13 +1068,13 @@ mod builtins {
         })
     }
 
-    /// Indents Value with spaces
+    /// Indents a value with spaces.
     ///
     /// The first optional parameter to the filter can be set to `true` to
     /// indent the first line. The parameter defaults to false.
-    /// the second optional parameter to the filter can be set to `true`
+    /// The second optional parameter to the filter can be set to `true`
     /// to indent blank lines. The parameter defaults to false.
-    /// This filter is useful, if you want to template yaml-files
+    /// This filter is useful if you want to template YAML files.
     ///
     /// ```jinja
     /// example:
@@ -1069,13 +1083,21 @@ mod builtins {
     /// {{ global_config|indent(2,true) }}     # indent whole Value with two spaces
     /// {{ global_config|indent(2,true,true)}} # indent whole Value and all blank lines
     /// ```
+    ///
+    /// The parameters can also be provided as keyword arguments for
+    /// compatibility with Jinja2: `width`, `first`, and `blank`.
+    ///
+    /// ```jinja
+    /// {{ global_config|indent(width=4, first=true, blank=false) }}
+    /// ```
     #[cfg_attr(docsrs, doc(cfg(all(feature = "builtins"))))]
     pub fn indent(
         mut value: String,
-        width: usize,
+        width: Option<usize>,
         indent_first_line: Option<bool>,
         indent_blank_lines: Option<bool>,
-    ) -> String {
+        kwargs: Kwargs,
+    ) -> Result<String, Error> {
         fn strip_trailing_newline(input: &mut String) {
             if input.ends_with('\n') {
                 input.truncate(input.len() - 1);
@@ -1085,17 +1107,31 @@ mod builtins {
             }
         }
 
+        let width: usize = match width {
+            Some(width) => width,
+            None => ok!(kwargs.get::<Option<usize>>("width")).unwrap_or(4),
+        };
+        let indent_first_line: bool = match indent_first_line {
+            Some(v) => v,
+            None => ok!(kwargs.get::<Option<bool>>("first")).unwrap_or(false),
+        };
+        let indent_blank_lines: bool = match indent_blank_lines {
+            Some(v) => v,
+            None => ok!(kwargs.get::<Option<bool>>("blank")).unwrap_or(false),
+        };
+        ok!(kwargs.assert_all_used());
+
         strip_trailing_newline(&mut value);
         let indent_with = " ".repeat(width);
         let mut output = String::new();
         let mut iterator = value.split('\n');
-        if !indent_first_line.unwrap_or(false) {
+        if !indent_first_line {
             output.push_str(iterator.next().unwrap());
             output.push('\n');
         }
         for line in iterator {
             if line.is_empty() {
-                if indent_blank_lines.unwrap_or(false) {
+                if indent_blank_lines {
                     output.push_str(&indent_with);
                 }
             } else {
@@ -1104,7 +1140,7 @@ mod builtins {
             output.push('\n');
         }
         strip_trailing_newline(&mut output);
-        output
+        Ok(output)
     }
 
     /// URL encodes a value.

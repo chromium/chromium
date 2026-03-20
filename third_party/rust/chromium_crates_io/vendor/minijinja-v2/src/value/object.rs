@@ -7,7 +7,7 @@ use std::hash::Hash;
 use std::sync::Arc;
 
 use crate::error::{Error, ErrorKind};
-use crate::value::{mapped_enumerator, Value};
+use crate::value::{mapped_enumerator, Value, ValueRepr};
 use crate::vm::State;
 
 /// A trait that represents a dynamic object.
@@ -181,6 +181,15 @@ pub trait Object: fmt::Debug + Send + Sync {
     fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
         let _ = key;
         None
+    }
+
+    /// Given a string key, looks up the associated value.
+    ///
+    /// By default this creates a temporary value and calls [`get_value`](Self::get_value).
+    /// Implementors can override this to avoid temporary allocations for common
+    /// string-key lookups.
+    fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
+        self.get_value(&Value::from(key))
     }
 
     /// Enumerates the object.
@@ -628,6 +637,8 @@ type_erase! {
 
         fn get_value(&self, key: &Value) -> Option<Value>;
 
+        fn get_value_by_str(&self, key: &str) -> Option<Value>;
+
         fn enumerate(&self) -> Enumerator;
 
         fn is_true(&self) -> bool;
@@ -781,8 +792,46 @@ macro_rules! impl_str_map_helper {
                 self.get(some!(key.as_str())).cloned().map(|v| v.into())
             }
 
+            #[inline(always)]
+            fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
+                self.get(key).cloned().map(|v| v.into())
+            }
+
             fn enumerate(self: &Arc<Self>) -> Enumerator {
                 self.$enumerator(|this| Box::new(this.keys().map(|x| Value::from(x as &str))))
+            }
+
+            fn enumerator_len(self: &Arc<Self>) -> Option<usize> {
+                Some(self.len())
+            }
+        }
+    };
+}
+
+macro_rules! impl_static_str_map_helper {
+    ($map_type:ident, $enumerator:ident) => {
+        impl<V> Object for $map_type<&'static str, V>
+        where
+            V: Into<Value> + Clone + Send + Sync + fmt::Debug + 'static,
+        {
+            #[inline(always)]
+            fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
+                self.get(some!(key.as_str())).cloned().map(|v| v.into())
+            }
+
+            #[inline(always)]
+            fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
+                if self.len() <= 8 {
+                    self.iter().find_map(|(map_key, value)| {
+                        (*map_key == key).then(|| value.clone().into())
+                    })
+                } else {
+                    self.get(key).cloned().map(|v| v.into())
+                }
+            }
+
+            fn enumerate(self: &Arc<Self>) -> Enumerator {
+                self.$enumerator(|this| Box::new(this.keys().map(|x| Value::from(*x))))
             }
 
             fn enumerator_len(self: &Arc<Self>) -> Option<usize> {
@@ -796,6 +845,7 @@ macro_rules! impl_str_map {
     ($map_type:ident, $enumerator:ident) => {
         impl_str_map_helper!($map_type, String, $enumerator);
         impl_str_map_helper!($map_type, Arc<str>, $enumerator);
+        impl_static_str_map_helper!($map_type, $enumerator);
 
         impl<V> From<$map_type<String, V>> for Value
         where
@@ -852,6 +902,19 @@ macro_rules! impl_value_map {
             #[inline(always)]
             fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
                 self.get(key).cloned().map(|v| v.into())
+            }
+
+            #[inline(always)]
+            fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
+                if self.len() <= 12 {
+                    self.iter().find_map(|(k, v)| match &k.0 {
+                        ValueRepr::String(s, _) if &**s == key => Some(v.clone().into()),
+                        ValueRepr::SmallStr(s) if s.as_str() == key => Some(v.clone().into()),
+                        _ => None,
+                    })
+                } else {
+                    self.get(&Value::from(key)).cloned().map(|v| v.into())
+                }
             }
 
             fn enumerate(self: &Arc<Self>) -> Enumerator {

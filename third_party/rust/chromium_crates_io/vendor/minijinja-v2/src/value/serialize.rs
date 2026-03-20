@@ -6,9 +6,32 @@ use serde::{ser, Serialize, Serializer};
 use crate::error::{Error, ErrorKind};
 use crate::utils::untrusted_size_hint;
 use crate::value::{
-    value_map_with_capacity, Arc, Packed, Value, ValueMap, ValueRepr, VALUE_HANDLES,
-    VALUE_HANDLE_MARKER,
+    value_map_with_capacity, Arc, Enumerator, Object, Packed, Value, ValueMap, ValueRepr,
+    VALUE_HANDLES, VALUE_HANDLE_MARKER,
 };
+
+#[derive(Debug)]
+struct StaticKeyMap(Vec<(&'static str, Value)>);
+
+impl Object for StaticKeyMap {
+    fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
+        self.get_value_by_str(key.as_str()?)
+    }
+
+    fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
+        self.0
+            .iter()
+            .find_map(|(map_key, value)| (*map_key == key).then(|| value.clone()))
+    }
+
+    fn enumerate(self: &Arc<Self>) -> Enumerator {
+        Enumerator::Values(self.0.iter().map(|(key, _)| Value::from(*key)).collect())
+    }
+
+    fn enumerator_len(self: &Arc<Self>) -> Option<usize> {
+        Some(self.0.len())
+    }
+}
 
 #[derive(Debug)]
 pub struct InvalidValue(String);
@@ -34,10 +57,15 @@ impl serde::ser::Error for InvalidValue {
 ///
 /// This neither fails nor panics.  For objects that cannot be represented
 /// the value might be represented as a half broken error object.
+#[cold]
+fn to_invalid_value(invalid: InvalidValue) -> Value {
+    Value::from(Error::new(ErrorKind::BadSerialization, invalid.0))
+}
+
 pub fn transform<T: Serialize>(value: T) -> Value {
     match value.serialize(ValueSerializer) {
         Ok(rv) => rv,
-        Err(invalid) => Value::from(Error::new(ErrorKind::BadSerialization, invalid.0)),
+        Err(invalid) => to_invalid_value(invalid),
     }
 }
 
@@ -223,7 +251,7 @@ impl Serializer for ValueSerializer {
         len: usize,
     ) -> Result<Self::SerializeStruct, InvalidValue> {
         Ok(SerializeStruct {
-            fields: value_map_with_capacity(len),
+            fields: Vec::with_capacity(untrusted_size_hint(len)),
         })
     }
 
@@ -311,7 +339,7 @@ impl ser::SerializeTupleStruct for SerializeTupleStruct {
         match self {
             SerializeTupleStruct::Handle(handle) => VALUE_HANDLES.with(|handles| {
                 handle
-                    .and_then(|h| handles.borrow_mut().remove(&h))
+                    .and_then(|h| handles.borrow_mut().remove(h))
                     .ok_or_else(|| InvalidValue("value handle not in registry".into()))
             }),
             SerializeTupleStruct::Fields(fields) => Ok(Value::from_object(fields)),
@@ -390,7 +418,7 @@ impl ser::SerializeMap for SerializeMap {
 }
 
 pub struct SerializeStruct {
-    fields: ValueMap,
+    fields: Vec<(&'static str, Value)>,
 }
 
 impl ser::SerializeStruct for SerializeStruct {
@@ -401,12 +429,14 @@ impl ser::SerializeStruct for SerializeStruct {
     where
         T: Serialize + ?Sized,
     {
-        self.fields.insert(key.into(), transform(value));
+        self.fields.push((key, transform(value)));
         Ok(())
     }
 
     fn end(self) -> Result<Value, InvalidValue> {
-        Ok(Value::from_object(self.fields))
+        let mut fields = self.fields;
+        fields.sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+        Ok(Value::from_object(StaticKeyMap(fields)))
     }
 }
 

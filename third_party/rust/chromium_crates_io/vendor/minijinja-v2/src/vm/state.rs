@@ -195,9 +195,9 @@ impl<'template, 'env> State<'template, 'env> {
     /// # let mut env = Environment::new();
     /// # env.add_template("hello", "{% block hi %}Hello {{ name }}!{% endblock %}")?;
     /// let tmpl = env.get_template("hello")?;
-    /// let rv = tmpl
-    ///     .eval_to_state(context!(name => "John"))?
-    ///     .render_block("hi")?;
+    /// let mut rendered = tmpl
+    ///     .render_captured(context!(name => "John"))?;
+    /// let rv = rendered.with_state_mut(|state| state.render_block("hi"))?;
     /// println!("{}", rv);
     /// # Ok(()) }
     /// ```
@@ -332,7 +332,7 @@ impl<'template, 'env> State<'template, 'env> {
     /// Temps are similar to context values but the engine never looks them up
     /// on their own and they are not scoped.  The lifetime of temps is limited
     /// to the rendering process of a template.  Temps are useful so that
-    /// filters and other things can temporary stash away state without having
+    /// filters and other things can temporarily stash away state without having
     /// to resort to thread locals which are hard to manage.  Unlike context
     /// variables, temps can also be modified during evaluation by filters and
     /// functions.
@@ -370,7 +370,7 @@ impl<'template, 'env> State<'template, 'env> {
 
     /// Shortcut for registering an object as a temp.
     ///
-    /// If the value is already there, it's returned as object, if it's
+    /// If the value is already there, it's returned as an object. If it's
     /// not there yet, the function is invoked to create it.
     ///
     /// # Example
@@ -394,7 +394,7 @@ impl<'template, 'env> State<'template, 'env> {
     ///
     /// # Panics
     ///
-    /// This will panick if the value registered under that name is not
+    /// This will panic if the value registered under that name is not
     /// the object expected.
     pub fn get_or_set_temp_object<O, F>(&self, name: &str, f: F) -> Arc<O>
     where
@@ -449,7 +449,7 @@ impl<'a> ArgType<'a> for &State<'_, '_> {
     }
 }
 
-/// Tracks a block and it's parents for super.
+/// Tracks a block and its parents for super.
 #[derive(Default)]
 pub(crate) struct BlockStack<'template, 'env> {
     instructions: Vec<&'template Instructions<'env>>,

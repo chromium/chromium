@@ -937,7 +937,7 @@ mod imp {
     use crate::error::{Error, ErrorKind};
     use aho_corasick::{AhoCorasick, PatternID};
     use std::borrow::Cow;
-    use std::sync::Arc;
+    use std::sync::{Arc, OnceLock};
 
     #[derive(Debug, PartialEq, Clone)]
     pub(crate) struct Delims {
@@ -961,6 +961,13 @@ mod imp {
         line_statement_prefix: Cow::Borrowed(""),
         line_comment_prefix: Cow::Borrowed(""),
     };
+
+    fn default_delims() -> Arc<Delims> {
+        static DEFAULT_DELIMS_ARC: OnceLock<Arc<Delims>> = OnceLock::new();
+        DEFAULT_DELIMS_ARC
+            .get_or_init(|| Arc::new(DEFAULT_DELIMS))
+            .clone()
+    }
 
     impl Delims {
         fn validated_start_delims(&self) -> Result<Vec<&str>, Error> {
@@ -1106,7 +1113,7 @@ mod imp {
     impl Default for SyntaxConfig {
         fn default() -> Self {
             Self {
-                delims: Arc::new(DEFAULT_DELIMS),
+                delims: default_delims(),
                 aho_corasick: None,
             }
         }
@@ -1117,7 +1124,7 @@ mod imp {
         #[cfg_attr(docsrs, doc(cfg(feature = "custom_syntax")))]
         pub fn builder() -> SyntaxConfigBuilder {
             SyntaxConfigBuilder {
-                delims: Arc::new(DEFAULT_DELIMS),
+                delims: default_delims(),
             }
         }
 

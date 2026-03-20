@@ -1,0 +1,11 @@
+[package]
+name = "memo-map"
+version = "0.3.3"
+authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
+edition = "2018"
+rust-version = "1.43"
+license = "Apache-2.0"
+description = "A crate implementing a synchronized map for memoization"
+repository = "https://github.com/mitsuhiko/memo-map"
+keywords = ["memo", "upsert"]
+readme = "README.md"

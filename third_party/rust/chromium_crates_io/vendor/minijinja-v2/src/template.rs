@@ -1,8 +1,10 @@
+use std::cell::RefCell;
 use std::collections::{BTreeMap, HashSet};
 use std::ops::Deref;
 use std::sync::Arc;
 use std::{fmt, io};
 
+use crate::vendor::self_cell::self_cell;
 use serde::Serialize;
 
 use crate::compiler::codegen::CodeGenerator;
@@ -53,6 +55,77 @@ impl TemplateConfig {
 pub struct Template<'env: 'source, 'source> {
     env: &'env Environment<'env>,
     pub(crate) compiled: CompiledTemplateRef<'env, 'source>,
+}
+
+struct CapturedData<'state> {
+    output: String,
+    state: State<'state, 'state>,
+}
+
+self_cell! {
+    struct CapturedCell<'source> {
+        owner: Template<'source, 'source>,
+
+        #[covariant]
+        dependent: CapturedData,
+    }
+}
+
+/// Represents a rendered template output together with a captured [`State`].
+///
+/// This type keeps the originating [`Template`] alive together with its
+/// [`State`].  This is useful in situations where a temporary template handle
+/// is used and a state needs to be inspected later (for instance to call
+/// exported macros).
+///
+/// When created from [`render_captured`](Template::render_captured)
+/// the [`output`](Self::output) contains the rendered string.  When created from
+/// [`render_captured_to`](Template::render_captured_to) the output is
+/// an empty string as the output was written to the provided writer.
+pub struct Captured<'source> {
+    cell: CapturedCell<'source>,
+}
+
+impl fmt::Debug for Captured<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Captured")
+            .field("output", &self.output())
+            .field("state", &self.state())
+            .finish()
+    }
+}
+
+impl<'source> Captured<'source> {
+    /// Returns the rendered output.
+    ///
+    /// When created from [`render_captured_to`](Template::render_captured_to)
+    /// this returns an empty string.
+    pub fn output(&self) -> &str {
+        self.cell.borrow_dependent().output.as_str()
+    }
+
+    /// Returns a reference to the captured state.
+    pub fn state(&self) -> &State<'_, '_> {
+        &self.cell.borrow_dependent().state
+    }
+
+    /// Invokes a closure with mutable access to the captured state.
+    pub fn with_state_mut<R>(
+        &mut self,
+        f: impl for<'state> FnOnce(&mut State<'state, 'state>) -> R,
+    ) -> R {
+        self.cell
+            .with_dependent_mut(|_, dependent| f(&mut dependent.state))
+    }
+
+    /// Consumes the capture and returns the rendered output string.
+    ///
+    /// When created from [`render_captured_to`](Template::render_captured_to)
+    /// this returns an empty string.
+    pub fn into_output(mut self) -> String {
+        self.cell
+            .with_dependent_mut(|_, dependent| std::mem::take(&mut dependent.output))
+    }
 }
 
 impl fmt::Debug for Template<'_, '_> {
@@ -107,8 +180,8 @@ impl<'env, 'source> Template<'env, 'source> {
     /// println!("{}", tmpl.render(context!(name => "John")).unwrap());
     /// ```
     ///
-    /// To render a single block use [`eval_to_state`](Self::eval_to_state) in
-    /// combination with [`State::render_block`].
+    /// To render a single block use [`render_captured`](Self::render_captured)
+    /// in combination with [`State::render_block`].
     ///
     /// **Note on values:** The [`Value`] type implements `Serialize` and can be
     /// efficiently passed to render.  It does not undergo actual serialization.
@@ -135,6 +208,7 @@ impl<'env, 'source> Template<'env, 'source> {
     ///
     /// **Note on values:** The [`Value`] type implements `Serialize` and can be
     /// efficiently passed to render.  It does not undergo actual serialization.
+    #[deprecated(since = "2.18.0", note = "use render_captured instead")]
     pub fn render_and_return_state<S: Serialize>(
         &self,
         ctx: S,
@@ -144,17 +218,111 @@ impl<'env, 'source> Template<'env, 'source> {
         self._render(Value::from_serialize(&ctx))
     }
 
+    /// Like [`render`](Self::render) but also returns the evaluated [`State`]
+    /// while keeping the template alive with the returned state.
+    ///
+    /// This is primarily useful when working with temporary template handles,
+    /// as the resulting [`State`] can continue to be used through the returned
+    /// wrapper.
+    ///
+    /// ```
+    /// # use minijinja::{Environment, value::Value};
+    /// let env = Environment::new();
+    /// let rendered = env
+    ///     .template_from_str("{% set x = 42 %}")
+    ///     .unwrap()
+    ///     .render_captured(())
+    ///     .unwrap();
+    /// assert_eq!(rendered.output(), "");
+    /// assert_eq!(rendered.state().lookup("x"), Some(Value::from(42)));
+    /// ```
+    pub fn render_captured<S: Serialize>(&self, ctx: S) -> Result<Captured<'source>, Error> {
+        self.clone()
+            ._capture_state(Value::from_serialize(&ctx), true)
+    }
+
+    /// Like [`render`](Self::render) but writes to an [`io::Write`] and keeps
+    /// the template alive with the returned state.
+    ///
+    /// This is useful when working with temporary template handles and
+    /// the state needs to be inspected afterwards.  The [`output`](Captured::output)
+    /// of the returned [`Captured`] will be an empty string since the
+    /// output was written to the provided writer.
+    ///
+    /// ```
+    /// # use minijinja::{Environment, context};
+    /// let env = Environment::new();
+    /// let mut buf = Vec::new();
+    /// let captured = env
+    ///     .template_from_str("{% set x = 42 %}Hello!")
+    ///     .unwrap()
+    ///     .render_captured_to((), &mut buf)
+    ///     .unwrap();
+    /// assert_eq!(std::str::from_utf8(&buf).unwrap(), "Hello!");
+    /// assert_eq!(captured.output(), "");
+    /// ```
+    pub fn render_captured_to<S: Serialize, W: io::Write>(
+        &self,
+        ctx: S,
+        w: W,
+    ) -> Result<Captured<'source>, Error> {
+        let root = Value::from_serialize(&ctx);
+        let w = std::cell::RefCell::new(WriteWrapper { w, err: None });
+        self.clone()
+            ._capture_state_with_output(root, &w)
+            .map_err(|err| w.into_inner().take_err(err))
+    }
+
     fn _render(&self, root: Value) -> Result<(String, State<'_, 'env>), Error> {
         let mut rv = String::with_capacity(self.compiled.buffer_size_hint);
         self._eval(root, &mut Output::new(&mut rv))
             .map(|(_, state)| (rv, state))
     }
 
+    fn _capture_state(self, root: Value, capture_output: bool) -> Result<Captured<'source>, Error> {
+        let this: Template<'source, 'source> = self;
+        let cell = ok!(CapturedCell::try_new(
+            this,
+            move |template| -> Result<CapturedData<'_>, Error> {
+                let mut output = if capture_output {
+                    String::with_capacity(template.compiled.buffer_size_hint)
+                } else {
+                    String::new()
+                };
+                let (_, state) = if capture_output {
+                    ok!(template._eval(root, &mut Output::new(&mut output)))
+                } else {
+                    ok!(template._eval(root, &mut Output::null()))
+                };
+                Ok(CapturedData { output, state })
+            }
+        ));
+        Ok(Captured { cell })
+    }
+
+    fn _capture_state_with_output<W: io::Write>(
+        self,
+        root: Value,
+        w: &RefCell<WriteWrapper<W>>,
+    ) -> Result<Captured<'source>, Error> {
+        let this: Template<'source, 'source> = self;
+        let cell = ok!(CapturedCell::try_new(
+            this,
+            move |template| -> Result<CapturedData<'_>, Error> {
+                let (_, state) = ok!(template._eval(root, &mut Output::new(&mut *w.borrow_mut())));
+                Ok(CapturedData {
+                    output: String::new(),
+                    state,
+                })
+            }
+        ));
+        Ok(Captured { cell })
+    }
+
     /// Renders the template into an [`io::Write`].
     ///
-    /// This works exactly like [`render`](Self::render) but instead writes the template
-    /// as it's evaluating into an [`io::Write`].  It also returns the [`State`] like
-    /// [`render_and_return_state`](Self::render_and_return_state) does.
+    /// This works exactly like [`render`](Self::render), but writes the template
+    /// into an [`io::Write`] as it is evaluated.
     ///
     /// ```
     /// # use minijinja::{Environment, context};
@@ -168,6 +336,7 @@ impl<'env, 'source> Template<'env, 'source> {
     ///
     /// **Note on values:** The [`Value`] type implements `Serialize` and can be
     /// efficiently passed to render.  It does not undergo actual serialization.
+    #[deprecated(since = "2.18.0", note = "use render_captured_to instead")]
     pub fn render_to_write<S: Serialize, W: io::Write>(
         &self,
         ctx: S,
@@ -197,9 +366,10 @@ impl<'env, 'source> Template<'env, 'source> {
     /// # Ok(()) }
     /// ```
     ///
-    /// If you also want to render, use [`render_and_return_state`](Self::render_and_return_state).
+    /// If you also want to render, use [`render_captured`](Self::render_captured).
     ///
     /// For more information see [`State`].
+    #[deprecated(since = "2.18.0", note = "use render_captured instead")]
     pub fn eval_to_state<S: Serialize>(&self, ctx: S) -> Result<State<'_, 'env>, Error> {
         let root = Value::from_serialize(&ctx);
         let mut out = Output::null();
@@ -232,7 +402,7 @@ impl<'env, 'source> Template<'env, 'source> {
     /// Returns a set of all undeclared variables in the template.
     ///
     /// This returns a set of all variables that might be looked up
-    /// at runtime by the template.  Since this is runs a static
+    /// at runtime by the template.  Since this runs a static
     /// analysis, the actual control flow is not considered.  This
     /// also cannot take into account what happens due to includes,
     /// imports or extending.  If `nested` is set to `true`, then also

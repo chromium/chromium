@@ -297,6 +297,13 @@ impl<'s> Tokenizer<'s> {
         syntax_config: SyntaxConfig,
         whitespace_config: WhitespaceConfig,
     ) -> Tokenizer<'s> {
+        let mut stack = Vec::with_capacity(8);
+        stack.push(if in_expr {
+            LexerState::Variable
+        } else {
+            LexerState::Template
+        });
+
         let mut source = input;
         if !whitespace_config.keep_trailing_newline {
             if source.ends_with('\n') {
@@ -309,11 +316,7 @@ impl<'s> Tokenizer<'s> {
         Tokenizer {
             source,
             filename,
-            stack: vec![if in_expr {
-                LexerState::Variable
-            } else {
-                LexerState::Template
-            }],
+            stack,
             current_line: 1,
             current_col: 0,
             current_offset: 0,
@@ -328,6 +331,11 @@ impl<'s> Tokenizer<'s> {
     /// Returns the current filename.
     pub fn filename(&self) -> &str {
         self.filename
+    }
+
+    /// Returns the source.
+    pub fn source(&self) -> &'s str {
+        self.source
     }
 
     /// Produces the next token from the tokenizer.
@@ -361,16 +369,17 @@ impl<'s> Tokenizer<'s> {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     fn rest(&self) -> &'s str {
         &self.source[self.current_offset..]
     }
 
-    #[inline]
+    #[inline(always)]
     fn rest_bytes(&self) -> &'s [u8] {
         &self.source.as_bytes()[self.current_offset..]
     }
 
+    #[inline(always)]
     fn advance(&mut self, bytes: usize) -> &'s str {
         let skipped = &self.rest()[..bytes];
         for c in skipped.chars() {

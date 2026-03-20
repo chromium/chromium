@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::fmt;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use serde::Serialize;
 
@@ -11,8 +11,10 @@ use crate::compiler::parser::parse_expr;
 use crate::error::{attach_basic_debug_info, Error, ErrorKind};
 use crate::expression::Expression;
 use crate::output::Output;
-use crate::template::{CompiledTemplate, CompiledTemplateRef, Template, TemplateConfig};
-use crate::utils::{AutoEscape, BTreeMapKeysDebug, UndefinedBehavior};
+use crate::template::{
+    AutoEscapeFunc, CompiledTemplate, CompiledTemplateRef, Template, TemplateConfig,
+};
+use crate::utils::{write_escaped, AutoEscape, BTreeMapKeysDebug, UndefinedBehavior};
 use crate::value::{FunctionArgs, FunctionResult, UndefinedType, Value, ValueRepr};
 use crate::vm::State;
 use crate::{defaults, functions};
@@ -22,10 +24,31 @@ type PathJoinFunc = dyn for<'s> Fn(&'s str, &'s str) -> Cow<'s, str> + Sync + Se
 type UnknownMethodFunc =
     dyn Fn(&State, &Value, &str, &[Value]) -> Result<Value, Error> + Sync + Send;
 
+fn default_auto_escape_callback() -> Arc<AutoEscapeFunc> {
+    static DEFAULT_AUTO_ESCAPE: OnceLock<Arc<AutoEscapeFunc>> = OnceLock::new();
+    DEFAULT_AUTO_ESCAPE
+        .get_or_init(|| Arc::new(defaults::default_auto_escape_callback))
+        .clone()
+}
+
+fn no_auto_escape_callback() -> Arc<AutoEscapeFunc> {
+    static NO_AUTO_ESCAPE: OnceLock<Arc<AutoEscapeFunc>> = OnceLock::new();
+    NO_AUTO_ESCAPE
+        .get_or_init(|| Arc::new(defaults::no_auto_escape))
+        .clone()
+}
+
+fn default_formatter() -> Arc<FormatterFunc> {
+    static FORMATTER: OnceLock<Arc<FormatterFunc>> = OnceLock::new();
+    FORMATTER
+        .get_or_init(|| Arc::new(defaults::escape_formatter))
+        .clone()
+}
+
 /// The maximum recursion in the VM.  Normally each stack frame
-/// adds one to this counter (eg: every time a frame is added).
+/// adds one to this counter (e.g., every time a frame is added).
 /// However in some situations more depth is pushed if the cost
-/// of the stack frame is higher.  Raising this above this limit
+/// of the stack frame is higher.  Raising this limit
 /// requires enabling the `stacker` feature.
 const MAX_RECURSION: usize = 500;
 
@@ -47,13 +70,14 @@ const MAX_RECURSION: usize = 500;
 #[derive(Clone)]
 pub struct Environment<'source> {
     templates: TemplateStore<'source>,
-    filters: BTreeMap<Cow<'source, str>, Value>,
-    tests: BTreeMap<Cow<'source, str>, Value>,
-    globals: BTreeMap<Cow<'source, str>, Value>,
+    filters: Arc<BTreeMap<Cow<'source, str>, Value>>,
+    tests: Arc<BTreeMap<Cow<'source, str>, Value>>,
+    globals: Arc<BTreeMap<Cow<'source, str>, Value>>,
     path_join_callback: Option<Arc<PathJoinFunc>>,
     pub(crate) unknown_method_callback: Option<Arc<UnknownMethodFunc>>,
     undefined_behavior: UndefinedBehavior,
     formatter: Arc<FormatterFunc>,
+    formatter_is_default: bool,
     #[cfg(feature = "debug")]
     debug: bool,
     #[cfg(feature = "fuel")]
@@ -96,16 +120,15 @@ impl<'source> Environment<'source> {
     )]
     pub fn new() -> Environment<'source> {
         Environment {
-            templates: TemplateStore::new(TemplateConfig::new(Arc::new(
-                defaults::default_auto_escape_callback,
-            ))),
+            templates: TemplateStore::new(TemplateConfig::new(default_auto_escape_callback())),
             filters: defaults::get_builtin_filters(),
             tests: defaults::get_builtin_tests(),
             globals: defaults::get_globals(),
             path_join_callback: None,
             unknown_method_callback: None,
             undefined_behavior: UndefinedBehavior::default(),
-            formatter: Arc::new(defaults::escape_formatter),
+            formatter: default_formatter(),
+            formatter_is_default: true,
             #[cfg(feature = "debug")]
             debug: cfg!(debug_assertions),
             #[cfg(feature = "fuel")]
@@ -120,14 +143,15 @@ impl<'source> Environment<'source> {
     /// logic for auto escaping configured.
     pub fn empty() -> Environment<'source> {
         Environment {
-            templates: TemplateStore::new(TemplateConfig::new(Arc::new(defaults::no_auto_escape))),
+            templates: TemplateStore::new(TemplateConfig::new(no_auto_escape_callback())),
             filters: Default::default(),
             tests: Default::default(),
             globals: Default::default(),
             path_join_callback: None,
             unknown_method_callback: None,
             undefined_behavior: UndefinedBehavior::default(),
-            formatter: Arc::new(defaults::escape_formatter),
+            formatter: default_formatter(),
+            formatter_is_default: true,
             #[cfg(feature = "debug")]
             debug: cfg!(debug_assertions),
             #[cfg(feature = "fuel")]
@@ -152,8 +176,7 @@ impl<'source> Environment<'source> {
     /// Note that there are situations where the interface of this method is
     /// too restrictive as you need to hold on to the strings for the lifetime
     /// of the environment. To avoid this restriction use
-    /// [`add_template_owned`](Self::add_template_owned), which is available
-    /// when the `loader` feature is enabled.
+    /// [`add_template_owned`](Self::add_template_owned).
     pub fn add_template(&mut self, name: &'source str, source: &'source str) -> Result<(), Error> {
         self.templates.insert(name, source)
     }
@@ -169,10 +192,9 @@ impl<'source> Environment<'source> {
     /// env.add_template_owned("index.html".to_string(), "Hello {{ name }}!".to_string()).unwrap();
     /// ```
     ///
-    /// **Note**: the name is a bit of a misnomer as this API also allows to borrow too as
-    /// the parameters are actually [`Cow`].  This method fails if the template has a syntax error.
-    #[cfg(feature = "loader")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "loader")))]
+    /// **Note**: the name is a bit of a misnomer as this API also allows borrowing,
+    /// as the parameters are actually [`Cow`].  This method fails if the template
+    /// has a syntax error.
     pub fn add_template_owned<N, S>(&mut self, name: N, source: S) -> Result<(), Error>
     where
         N: Into<Cow<'source, str>>,
@@ -209,8 +231,6 @@ impl<'source> Environment<'source> {
     ///     env
     /// }
     /// ```
-    #[cfg(feature = "loader")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "loader")))]
     pub fn set_loader<F>(&mut self, f: F)
     where
         F: Fn(&str) -> Result<Option<String>, Error> + Send + Sync + 'static,
@@ -388,8 +408,7 @@ impl<'source> Environment<'source> {
 
     /// Loads a template from a string.
     ///
-    /// In some cases you really only need to work with (eg: render) a template to be
-    /// rendered once only.
+    /// In some cases you only need to work with (e.g., render) a template once.
     ///
     /// ```
     /// # use minijinja::{Environment, context};
@@ -473,7 +492,7 @@ impl<'source> Environment<'source> {
     /// invoked with the name of the template and can make an initial auto
     /// escaping decision based on that.  The default implementation
     /// ([`default_auto_escape_callback`](defaults::default_auto_escape_callback))
-    /// turn on escaping depending on the file extension.
+    /// turns on escaping depending on the file extension.
     ///
     /// ```
     /// # use minijinja::{Environment, AutoEscape};
@@ -550,6 +569,7 @@ impl<'source> Environment<'source> {
         F: Fn(&mut Output, &State, &Value) -> Result<(), Error> + 'static + Sync + Send,
     {
         self.formatter = Arc::new(f);
+        self.formatter_is_default = false;
     }
 
     /// Enable or disable the debug mode.
@@ -655,9 +675,9 @@ impl<'source> Environment<'source> {
 
     /// Compiles an expression.
     ///
-    /// This lets one compile an expression in the template language and
-    /// receive the output.  This lets one use the expressions of the language
-    /// be used as a minimal scripting language.  For more information and an
+    /// This lets you compile an expression in the template language and evaluate it.
+    /// This makes it possible to use the language's expressions as a minimal
+    /// scripting language.  For more information and an
     /// example see [`Expression`].
     pub fn compile_expression(&self, expr: &'source str) -> Result<Expression<'_, 'source>, Error> {
         self._compile_expression(expr)
@@ -668,8 +688,6 @@ impl<'source> Environment<'source> {
     ///
     /// This works exactly like [`compile_expression`](Self::compile_expression) but
     /// lets you pass an owned string without capturing the lifetime.
-    #[cfg(feature = "loader")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "loader")))]
     pub fn compile_expression_owned<E>(&self, expr: E) -> Result<Expression<'_, 'source>, Error>
     where
         E: Into<Cow<'source, str>>,
@@ -703,12 +721,12 @@ impl<'source> Environment<'source> {
         Rv: FunctionResult,
         Args: for<'a> FunctionArgs<'a>,
     {
-        self.filters.insert(name.into(), Value::from_function(f));
+        Arc::make_mut(&mut self.filters).insert(name.into(), Value::from_function(f));
     }
 
     /// Removes a filter by name.
     pub fn remove_filter(&mut self, name: &str) {
-        self.filters.remove(name);
+        Arc::make_mut(&mut self.filters).remove(name);
     }
 
     /// Adds a new test function.
@@ -723,12 +741,12 @@ impl<'source> Environment<'source> {
         Rv: FunctionResult,
         Args: for<'a> FunctionArgs<'a>,
     {
-        self.tests.insert(name.into(), Value::from_function(f));
+        Arc::make_mut(&mut self.tests).insert(name.into(), Value::from_function(f));
     }
 
     /// Removes a test by name.
     pub fn remove_test(&mut self, name: &str) {
-        self.tests.remove(name);
+        Arc::make_mut(&mut self.tests).remove(name);
     }
 
     /// Adds a new global function.
@@ -756,12 +774,12 @@ impl<'source> Environment<'source> {
         N: Into<Cow<'source, str>>,
         V: Into<Value>,
     {
-        self.globals.insert(name.into(), value.into());
+        Arc::make_mut(&mut self.globals).insert(name.into(), value.into());
     }
 
     /// Removes a global function or variable by name.
     pub fn remove_global(&mut self, name: &str) {
-        self.globals.remove(name);
+        Arc::make_mut(&mut self.globals).remove(name);
     }
 
     /// Returns an iterator of all global variables.
@@ -795,6 +813,11 @@ impl<'source> Environment<'source> {
         (self.templates.template_config.default_auto_escape)(name)
     }
 
+    #[inline(always)]
+    pub(crate) fn is_default_formatter(&self) -> bool {
+        self.formatter_is_default
+    }
+
     /// Formats a value into the final format.
     ///
     /// This step is called finalization in Jinja2 but since we are writing into
@@ -814,7 +837,13 @@ impl<'source> Environment<'source> {
                 UndefinedBehavior::Strict | UndefinedBehavior::SemiStrict,
                 &ValueRepr::Undefined(UndefinedType::Default),
             ) => Err(Error::from(ErrorKind::UndefinedError)),
-            _ => (self.formatter)(out, state, value),
+            _ => {
+                if self.formatter_is_default {
+                    write_escaped(out, state.auto_escape(), value)
+                } else {
+                    (self.formatter)(out, state, value)
+                }
+            }
         }
     }
 
@@ -827,65 +856,4 @@ impl<'source> Environment<'source> {
     }
 }
 
-#[cfg(not(feature = "loader"))]
-mod basic_store {
-    use super::*;
-
-    #[derive(Clone)]
-    pub(crate) struct BasicStore<'source> {
-        pub template_config: TemplateConfig,
-        map: BTreeMap<&'source str, Arc<CompiledTemplate<'source>>>,
-    }
-
-    impl fmt::Debug for BasicStore<'_> {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            BTreeMapKeysDebug(&self.map).fmt(f)
-        }
-    }
-
-    impl<'source> BasicStore<'source> {
-        pub fn new(template_config: TemplateConfig) -> BasicStore<'source> {
-            BasicStore {
-                template_config,
-                map: BTreeMap::default(),
-            }
-        }
-
-        pub fn insert(&mut self, name: &'source str, source: &'source str) -> Result<(), Error> {
-            self.map.insert(
-                name,
-                Arc::new(ok!(CompiledTemplate::new(
-                    name,
-                    source,
-                    &self.template_config
-                ))),
-            );
-            Ok(())
-        }
-
-        pub fn remove(&mut self, name: &str) {
-            self.map.remove(name);
-        }
-
-        pub fn clear(&mut self) {
-            self.map.clear();
-        }
-
-        pub fn get(&self, name: &str) -> Result<&CompiledTemplate<'source>, Error> {
-            self.map
-                .get(name)
-                .map(|x| &**x)
-                .ok_or_else(|| Error::new_not_found(name))
-        }
-
-        pub fn iter(&self) -> impl Iterator<Item = (&str, &CompiledTemplate<'source>)> {
-            self.map.iter().map(|(name, template)| (*name, &**template))
-        }
-    }
-}
-
-#[cfg(not(feature = "loader"))]
-use self::basic_store::BasicStore as TemplateStore;
-
-#[cfg(feature = "loader")]
 use crate::loader::LoaderStore as TemplateStore;

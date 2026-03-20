@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::iter::{once, repeat};
 use std::str::Chars;
+use std::sync::OnceLock;
 
 use crate::error::{Error, ErrorKind};
 use crate::value::{StringType, UndefinedType, Value, ValueIter, ValueKind, ValueRepr};
@@ -28,9 +29,85 @@ pub(crate) fn untrusted_size_hint(value: usize) -> usize {
     value.min(1024)
 }
 
+const SMALL_INT_FORMAT_CACHE_LIMIT: usize = 256;
+
+#[inline(always)]
+fn small_u64_format(value: u64) -> Option<&'static str> {
+    static CACHE: OnceLock<Vec<Box<str>>> = OnceLock::new();
+
+    if value >= SMALL_INT_FORMAT_CACHE_LIMIT as u64 {
+        return None;
+    }
+
+    let cache = CACHE.get_or_init(|| {
+        (0..SMALL_INT_FORMAT_CACHE_LIMIT)
+            .map(|n| n.to_string().into_boxed_str())
+            .collect::<Vec<_>>()
+    });
+    Some(cache[value as usize].as_ref())
+}
+
+#[inline(always)]
+fn is_ascii_integer_str(s: &str) -> bool {
+    let bytes = s.as_bytes();
+    if bytes.is_empty() {
+        return false;
+    }
+
+    let (first, rest) = bytes.split_first().unwrap();
+    if *first == b'-' {
+        !rest.is_empty() && rest.iter().all(|b| b.is_ascii_digit())
+    } else {
+        first.is_ascii_digit() && rest.iter().all(|b| b.is_ascii_digit())
+    }
+}
+
+#[inline(always)]
+fn needs_html_escaping(s: &str) -> bool {
+    for &b in s.as_bytes() {
+        if b.wrapping_sub(b'"') <= b'>' - b'"'
+            && matches!(b, b'<' | b'>' | b'&' | b'"' | b'\'' | b'/')
+        {
+            return true;
+        }
+    }
+    false
+}
+
 fn write_with_html_escaping(out: &mut Output, value: &Value) -> fmt::Result {
+    match value.0 {
+        ValueRepr::U64(v) => {
+            return match small_u64_format(v) {
+                Some(s) => out.write_str(s),
+                None => write!(out, "{v}"),
+            }
+        }
+        ValueRepr::I64(v) if v >= 0 => {
+            return match small_u64_format(v as u64) {
+                Some(s) => out.write_str(s),
+                None => write!(out, "{v}"),
+            }
+        }
+        ValueRepr::I64(v) => return write!(out, "{v}"),
+        ValueRepr::Bool(v) => {
+            return out.write_str(if v { "true" } else { "false" });
+        }
+        _ => {}
+    }
+
+    if let ValueRepr::SmallStr(ref s) = value.0 {
+        let s = s.as_str();
+        if is_ascii_integer_str(s) {
+            return out.write_str(s);
+        }
+    }
+
     if let Some(s) = value.as_str() {
-        write!(out, "{}", HtmlEscape(s))
+        if !needs_html_escaping(s) {
+            out.write_str(s)
+        } else {
+            write!(out, "{}", HtmlEscape(s))
+        }
     } else if matches!(
         value.kind(),
         ValueKind::Undefined | ValueKind::None | ValueKind::Bool | ValueKind::Number
@@ -304,7 +381,10 @@ impl Unescaper {
                             let val = ok!(self.parse_octal_byte(d, &mut char_iter));
                             ok!(self.push_char(val as char));
                         }
-                        _ => return Err(ErrorKind::BadEscape.into()),
+                        _ => {
+                            ok!(self.push_char('\\'));
+                            ok!(self.push_char(d));
+                        }
                     },
                 }
             } else {
@@ -383,7 +463,7 @@ impl Unescaper {
     }
 }
 
-/// Un-escape a string, following JSON rules.
+/// Un-escape a string, following Jinja-compatible string escape rules.
 pub fn unescape(s: &str) -> Result<String, Error> {
     Unescaper {
         out: String::new(),
@@ -397,20 +477,6 @@ pub struct BTreeMapKeysDebug<'a, K: fmt::Debug, V>(pub &'a BTreeMap<K, V>);
 impl<K: fmt::Debug, V> fmt::Debug for BTreeMapKeysDebug<'_, K, V> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_list().entries(self.0.iter().map(|x| x.0)).finish()
-    }
-}
-
-pub struct OnDrop<F: FnOnce()>(Option<F>);
-
-impl<F: FnOnce()> OnDrop<F> {
-    pub fn new(f: F) -> Self {
-        Self(Some(f))
-    }
-}
-
-impl<F: FnOnce()> Drop for OnDrop<F> {
-    fn drop(&mut self) {
-        self.0.take().unwrap()();
     }
 }
 
@@ -495,6 +561,24 @@ mod tests {
     use similar_asserts::assert_eq;
 
     #[test]
+    fn test_small_u64_format_cache_bounds() {
+        assert_eq!(small_u64_format(0), Some("0"));
+
+        let last_cached = (SMALL_INT_FORMAT_CACHE_LIMIT - 1) as u64;
+        let expected = (SMALL_INT_FORMAT_CACHE_LIMIT - 1).to_string();
+        assert_eq!(small_u64_format(last_cached), Some(expected.as_str()));
+
+        assert_eq!(small_u64_format(SMALL_INT_FORMAT_CACHE_LIMIT as u64), None);
+    }
+
+    #[test]
+    fn test_small_u64_format_large_values_are_not_cached() {
+        // This value wraps to 0 when cast to usize on 32-bit targets.
+        assert_eq!(small_u64_format(u64::from(u32::MAX) + 1), None);
+        assert_eq!(small_u64_format(u64::MAX), None);
+    }
+
+    #[test]
     fn test_html_escape() {
         let input = "<>&\"'/";
         let output = HtmlEscape(input).to_string();
@@ -517,6 +601,13 @@ mod tests {
         assert_eq!(unescape(r"foo\x42bar").unwrap(), "fooBbar");
         assert_eq!(unescape(r"\x0a").unwrap(), "\n");
         assert_eq!(unescape(r"\x0d").unwrap(), "\r");
+
+        // Unknown escapes are preserved as-is for Jinja compatibility.
+        assert_eq!(unescape(r"\s").unwrap(), r"\s");
+        assert_eq!(unescape(r"\q").unwrap(), r"\q");
+        assert_eq!(unescape(r"foo\sbar").unwrap(), r"foo\sbar");
+        assert_eq!(unescape(r"\8").unwrap(), r"\8");
+        assert_eq!(unescape(r"\9").unwrap(), r"\9");
 
         // Test truncation
         assert!(unescape(r"\x").is_err()); // truncated \x
