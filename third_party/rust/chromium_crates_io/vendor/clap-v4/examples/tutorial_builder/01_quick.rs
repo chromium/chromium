@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clap::{arg, command, value_parser, ArgAction, Command};
+use clap::{ArgAction, Command, arg, command, value_parser};
 
 fn main() {
     let matches = command!() // requires `cargo` feature

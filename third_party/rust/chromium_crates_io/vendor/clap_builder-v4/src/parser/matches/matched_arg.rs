@@ -5,12 +5,12 @@ use std::{
     slice::Iter,
 };
 
+use crate::INTERNAL_ERROR_MSG;
 use crate::builder::ArgPredicate;
 use crate::parser::ValueSource;
-use crate::util::eq_ignore_case;
 use crate::util::AnyValue;
 use crate::util::AnyValueId;
-use crate::INTERNAL_ERROR_MSG;
+use crate::util::eq_ignore_case;
 
 #[derive(Debug, Clone)]
 pub(crate) struct MatchedArg {

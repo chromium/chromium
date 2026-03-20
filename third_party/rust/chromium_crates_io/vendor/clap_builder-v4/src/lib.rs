@@ -19,8 +19,8 @@ pub use crate::builder::Command;
 pub use crate::builder::ValueHint;
 pub use crate::builder::{Arg, ArgGroup};
 pub use crate::parser::ArgMatches;
-pub use crate::util::color::ColorChoice;
 pub use crate::util::Id;
+pub use crate::util::color::ColorChoice;
 
 /// Command Line Argument Parser Error
 ///

@@ -69,7 +69,7 @@ Implicit(ImplicitParsers { optimization: None, include: None, bind: None, sleep:
 
 $ typed-derive implicit --sleep forever
 ? failed
-error: invalid value 'forever' for '--sleep <SLEEP>': failed to parse "forever" in the "friendly" format: parsing a friendly duration requires it to start with a unit value (a decimal integer) after an optional sign, but no integer was found
+error: invalid value 'forever' for '--sleep <SLEEP>': failed to parse input in the "friendly" duration format: expected duration to start with a unit value (a decimal integer) after an optional sign, but no integer was found
 
 For more information, try '--help'.
 

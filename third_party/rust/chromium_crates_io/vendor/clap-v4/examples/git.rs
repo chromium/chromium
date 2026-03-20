@@ -1,7 +1,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use clap::{arg, Command};
+use clap::{Command, arg};
 
 fn cli() -> Command {
     Command::new("git")

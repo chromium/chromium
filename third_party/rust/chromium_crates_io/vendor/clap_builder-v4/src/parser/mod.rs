@@ -14,8 +14,8 @@ pub(crate) use self::matches::{MatchedArg, SubCommand};
 pub(crate) use self::parser::Identifier;
 pub(crate) use self::parser::Parser;
 pub(crate) use self::parser::PendingArg;
-pub(crate) use self::validator::get_possible_values_cli;
 pub(crate) use self::validator::Validator;
+pub(crate) use self::validator::get_possible_values_cli;
 
 pub use self::matches::IdsRef;
 pub use self::matches::RawValues;

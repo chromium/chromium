@@ -9,25 +9,25 @@ use std::ops::Index;
 use std::path::Path;
 
 // Internal
-use crate::builder::app_settings::{AppFlags, AppSettings};
-use crate::builder::arg_settings::ArgSettings;
-use crate::builder::ext::Extension;
-use crate::builder::ext::Extensions;
 use crate::builder::ArgAction;
 use crate::builder::IntoResettable;
 use crate::builder::PossibleValue;
 use crate::builder::Str;
 use crate::builder::StyledStr;
 use crate::builder::Styles;
+use crate::builder::app_settings::{AppFlags, AppSettings};
+use crate::builder::arg_settings::ArgSettings;
+use crate::builder::ext::Extension;
+use crate::builder::ext::Extensions;
 use crate::builder::{Arg, ArgGroup, ArgPredicate};
 use crate::error::ErrorKind;
 use crate::error::Result as ClapResult;
 use crate::mkeymap::MKeyMap;
 use crate::output::fmt::Stream;
-use crate::output::{fmt::Colorizer, write_help, Usage};
+use crate::output::{Usage, fmt::Colorizer, write_help};
 use crate::parser::{ArgMatcher, ArgMatches, Parser};
 use crate::util::ChildGraph;
-use crate::util::{color::ColorChoice, Id};
+use crate::util::{Id, color::ColorChoice};
 use crate::{Error, INTERNAL_ERROR_MSG};
 
 #[cfg(debug_assertions)]
@@ -613,10 +613,8 @@ impl Command {
     ///     cmd().debug_assert();
     /// }
     ///
-    /// fn main() {
-    ///     let m = cmd().get_matches_from(vec!["foo", "-b"]);
-    ///     println!("{}", m.get_flag("bar"));
-    /// }
+    /// let m = cmd().get_matches_from(vec!["foo", "-b"]);
+    /// println!("{}", m.get_flag("bar"));
     /// ```
     #[allow(clippy::test_attr_in_doctest)]
     pub fn debug_assert(mut self) {
@@ -876,9 +874,13 @@ impl Command {
                     let command = command.to_owned();
                     debug!("Command::try_get_matches_from_mut: Parsed command {command} from argv");
 
-                    debug!("Command::try_get_matches_from_mut: Reinserting command into arguments so subcommand parser matches it");
+                    debug!(
+                        "Command::try_get_matches_from_mut: Reinserting command into arguments so subcommand parser matches it"
+                    );
                     raw_args.insert(&cursor, [&command]);
-                    debug!("Command::try_get_matches_from_mut: Clearing name and bin_name so that displayed command name starts with applet name");
+                    debug!(
+                        "Command::try_get_matches_from_mut: Clearing name and bin_name so that displayed command name starts with applet name"
+                    );
                     self.name = "".into();
                     self.bin_name = None;
                     return self._do_parse(&mut raw_args, cursor);
@@ -4042,7 +4044,9 @@ impl Command {
                             .map(|id| self.find(id).expect(INTERNAL_ERROR_MSG)),
                     );
                 } else {
-                    panic!("Command::get_arg_conflicts_with: The passed arg conflicts with an arg unknown to the cmd");
+                    panic!(
+                        "Command::get_arg_conflicts_with: The passed arg conflicts with an arg unknown to the cmd"
+                    );
                 }
             }
             result
@@ -4696,11 +4700,12 @@ impl Command {
                 .map(|arg| arg.get_id().clone())
                 .collect();
 
-            debug_assert!(args_missing_help.is_empty(),
-                    "Command::help_expected is enabled for the Command {}, but at least one of its arguments does not have either `help` or `long_help` set. List of such arguments: {}",
-                    self.name,
-                    args_missing_help.join(", ")
-                );
+            debug_assert!(
+                args_missing_help.is_empty(),
+                "Command::help_expected is enabled for the Command {}, but at least one of its arguments does not have either `help` or `long_help` set. List of such arguments: {}",
+                self.name,
+                args_missing_help.join(", ")
+            );
         }
 
         for sub_app in &self.subcommands {

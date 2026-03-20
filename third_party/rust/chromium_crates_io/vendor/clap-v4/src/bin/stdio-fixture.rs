@@ -1,4 +1,4 @@
-use clap::{builder::PossibleValue, Arg, ArgAction, Command};
+use clap::{Arg, ArgAction, Command, builder::PossibleValue};
 
 fn main() {
     #[allow(unused_mut)]

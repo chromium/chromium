@@ -129,9 +129,7 @@ macro_rules! crate_name {
 #[cfg(feature = "cargo")]
 #[macro_export]
 macro_rules! command {
-    () => {{
-        $crate::command!($crate::crate_name!())
-    }};
+    () => {{ $crate::command!($crate::crate_name!()) }};
     ($name:expr) => {{
         let mut cmd = $crate::Command::new($name).version($crate::crate_version!());
 

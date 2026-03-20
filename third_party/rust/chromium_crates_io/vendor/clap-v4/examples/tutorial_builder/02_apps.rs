@@ -1,4 +1,4 @@
-use clap::{arg, Command};
+use clap::{Command, arg};
 
 fn main() {
     let matches = Command::new("MyApp")

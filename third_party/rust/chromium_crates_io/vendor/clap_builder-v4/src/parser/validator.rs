@@ -1,4 +1,5 @@
 // Internal
+use crate::INTERNAL_ERROR_MSG;
 use crate::builder::StyledStr;
 use crate::builder::{Arg, ArgGroup, ArgPredicate, Command, PossibleValue};
 use crate::error::{Error, Result as ClapResult};
@@ -8,7 +9,6 @@ use crate::util::ChildGraph;
 use crate::util::FlatMap;
 use crate::util::FlatSet;
 use crate::util::Id;
-use crate::INTERNAL_ERROR_MSG;
 
 pub(crate) struct Validator<'cmd> {
     cmd: &'cmd Command,

@@ -1,5 +1,5 @@
-use clap::builder::TypedValueParser as _;
 use clap::Args;
+use clap::builder::TypedValueParser as _;
 
 use crate::foreign_crate;
 

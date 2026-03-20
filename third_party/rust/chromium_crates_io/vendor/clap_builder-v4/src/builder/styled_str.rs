@@ -232,7 +232,9 @@ mod wrap_tests {
     #[cfg(feature = "wrap_help")]
     fn wrap_unstyled() {
         let style = anstyle::Style::new();
-        let input = format!("{style}12345{style:#} {style}12345{style:#} {style}12345{style:#} {style}12345{style:#}");
+        let input = format!(
+            "{style}12345{style:#} {style}12345{style:#} {style}12345{style:#} {style}12345{style:#}"
+        );
         let mut actual = StyledStr::new();
         actual.push_string(input);
         actual.wrap(20);
@@ -249,7 +251,9 @@ mod wrap_tests {
     #[cfg(feature = "wrap_help")]
     fn wrap_styled() {
         let style = anstyle::Style::new().bold();
-        let input = format!("{style}12345{style:#} {style}12345{style:#} {style}12345{style:#} {style}12345{style:#}");
+        let input = format!(
+            "{style}12345{style:#} {style}12345{style:#} {style}12345{style:#} {style}12345{style:#}"
+        );
         let mut actual = StyledStr::new();
         actual.push_string(input);
         actual.wrap(20);

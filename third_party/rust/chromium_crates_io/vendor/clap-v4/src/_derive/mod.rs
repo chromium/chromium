@@ -81,9 +81,7 @@
 //!     Variant1,
 //! }
 //!
-//! fn main() {
-//!     let cli = Cli::parse();
-//! }
+//! let cli = Cli::parse();
 //! ```
 //!
 //! Traits:

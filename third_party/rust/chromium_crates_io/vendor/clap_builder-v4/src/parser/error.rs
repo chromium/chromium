@@ -45,7 +45,10 @@ impl std::fmt::Display for MatchesError {
                 )
             }
             Self::UnknownArgument {} => {
-                writeln!(f, "Unknown argument or group id.  Make sure you are using the argument id and not the short or long flags")
+                writeln!(
+                    f,
+                    "Unknown argument or group id.  Make sure you are using the argument id and not the short or long flags"
+                )
             }
         }
     }

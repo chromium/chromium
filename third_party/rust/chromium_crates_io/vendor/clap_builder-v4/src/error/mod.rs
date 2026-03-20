@@ -17,14 +17,14 @@ use std::{
 };
 
 // Internal
+use crate::Command;
 use crate::builder::StyledStr;
 use crate::builder::Styles;
 use crate::output::fmt::Colorizer;
 use crate::output::fmt::Stream;
 use crate::parser::features::suggestions;
 use crate::util::FlatMap;
-use crate::util::{color::ColorChoice, SUCCESS_CODE, USAGE_CODE};
-use crate::Command;
+use crate::util::{SUCCESS_CODE, USAGE_CODE, color::ColorChoice};
 
 #[cfg(feature = "error-context")]
 mod context;

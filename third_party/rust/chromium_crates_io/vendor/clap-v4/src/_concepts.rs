@@ -101,8 +101,8 @@
 //! and stored in the [`ArgMatches`].
 
 #![allow(unused_imports)]
-use clap_builder::builder::ValueParser;
 use clap_builder::Arg;
 use clap_builder::ArgAction;
 use clap_builder::ArgMatches;
 use clap_builder::Command;
+use clap_builder::builder::ValueParser;

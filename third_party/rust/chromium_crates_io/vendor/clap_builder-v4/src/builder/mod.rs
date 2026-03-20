@@ -43,9 +43,9 @@ pub use resettable::Resettable;
 pub use styled_str::StyledStr;
 pub use styling::Styles;
 pub use value_hint::ValueHint;
-pub use value_parser::BoolValueParser;
+pub use value_parser::_AnonymousValueParser;
 pub use value_parser::_infer_ValueParser_for;
-pub use value_parser::impl_prelude;
+pub use value_parser::BoolValueParser;
 pub use value_parser::BoolishValueParser;
 pub use value_parser::EnumValueParser;
 pub use value_parser::FalseyValueParser;
@@ -62,7 +62,7 @@ pub use value_parser::TypedValueParser;
 pub use value_parser::UnknownArgumentValueParser;
 pub use value_parser::ValueParser;
 pub use value_parser::ValueParserFactory;
-pub use value_parser::_AnonymousValueParser;
+pub use value_parser::impl_prelude;
 
 #[allow(unused_imports)]
 pub(crate) use self::str::Inner as StrInner;

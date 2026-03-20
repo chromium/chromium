@@ -1,4 +1,4 @@
-use clap::{arg, builder::PossibleValue, command, value_parser, ValueEnum};
+use clap::{ValueEnum, arg, builder::PossibleValue, command, value_parser};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum Mode {

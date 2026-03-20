@@ -14,11 +14,11 @@ use crate::builder::Str;
 use crate::builder::StyledStr;
 use crate::builder::Styles;
 use crate::builder::{Arg, Command};
-use crate::output::display_width;
-use crate::output::wrap;
-use crate::output::Usage;
 use crate::output::TAB;
 use crate::output::TAB_WIDTH;
+use crate::output::Usage;
+use crate::output::display_width;
+use crate::output::wrap;
 use crate::util::Escape;
 use crate::util::FlatSet;
 

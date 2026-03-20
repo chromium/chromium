@@ -1,4 +1,4 @@
-use clap::{command, Arg};
+use clap::{Arg, command};
 
 fn main() {
     let matches = command!() // requires `cargo` feature
