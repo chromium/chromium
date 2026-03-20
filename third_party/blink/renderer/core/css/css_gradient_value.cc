@@ -2072,8 +2072,10 @@ CSSRadialGradientValue::ResolveValuesAndCreateCopyIfNeeded(
   for (const auto& stop : stops_) {
     const auto* offset = DynamicTo<CSSPrimitiveValue>(
         ResolveLength(stop.offset_, conversion_data));
-    stops_changed = stops_changed || (offset != stop.offset_);
-    stops.push_back(CSSGradientColorStop(offset, stop.color_));
+    const CSSValue* color = ResolveColor(stop.color_, style_resolver_state);
+    stops_changed =
+        stops_changed || (offset != stop.offset_) || (color != stop.color_);
+    stops.push_back(CSSGradientColorStop(offset, color));
   }
 
   // If the values are the same as the current ones, return this.
@@ -2260,9 +2262,12 @@ CSSConicGradientValue::ResolveValuesAndCreateCopyIfNeeded(
   bool stops_changed = false;
   HeapVector<CSSGradientColorStop> stops;
   for (const auto& stop : stops_) {
-    const auto* offset = ResolveAngle(stop.offset_, conversion_data);
-    stops_changed = stops_changed || (offset != stop.offset_);
-    stops.push_back(CSSGradientColorStop(offset, stop.color_));
+    const CSSPrimitiveValue* offset =
+        ResolveAngle(stop.offset_, conversion_data);
+    const CSSValue* color = ResolveColor(stop.color_, style_resolver_state);
+    stops_changed =
+        stops_changed || (offset != stop.offset_) || (color != stop.color_);
+    stops.push_back(CSSGradientColorStop(offset, color));
   }
 
   // If the values are the same as the current ones, return this.
