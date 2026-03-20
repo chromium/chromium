@@ -30,7 +30,6 @@ source_set("unit_tests") {
 
   deps = [
     ":utilities",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/types",
     "//testing/gtest",

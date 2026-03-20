@@ -11,8 +11,6 @@ source_set("events") {
   ]
 
   deps = [
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/types",

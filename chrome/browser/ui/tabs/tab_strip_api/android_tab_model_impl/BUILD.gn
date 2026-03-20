@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("android_tab_model_impl") {
+  # TODO(crbug.com/494284032): Remove once impl is usable.
+  testonly = true
+
+  sources = [
+    "android_browser_adapter_impl.cc",
+    "android_browser_adapter_impl.h",
+    "android_tab_strip_api_injector.cc",
+    "android_tab_strip_api_injector.h",
+    "android_tab_strip_model_adapter.cc",
+    "android_tab_strip_model_adapter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/types",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/tabs:public",
+    "//mojo/public/mojom/base",
+    "//skia",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "android_tab_strip_api_browsertest.cc" ]
+
+  deps = [
+    ":android_tab_model_impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/tabs/tab_strip_api:impl",
+    "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
