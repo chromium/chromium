@@ -90,23 +90,7 @@ size_t TemplateURLTableModel::RowCount() {
 }
 
 std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
-  DCHECK(row < RowCount());
-  const TemplateURL* url = entries_[row];
-  if (col_id == IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN) {
-    std::u16string url_short_name = url->short_name();
-    // TODO(xji): Consider adding a special case if the short name is a URL,
-    // since those should always be displayed LTR. Please refer to
-    // http://crbug.com/6726 for more information.
-    base::i18n::AdjustStringForLocaleDirection(&url_short_name);
-    return (template_url_service_->GetDefaultSearchProvider() == url)
-               ? l10n_util::GetStringFUTF16(
-                     IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE, url_short_name)
-               : url_short_name;
-  }
-
-  DCHECK_EQ(IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN, col_id);
-  // Keyword should be domain name. Force it to have LTR directionality.
-  return base::i18n::GetDisplayStringInLTRDirectionality(url->keyword());
+  NOTREACHED();
 }
 
 void TemplateURLTableModel::SetObserver(ui::TableModelObserver* observer) {

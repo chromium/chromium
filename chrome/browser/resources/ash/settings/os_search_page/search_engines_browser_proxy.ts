@@ -10,7 +10,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
- * @see chrome/browser/ui/webui/settings/search_engine_manager_handler.cc
+ * @see chrome/browser/ui/webui/settings/search_engines_handler.cc
  */
 export interface SearchEngine {
   canBeDefault: boolean;
@@ -28,7 +28,6 @@ export interface SearchEngine {
   id: number;
   isOmniboxExtension: boolean;
   keyword: string;
-  modelIndex: number;
   name: string;
   url: string;
   urlLocked: boolean;

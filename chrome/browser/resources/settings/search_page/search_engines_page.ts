@@ -228,7 +228,7 @@ export class SettingsSearchEnginesPageElement extends
 
     if (confirmed) {
       assert(this.dialogModel_);
-      this.browserProxy_.removeSearchEngine(this.dialogModel_.modelIndex);
+      this.browserProxy_.removeSearchEngine(this.dialogModel_.id);
       this.dialogAnchorElement_ = null;
     }
 

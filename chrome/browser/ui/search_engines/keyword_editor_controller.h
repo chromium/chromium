@@ -9,6 +9,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/search_engines/template_url_id.h"
+#include "components/search_engines/template_url_service_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
 class TemplateURL;
@@ -19,21 +23,21 @@ namespace search_engines {
 enum class ChoiceMadeLocation;
 }
 
-class KeywordEditorController {
+class KeywordEditorController : public TemplateURLServiceObserver {
  public:
   explicit KeywordEditorController(Profile* profile);
 
   KeywordEditorController(const KeywordEditorController&) = delete;
   KeywordEditorController& operator=(const KeywordEditorController&) = delete;
 
-  ~KeywordEditorController();
+  ~KeywordEditorController() override;
 
-  // Invoked when the user succesfully fills out the add keyword dialog.
+  // Invoked when the user successfully fills out the add keyword dialog.
   // Propagates the change to the TemplateURLService and updates the table
-  // model.  Returns the index of the added URL.
-  int AddTemplateURL(const std::u16string& title,
-                     const std::u16string& keyword,
-                     const std::string& url);
+  // model. Returns the id of the added URL.
+  TemplateURLID AddTemplateURL(const std::u16string& title,
+                               const std::u16string& keyword,
+                               const std::string& url);
 
   // Invoked when the user modifies a TemplateURL. Updates the
   // TemplateURLService and table model appropriately.
@@ -69,35 +73,47 @@ class KeywordEditorController {
   // Return true if a search engine is managed by policy.
   bool IsManaged(const TemplateURL* url) const;
 
-  // Remove the TemplateURL at the specified index in the TableModel.
-  void RemoveTemplateURL(int index);
+  // Remove the TemplateURL with the specified id.
+  void RemoveTemplateURL(TemplateURLID id);
 
   // Returns the default search provider.
   const TemplateURL* GetDefaultSearchProvider();
 
-  // Make the TemplateURL at the specified index (into the TableModel) the
-  // default search provider.
+  // Make the TemplateURL with the specified id the default search provider.
   void MakeDefaultTemplateURL(
-      int index,
+      TemplateURLID id,
       search_engines::ChoiceMadeLocation choice_location);
 
-  // Activates the TemplateURL at the specified index in the TableModel if
-  // `is_active` is true or deactivates it if false.
-  void SetIsActiveTemplateURL(int index, bool is_active);
+  // Activates the TemplateURL with the specified id if `is_active` is true or
+  // deactivates it if false.
+  void SetIsActiveTemplateURL(TemplateURLID id, bool is_active);
 
   // Return true if the |url_model_| data is loaded.
   bool loaded() const;
 
-  // Return the TemplateURL corresponding to the |index| in the model.
-  TemplateURL* GetTemplateURL(int index);
+  // Return the TemplateURL corresponding to the `id`. Returns
+  // `nullptr` if the id was not found.
+  TemplateURL* GetTemplateURL(TemplateURLID id);
+
+  // Return the TemplateURL corresponding to the `index` in the table model.
+  TemplateURL* GetTemplateURLForIndex(int index);
 
   TemplateURLTableModel* table_model() { return table_model_.get(); }
+
+  // TemplateURLServiceObserver notification.
+  void OnTemplateURLServiceChanged() override;
 
  private:
   raw_ptr<TemplateURLService> url_model_;
 
+  // Mapping from IDs to the TemplateURL.
+  absl::flat_hash_map<TemplateURLID, TemplateURL*> id_to_turl_;
+
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      scoped_url_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_KEYWORD_EDITOR_CONTROLLER_H_

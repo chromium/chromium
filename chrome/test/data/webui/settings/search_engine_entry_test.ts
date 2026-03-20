@@ -115,9 +115,9 @@ suite('SearchEngineEntryTest', function() {
     const deleteButton = entry.$.delete;
     assertTrue(isVisible(deleteButton));
     deleteButton.click();
-    const modelIndex = await browserProxy.whenCalled('removeSearchEngine');
+    const id = await browserProxy.whenCalled('removeSearchEngine');
     assertFalse(menu.open);
-    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertEquals(entry.engine.id, id);
   });
 
   test('MakeDefault_Enabled', async function() {
@@ -126,11 +126,11 @@ suite('SearchEngineEntryTest', function() {
     const makeDefaultButton = entry.$.makeDefault;
     assertTrue(!!makeDefaultButton);
     makeDefaultButton.click();
-    const [modelIndex, choiceMadeLocation] =
+    const [id, choiceMadeLocation] =
         await browserProxy.whenCalled('setDefaultSearchEngine');
     assertEquals(choiceMadeLocation, ChoiceMadeLocation.SEARCH_ENGINE_SETTINGS);
     assertFalse(menu.open);
-    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertEquals(entry.engine.id, id);
   });
 
   // Test that clicking the "edit" menu item fires an edit event.
@@ -199,9 +199,9 @@ suite('SearchEngineEntryTest', function() {
     activateButton.click();
 
     // Ensure that the activate event is fired.
-    const [modelIndex, isActive] =
+    const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
-    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertEquals(entry.engine.id, id);
     assertTrue(isActive);
   });
 
@@ -221,9 +221,9 @@ suite('SearchEngineEntryTest', function() {
     deactivateButton.click();
 
     // Ensure that the deactivate event is fired.
-    const [modelIndex, isActive] =
+    const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
-    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertEquals(entry.engine.id, id);
     assertFalse(isActive);
   });
 
@@ -535,10 +535,10 @@ suite('EnterpriseSiteSearchEntryTests', function() {
       assertTrue(isVisible(deactivateButton));
       deactivateButton.click();
 
-      const [modelIndex, isActive] =
+      const [id, isActive] =
           await browserProxy.whenCalled('setIsActiveSearchEngine');
       assertFalse(menu.open);
-      assertEquals(entry.engine.modelIndex, modelIndex);
+      assertEquals(entry.engine.id, id);
       assertFalse(isActive);
     };
 

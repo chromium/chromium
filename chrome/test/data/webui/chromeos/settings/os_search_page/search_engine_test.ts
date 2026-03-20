@@ -28,7 +28,6 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
       id: 0,
       isOmniboxExtension: false,
       keyword: 'google.com',
-      modelIndex: 0,
       name: '',
       url: 'https://search.foo.com/search?p=%s',
       urlLocked: false,
@@ -40,12 +39,12 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
     const searchEngines0 = createSampleSearchEngine({
       default: true,
       displayName: 'SearchEngine0',
-      modelIndex: 0,
+      id: 1,
       name: 'SearchEngine0',
     });
     const searchEngines1 = createSampleSearchEngine({
       displayName: 'SearchEngine1',
-      modelIndex: 1,
+      id: 2,
       name: 'SearchEngine1',
     });
 

@@ -20,6 +20,8 @@ class Profile;
 
 namespace settings {
 
+// TODO(crbug.com/494529875): Use `TemplateURLServiceObserver` instead of
+// `ui::TableModelObserver`.
 class SearchEnginesHandler : public SettingsPageUIHandler,
                              public ui::TableModelObserver,
                              public EditSearchEngineControllerDelegate {
@@ -99,7 +101,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 #endif
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
-  base::DictValue CreateDictionaryForEngine(size_t index, bool is_default);
+  base::DictValue CreateDictionaryForEngine(TemplateURL* template_url);
 
   const raw_ptr<Profile> profile_;
 

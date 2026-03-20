@@ -24,31 +24,36 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
       AimEligibilityServiceFactory::GetForProfile(profile));
   table_model_ = std::make_unique<TemplateURLTableModel>(
       url_model_, internal::GetDisabledStarterPackIds(ai_mode_enabled));
+  scoped_url_service_observation_.Observe(url_model_.get());
+  OnTemplateURLServiceChanged();
 }
 
 KeywordEditorController::~KeywordEditorController() = default;
 
-int KeywordEditorController::AddTemplateURL(const std::u16string& title,
-                                            const std::u16string& keyword,
-                                            const std::string& url) {
-  DCHECK(!url.empty());
+TemplateURLID KeywordEditorController::AddTemplateURL(
+    const std::u16string& title,
+    const std::u16string& keyword,
+    const std::string& url) {
+  CHECK(!url.empty());
 
   base::RecordAction(UserMetricsAction("KeywordEditor_AddKeyword"));
 
-  const int new_index = table_model_->last_other_engine_index();
-  table_model_->Add(new_index, title, keyword, url);
-
-  return new_index;
+  TemplateURLData data;
+  data.SetShortName(title);
+  data.SetKeyword(keyword);
+  data.SetURL(url);
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  TemplateURL* template_url =
+      url_model_->Add(std::make_unique<TemplateURL>(data));
+  return template_url->id();
 }
 
 void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
                                                 const std::u16string& title,
                                                 const std::u16string& keyword,
                                                 const std::string& url) {
-  DCHECK(!url.empty());
-  const std::optional<size_t> index =
-      table_model_->IndexOfTemplateURL(template_url);
-  if (!index.has_value()) {
+  CHECK(!url.empty());
+  if (!template_url) {
     // Will happen if url was deleted out from under us while the user was
     // editing it.
     return;
@@ -60,7 +65,10 @@ void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
     return;
   }
 
-  table_model_->ModifyTemplateURL(index.value(), title, keyword, url);
+  // The default search provider should support replacement.
+  CHECK(url_model_->GetDefaultSearchProvider() != template_url ||
+        template_url->SupportsReplacement(url_model_->search_terms_data()));
+  url_model_->ResetTemplateURL(template_url, title, keyword, url);
 
   base::RecordAction(UserMetricsAction("KeywordEditor_ModifiedKeyword"));
 }
@@ -110,8 +118,13 @@ bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
          url->CreatedByNonDefaultSearchProviderPolicy();
 }
 
-void KeywordEditorController::RemoveTemplateURL(int index) {
-  table_model_->Remove(index);
+void KeywordEditorController::RemoveTemplateURL(TemplateURLID id) {
+  TemplateURL* template_url = GetTemplateURL(id);
+  if (!template_url) {
+    return;
+  }
+
+  url_model_->Remove(template_url);
   base::RecordAction(UserMetricsAction("KeywordEditor_RemoveKeyword"));
 }
 
@@ -120,20 +133,46 @@ const TemplateURL* KeywordEditorController::GetDefaultSearchProvider() {
 }
 
 void KeywordEditorController::MakeDefaultTemplateURL(
-    int index,
+    TemplateURLID id,
     search_engines::ChoiceMadeLocation choice_location) {
-  table_model_->MakeDefaultTemplateURL(index, choice_location);
+  TemplateURL* template_url = GetTemplateURL(id);
+  if (!template_url || template_url == url_model_->GetDefaultSearchProvider()) {
+    return;
+  }
+
+  url_model_->SetUserSelectedDefaultSearchProvider(template_url,
+                                                   choice_location);
 }
 
-void KeywordEditorController::SetIsActiveTemplateURL(int index,
+void KeywordEditorController::SetIsActiveTemplateURL(TemplateURLID id,
                                                      bool is_active) {
-  table_model_->SetIsActiveTemplateURL(index, is_active);
+  TemplateURL* template_url = GetTemplateURL(id);
+  if (!template_url) {
+    return;
+  }
+
+  url_model_->SetIsActiveTemplateURL(template_url, is_active);
 }
 
 bool KeywordEditorController::loaded() const {
   return url_model_->loaded();
 }
 
-TemplateURL* KeywordEditorController::GetTemplateURL(int index) {
+TemplateURL* KeywordEditorController::GetTemplateURL(TemplateURLID id) {
+  auto it = id_to_turl_.find(id);
+  return it == id_to_turl_.end() ? nullptr : it->second;
+}
+
+TemplateURL* KeywordEditorController::GetTemplateURLForIndex(int index) {
   return table_model_->GetTemplateURL(index);
+}
+
+void KeywordEditorController::OnTemplateURLServiceChanged() {
+  TemplateURLService::TemplateURLVector urls = url_model_->GetTemplateURLs();
+  id_to_turl_.clear();
+  id_to_turl_.reserve(urls.size());
+
+  for (const auto& url : url_model_->GetTemplateURLs()) {
+    id_to_turl_[url->id()] = url;
+  }
 }

@@ -23,12 +23,9 @@ import {getTemplate} from './search_engine_edit_dialog.html.js';
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
-/**
- * The |modelIndex| to use when a new search engine is added. Must match
- * with kNewSearchEngineIndex constant specified at
- * chrome/browser/ui/webui/settings/search_engines_handler.cc
- */
-const DEFAULT_MODEL_INDEX: number = -1;
+// The `id` to use when a new search engine is added.  See
+// `kInvalidTemplateURLID`.
+const DEFAULT_MODEL_ID: number = 0;
 
 export interface SettingsSearchEngineEditDialogElement {
   $: {
@@ -131,7 +128,7 @@ export class SettingsSearchEngineEditDialogElement extends
 
     microTask.run(() => this.updateActionButtonState_());
     this.browserProxy_.searchEngineEditStarted(
-        this.model ? this.model.modelIndex : DEFAULT_MODEL_INDEX);
+        this.model ? this.model.id : DEFAULT_MODEL_ID);
     this.$.dialog.showModal();
   }
 

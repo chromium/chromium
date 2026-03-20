@@ -408,8 +408,8 @@ suite('SearchEnginePageTests', function() {
         anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
       },
     }));
-    const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
-    assertEquals(engine.modelIndex, modelIndex);
+    const id = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals(engine.id, id);
     const dialog =
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);
@@ -449,8 +449,8 @@ suite('SearchEnginePageTests', function() {
         anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
       },
     }));
-    const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
-    assertEquals(engine.modelIndex, modelIndex);
+    const id = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals(engine.id, id);
     const dialog =
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog');
     assertTrue(!!dialog);
@@ -526,8 +526,8 @@ suite('SearchEnginePageTests', function() {
         anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
       },
     }));
-    const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
-    assertEquals(engine.modelIndex, modelIndex);
+    const id = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals(engine.id, id);
     const dialog =
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);

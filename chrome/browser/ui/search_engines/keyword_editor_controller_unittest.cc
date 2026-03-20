@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
@@ -199,12 +200,12 @@ TEST_F(KeywordEditorControllerTest, Modify_SiteSearchPolicyEngine) {
 
 // Tests removing a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Remove) {
-  int index = controller()->AddTemplateURL(kA, kB, "http://c");
+  TemplateURLID id = controller()->AddTemplateURL(kA, kB, "http://c");
   auto original_size = util()->model()->GetTemplateURLs().size();
   ClearChangeCount();
 
   // Remove the entry.
-  controller()->RemoveTemplateURL(index);
+  controller()->RemoveTemplateURL(id);
 
   // Make sure it was deleted appropriately.
   VerifyChanged();
@@ -230,8 +231,7 @@ TEST_F(KeywordEditorControllerTest, Remove_SiteSearchPolicyEngine) {
   ClearChangeCount();
 
   // Remove the entry.
-  int index = table_model()->IndexOfTemplateURL(turl).value();
-  controller()->RemoveTemplateURL(index);
+  controller()->RemoveTemplateURL(turl->id());
 
   // Make sure it was deleted appropriately.
   VerifyChanged();
@@ -252,12 +252,13 @@ TEST_F(KeywordEditorControllerTest, Remove_SiteSearchPolicyEngine) {
 
 // Tests making a TemplateURL the default search provider.
 TEST_F(KeywordEditorControllerTest, MakeDefault) {
-  int index = controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
+  TemplateURLID id =
+      controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   ClearChangeCount();
 
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
   controller()->MakeDefaultTemplateURL(
-      index, search_engines::ChoiceMadeLocation::kOther);
+      id, search_engines::ChoiceMadeLocation::kOther);
   // Making an item the default sends a handful of changes. Which are sent isn't
   // important, what is important is 'something' is sent.
   VerifyChanged();
@@ -265,7 +266,7 @@ TEST_F(KeywordEditorControllerTest, MakeDefault) {
 
   // Making it default a second time should fail.
   controller()->MakeDefaultTemplateURL(
-      index, search_engines::ChoiceMadeLocation::kOther);
+      id, search_engines::ChoiceMadeLocation::kOther);
   EXPECT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 }
 
@@ -315,7 +316,8 @@ TEST_F(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
   EXPECT_FALSE(
       controller()->IsManaged(util()->model()->GetDefaultSearchProvider()));
 
-  int index = controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
+  TemplateURLID id =
+      controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
   const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(kB1);
   ASSERT_NE(turl2, nullptr);
@@ -324,7 +326,7 @@ TEST_F(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
   // Update the default search provider.
   EXPECT_NE(turl2, util()->model()->GetDefaultSearchProvider());
   controller()->MakeDefaultTemplateURL(
-      index, search_engines::ChoiceMadeLocation::kOther);
+      id, search_engines::ChoiceMadeLocation::kOther);
   VerifyChanged();
   EXPECT_EQ(turl2, util()->model()->GetDefaultSearchProvider());
 
@@ -437,12 +439,13 @@ TEST_F(KeywordEditorControllerManagedDSPTest, EditRecommendedDefault) {
 }
 
 TEST_F(KeywordEditorControllerNoWebDataTest, MakeDefaultNoWebData) {
-  int index = controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
+  TemplateURLID id =
+      controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   ClearChangeCount();
 
   // This should not result in a crash.
   controller()->MakeDefaultTemplateURL(
-      index, search_engines::ChoiceMadeLocation::kOther);
+      id, search_engines::ChoiceMadeLocation::kOther);
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
   EXPECT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 }
@@ -616,7 +619,8 @@ void CheckKeywordsToDisplay(
     const std::vector<std::u16string>& kExpectedShortNamesOrder,
     const std::vector<std::u16string>& kExpectedKeywordsToDisplay,
     size_t numExpectedKeywords,
-    TemplateURLTableModel* table_model) {
+    TemplateURLTableModel* table_model,
+    KeywordEditorController* controller) {
   ASSERT_TRUE(table_model);
   ASSERT_EQ(table_model->last_active_engine_index(),
             table_model->last_search_engine_index() + numExpectedKeywords);
@@ -628,9 +632,9 @@ void CheckKeywordsToDisplay(
     const TemplateURL* template_url = table_model->GetTemplateURL(row);
     ASSERT_TRUE(template_url);
     EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
-    EXPECT_EQ(
-        table_model->GetText(row, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN),
-        kExpectedKeywordsToDisplay[i]);
+    EXPECT_EQ(base::i18n::GetDisplayStringInLTRDirectionality(
+                  template_url->keyword()),
+              kExpectedKeywordsToDisplay[i]);
   }
 }
 
@@ -697,7 +701,7 @@ TEST_F(KeywordEditorControllerTest, FeaturedEnterpriseSiteSearch) {
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
-                         numExpectedKeywords, table_model());
+                         numExpectedKeywords, table_model(), controller());
 }
 
 TEST_F(KeywordEditorControllerTest,
@@ -786,7 +790,7 @@ TEST_F(KeywordEditorControllerTest,
 
   size_t numExpectedKeywords = std::size(kExpectedShortNamesOrder);
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
-                         numExpectedKeywords, table_model());
+                         numExpectedKeywords, table_model(), controller());
 }
 
 TEST_F(KeywordEditorControllerTest, EnterpriseSearchAggregator) {
@@ -829,7 +833,7 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSearchAggregator) {
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
-                         numExpectedKeywords, table_model());
+                         numExpectedKeywords, table_model(), controller());
 }
 
 TEST_F(KeywordEditorControllerTest,
@@ -897,7 +901,7 @@ TEST_F(KeywordEditorControllerTest,
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
-                         numExpectedKeywords, table_model());
+                         numExpectedKeywords, table_model(), controller());
 }
 
 TEST_F(KeywordEditorControllerTest, EnterpriseSiteSearchAndSearchAggregator) {
@@ -955,5 +959,5 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSiteSearchAndSearchAggregator) {
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
-                         numExpectedKeywords, table_model());
+                         numExpectedKeywords, table_model(), controller());
 }

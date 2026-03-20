@@ -38,23 +38,22 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
   }
 
   setDefaultSearchEngine(
-      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation,
+      id: number, choiceMadeLocation: ChoiceMadeLocation,
       saveGuestChoice?: boolean|null) {
     this.methodCalled(
-        'setDefaultSearchEngine', modelIndex, choiceMadeLocation,
-        saveGuestChoice);
+        'setDefaultSearchEngine', id, choiceMadeLocation, saveGuestChoice);
   }
 
-  setIsActiveSearchEngine(modelIndex: number, isActive: boolean) {
-    this.methodCalled('setIsActiveSearchEngine', [modelIndex, isActive]);
+  setIsActiveSearchEngine(id: number, isActive: boolean) {
+    this.methodCalled('setIsActiveSearchEngine', [id, isActive]);
   }
 
-  removeSearchEngine(modelIndex: number) {
-    this.methodCalled('removeSearchEngine', modelIndex);
+  removeSearchEngine(id: number) {
+    this.methodCalled('removeSearchEngine', id);
   }
 
-  searchEngineEditStarted(modelIndex: number) {
-    this.methodCalled('searchEngineEditStarted', modelIndex);
+  searchEngineEditStarted(id: number) {
+    this.methodCalled('searchEngineEditStarted', id);
   }
 
   searchEngineEditCancelled() {
@@ -123,7 +122,6 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         isPrepopulated: false,
         isStarterPack: false,
         keyword: 'google.com',
-        modelIndex: 0,
         name: 'Google',
         shouldConfirmRemoval: false,
         url: 'https://search.foo.com/search?p=%s',
@@ -154,7 +152,6 @@ export function createSampleOmniboxExtension(): SearchEngine {
     isPrepopulated: false,
     isStarterPack: false,
     keyword: 'oe',
-    modelIndex: 6,
     name: 'Omnibox extension',
     shouldConfirmRemoval: false,
     url: 'chrome-extension://dummyextensionid/?q=%s',
