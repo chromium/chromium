@@ -104,7 +104,10 @@ class TestServiceWorkerContextObserver
   // ServiceWorkerContextObserverSynchronous:
   void OnStartWorkerMessageSentSync(int64_t version_id,
                                     const GURL& scope) override;
-  void OnStoppingSync(int64_t version_id, const GURL& scope) override;
+  void OnStoppingSync(
+      int64_t version_id,
+      const GURL& scope,
+      const blink::ServiceWorkerToken& service_worker_token) override;
 
   using RegistrationsMap = std::map<GURL, int>;
 

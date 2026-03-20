@@ -248,32 +248,30 @@ void ServiceWorkerState::RendererDidStopServiceWorkerContext(
     const WorkerId& worker_id,
     const GURL& scope) {
   CHECK(worker_id.start_token);
-  if (!worker_id_ || worker_id.start_token != worker_id_->start_token) {
-    // Drop the IPC message. It is from a different worker instance than the one
-    // we're tracking (or we aren't tracking any).
-    return;
-  }
-
-  HandleStop(worker_id.version_id, scope);
+  HandleStop(worker_id.version_id, scope, *worker_id.start_token);
 }
 
-void ServiceWorkerState::OnStoppingSync(int64_t version_id, const GURL& scope) {
-  // NOTE: we are not tracking the `start_token` here as we do for
-  // `RendererDidStopServiceWorkerContext`, but we are not as concerned because
-  // this method is called synchronously when the worker is stopping/stops,
-  // so it should be carrying up to date info.
+void ServiceWorkerState::OnStoppingSync(
+    int64_t version_id,
+    const GURL& scope,
+    const blink::ServiceWorkerToken& service_worker_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  HandleStop(version_id, scope);
+  HandleStop(version_id, scope, service_worker_token);
 }
 
-void ServiceWorkerState::OnStoppedSync(int64_t version_id, const GURL& scope) {
-  // If `OnStoppingSync` was not called for some reason, try again here.
-  OnStoppingSync(version_id, scope);
+void ServiceWorkerState::OnStoppedSync(
+    int64_t version_id,
+    const GURL& scope,
+    const blink::ServiceWorkerToken& service_worker_token) {
+  HandleStop(version_id, scope, service_worker_token);
 }
 
-void ServiceWorkerState::HandleStop(int64_t version_id, const GURL& scope) {
+void ServiceWorkerState::HandleStop(
+    int64_t version_id,
+    const GURL& scope,
+    const blink::ServiceWorkerToken& service_worker_token) {
   // NOTE: this method may be called multiple times for the same service worker,
-  // or even for service workers whose `version_id` is not tracked by this class
+  // or even for service workers whose token is not tracked by this class
   // anymore. It needs to handle those cases gracefully.
 
   // Service workers registered for subscopes via
@@ -284,9 +282,9 @@ void ServiceWorkerState::HandleStop(int64_t version_id, const GURL& scope) {
     return;
   }
 
-  // Check that the version ID of the worker that is stopping refers to an
-  // extension service worker that is tracked by this class.
-  if (worker_id_ && worker_id_->version_id == version_id) {
+  // Check that the worker that is stopping refers to an extension service
+  // worker that is tracked by this class.
+  if (worker_id_ && worker_id_->start_token == service_worker_token) {
     // Untrack all the worker state because once a worker begin stopping or
     // stops, a new instance must start before the worker can be considered
     // ready to receive tasks/events again and the renderer stop notifications
@@ -299,6 +297,9 @@ void ServiceWorkerState::HandleStop(int64_t version_id, const GURL& scope) {
   // anymore. Observers may still care about those versions for tracking or
   // testing purposes. Importantly, ServiceWorkerTaskQueue needs this to untrack
   // old service worker versions from ProcessManager. See crbug.com/40936639.
+  // TODO(andreaorru): for the time being, this can also be called multiple
+  // times for the same `version_id` and `service_worker_token`. Ideally we
+  // want to fix that.
   for (auto& observer : observers_) {
     observer.OnWorkerStop(version_id, scope);
   }

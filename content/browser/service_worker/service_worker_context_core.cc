@@ -957,7 +957,8 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
     for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStoppedSync(id, version->scope());
+      observer.OnStoppedSync(id, version->scope(),
+                             *version->start_worker_token());
     }
   }
 
@@ -1029,7 +1030,8 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
         blink::EmbeddedWorkerStatus::kStopped) {
       for (auto& observer : sync_observer_list_->observers) {
         observer.OnStoppedSync(live_version->version_id(),
-                               live_version->scope());
+                               live_version->scope(),
+                               *live_version->start_worker_token());
       }
     }
   }
@@ -1255,7 +1257,8 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        observer.OnStoppedSync(version->version_id(), version->scope());
+        observer.OnStoppedSync(version->version_id(), version->scope(),
+                               *version->start_worker_token());
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:
@@ -1275,7 +1278,9 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        observer.OnStoppingSync(version->version_id(), version->scope());
+        CHECK(version->start_worker_token());
+        observer.OnStoppingSync(version->version_id(), version->scope(),
+                                *version->start_worker_token());
       }
       break;
   }

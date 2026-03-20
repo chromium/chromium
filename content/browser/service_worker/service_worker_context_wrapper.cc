@@ -577,7 +577,8 @@ void ServiceWorkerContextWrapper::
   for (const auto& kv : running_service_workers_) {
     for (auto& observer : core_sync_observer_list_->observers) {
       observer.OnStoppedSync(/*version_id=*/kv.first,
-                             /*scope=*/kv.second.scope);
+                             /*scope=*/kv.second.scope,
+                             /*service_worker_token=*/kv.second.token);
     }
   }
 }

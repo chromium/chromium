@@ -115,9 +115,15 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
                                           const ConsoleMessage& message) {}
 
   // Called when the service worker with id `version_id` will be stopped.
-  virtual void OnStoppingSync(int64_t version_id, const GURL& scope) {}
+  virtual void OnStoppingSync(
+      int64_t version_id,
+      const GURL& scope,
+      const blink::ServiceWorkerToken& service_worker_token) {}
   // Called when the service worker with id `version_id` has stopped running.
-  virtual void OnStoppedSync(int64_t version_id, const GURL& scope) {}
+  virtual void OnStoppedSync(
+      int64_t version_id,
+      const GURL& scope,
+      const blink::ServiceWorkerToken& service_worker_token) {}
 
   // Called when `context` is destroyed. Observers must no longer use |context|.
   virtual void OnDestructSync(ServiceWorkerContext* context) {}
