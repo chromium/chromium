@@ -4,6 +4,8 @@
 
 static_library("gapis") {
   sources = [
+    "gapis_manager.cc",
+    "gapis_manager.h",
     "gapis_service.cc",
     "gapis_service.h",
     "token_downloader.cc",
@@ -13,6 +15,10 @@ static_library("gapis") {
     "//base",
     "//components/gapis/proto",
     "//components/keyed_service/core",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/version_info",
     "//google_apis",
     "//services/network/public/cpp",
     "//url",
