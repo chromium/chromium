@@ -81,6 +81,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:features_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/bookmarks/android:java",
@@ -116,6 +117,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//base:callback_java",
+    "//base:features_java",
     "//base:promise_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
