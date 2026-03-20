@@ -4587,6 +4587,11 @@ inline constexpr char kWebBluetoothNewPermissionsBackendDescription[] =
     "persistent storage of device permissions and Web Bluetooth features such "
     "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
 
+inline constexpr char kWebCryptoPQCName[] = "WebCrypto PQC";
+inline constexpr char kWebCryptoPQCDescription[] =
+    "Enables Post-Quantum Cryptography (PQC) algorithms (ML-DSA and ML-KEM) "
+    "and ChaCha20-Poly1305 in WebCrypto.";
+
 inline constexpr char kWebiumName[] = "Webium";
 inline constexpr char kWebiumDescription[] = "Webium Prototype Browser.";
 

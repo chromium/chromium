@@ -13106,6 +13106,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableWalletBrandingV2Name,
      flag_descriptions::kAutofillEnableWalletBrandingV2Description, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBrandingV2)},
+    {"webcrypto-pqc", flag_descriptions::kWebCryptoPQCName,
+     flag_descriptions::kWebCryptoPQCDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kWebCryptoPQC)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

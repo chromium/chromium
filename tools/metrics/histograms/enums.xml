@@ -9747,6 +9747,7 @@ from previous Chrome versions.
   <int value="-1594067749" label="TabStripIncognitoMigration:disabled"/>
   <int value="-1593946814"
       label="AccountReauthenticationRecentTimeWindow:enabled"/>
+  <int value="-1593218491" label="WebCryptoPQC:enabled"/>
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
@@ -20214,6 +20215,7 @@ from previous Chrome versions.
   <int value="1920780354" label="CCTPageInsightsHubPeek:enabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
+  <int value="1921387145" label="WebCryptoPQC:disabled"/>
   <int value="1921543515" label="ExoLockNotification:enabled"/>
   <int value="1921615454" label="DataSharingAndroidV2:disabled"/>
   <int value="1922609313"

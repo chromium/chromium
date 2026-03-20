@@ -10080,6 +10080,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "webcrypto-pqc",
+    "owners": [ "hchao@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "webium",
     "owners": [ "robliao@chromium.org", "kerenzhu@chromium.org" ],
     "expiry_milestone": 150
