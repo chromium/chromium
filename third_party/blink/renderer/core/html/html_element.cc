@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_attach_internals_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_show_popover_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_toggle_popover_options.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/element_behavior.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -3812,6 +3814,15 @@ void HTMLElement::OnContainerTimingIgnoreAttrChanged(
 
 ElementInternals* HTMLElement::attachInternals(
     ExceptionState& exception_state) {
+  return attachInternals(nullptr, exception_state);
+}
+
+ElementInternals* HTMLElement::attachInternals(
+    const AttachInternalsOptions* options,
+    ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled() ||
+         !options);
+
   // 1. If this's is value is not null, then throw a "NotSupportedError"
   // DOMException.
   if (IsValue()) {
@@ -3867,9 +3878,21 @@ ElementInternals* HTMLElement::attachInternals(
 
   // 7. Set this's attached internals to true.
   SetDidAttachInternals();
+
   // 8. Return a new ElementInternals instance whose target element is this.
   UseCounter::Count(GetDocument(), WebFeature::kElementAttachInternals);
-  return &EnsureElementInternals();
+  ElementInternals& internals = EnsureElementInternals();
+
+  // Handle behaviors option if provided.
+  if (RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled()) {
+    HeapVector<Member<ElementBehavior>> behaviors;
+    if (options && options->hasBehaviors()) {
+      behaviors = options->behaviors();
+    }
+    internals.SetBehaviors(std::move(behaviors));
+  }
+
+  return &internals;
 }
 
 bool HTMLElement::IsFormAssociatedCustomElement() const {

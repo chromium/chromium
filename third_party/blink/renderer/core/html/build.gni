@@ -147,6 +147,8 @@ blink_core_sources_html = [
   "forms/date_time_numeric_field_element.h",
   "forms/date_time_symbolic_field_element.cc",
   "forms/date_time_symbolic_field_element.h",
+  "forms/element_behavior.cc",
+  "forms/element_behavior.h",
   "forms/email_input_type.cc",
   "forms/email_input_type.h",
   "forms/external_date_time_chooser.cc",

@@ -13,12 +13,12 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CustomStateSet;
+class ElementBehavior;
 class HTMLElement;
 class ValidityStateFlags;
 
@@ -82,6 +82,10 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
       const GCedHeapVector<Member<Element>>* given_elements);
   const FrozenArray<Element>* GetElementArrayAttribute(
       const QualifiedName& attribute) const;
+
+  // Platform-provided behaviors
+  const FrozenArray<ElementBehavior>& behaviors() const;
+  void SetBehaviors(HeapVector<Member<ElementBehavior>> behaviors);
 
   const FrozenArray<Element>* ariaControlsElements() const;
   void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);
@@ -150,6 +154,10 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element
   HeapHashMap<QualifiedName, Member<FrozenArray<Element>>>
       explicitly_set_attr_elements_map_;
+
+  // Platform-provided behaviors attached via attachInternals().
+  // Behaviors cannot be added or removed after attachment.
+  Member<FrozenArray<ElementBehavior>> behaviors_;
 };
 
 template <>

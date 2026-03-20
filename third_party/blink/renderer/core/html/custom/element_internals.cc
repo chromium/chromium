@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/custom_state_set.h"
+#include "third_party/blink/renderer/core/html/forms/element_behavior.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
@@ -101,6 +102,7 @@ void ElementInternals::Trace(Visitor* visitor) const {
   visitor->Trace(validity_flags_);
   visitor->Trace(validation_anchor_);
   visitor->Trace(custom_states_);
+  visitor->Trace(behaviors_);
   visitor->Trace(explicitly_set_attr_elements_map_);
   ListedElement::Trace(visitor);
   ScriptWrappable::Trace(visitor);
@@ -404,6 +406,19 @@ const FrozenArray<Element>* ElementInternals::GetElementArrayAttribute(
     return nullptr;
   }
   return it->value.Get();
+}
+
+const FrozenArray<ElementBehavior>& ElementInternals::behaviors() const {
+  DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+  DCHECK(behaviors_);
+  return *behaviors_;
+}
+
+void ElementInternals::SetBehaviors(
+    HeapVector<Member<ElementBehavior>> behaviors) {
+  DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+  behaviors_ =
+      MakeGarbageCollected<FrozenArray<ElementBehavior>>(std::move(behaviors));
 }
 
 const FrozenArray<Element>* ElementInternals::ariaControlsElements() const {

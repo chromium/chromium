@@ -40,7 +40,7 @@
     [CEReactions] attribute boolean spellcheck;
     [Measure] attribute DOMString autocapitalize;
 
-    [RaisesException] ElementInternals attachInternals();
+    [RaisesException] ElementInternals attachInternals(optional AttachInternalsOptions options);
 
     // EditContext
     // https://w3c.github.io/edit-context/

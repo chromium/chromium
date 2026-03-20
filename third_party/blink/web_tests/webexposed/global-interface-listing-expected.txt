@@ -2749,6 +2749,9 @@ interface Element : Node
     setter scrollLeft
     setter scrollTop
     setter slot
+interface ElementBehavior
+    attribute @@toStringTag
+    method constructor
 interface ElementInternals
     attribute @@toStringTag
     getter ariaActiveDescendantElement
@@ -2803,6 +2806,7 @@ interface ElementInternals
     getter ariaValueNow
     getter ariaValueText
     getter ariaVirtualContent
+    getter behaviors
     getter form
     getter labels
     getter role

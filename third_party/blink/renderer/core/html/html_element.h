@@ -38,6 +38,7 @@
 namespace blink {
 
 struct AttributeTriggers;
+class AttachInternalsOptions;
 class Color;
 class DocumentFragment;
 class ElementInternals;
@@ -247,6 +248,8 @@ class CORE_EXPORT HTMLElement : public Element {
   int offsetHeightForBinding();
 
   ElementInternals* attachInternals(ExceptionState& exception_state);
+  ElementInternals* attachInternals(const AttachInternalsOptions* options,
+                                    ExceptionState& exception_state);
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 

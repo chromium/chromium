@@ -2355,6 +2355,16 @@
       status: "stable",
     },
     {
+      // ElementInternals.behaviors allows web authors to attach
+      // platform-provided behaviors to custom elements, enabling
+      // them to adopt native behaviors without extending native
+      // elements.
+      // crbug.com/486928684
+      // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md
+      name: "ElementInternalsBehaviors",
+      status: "experimental",
+    },
+    {
       // When enabled, the readonly attribute will prevent constraint validation
       // only in some cases, depending on the element.
       // This was added in M147 and can be removed after M149.

@@ -36,5 +36,9 @@ interface ElementInternals {
   // Access to shadowRoot from custom elements. See crbug.com/1042130 and
   // https://github.com/w3c/webcomponents/issues/871#issuecomment-672082936
   [MeasureAs=ElementInternalsShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+
+  // Platform-provided behaviors.
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md
+  [RuntimeEnabled=ElementInternalsBehaviors] readonly attribute FrozenArray<ElementBehavior> behaviors;
 };
 
