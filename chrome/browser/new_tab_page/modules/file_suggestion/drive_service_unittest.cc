@@ -529,7 +529,7 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   EXPECT_FALSE(token_is_valid);
   ASSERT_EQ(0, histogram_tester_.GetBucketCount(
