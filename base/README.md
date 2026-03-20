@@ -85,3 +85,20 @@ synthetic microbenchmarks that measure performance in various scenarios:
 Regressions in these benchmarks can generally by caused by 1) operating system
 changes, 2) compiler version or flag changes or 3) changes in //base code
 itself.
+
+## Rust code
+Rust code in base should be organized into very small crates, split up by
+function. Merging crates is sometimes unavoidable (due to dependency cycles or
+the orphaning rule).
+
+Rust files should live near the equivalent C++ files (if any), and use the
+same naming scheme (for example, `run_loop.rs`, not `run_loop_rust.rs`).
+
+When adding FFI shims, prefer separate `_shim.h` files rather than adding code
+to existing C++ files. This helps avoid circular dependencies with the `//base`
+target. It also avoids adding code to commonly-used headers, which can increase
+compile size by a lot.
+
+Crates which you expect to be widely used should be added to the
+`public_deps` of the `//base:base_rust` target, so that developers can simply
+depend on `//base:base_rust` the same way they do with `//base`.
