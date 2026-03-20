@@ -1013,9 +1013,8 @@ void FeatureList::RegisterOverride(std::string_view feature_name,
 
   // When `replace_use_default_overrides` is true, if an `OVERRIDE_USE_DEFAULT`
   // entry exists, it should be replaced.
-  std::string feature_name_str(feature_name);
   if (replace_use_default_overrides) {
-    auto found = overrides_.find(feature_name_str);
+    auto found = overrides_.find(feature_name);
     if (found != overrides_.end() &&
         found->second.overridden_state == OVERRIDE_USE_DEFAULT) {
       // Also, keep the existing trial if a null trial was passed.
@@ -1028,8 +1027,7 @@ void FeatureList::RegisterOverride(std::string_view feature_name,
   // Note: The semantics of try_emplace() is that it does not overwrite the
   // entry if one already exists for the key. Thus, only the first override for
   // a given feature name takes effect.
-  overrides_.try_emplace(std::move(feature_name_str), overridden_state,
-                         field_trial);
+  overrides_.try_emplace(feature_name, overridden_state, field_trial);
 }
 
 void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
