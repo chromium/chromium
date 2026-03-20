@@ -143,6 +143,7 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
   stack_size = std::move(other.stack_size);
   thread_type = std::move(other.thread_type);
   joinable = std::move(other.joinable);
+  sequence_manager_settings = std::move(other.sequence_manager_settings);
   task_observer = std::move(other.task_observer);
   other.moved_from = true;
 
