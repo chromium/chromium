@@ -2017,6 +2017,10 @@ class LocationBarMediator
         updateButtonVisibility();
     }
 
+    boolean isUrlBarFocusedWithoutAnimation() {
+        return mUrlFocusedWithoutAnimations;
+    }
+
     /** Getter for LocationBarDataProvider. */
     public LocationBarDataProvider getLocationBarDataProvider() {
         return mLocationBarDataProvider;

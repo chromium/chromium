@@ -736,6 +736,15 @@ public class LocationBarCoordinator
     }
 
     /**
+     * Returns whether the url bar is in the special "focused without animation" state, a special
+     * case where we show a blinking cursor in the UrlBar on the NTP in order to accept keyboard
+     * input from an attached keyboard, but otherwise do not treat the UrlBar as focused.
+     */
+    public boolean isUrlBarFocusedWithoutAnimation() {
+        return mLocationBarMediator.isUrlBarFocusedWithoutAnimation();
+    }
+
+    /**
      * @see UrlBarCoordinator#getVisibleTextPrefixHint()
      */
     public @Nullable CharSequence getOmniboxVisibleTextPrefixHint() {
