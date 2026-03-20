@@ -599,6 +599,470 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Rebooted"/>
 </enum>
 
+<enum name="CrashExitCodes">
+<!-- These are abs() raw exit codes, so they are always positive. See the
+MapCrashExitCodeForHistogram function and the WindowsExitCode enum.
+
+When adding to this list, update the CrashExitCodeToString function in
+//content/public/common/result_codes.cc to ensure that the crash string is
+shown properly on the user-facing crash UI.
+-->
+
+  <int value="1" label="RESULT_CODE_KILLED"/>
+  <int value="2" label="RESULT_CODE_HUNG"/>
+  <int value="3" label="RESULT_CODE_KILLED_BAD_MESSAGE"/>
+  <int value="4" label="RESULT_CODE_GPU_DEAD_ON_ARRIVAL"/>
+  <int value="5" label="RESULT_CODE_INVALID_CMDLINE_URL"/>
+  <int value="6" label="RESULT_CODE_BAD_PROCESS_TYPE"/>
+  <int value="7" label="RESULT_CODE_MISSING_DATA"/>
+  <int value="8" label="RESULT_CODE_SHELL_INTEGRATION_FAILED"/>
+  <int value="9" label="RESULT_CODE_MACHINE_LEVEL_INSTALL_EXISTS"/>
+  <int value="10" label="RESULT_CODE_UNINSTALL_CHROME_ALIVE"/>
+  <int value="11" label="RESULT_CODE_UNINSTALL_USER_CANCEL"/>
+  <int value="12" label="RESULT_CODE_UNINSTALL_DELETE_PROFILE"/>
+  <int value="13" label="RESULT_CODE_UNSUPPORTED_PARAM"/>
+  <int value="14" label="RESULT_CODE_IMPORTER_HUNG"/>
+  <int value="15" label="RESULT_CODE_RESPAWN_FAILED"/>
+  <int value="16" label="RESULT_CODE_NORMAL_EXIT_EXP1"/>
+  <int value="17" label="RESULT_CODE_NORMAL_EXIT_EXP2"/>
+  <int value="18" label="RESULT_CODE_NORMAL_EXIT_EXP3"/>
+  <int value="19" label="RESULT_CODE_NORMAL_EXIT_EXP4"/>
+  <int value="20" label="RESULT_CODE_NORMAL_EXIT_CANCEL"/>
+  <int value="21" label="RESULT_CODE_PROFILE_IN_USE"/>
+  <int value="22" label="RESULT_CODE_PACK_EXTENSION_ERROR"/>
+  <int value="23" label="RESULT_CODE_UNINSTALL_EXTENSION_ERROR"/>
+  <int value="24" label="RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED"/>
+  <int value="26" label="RESULT_CODE_INSTALL_FROM_WEBSTORE_ERROR_2"/>
+  <int value="28" label="RESULT_CODE_EULA_REFUSED"/>
+  <int value="29" label="RESULT_CODE_SXS_MIGRATION_FAILED_NOT_USED"/>
+  <int value="30" label="RESULT_CODE_ACTION_DISALLOWED_BY_POLICY"/>
+  <int value="31" label="RESULT_CODE_INVALID_SANDBOX_STATE"/>
+  <int value="32" label="RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED"/>
+  <int value="33" label="RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
+  <int value="34" label="RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
+  <int value="35" label="RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
+  <int value="36" label="RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"/>
+  <int value="37" label="RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED"/>
+  <int value="38" label="RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED"/>
+  <int value="39"
+      label="RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE"/>
+  <int value="40" label="RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS"/>
+  <int value="131" label="SIGQUIT"/>
+  <int value="132" label="SIGILL"/>
+  <int value="133" label="SIGTRAP"/>
+  <int value="134" label="SIGABRT"/>
+  <int value="135" label="SIGBUS (7)"/>
+  <int value="136" label="SIGFPE"/>
+  <int value="137" label="SIGKILL"/>
+  <int value="138" label="SIGBUS (10)"/>
+  <int value="139" label="SIGSEGV"/>
+  <int value="140" label="SIGSYS"/>
+  <int value="258" label="WAIT_TIMEOUT"/>
+  <int value="7006" label="SBOX_FATAL_INTEGRITY"/>
+  <int value="7007" label="SBOX_FATAL_DROPTOKEN"/>
+  <int value="7008" label="SBOX_FATAL_FLUSHANDLES"/>
+  <int value="7009" label="SBOX_FATAL_CACHEDISABLE"/>
+  <int value="7010" label="SBOX_FATAL_CLOSEHANDLES"/>
+  <int value="7011" label="SBOX_FATAL_MITIGATION"/>
+  <int value="7012" label="SBOX_FATAL_MEMORY_EXCEEDED"/>
+  <int value="7013" label="SBOX_FATAL_WARMUP"/>
+  <int value="7014" label="SBOX_FATAL_BROKER_SHUTDOWN_HUNG"/>
+  <int value="36861" label="Crashpad_NotConnectedToHandler"/>
+  <int value="36862" label="Crashpad_FailedToCaptureProcess"/>
+  <int value="36863" label="Crashpad_HandlerDidNotRespond"/>
+  <int value="85436397" label="Crashpad_SimulatedCrash"/>
+  <int value="529697949" label="CPP_EH_EXCEPTION"/>
+  <int value="533692099" label="STATUS_GUARD_PAGE_VIOLATION"/>
+  <int value="536870904" label="Out of Memory"/>
+  <int value="1066598273" label="FACILITY_VISUALCPP/ERROR_PROC_NOT_FOUND"/>
+  <int value="1066598274" label="FACILITY_VISUALCPP/ERROR_MOD_NOT_FOUND"/>
+  <int value="1072103400" label="STATUS_CURRENT_TRANSACTION_NOT_VALID"/>
+  <int value="1072365548" label="STATUS_SXS_CORRUPT_ACTIVATION_STACK"/>
+  <int value="1072365552" label="STATUS_SXS_INVALID_DEACTIVATION"/>
+  <int value="1072365566" label="STATUS_SXS_CANT_GEN_ACTCTX"/>
+  <int value="1073739514" label="STATUS_VIRUS_INFECTED"/>
+  <int value="1073740004" label="STATUS_INVALID_THREAD"/>
+  <int value="1073740016" label="STATUS_CALLBACK_RETURNED_WHILE_IMPERSONATING"/>
+  <int value="1073740022" label="STATUS_THREADPOOL_HANDLE_EXCEPTION"/>
+  <int value="1073740760" label="STATUS_INVALID_IMAGE_HASH"/>
+  <int value="1073740767" label="STATUS_VERIFIER_STOP"/>
+  <int value="1073740768" label="STATUS_ASSERTION_FAILURE"/>
+  <int value="1073740771" label="STATUS_FATAL_USER_CALLBACK_EXCEPTION"/>
+  <int value="1073740777" label="STATUS_INVALID_CRUNTIME_PARAMETER"/>
+  <int value="1073740782" label="STATUS_DELAY_LOAD_FAILED"/>
+  <int value="1073740791" label="STATUS_STACK_BUFFER_OVERRUN"/>
+  <int value="1073740940" label="STATUS_HEAP_CORRUPTION"/>
+  <int value="1073740959" label="STATUS_ACCESS_DISABLED_BY_POLICY_DEFAULT"/>
+  <int value="1073741131" label="STATUS_FLOAT_MULTIPLE_TRAPS"/>
+  <int value="1073741132" label="STATUS_FLOAT_MULTIPLE_FAULTS"/>
+  <int value="1073741205" label="STATUS_DLL_INIT_FAILED_LOGOFF"/>
+  <int value="1073741212" label="STATUS_RESOURCE_NOT_OWNED"/>
+  <int value="1073741431" label="STATUS_TOO_LATE"/>
+  <int value="1073741502" label="STATUS_DLL_INIT_FAILED"/>
+  <int value="1073741510" label="STATUS_CONTROL_C_EXIT"/>
+  <int value="1073741511" label="STATUS_ENTRYPOINT_NOT_FOUND"/>
+  <int value="1073741515" label="STATUS_DLL_NOT_FOUND"/>
+  <int value="1073741523" label="STATUS_COMMITMENT_LIMIT"/>
+  <int value="1073741558" label="STATUS_PROCESS_IS_TERMINATING"/>
+  <int value="1073741569" label="STATUS_BAD_FUNCTION_TABLE"/>
+  <int value="1073741571" label="STATUS_STACK_OVERFLOW"/>
+  <int value="1073741581" label="STATUS_INVALID_PARAMETER_5"/>
+  <int value="1073741595" label="STATUS_INTERNAL_ERROR"/>
+  <int value="1073741659" label="STATUS_BAD_IMPERSONATION_LEVEL"/>
+  <int value="1073741662" label="STATUS_MEDIA_WRITE_PROTECTED"/>
+  <int value="1073741670" label="STATUS_INSUFFICIENT_RESOURCES"/>
+  <int value="1073741674" label="STATUS_PRIVILEGED_INSTRUCTION"/>
+  <int value="1073741675" label="STATUS_INTEGER_OVERFLOW"/>
+  <int value="1073741676" label="STATUS_INTEGER_DIVIDE_BY_ZERO"/>
+  <int value="1073741677" label="STATUS_FLOAT_UNDERFLOW"/>
+  <int value="1073741678" label="STATUS_FLOAT_STACK_CHECK"/>
+  <int value="1073741679" label="STATUS_FLOAT_OVERFLOW"/>
+  <int value="1073741680" label="STATUS_FLOAT_INVALID_OPERATION"/>
+  <int value="1073741681" label="STATUS_FLOAT_INEXACT_RESULT"/>
+  <int value="1073741682" label="STATUS_FLOAT_DIVIDE_BY_ZERO"/>
+  <int value="1073741683" label="STATUS_FLOAT_DENORMAL_OPERAND"/>
+  <int value="1073741684" label="STATUS_ARRAY_BOUNDS_EXCEEDED"/>
+  <int value="1073741701" label="STATUS_INVALID_IMAGE_FORMAT"/>
+  <int value="1073741738" label="STATUS_DELETE_PENDING"/>
+  <int value="1073741744" label="STATUS_EA_TOO_LARGE"/>
+  <int value="1073741749" label="STATUS_THREAD_IS_TERMINATING"/>
+  <int value="1073741756" label="STATUS_QUOTA_EXCEEDED"/>
+  <int value="1073741757" label="STATUS_SHARING_VIOLATION"/>
+  <int value="1073741766" label="STATUS_OBJECT_PATH_NOT_FOUND"/>
+  <int value="1073741772" label="STATUS_OBJECT_NAME_NOT_FOUND"/>
+  <int value="1073741783" label="STATUS_INVALID_UNWIND_TARGET"/>
+  <int value="1073741784" label="STATUS_BAD_STACK"/>
+  <int value="1073741785" label="STATUS_UNWIND"/>
+  <int value="1073741786" label="STATUS_INVALID_DISPOSITION"/>
+  <int value="1073741787" label="STATUS_NONCONTINUABLE_EXCEPTION"/>
+  <int value="1073741788" label="STATUS_OBJECT_TYPE_MISMATCH"/>
+  <int value="1073741790" label="STATUS_ACCESS_DENIED"/>
+  <int value="1073741794" label="STATUS_INVALID_LOCK_SEQUENCE"/>
+  <int value="1073741795" label="STATUS_ILLEGAL_INSTRUCTION"/>
+  <int value="1073741796" label="STATUS_INVALID_SYSTEM_SERVICE"/>
+  <int value="1073741800" label="STATUS_CONFLICTING_ADDRESSES"/>
+  <int value="1073741801" label="STATUS_NO_MEMORY"/>
+  <int value="1073741811" label="STATUS_INVALID_PARAMETER"/>
+  <int value="1073741816" label="STATUS_INVALID_HANDLE"/>
+  <int value="1073741818" label="STATUS_IN_PAGE_ERROR"/>
+  <int value="1073741819" label="STATUS_ACCESS_VIOLATION"/>
+  <int value="1073741820" label="STATUS_INFO_LENGTH_MISMATCH"/>
+  <int value="1073741822" label="STATUS_NOT_IMPLEMENTED"/>
+  <int value="1073741823" label="STATUS_UNSUCCESSFUL"/>
+  <int value="1073741829" label="STATUS_SEGMENT_NOTIFICATION"/>
+  <int value="1073741845" label="STATUS_FATAL_APP_EXIT"/>
+  <int value="2147483644" label="STATUS_SINGLE_STEP"/>
+  <int value="2147483645" label="STATUS_BREAKPOINT"/>
+  <int value="2147483646" label="STATUS_DATATYPE_MISALIGNMENT"/>
+</enum>
+
+<enum name="CrashpadExceptionCaptureResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kUnexpectedExceptionBehavior"/>
+  <int value="2" label="kFailedDueToSuspendSelf"/>
+  <int value="3" label="kSnapshotFailed"/>
+  <int value="4" label="kExceptionInitializationFailed"/>
+  <int value="5" label="kPrepareNewCrashReportFailed"/>
+  <int value="6" label="kMinidumpWriteFailed"/>
+  <int value="7" label="kFinishWritingCrashReportFailed"/>
+  <int value="8" label="kDirectPtraceFailed"/>
+  <int value="9" label="kBrokeredPtraceFailed"/>
+</enum>
+
+<enum name="CrashpadExceptionProcessingState">
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kFinished"/>
+</enum>
+
+<enum name="CrashpadIntermediateDumpKey">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kVersion"/>
+  <int value="1000" label="kMachException"/>
+  <int value="1001" label="kCodes"/>
+  <int value="1002" label="kException"/>
+  <int value="1003" label="kFlavor"/>
+  <int value="1004" label="kState"/>
+  <int value="2000" label="kSignalException"/>
+  <int value="2001" label="kSignalNumber"/>
+  <int value="2002" label="kSignalCode"/>
+  <int value="2003" label="kSignalAddress"/>
+  <int value="2500" label="kNSException"/>
+  <int value="3000" label="kModules"/>
+  <int value="3001" label="kAddress"/>
+  <int value="3002" label="kFileType"/>
+  <int value="3003" label="kName"/>
+  <int value="3004" label="kSize"/>
+  <int value="3005" label="kDylibCurrentVersion"/>
+  <int value="3006" label="kSourceVersion"/>
+  <int value="3007" label="kTimestamp"/>
+  <int value="3008" label="kUUID"/>
+  <int value="3009" label="kAnnotationObjects"/>
+  <int value="3010" label="kAnnotationsSimpleMap"/>
+  <int value="3011" label="kAnnotationsVector"/>
+  <int value="3012" label="kAnnotationType"/>
+  <int value="3013" label="kAnnotationName"/>
+  <int value="3014" label="kAnnotationValue"/>
+  <int value="3015" label="kAnnotationsCrashInfo"/>
+  <int value="3016" label="kAnnotationsCrashInfoMessage1"/>
+  <int value="3017" label="kAnnotationsCrashInfoMessage2"/>
+  <int value="3018" label="kAnnotationsDyldErrorString"/>
+  <int value="3019" label="kModuleExtraMemoryRegions"/>
+  <int value="3020" label="kModuleExtraMemoryRegionAddress"/>
+  <int value="3021" label="kModuleExtraMemoryRegionData"/>
+  <int value="3022" label="kModuleIntermediateDumpExtraMemoryRegions"/>
+  <int value="3023" label="kModuleIntermediateDumpExtraMemoryRegionAddress"/>
+  <int value="3024" label="kModuleIntermediateDumpExtraMemoryRegionData"/>
+  <int value="4000" label="kProcessInfo"/>
+  <int value="4001" label="kParentPID"/>
+  <int value="4002" label="kPID"/>
+  <int value="4003" label="kStartTime"/>
+  <int value="4004" label="kSnapshotTime"/>
+  <int value="4005" label="kTaskBasicInfo"/>
+  <int value="4006" label="kTaskThreadTimes"/>
+  <int value="4007" label="kSystemTime"/>
+  <int value="4008" label="kUserTime"/>
+  <int value="5000" label="kSystemInfo"/>
+  <int value="5001" label="kCpuCount"/>
+  <int value="5002" label="kCpuVendor"/>
+  <int value="5003" label="kDaylightName"/>
+  <int value="5004" label="kDaylightOffsetSeconds"/>
+  <int value="5005" label="kHasDaylightSavingTime"/>
+  <int value="5006" label="kIsDaylightSavingTime"/>
+  <int value="5007" label="kMachineDescription"/>
+  <int value="5008" label="kOSVersionBugfix"/>
+  <int value="5009" label="kOSVersionBuild"/>
+  <int value="5010" label="kOSVersionMajor"/>
+  <int value="5011" label="kOSVersionMinor"/>
+  <int value="5012" label="kPageSize"/>
+  <int value="5013" label="kStandardName"/>
+  <int value="5014" label="kStandardOffsetSeconds"/>
+  <int value="5015" label="kVMStat"/>
+  <int value="5016" label="kActive"/>
+  <int value="5017" label="kFree"/>
+  <int value="5018" label="kInactive"/>
+  <int value="5019" label="kWired"/>
+  <int value="5020" label="kAddressMask"/>
+  <int value="5021" label="kCrashpadUptime"/>
+  <int value="6000" label="kThreads"/>
+  <int value="6001" label="kDebugState"/>
+  <int value="6002" label="kFloatState"/>
+  <int value="6003" label="kThreadState"/>
+  <int value="6004" label="kPriority"/>
+  <int value="6005" label="kStackRegionAddress"/>
+  <int value="6006" label="kStackRegionData"/>
+  <int value="6007" label="kSuspendCount"/>
+  <int value="6008" label="kThreadID"/>
+  <int value="6009" label="kThreadDataAddress"/>
+  <int value="6010" label="kThreadUncaughtNSExceptionFrames"/>
+  <int value="6011" label="kThreadContextMemoryRegions"/>
+  <int value="6012" label="kThreadContextMemoryRegionAddress"/>
+  <int value="6013" label="kThreadContextMemoryRegionData"/>
+  <int value="6014" label="kThreadName"/>
+  <int value="65535" label="kMaxValue"/>
+</enum>
+
+<enum name="CrashpadLifetimeMilestone">
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kExitedNormally"/>
+  <int value="2" label="kExitedEarly"/>
+  <int value="3" label="kFailed"/>
+  <int value="4" label="kTerminated"/>
+  <int value="5" label="kCrashed"/>
+</enum>
+
+<enum name="CrashpadMacExceptionCodes">
+  <int value="1" label="EXC_BAD_ACCESS"/>
+  <int value="2" label="EXC_BAD_INSTRUCTION"/>
+  <int value="3" label="EXC_ARITHMETIC"/>
+  <int value="4" label="EXC_EMULATION"/>
+  <int value="5" label="EXC_SOFTWARE"/>
+  <int value="6" label="EXC_BREAKPOINT"/>
+  <int value="7" label="EXC_SYSCALL"/>
+  <int value="8" label="EXC_MACH_SYSCALL"/>
+  <int value="9" label="EXC_RPC_ALERT"/>
+  <int value="10" label="EXC_CRASH"/>
+  <int value="11" label="EXC_RESOURCE"/>
+  <int value="12" label="EXC_GUARD"/>
+  <int value="13" label="EXC_CORPSE_NOTIFY"/>
+  <int value="65537" label="EXC_BAD_ACCESS/KERN_INVALID_ADDRESS"/>
+  <int value="65538" label="EXC_BAD_ACCESS/KERN_PROTECTION_FAILURE"/>
+  <int value="65541" label="EXC_BAD_ACCESS/(VM_PROT_READ|VM_PROT_EXECUTE)"/>
+  <int value="65549" label="EXC_BAD_ACCESS/EXC_I386_GPFLT"/>
+  <int value="65586" label="EXC_BAD_ACCESS/KERN_CODESIGN_ERROR"/>
+  <int value="131073" label="EXC_BAD_INSTRUCTION/EXC_I386_INVOP"/>
+  <int value="131083" label="EXC_BAD_INSTRUCTION/EXC_I386_SEGNPFLT"/>
+  <int value="131084" label="EXC_BAD_INSTRUCTION/EXC_I386_STKFLT"/>
+  <int value="196609" label="EXC_ARITHMETIC/EXC_I386_DIV"/>
+  <int value="196610" label="EXC_ARITHMETIC/EXC_I386_INTO"/>
+  <int value="196613" label="EXC_ARITHMETIC/EXC_I386_EXTERR"/>
+  <int value="196616" label="EXC_ARITHMETIC/EXC_I386_SSEEXTERR"/>
+  <int value="327687" label="EXC_SOFTWARE/EXC_I386_BOUND"/>
+  <int value="393217" label="EXC_BREAKPOINT/EXC_I386_SGL"/>
+  <int value="393218" label="EXC_BREAKPOINT/EXC_I386_BPT"/>
+  <int value="458752" label="EXC_SYSCALL/0"/>
+  <int value="458880" label="EXC_SYSCALL/128"/>
+  <int value="483328" label="EXC_SYSCALL/0x6000"/>
+  <int value="655363" label="EXC_CRASH/SIGQUIT"/>
+  <int value="655364" label="EXC_CRASH/SIGILL (raised)"/>
+  <int value="655365" label="EXC_CRASH/SIGTRAP (raised)"/>
+  <int value="655366" label="EXC_CRASH/SIGABRT"/>
+  <int value="655367" label="EXC_CRASH/SIGEMT (raised)"/>
+  <int value="655368" label="EXC_CRASH/SIGFPE (raised)"/>
+  <int value="655370" label="EXC_CRASH/SIGBUS (raised)"/>
+  <int value="655371" label="EXC_CRASH/SIGSEGV (raised)"/>
+  <int value="655372" label="EXC_CRASH/SIGSYS"/>
+  <int value="721153"
+      label="EXC_RESOURCE/RESOURCE_TYPE_CPU/FLAVOR_CPU_MONITOR"/>
+  <int value="721154"
+      label="EXC_RESOURCE/RESOURCE_TYPE_CPU/FLAVOR_CPU_MONITOR_FATAL"/>
+  <int value="721409"
+      label="EXC_RESOURCE/RESOURCE_TYPE_WAKEUPS/FLAVOR_WAKEUPS_MONITOR"/>
+  <int value="721665"
+      label="EXC_RESOURCE/RESOURCE_TYPE_MEMORY/FLAVOR_HIGH_WATERMARK"/>
+  <int value="721921"
+      label="EXC_RESOURCE/RESOURCE_TYPE_IO/FLAVOR_IO_PHYSICAL_WRITES"/>
+  <int value="721922"
+      label="EXC_RESOURCE/RESOURCE_TYPE_IO/FLAVOR_IO_LOGICAL_WRITES"/>
+  <int value="786688"
+      label="EXC_GUARD/GUARD_TYPE_MACH_PORT/kGUARD_EXC_DESTROY"/>
+  <int value="786689"
+      label="EXC_GUARD/GUARD_TYPE_MACH_PORT/kGUARD_EXC_MOD_REFS"/>
+  <int value="786690"
+      label="EXC_GUARD/GUARD_TYPE_MACH_PORT/kGUARD_EXC_SET_CONTEXT"/>
+  <int value="786691"
+      label="EXC_GUARD/GUARD_TYPE_MACH_PORT/kGUARD_EXC_UNGUARDED"/>
+  <int value="786692"
+      label="EXC_GUARD/GUARD_TYPE_MACH_PORT/kGUARD_EXC_INCORRECT_GUARD"/>
+  <int value="786944" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_CLOSE"/>
+  <int value="786945" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_DUP"/>
+  <int value="786946" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_NOCLOEXEC"/>
+  <int value="786947" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_SOCKET_IPC"/>
+  <int value="786948" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_FILEPORT"/>
+  <int value="786949" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_MISMATCH"/>
+  <int value="786950" label="EXC_GUARD/GUARD_TYPE_FD/kGUARD_EXC_WRITE"/>
+  <int value="851968" label="EXC_CORPSE_NOTIFY/0"/>
+  <int value="1129345912" label="crashpad::kMachExceptionSimulated"/>
+  <int value="1396900608" label="SIGQUIT/0"/>
+  <int value="1396900864" label="SIGILL/ILL_NOOP"/>
+  <int value="1396900865" label="SIGILL/ILL_ILLOPC"/>
+  <int value="1396900866" label="SIGILL/ILL_ILLTRP"/>
+  <int value="1396900867" label="SIGILL/ILL_PRVOPC"/>
+  <int value="1396900868" label="SIGILL/ILL_ILLOPN"/>
+  <int value="1396900869" label="SIGILL/ILL_ILLADR"/>
+  <int value="1396900870" label="SIGILL/ILL_PRVREG"/>
+  <int value="1396900871" label="SIGILL/ILL_COPROC"/>
+  <int value="1396900872" label="SIGILL/ILL_BADSTK"/>
+  <int value="1396901120" label="SIGTRAP/0"/>
+  <int value="1396901121" label="SIGTRAP/TRAP_BRKPT"/>
+  <int value="1396901122" label="SIGTRAP/TRAP_TRACE"/>
+  <int value="1396901376" label="SIGABRT/0"/>
+  <int value="1396901632" label="SIGEMT/0"/>
+  <int value="1396901888" label="SIGFPE/FPE_NOOP"/>
+  <int value="1396901889" label="SIGFPE/FPE_FLTDIV"/>
+  <int value="1396901890" label="SIGFPE/FPE_FLTOVF"/>
+  <int value="1396901891" label="SIGFPE/FPE_FLTUND"/>
+  <int value="1396901892" label="SIGFPE/FPE_FLTRES"/>
+  <int value="1396901893" label="SIGFPE/FPE_FLTINV"/>
+  <int value="1396901894" label="SIGFPE/FPE_FLTSUB"/>
+  <int value="1396901895" label="SIGFPE/FPE_INTDIV"/>
+  <int value="1396901896" label="SIGFPE/FPE_INTOVF"/>
+  <int value="1396902400" label="SIGBUS/BUS_NOOP"/>
+  <int value="1396902401" label="SIGBUS/BUS_ADRALN"/>
+  <int value="1396902402" label="SIGBUS/BUS_ADRERR"/>
+  <int value="1396902403" label="SIGBUS/BUS_OBJERR"/>
+  <int value="1396902656" label="SIGSEGV/SEGV_NOOP"/>
+  <int value="1396902657" label="SIGSEGV/SEGV_MAPERR"/>
+  <int value="1396902658" label="SIGSEGV/SEGV_ACCERR"/>
+  <int value="1396902912" label="SIGSYS/0"/>
+</enum>
+
+<enum name="CrashpadReportPending">
+  <int value="0" label="kNewlyCreated"/>
+  <int value="1" label="kUserInitiated"/>
+</enum>
+
+<enum name="CrashpadUploadAttemptStatus">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+</enum>
+
+<enum name="CrashpadUploadSkippedReason">
+  <int value="0" label="kUploadsDisabled"/>
+  <int value="1" label="kUploadThrottled"/>
+  <int value="2" label="kUnexpectedTime"/>
+  <int value="3" label="kDatabaseError"/>
+  <int value="4" label="kUploadFailed"/>
+  <int value="5" label="kPrepareForUploadFailed"/>
+</enum>
+
+<enum name="CrashpadWinExceptionCodes">
+  <int value="-2147483647" label="EXCEPTION_GUARD_PAGE"/>
+  <int value="-2147483646" label="EXCEPTION_DATATYPE_MISALIGNMENT"/>
+  <int value="-2147483645" label="EXCEPTION_BREAKPOINT"/>
+  <int value="-2147483644" label="EXCEPTION_SINGLE_STEP"/>
+  <int value="-1073741822" label="STATUS_NOT_IMPLEMENTED"/>
+  <int value="-1073741819" label="EXCEPTION_ACCESS_VIOLATION"/>
+  <int value="-1073741818" label="EXCEPTION_IN_PAGE_ERROR"/>
+  <int value="-1073741816" label="EXCEPTION_INVALID_HANDLE"/>
+  <int value="-1073741811" label="STATUS_INVALID_PARAMETER"/>
+  <int value="-1073741803" label="STATUS_NONEXISTENT_SECTOR"/>
+  <int value="-1073741801" label="STATUS_NO_MEMORY"/>
+  <int value="-1073741795" label="EXCEPTION_ILLEGAL_INSTRUCTION"/>
+  <int value="-1073741794" label="STATUS_INVALID_LOCK_SEQUENCE"/>
+  <int value="-1073741790" label="STATUS_ACCESS_DENIED"/>
+  <int value="-1073741788" label="STATUS_OBJECT_TYPE_MISMATCH"/>
+  <int value="-1073741739" label="STATUS_LOCK_NOT_GRANTED"/>
+  <int value="-1073741684" label="EXCEPTION_ARRAY_BOUNDS_EXCEEDED"/>
+  <int value="-1073741682" label="EXCEPTION_FLT_DIVIDE_BY_ZERO"/>
+  <int value="-1073741681" label="EXCEPTION_FLT_INEXACT_RESULT"/>
+  <int value="-1073741680" label="EXCEPTION_FLT_INVALID_OPERATION"/>
+  <int value="-1073741679" label="EXCEPTION_FLT_OVERFLOW"/>
+  <int value="-1073741678" label="EXCEPTION_FLT_STACK_CHECK"/>
+  <int value="-1073741677" label="EXCEPTION_FLT_UNDERFLOW"/>
+  <int value="-1073741676" label="EXCEPTION_INT_DIVIDE_BY_ZERO"/>
+  <int value="-1073741675" label="EXCEPTION_INT_OVERFLOW"/>
+  <int value="-1073741674" label="EXCEPTION_PRIV_INSTRUCTION"/>
+  <int value="-1073741571" label="EXCEPTION_STACK_OVERFLOW"/>
+  <int value="-1073741569" label="STATUS_BAD_FUNCTION_TABLE"/>
+  <int value="-1073741420" label="EXCEPTION_POSSIBLE_DEADLOCK"/>
+  <int value="-1073741224" label="STATUS_NO_CALLBACK_ACTIVE"/>
+  <int value="-1073741212" label="STATUS_RESOURCE_NOT_OWNED"/>
+  <int value="-1073741132" label="STATUS_FLOAT_MULTIPLE_FAULTS"/>
+  <int value="-1073741131" label="STATUS_FLOAT_MULTIPLE_TRAPS"/>
+  <int value="-1073740791" label="STATUS_STACK_BUFFER_OVERRUN"/>
+  <int value="-1073740022" label="STATUS_THREADPOOL_HANDLE_EXCEPTION"/>
+  <int value="-1073740021"
+      label="STATUS_THREADPOOL_SET_EVENT_ON_COMPLETION_FAILED"/>
+  <int value="-1073740020"
+      label="STATUS_THREADPOOL_RELEASE_SEMAPHORE_ON_COMPLETION_FAILED"/>
+  <int value="-1073740018"
+      label="STATUS_THREADPOOL_FREE_LIBRARY_ON_COMPLETION_FAILED"/>
+  <int value="-1073740016"
+      label="STATUS_CALLBACK_RETURNED_WHILE_IMPERSONATING"/>
+  <int value="-1073740004" label="STATUS_INVALID_THREAD"/>
+  <int value="-1073740003" label="STATUS_CALLBACK_RETURNED_TRANSACTION"/>
+  <int value="-1073740002" label="STATUS_CALLBACK_RETURNED_LDR_LOCK"/>
+  <int value="-1073740001" label="STATUS_CALLBACK_RETURNED_LANG"/>
+  <int value="-1073610685" label="RPC_NT_INTERNAL_ERROR"/>
+  <int value="-1072365553" label="STATUS_SXS_EARLY_DEACTIVATION"/>
+  <int value="-1072365552" label="STATUS_SXS_INVALID_DEACTIVATION"/>
+  <int value="-1072365551" label="STATUS_SXS_MULTIPLE_DEACTIVATION"/>
+  <int value="-1072365548" label="STATUS_SXS_CORRUPT_ACTIVATION_STACK"/>
+  <int value="-1066598274" label="FACILITY_VISUALCPP/ERROR_MOD_NOT_FOUND"/>
+  <int value="-1066598273" label="FACILITY_VISUALCPP/ERROR_PROC_NOT_FOUND"/>
+  <int value="-536870904" label="base::win::kOomExceptionCode"/>
+  <int value="-529697949" label="EH_EXCEPTION_NUMBER"/>
+  <int value="1285" label="ERROR_DELAY_LOAD_FAILED"/>
+  <int value="1717" label="RPC_S_UNKNOWN_IF"/>
+  <int value="1722" label="RPC_S_SERVER_UNAVAILABLE"/>
+  <int value="1726" label="RPC_S_CALL_FAILED"/>
+  <int value="1766" label="RPC_S_INTERNAL_ERROR"/>
+  <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
+  <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="85436397" label="crashpad::kSimulatedExceptionCode"/>
+  <int value="250477278" label="(Delphi exception)"/>
+</enum>
+
 <enum name="CrashVisibility">
   <summary>
     This enum describes the timing of a renderer crash in relation to whether a

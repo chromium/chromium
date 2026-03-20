@@ -26,7 +26,8 @@ namespace content {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.common
 //
 // IMPORTANT: This needs to stay in sync with <enum name="CrashExitCodes"> and
-// <enum name="WindowsExitCode"> in tools/metrics/histograms/enums.xml. Due to
+// <enum name="WindowsExitCode"> in
+// tools/metrics/histograms/metadata/stability/enums.xml. Due to
 // chrome::ResultCode's dependency on the enum values, do not add any new values
 // here, and mark obsolete values are unused instead of removing them. See
 // https://crrev.com/c/885090 for context.

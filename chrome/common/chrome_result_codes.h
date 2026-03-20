@@ -9,8 +9,9 @@
 #include "partition_alloc/page_allocator.h"
 
 // IMPORTANT: This needs to stay in sync with <enum name="CrashExitCodes"> and
-// <enum name="WindowsExitCode"> in tools/metrics/histograms/enums.xml. So do
-// not remove any entries, and always append entries to the bottom just above
+// <enum name="WindowsExitCode"> in
+// tools/metrics/histograms/metadata/stability/enums.xml. So do not remove any
+// entries, and always append entries to the bottom just above
 // RESULT_CODE_CHROME_LAST_CODE.
 
 enum ResultCode {

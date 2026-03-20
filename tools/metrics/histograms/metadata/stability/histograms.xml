@@ -141,6 +141,175 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrashExitCodes.Extension" enum="CrashExitCodes"
+    expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    The exit codes for crashed extension processes. Note: Due to
+    https://crbug.com/805754, the enum labels are off by 1 for M56 and earlier.
+  </summary>
+</histogram>
+
+<histogram name="CrashExitCodes.Renderer" enum="CrashExitCodes"
+    expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    The exit codes for crashed renderer processes. Note: Due to
+    https://crbug.com/805754, the enum labels are off by 1 for M56 and earlier.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.AnrUpload.Skipped" enum="AnrSkippedReason"
+    expires_after="2024-06-30">
+  <owner>smaier@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The reason that an ANR upload was skipped.</summary>
+</histogram>
+
+<histogram name="Crashpad.CrashReportPending" enum="CrashpadReportPending"
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The reason that a crash report entered the upload pending state.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.CrashReportSize" units="bytes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The size of a crash report minidump on disk when captured.</summary>
+</histogram>
+
+<histogram name="Crashpad.CrashUpload.AttemptSuccessful"
+    enum="CrashpadUploadAttemptStatus" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>Logs whether a crash uploaded succeeded or failed.</summary>
+</histogram>
+
+<histogram name="Crashpad.CrashUpload.ErrorCode" units="int"
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The error codes from [NSURLConnection
+    sendSynchronousRequest:returningResponse:error:]
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.CrashUpload.Skipped"
+    enum="CrashpadUploadSkippedReason" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The reason that a crash report upload was skipped.</summary>
+</histogram>
+
+<histogram name="Crashpad.ExceptionCaptureResult"
+    enum="CrashpadExceptionCaptureResult" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The outcome of execution of the Crashpad exception handler.</summary>
+</histogram>
+
+<histogram name="Crashpad.ExceptionCode.Mac" enum="CrashpadMacExceptionCodes"
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>mark@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The exception code encountered in a crash on Mac OS X.</summary>
+</histogram>
+
+<histogram name="Crashpad.ExceptionCode.Win" enum="CrashpadWinExceptionCodes"
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The exception code encountered in a crash on Windows.</summary>
+</histogram>
+
+<histogram name="Crashpad.ExceptionEncountered"
+    enum="CrashpadExceptionProcessingState" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    A count of the number of exceptions handled by Crashpad with two buckets for
+    starting and finishing.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.HandlerCrash.ExceptionCode.Mac"
+    enum="CrashpadMacExceptionCodes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>mark@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The exception code encountered for a crash of the crash handler process on
+    Mac OS X.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.HandlerCrash.ExceptionCode.Win"
+    enum="CrashpadWinExceptionCodes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The exception code encountered for a crash of the crash handler process on
+    Windows.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.HandlerLifetimeMilestone"
+    enum="CrashpadLifetimeMilestone" expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
+  <owner>jperaza@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>Handler start/crash/exit events.</summary>
+</histogram>
+
+<histogram name="Crashpad.IntermediateDump.Reader.InvalidKeySize"
+    enum="CrashpadIntermediateDumpKey" expires_after="2027-02-20">
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    Records key id when id has an invalid sizein an intermediate dump.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.IntermediateDump.Reader.MissingKey"
+    enum="CrashpadIntermediateDumpKey" expires_after="2027-02-20">
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>Records key id when id is missing in an intermediate dump.</summary>
+</histogram>
+
 <histogram name="Stability.Android.KillSpareRendererAvailability.{KillType}"
     enum="SpareRendererAvailabilityWhenKilled" expires_after="2026-08-09">
   <owner>gjc@google.com</owner>
