@@ -191,6 +191,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PasswordBreach" summary="Password breach events"/>
   <variant name="PasswordChanged" summary="Password changed events"/>
   <variant name="PasswordReuse" summary="Password reuse events"/>
+  <variant name="SaasUsage" summary="Saas usage report events"/>
   <variant name="SensitiveData" summary="Sensitive data events"/>
   <variant name="Unknown" summary="Unknown/uncategorized events"/>
   <variant name="UnscannedFile" summary="Unscanned file events"/>

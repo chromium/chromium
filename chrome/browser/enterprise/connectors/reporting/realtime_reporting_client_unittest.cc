@@ -813,11 +813,15 @@ TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
         "Enterprise.ReportingEventUploadSuccess",
         EnterpriseReportingEventType::kSaasUsageReportEvent, 1);
     histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
+    histogram_.ExpectTotalCount(
+        "Enterprise.ReportingEvent.SaasUsage.UploadSuccess.Duration", 1);
   } else {
     histogram_.ExpectUniqueSample(
         "Enterprise.ReportingEventUploadFailure",
         EnterpriseReportingEventType::kSaasUsageReportEvent, 1);
     histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
+    histogram_.ExpectTotalCount(
+        "Enterprise.ReportingEvent.SaasUsage.UploadFailure.Duration", 1);
   }
 }
 
