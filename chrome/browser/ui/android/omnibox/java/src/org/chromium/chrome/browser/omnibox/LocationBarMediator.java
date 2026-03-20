@@ -638,8 +638,11 @@ class LocationBarMediator
         }
     }
 
-    /* package */ void onUrlTextChanged() {
+    /* package */ void onUrlTextChanged(String text) {
         updateButtonVisibility();
+        if (mCurrentInput != null) {
+            mCurrentInput.setUserText(text);
+        }
     }
 
     /* package */ void onSuggestionsChanged(
@@ -1021,7 +1024,7 @@ class LocationBarMediator
         if (mCurrentInput != null) {
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         }
-        // To avoid the asyc gap between now and on activate, null out here as well.
+        // To avoid the async gap between now and on activate, null out here as well.
         setAttachmentModelList(null);
 
         session.activate(

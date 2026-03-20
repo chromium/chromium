@@ -19,9 +19,6 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
         void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult);
     }
 
-    /** Notified that the URL text has changed. */
-    void onUrlTextChanged();
-
     /**
      * Notified that suggestions have changed.
      *

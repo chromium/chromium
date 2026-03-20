@@ -147,6 +147,8 @@ class AutocompleteMediator
     private final Callback<@Nullable SiteSearchData> mOnSiteSearchDataChanged =
             this::onSiteSearchDataChanged;
     private final Callback<Integer> mOnFuseboxStateChanged = this::onFuseboxStateChanged;
+    private final Callback<String> mOnUserTextChanged =
+            text -> onTextChanged(text, /* isOnFocusContext= */ false);
 
     private @Nullable AutocompleteController mAutocomplete;
     private @Nullable AutocompleteResult mAutocompleteResult;
@@ -610,6 +612,7 @@ class AutocompleteMediator
                     .removeObserver(mOnAutocompleteRequestTypeChanged);
             mAutocompleteInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
             mUrlBarEditingTextProvider.setSiteSearchChip(null);
+            mAutocompleteInput.getUserTextSupplier().removeObserver(mOnUserTextChanged);
         }
         mAutocompleteInput = input;
         if (mAutocompleteInput != null) {
@@ -619,6 +622,8 @@ class AutocompleteMediator
             mAutocompleteInput
                     .getSiteSearchDataSupplier()
                     .addSyncObserver(mOnSiteSearchDataChanged);
+            // Don't call onTextChange right away, wait for the user text supplier to be added.
+            mAutocompleteInput.getUserTextSupplier().addSyncObserver(mOnUserTextChanged);
         }
     }
 
@@ -968,8 +973,7 @@ class AutocompleteMediator
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.updateSuggestionUrlIfNeeded")) {
             if (mAutocomplete == null) return url;
             // TODO(crbug.com/40279214): this should exclude TILE variants when horizontal render
-            // group
-            // is ready.
+            // group is ready.
             if (suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
                 return url;
             }
@@ -1010,8 +1014,6 @@ class AutocompleteMediator
         // is final, which, in turn, may suppress certain functionality from getting invoked if the
         // subsequent push is immediately `final`.
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
-
-        mAutocompleteInput.setUserText(textWithoutAutocomplete);
 
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         mIgnoreOmniboxItemSelection = true;
@@ -1058,8 +1060,6 @@ class AutocompleteMediator
                     },
                     OMNIBOX_SUGGESTION_START_DELAY_MS);
         }
-
-        mDelegate.onUrlTextChanged();
     }
 
     @Override
