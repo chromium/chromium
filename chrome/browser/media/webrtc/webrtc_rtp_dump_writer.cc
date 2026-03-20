@@ -418,7 +418,8 @@ void WebRtcRtpDumpWriter::OnDumpEnded(EndDumpContext context,
     return;
   }
 
+  bool incoming_succeeded = context.incoming_succeeded;
+  bool outgoing_succeeded = context.outgoing_succeeded;
   // This object might be deleted after running the callback.
-  std::move(context).callback.Run(context.incoming_succeeded,
-                                  context.outgoing_succeeded);
+  std::move(context).callback.Run(incoming_succeeded, outgoing_succeeded);
 }
