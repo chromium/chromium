@@ -139,6 +139,11 @@ std::vector<const char*> GetDisabledToggles(
   for (const auto& toggle : gpu_preferences.disabled_dawn_features_list) {
     disabled_toggles.push_back(toggle.c_str());
   }
+
+  // TODO(crbug.com/486866985): Remove this once dynamic rendering perf
+  // regressions are investigated.
+  disabled_toggles.push_back("vulkan_use_dynamic_rendering");
+
   return disabled_toggles;
 }
 
@@ -290,9 +295,6 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
 
       wgpu::FeatureName::TransientAttachments,
-
-      wgpu::FeatureName::DawnLoadResolveTexture,
-      wgpu::FeatureName::DawnPartialLoadResolveTexture,
       wgpu::FeatureName::DawnTexelCopyBufferRowAlignment,
       wgpu::FeatureName::FlexibleTextureViews,
   };
@@ -302,12 +304,17 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       continue;
     }
     features.push_back(feature);
+  }
 
-    // Enabling MSAARenderToSingleSampled causes performance regression without
-    // TransientAttachments support.
-    if (feature == wgpu::FeatureName::TransientAttachments &&
-        adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
-      features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
+  // Both MSAARenderToSingleSampled and DawnLoadResolveTexture are used to
+  // unresolve a single-sampled texture for multi-sampled rendering.
+  // We prefer the former if it's available,
+  if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
+    features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
+  } else if (adapter.HasFeature(wgpu::FeatureName::DawnLoadResolveTexture)) {
+    features.push_back(wgpu::FeatureName::DawnLoadResolveTexture);
+    if (adapter.HasFeature(wgpu::FeatureName::DawnPartialLoadResolveTexture)) {
+      features.push_back(wgpu::FeatureName::DawnPartialLoadResolveTexture);
     }
   }
 
