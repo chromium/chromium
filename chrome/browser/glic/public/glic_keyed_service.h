@@ -435,6 +435,8 @@ class GlicKeyedService : public KeyedService,
                         bool auto_send,
                         std::optional<std::string> conversation_id);
 
+  void InitializeAfterConstruction();
+
   void FinishPreload(GlicPrewarmingChecksResult reason);
 
   // List of callbacks to be notified when the client requests a change to the

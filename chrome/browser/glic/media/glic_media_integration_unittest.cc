@@ -153,13 +153,11 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
         static_cast<int>(glic::prefs::FreStatus::kCompleted));
   }
 
- protected:
-  speech::MockSodaInstaller soda_installer_;
-
  private:
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   raw_ptr<captions::LiveCaptionController> live_caption_controller_ = nullptr;
   raw_ptr<user_prefs::PrefRegistrySyncable> pref_registry_ = nullptr;
+  speech::MockSodaInstaller soda_installer_;
 };
 
 TEST_F(GlicMediaIntegrationTest, GetWithNullReturnsNull) {
@@ -473,24 +471,6 @@ TEST_F(GlicMediaIntegrationTest,
   integration->AppendContext(web_contents(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_FALSE(root_node.has_content_attributes());
-}
-
-TEST_F(GlicMediaIntegrationTest, InstallsSodaIfMissing) {
-  // SODA is not installed by default in this test setup.
-  EXPECT_CALL(soda_installer_, InstallLanguage(testing::_, testing::_));
-  GetIntegration();
-}
-
-TEST_F(GlicMediaIntegrationTest, DoesNotInstallSodaIfPresent) {
-  // Mark SODA as installed.
-  const std::string language_code =
-      ::prefs::GetLiveCaptionLanguageCode(pref_service());
-  soda_installer_.NotifySodaInstalledForTesting(speech::LanguageCode::kNone);
-  soda_installer_.NotifySodaInstalledForTesting(
-      speech::GetLanguageCode(language_code));
-
-  EXPECT_CALL(soda_installer_, InstallLanguage(testing::_, testing::_)).Times(0);
-  GetIntegration();
 }
 
 }  // namespace glic

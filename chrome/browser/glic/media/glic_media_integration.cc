@@ -13,7 +13,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/browser_process.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -136,7 +135,6 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
  protected:
   void Initialize();
   void OnConsentChanged();
-  void MaybeInstallSoda();
 
   raw_ptr<Profile> profile_;
   // Don't let the transcript grow unbounded.
@@ -216,25 +214,11 @@ void GlicMediaIntegrationImpl::Initialize() {
   // Live Caption controller, since it resets the pref to false.
   profile_->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
 
-  MaybeInstallSoda();
-
   // Default to turning off for YT.
   std::vector<url::Origin> excluded_origins = {
       url::Origin::Create(GURL("https://www.youtube.com")),
       url::Origin::Create(GURL("http://www.youtube.com"))};
   SetExcludedOrigins(std::move(excluded_origins));
-}
-
-void GlicMediaIntegrationImpl::MaybeInstallSoda() {
-  const auto language_code =
-      prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
-  auto* soda_installer = speech::SodaInstaller::GetInstance();
-  // Only trigger an install when the language is not already installed.
-  if (!soda_installer->IsSodaInstalled(
-          speech::GetLanguageCode(language_code))) {
-    soda_installer->InstallLanguage(language_code,
-                                    g_browser_process->local_state());
-  }
 }
 
 bool GlicMediaIntegrationImpl::IsExcludedByOrigin(

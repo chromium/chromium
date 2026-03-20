@@ -275,6 +275,12 @@ GlicKeyedService::GlicKeyedService(
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();
 
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GlicKeyedService::InitializeAfterConstruction,
+                                GetWeakPtr()));
+}
+
+void GlicKeyedService::InitializeAfterConstruction() {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(media::kHeadlessCaptionEarlyStart)) {
     GlicMediaIntegration::GetFor(profile_);
