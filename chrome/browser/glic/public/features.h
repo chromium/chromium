@@ -33,6 +33,8 @@ extern const base::FeatureParam<base::TimeDelta>
 
 BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
 
+BASE_DECLARE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

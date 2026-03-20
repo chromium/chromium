@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -429,6 +430,12 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
                                   base::Milliseconds(1), base::Hours(24), 50);
     fre_accepted_time_ = base::TimeTicks();
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kGlicFixTimeToFirstQueryKillSwitch)) {
+    return;
+  }
+
   base::UmaHistogramEnumeration(
       "Glic.Session.InputSubmit.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());

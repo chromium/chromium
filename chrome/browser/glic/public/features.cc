@@ -54,4 +54,7 @@ const base::FeatureParam<base::TimeDelta>
 
 BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

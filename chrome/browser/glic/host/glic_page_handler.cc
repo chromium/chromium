@@ -1661,9 +1661,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
-  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnUserInputSubmitted(mojom::WebClientMode mode) override {
+    if (base::FeatureList::IsEnabled(
+            features::kGlicFixTimeToFirstQueryKillSwitch)) {
+      glic_service_->metrics()->OnUserInputSubmitted(mode);
+    }
     glic_service_->OnUserInputSubmitted(mode);
     host().instance_metrics_backwards_compatibility().OnUserInputSubmitted(
         mode);
