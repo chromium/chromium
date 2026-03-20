@@ -267,20 +267,6 @@ macro_rules! impl_generic_buffer_func {
     };
 }
 
-/// A macro to apply an expression to a `GenericRawSampleBuffer`.
-/// This avoids repetitive `match` statements for mutable operations.
-macro_rules! impl_generic_buffer_func_mut {
-    ($type:ident, $var:expr, $buf:ident,$expr:expr) => {
-        match $var {
-            $type::U8(ref mut $buf) => $expr,
-            $type::S16(ref mut $buf) => $expr,
-            $type::S24(ref mut $buf) => $expr,
-            $type::S32(ref mut $buf) => $expr,
-            $type::F32(ref mut $buf) => $expr,
-        }
-    };
-}
-
 /// An enum to wrap a `symphonia::core::audio::RawSampleBuffer` with a generic
 /// sample type.
 ///
@@ -352,16 +338,40 @@ impl SymphoniaRawSampleBuffer {
         impl_generic_buffer_func!(GenericRawSampleBuffer, self.inner, buf, buf.as_bytes())
     }
 
+    /// Checks if the underlying type of the `GenericRawSampleBuffer` matches
+    /// the type of the provided `AudioBufferRef`.
+    fn formats_match(&self, other: &AudioBufferRef) -> bool {
+        matches!(
+            (&self.inner, other),
+            (GenericRawSampleBuffer::U8(_), AudioBufferRef::U8(_))
+                | (GenericRawSampleBuffer::S16(_), AudioBufferRef::S16(_))
+                | (GenericRawSampleBuffer::S24(_), AudioBufferRef::S24(_))
+                | (GenericRawSampleBuffer::S32(_), AudioBufferRef::S32(_))
+                | (GenericRawSampleBuffer::F32(_), AudioBufferRef::F32(_))
+        )
+    }
+
     /// Copies sample data from a Symphonia `AudioBufferRef` into this buffer.
     /// It correctly handles both interleaved and planar formats.
     fn copy_from_buffer(&mut self, src: AudioBufferRef) {
-        impl_generic_buffer_func_mut!(
-            GenericRawSampleBuffer,
-            self.inner,
-            buf,
-            // We always copy the data as interleaved, never planar.
-            buf.copy_interleaved_ref(src)
-        );
+        match (&mut self.inner, src) {
+            (GenericRawSampleBuffer::U8(dst), AudioBufferRef::U8(s)) => {
+                dst.copy_interleaved_typed(&s)
+            }
+            (GenericRawSampleBuffer::S16(dst), AudioBufferRef::S16(s)) => {
+                dst.copy_interleaved_typed(&s)
+            }
+            (GenericRawSampleBuffer::S24(dst), AudioBufferRef::S24(s)) => {
+                dst.copy_interleaved_typed(&s)
+            }
+            (GenericRawSampleBuffer::S32(dst), AudioBufferRef::S32(s)) => {
+                dst.copy_interleaved_typed(&s)
+            }
+            (GenericRawSampleBuffer::F32(dst), AudioBufferRef::F32(s)) => {
+                dst.copy_interleaved_typed(&s)
+            }
+            _ => unreachable!("Buffer format mismatch! Reallocation should have handled this."),
+        }
     }
 }
 
@@ -744,7 +754,8 @@ impl SymphoniaDecoder {
         let capacity = buffer.capacity();
         let needs_realloc = match &decoder_impl.sample_buffer {
             Some(sb) => {
-                sb.spec != spec
+                !sb.formats_match(&buffer)
+                    || sb.spec != spec
                     || impl_generic_buffer_func!(
                         GenericRawSampleBuffer,
                         sb.inner,
