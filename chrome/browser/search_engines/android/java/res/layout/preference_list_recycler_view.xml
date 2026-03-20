@@ -7,12 +7,6 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.search_engines.settings.common.PreferenceListRecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/PreferenceLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="0dp"
-    android:paddingEnd="0dp"
-    android:padding="0dp"
-    android:orientation="vertical"
-    android:divider="?android:attr/listDivider"
-    android:showDividers="middle"/>
+    android:orientation="vertical"/>
