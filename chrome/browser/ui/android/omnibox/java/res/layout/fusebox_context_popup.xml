@@ -71,14 +71,9 @@ found in the LICENSE file.
             android:id="@+id/fusebox_tools_divider"/>
 
         <TextView
+            style="@style/Fusebox.PopupMenu.Header"
             android:id="@+id/fusebox_tools_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/fusebox_tools_header"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:paddingHorizontal="8dp"
-            android:importantForAccessibility="no"/>
+            android:text="@string/fusebox_tools_header"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -111,14 +106,9 @@ found in the LICENSE file.
             android:id="@+id/fusebox_models_divider"/>
 
         <TextView
+            style="@style/Fusebox.PopupMenu.Header"
             android:id="@+id/fusebox_models_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/fusebox_models_header"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:paddingHorizontal="8dp"
-            android:importantForAccessibility="no"/>
+            android:text="@string/fusebox_models_header"/>
 
     </LinearLayout>
 
