@@ -269,7 +269,6 @@ public class LocationBarCoordinator
                         context,
                         windowAndroid,
                         mLocationBarLayout,
-                        profileObservableSupplier,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
                         snackbarManager);
