@@ -35,10 +35,9 @@
 #include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
-using page_load_metrics::PageLoadMetricsTestWaiter;
-using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
-
+namespace page_load_metrics {
 namespace {
+
 std::map<int64_t, double> GetSoftNavigationMetrics(
     const ukm::TestUkmRecorder& ukm_recorder,
     std::string_view metric_name) {
@@ -77,16 +76,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     feature_list_.InitWithFeatures(enabled_feature_list, {} /*disabled*/);
   }
 
-  std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter(
-      const char* observer_name,
-      content::WebContents* web_contents = nullptr) {
-    if (!web_contents) {
-      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    }
-    return std::make_unique<PageLoadMetricsTestWaiter>(web_contents,
-                                                       observer_name);
-  }
-
   void SimulateMouseDownElementWithId(const std::string& id) {
     gfx::Point point = gfx::ToFlooredPoint(
         GetCenterCoordinatesOfElementWithId(web_contents(), id));
@@ -119,9 +108,9 @@ class SoftNavigationTest : public MetricIntegrationTest,
     frame_observer.Wait();
   }
 
-  void SimulateUserInteraction(
-      page_load_metrics::PageLoadMetricsTestWaiter* waiter,
-      int expected_num_interactions) {
+  void SimulateUserInteractionAndWait(PageLoadMetricsTestWaiter* waiter,
+                                      int expected_num_interactions,
+                                      std::string_view element_id) {
     waiter->AddNumInteractionsExpectation(expected_num_interactions);
 
     EXPECT_TRUE(ExecJs(web_contents(), "registerEventListeners(); "));
@@ -129,21 +118,21 @@ class SoftNavigationTest : public MetricIntegrationTest,
     WaitForFrameReady();
 
     // Simulate a click on button which has default browser-driven presentation.
-    content::SimulateMouseClickOrTapElementWithId(web_contents(), "div");
+    content::SimulateMouseClickOrTapElementWithId(web_contents(), element_id);
 
     EXPECT_TRUE(ExecJs(web_contents(), "waitForClick();"));
 
     waiter->Wait();
   }
 
-  void TriggerSoftNavigation(
-      page_load_metrics::PageLoadMetricsTestWaiter* waiter,
-      int expected_soft_nav_count) {
+  void TriggerSoftNavigationAndWait(PageLoadMetricsTestWaiter* waiter,
+                                    int expected_soft_nav_count,
+                                    std::string_view element_id) {
     waiter->AddSoftNavigationCountExpectation(expected_soft_nav_count);
     waiter->AddSoftNavigationLargestContentfulPaintExpectation(
         expected_soft_nav_count);
-
-    content::SimulateMouseClickOrTapElementWithId(web_contents(), "link");
+    WaitForFrameReady();
+    content::SimulateMouseClickOrTapElementWithId(web_contents(), element_id);
 
     waiter->Wait();
   }
@@ -280,29 +269,38 @@ class SoftNavigationTest : public MetricIntegrationTest,
     return true;
   }
 
-  int ExtractMaxInteractionDurationFromTrace(
+  int64_t ExtractMaxInteractionDurationFromTrace(
       trace_analyzer::TraceEventVector events) {
-    int max_duration = 0;
-    int sizeOfEvents = (int)events.size();
-    for (int i = 0; i < sizeOfEvents; i++) {
-      auto* traceEvent = events[i];
-
+    int64_t max_duration = 0;
+    for (const trace_analyzer::TraceEvent* traceEvent : events) {
       // If the traceEvent doesn't contain args data, it is not
       // one of pointerdown, pointerup and click.
-      if (traceEvent->HasDictArg("data")) {
-        base::DictValue data = traceEvent->GetKnownArgAsDict("data");
+      if (!traceEvent->HasDictArg("data")) {
+        continue;
+      }
+      base::DictValue data = traceEvent->GetKnownArgAsDict("data");
 
-        // INP only consider the events with interactionID greater than 0.
-        std::string* event_name = data.FindString("type");
-        if ((*event_name == "pointerdown" || *event_name == "pointerup" ||
-             *event_name == "click") &&
-            data.FindInt("interactionId").value_or(-1) > 0) {
-          int duration = (int)*(data.FindDouble("duration"));
-
-          // Ensure the max_duration carries the largest duration out of
-          // pointerdown, pointerup and click.
-          max_duration = fmax(max_duration, duration);
-        }
+      // INP only consider the events with interactionID greater than 0.
+      if (data.FindInt("interactionId").value_or(-1) <= 0) {
+        continue;
+      }
+      std::string* event_name = data.FindString("type");
+      EXPECT_TRUE(event_name != nullptr);
+      if (event_name == nullptr) {
+        continue;
+      }
+      // Ensure the max_duration carries the largest duration out of
+      // pointerdown, pointerup and click.
+      if (*event_name != "pointerdown" && *event_name != "pointerup" &&
+          *event_name != "click") {
+        continue;
+      }
+      std::optional<double> duration = data.FindDouble("duration");
+      EXPECT_TRUE(duration.has_value());
+      EXPECT_TRUE(std::isfinite(duration.value()));
+      int64_t duration_as_int = static_cast<int64_t>(duration.value());
+      if (duration_as_int > max_duration) {
+        max_duration = duration_as_int;
       }
     }
     return max_duration;
@@ -489,28 +487,22 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // Start the test, load soft_navigation_basics.html and wait for
   // load, fcp, and lcp to be observed.
   Start();
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kLoadEvent);
-  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  PageLoadMetricsTestWaiter waiter(web_contents());
+  waiter.AddPageExpectation(PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
   Load("/soft_navigation_basics.html#image");
-  waiter->Wait();
+  waiter.Wait();
 
   // 1st soft navigation: click on the next page button and wait for soft
   // navigation count and image lcp.
-  waiter->AddSoftNavigationCountExpectation(1);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 1, "next-page");
 
   // 2nd soft navigation: click on the next page button and wait for soft
   // navigation count and image lcp.
-  waiter->AddSoftNavigationCountExpectation(2);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 2, "next-page");
 
   base::ListValue soft_nav_lcp_list;
   if (GetParam()) {
@@ -526,8 +518,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
 
   VerifySoftNavigationCount(/*expected_count=*/2);
 
-  VerifySoftNavIdsAndSoftLcpStartTimes(
-      soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
+  VerifySoftNavIdsAndSoftLcpStartTimes(soft_nav_lcp_list,
+                                       /*expected_soft_nav_count=*/2);
 
   // Verify 2 LCP discovery time timings are reported.
   auto source_id_to_lcp_discovery_time = GetSoftNavigationMetrics(
@@ -598,28 +590,22 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   // Start the test, load soft_navigation_basics.html and wait for
   // load, fcp, and lcp to be observed.
   Start();
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kLoadEvent);
-  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  PageLoadMetricsTestWaiter waiter(web_contents());
+  waiter.AddPageExpectation(PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
   Load("/soft_navigation_basics.html#text");
-  waiter->Wait();
+  waiter.Wait();
 
   // 1st soft navigation: click on the next page button and wait for soft
   // navigation count and text lcp.
-  waiter->AddSoftNavigationCountExpectation(1);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 1, "next-page");
 
   // 2nd soft navigation: click on the next page button and wait for soft
   // navigation count and text lcp.
-  waiter->AddSoftNavigationCountExpectation(2);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 2, "next-page");
 
   base::ListValue soft_nav_lcp_list;
   if (GetParam()) {
@@ -635,8 +621,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
 
   VerifySoftNavigationCount(/*expected_count=*/2);
 
-  VerifySoftNavIdsAndSoftLcpStartTimes(
-      soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
+  VerifySoftNavIdsAndSoftLcpStartTimes(soft_nav_lcp_list,
+                                       /*expected_soft_nav_count=*/2);
 
   // Verify LCP types.
   auto source_id_to_lcp_type = GetSoftNavigationMetrics(
@@ -664,24 +650,17 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
   // Load soft_navigation_basics.html and wait for lcp.
   Start();
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  PageLoadMetricsTestWaiter waiter(web_contents());
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
   Load("/soft_navigation_basics.html#text");
-  waiter->Wait();
+  waiter.Wait();
 
   // 1st soft navigation: click on the next page button.
-  waiter->AddSoftNavigationCountExpectation(1);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 1, "next-page");
 
   // 2nd soft navigation: click on the next page button.
-  waiter->AddSoftNavigationCountExpectation(2);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
-  WaitForFrameReady();
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
-  waiter->Wait();
+  TriggerSoftNavigationAndWait(&waiter, 2, "next-page");
 
   // Now we simulate the back button. However, a regular back-button click or
   // content::HistoryGoBack would trigger this intervention:
@@ -691,18 +670,18 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
   // avoiding the intervention by adding a user activation to the page.
 
   // 3rd soft navigation: going backwards in history.
-  waiter->AddSoftNavigationCountExpectation(3);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(3);
+  waiter.AddSoftNavigationCountExpectation(3);
+  waiter.AddSoftNavigationLargestContentfulPaintExpectation(3);
   WaitForFrameReady();
   ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
-  waiter->Wait();
+  waiter.Wait();
 
   // 4th soft navigation: going backwards in history.
-  waiter->AddSoftNavigationCountExpectation(4);
-  waiter->AddSoftNavigationLargestContentfulPaintExpectation(4);
+  waiter.AddSoftNavigationCountExpectation(4);
+  waiter.AddSoftNavigationLargestContentfulPaintExpectation(4);
   WaitForFrameReady();
   ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
-  waiter->Wait();
+  waiter.Wait();
 
   base::ListValue soft_nav_lcp_list;
   if (GetParam()) {
@@ -760,15 +739,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
 }
 
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
+  PageLoadMetricsTestWaiter waiter(web_contents());
 
-  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
+  waiter.AddMinimumLargestContentfulPaintImageExpectation(1);
 
   Start();
   Load("/soft_navigation.html");
 
-  waiter->Wait();
+  waiter.Wait();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
@@ -782,8 +760,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
   // Add waiter to wait for the interaction is arrived in browser.
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
+  PageLoadMetricsTestWaiter waiter(web_contents());
 
   // Start tracing to record tracing data.
   StartTracing({"devtools.timeline"});
@@ -799,19 +776,19 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
 
   WaitForFrameReady();
 
-  SimulateUserInteraction(waiter.get(), 1);
+  SimulateUserInteractionAndWait(&waiter, 1, "div");
 
   // Trigger 1st soft nav.
-  TriggerSoftNavigation(waiter.get(), 1);
+  TriggerSoftNavigationAndWait(&waiter, 1, "link");
 
   // Trigger a user interaction.
-  SimulateUserInteraction(waiter.get(), 3);
+  SimulateUserInteractionAndWait(&waiter, 3, "div");
 
   // Trigger 2nd soft nav.
-  TriggerSoftNavigation(waiter.get(), 2);
+  TriggerSoftNavigationAndWait(&waiter, 2, "link");
 
   // Trigger a user interaction.
-  SimulateUserInteraction(waiter.get(), 5);
+  SimulateUserInteractionAndWait(&waiter, 5, "div");
 
   // Navigate to blank page to ensure the data gets flushed from renderer to
   // browser.
@@ -823,12 +800,10 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
+  PageLoadMetricsTestWaiter waiter(web_contents());
 
-  waiter->AddPageLayoutShiftExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
-          LayoutShiftOnlyInMainFrame,
+  waiter.AddPageLayoutShiftExpectation(
+      PageLoadMetricsTestWaiter::ShiftFrame::LayoutShiftOnlyInMainFrame,
       /*num_layout_shifts=*/1);
   Start();
 
@@ -847,25 +822,24 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
 
   double cls_before_soft_nav = GetCLSFromList(entry_records_list);
 
-  waiter->Wait();
+  waiter.Wait();
 
   // Set up for soft navigation.
   EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()")
                   .is_ok());
 
   // Trigger 1st soft navigation.
-  TriggerSoftNavigation(waiter.get(), 1);
+  TriggerSoftNavigationAndWait(&waiter, 1, "link");
 
   // Trigger a layout shift.
-  waiter->AddPageLayoutShiftExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
-          LayoutShiftOnlyInMainFrame,
+  waiter.AddPageLayoutShiftExpectation(
+      PageLoadMetricsTestWaiter::ShiftFrame::LayoutShiftOnlyInMainFrame,
       /*num_layout_shifts=*/1);
 
   // TODO: handle return value.
   std::ignore = EvalJs(web_contents(), "triggerLayoutShift()");
 
-  waiter->Wait();
+  waiter.Wait();
 
   // Retrieve web exposed layout shift entries if the runtime flag for soft nav
   // is on.
@@ -883,19 +857,17 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
   }
 
   // Trigger 2nd soft navigation.
-  TriggerSoftNavigation(waiter.get(), 2);
+  TriggerSoftNavigationAndWait(&waiter, 2, "link");
 
   // Trigger a layout shift.
-  waiter->AddPageLayoutShiftExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
-          LayoutShiftOnlyInMainFrame,
+  waiter.AddPageLayoutShiftExpectation(
+      PageLoadMetricsTestWaiter::ShiftFrame::LayoutShiftOnlyInMainFrame,
       /*num_layout_shifts=*/1);
 
   // TODO: handle return value.
-  std::ignore = EvalJs(web_contents(),
-                       "triggerLayoutShift(" + base::NumberToString(1.5) + ")");
+  std::ignore = EvalJs(web_contents(), "triggerLayoutShift(1.5)");
 
-  waiter->Wait();
+  waiter.Wait();
 
   // Retrieve web exposed layout shift entries if the runtime flag for soft nav
   // is on.
@@ -920,7 +892,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
   ExpectUKMPageLoadMetricNear(
       ukm::builders::PageLoad::
           kLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000msName,
-      page_load_metrics::LayoutShiftUkmValue(cls_before_soft_nav), 1);
+      LayoutShiftUkmValue(cls_before_soft_nav), 1);
 
   // Verify soft nav CLS records exist.
   auto source_id_to_soft_nav_cls = GetSoftNavigationMetrics(
@@ -933,10 +905,11 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
   // Verify soft navigation layout shift values against web-exposed values
   if (GetParam()) {
     EXPECT_NEAR(source_id_to_soft_nav_cls.begin()->second,
-                page_load_metrics::LayoutShiftUkmValue(soft_nav_1_cls), 1);
+                LayoutShiftUkmValue(soft_nav_1_cls), 1);
 
     EXPECT_NEAR(std::next(source_id_to_soft_nav_cls.begin())->second,
-                page_load_metrics::LayoutShiftUkmValue(soft_nav_2_cls), 1);
+                LayoutShiftUkmValue(soft_nav_2_cls), 1);
   }
 }
 }  // namespace
+}  // namespace page_load_metrics
