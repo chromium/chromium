@@ -4,26 +4,14 @@
 
 #include "base/timer/hi_res_timer_manager.h"
 
-#include <algorithm>
-
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 
 namespace base {
 
 namespace {
-
-constexpr TimeDelta kUsageSampleInterval = Minutes(10);
-
-void ReportHighResolutionTimerUsage() {
-  UMA_HISTOGRAM_PERCENTAGE("Windows.HighResolutionTimerUsage",
-                           Time::GetHighResolutionTimerUsage());
-  // Reset usage for the next interval.
-  Time::ResetHighResolutionTimerUsage();
-}
 
 bool HighResolutionTimerAllowed() {
   return !CommandLine::ForCurrentProcess()->HasSwitch(
@@ -41,23 +29,16 @@ HighResolutionTimerManager::HighResolutionTimerManager()
   if (HighResolutionTimerAllowed()) {
     auto* power_monitor = base::PowerMonitor::GetInstance();
     DCHECK(power_monitor->IsInitialized());
-    power_monitor->AddPowerSuspendObserver(this);
     const bool on_battery =
         power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
     UseHiResClock(!on_battery);
-
-    // Start polling the high resolution timer usage.
-    Time::ResetHighResolutionTimerUsage();
-    timer_.Start(FROM_HERE, kUsageSampleInterval,
-                 BindRepeating(&ReportHighResolutionTimerUsage));
   }
 }
 
 HighResolutionTimerManager::~HighResolutionTimerManager() {
   if (HighResolutionTimerAllowed()) {
     auto* power_monitor = base::PowerMonitor::GetInstance();
-    power_monitor->RemovePowerSuspendObserver(this);
     power_monitor->RemovePowerStateObserver(this);
     UseHiResClock(false);
   }
@@ -68,19 +49,6 @@ void HighResolutionTimerManager::OnBatteryPowerStatusChange(
   DCHECK(HighResolutionTimerAllowed());
   UseHiResClock(battery_power_status !=
                 PowerStateObserver::BatteryPowerStatus::kBatteryPower);
-}
-
-void HighResolutionTimerManager::OnSuspend() {
-  DCHECK(HighResolutionTimerAllowed());
-  // Stop polling the usage to avoid including the standby time.
-  timer_.Stop();
-}
-
-void HighResolutionTimerManager::OnResume() {
-  DCHECK(HighResolutionTimerAllowed());
-  // Resume polling the usage.
-  Time::ResetHighResolutionTimerUsage();
-  timer_.Reset();
 }
 
 void HighResolutionTimerManager::UseHiResClock(bool use) {

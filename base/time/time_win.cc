@@ -106,15 +106,6 @@ UINT g_last_interval_requested_ms = 0;
 bool g_high_res_timer_enabled = false;
 // How many times the high resolution timer has been called.
 uint32_t g_high_res_timer_count = 0;
-// Start time of the high resolution timer usage monitoring. This is needed
-// to calculate the usage as percentage of the total elapsed time.
-TimeTicks g_high_res_timer_usage_start;
-// The cumulative time the high resolution timer has been in use since
-// |g_high_res_timer_usage_start| moment.
-TimeDelta g_high_res_timer_usage;
-// Timestamp of the last activation change of the high resolution timer. This
-// is used to calculate the cumulative usage.
-TimeTicks g_high_res_timer_last_activation;
 // The lock to control access to the above set of variables.
 Lock* GetHighResLock() {
   static auto* lock = new Lock();
@@ -156,16 +147,11 @@ void UpdateTimerIntervalLocked() {
     return;
   }
   if (g_last_interval_requested_ms) {
-    // Record how long the timer interrupt frequency was raised.
-    g_high_res_timer_usage += subtle::TimeTicksNowIgnoringOverride() -
-                              g_high_res_timer_last_activation;
     // Reset the timer interrupt back to the default.
     timeEndPeriod(g_last_interval_requested_ms);
   }
   g_last_interval_requested_ms = new_interval;
   if (g_last_interval_requested_ms) {
-    // Record when the timer interrupt was raised.
-    g_high_res_timer_last_activation = subtle::TimeTicksNowIgnoringOverride();
     timeBeginPeriod(g_last_interval_requested_ms);
   }
 }
@@ -311,35 +297,7 @@ bool Time::IsHighResolutionTimerInUse() {
   return g_last_interval_requested_ms == kMinTimerIntervalHighResMs;
 }
 
-// static
-void Time::ResetHighResolutionTimerUsage() {
-  AutoLock lock(*GetHighResLock());
-  g_high_res_timer_usage = TimeDelta();
-  g_high_res_timer_usage_start = subtle::TimeTicksNowIgnoringOverride();
-  if (g_high_res_timer_count > 0) {
-    g_high_res_timer_last_activation = g_high_res_timer_usage_start;
-  }
-}
 
-// static
-double Time::GetHighResolutionTimerUsage() {
-  AutoLock lock(*GetHighResLock());
-  TimeTicks now = subtle::TimeTicksNowIgnoringOverride();
-  TimeDelta elapsed_time = now - g_high_res_timer_usage_start;
-  if (elapsed_time.is_zero()) {
-    // This is unexpected but possible if TimeTicks resolution is low and
-    // GetHighResolutionTimerUsage() is called promptly after
-    // ResetHighResolutionTimerUsage().
-    return 0.0;
-  }
-  TimeDelta used_time = g_high_res_timer_usage;
-  if (g_high_res_timer_count > 0) {
-    // If currently activated add the remainder of time since the last
-    // activation.
-    used_time += now - g_high_res_timer_last_activation;
-  }
-  return used_time / elapsed_time * 100;
-}
 
 // static
 bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
