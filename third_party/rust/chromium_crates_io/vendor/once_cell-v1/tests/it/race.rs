@@ -6,7 +6,7 @@ use std::{
     thread::scope,
 };
 
-use once_cell::race::{OnceBool, OnceNonZeroUsize};
+use once_cell::race::{OnceBool, OnceNonZeroUsize, OnceRef};
 
 #[test]
 fn once_non_zero_usize_smoke_test() {
@@ -125,6 +125,61 @@ fn once_bool_set() {
 
     assert!(cell.set(true).is_err());
     assert_eq!(cell.get(), Some(false));
+}
+
+#[test]
+fn once_bool_get_or_try_init() {
+    let cell = OnceBool::new();
+
+    let result1: Result<bool, ()> = cell.get_or_try_init(|| Ok(true));
+    let result2: Result<bool, ()> = cell.get_or_try_init(|| Ok(false));
+    assert_eq!(result1, Ok(true));
+    assert_eq!(result2, Ok(true));
+
+    let cell = OnceBool::new();
+
+    let result3: Result<bool, ()> = cell.get_or_try_init(|| Err(()));
+    assert_eq!(result3, Err(()));
+}
+
+#[test]
+fn once_ref_smoke_test() {
+    let cnt: AtomicUsize = AtomicUsize::new(0);
+    let cell: OnceRef<'_, &str> = OnceRef::new();
+    scope(|s| {
+        s.spawn(|| {
+            assert_eq!(
+                cell.get_or_init(|| {
+                    cnt.fetch_add(1, SeqCst);
+                    &"false"
+                }),
+                &"false"
+            );
+            assert_eq!(cnt.load(SeqCst), 1);
+
+            assert_eq!(
+                cell.get_or_init(|| {
+                    cnt.fetch_add(1, SeqCst);
+                    &"false"
+                }),
+                &"false"
+            );
+            assert_eq!(cnt.load(SeqCst), 1);
+        });
+    });
+    assert_eq!(cell.get(), Some(&"false"));
+    assert_eq!(cnt.load(SeqCst), 1);
+}
+
+#[test]
+fn once_ref_set() {
+    let cell: OnceRef<'_, &str> = OnceRef::new();
+
+    assert!(cell.set(&"false").is_ok());
+    assert_eq!(cell.get(), Some(&"false"));
+
+    assert!(cell.set(&"true").is_err());
+    assert_eq!(cell.get(), Some(&"false"));
 }
 
 #[test]

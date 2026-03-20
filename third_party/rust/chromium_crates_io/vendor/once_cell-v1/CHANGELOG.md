@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.21.4
+
+- Fix unsoundness in `OnceCell::wait` under `--features=parking_lot`, [#295](https://github.com/matklad/once_cell/pull/295).
+
+  If thread A calls `wait`, while thread B calls `get_or_try_init(f)`, and, furthermore, `f` panics,
+  the `wait` incorrectly returns and thread A observes uninitialized memory.
+
+  Kudos to [@meng-xu-cs](https://github.com/meng-xu-cs) for a nice find!
+
 ## 1.21.3
 
 - Outline more initialization in `race`: [#284](https://github.com/matklad/once_cell/pull/284),

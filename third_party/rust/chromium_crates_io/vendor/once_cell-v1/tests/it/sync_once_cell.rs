@@ -115,6 +115,25 @@ fn wait() {
 
 #[cfg(feature = "std")]
 #[test]
+fn wait_panic() {
+    let cell: OnceCell<String> = OnceCell::new();
+    scope(|s| {
+        let h1 = s.spawn(|| {
+            cell.get_or_try_init(|| -> Result<String, ()> { panic!() }).unwrap();
+        });
+        let h2 = s.spawn(|| {
+            assert!(h1.join().is_err());
+            cell.get_or_try_init(|| -> Result<String, ()> { Ok("hello".to_string()) }).unwrap();
+        });
+
+        let greeting = cell.wait();
+        assert_eq!(greeting, "hello");
+        assert!(h2.join().is_ok());
+    });
+}
+
+#[cfg(feature = "std")]
+#[test]
 fn get_or_init_stress() {
     let n_threads = if cfg!(miri) { 30 } else { 1_000 };
     let n_cells = if cfg!(miri) { 30 } else { 1_000 };

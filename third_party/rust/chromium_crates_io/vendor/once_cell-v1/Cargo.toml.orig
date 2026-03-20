@@ -1,6 +1,6 @@
 [package]
 name = "once_cell"
-version = "1.21.3"
+version = "1.21.4"
 authors = ["Aleksey Kladov <aleksey.kladov@gmail.com>"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
