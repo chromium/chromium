@@ -4,6 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -29,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Tests for {@link HomeOfTransactionsFragment}. */
@@ -112,5 +122,35 @@ public class HomeOfTransactionsFragmentTest {
                 .removeEntry(
                         HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 HomeOfTransactionsFragment.PREF_AUTOFILL_TRAVEL));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testClickPaymentsLaunchesPayments() {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_payments_title)).perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_payments_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testClickContactInfoLaunchesContactInfo() {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_contact_info_title)).perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_contact_info_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 }
