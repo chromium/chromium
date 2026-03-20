@@ -53,6 +53,7 @@ static_library("preferences") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/experiences/frozen_update",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants",

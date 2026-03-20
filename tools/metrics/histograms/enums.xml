@@ -9537,6 +9537,7 @@ from previous Chrome versions.
   <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
   <int value="-1658154886"
       label="CompressionDictionaryTransportRequireKnownRootCert:disabled"/>
+  <int value="-1657250488" label="ShowFrozenUpdateNotification:disabled"/>
   <int value="-1657056532" label="FilesNewDirectoryTree:disabled"/>
   <int value="-1656949556"
       label="AndroidBlockMisspellingSuggestionSpanInCompositionMode:enabled"/>
@@ -13074,6 +13075,7 @@ from previous Chrome versions.
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-478404134" label="CCTPageInsightsHub:enabled"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
+  <int value="-476573220" label="ShowFrozenUpdateNotification:enabled"/>
   <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
   <int value="-475537287" label="EcheLauncherListView:enabled"/>
   <int value="-475178110" label="WebApkBackupAndRestoreBackend:enabled"/>

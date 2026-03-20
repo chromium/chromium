@@ -1,0 +1,78 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+process_json_outputs = [
+  "$target_gen_dir/frozen_update_gpu_list_autogen.cc",
+  "$target_gen_dir/frozen_update_gpu_list_autogen.h",
+]
+
+action("process_json") {
+  script = "process_json.py"
+
+  inputs = [
+    "frozen_update_gpu_list.json",
+    "frozen_gpu.h",
+  ]
+
+  outputs = process_json_outputs
+
+  args = [
+    "--output-dir",
+    rebase_path("$target_gen_dir", root_build_dir),
+  ]
+}
+
+static_library("frozen_update") {
+  sources = [
+    "frozen_gpu.h",
+    "frozen_update_notification.cc",
+    "frozen_update_notification.h",
+  ]
+
+  sources += process_json_outputs
+
+  deps = [
+    ":process_json",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/install_attributes",
+    "//components/prefs",
+    "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/chromeos/strings",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "frozen_update_notification_unittest.cc" ]
+
+  deps = [
+    ":frozen_update",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/supervised_user/core/common",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+  ]
+}

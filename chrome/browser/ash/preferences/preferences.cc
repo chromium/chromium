@@ -66,6 +66,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
+#include "chromeos/ash/experiences/frozen_update/frozen_update_notification.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/pref_names.h"
@@ -688,6 +689,7 @@ void Preferences::RegisterProfilePrefs(
                              base::Time());
   registry->RegisterTimePref(::prefs::kSkyVaultMigrationStartTime,
                              base::Time());
+  FrozenUpdateNotification::RegisterProfilePrefs(registry);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

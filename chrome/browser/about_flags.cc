@@ -13067,6 +13067,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch3Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch3)},
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    {"show-frozen-update-notification",
+     flag_descriptions::kShowFrozenUpdateNotificationName,
+     flag_descriptions::kShowFrozenUpdateNotificationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ash::features::kShowFrozenUpdateNotification)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-three-dot-menu-back-button",
