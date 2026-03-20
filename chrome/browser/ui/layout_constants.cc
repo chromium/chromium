@@ -207,7 +207,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       }
 
     case TOOLBAR_INTERIOR_MARGIN:
-      return touch_ui ? gfx::Insets::VH(4, 0) : gfx::Insets::VH(6, 5);
+      return touch_ui ? gfx::Insets::VH(4, 0) : gfx::Insets::VH(6, 6);
 
     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
       return gfx::Insets::VH(4, 0);
