@@ -31,6 +31,8 @@ BASE_DECLARE_FEATURE(kGlicDefaultToLastActiveConversation);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicDefaultToLastActiveConversationMaxRecency;
 
+BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

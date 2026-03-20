@@ -1658,6 +1658,7 @@ export declare interface PageMetadata {
  * available while the page is being loaded or if not provided by the page
  * itself.
  */
+
 export declare interface TabData {
   /**
    * Unique ID of the tab that owns the page. These values are unique across
@@ -1737,6 +1738,8 @@ export declare interface TabData {
    * WARNING: This is not implemented on Android, and is always true.
    */
   isWindowActive?: boolean;
+  /** Lightweight page features detected on the page. */
+  lightweightPageFeatures?: LightweightPageFeature[];
 }
 
 /** A candidate for pinning. */
@@ -2850,6 +2853,15 @@ export enum AdditionalContextSource {
   SHARE_CONTEXT_MENU = 0,
   REGION_SELECTION = 1,
   TEXT_SELECTION = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Lightweight page features detected on the page.
+export enum LightweightPageFeature {
+  UNKNOWN = 0,
+  // The YouTube "Ask" button is visible.
+  YT_ASK_BUTTON_PRESENT = 1,
 }
 
 ///////////////////////////////////////////////

@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
+#include "chrome/browser/glic/host/context/glic_page_features_manager.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
@@ -367,6 +368,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
         glic_selection_observer_ =
             std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kGlicSummarizeVideoSuggestion)) {
+        glic_page_features_manager_ =
+            GetUserDataFactory().CreateInstance<glic::GlicPageFeaturesManager>(
+                tab, &tab);
       }
     }
     if (glic::GlicEnabling::IsMultiInstanceEnabled() &&

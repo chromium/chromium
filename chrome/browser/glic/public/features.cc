@@ -52,4 +52,6 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicDefaultToLastActiveConversation, "max_recency",
         base::Minutes(20)};
 
+BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

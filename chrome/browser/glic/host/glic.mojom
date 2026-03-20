@@ -1896,6 +1896,15 @@ struct PdfDocumentData {
   bool size_limit_exceeded;
 };
 
+// @generate glic_api
+// Lightweight page features detected on the page.
+[Stable, Extensible]
+enum LightweightPageFeature {
+  [Default] kUnknown = 0,
+  // The YouTube "Ask" button is visible.
+  kYtAskButtonPresent = 1,
+};
+
 // Data about a browser tab.
 struct TabData {
   // Unique ID of the tab that owns the page.
@@ -1931,6 +1940,8 @@ struct TabData {
   // Whether the tab's browser window is active. Note that this does not
   // consider whether the tab is active in the window.
   bool? is_window_active;
+  // Lightweight page features detected on the page.
+  array<LightweightPageFeature>? lightweight_page_features;
 };
 
 // Data about the focused tab state.

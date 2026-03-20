@@ -225,6 +225,8 @@ export function tabDataToClient(
     isTabContentCaptured,
     isActiveInWindow,
     isWindowActive,
+    lightweightPageFeatures:
+        tabData.lightweightPageFeatures?.map(feature => enumToClient(feature)),
   };
 }
 

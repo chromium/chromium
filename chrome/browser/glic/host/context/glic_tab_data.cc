@@ -14,9 +14,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/host/context/glic_page_features_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -56,6 +60,14 @@ std::string TabDataDebugString(const mojom::TabData& tab_data) {
   }
   if (tab_data.is_observable) {
     dict.Set("is_observable", *tab_data.is_observable);
+  }
+  if (tab_data.lightweight_page_features) {
+    base::ListValue features_list;
+    for (const mojom::LightweightPageFeature feature :
+         *tab_data.lightweight_page_features) {
+      features_list.Append(static_cast<int>(feature));
+    }
+    dict.Set("lightweight_page_features", std::move(features_list));
   }
   return dict.DebugString();
 }
@@ -291,13 +303,21 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
     is_window_active = true;
 #endif
   }
+  std::optional<std::vector<mojom::LightweightPageFeature>>
+      lightweight_page_features;
+  if (base::FeatureList::IsEnabled(features::kGlicSummarizeVideoSuggestion)) {
+    if (auto* manager = glic::GlicPageFeaturesManager::From(tab)) {
+      lightweight_page_features = manager->GetFeatures();
+    }
+  }
+
   return glic::mojom::TabData::New(
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
       GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
       favicon, favicon_url, web_contents->GetContentsMimeType(), is_observable,
       is_audible, is_tab_content_captured, is_active_in_window,
-      is_window_active);
+      is_window_active, std::move(lightweight_page_features));
 }
 
 // CreateFocusedTabData Implementation:

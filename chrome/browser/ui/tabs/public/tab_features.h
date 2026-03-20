@@ -106,6 +106,7 @@ class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
 class SelectionOverlayController;
+class GlicPageFeaturesManager;
 }  // namespace glic
 
 namespace memory_saver {
@@ -504,6 +505,8 @@ class TabFeatures {
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
   std::unique_ptr<glic::SelectionOverlayController>
       glic_selection_overlay_controller_;
+
+  std::unique_ptr<glic::GlicPageFeaturesManager> glic_page_features_manager_;
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
       memory_saver_chip_controller_;
