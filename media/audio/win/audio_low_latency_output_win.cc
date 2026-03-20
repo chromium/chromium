@@ -119,7 +119,9 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   DCHECK_NE(device_id_, AudioDeviceDescription::kDefaultDeviceId);
   DCHECK_NE(device_id_, AudioDeviceDescription::kCommunicationsDeviceId);
 
-  SendLogMessage(base::StrCat({__func__, "({device_id=", device_id,
+  std::string device_name =
+      manager_->GetDeviceNameFromCache(device_id_, /*is_input=*/false);
+  SendLogMessage(base::StrCat({__func__, "({device_name=", device_name,
                                "}, {params=[", params.AsHumanReadableString(),
                                "]}, {role=", RoleToString(device_role), "})"}));
 
@@ -250,15 +252,19 @@ bool WASAPIAudioOutputStream::Open() {
     }
 
     REFERENCE_TIME device_period = 0;
-    if (FAILED(CoreAudioUtil::GetDevicePeriod(
-            audio_client.Get(), AUDCLNT_SHAREMODE_SHARED, &device_period))) {
-      RecordAudioFailure(kOpenFailureHistogram, GetLastError());
+    hr = CoreAudioUtil::GetDevicePeriod(
+        audio_client.Get(), AUDCLNT_SHAREMODE_SHARED, &device_period);
+    if (FAILED(hr)) {
+      RecordAudioFailure(kOpenFailureHistogram, hr);
+      SendLogMessage(
+          base::StrCat({__func__, " => (ERROR: CAU::GetDevicePeriod=[",
+                        ErrorToString(hr), "])"}));
       return false;
     }
 
     UINT32 preferred_frames_per_buffer = 0;
     if (enable_audio_offload_) {
-      audio_client->GetBufferSize(&preferred_frames_per_buffer);
+      hr = audio_client->GetBufferSize(&preferred_frames_per_buffer);
 
       // TODO(crbug.com/348468130) : Consider reinitializing `audio_bus_` and
       // handling mismatch of `packet_size_frames_` and
@@ -316,16 +322,25 @@ bool WASAPIAudioOutputStream::Open() {
     hr = ExclusiveModeInitialization(audio_client.Get(),
                                      audio_samples_render_event_.Get(),
                                      &endpoint_buffer_size_frames_);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+      SendLogMessage(
+          base::StrCat({__func__, " => (ERROR: ExclusiveModeInitialization=[",
+                        ErrorToString(hr), "])"}));
       return false;
+    }
 
     // The buffer scheme for exclusive mode streams is not designed for max
     // flexibility. We only allow a "perfect match" between the packet size set
     // by the user and the actual endpoint buffer size.
     if (endpoint_buffer_size_frames_ != packet_size_frames_) {
-      LOG(ERROR) << "Bailing out due to non-perfect timing.";
+      SendLogMessage(base::StringPrintf(
+          "%s => (ERROR: non-perfect timing: %u vs %zu)", __func__,
+          endpoint_buffer_size_frames_, packet_size_frames_));
       return false;
     }
+    SendLogMessage(base::StringPrintf(
+        "%s => (exclusive mode: endpoint_buffer_size_frames=%u)", __func__,
+        endpoint_buffer_size_frames_));
   }
 
   // Create an IAudioRenderClient client for an initialized IAudioClient.
@@ -537,7 +552,8 @@ void WASAPIAudioOutputStream::GetVolume(double* volume) {
 
 void WASAPIAudioOutputStream::SendLogMessage(std::string message) {
   if (log_callback_) {
-    log_callback_.Run(absl::StrFormat("WAOS[%p]: %s", this, message));
+    log_callback_.Run(
+        base::StringPrintf("WAOS[%p]: %s", this, message.c_str()));
   }
 }
 
@@ -1057,8 +1073,10 @@ void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
 
   HRESULT hr = audio_client_->GetService(IID_PPV_ARGS(&audio_session_control_));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get IAudioSessionControl service: " << std::hex
-                << hr;
+    SendLogMessage(base::StrCat(
+        {__func__,
+         " => (ERROR: IAudioClient::GetService(IAudioSessionControl)=[",
+         ErrorToString(hr), "])"}));
     return;
   }
 
@@ -1069,10 +1087,13 @@ void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
 
   hr = audio_session_control_->RegisterAudioSessionNotification(
       session_listener_.Get());
-
-  DLOG_IF(ERROR, FAILED(hr))
-      << "IAudioSessionControl::RegisterAudioSessionNotification() failed: "
-      << std::hex << hr;
+  if (FAILED(hr)) {
+    SendLogMessage(base::StrCat(
+        {__func__,
+         " => (ERROR: "
+         "IAudioSessionControl::RegisterAudioSessionNotification=[",
+         ErrorToString(hr), "])"}));
+  }
 }
 
 void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
@@ -1085,10 +1106,13 @@ void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
 
   HRESULT hr = audio_session_control_->UnregisterAudioSessionNotification(
       session_listener_.Get());
-
-  DLOG_IF(ERROR, FAILED(hr))
-      << "IAudioSessionControl::UnregisterAudioSessionNotification() failed: "
-      << std::hex << hr;
+  if (FAILED(hr)) {
+    SendLogMessage(base::StrCat(
+        {__func__,
+         " => (ERROR: "
+         "IAudioSessionControl::UnregisterAudioSessionNotification=[",
+         ErrorToString(hr), "])"}));
+  }
 
   audio_session_control_.Reset();
   session_listener_.Reset();
@@ -1096,6 +1120,8 @@ void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
 
 void WASAPIAudioOutputStream::OnDeviceChanged() {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
+  SendLogMessage(base::StrCat(
+      {__func__, "([has_source=", source_ ? "true" : "false", "])"}));
 
   device_changed_ = true;
   if (source_)

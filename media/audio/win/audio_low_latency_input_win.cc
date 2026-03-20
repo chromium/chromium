@@ -696,8 +696,10 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   DCHECK(params.channel_layout() == CHANNEL_LAYOUT_MONO ||
          params.channel_layout() == CHANNEL_LAYOUT_STEREO ||
          params.channel_layout() == CHANNEL_LAYOUT_DISCRETE);
+  std::string device_name =
+      manager_->GetDeviceNameFromCache(device_id_, /*is_input=*/true);
   SendLogMessage(
-      base::StrCat({__func__, "%s({device_id=", device_id, "}, {params=[",
+      base::StrCat({__func__, "({device_name=", device_name, "}, {params=[",
                     params.AsHumanReadableString(), "]})"}));
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
     SendLogMessage(base::StrCat(
@@ -752,6 +754,9 @@ bool WASAPIAudioInputStream::UpdateFormats() {
         CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
     if (FAILED(hr)) {
       ReportOpenResult(hr);
+      SendLogMessage(base::StrCat(
+          {__func__, " => (ERROR: CoreAudioUtil::GetSharedModeMixFormat=[",
+           ErrorToString(hr), "])"}));
       return false;
     }
     // Note that Windows Audio Engine could potentially be S32 or F32.
@@ -778,6 +783,8 @@ bool WASAPIAudioInputStream::UpdateFormats() {
         output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
       } else {
         // We don't support other wFormatTags, consider this as failed.
+        SendLogMessage(base::StrCat(
+            {__func__, " => (ERROR: unsupported wFormatTag in mix format)"}));
         return false;
       }
     } else {
@@ -785,6 +792,9 @@ bool WASAPIAudioInputStream::UpdateFormats() {
           EXTRACT_WAVEFORMATEX_ID(&mix_format.SubFormat);
       base::UmaHistogramSparse(
           "Media.Audio.Capture.Win.AudioEngineFormat.Unknown", format_tag);
+      SendLogMessage(base::StringPrintf(
+          "%s => (WARNING: unknown mix sample format (tag=%#x))", __func__,
+          format_tag));
 
       use_device_sample_format_ = false;
     }
@@ -965,8 +975,12 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
     // mute it again, and later we do not unmute system audio when stopping
     // capturing.
     if (!muted) {
+      SendLogMessage(base::StrCat({__func__, " => (muting system audio)"}));
       system_audio_volume_->SetMute(true, nullptr);
       mute_done_ = true;
+    } else {
+      SendLogMessage(
+          base::StrCat({__func__, " => (system audio is already muted)"}));
     }
   }
 
@@ -1181,11 +1195,10 @@ void WASAPIAudioInputStream::SetOutputDeviceForAec(
 }
 
 void WASAPIAudioInputStream::SendLogMessage(std::string message) {
-  if (log_callback_.is_null()) {
-    return;
+  if (log_callback_) {
+    log_callback_.Run(
+        base::StringPrintf("WAIS[%p]: %s", this, message.c_str()));
   }
-  message.insert(0, "WAIS::");
-  log_callback_.Run(std::move(message));
 }
 
 // static
@@ -1213,6 +1226,9 @@ HRESULT WASAPIAudioInputStream::CreateFifoIfNeeded() {
   uint32_t endpoint_buffer_size_frames = 0;
   HRESULT hr = audio_client_->GetBufferSize(&endpoint_buffer_size_frames);
   if (FAILED(hr)) {
+    SendLogMessage(
+        base::StrCat({__func__, " => (ERROR: IAudioClient::GetBufferSize=[",
+                      ErrorToString(hr), "])"}));
     return hr;
   }
 
@@ -1237,7 +1253,6 @@ HRESULT WASAPIAudioInputStream::CreateFifoIfNeeded() {
   DCHECK(!fifo_);
   fifo_ = std::make_unique<AudioBlockFifo>(
       input_format_.Format.nChannels, packet_size_frames_, buffers_required);
-  DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
   return S_OK;
 }
 
@@ -1661,7 +1676,6 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
   }
 
   if (!(state & DEVICE_STATE_ACTIVE)) {
-    DLOG(ERROR) << "Selected capture device is not active.";
     open_result_ = OPEN_RESULT_DEVICE_NOT_ACTIVE;
     hr = E_ACCESSDENIED;
   }
@@ -1674,8 +1688,14 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
     // Obtain an IAudioClient interface for the endpoint device which enables us
     // to create and initialize an audio stream between an audio application and
     // the audio engine.
-    return endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL,
-                                      nullptr, &audio_client_);
+    HRESULT hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL,
+                                            nullptr, &audio_client_);
+    if (FAILED(hr)) {
+      SendLogMessage(base::StrCat(
+          {__func__, " => (ERROR: IMMDevice::Activate(IAudioClient)=[",
+           ErrorToString(hr), "])"}));
+    }
+    return hr;
   }
 
   CHECK(is_process_loopback_capture_);
@@ -1724,6 +1744,9 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
   if (FAILED(hr)) {
     TRACE_EVENT_INSTANT0("audio", "ActivateAudioInterfaceAsync failed",
                          TRACE_EVENT_SCOPE_THREAD);
+    SendLogMessage(base::StrCat(
+        {__func__, " => (ERROR: ActivateAudioInterfaceAsync::Run=[",
+         ErrorToString(hr), "])"}));
     return hr;
   }
 
@@ -1738,6 +1761,12 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
   } else {
     TRACE_EVENT_INSTANT0("audio", "GetAudioClient timed out",
                          TRACE_EVENT_SCOPE_THREAD);
+  }
+
+  if (FAILED(hr)) {
+    SendLogMessage(
+        base::StrCat({__func__, " => (ERROR: WaitAndGetAudioClient=[",
+                      ErrorToString(hr), "])"}));
   }
 
   return hr;
@@ -1787,6 +1816,10 @@ HRESULT WASAPIAudioInputStream::GetAudioEngineNumChannels(WORD* channels) {
     *channels = wformat->nChannels;
     SendLogMessage(base::StringPrintf("%s => (native channels=[%d])", __func__,
                                       *channels));
+  } else {
+    SendLogMessage(base::StrCat(
+        {__func__, " => (ERROR: CoreAudioUtil::GetSharedModeMixFormat=[",
+         ErrorToString(hr), "])"}));
   }
   return hr;
 }

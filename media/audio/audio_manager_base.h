@@ -59,6 +59,9 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
       AudioLogFactory::AudioComponent component,
       int component_id) override;
 
+  std::string GetDeviceNameFromCache(const std::string& device_id,
+                                     bool is_input) override;
+
   // AudioManagerBase:
 
   // Called internally by the audio stream when it has been closed.
@@ -157,9 +160,6 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   std::string GetDefaultOutputDeviceID() override;
   std::string GetCommunicationsInputDeviceID() override;
   std::string GetCommunicationsOutputDeviceID() override;
-
-  std::string GetDeviceNameFromCache(const std::string& device_id,
-                                     bool is_input) override;
 
   virtual std::unique_ptr<AudioDebugRecordingManager>
   CreateAudioDebugRecordingManager();
