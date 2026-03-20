@@ -47,14 +47,14 @@ class SelectionOverlayController
 
   DECLARE_USER_DATA(SelectionOverlayController);
 
-  // A simple utility that gets the the SelectionOverlayController TabFeature
+  // A simple utility that gets the SelectionOverlayController TabFeature
   // set by the embedding tab of a overlay WebUI hosted in
   // `overlay_web_contents`. May return nullptr if no SelectionOverlayController
   // TabFeature is associated with `overlay_web_contents`.
   static SelectionOverlayController* FromOverlayWebContents(
       content::WebContents* overlay_web_contents);
 
-  // A simple utility that gets the the SelectionOverlayController TabFeature
+  // A simple utility that gets the SelectionOverlayController TabFeature
   // set by the instances of WebContents associated with a tab. May return
   // nullptr if no SelectionOverlayController TabFeature is associated with
   // `tab_web_contents`.
