@@ -97,13 +97,6 @@ PermissionsData GetUnusedSitePermissionsFromDict(
     permissions_data.permission_types.insert(type);
   }
 
-  const base::DictValue* chooser_permissions_data =
-      unused_site_permissions.FindDict(
-          safety_hub::kSafetyHubChooserPermissionsData);
-  permissions_data.chooser_permissions_data =
-      chooser_permissions_data ? chooser_permissions_data->Clone()
-                               : base::DictValue();
-
   // Handle expiration and lifetime for revoked permission.
   const base::Value* js_expiration =
       unused_site_permissions.Find(safety_hub::kExpirationKey);
@@ -304,10 +297,6 @@ base::ListValue SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         safety_hub::kLifetimeKey,
         base::TimeDeltaToValue(permissions_data.constraints.lifetime()));
-
-    revoked_permission_value.Set(
-        safety_hub::kSafetyHubChooserPermissionsData,
-        base::Value(permissions_data.chooser_permissions_data.Clone()));
 
     revoked_permission_value.Set(
         kRevocationTypeKey, static_cast<int>(permissions_data.revocation_type));

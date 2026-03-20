@@ -88,8 +88,6 @@ constexpr char16_t kUsername[] = u"bob";
 constexpr char16_t kCompromisedPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr ContentSettingsType kUnusedRegularPermission =
     ContentSettingsType::GEOLOCATION;
-constexpr ContentSettingsType kUnusedChooserPermission =
-    ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 const base::TimeDelta kLifetime = base::Days(30);
 
 namespace {
@@ -126,9 +124,6 @@ class SafetyHubHandlerTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{content_settings::features::kSafetyCheckUnusedSitePermissions, {}},
-         {content_settings::features::
-              kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-          {}},
          {features::kSafetyHubExtensionsUwSTrigger, {}},
          {features::kSafetyHubExtensionsOffStoreTrigger, {}},
          {kMobilePromoOnDesktopWithReminder,
@@ -188,21 +183,11 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void AddRevokedPermission() {
-    auto dict =
-        base::DictValue()
-            .Set(permissions::kRevokedKey,
-                 base::ListValue()
-                     .Append(UnusedSitePermissionsManager::
-                                 ConvertContentSettingsTypeToKey(
-                                     kUnusedRegularPermission))
-                     .Append(UnusedSitePermissionsManager::
-                                 ConvertContentSettingsTypeToKey(
-                                     kUnusedChooserPermission)))
-            .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::DictValue().Set(UnusedSitePermissionsManager::
-                                           ConvertContentSettingsTypeToKey(
-                                               kUnusedChooserPermission),
-                                       base::DictValue().Set("foo", "bar")));
+    auto dict = base::DictValue().Set(
+        permissions::kRevokedKey,
+        base::ListValue().Append(
+            UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
+                kUnusedRegularPermission)));
 
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(kLifetime);
@@ -245,18 +230,9 @@ class SafetyHubHandlerTest : public testing::Test {
     auto dict =
         base::DictValue()
             .Set(permissions::kRevokedKey,
-                 base::ListValue()
-                     .Append(UnusedSitePermissionsManager::
-                                 ConvertContentSettingsTypeToKey(
-                                     kUnusedRegularPermission))
-                     .Append(UnusedSitePermissionsManager::
-                                 ConvertContentSettingsTypeToKey(
-                                     kUnusedChooserPermission)))
-            .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::DictValue().Set(UnusedSitePermissionsManager::
-                                           ConvertContentSettingsTypeToKey(
-                                               kUnusedChooserPermission),
-                                       base::DictValue().Set("foo", "bar")))
+                 base::ListValue().Append(UnusedSitePermissionsManager::
+                                              ConvertContentSettingsTypeToKey(
+                                                  kUnusedRegularPermission)))
             .Set(safety_hub::kExpirationKey,
                  base::TimeToValue(constraint.expiration()))
             .Set(safety_hub::kLifetimeKey,
@@ -312,9 +288,6 @@ class SafetyHubHandlerTest : public testing::Test {
     EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
               hcsm()->GetContentSetting(GURL(url), GURL(url),
                                         kUnusedRegularPermission));
-    EXPECT_EQ(base::Value(),
-              hcsm()->GetWebsiteSetting(GURL(url), GURL(url),
-                                        kUnusedChooserPermission));
   }
 
   void ExpectRevokedAbusiveNotificationPermission(const std::string& url) {
@@ -621,12 +594,6 @@ TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
   const auto lifetime = base::ValueToTimeDelta(
       *revoked_permission_dict.Find(safety_hub::kLifetimeKey));
   EXPECT_EQ(lifetime, kLifetime);
-
-  const auto* chooser_permissions_data = revoked_permission_dict.FindDict(
-      safety_hub::kSafetyHubChooserPermissionsData);
-  EXPECT_TRUE(chooser_permissions_data->contains(
-      UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-          kUnusedChooserPermission)));
 }
 
 TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
@@ -655,10 +622,6 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
       ContentSetting::CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
                                 kUnusedRegularPermission));
-  EXPECT_EQ(
-      base::DictValue().Set("foo", "bar"),
-      hcsm()->GetWebsiteSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
-                                kUnusedChooserPermission));
 
   // Undoing restores the initial state.
   handler()->HandleUndoAllowPermissionsAgainForUnusedSite(
@@ -714,18 +677,16 @@ TEST_F(SafetyHubHandlerTest, PopulateAbusiveAndUnusedSitePermissionsData) {
   // Unused site url should have unused permissions in permission list.
   auto* revoked_permission_list_unused =
       revoked_permissions[0].GetDict().FindList(site_settings::kPermissions);
+  EXPECT_EQ(revoked_permission_list_unused->size(), 1u);
   EXPECT_EQ((*revoked_permission_list_unused)[0], "location");
-  EXPECT_EQ((*revoked_permission_list_unused)[1],
-            "file-system-access-handles-data");
 
   // Abusive and unused site url should have both notifications and unused
   // permissions in permission list.
   auto* revoked_permission_list_abusive_and_unused =
       revoked_permissions[1].GetDict().FindList(site_settings::kPermissions);
+  EXPECT_EQ(revoked_permission_list_abusive_and_unused->size(), 2u);
   EXPECT_EQ((*revoked_permission_list_abusive_and_unused)[0], "location");
   EXPECT_EQ((*revoked_permission_list_abusive_and_unused)[1], "notifications");
-  EXPECT_EQ((*revoked_permission_list_abusive_and_unused)[2],
-            "file-system-access-handles-data");
 
   // Abusive notification url should have notifications in permission list.
   auto* revoked_permission_list_abusive =
@@ -1405,9 +1366,7 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/
-        {content_settings::features::kSafetyCheckUnusedSitePermissions,
-         content_settings::features::
-             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions});
+        {content_settings::features::kSafetyCheckUnusedSitePermissions});
   }
 
   // If the test parameter is true, enable safe browsing and expect that abusive

@@ -26,7 +26,6 @@ const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
 
 const char kExpirationKey[] = "expiration";
 const char kLifetimeKey[] = "lifetime";
-const char kSafetyHubChooserPermissionsData[] = "chooserPermissionsData";
 
 const char kRevokedStatusDictKeyStr[] = "revoked_status";
 const char kIgnoreStr[] = "ignore";

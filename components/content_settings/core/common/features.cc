@@ -27,9 +27,6 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kActiveContentSettingExpiry, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{

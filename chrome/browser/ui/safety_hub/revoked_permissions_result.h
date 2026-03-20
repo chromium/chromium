@@ -46,7 +46,6 @@ struct PermissionsData {
 
   ContentSettingsPattern primary_pattern;
   std::set<ContentSettingsType> permission_types;
-  base::DictValue chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
   PermissionsRevocationType revocation_type;
 };

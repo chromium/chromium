@@ -117,9 +117,7 @@ PermissionsData::PermissionsData(const PermissionsData& other)
     : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
       constraints(other.constraints.Clone()),
-      revocation_type(other.revocation_type) {
-  chooser_permissions_data = other.chooser_permissions_data.Clone();
-}
+      revocation_type(other.revocation_type) {}
 
 void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
     content::Page& page) {
@@ -405,13 +403,6 @@ RevokedPermissionsService::GetRevokedPermissions() {
     permissions_data.constraints.set_lifetime(
         revoked_permissions.metadata.lifetime());
 
-    auto* chooser_permissions_data_dict = stored_value.GetDict().FindDict(
-        permissions::kRevokedChooserPermissionsKey);
-    if (chooser_permissions_data_dict) {
-      permissions_data.chooser_permissions_data =
-          chooser_permissions_data_dict->Clone();
-    }
-
     // If the origin has a revoked notification, add `NOTIFICATIONS` to
     // the list of revoked permissions.
     const GURL& url = GURL(revoked_permissions.primary_pattern.ToString());
@@ -551,7 +542,6 @@ void RevokedPermissionsService::RestoreDeletedRevokedPermissionsList(
       unused_site_permissions_manager_
           ->StorePermissionInUnusedSitePermissionSetting(
               permissions_data.permission_types,
-              permissions_data.chooser_permissions_data,
               permissions_data.constraints.Clone(),
               permissions_data.primary_pattern,
               ContentSettingsPattern::Wildcard());

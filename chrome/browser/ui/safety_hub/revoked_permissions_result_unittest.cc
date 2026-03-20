@@ -34,14 +34,11 @@ const ContentSettingsType mediastream_type =
     ContentSettingsType::MEDIASTREAM_CAMERA;
 const ContentSettingsType notifications_type =
     ContentSettingsType::NOTIFICATIONS;
-const ContentSettingsType chooser_type =
-    ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 
 std::set<ContentSettingsType> abusive_permission_types({notifications_type});
-std::set<ContentSettingsType> unused_permission_types({geolocation_type,
-                                                       chooser_type});
+std::set<ContentSettingsType> unused_permission_types({geolocation_type});
 std::set<ContentSettingsType> abusive_and_unused_permission_types(
-    {notifications_type, geolocation_type, chooser_type});
+    {notifications_type, geolocation_type});
 
 PermissionsData CreatePermissionsData(
     ContentSettingsPattern& primary_pattern,
@@ -64,12 +61,8 @@ class RevokedPermissionsResultTest
                      /*should_setup_disruptive_sites*/ bool>> {
  public:
   RevokedPermissionsResultTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(
-        content_settings::features::kSafetyCheckUnusedSitePermissions);
-    enabled_features.push_back(
-        content_settings::features::
-            kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        content_settings::features::kSafetyCheckUnusedSitePermissions};
     if (ShouldSetupDisruptiveSites()) {
       enabled_features.push_back(
           features::kSafetyHubDisruptiveNotificationRevocation);
