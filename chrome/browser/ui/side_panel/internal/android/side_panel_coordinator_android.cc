@@ -17,18 +17,18 @@ using base::android::ScopedJavaLocalRef;
 // Implements Java `SidePanelCoordinatorAndroidImpl.Natives#create`.
 static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
     JNIEnv* env,
-    const JavaRef<jobject>& caller) {
-  return reinterpret_cast<intptr_t>(
-      new SidePanelCoordinatorAndroid(env, caller));
+    const JavaRef<jobject>& caller,
+    int64_t nativeBrowserWindowPtr) {
+  return reinterpret_cast<intptr_t>(new SidePanelCoordinatorAndroid(
+      env, caller,
+      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
 }
 
-// TODO(crbug.com/493930386): Pass a valid `BrowserWindowInterface` to
-// SidePanelUIBase.
 SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     JNIEnv* env,
-    const JavaRef<jobject>& java_coordinator)
-    : SidePanelUIBase(/*browser=*/nullptr),
-      java_coordinator_(env, java_coordinator) {}
+    const JavaRef<jobject>& java_coordinator,
+    BrowserWindowInterface* browser)
+    : SidePanelUIBase(browser), java_coordinator_(env, java_coordinator) {}
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(

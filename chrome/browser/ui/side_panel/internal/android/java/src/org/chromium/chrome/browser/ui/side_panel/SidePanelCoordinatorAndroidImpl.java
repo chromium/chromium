@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -18,15 +20,29 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     public SidePanelCoordinatorAndroidImpl() {}
 
-    /** Creates the native {@code SidePanelCoordinatorAndroid}. */
-    public void createNativePtr() {
-        assert mNativeSidePanelCoordinatorAndroid == 0
-                : "Native SidePanelCoordinatorAndroid already exists";
-        mNativeSidePanelCoordinatorAndroid = SidePanelCoordinatorAndroidImplJni.get().create(this);
+    @Override
+    public void onAddedToTask(long nativeBrowserWindowPtr) {
+        createNativePtr(nativeBrowserWindowPtr);
     }
 
-    /** Destroys all objects owned by this class. */
-    public void destroy() {
+    @Override
+    public void onFeatureRemoved() {
+        destroyNativePtr();
+    }
+
+    @VisibleForTesting
+    void createNativePtr(long nativeBrowserWindowPtr) {
+        assert nativeBrowserWindowPtr != 0
+                : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
+                        + " ChromeAndroidTaskFeatureKey correct?";
+        assert mNativeSidePanelCoordinatorAndroid == 0
+                : "Native SidePanelCoordinatorAndroid already exists";
+        mNativeSidePanelCoordinatorAndroid =
+                SidePanelCoordinatorAndroidImplJni.get().create(this, nativeBrowserWindowPtr);
+    }
+
+    @VisibleForTesting
+    void destroyNativePtr() {
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get().destroy(mNativeSidePanelCoordinatorAndroid);
         }
@@ -47,9 +63,10 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          * Creates a native {@code SidePanelCoordinatorAndroid}.
          *
          * @param caller The Java object calling this method.
+         * @param nativeBrowserWindowPtr The pointer to the native {@code BrowserWindowInterface}.
          * @return The address of the native {@code SidePanelCoordinatorAndroid}.
          */
-        long create(SidePanelCoordinatorAndroidImpl caller);
+        long create(SidePanelCoordinatorAndroidImpl caller, long nativeBrowserWindowPtr);
 
         /**
          * Destroys the native {@code SidePanelCoordinatorAndroid}.

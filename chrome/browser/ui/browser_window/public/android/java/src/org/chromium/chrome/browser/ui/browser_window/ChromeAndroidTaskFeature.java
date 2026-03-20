@@ -70,14 +70,14 @@ public interface ChromeAndroidTaskFeature {
      *
      * @param newBoundsInDp The new Task bounds.
      */
-    void onTaskBoundsChanged(Rect newBoundsInDp);
+    default void onTaskBoundsChanged(Rect newBoundsInDp) {}
 
     /**
      * Called by a {@link ChromeAndroidTask} when the Task (window) has gained or lost focus.
      *
      * @param hasFocus True if the Task has focus.
      */
-    void onTaskFocusChanged(boolean hasFocus);
+    default void onTaskFocusChanged(boolean hasFocus) {}
 
     /**
      * Called when the selected {@link TabModel} changes. This is also invoked when the feature is

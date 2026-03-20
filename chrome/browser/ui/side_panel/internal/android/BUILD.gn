@@ -26,11 +26,17 @@ android_library("java") {
     "//chrome/android:chrome_all_java",
     "//chrome/browser/ui/side_panel/test/android:*",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidImpl.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidImpl.java",
+  ]
 
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/side_panel/android:java",
+    "//components/cached_flags:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
@@ -47,7 +53,9 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base",
+    "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_jni",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

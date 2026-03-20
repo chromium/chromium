@@ -6,8 +6,11 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/test/android/native_unit_test_support_jni/SidePanelCoordinatorAndroidNativeUnitTestSupport_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,14 +25,18 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
   SidePanelCoordinatorAndroidUnitTest() = default;
   ~SidePanelCoordinatorAndroidUnitTest() override = default;
 
-  void SetUp() override { SetUpJavaSupport(); }
+  void SetUp() override {
+    SetUpJavaSupport();
+    SetUpMockBrowserWindow();
+  }
 
-  void TearDown() override { InvokeJavaDestroy(); }
+  void TearDown() override { InvokeJavaDestroyNativePtr(); }
 
   SidePanelCoordinatorAndroid* InvokeJavaCreateNativePtr() const {
     return reinterpret_cast<SidePanelCoordinatorAndroid*>(
         Java_SidePanelCoordinatorAndroidNativeUnitTestSupport_invokeCreateNativePtr(
-            AttachCurrentThread(), java_test_support_));
+            AttachCurrentThread(), java_test_support_,
+            reinterpret_cast<int64_t>(mock_browser_.get())));
   }
 
   SidePanelCoordinatorAndroid* InvokeJavaGetNativePtrForTesting() const {
@@ -38,8 +45,8 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
             AttachCurrentThread(), java_test_support_));
   }
 
-  void InvokeJavaDestroy() const {
-    Java_SidePanelCoordinatorAndroidNativeUnitTestSupport_invokeDestroy(
+  void InvokeJavaDestroyNativePtr() const {
+    Java_SidePanelCoordinatorAndroidNativeUnitTestSupport_invokeDestroyNativePtr(
         AttachCurrentThread(), java_test_support_);
   }
 
@@ -50,7 +57,12 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
             AttachCurrentThread());
   }
 
+  void SetUpMockBrowserWindow() {
+    mock_browser_ = std::make_unique<MockBrowserWindowInterface>();
+  }
+
   ScopedJavaGlobalRef<jobject> java_test_support_;
+  std::unique_ptr<MockBrowserWindowInterface> mock_browser_;
 };
 
 TEST_F(SidePanelCoordinatorAndroidUnitTest,
@@ -68,13 +80,13 @@ TEST_F(SidePanelCoordinatorAndroidUnitTest,
 }
 
 TEST_F(SidePanelCoordinatorAndroidUnitTest,
-       JavaDestroyMethodClearsPtrValueInJava) {
+       JavaDestroyNativePtrMethodClearsPtrValueInJava) {
   // Arrange.
   SidePanelCoordinatorAndroid* ptr = InvokeJavaCreateNativePtr();
   EXPECT_NE(nullptr, ptr);
 
   // Act: call Java destroy().
-  InvokeJavaDestroy();
+  InvokeJavaDestroyNativePtr();
 
   // Assert: the native pointer on the Java side should be set to null.
   ptr = InvokeJavaGetNativePtrForTesting();

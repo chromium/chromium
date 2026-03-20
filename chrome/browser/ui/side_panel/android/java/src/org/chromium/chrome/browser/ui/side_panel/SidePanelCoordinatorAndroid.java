@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.ui.side_panel;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** Interface for the Java counterpart of the native {@code SidePanelCoordinatorAndroid}. */
 @NullMarked
-public interface SidePanelCoordinatorAndroid {}
+public interface SidePanelCoordinatorAndroid extends ChromeAndroidTaskFeature {}

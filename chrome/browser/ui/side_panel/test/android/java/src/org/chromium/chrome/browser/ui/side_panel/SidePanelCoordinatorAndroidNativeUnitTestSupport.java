@@ -29,8 +29,8 @@ final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
     }
 
     @CalledByNativeForTesting
-    private long invokeCreateNativePtr() {
-        mCoordinator.createNativePtr();
+    private long invokeCreateNativePtr(long nativeBrowserWindowPtr) {
+        mCoordinator.createNativePtr(nativeBrowserWindowPtr);
         return mCoordinator.getNativePtrForTesting();
     }
 
@@ -40,7 +40,7 @@ final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
     }
 
     @CalledByNativeForTesting
-    private void invokeDestroy() {
-        mCoordinator.destroy();
+    private void invokeDestroyNativePtr() {
+        mCoordinator.destroyNativePtr();
     }
 }

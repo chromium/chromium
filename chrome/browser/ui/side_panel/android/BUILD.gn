@@ -22,7 +22,10 @@ source_set("android") {
 # Public Java interfaces
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroid.java" ]
-  deps = [ "//build/android:build_java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+  ]
 }
 
 # Public Java factory

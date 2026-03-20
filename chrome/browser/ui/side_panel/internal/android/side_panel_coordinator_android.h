@@ -11,6 +11,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
+class BrowserWindowInterface;
+
 // Android implementation of `SidePanelUIBase`.
 //
 // It's named as `SidePanelCoordinatorAndroid` to be consistent with
@@ -24,7 +26,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
  public:
   SidePanelCoordinatorAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_coordinator);
+      const base::android::JavaRef<jobject>& java_coordinator,
+      BrowserWindowInterface* browser);
 
   ~SidePanelCoordinatorAndroid() override;
 
