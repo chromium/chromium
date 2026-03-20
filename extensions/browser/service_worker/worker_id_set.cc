@@ -79,6 +79,7 @@ void WorkerIdSet::Add(const WorkerId& worker_id,
                       content::BrowserContext* context) {
   // We should not try to register the same WorkerId multiple times.
   CHECK(!Contains(worker_id));
+  CHECK(worker_id.start_token.has_value());
 
   std::vector<WorkerId> previous_worker_ids =
       GetAllForExtension(worker_id.extension_id);

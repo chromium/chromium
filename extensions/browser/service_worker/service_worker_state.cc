@@ -297,11 +297,8 @@ void ServiceWorkerState::HandleStop(
   // anymore. Observers may still care about those versions for tracking or
   // testing purposes. Importantly, ServiceWorkerTaskQueue needs this to untrack
   // old service worker versions from ProcessManager. See crbug.com/40936639.
-  // TODO(andreaorru): for the time being, this can also be called multiple
-  // times for the same `version_id` and `service_worker_token`. Ideally we
-  // want to fix that.
   for (auto& observer : observers_) {
-    observer.OnWorkerStop(version_id, scope);
+    observer.OnWorkerStop(version_id, service_worker_token, scope);
   }
 }
 
