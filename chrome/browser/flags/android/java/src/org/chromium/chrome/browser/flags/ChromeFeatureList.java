@@ -1448,12 +1448,6 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidComposeplateSkipLocaleCheck =
             newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "skip_locale_check", false);
 
-    public static final BooleanCachedFeatureParam sAndroidComposeplateHideIncognitoButton =
-            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "hide_incognito_button", false);
-
-    public static final BooleanCachedFeatureParam sAndroidComposeplateV2Enabled =
-            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "v2_enabled", true);
-
     public static final BooleanCachedFeatureParam
             sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox =
                     newBooleanCachedFeatureParam(
@@ -1791,9 +1785,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBookmarkBarShowBookmarkBar,
                     sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,
-                    sAndroidComposeplateHideIncognitoButton,
                     sAndroidComposeplateSkipLocaleCheck,
-                    sAndroidComposeplateV2Enabled,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,

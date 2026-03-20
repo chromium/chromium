@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 import android.widget.TextView;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,11 +30,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @Config(manifest = Config.NONE)
 public class SearchBoxViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private View.OnClickListener mOnClickListener;
 
     @Mock private SearchBoxContainerView mSearchBoxLayout;
     @Mock private View mSearchBoxContainer;
-    @Mock private LottieAnimationView mComposeplateButtonView;
     @Mock private TextView mSearchBoxTextView;
 
     private PropertyModel mPropertyModel;
@@ -48,32 +44,7 @@ public class SearchBoxViewBinderUnitTest {
                 mPropertyModel, mSearchBoxLayout, new SearchBoxViewBinder());
         when(mSearchBoxLayout.findViewById(R.id.search_box_container))
                 .thenReturn(mSearchBoxContainer);
-        when(mSearchBoxLayout.findViewById(R.id.composeplate_button))
-                .thenReturn(mComposeplateButtonView);
         when(mSearchBoxLayout.findViewById(R.id.search_box_text)).thenReturn(mSearchBoxTextView);
-    }
-
-    @Test
-    public void testSetComposeplateButtonClickListener() {
-        mPropertyModel.set(
-                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, mOnClickListener);
-        verify(mComposeplateButtonView).setOnClickListener(eq(mOnClickListener));
-    }
-
-    @Test
-    public void testSetComposeplateButtonVisibility() {
-        mPropertyModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY, true);
-        verify(mSearchBoxLayout).setComposeplateButtonVisibility(eq(true));
-
-        mPropertyModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY, false);
-        verify(mSearchBoxLayout).setComposeplateButtonVisibility(eq(false));
-    }
-
-    @Test
-    public void testSetComposeplateButtonAnimation() {
-        int iconRawResId = 10;
-        mPropertyModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID, iconRawResId);
-        verify(mComposeplateButtonView).setAnimation(eq(iconRawResId));
     }
 
     @Test

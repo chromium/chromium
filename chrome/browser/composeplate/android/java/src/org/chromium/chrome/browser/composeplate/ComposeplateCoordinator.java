@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,7 +21,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ComposeplateCoordinator {
     private final PropertyModel mModel;
     private final ComposeplateView mView;
-    private final boolean mHideIncognitoButton;
     private final int mComposeplateViewMaxiumWidth;
 
     /**
@@ -36,31 +33,11 @@ public class ComposeplateCoordinator {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
-        mHideIncognitoButton =
-                ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue()
-                        || !IncognitoUtils.isIncognitoModeEnabled(profile);
 
         mComposeplateViewMaxiumWidth =
                 parentView
                         .getResources()
                         .getDimensionPixelSize(R.dimen.composeplate_view_max_width);
-    }
-
-    /**
-     * Sets the visibility of the composeplate for V1 variations.
-     *
-     * @param visible Whether the composeplate should be visible.
-     * @param isCurrentPage whether the New Tab Page is the current page displayed to the user.
-     */
-    public void setVisibilityV1(boolean visible, boolean isCurrentPage) {
-        if (isCurrentPage && visible != mModel.get(ComposeplateProperties.IS_VISIBLE)) {
-            ComposeplateMetricsUtils.recordComposeplateImpression(visible);
-        }
-
-        mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
-        mModel.set(
-                ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE,
-                visible && !mHideIncognitoButton);
     }
 
     /**

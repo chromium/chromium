@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -29,7 +27,6 @@ class SearchBoxViewBinder
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         ImageView voiceSearchButton = view.findViewById(R.id.voice_search_button);
         ImageView lensButton = view.findViewById(R.id.lens_camera_button);
-        LottieAnimationView composeplateButton = view.findViewById(R.id.composeplate_button);
         View searchBoxlayout = view;
         View searchBoxContainer = searchBoxlayout.findViewById(R.id.search_box_container);
         final TextView searchBoxTextView = searchBoxlayout.findViewById(R.id.search_box_text);
@@ -50,10 +47,6 @@ class SearchBoxViewBinder
                     model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY == propertyKey) {
-            ((SearchBoxContainerView) view)
-                    .setComposeplateButtonVisibility(
-                            model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY));
         } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
             lensButton.setVisibility(
                     model.get(SearchBoxProperties.LENS_VISIBILITY) ? View.VISIBLE : View.GONE);
@@ -89,9 +82,6 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {
             voiceSearchButton.setOnClickListener(
                     model.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK == propertyKey) {
-            composeplateButton.setOnClickListener(
-                    model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
             ViewGroup.LayoutParams lp = searchBoxlayout.getLayoutParams();
             lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);
@@ -124,9 +114,6 @@ class SearchBoxViewBinder
             ((SearchBoxContainerView) searchBoxlayout)
                     .applyWhiteBackgroundWithShadow(
                             model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
-        } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID == propertyKey) {
-            composeplateButton.setAnimation(
-                    model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID));
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }

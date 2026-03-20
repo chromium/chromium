@@ -65,16 +65,6 @@ found in the LICENSE file.
 
         </RelativeLayout>
 
-        <com.airbnb.lottie.LottieAnimationView
-            style="@style/LocationBarActionButtonForFakeSearchBox"
-            android:id="@+id/composeplate_button"
-            android:foreground="@drawable/oval_ripple"
-            android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
-            android:visibility="gone"
-            app:lottie_rawRes="@raw/composeplate_loop_light"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"/>
-
         <org.chromium.ui.widget.ChromeImageView
             style="@style/LocationBarActionButtonForFakeSearchBox"
             android:id="@+id/voice_search_button"

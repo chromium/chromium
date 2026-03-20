@@ -21,16 +21,6 @@ found in the LICENSE file.
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/install_button"/>
 
-    <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on NTP -->
-    <org.chromium.ui.widget.ChromeImageButton
-        style="@style/LocationBarActionButton.AdaptiveDensity"
-        android:id="@+id/composeplate_button"
-        android:visibility="gone"
-        android:src="@drawable/search_spark_black_24dp"
-        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
-        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
-
     <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on Tablets -->
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"

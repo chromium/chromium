@@ -50,16 +50,6 @@ public class ComposeplateMetricsUtilsUnitTest {
     }
 
     @Test
-    public void testRecordFakeSearchBoxComposeplateButtonClick() {
-        String histogramName = "NewTabPage.Module.Click";
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        histogramName, ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON);
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     public void testRecordFakeSearchBoxImpression() {
         String histogramName = "NewTabPage.FakeSearchBox.Impression2";
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, true);

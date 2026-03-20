@@ -172,7 +172,6 @@ public class LocationBarTest {
                         Map.entry(R.id.lens_camera_button, "R.id.lens_camera_button"),
                         Map.entry(R.id.zoom_button, "R.id.zoom_button"),
                         Map.entry(R.id.install_button, "R.id.install_button"),
-                        Map.entry(R.id.composeplate_button, "R.id.composeplate_button"),
                         Map.entry(R.id.bookmark_button, "R.id.bookmark_button"),
                         Map.entry(R.id.delete_button, "R.id.delete_button"));
 

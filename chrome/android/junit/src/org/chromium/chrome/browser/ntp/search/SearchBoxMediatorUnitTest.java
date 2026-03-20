@@ -60,7 +60,6 @@ public class SearchBoxMediatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private View.OnClickListener mLensClickListener;
     @Mock private View.OnClickListener mVoiceSearchClickListener;
-    @Mock private View.OnClickListener mComposePlateClickListener;
     @Mock private FeedSurfaceScrollDelegate mScrollDelegate;
     @Mock private Supplier<Integer> mTabStripHeightSupplier;
 
@@ -94,8 +93,6 @@ public class SearchBoxMediatorUnitTest {
         mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
         mPropertyModel.set(
                 SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
-        mPropertyModel.set(
-                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, mComposePlateClickListener);
         mPropertyModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, mVoiceSearchDrawable);
         mPropertyModel.set(
                 SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mock(View.OnClickListener.class));
@@ -105,7 +102,6 @@ public class SearchBoxMediatorUnitTest {
 
         assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        assertNotNull(mPropertyModel.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
@@ -117,7 +113,6 @@ public class SearchBoxMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).unregister(mMediator);
         assertNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        assertNull(mPropertyModel.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
 
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
