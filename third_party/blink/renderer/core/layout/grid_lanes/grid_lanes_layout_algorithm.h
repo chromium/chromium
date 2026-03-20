@@ -211,7 +211,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // track sizing per
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
   GridItems* BuildVirtualGridLanesItems(const GridLineResolver& line_resolver,
-                                        const GridItems& grid_lanes_items,
+                                        GridItems& grid_lanes_items,
                                         const bool needs_intrinsic_track_size,
                                         SizingConstraint sizing_constraint,
                                         const wtf_size_t auto_repetition_count,
@@ -252,10 +252,17 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridLayoutTrackCollection* track_collection = nullptr,
       bool is_for_min_max_sizing = false) const;
 
-  LayoutUnit ComputeSharedBaselineForGroup(
-      const GridItems::GridItemDataVector& group_items,
-      GridTrackSizingDirection grid_axis_direction,
-      SizingConstraint sizing_constraint) const;
+  // Computes the shared baselines across all items in `grid_lanes_items` for
+  // both the major and minor baseline groups. This is used to correctly handle
+  // baseline shims for multi-span items by computing baselines across all items
+  // rather than per-group. We use `BaselineGroup` instead of first/last
+  // baseline because orthogonal items may belong to a different group than
+  // their specified alignment suggests. `major_shared_baseline` and
+  // `minor_shared_baseline` are output parameters for the respective groups.
+  void ComputeSharedBaselines(GridItems& grid_lanes_items,
+                              SizingConstraint sizing_constraint,
+                              LayoutUnit& major_shared_baseline,
+                              LayoutUnit& minor_shared_baseline) const;
 
   // Lays out `grid_lanes_item` for measurement using `space_for_measure`. If
   // the available inline size is indefinite (e.g., for an orthogonal virtual

@@ -749,45 +749,53 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
   }
 }
 
-LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
-    const GridItems::GridItemDataVector& group_items,
-    GridTrackSizingDirection grid_axis_direction,
-    SizingConstraint sizing_constraint) const {
-  LayoutUnit shared_baseline = LayoutUnit::Min();
+void GridLanesLayoutAlgorithm::ComputeSharedBaselines(
+    GridItems& grid_lanes_items,
+    SizingConstraint sizing_constraint,
+    LayoutUnit& major_shared_baseline,
+    LayoutUnit& minor_shared_baseline) const {
+  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
+  major_shared_baseline = LayoutUnit::Min();
+  minor_shared_baseline = LayoutUnit::Min();
 
-  // All items in a group have the same baseline alignment, so if the first
-  // item isn't baseline aligned, there is no need to calculate a shared
-  // baseline for the group.
-  CHECK(!group_items.empty());
-  if (!group_items[0]->IsBaselineAligned(grid_axis_direction)) {
-    return shared_baseline;
-  }
+  for (auto& grid_lanes_item : grid_lanes_items) {
+    if (!grid_lanes_item.IsBaselineAligned(grid_axis_direction)) {
+      continue;
+    }
 
-  for (const Member<GridItemData>& group_item : group_items) {
-    const auto space_for_measure = CreateConstraintSpaceForMeasure(*group_item);
+    const auto space_for_measure =
+        CreateConstraintSpaceForMeasure(grid_lanes_item);
     const BoxStrut margins = ComputeMarginsFor(
-        space_for_measure, group_item->node.Style(), GetConstraintSpace());
+        space_for_measure, grid_lanes_item.node.Style(), GetConstraintSpace());
     const LayoutUnit extra_margin =
-        GetBaselineSideMargin(*group_item, margins, grid_axis_direction);
+        GetBaselineSideMargin(grid_lanes_item, margins, grid_axis_direction);
 
     const LayoutResult* result = LayoutItemForMeasureWithFallback(
-        group_item, space_for_measure, sizing_constraint);
+        &grid_lanes_item, space_for_measure, sizing_constraint);
     LogicalBoxFragment baseline_fragment(
-        group_item->BaselineWritingDirection(grid_axis_direction),
+        grid_lanes_item.BaselineWritingDirection(grid_axis_direction),
         To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
     const LayoutUnit item_baseline = GetLogicalBaseline(
-        baseline_fragment, group_item->parent_grid_font_baseline,
-        group_item->IsLastBaselineSpecified(grid_axis_direction));
+        baseline_fragment, grid_lanes_item.parent_grid_font_baseline,
+        grid_lanes_item.IsLastBaselineSpecified(grid_axis_direction));
 
     const LayoutUnit total_baseline = extra_margin + item_baseline;
-    shared_baseline = std::max(shared_baseline, total_baseline);
+    const auto item_baseline_group =
+        grid_lanes_item.BaselineGroup(grid_axis_direction);
+    switch (item_baseline_group) {
+      case BaselineGroup::kMajor:
+        major_shared_baseline = std::max(major_shared_baseline, total_baseline);
+        break;
+      case BaselineGroup::kMinor:
+        minor_shared_baseline = std::max(minor_shared_baseline, total_baseline);
+        break;
+    }
   }
-  return shared_baseline;
 }
 
 GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const GridLineResolver& line_resolver,
-    const GridItems& grid_lanes_items,
+    GridItems& grid_lanes_items,
     const bool needs_intrinsic_track_size,
     SizingConstraint sizing_constraint,
     const wtf_size_t auto_repetition_count,
@@ -813,6 +821,17 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
         track_list.TrackCountBeforeAutoRepeat() + auto_repetition_count);
   }
 
+  // Compute shared baselines separately for major and minor baseline groups
+  // across all items. By computing across all items rather than per-group, we
+  // correctly handle baseline shims for multi-span items. We use
+  // `BaselineGroup` (`kMajor`/`kMinor`) rather than first/last baseline
+  // specification because orthogonal items may belong to a different baseline
+  // group than their specified alignment would suggest.
+  LayoutUnit major_shared_baseline;
+  LayoutUnit minor_shared_baseline;
+  ComputeSharedBaselines(grid_lanes_items, sizing_constraint,
+                         major_shared_baseline, minor_shared_baseline);
+
   wtf_size_t unplaced_item_span_count = 0;
 
   for (const auto& [group_items, group_properties] :
@@ -824,19 +843,18 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     wtf_size_t span_size = span.SpanSize();
     CHECK_GT(span_size, 0u);
 
-    // TODO(yanlingwang): correctly handle baseline shims for multi-spanning
-    // items
-    //
-    // For each group, iterate all items, compute each item's baseline, and
-    // choose the maximum as `shared_baseline` for the group. This value is
-    // later used to calculate baseline shims for alignment within the track.
-    const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
-        group_items, grid_axis_direction, sizing_constraint);
-
     for (const Member<GridItemData>& group_item : group_items) {
       GridItemData& item_data = *group_item;
       has_baseline_aligned_items |=
           item_data.IsBaselineSpecified(grid_axis_direction);
+
+      const LayoutUnit shared_baseline =
+          item_data.IsBaselineAligned(grid_axis_direction)
+              ? (item_data.BaselineGroup(grid_axis_direction) ==
+                         BaselineGroup::kMajor
+                     ? major_shared_baseline
+                     : minor_shared_baseline)
+              : LayoutUnit::Min();
 
       const BlockNode& item_node = item_data.node;
       const auto space = CreateConstraintSpaceForMeasure(item_data);
