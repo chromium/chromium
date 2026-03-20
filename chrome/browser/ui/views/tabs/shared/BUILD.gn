@@ -44,6 +44,7 @@ source_set("impl") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/projects",
     "//chrome/browser/ui/views/toolbar",
     "//components/prefs",
     "//ui/actions",

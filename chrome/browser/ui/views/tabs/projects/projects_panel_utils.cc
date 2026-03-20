@@ -6,7 +6,9 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -26,6 +28,11 @@ GetListItemHighlightPathGenerator() {
 }  // namespace
 
 namespace projects_panel {
+
+bool IsProjectsPanelVisibleForProfile(Profile* profile) {
+  return tab_groups::IsProjectsPanelFeatureEnabled() &&
+         tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile);
+}
 
 void ConfigureInkDropForButton(views::Button* view) {
   auto* ink_drop = views::InkDrop::Get(view);

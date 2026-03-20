@@ -24,6 +24,7 @@ ProjectsPanelController::ProjectsPanelController(
       state_controller_(state_controller),
       tab_group_sync_service_(tab_group_sync_service),
       contextual_tasks_service_(contextual_tasks_service) {
+  CHECK(tab_group_sync_service);
   tab_group_sync_service_observer_.Observe(tab_group_sync_service);
 
   if (contextual_tasks_service) {

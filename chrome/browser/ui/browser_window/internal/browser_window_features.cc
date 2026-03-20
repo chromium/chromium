@@ -125,6 +125,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -339,15 +340,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                   restored_state_uncollapsed_width);
     }
 
-    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (projects_panel::IsProjectsPanelVisibleForProfile(profile)) {
       glic::GlicKeyedService* glic_service =
-          glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-              browser->GetProfile());
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
       projects_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<ProjectsPanelStateController>(
               *browser, browser, browser_actions_->root_action_item(),
-              AimEligibilityServiceFactory::GetForProfile(
-                  browser->GetProfile()),
+              AimEligibilityServiceFactory::GetForProfile(profile),
               glic_service ? &glic_service->enabling() : nullptr);
     }
 

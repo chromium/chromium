@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -65,7 +66,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
           LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding)));
 
   std::unique_ptr<TabStripFlatEdgeButton> start_button;
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+  if (projects_panel::IsProjectsPanelVisibleForProfile(browser->GetProfile())) {
     start_button = CreateFlatEdgeButtonFor(
         kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
     projects_panel_button_subscription_ =

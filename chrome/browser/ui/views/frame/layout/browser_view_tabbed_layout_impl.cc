@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
@@ -1247,7 +1248,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // When the projects panel is animating open or closed and does not appear
     // elevated, the background of vertical tabs should fade to match the
     // background color of the panel.
-    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (delegate().IsProjectsPanelVisible()) {
       CustomFloatingCorner* const vertical_tabs_top_corner =
           views().vertical_tab_strip_top_corner;
       CustomFloatingCorner* const vertical_tabs_bottom_corner =
