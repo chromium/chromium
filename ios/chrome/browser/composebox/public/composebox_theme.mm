@@ -25,7 +25,8 @@
 #pragma mark - Public
 
 - (BOOL)useIncognitoViewFallback {
-  return _isNTP && _incognito;
+  return _isNTP && _incognito &&
+         _inputPlatePosition != ComposeboxInputPlatePosition::kiPad;
 }
 
 - (BOOL)isTopInputPlate {
