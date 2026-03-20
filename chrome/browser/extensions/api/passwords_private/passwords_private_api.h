@@ -267,47 +267,6 @@ class PasswordsPrivateRequestExportProgressStatusFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateIsAccountStorageActiveFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isAccountStorageActive",
-                             PASSWORDSPRIVATE_ISACCOUNTSTORAGEACTIVE)
-
- protected:
-  ~PasswordsPrivateIsAccountStorageActiveFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class PasswordsPrivateSetAccountStorageEnabledFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.setAccountStorageEnabled",
-                             PASSWORDSPRIVATE_SETACCOUNTSTORAGEENABLED)
-
- protected:
-  ~PasswordsPrivateSetAccountStorageEnabledFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class PasswordsPrivateShouldShowAccountStorageSettingToggleFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION(
-      "passwordsPrivate.shouldShowAccountStorageSettingToggle",
-      PASSWORDSPRIVATE_SHOULDSHOWACCOUNTSTORAGESETTINGTOGGLE)
-
- protected:
-  ~PasswordsPrivateShouldShowAccountStorageSettingToggleFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateGetInsecureCredentialsFunction
     : public ExtensionFunction {
  public:
@@ -413,48 +372,6 @@ class PasswordsPrivateAddPasswordFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateExtendAuthValidityFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.extendAuthValidity",
-                             PASSWORDSPRIVATE_EXTENDAUTHVALIDITY)
-
- protected:
-  ~PasswordsPrivateExtendAuthValidityFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION(
-      "passwordsPrivate.switchBiometricAuthBeforeFillingState",
-      PASSWORDSPRIVATE_SWITCHBIOMETRICAUTHBEFOREFILLINGSTATE)
-
- protected:
-  ~PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnAuthenticationComplete(bool result);
-};
-
-class PasswordsPrivateShowAddShortcutDialogFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.showAddShortcutDialog",
-                             PASSWORDSPRIVATE_SHOWADDSHORTCUTDIALOG)
-
- protected:
-  ~PasswordsPrivateShowAddShortcutDialogFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateShowExportedFileInShellFunction
     : public ExtensionFunction {
  public:
@@ -466,38 +383,6 @@ class PasswordsPrivateShowExportedFileInShellFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-};
-
-class PasswordsPrivateChangePasswordManagerPinFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changePasswordManagerPin",
-                             PASSWORDSPRIVATE_CHANGEPASSWORDMANAGERPIN)
-
- protected:
-  ~PasswordsPrivateChangePasswordManagerPinFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnPinChangeCompleted(bool success);
-};
-
-class PasswordsPrivateIsPasswordManagerPinAvailableFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isPasswordManagerPinAvailable",
-                             PASSWORDSPRIVATE_ISPASSWORDMANAGERPINAVAILABLE)
-
- protected:
-  ~PasswordsPrivateIsPasswordManagerPinAvailableFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnPasswordManagerPinAvailabilityReceived(bool is_available);
 };
 
 class PasswordsPrivateDisconnectCloudAuthenticatorFunction
@@ -527,22 +412,6 @@ class PasswordsPrivateIsConnectedToCloudAuthenticatorFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-};
-
-class PasswordsPrivateDeleteAllPasswordManagerDataFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.deleteAllPasswordManagerData",
-                             PASSWORDSPRIVATE_DELETEALLPASSWORDMANAGERDATA)
-
- protected:
-  ~PasswordsPrivateDeleteAllPasswordManagerDataFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnDeletionCompleted(bool success);
 };
 
 }  // namespace extensions

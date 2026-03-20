@@ -408,42 +408,6 @@ const availableTests = [
     chrome.passwordsPrivate.requestExportProgressStatus(callback);
   },
 
-  function accountStorageIsInactive() {
-    const callback = function(active) {
-      chrome.test.assertEq(active, false);
-      // Ensure that the callback is invoked.
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.isAccountStorageActive(callback);
-  },
-
-  function accountStorageIsActive() {
-    const callback = function(active) {
-      chrome.test.assertEq(active, true);
-      // Ensure that the callback is invoked.
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.isAccountStorageActive(callback);
-  },
-
-  function enableAccountStorage() {
-    chrome.passwordsPrivate.setAccountStorageEnabled(true);
-    chrome.passwordsPrivate.isAccountStorageActive(function(active) {
-      chrome.test.assertEq(active, true);
-      chrome.test.succeed();
-    });
-  },
-
-  function disableAccountStorage() {
-    chrome.passwordsPrivate.setAccountStorageEnabled(false);
-    chrome.passwordsPrivate.isAccountStorageActive(function(active) {
-      chrome.test.assertEq(active, false);
-      chrome.test.succeed();
-    });
-  },
-
   function getInsecureCredentials() {
     chrome.passwordsPrivate.getInsecureCredentials(
         insecureCredentials => {
@@ -634,26 +598,6 @@ const availableTests = [
     chrome.test.succeed();
   },
 
-  function extendAuthValidity() {
-    chrome.passwordsPrivate.extendAuthValidity(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function switchBiometricAuthBeforeFillingState() {
-    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState(_ => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function showAddShortcutDialog() {
-    chrome.passwordsPrivate.showAddShortcutDialog();
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  },
-
   function getCredentialGroups() {
     const callback = function(list) {
       chrome.test.assertTrue(!!list);
@@ -729,34 +673,9 @@ const availableTests = [
     chrome.test.succeed();
   },
 
-  function changePasswordManagerPin() {
-    chrome.passwordsPrivate.changePasswordManagerPin(success => {
-      chrome.test.assertFalse(success);
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function isPasswordManagerPinAvailable() {
-    const callback = function(available) {
-      chrome.test.assertFalse(available);
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.isPasswordManagerPinAvailable(callback);
-  },
-
   function disconnectCloudAuthenticator() {
     chrome.passwordsPrivate.disconnectCloudAuthenticator(success => {
       chrome.test.assertFalse(success);
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function deleteAllPasswordManagerData() {
-    chrome.passwordsPrivate.deleteAllPasswordManagerData(success => {
-      chrome.test.assertTrue(success);
       chrome.test.assertNoLastError();
       chrome.test.succeed();
     });

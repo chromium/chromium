@@ -8,8 +8,6 @@
  * testing. The chrome.passwordsPrivate API is being migrated to use Mojo.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './password_manager.mojom-webui.js';
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 
@@ -552,10 +550,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   showAddShortcutDialog() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      chrome.passwordsPrivate.showAddShortcutDialog();
-      return;
-    }
     this.handler.showAddShortcutDialog();
   }
 
@@ -649,9 +643,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   switchBiometricAuthBeforeFillingState() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
-    }
     return this.handler.switchBiometricAuthBeforeFillingState().then(
         result => result.success);
   }
@@ -676,10 +667,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   extendAuthValidity() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      chrome.passwordsPrivate.extendAuthValidity();
-      return;
-    }
     this.handler.extendAuthValidity();
   }
 
@@ -708,24 +695,14 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   isAccountStorageActive() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.isAccountStorageActive();
-    }
     return this.handler.isAccountStorageActive().then(result => result.active);
   }
 
   setAccountStorageEnabled(enabled: boolean) {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
-      return;
-    }
     this.handler.setAccountStorageEnabled(enabled);
   }
 
   shouldShowAccountStorageSettingToggle() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.shouldShowAccountStorageSettingToggle();
-    }
     return this.handler.shouldShowAccountStorageSettingToggle().then(
         result => result.shouldShow);
   }
@@ -739,17 +716,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   changePasswordManagerPin() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.changePasswordManagerPin();
-    }
     return this.handler.changePasswordManagerPin().then(
         result => result.success);
   }
 
   isPasswordManagerPinAvailable() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
-    }
     return this.handler.isPasswordManagerPinAvailable().then(
         result => result.isAvailable);
   }
@@ -763,9 +734,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   deleteAllPasswordManagerData() {
-    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.deleteAllPasswordManagerData();
-    }
     return this.handler.deleteAllPasswordManagerData().then(
         result => result.success);
   }
