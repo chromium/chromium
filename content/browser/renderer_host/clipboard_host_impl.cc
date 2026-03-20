@@ -1014,7 +1014,7 @@ void ClipboardHostImpl::OnReadAvailableTypesForUpdate(
           ui::kMimeTypeHtml16,
           ui::kMimeTypePlainText16,
       },
-      base::MakeFlatSet<std::u16string>(std::move(types)));
+      base::flat_set<std::u16string>(std::move(types)));
 
   clipboard_listener_->OnClipboardDataChanged(
       filtered_types, last_change_id_.emplace(change_id));

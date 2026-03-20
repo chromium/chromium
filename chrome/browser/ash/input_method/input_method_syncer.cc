@@ -71,7 +71,7 @@ std::string CheckAndResolveLocales(const std::string& app_locale,
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Remove unsupported language values.
-  auto accept_language_codes = base::MakeFlatSet<std::string>(
+  base::flat_set<std::string> accept_language_codes(
       l10n_util::GetAcceptLanguagesForLocale(app_locale));
   std::erase_if(values, [&accept_language_codes](const std::string& value) {
     if (accept_language_codes.contains(value)) {

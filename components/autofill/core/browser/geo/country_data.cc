@@ -53,7 +53,7 @@ GetCountryDataMap() {
   other_countries.insert(other_countries.end(),
                          kCountryAddressImportRequirementsData.begin(),
                          kCountryAddressImportRequirementsData.end());
-  return base::MakeFlatMap<std::string, RequiredFieldsForAddressImport>(
+  return base::flat_map<std::string, RequiredFieldsForAddressImport>(
       std::move(other_countries));
 }
 

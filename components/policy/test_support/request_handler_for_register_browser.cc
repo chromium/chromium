@@ -105,12 +105,11 @@ RequestHandlerForRegisterBrowser::ValidateRegisterBrowserRequest(
 
 base::flat_set<std::string>
 RequestHandlerForRegisterBrowser::allowed_policy_types() {
-  return base::MakeFlatSet<std::string>(std::vector(
-      {dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-       dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
-       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
-       dm_protocol::GetChromeUserPolicyType()}));
+  return {{dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+           dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
+           dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+           dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+           dm_protocol::GetChromeUserPolicyType()}};
 }
 
 RequestHandlerForRegisterPolicyAgent::RequestHandlerForRegisterPolicyAgent(
@@ -146,11 +145,10 @@ RequestHandlerForRegisterPolicyAgent::ValidateRegisterBrowserRequest(
 
 base::flat_set<std::string>
 RequestHandlerForRegisterPolicyAgent::allowed_policy_types() {
-  return base::MakeFlatSet<std::string>(
-      std::vector({dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
-                   dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
-                   dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-                   dm_protocol::kChromeMachineLevelExtensionCloudPolicyType}));
+  return {{dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
+           dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+           dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+           dm_protocol::kChromeMachineLevelExtensionCloudPolicyType}};
 }
 
 }  // namespace policy
