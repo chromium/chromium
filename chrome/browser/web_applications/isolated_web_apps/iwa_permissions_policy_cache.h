@@ -17,6 +17,7 @@
 #include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "content/public/browser/console_message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
@@ -59,7 +60,8 @@ class IwaPermissionsPolicyCache : public KeyedService,
     explicit Policy(
         const std::vector<Entry>& unfiltered = {},
         const std::vector<Entry>& filtered = {},
-        std::optional<IwaVersion> app_version_for_filtering = std::nullopt);
+        std::optional<IwaVersion> app_version_for_filtering = std::nullopt,
+        std::vector<std::string> deprecation_warnings = {});
     Policy(const Policy&);
     Policy(Policy&&);
     Policy& operator=(const Policy&);
@@ -68,6 +70,7 @@ class IwaPermissionsPolicyCache : public KeyedService,
     std::vector<Entry> unfiltered;
     std::vector<Entry> filtered;
     std::optional<IwaVersion> app_version_for_filtering;
+    std::vector<std::string> deprecation_warnings;
   };
 
   explicit IwaPermissionsPolicyCache(WebAppProvider& provider);
@@ -79,9 +82,8 @@ class IwaPermissionsPolicyCache : public KeyedService,
   // Returns nullptr if not found or not yet cached.
   const CacheEntry* GetPolicy(const IwaOrigin& iwa_origin) const;
 
-  // Returns a list of features that were present in the unfiltered policy
-  // but removed due to entitlement violations.
-  std::vector<std::string> GetViolations(const IwaOrigin& iwa_origin) const;
+  std::vector<content::ConsoleMessage> GetWarningMessages(
+      const IwaOrigin& iwa_origin) const;
 
   // Retrieves IWA manifest, parses it and stores in cache.
   // Callback is queued to run immediately if the cache is already populated.
@@ -95,8 +97,18 @@ class IwaPermissionsPolicyCache : public KeyedService,
                                          CacheEntry filtered_policy);
 
  private:
+  // Returns a list of features that were present in the unfiltered policy
+  // but removed due to entitlement violations.
+  std::vector<content::ConsoleMessage> GetViolationWarningMessages(
+      const IwaOrigin& iwa_origin) const;
+
+  std::vector<content::ConsoleMessage> GetDeprecationWarningMessages(
+      const IwaOrigin& iwa_origin) const;
+
   // Stores the policy for the given IWA origin and runs pending callbacks.
-  void SetPolicy(const IwaOrigin& iwa_origin, CacheEntry policy);
+  void SetPolicy(const IwaOrigin& iwa_origin,
+                 CacheEntry policy,
+                 std::vector<std::string> deprecation_warnings);
 
   // Parses the manifest and stores the policy for the given IWA origin.
   // Returns true if the manifest was parsed successfully (even if the policy

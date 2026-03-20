@@ -413,4 +413,149 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppGenericPermissionsPolicyBrowserTest,
                                    "https://raven.nevermore"));
 }
 
+class IsolatedWebAppDirectSocketsPrivatePermissionsPolicyUnpackingTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  content::RenderFrameHost* InstallAndOpenIWAWithFeatures(
+      std::map<network::mojom::PermissionsPolicyFeature,
+               std::vector<url::Origin>> feature_map = {}) {
+    auto builder =
+        ManifestBuilder(
+            /*include_cross_origin_isolated_permissions_policy=*/true)
+            .AddPermissionsPolicyWildcard(
+                network::mojom::PermissionsPolicyFeature::kDirectSockets);
+
+    for (const auto& [feature, origins] : feature_map) {
+      builder.AddPermissionsPolicy(feature, /*self=*/true, origins);
+    }
+
+    auto app = web_app::IsolatedWebAppBuilder(std::move(builder)).BuildBundle();
+    return OpenApp(app->Install(profile()).value().app_id());
+  }
+
+  bool IsFeatureAllowed(content::RenderFrameHost* frame,
+                        std::string_view feature) {
+    return content::EvalJs(frame,
+                           base::ReplaceStringPlaceholders(
+                               "document.featurePolicy.allowsFeature('$1')",
+                               {std::string(feature)}, nullptr))
+        .ExtractBool();
+  }
+
+  std::vector<std::string> GetAllowlist(content::RenderFrameHost* frame,
+                                        std::string_view feature) {
+    auto result = content::EvalJs(
+        frame, base::ReplaceStringPlaceholders(
+                   "document.featurePolicy.getAllowlistForFeature('$1')",
+                   {std::string(feature)}, nullptr));
+
+    std::vector<std::string> allowlist;
+    for (const auto& item : result.ExtractList()) {
+      allowlist.push_back(item.GetString());
+    }
+    return allowlist;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDirectSocketsPrivatePermissionsPolicyUnpackingTest,
+    UnpackNetworkPermissionsAndMirrorOrigins) {
+  url::Origin test_origin = url::Origin::Create(GURL("https://meow.meow"));
+
+  auto* rfh = InstallAndOpenIWAWithFeatures(
+      {{network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
+        {test_origin}}});
+  const url::Origin& iwa_origin = rfh->GetLastCommittedOrigin();
+
+  auto dsp_allowlist = GetAllowlist(rfh, "direct-sockets-private");
+  auto local_network_allowlist = GetAllowlist(rfh, "local-network");
+  auto loopback_network_allowlist = GetAllowlist(rfh, "loopback-network");
+
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "direct-sockets-private"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "local-network"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "loopback-network"));
+
+  EXPECT_EQ(dsp_allowlist, loopback_network_allowlist);
+  EXPECT_EQ(dsp_allowlist, local_network_allowlist);
+  EXPECT_THAT(dsp_allowlist,
+              testing::UnorderedElementsAre(test_origin.Serialize(),
+                                            iwa_origin.Serialize()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDirectSocketsPrivatePermissionsPolicyUnpackingTest,
+    NoUnpackingWithoutDirectSocketsPrivate) {
+  auto* rfh = InstallAndOpenIWAWithFeatures({});
+
+  ASSERT_FALSE(IsFeatureAllowed(rfh, "direct-sockets-private"));
+  ASSERT_FALSE(IsFeatureAllowed(rfh, "local-network"));
+  ASSERT_FALSE(IsFeatureAllowed(rfh, "loopback-network"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDirectSocketsPrivatePermissionsPolicyUnpackingTest,
+    ExplicitLocalNetworkPreservesItsOwnAllowlist) {
+  url::Origin dsp_only_origin = url::Origin::Create(GURL("https://meow.meow"));
+  url::Origin local_network_only_origin =
+      url::Origin::Create(GURL("https://raven.nevermore"));
+
+  auto* rfh = InstallAndOpenIWAWithFeatures(
+      {{network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
+        {dsp_only_origin}},
+       {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
+        {local_network_only_origin}}});
+  const url::Origin& iwa_origin = rfh->GetLastCommittedOrigin();
+
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "direct-sockets-private"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "local-network"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "loopback-network"));
+
+  auto dsp_allowlist = GetAllowlist(rfh, "direct-sockets-private");
+  auto local_network_allowlist = GetAllowlist(rfh, "local-network");
+  auto loopback_network_allowlist = GetAllowlist(rfh, "loopback-network");
+
+  EXPECT_EQ(dsp_allowlist, loopback_network_allowlist);
+  EXPECT_THAT(dsp_allowlist,
+              testing::UnorderedElementsAre(dsp_only_origin.Serialize(),
+                                            iwa_origin.Serialize()));
+  EXPECT_NE(local_network_allowlist, dsp_allowlist);
+  EXPECT_THAT(
+      local_network_allowlist,
+      testing::UnorderedElementsAre(local_network_only_origin.Serialize(),
+                                    iwa_origin.Serialize()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDirectSocketsPrivatePermissionsPolicyUnpackingTest,
+    ExplicitLoopbackNetworkPreservesItsOwnAllowlist) {
+  url::Origin dsp_only_origin = url::Origin::Create(GURL("https://meow.meow"));
+  url::Origin loopback_network_only_origin =
+      url::Origin::Create(GURL("https://raven.nevermore"));
+
+  auto* rfh = InstallAndOpenIWAWithFeatures(
+      {{network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
+        {dsp_only_origin}},
+       {network::mojom::PermissionsPolicyFeature::kLoopbackNetwork,
+        {loopback_network_only_origin}}});
+  const url::Origin& iwa_origin = rfh->GetLastCommittedOrigin();
+
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "direct-sockets-private"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "loopback-network"));
+  ASSERT_TRUE(IsFeatureAllowed(rfh, "local-network"));
+
+  auto dsp_allowlist = GetAllowlist(rfh, "direct-sockets-private");
+  auto local_network_allowlist = GetAllowlist(rfh, "local-network");
+  auto loopback_network_allowlist = GetAllowlist(rfh, "loopback-network");
+
+  EXPECT_EQ(dsp_allowlist, local_network_allowlist);
+  EXPECT_THAT(dsp_allowlist,
+              testing::UnorderedElementsAre(dsp_only_origin.Serialize(),
+                                            iwa_origin.Serialize()));
+  EXPECT_NE(loopback_network_allowlist, dsp_allowlist);
+  EXPECT_THAT(
+      loopback_network_allowlist,
+      testing::UnorderedElementsAre(loopback_network_only_origin.Serialize(),
+                                    iwa_origin.Serialize()));
+}
+
 }  // namespace web_app

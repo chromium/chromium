@@ -104,7 +104,7 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitialized) {
             throttle->WillStartRequest().action());
 
   // If manifest is already cached, it should PROCEED.
-  GetCache()->SetPolicy(IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value(),
+  GetCache()->SetPolicy(IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value(), {},
                         {});
   auto throttle2 = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,

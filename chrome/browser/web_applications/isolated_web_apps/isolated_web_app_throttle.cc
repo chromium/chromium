@@ -8,6 +8,8 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -34,44 +37,41 @@ namespace web_app {
 
 namespace {
 
-// The purpose of this is to defer logging violations to after the navigation
+// The purpose of this is to defer logging to after the navigation
 // (so that post-navigation console cleaning won't hide the message).
-class DeferredEntitlementViolationLogger
-    : public content::NavigationHandleUserData<
-          DeferredEntitlementViolationLogger>,
+
+class DeferredConsoleLogger
+    : public content::NavigationHandleUserData<DeferredConsoleLogger>,
       public content::WebContentsObserver {
  public:
-  ~DeferredEntitlementViolationLogger() override = default;
+  ~DeferredConsoleLogger() override = default;
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     if (GetForNavigationHandle(*handle) != this) {
       return;
     }
     if (handle->HasCommitted() && !handle->IsErrorPage()) {
-      for (const auto& feature : violations_) {
+      for (const auto& message : messages_) {
         handle->GetRenderFrameHost()->AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kWarning,
-            "IWA entitlement violation: feature '" + feature +
-                "' is not granted to " + handle->GetURL().spec() + ".");
+            message.message_level, base::UTF16ToUTF8(message.message));
       }
     }
   }
 
  private:
-  friend class content::NavigationHandleUserData<
-      DeferredEntitlementViolationLogger>;
+  friend class content::NavigationHandleUserData<DeferredConsoleLogger>;
 
-  DeferredEntitlementViolationLogger(content::NavigationHandle& handle,
-                                     std::vector<std::string> violations)
+  DeferredConsoleLogger(content::NavigationHandle& handle,
+                        std::vector<content::ConsoleMessage> messages)
       : content::WebContentsObserver(handle.GetWebContents()),
-        violations_(std::move(violations)) {}
+        messages_(std::move(messages)) {}
 
-  const std::vector<std::string> violations_;
+  const std::vector<content::ConsoleMessage> messages_;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DeferredEntitlementViolationLogger);
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DeferredConsoleLogger);
 
 }  // namespace
 
@@ -133,7 +133,7 @@ content::NavigationThrottle::ThrottleCheckResult
 IsolatedWebAppThrottle::WillProcessResponse() {
   const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
   if (iwa_origin.has_value()) {
-    LogEntitlementViolations(*iwa_origin);
+    LogWarnings(*iwa_origin);
   }
   return PROCEED;
 }
@@ -168,17 +168,21 @@ bool IsolatedWebAppThrottle::NeedsManifestFetch(
              iwa_origin);
 }
 
-void IsolatedWebAppThrottle::LogEntitlementViolations(
-    const IwaOrigin& iwa_origin) {
-  std::vector<std::string> violations =
-      IwaPermissionsPolicyCacheFactory::GetForProfile(profile())->GetViolations(
-          iwa_origin);
-  if (violations.empty() || !navigation_handle()->IsInPrimaryMainFrame()) {
+void IsolatedWebAppThrottle::LogWarnings(const IwaOrigin& iwa_origin) {
+  if (!navigation_handle()->IsInPrimaryMainFrame()) {
     return;
   }
 
-  DeferredEntitlementViolationLogger::CreateForNavigationHandle(
-      *navigation_handle(), std::move(violations));
+  std::vector<content::ConsoleMessage> warning_messages =
+      IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
+          ->GetWarningMessages(iwa_origin);
+
+  if (warning_messages.empty()) {
+    return;
+  }
+
+  DeferredConsoleLogger::CreateForNavigationHandle(*navigation_handle(),
+                                                   std::move(warning_messages));
 }
 
 void IsolatedWebAppThrottle::OnCachePopulated(bool success) {

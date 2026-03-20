@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
       IwaPermissionsPolicyCache::Entry("camera", {})};
   const IwaOrigin iwa_origin =
       IwaOrigin::Create(url_info.origin().GetURL()).value();
-  cache->SetPolicy(iwa_origin, policy);
+  cache->SetPolicy(iwa_origin, policy, {});
 
   ASSERT_TRUE(cache->GetPolicy(iwa_origin));
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
       IwaPermissionsPolicyCache::Entry("camera", {})};
   const IwaOrigin iwa_origin =
       IwaOrigin::Create(url_info.origin().GetURL()).value();
-  cache->SetPolicy(iwa_origin, policy);
+  cache->SetPolicy(iwa_origin, policy, {});
 
   ASSERT_TRUE(cache->GetPolicy(iwa_origin));
 
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
       IwaOrigin::Create(url_info.origin().GetURL()).value();
   // Set fake policy not in line with the manifest (by default, manifest
   // contains also cross-origin-isolated policy).
-  cache->SetPolicy(iwa_origin, {});
+  cache->SetPolicy(iwa_origin, {}, {});
 
   ASSERT_TRUE(cache->GetPolicy(iwa_origin));
 

@@ -49,7 +49,7 @@ class IsolatedWebAppThrottle : public content::NavigationThrottle {
   bool NeedsManifestFetch(const IwaOrigin& iwa_origin) const;
   void OnCachePopulated(bool success);
 
-  void LogEntitlementViolations(const IwaOrigin& iwa_origin);
+  void LogWarnings(const IwaOrigin& iwa_origin);
 
   Profile* profile() const;
   bool is_isolated_web_app_navigation() const;
