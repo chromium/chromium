@@ -50,6 +50,9 @@ ${this.isTopRightCornerVariation_ ? html`
 </div>
 
 <div id="buttonRow" class="fade-in">
+  ${this.isTopRightCornerVariation_ ? html`
+    <p id="create-account-disclaimer">$i18n{createAccountDisclaimer}</p>
+  ` : ''}
   <div id="buttonContainer">
     ${this.isDefaultVariation_ ? html`
     <cr-button id="declineSignInButton"
@@ -66,9 +69,6 @@ ${this.isTopRightCornerVariation_ ? html`
       $i18n{acceptSignInButtonTitle}
     </cr-button>
   </div>
-  ${this.isTopRightCornerVariation_ ? html`
-    <p id="create-account-disclaimer">$i18n{createAccountDisclaimer}</p>
-  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

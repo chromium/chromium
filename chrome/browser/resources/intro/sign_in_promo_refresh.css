@@ -261,8 +261,12 @@ h2 {
   top: 1.5rem;
 }
 
+#top-right-corner-container #declineSignInButton {
+  border: none;
+}
+
 #create-account-disclaimer {
   color: var(--cr-secondary-text-color);
   font-size: var(--card-description-font-size);
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
