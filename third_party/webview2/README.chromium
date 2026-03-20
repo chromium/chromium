@@ -1,0 +1,24 @@
+Name: Microsoft Edge WebView2 SDK
+Short Name: webview2
+URL: https://www.nuget.org/packages/Microsoft.Web.WebView2
+Version: 1.0.3856.49
+Date: 2026-03-16
+License: BSD-3-Clause
+License File: LICENSE
+License Android Compatible: no
+Shipped: yes
+Security Critical: yes
+Update Mechanism: Manual
+CPEPrefix: cpe:/a:microsoft:edge_webview2
+Description:
+The Microsoft Edge WebView2 control allows you to embed web technologies
+(HTML, CSS, and JavaScript) in your native apps. This directory contains
+the Win32 SDK headers and loader binaries required to instantiate the
+WebView2 runtime.
+
+Local Modifications:
+Only includes the following headers and libraries required for the build:
+- include/WebView2.h
+- {x86/x64/arm64}/WebView2Loader.dll
+- {x86/x64/arm64}/WebView2Loader.dll.lib
+

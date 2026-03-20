@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("webview2_config") {
+  include_dirs = [ "include" ]
+}
+
+# This target copies the DLL to the root build directory. `WebView2Loader.dll`
+# needs to be bundled with the distribution of your binary using `WebView2`.
+copy("webview2_loader_dll") {
+  sources = [ "$target_cpu/WebView2Loader.dll" ]
+  outputs = [ "$root_out_dir/WebView2Loader.dll" ]
+}
+
+source_set("webview2") {
+  sources = [ "include/WebView2.h" ]
+  public_configs = [ ":webview2_config" ]
+  libs = [ rebase_path("$target_cpu/WebView2Loader.dll.lib", root_build_dir) ]
+  data_deps = [ ":webview2_loader_dll" ]
+}
