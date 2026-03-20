@@ -25,7 +25,6 @@ build_webui("build") {
   web_component_files = [
     "certificate_manager.ts",
     "certificate_subpage.ts",
-    "crs_section.ts",
   ]
   ts_files = [
     "certificate_confirmation_dialog.html.ts",
@@ -39,6 +38,8 @@ build_webui("build") {
     "certificate_password_dialog.html.ts",
     "certificate_password_dialog.ts",
     "certificates_browser_proxy.ts",
+    "crs_section.html.ts",
+    "crs_section.ts",
     "local_certs_section.html.ts",
     "local_certs_section.ts",
     "navigation.ts",

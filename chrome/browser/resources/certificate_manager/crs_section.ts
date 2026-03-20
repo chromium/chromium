@@ -8,17 +8,15 @@
  */
 
 import './certificate_list.js';
-import './certificate_manager_style.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
 
+import {getCss as getCrPageHostStyleCss} from '//resources/cr_elements/cr_page_host_style_lit.css.js';
+import {getCss as getCrSharedStyleCss} from '//resources/cr_elements/cr_shared_style_lit.css.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CertificateListElement} from './certificate_list.js';
-import {CertificateSource} from './certificate_manager.mojom-webui.js';
-import {getTemplate} from './crs_section.html.js';
+import {getCss as getCertificateManagerStyleCss} from './certificate_manager_style_lit.css.js';
+import {getHtml} from './crs_section.html.js';
 
 export interface CrsSectionElement {
   $: {
@@ -26,30 +24,31 @@ export interface CrsSectionElement {
   };
 }
 
-export class CrsSectionElement extends PolymerElement {
+export class CrsSectionElement extends CrLitElement {
   static get is() {
     return 'crs-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getCrPageHostStyleCss(),
+      getCrSharedStyleCss(),
+      getCertificateManagerStyleCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      crsLearnMoreUrl_: {
-        type: String,
-        value: () => loadTimeData.getString('crsLearnMoreUrl'),
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      certificateSourceEnum_: {
-        type: Object,
-        value: CertificateSource,
-      },
+  static override get properties() {
+    return {
+      crsLearnMoreUrl_: {type: String},
     };
   }
 
-  declare private crsLearnMoreUrl_: string;
+  protected accessor crsLearnMoreUrl_: string =
+      loadTimeData.getString('crsLearnMoreUrl');
 }
 
 declare global {
