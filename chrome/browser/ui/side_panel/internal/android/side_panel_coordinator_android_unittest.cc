@@ -59,11 +59,26 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
 
   void SetUpMockBrowserWindow() {
     mock_browser_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*mock_browser_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
   }
 
   ScopedJavaGlobalRef<jobject> java_test_support_;
   std::unique_ptr<MockBrowserWindowInterface> mock_browser_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 };
+
+TEST_F(SidePanelCoordinatorAndroidUnitTest,
+       FromReturnsCorrectPtrForValidBrowserWindow) {
+  SidePanelCoordinatorAndroid* ptr = InvokeJavaCreateNativePtr();
+  EXPECT_EQ(ptr, SidePanelCoordinatorAndroid::From(mock_browser_.get()));
+}
+
+TEST_F(SidePanelCoordinatorAndroidUnitTest,
+       FromReturnsNullPtrForNullBrowserWindow) {
+  InvokeJavaCreateNativePtr();
+  EXPECT_EQ(nullptr, SidePanelCoordinatorAndroid::From(/*browser=*/nullptr));
+}
 
 TEST_F(SidePanelCoordinatorAndroidUnitTest,
        JavaCreateNativePtrMethodReturnsValidPtr) {

@@ -9,10 +9,19 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidImpl_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+
+DEFINE_USER_DATA(SidePanelCoordinatorAndroid);
+
+// static
+SidePanelCoordinatorAndroid* SidePanelCoordinatorAndroid::From(
+    BrowserWindowInterface* browser) {
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+}
 
 // Implements Java `SidePanelCoordinatorAndroidImpl.Natives#create`.
 static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
@@ -28,7 +37,9 @@ SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& java_coordinator,
     BrowserWindowInterface* browser)
-    : SidePanelUIBase(browser), java_coordinator_(env, java_coordinator) {}
+    : SidePanelUIBase(browser),
+      java_coordinator_(env, java_coordinator),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(

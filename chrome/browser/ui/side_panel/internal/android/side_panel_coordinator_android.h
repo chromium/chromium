@@ -10,6 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -24,6 +25,12 @@ class BrowserWindowInterface;
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_overview.md
 class SidePanelCoordinatorAndroid : public SidePanelUIBase {
  public:
+  DECLARE_USER_DATA(SidePanelCoordinatorAndroid);
+
+  // Returns the `SidePanelCoordinatorAndroid` associated with the given
+  // `browser`. A `nullptr` will be returned if `browser` is a `nullptr`.
+  static SidePanelCoordinatorAndroid* From(BrowserWindowInterface* browser);
+
   SidePanelCoordinatorAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& java_coordinator,
@@ -71,6 +78,9 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
   JavaObjectWeakGlobalRef java_coordinator_;
+
+  ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_COORDINATOR_ANDROID_H_

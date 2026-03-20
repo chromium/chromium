@@ -14,9 +14,11 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//third_party/jni_zero",
     "//ui/base",
+    "//ui/base/unowned_user_data",
   ]
 }
 
