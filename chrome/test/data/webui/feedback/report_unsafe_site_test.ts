@@ -43,7 +43,7 @@ suite('ReportUnsafeSiteTest', () => {
     document.body.appendChild(app);
 
     const cancelButton =
-        app.shadowRoot.querySelector<HTMLInputElement>('.cancel-button');
+        app.shadowRoot.querySelector<HTMLInputElement>('#cancel-button');
     assertTrue(!!cancelButton);
     cancelButton.click();
     assertEquals(1, browserProxy.getPageHandler().getCallCount('closeDialog'));

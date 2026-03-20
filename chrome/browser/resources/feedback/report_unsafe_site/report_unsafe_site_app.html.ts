@@ -9,15 +9,12 @@ import type {ReportUnsafeSiteAppElement} from './report_unsafe_site_app.js';
 export function getHtml(this: ReportUnsafeSiteAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="header">
+<div class="main-content">
   <h2 class="dialog-title">$i18n{reportUnsafeSiteDialogTitle}</h2>
   $i18nRaw{reportUnsafeSiteDialogDescription}
-</div>
-
-<div class="main-content">
   <label class="url-input-container">
     $i18n{reportUnsafeSiteDialogUrlLabel}
-    <input type="text" .value="${this.pageUrl_}" readonly>
+    <cr-input type="text" .value="${this.pageUrl_}" readonly>
   </label>
   <div class="two-cols">
     ${this.includeScreenshot_ ? html`
@@ -36,7 +33,8 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
     </div>
   </div>
   <div class="button-container">
-    <cr-button class="cancel-button" @click="${this.onCancelButtonClick_}">
+    <cr-button id="cancel-button" class="tonal-button"
+        @click="${this.onCancelButtonClick_}">
       $i18n{cancel}
     </cr-button>
     <cr-button class="action-button" @click="${this.onActionButtonClick_}"

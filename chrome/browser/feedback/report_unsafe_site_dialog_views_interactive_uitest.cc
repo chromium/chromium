@@ -103,7 +103,7 @@ class ReportUnsafeSiteDialogInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto CloseDialog() {
-    return InAnyContext(ClickDialogElement(".cancel-button"),
+    return InAnyContext(ClickDialogElement("#cancel-button"),
                         WaitForDialogHide());
   }
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest, UrlInDialog) {
       ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
       WaitForJsResultAt(
           kDialogWebviewId,
-          {"report-unsafe-site-app", ".url-input-container", "input"},
+          {"report-unsafe-site-app", ".url-input-container", "cr-input"},
           "(el) => el.value", ::testing::Eq(formatted_origin)),
       CloseDialog());
 }
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
       ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
       WaitForJsResultAt(
           kDialogWebviewId,
-          {"report-unsafe-site-app", ".url-input-container", "input"},
+          {"report-unsafe-site-app", ".url-input-container", "cr-input"},
           "(el) => el.value", ::testing::Eq(formatted_origin)),
       CheckJsResultAt(kDialogWebviewId,
                       {"report-unsafe-site-app", "#includeScreenshotCheckbox"},
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
           FocusElement(kDialogWebviewId),
           ScreenshotSurface(kDialogWebviewId,
                             /*screenshot_name=*/"ReportUnsafeSiteDialog",
-                            /*baseline_cl=*/"7650257")),
+                            /*baseline_cl=*/"7674204")),
       CloseDialog());
 }
 
