@@ -530,12 +530,14 @@ int AXImageAnnotator::GetLengthAfterRemovingStopwords(
   // Split the image name into words by splitting on all whitespace and
   // punctuation. Reject any words that are classified as stopwords.
   // Return the number of remaining codepoints.
-  const char* separators = "0123456789`~!@#$%^&*()[]{}\\|;:'\",.<>?/-_=+ ";
-  std::vector<std::string> words = base::SplitString(
-      image_name, separators, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  static constexpr std::string_view kSeparators =
+      "0123456789`~!@#$%^&*()[]{}\\|;:'\",.<>?/-_=+ ";
+  std::vector<std::string_view> words =
+      base::SplitStringPiece(image_name, kSeparators, base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
   int remaining_codepoints = 0;
-  for (const std::string& word : words) {
-    if (AXImageStopwords::GetInstance().IsImageStopword(word.c_str())) {
+  for (std::string_view word : words) {
+    if (AXImageStopwords::GetInstance().IsImageStopword(word)) {
       continue;
     }
 

@@ -55,7 +55,7 @@ class CONTENT_EXPORT AXImageStopwords {
   // whitespace. Returns true if the word is an image stopword.
   // Case-insensitive and language-neutral (includes words from all
   // languages).
-  bool IsImageStopword(const char* utf8_string) const;
+  bool IsImageStopword(std::string_view utf8_string) const;
 
  private:
   friend base::NoDestructor<AXImageStopwords>;
