@@ -352,23 +352,32 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        PageChangeWithLoadingIsDebounced) {
-  // Navigate to new pages in quick succession.
+  base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
+
+  // Navigate to a new page.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.example.com"),
       WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  mocked_task_runner->RunUntilIdle();
+
+  // Advance time by 500ms. The 1s timer should not have fired.
+  mocked_task_runner->FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(ReadAnythingEntryPointController::CheckCountForTesting(), 0);
+
+  // Navigate again. This should restart the timer.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.support.google.com"),
       WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.example.com"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  mocked_task_runner->RunUntilIdle();
+
+  // Advance time by another 700ms. Total 1.2s since first nav, but only 700ms
+  // since second nav. Timer should still not have fired if it restarted.
+  mocked_task_runner->FastForwardBy(base::Milliseconds(700));
   EXPECT_EQ(ReadAnythingEntryPointController::CheckCountForTesting(), 0);
 
-  // Let the final navigation finish loading. A single check should run.
-  EXPECT_TRUE(NavigateToURL(browser(), GURL("https://www.support.google.com")));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return ReadAnythingEntryPointController::CheckCountForTesting() == 1;
-  }));
+  // Advance remaining 300ms for the second navigation.
+  mocked_task_runner->FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(ReadAnythingEntryPointController::CheckCountForTesting(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,

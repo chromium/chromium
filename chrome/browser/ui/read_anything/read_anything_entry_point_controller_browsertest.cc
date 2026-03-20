@@ -321,19 +321,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsPageAction) {
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
-
   ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
-
   VerifyPageActionIsShowing(true);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsChip) {
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
@@ -345,8 +339,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     UpdatePageActionVisibility_DoesNotShowChipIfIgnoredManyTimes) {
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 10);
@@ -359,8 +351,6 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsPromo) {
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   base::test::TestFuture<user_education::FeaturePromoResult> future;
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
@@ -372,8 +362,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_HidesPageAction) {
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
   browser()
       ->GetActiveTabInterface()
@@ -392,8 +380,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_AbortsPromo) {
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
   base::test::TestFuture<user_education::FeaturePromoResult> future;
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
