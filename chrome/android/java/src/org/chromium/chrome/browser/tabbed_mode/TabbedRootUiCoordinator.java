@@ -1704,7 +1704,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher,
                             mSnackbarManagerSupplier.get());
             mTabBottomSheetManager =
-                    new TabBottomSheetManager(mWindowAndroid, getBottomSheetController());
+                    new TabBottomSheetManager(
+                            mWindowAndroid,
+                            getBottomSheetController(),
+                            mLayoutStateProviderOneShotSupplier);
         }
     }
 
