@@ -322,16 +322,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                             });
         }
 
-        public void reload() throws Throwable {
-            mTest.executeJavaScriptAndWaitForResult("location.reload();");
-            mCnt +=
-                    mTest.waitForCallbackAndVerifyTypes(
-                            mCnt,
-                            new Integer[] {
-                                AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
-                            });
-        }
-
         public void startNewSession() throws Throwable {
             // Start a new session by moving focus to another form.
             mTest.executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
@@ -2118,7 +2108,6 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
-    @DisabledTest(message = "crbug.com/485170693")
     public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -2131,7 +2120,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                         });
         mUMATestHelper.triggerAutofill();
         invokeOnProvideAutoFillVirtualStructure();
-        mUMATestHelper.reload();
+        int cnt = getCallbackCount();
+        executeJavaScriptAndWaitForResult("window.location = 'about:blank';");
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL});
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
