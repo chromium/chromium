@@ -262,8 +262,6 @@ class NtpRealboxUiTestBase
         switch (layout_mode.value()) {
           case RealboxLayoutMode::kTallBottomContext:
             return ntp_realbox::kRealboxLayoutModeTallBottomContext;
-          case RealboxLayoutMode::kTallTopContext:
-            return ntp_realbox::kRealboxLayoutModeTallTopContext;
           case RealboxLayoutMode::kCompact:
             return ntp_realbox::kRealboxLayoutModeCompact;
         }
@@ -394,16 +392,6 @@ INSTANTIATE_TEST_SUITE_P(
         // Tall bottom, compose enabled, dark mode, RTL
         {
             .layout_mode = RealboxLayoutMode::kTallBottomContext,
-            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
-            .rtl = true,
-        },
-        // Tall top, compose enabled, light mode, LTR
-        {
-            .layout_mode = RealboxLayoutMode::kTallTopContext,
-        },
-        // Tall top, compose enabled, dark mode, RTL
-        {
-            .layout_mode = RealboxLayoutMode::kTallTopContext,
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
             .rtl = true,
         },

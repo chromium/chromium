@@ -392,10 +392,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-button-height: 36px;
 }
 
-:host-context([searchbox-layout-mode='TallTopContext']) .carousel-divider {
-  margin-top: 10px;
-}
-
 :host([searchbox-layout-mode='Compact']) {
   --cr-searchbox-border-radius: 30px;
   --cr-searchbox-dropdown-padding-bottom: 10px;

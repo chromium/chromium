@@ -6,7 +6,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ComposeboxElement} from './composebox.js';
-import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -65,18 +64,6 @@ export function getHtml(this: ComposeboxElement) {
         .inputState="${this.inputState}"
         @tool-click="${this.onToolClick_}">
       </cr-composebox-tool-chip>
-    ` : ''}
-  ` : ''}
-  ${this.searchboxLayoutMode === 'TallTopContext' ? html`
-    ${this.shouldShowVoiceSearch_() ? html`
-      <cr-icon-button id="voiceSearchButton" class="voice-icon"
-          part="voice-icon" iron-icon="cr:mic"
-          @click="${this.onVoiceSearchButtonClick_}"
-          title="${this.i18n('voiceSearchButtonLabel')}">
-      </cr-icon-button>
-    ` : ''}
-    ${this.shouldShowSubmitButton_ ? html`
-      ${getSubmitButtonHtml.bind(this)()}
     ` : ''}
   ` : ''}
 </div>

@@ -323,7 +323,6 @@ const base::FeatureParam<RealboxLayoutMode>::Option
     kRealboxLayoutModeOptions[] = {
         {RealboxLayoutMode::kTallBottomContext,
          kRealboxLayoutModeTallBottomContext},
-        {RealboxLayoutMode::kTallTopContext, kRealboxLayoutModeTallTopContext},
         {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
 
 const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
@@ -341,8 +340,6 @@ std::string_view RealboxLayoutModeToString(
   switch (realbox_layout_mode) {
     case RealboxLayoutMode::kTallBottomContext:
       return kRealboxLayoutModeTallBottomContext;
-    case RealboxLayoutMode::kTallTopContext:
-      return kRealboxLayoutModeTallTopContext;
     case RealboxLayoutMode::kCompact:
       return kRealboxLayoutModeCompact;
     default:

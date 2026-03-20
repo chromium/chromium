@@ -32,9 +32,7 @@ enum class AddContextButtonVariant {
   // Variant 1.
   kBelowResults = 1,
   // Variant 2.
-  kAboveResults = 2,
-  // Variant 3.
-  kInline = 3,
+  kInline = 2,
 };
 
 extern const base::FeatureParam<AddContextButtonVariant>

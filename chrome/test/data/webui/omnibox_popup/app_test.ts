@@ -93,7 +93,7 @@ suite('AppTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         omniboxAimPopupEnabled: true,
-        searchboxLayoutMode: 'TallTopContext',
+        searchboxLayoutMode: 'TallBottomContext',
       });
 
       localApp = document.createElement('omnibox-popup-app');
@@ -175,7 +175,7 @@ suite('AppTest', function() {
 
     test('RecentTabChipShown', async () => {
       loadTimeData.overrideValues({
-        searchboxLayoutMode: 'TallTopContext',
+        searchboxLayoutMode: 'TallBottomContext',
         composeboxShowRecentTabChip: true,
         addTabUploadDelayOnRecentTabChipClick: true,
       });

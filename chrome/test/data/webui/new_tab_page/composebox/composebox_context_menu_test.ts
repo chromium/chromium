@@ -92,7 +92,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
     test('tab changes calls getRecentTabs', async () => {
       createComposeboxElement(testProxy);
       loadTimeData.overrideValues({
-        realboxLayoutMode: 'TallTopContext',
+        realboxLayoutMode: 'Compact',
         composeboxShowRecentTabChip: true,
       });
       const sampleTabs = [
@@ -146,7 +146,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
     test('mousedown prevents default when not Compact', async () => {
       createComposeboxElement(testProxy);
-      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      testProxy.element.searchboxLayoutMode = 'TallBottomContext';
       await testProxy.element.updateComplete;
 
       const contextMenuContainer =
@@ -188,7 +188,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         'mousedown does not prevent default when target is not container',
         async () => {
           createComposeboxElement(testProxy);
-          testProxy.element.searchboxLayoutMode = 'TallTopContext';
+          testProxy.element.searchboxLayoutMode = 'TallBottomContext';
           await testProxy.element.updateComplete;
 
           const contextMenuContainer =
@@ -212,7 +212,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
     test('mouse click prevents default and focuses input', async () => {
       createComposeboxElement(testProxy);
-      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      testProxy.element.searchboxLayoutMode = 'TallBottomContext';
       await testProxy.element.updateComplete;
 
       const contextMenuContainer =
@@ -238,7 +238,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
     test('mouse click ignores non-primary button', async () => {
       createComposeboxElement(testProxy);
-      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      testProxy.element.searchboxLayoutMode = 'TallBottomContext';
       await testProxy.element.updateComplete;
 
       const contextMenuContainer =

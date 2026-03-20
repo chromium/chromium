@@ -353,26 +353,6 @@ suite('NewTabPageRealboxNextTest', () => {
     assertEquals(ToolMode.kImageGen, event.detail.mode);
   });
 
-  // TODO(crbug.com/453570027): Test is flaky.
-  test.skip(
-      'Contextual component empty area click focuses search input',
-      async () => {
-        // Arrange.
-        realbox = await createAndAppendRealbox({
-          composeButtonEnabled: true,
-          composeboxEnabled: true,
-          searchboxLayoutMode: 'TallTopContext',
-          ntpRealboxNextEnabled: true,
-        });
-        const contextElement = realbox.shadowRoot.querySelector<HTMLElement>(
-            'contextual-entrypoint-and-carousel');
-        assertTrue(!!contextElement);
-        contextElement.dispatchEvent(
-            new CustomEvent('context-menu-container-click'));
-        assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-        assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-      });
-
   test('pasting files opens composebox', async () => {
     loadTimeData.overrideValues({composeboxFileMaxCount: 2});
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});

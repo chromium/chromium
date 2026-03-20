@@ -120,9 +120,6 @@ export function getHtml(this: ComposeboxElement) {
               getSubmitButtonHtml.bind(this)() :
               ''}
           </div>
-          ${this.searchboxLayoutMode === 'TallTopContext' ?
-            getContextMenuHtml.bind(this)()
-          : ''}
           ${this.shouldShowDivider_ ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
           ` : ''}

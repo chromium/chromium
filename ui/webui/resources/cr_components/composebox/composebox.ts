@@ -417,7 +417,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     return this.showDropdown_ &&
         (this.showFileCarousel_ ||
-         this.searchboxLayoutMode === 'TallTopContext' ||
          this.shouldShowSubmitButton_ || this.inToolMode_);
   }
 

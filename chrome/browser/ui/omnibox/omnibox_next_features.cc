@@ -38,7 +38,6 @@ BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 constexpr base::FeatureParam<AddContextButtonVariant>::Option
     kAddContextButtonVariantOptions[] = {
         {AddContextButtonVariant::kBelowResults, "below_results"},
-        {AddContextButtonVariant::kAboveResults, "above_results"},
         {AddContextButtonVariant::kInline, "inline"}};
 
 // Configures the placement of the "Add Context" button in the Omnibox popup.
