@@ -74,10 +74,9 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
 
   bool needs_migration_validation =
       !base::STLSetDifference<base::flat_set<MigrationSource>>(
-           base::MakeFlatSet<MigrationSource>(
+           base::flat_set<MigrationSource>(
                app->unvalidated_migration_sources()),
-           base::MakeFlatSet<MigrationSource>(
-               app->validated_migration_sources()))
+           base::flat_set<MigrationSource>(app->validated_migration_sources()))
            .empty();
 
   if (!needs_scope_validation && !needs_migration_validation) {
@@ -152,13 +151,12 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
     }
 
     {
-      auto original_unvalidated = base::MakeFlatSet<MigrationSource>(
+      base::flat_set<MigrationSource> original_unvalidated(
           app.unvalidated_migration_sources());
-      auto original_validated =
-          base::MakeFlatSet<MigrationSource>(app.validated_migration_sources());
+      base::flat_set<MigrationSource> original_validated(
+          app.validated_migration_sources());
 
-      base::flat_set<MigrationSource> new_validated;
-      new_validated.insert_range(
+      base::flat_set<MigrationSource> new_validated(
           validated_origin_associations.migration_sources);
 
       auto previously_validated_and_requested =
@@ -174,11 +172,10 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
                original_unvalidated, final_validated)
                .empty();
 
-      app.SetValidatedMigrationSources(
-          std::ranges::to<std::vector<MigrationSource>>(final_validated));
-
       // Check if any migration sources were added or removed.
       migration_sources_updated = original_validated != final_validated;
+
+      app.SetValidatedMigrationSources(std::move(final_validated).extract());
     }
     app.SetOriginAssociationLastValidationCheckTime(now_time);
   }

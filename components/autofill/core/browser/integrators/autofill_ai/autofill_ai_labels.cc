@@ -142,15 +142,15 @@ GetOrderedAttributeTypesForDisambiguation(
     if (!attribute_type.is_disambiguation_type()) {
       return false;
     }
-    std::vector<std::u16string> values;
-    for (const EntityInstance* entity : entities) {
-      auto [value, types_used] = GetValueAndTypesForLabel(
-          *entity, attribute_type, obfuscate_sensitive_types, app_locale);
-      values.push_back(std::move(value));
-    }
+    std::vector<std::u16string> values =
+        base::ToVector(entities, [&](const EntityInstance* entity) {
+          return GetValueAndTypesForLabel(*entity, attribute_type,
+                                          obfuscate_sensitive_types, app_locale)
+              .first;
+        });
     return values.size() == 1
                ? !values.back().empty()
-               : base::MakeFlatSet<std::u16string>(values).size() > 1;
+               : base::flat_set<std::u16string>(std::move(values)).size() > 1;
   };
 
   std::vector<AttributeType> types = base::ToVector(entity_type.attributes());

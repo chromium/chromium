@@ -202,7 +202,7 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
   EditDetails details(MOVE);
 
-  details.existing_nodes_to_move = base::MakeFlatSet<
+  details.existing_nodes_to_move = base::flat_set<
       raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>(nodes);
 
   details.parent_node = GetParentNodeForMove(model, nodes);

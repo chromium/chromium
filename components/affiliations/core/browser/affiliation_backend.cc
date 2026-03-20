@@ -311,7 +311,7 @@ void AffiliationBackend::ProcessSuccessfulFetch(
     cache_->UpdatePslExtensions(result.psl_extensions);
   }
 
-  auto psl_extensions = base::MakeFlatSet<std::string>(result.psl_extensions);
+  base::flat_set<std::string> psl_extensions(result.psl_extensions);
   result.groupings = MergeRelatedGroups(psl_extensions, result.groupings);
   std::map<std::string, const GroupedFacets*> map_facet_to_group;
   for (const GroupedFacets& grouped_facets : result.groupings) {

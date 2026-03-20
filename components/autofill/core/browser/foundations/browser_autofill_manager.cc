@@ -1324,10 +1324,9 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
-  auto all_suggestion_data =
-      base::MakeFlatMap<SuggestionDataSource,
-                        std::vector<SuggestionGenerator::SuggestionData>>(
-          suggestion_data);
+  base::flat_map<SuggestionDataSource,
+                 std::vector<SuggestionGenerator::SuggestionData>>
+      all_suggestion_data(std::move(suggestion_data));
 
   // Clear some of the suggestions based on the ablation study.
   if (autofill_field &&
