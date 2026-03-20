@@ -18,6 +18,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",

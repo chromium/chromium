@@ -6,9 +6,9 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
-#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -74,13 +74,11 @@ UIImage* DefaultAppBarSymbol(NSString* symbol_name) {
                                         AppBarSymbolConfiguration());
 }
 
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Returns a custom symbol with the common configuration.
 UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   return CustomSymbolWithConfiguration(symbol_name,
                                        AppBarSymbolConfiguration());
 }
-#endif
 
 }  // namespace
 
@@ -286,6 +284,11 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 #else
       image = DefaultAppBarSymbol(kGeminiNonBrandedLogoSymbol);
 #endif
+      break;
+    case AppBarAssistantButtonState::kAIM:
+      title =
+          l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
+      image = CustomAppBarSymbol(kMagnifyingglassSparkSymbol);
       break;
   }
 

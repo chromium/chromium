@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -621,4 +623,31 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
       }]]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that the assistant button is in the kAIM state when the correct
+// features are enabled.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAssistantContainer, kAimCobrowse, kGeminiKillSwitch},
+      {kPageActionMenu});
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAIM
+                                        avatar:nil]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping the assistant button in the kAIM state dispatches the
+// assistant command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kAssistantContainer, kGeminiKillSwitch},
+                                {kPageActionMenu});
+  [mediator_ updateAssistantButton];
+
+  OCMExpect([mock_scene_handler_ showAssistantWithContext:[OCMArg any]]);
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM];
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 }

@@ -19,6 +19,7 @@ enum class AppBarAssistantButtonState {
   kSignedOut,
   kAccount,
   kAsk,
+  kAIM,
 };
 
 // Consumer of the app bar.

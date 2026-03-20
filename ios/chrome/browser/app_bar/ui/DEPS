@@ -1,6 +1,5 @@
 include_rules = [
   # keep-sorted start
-  "+ios/chrome/browser/cobrowse/model/cobrowse_context.h",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   # keep-sorted end
