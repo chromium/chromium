@@ -8,8 +8,11 @@
 #include <string>
 namespace safe_browsing {
 
-// Strips the filename from the |url|.
+// Strips the filename, query parameters, and fragment from the `url`.
 std::string SanitizeURLWithoutFilename(std::string url);
+
+// Strips the query parameters and fragment from the `url`.
+std::string SanitizeURLWithoutQueryAndRef(std::string url);
 
 }  // namespace safe_browsing
 

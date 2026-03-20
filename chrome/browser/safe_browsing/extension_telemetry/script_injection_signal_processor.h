@@ -50,7 +50,6 @@ class ScriptInjectionSignalProcessor : public ExtensionSignalProcessor {
     std::string api_name;
     std::string url;
     std::vector<std::string> args_list;
-    std::string arg_url;
     base::Time last_timestamp;
     uint32_t count = 0;
   };

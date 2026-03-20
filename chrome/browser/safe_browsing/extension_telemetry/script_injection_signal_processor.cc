@@ -54,7 +54,6 @@ void ScriptInjectionSignalProcessor::ProcessSignal(
     data.api_name = script_injection_signal.api_name();
     data.url = script_injection_signal.url();
     data.args_list = script_injection_signal.args_list();
-    data.arg_url = script_injection_signal.arg_url();
     data.last_timestamp = script_injection_signal.timestamp();
     data.count = 1;
     data_map.emplace(std::move(aggregation_key), std::move(data));
@@ -80,7 +79,6 @@ ScriptInjectionSignalProcessor::GetSignalInfoForReport(
     for (auto& arg : data.args_list) {
       script_injection->add_args_list(std::move(arg));
     }
-    script_injection->set_arg_url(std::move(data.arg_url));
     script_injection->set_timestamp_ms(
         data.last_timestamp.InMillisecondsSinceUnixEpoch());
     script_injection->set_count(data.count);

@@ -531,8 +531,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   // Add a script injection signal.
   auto signal = std::make_unique<ScriptInjectionSignal>(
       kExtensionId[0], "blinkSetAttribute", "http://www.example.com",
-      std::vector<std::string>{"src", "<arg_url>"}, "http://evil.com/js",
-      base::Time::Now());
+      std::vector<std::string>{"src", "http://evil.com/js"}, base::Time::Now());
   telemetry_service_->AddSignal(std::move(signal));
 
   // Verify that the signal is correctly recorded in the enterprise report.

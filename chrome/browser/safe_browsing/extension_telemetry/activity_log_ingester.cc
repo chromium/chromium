@@ -64,13 +64,25 @@ void ActivityLogIngester::OnExtensionActivity(
           DOMAccessSignal::DOMAccess::READ, action->time()));
       break;
     case extensions::activity_log_policy_util::TelemetrySignalType::
-        kScriptInjection:
+        kScriptInjection: {
+      std::string url = action->page_url().spec();
+      std::string arg_url = action->arg_url().spec();
+
+      // For scripting.executeScript, the target URL is resolved from the tabId
+      // argument and placed in arg_url by the ActivityLog system.
+      // We move this to the `url` field and clear `arg_url` to save space,
+      // as it represents the true injection target.
+      if (action->api_name() == "scripting.executeScript" && !arg_url.empty()) {
+        url = std::move(arg_url);
+      }
+
       telemetry_service_->AddSignal(std::make_unique<ScriptInjectionSignal>(
-          action->extension_id(), action->api_name(), action->page_url().spec(),
+          action->extension_id(), action->api_name(), std::move(url),
           extensions::activity_log_policy_util::GetArgumentsList(
               action->api_name(), args),
-          action->arg_url().spec(), action->time()));
+          action->time()));
       break;
+    }
     case extensions::activity_log_policy_util::TelemetrySignalType::kNone:
       // We should never reach here because of the early return above, but
       // the compiler requires all enum values to be handled.

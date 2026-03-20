@@ -21,7 +21,6 @@ class ScriptInjectionSignal : public ExtensionSignal {
                         std::string api_name,
                         std::string url,
                         std::vector<std::string> args_list,
-                        std::string arg_url,
                         base::Time timestamp);
   ~ScriptInjectionSignal() override;
 
@@ -35,14 +34,12 @@ class ScriptInjectionSignal : public ExtensionSignal {
   const std::string& api_name() const { return api_name_; }
   const std::string& url() const { return url_; }
   const std::vector<std::string>& args_list() const { return args_list_; }
-  const std::string& arg_url() const { return arg_url_; }
   const base::Time& timestamp() const { return timestamp_; }
 
  protected:
   std::string api_name_;
   std::string url_;
   std::vector<std::string> args_list_;
-  std::string arg_url_;
   base::Time timestamp_;
 };
 

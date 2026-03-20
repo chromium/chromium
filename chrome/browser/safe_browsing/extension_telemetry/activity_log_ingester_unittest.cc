@@ -137,6 +137,7 @@ TEST_F(ActivityLogIngesterTest, IngestsScriptInjectionSignal_ExecuteScript) {
   args.Append("code to inject");
   auto action = CreateAction(extensions::Action::ACTION_API_CALL,
                              "scripting.executeScript", std::move(args));
+  action->set_arg_url(GURL("http://www.target.com/path/to/page.html"));
 
   EXPECT_CALL(*telemetry_service_, AddSignal(testing::_))
       .WillOnce([](std::unique_ptr<ExtensionSignal> signal) {
@@ -146,6 +147,8 @@ TEST_F(ActivityLogIngesterTest, IngestsScriptInjectionSignal_ExecuteScript) {
         EXPECT_EQ(script_signal->api_name(), "scripting.executeScript");
         ASSERT_EQ(script_signal->args_list().size(), 1u);
         EXPECT_EQ(script_signal->args_list()[0], "code to inject");
+        // Target URL should have been moved from arg_url to url and sanitized.
+        EXPECT_EQ(script_signal->url(), "http://www.target.com/path/to/");
       });
 
   ingester_->OnExtensionActivity(action);

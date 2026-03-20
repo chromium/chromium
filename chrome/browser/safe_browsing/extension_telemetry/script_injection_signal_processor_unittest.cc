@@ -41,7 +41,7 @@ TEST_F(ScriptInjectionSignalProcessorTest, EmptyProcessorWithNoData) {
 
 TEST_F(ScriptInjectionSignalProcessorTest, StoresDataAfterProcessingSignal) {
   ScriptInjectionSignal signal(kExtensionId[0], "blinkAddElement",
-                               "http://example.com", {"script"}, "",
+                               "http://example.com", {"script"},
                                base::Time::Now());
   processor_.ProcessSignal(signal);
 
@@ -56,15 +56,15 @@ TEST_F(ScriptInjectionSignalProcessorTest, AggregatesSignalsCorrectly) {
   // Identical signals (different timestamps).
   processor_.ProcessSignal(ScriptInjectionSignal(
       kExtensionId[0], "blinkSetAttribute", "http://example.com",
-      {"script", "src", "<arg_url>"}, "http://evil.com/js", now));
+      {"script", "src", "https://evil.com/s.js"}, now));
   processor_.ProcessSignal(ScriptInjectionSignal(
       kExtensionId[0], "blinkSetAttribute", "http://example.com",
-      {"script", "src", "<arg_url>"}, "http://evil.com/js", later));
+      {"script", "src", "https://evil.com/s.js"}, later));
 
-  // Different signal (different arg_url).
+  // Different signal (different argument).
   processor_.ProcessSignal(ScriptInjectionSignal(
       kExtensionId[0], "blinkSetAttribute", "http://example.com",
-      {"script", "src", "<arg_url>"}, "http://other.com/js", now));
+      {"script", "src", "https://other.com/s.js"}, now));
 
   std::unique_ptr<SignalInfo> signal_info =
       processor_.GetSignalInfoForReport(kExtensionId[0]);
@@ -76,7 +76,7 @@ TEST_F(ScriptInjectionSignalProcessorTest, AggregatesSignalsCorrectly) {
   // Check aggregated signal using gMock.
   EXPECT_THAT(injection_info.script_injections(),
               Contains(AllOf(
-                  Property(&ScriptInjection::arg_url, Eq("http://evil.com/js")),
+                  Property(&ScriptInjection::api_name, Eq("blinkSetAttribute")),
                   Property(&ScriptInjection::count, Eq(2u)),
                   Property(&ScriptInjection::timestamp_ms,
                            Eq(later.InMillisecondsSinceUnixEpoch())),
@@ -87,10 +87,10 @@ TEST_F(ScriptInjectionSignalProcessorTest, EnforcesMaxAggregatedSignals) {
   processor_.SetMaxAggregatedSignalsForTest(1);
 
   processor_.ProcessSignal(ScriptInjectionSignal(
-      kExtensionId[0], "api1", "url1", {"arg1"}, "", base::Time::Now()));
+      kExtensionId[0], "api1", "url1", {"arg1"}, base::Time::Now()));
   // This one should be ignored.
   processor_.ProcessSignal(ScriptInjectionSignal(
-      kExtensionId[0], "api2", "url1", {"arg1"}, "", base::Time::Now()));
+      kExtensionId[0], "api2", "url1", {"arg1"}, base::Time::Now()));
 
   std::unique_ptr<SignalInfo> signal_info =
       processor_.GetSignalInfoForReport(kExtensionId[0]);
