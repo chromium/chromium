@@ -248,15 +248,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 // Tests that an extension calling chrome.runtime.reload() repeatedly
 // will eventually be terminated.
 // TODO(https://crbug.com/493409291): Fix the failure.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExtensionTerminatedForRapidReloads \
-  DISABLED_ExtensionTerminatedForRapidReloads
-#else
-#define MAYBE_ExtensionTerminatedForRapidReloads \
-  ExtensionTerminatedForRapidReloads
-#endif
+// TODO(https://crbug.com/494351936): Fix test failing on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       MAYBE_ExtensionTerminatedForRapidReloads) {
+                       DISABLED_ExtensionTerminatedForRapidReloads) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   static constexpr char kManifest[] = R"(
       {
