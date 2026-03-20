@@ -48,6 +48,10 @@
 }
 
 - (void)start {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
+    return;
+  }
+
   [self.browser->GetSceneState().tabGridState addObserver:self];
 
   _viewController = [[AssistantAIMViewController alloc] init];

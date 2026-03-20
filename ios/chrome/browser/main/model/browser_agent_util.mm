@@ -125,7 +125,7 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   OmniboxPositionBrowserAgent::CreateForBrowser(browser);
   AutocompleteBrowserAgent::CreateForBrowser(browser);
   ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
-  if (IsAimCobrowseEnabled()) {
+  if (IsAimCobrowseEnabled() && !browser_is_off_record) {
     CobrowseBrowserAgent::CreateForBrowser(browser);
   }
 
