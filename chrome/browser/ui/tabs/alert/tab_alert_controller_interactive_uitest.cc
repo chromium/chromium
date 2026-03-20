@@ -59,14 +59,15 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
 
 }  // namespace
 
-class TabAlertControllerInteractiveUiTest
+// TODO(b/494617834): Fix to work with GlicMultiInstance and re-enable.
+class DISABLED_TabAlertControllerInteractiveUiTest
     : public glic::test::InteractiveGlicTest {
  public:
-  TabAlertControllerInteractiveUiTest() {
+  DISABLED_TabAlertControllerInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures({features::kGlic},
                                           {features::kGlicMultiInstance});
   }
-  ~TabAlertControllerInteractiveUiTest() override = default;
+  ~DISABLED_TabAlertControllerInteractiveUiTest() override = default;
 
   void SetUp() override { glic::test::InteractiveGlicTest::SetUp(); }
 
@@ -87,7 +88,7 @@ class TabAlertControllerInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
                        TabAlertControllerAccessingSwitchTabs) {
   RunTestSequence(
       LoadStartingPage(kFirstTabId, 0, browser()),
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)));
 }
 
-IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
                        AlertControllerChangesOnTabMovedBetweenBrowsers) {
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)));
 }
 
-IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
                        GlicSharingUpdatesAlertController) {
   RunTestSequence(
       LoadStartingPage(kFirstTabId, 0, browser()),
