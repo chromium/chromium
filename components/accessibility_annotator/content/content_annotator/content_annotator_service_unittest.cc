@@ -13,6 +13,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotation_validator.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -73,6 +74,20 @@ class MockContentClassifier : public ContentClassifier {
               (const, override));
 };
 
+class MockContentAnnotationValidator : public ContentAnnotationValidator {
+ public:
+  MockContentAnnotationValidator()
+      : ContentAnnotationValidator(base::DictValue()) {}
+  ~MockContentAnnotationValidator() override = default;
+
+  MOCK_METHOD(std::optional<std::string>,
+              Validate,
+              (std::string),
+              (const, override));
+
+  MOCK_METHOD(bool, IsValidatorEnabled, (), (const, override));
+};
+
 class MockPageEmbeddingsService
     : public page_content_annotations::PageEmbeddingsService {
  public:
@@ -108,7 +123,8 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
         passage_embeddings::Embedder* embedder,
         passage_embeddings::EmbedderMetadataProvider*
             embedder_metadata_provider,
-        std::unique_ptr<ContentClassifier> content_classifier)
+        std::unique_ptr<ContentClassifier> content_classifier,
+        std::unique_ptr<ContentAnnotationValidator> validator)
         : ContentAnnotatorService(page_content_annotations_service,
                                   page_content_extraction_service,
                                   optimization_guide_remote_model_executor,
@@ -116,7 +132,8 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
                                   accessibility_annotator_backend,
                                   embedder,
                                   embedder_metadata_provider,
-                                  std::move(content_classifier)) {}
+                                  std::move(content_classifier),
+                                  std::move(validator)) {}
   };
 
   ContentAnnotatorServiceTest() = default;
@@ -164,17 +181,23 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
         std::make_unique<testing::StrictMock<MockContentClassifier>>();
     mock_classifier_ = mock_classifier.get();
 
+    auto mock_validator =
+        std::make_unique<testing::StrictMock<MockContentAnnotationValidator>>();
+    mock_validator_ = mock_validator.get();
+
     service_ = std::make_unique<TestContentAnnotatorService>(
         *page_content_annotations_service_, *page_content_extraction_service_,
         *mock_remote_model_executor_, *mock_page_embeddings_service_,
         *accessibility_annotator_backend_, mock_embedder_.get(),
-        mock_embedder_metadata_provider_.get(), std::move(mock_classifier));
+        mock_embedder_metadata_provider_.get(), std::move(mock_classifier),
+        std::move(mock_validator));
   }
 
   void TearDown() override {
     // Explicitly destroy services before the TestHarness tears down the
     // environment.
     mock_classifier_ = nullptr;
+    mock_validator_ = nullptr;
     service_.reset();
     mock_embedder_.reset();
     mock_embedder_metadata_provider_.reset();
@@ -251,6 +274,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
       mock_embedder_metadata_provider_;
   std::unique_ptr<TestContentAnnotatorService> service_;
   raw_ptr<testing::StrictMock<MockContentClassifier>> mock_classifier_;
+  raw_ptr<testing::StrictMock<MockContentAnnotationValidator>> mock_validator_;
 };
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
@@ -478,7 +502,7 @@ TEST_F(ContentAnnotatorServiceTest,
       "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing", 5);
 }
 
-TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
+TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
   // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -549,11 +573,15 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
   optimization_guide::OptimizationGuideModelExecutionResult mock_result(
       base::ok(any_proto), /*execution_info=*/nullptr);
 
+  // 5. Empty schema means no validation is performed.
+  EXPECT_CALL(*mock_validator_, IsValidatorEnabled()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_validator_, Validate).Times(0);
+
   ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
                               .Run(std::move(mock_result),
                                    /*log_entry=*/nullptr));
 
-  // 5. Verify that the data is cached in the backend.
+  // 6. Verify that the data is cached in the backend.
   std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
           accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
@@ -632,7 +660,7 @@ TEST_F(ContentAnnotatorServiceTest,
 // Tests that a metadata update enables semantic classification and subsequent
 // full annotations.
 TEST_F(ContentAnnotatorServiceTest,
-       TestMaybeAnnotate_FullAnnotationTriggeredAfterEmbedderMetadataUpdate) {
+       TestMaybeAnnotate_FullAnnotationReachedAfterEmbedderMetadataUpdate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kContentAnnotator,
@@ -645,7 +673,7 @@ TEST_F(ContentAnnotatorServiceTest,
   // 1. Classification fails before metadata update.
   EXPECT_CALL(*mock_classifier_, Classify(_))
       .WillOnce(Return(ContentClassificationResult()));
-  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel).Times(0);
 
   TriggerClassification(url, base_time);
   histogram_tester.ExpectUniqueSample(
@@ -662,11 +690,78 @@ TEST_F(ContentAnnotatorServiceTest,
   result.is_in_target_language = true;
 
   EXPECT_CALL(*mock_classifier_, Classify(_)).WillOnce(Return(result));
-  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel(_, _, _, _)).Times(1);
+  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel).Times(1);
 
   TriggerClassification(url, base_time);
   histogram_tester.ExpectBucketCount(
       "AccessibilityAnnotator.FullAnnotationReached", true, 1);
+}
+
+// Tests that annotations are not saved when their validation fails.
+TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_FullAnnotationReachedValidationFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "true"}});
+
+  GURL url("https://example.com/validation_failed");
+  base::Time base_time = base::Time::Now();
+  std::string data = "invalid data";
+
+  // 1. Mock Classify to return a result that triggers full annotation.
+  ContentClassificationResult classifier_result;
+  classifier_result.title_keyword_result =
+      ContentClassificationResult::Result();
+  classifier_result.title_keyword_result->category = "test category";
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify(_))
+      .WillOnce(Return(classifier_result));
+
+  // 2. Capture the callback.
+  base::OnceCallback<void(
+      optimization_guide::OptimizationGuideModelExecutionResult,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>
+      captured_callback;
+
+  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel)
+      .WillOnce(
+          [&captured_callback](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) { captured_callback = std::move(callback); });
+
+  TriggerClassification(url, base_time);
+
+  // 3. Simulate model output.
+  ASSERT_TRUE(captured_callback);
+  optimization_guide::proto::ContentAnnotationResponse mock_response_proto;
+  mock_response_proto.set_extracted_data(data);
+
+  optimization_guide::proto::Any any_proto;
+  any_proto.set_type_url(base::StrCat(
+      {"type.googleapis.com/", mock_response_proto.GetTypeName()}));
+  any_proto.set_value(mock_response_proto.SerializeAsString());
+
+  optimization_guide::OptimizationGuideModelExecutionResult mock_result(
+      base::ok(any_proto), /*execution_info=*/nullptr);
+
+  // 4. Mock validator to return nullopt (validation failed).
+  EXPECT_CALL(*mock_validator_, IsValidatorEnabled()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_validator_, Validate(data)).WillOnce(Return(std::nullopt));
+
+  std::move(captured_callback)
+      .Run(std::move(mock_result), /*log_entry=*/nullptr);
+
+  // 5. Verify that NO data is cached in the backend.
+  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+      cached_data =
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+  EXPECT_FALSE(cached_data.has_value());
 }
 
 }  // namespace accessibility_annotator

@@ -17,6 +17,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 #include "chrome/test/base/testing_profile.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotation_validator.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -48,7 +49,8 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
       AccessibilityAnnotatorBackend& accessibility_annotator_backend,
       passage_embeddings::Embedder* embedder,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-      std::unique_ptr<ContentClassifier> content_classifier)
+      std::unique_ptr<ContentClassifier> content_classifier,
+      std::unique_ptr<ContentAnnotationValidator> validator)
       : ContentAnnotatorService(page_content_annotations_service,
                                 page_content_extraction_service,
                                 optimization_guide_remote_model_executor,
@@ -56,7 +58,8 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
                                 accessibility_annotator_backend,
                                 embedder,
                                 embedder_metadata_provider,
-                                std::move(content_classifier)) {}
+                                std::move(content_classifier),
+                                std::move(validator)) {}
   ~MockContentAnnotatorService() override = default;
 
   MOCK_METHOD(void,
@@ -101,13 +104,17 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
         ContentClassifier::Create(mock_embedder_.get());
     ASSERT_TRUE(content_classifier_);
 
+    std::unique_ptr<ContentAnnotationValidator> validator_ =
+        ContentAnnotationValidator::Create();
+    ASSERT_TRUE(validator_);
+
     mock_service_ =
         std::make_unique<testing::StrictMock<MockContentAnnotatorService>>(
             *page_content_annotations_service_,
             *page_content_extraction_service, mock_remote_model_executor_,
             *page_embeddings_service, *accessibility_annotator_backend,
             mock_embedder_.get(), mock_embedder_metadata_provider_.get(),
-            std::move(content_classifier_));
+            std::move(content_classifier_), std::move(validator_));
 
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*tab_interface_, GetContents())

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotation_validator.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -62,11 +63,16 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
   if (!content_classifier) {
     return nullptr;
   }
+  std::unique_ptr<ContentAnnotationValidator> validator =
+      ContentAnnotationValidator::Create();
+  if (!validator) {
+    return nullptr;
+  }
   return base::WrapUnique(new ContentAnnotatorService(
       page_content_annotations_service, page_content_extraction_service,
       optimization_guide_remote_model_executor, page_embeddings_service,
       accessibility_annotator_backend, embedder, embedder_metadata_provider,
-      std::move(content_classifier)));
+      std::move(content_classifier), std::move(validator)));
 }
 
 ContentAnnotatorService::ContentAnnotatorService(
@@ -80,7 +86,8 @@ ContentAnnotatorService::ContentAnnotatorService(
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
     passage_embeddings::Embedder* embedder,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    std::unique_ptr<ContentClassifier> content_classifier)
+    std::unique_ptr<ContentClassifier> content_classifier,
+    std::unique_ptr<ContentAnnotationValidator> validator)
     : page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_remote_model_executor_(
           optimization_guide_remote_model_executor),
@@ -88,8 +95,10 @@ ContentAnnotatorService::ContentAnnotatorService(
       accessibility_annotator_backend_(accessibility_annotator_backend),
       embedder_(embedder),
       join_entries_(kContentAnnotatorMaxPendingUrls.Get()),
-      content_classifier_(std::move(content_classifier)) {
+      content_classifier_(std::move(content_classifier)),
+      validator_(std::move(validator)) {
   CHECK(content_classifier_);
+  CHECK(validator_);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
   page_content_extraction_service_observation_.Observe(
@@ -267,8 +276,14 @@ void ContentAnnotatorService::HandleModelExecutionResult(
           });
 
   if (extracted_data.has_value() && !extracted_data->empty()) {
-    accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-        url, std::move(page_title), std::move(*extracted_data));
+    std::optional<std::string> data_to_cache =
+        validator_->IsValidatorEnabled()
+            ? validator_->Validate(std::move(*extracted_data))
+            : std::move(extracted_data);
+    if (data_to_cache) {
+      accessibility_annotator_backend_->SetContentAnnotationsCacheData(
+          url, std::move(page_title), std::move(*data_to_cache));
+    }
   }
 }
 
