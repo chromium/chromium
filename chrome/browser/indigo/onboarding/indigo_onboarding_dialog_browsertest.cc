@@ -71,6 +71,23 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, ShowAndClose) {
       Check([&]() { return WasDialogClosed(); }));
 }
 
+
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, JSWindowClose) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab);
+
+  const GURL onboarding_url("about:blank");
+  RunTestSequence(Do([&]() { OpenDialog(*tab, onboarding_url); }),
+                  WaitForShow(IndigoOnboardingDialog::kWebViewId),
+                  InstrumentNonTabWebView(kDialogWebContentsId,
+                                          IndigoOnboardingDialog::kWebViewId),
+                  WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+                  ExecuteJs(kDialogWebContentsId, "() => window.close()",
+                            ExecuteJsMode::kFireAndForget),
+                  WaitForHide(IndigoOnboardingDialog::kWebViewId),
+                  Check([&]() { return WasDialogClosed(); }));
+}
+
 // Test clicking a link with target="_blank". This verifies the
 // WebContentsDelegate::AddNewContents implementation.
 IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest,

@@ -67,13 +67,15 @@ class IndigoOnboardingDialog : public views::ViewObserver {
 
   base::OnceClosure close_callback_;
 
-  // `widget_` must be destroyed before `delegate_` because the widget holds a
-  // raw pointer to the delegate.
   std::unique_ptr<views::DialogDelegate> delegate_;
-  std::unique_ptr<views::Widget> widget_;
-
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
+
+  // `widget_` must be destroyed early, and especially before `delegate_`,
+  // because the widget holds a raw pointer to the delegate. It should also
+  // be destroyed before `view_observation_`, since it is accessed (to reset)
+  // in `OnWidgetClosed`, which can happen during widget destruction.
+  std::unique_ptr<views::Widget> widget_;
 };
 
 }  // namespace indigo

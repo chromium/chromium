@@ -39,6 +39,10 @@ class OnboardingWebView : public views::WebView {
  public:
   using WebView::WebView;
 
+  void SetOnCloseCallback(base::OnceClosure close_callback) {
+    close_callback_ = std::move(close_callback);
+  }
+
   void SetBrowserWindowCallback(
       base::RepeatingCallback<BrowserWindowInterface*()>
           browser_window_callback) {
@@ -46,6 +50,12 @@ class OnboardingWebView : public views::WebView {
   }
 
   // WebContentsDelegate:
+
+  void CloseContents(content::WebContents* web_contents) override {
+    if (close_callback_) {
+      std::move(close_callback_).Run();
+    }
+  }
 
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
@@ -93,6 +103,7 @@ class OnboardingWebView : public views::WebView {
   }
 
   base::RepeatingCallback<BrowserWindowInterface*()> browser_window_callback_;
+  base::OnceClosure close_callback_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
@@ -119,6 +130,8 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
   Profile* profile =
       Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
   auto web_view = std::make_unique<OnboardingWebView>(profile);
+  web_view->SetOnCloseCallback(
+      base::BindOnce(&IndigoOnboardingDialog::Close, base::Unretained(this)));
   web_view->SetBrowserWindowCallback(base::BindRepeating(
       [](const base::WeakPtr<tabs::TabInterface>& tab) {
         return tab ? tab->GetBrowserWindowInterface() : nullptr;
