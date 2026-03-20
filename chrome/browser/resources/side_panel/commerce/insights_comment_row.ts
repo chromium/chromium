@@ -3,38 +3,40 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './insights_comment_row.html.js';
+import {getCss} from './insights_comment_row.css.js';
+import {getHtml} from './insights_comment_row.html.js';
 import {PriceInsightsBrowserProxyImpl} from './price_insights_browser_proxy.js';
 import type {PriceInsightsBrowserProxy} from './price_insights_browser_proxy.js';
 
-export class InsightsCommentRow extends PolymerElement {
+export class InsightsCommentRowElement extends CrLitElement {
   static get is() {
     return 'insights-comment-row';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      shouldShowFeedback_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('shouldShowFeedback'),
-      },
+      shouldShowFeedback_: {type: Boolean},
     };
   }
 
-  declare private shouldShowFeedback_: boolean;
+  protected accessor shouldShowFeedback_: boolean =
+      loadTimeData.getBoolean('shouldShowFeedback');
   private priceInsightsProxy_: PriceInsightsBrowserProxy =
       PriceInsightsBrowserProxyImpl.getInstance();
 
-  private showFeedback_() {
+  protected onFeedbackClick_() {
     this.priceInsightsProxy_.showFeedback();
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceInsights.InlineFeedbackLinkClicked');
@@ -43,8 +45,8 @@ export class InsightsCommentRow extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'insights-comment-row': InsightsCommentRow;
+    'insights-comment-row': InsightsCommentRowElement;
   }
 }
 
-customElements.define(InsightsCommentRow.is, InsightsCommentRow);
+customElements.define(InsightsCommentRowElement.is, InsightsCommentRowElement);

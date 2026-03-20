@@ -198,14 +198,14 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!commentRow);
     assertTrue(isVisible(commentRow));
 
-    const comment = commentRow.shadowRoot!.querySelector('#comment');
+    const comment = commentRow.shadowRoot.querySelector('#comment');
     assertTrue(!!comment);
     assertEquals(
         loadTimeData.getString('historyDescription'),
         comment.textContent.trim());
 
     const feedbackButton =
-        commentRow.shadowRoot!.querySelector<HTMLElement>('.link');
+        commentRow.shadowRoot.querySelector<HTMLElement>('.link');
     assertTrue(!!feedbackButton);
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent.trim());
