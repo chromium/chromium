@@ -145,6 +145,13 @@
       </cr-button>
     </div>
 
+    <div id="subAppsPermissionExplanation" class="cr-row continuation secondary"
+        hidden$="[[!subAppsPermissionExplanation_]]">
+      <localized-link localized-string="[[subAppsPermissionExplanation_]]"
+          on-link-clicked="onSubAppPermissionExplanationLinkClicked_">
+      </localized-link>
+    </div>
+
     <div class="list-frame">
       <site-details-permission category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
           icon="settings:location-on" label="$i18n{siteSettingsLocation}">

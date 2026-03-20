@@ -320,7 +320,7 @@ export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
 export {DefaultSettingSource, SiteSettingsBrowserProxyImpl, ThirdPartyCookieBlockingSetting} from './site_settings/site_settings_browser_proxy.js';
-export type {ChooserException, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsBrowserProxy, StorageAccessEmbeddingException, StorageAccessSiteException, ZoomLevelEntry} from './site_settings/site_settings_browser_proxy.js';
+export type {ChooserException, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsBrowserProxy, StorageAccessEmbeddingException, StorageAccessSiteException, SubAppsPermissionExplanationInfo, ZoomLevelEntry} from './site_settings/site_settings_browser_proxy.js';
 export {defaultSettingLabel} from './site_settings/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
 // <if expr="is_chromeos">

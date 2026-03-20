@@ -196,6 +196,14 @@ export interface OriginFileSystemGrants {
   editGrants: FileSystemGrant[];
 }
 
+export interface SubAppsPermissionExplanationInfo {
+  isSubApp: boolean;
+  hasSubApps: boolean;
+  appName?: string;
+  parentAppName?: string;
+  parentAppOrigin?: string;
+}
+
 /**
  * Must be kept in sync with the C++ enum of the same name in
  * chrome/browser/content_settings/generated_cookie_prefs.h
@@ -518,6 +526,15 @@ export interface SiteSettingsBrowserProxy {
    * @param contentType The permission type.
    */
   openSystemPermissionSettings(contentType: string): void;
+
+  /**
+   * Returns info about whether the url points to an isolated web app that has
+   * sub apps or is a sub app so that we can later on explain clearly that
+   * an isolated web app shares permissions with its installed sub apps
+   * and vice versa.
+   */
+  getSubAppsPermissionExplanation(url: string):
+      Promise<SubAppsPermissionExplanationInfo>;
 }
 
 export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
@@ -699,6 +716,10 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
 
   openSystemPermissionSettings(contentType: string) {
     chrome.send('openSystemPermissionSettings', [contentType]);
+  }
+
+  getSubAppsPermissionExplanation(url: string) {
+    return sendWithPromise('getSubAppsPermissionExplanation', url);
   }
 
   static getInstance(): SiteSettingsBrowserProxy {

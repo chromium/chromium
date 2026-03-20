@@ -994,8 +994,11 @@ UrlIdentity GetUrlIdentityForGURL(Profile* profile,
             .name = base::UTF8ToUTF16(url.spec())};
   }
 
+  GURL url_to_use =
+      url.SchemeIs(webapps::kIsolatedAppScheme) ? url : origin.GetURL();
+
   return UrlIdentity::CreateFromUrl(
-      profile, origin.GetURL(), kUrlIdentityAllowedTypes,
+      profile, url_to_use, kUrlIdentityAllowedTypes,
       hostname_only ? kUrlIdentityOptionsHostOnly
                     : kUrlIdentityOptionsOmitHttps);
 }

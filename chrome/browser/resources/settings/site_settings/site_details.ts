@@ -7,6 +7,7 @@
  * 'site-details' show the details (permissions and usage) for a given origin
  * under Site Settings.
  */
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -212,6 +213,16 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             'computeShouldUseBlockIfUnfamiliarLabelForV8OptimizerDefault_(' +
             'prefs.generated.javascript_optimizer.value)',
       },
+
+      /**
+       * When the app at url is an isolated web app or an isolated sub app,
+       * this returns a string explaining that sub apps share permissions
+       * with the parent app that installed them.
+       */
+      subAppsPermissionExplanation_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -237,6 +248,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   declare private enableLocalNetworkAccessSetting_: boolean;
   declare private enableLocalNetworkAccessSplitPermissions_: boolean;
   declare private useBlockIfUnfamiliarLabelForV8OptimizerDefault_: boolean;
+  declare private subAppsPermissionExplanation_: string;
+  private parentAppOrigin_: string|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -283,6 +296,24 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         this.browserProxy.getCategoryList(this.origin_).then((categoryList) => {
           this.updatePermissions_(categoryList, /*hideOthers=*/ true);
         });
+
+        this.browserProxy.getSubAppsPermissionExplanation(this.origin_)
+            .then((info) => {
+              if (info.isSubApp && info.appName && info.parentAppName &&
+                  info.parentAppOrigin) {
+                this.parentAppOrigin_ = info.parentAppOrigin;
+                this.subAppsPermissionExplanation_ = this.i18n(
+                    'siteSettingsSubAppPermissionExplanation', info.appName,
+                    info.parentAppName);
+              } else if (info.hasSubApps && info.appName) {
+                this.parentAppOrigin_ = null;
+                this.subAppsPermissionExplanation_ = this.i18n(
+                    'siteSettingsParentAppPermissionExplanation', info.appName);
+              } else {
+                this.parentAppOrigin_ = null;
+                this.subAppsPermissionExplanation_ = '';
+              }
+            });
       }
     });
   }
@@ -469,6 +500,14 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  private onSubAppPermissionExplanationLinkClicked_() {
+    if (this.parentAppOrigin_) {
+      Router.getInstance().navigateTo(
+          routes.SITE_SETTINGS_SITE_DETAILS,
+          new URLSearchParams('site=' + this.parentAppOrigin_));
+    }
   }
 }
 

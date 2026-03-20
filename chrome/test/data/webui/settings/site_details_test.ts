@@ -4,6 +4,7 @@
 
 // clang-format off
 import {isChromeOS} from 'chrome://resources/js/platform.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsElement, WebsiteUsageBrowserProxy} from 'chrome://settings/lazy_load.js';
@@ -659,4 +660,118 @@ suite('SiteDetails', function() {
             routes.SITE_SETTINGS_ALL.path,
             Router.getInstance().getCurrentRoute().path);
       });
+
+  test('sub app permission explanation', async function() {
+    const isolatedAppOrigin = 'isolated-app://hubeit66v45f5a2n';
+    const regularOrigin = 'https://foo.com:443';
+
+    // Add exceptions for isolatedAppOrigin to prefs so that getOriginPermissions
+    // doesn't assert.
+    browserProxy.getCategoryListForTest(isolatedAppOrigin).forEach(category => {
+      prefs.exceptions[category].push(createRawSiteException(isolatedAppOrigin));
+    });
+
+    browserProxy.setPrefs(prefs);
+    browserProxy.setSubAppsPermissionExplanation({
+      isSubApp: true,
+      hasSubApps: false,
+      appName: 'Sub App',
+      parentAppName: 'Parent App',
+      parentAppOrigin: 'isolated-app://hubeit66v45f5a2n',
+    });
+
+    testElement = createSiteDetails(isolatedAppOrigin);
+    await browserProxy.whenCalled('getSubAppsPermissionExplanation');
+    await flushTasks();
+
+    const explanation = testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#subAppsPermissionExplanation');
+    assert(explanation);
+    assertFalse(explanation.hidden);
+    const linkElement = explanation.querySelector('localized-link');
+    assert(linkElement);
+
+    // Should contain both app name and parent app name.
+    assertTrue(linkElement.localizedString.includes('Sub App'));
+    assertTrue(linkElement.localizedString.includes('Parent App'));
+
+    browserProxy.resetResolver('getSubAppsPermissionExplanation');
+    browserProxy.setSubAppsPermissionExplanation({
+      isSubApp: false,
+      hasSubApps: true,
+      appName: 'Parent App',
+    });
+
+    // Navigate again with isolated app origin.
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS_SITE_DETAILS,
+        new URLSearchParams('site=' + isolatedAppOrigin));
+
+    await browserProxy.whenCalled('getSubAppsPermissionExplanation');
+    await flushTasks();
+
+    assertFalse(explanation.hidden);
+    assertTrue(linkElement.localizedString.includes('Parent App'));
+
+    browserProxy.resetResolver('getSubAppsPermissionExplanation');
+    browserProxy.setSubAppsPermissionExplanation({
+      isSubApp: false,
+      hasSubApps: false,
+    });
+
+    // Navigate with a regular origin
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS_SITE_DETAILS,
+        new URLSearchParams('site=' + regularOrigin));
+
+    await browserProxy.whenCalled('getSubAppsPermissionExplanation');
+    await flushTasks();
+
+    assertTrue(explanation.hidden);
+    assertEquals('', linkElement.localizedString);
+  });
+
+  test('sub app permission explanation link click', async function() {
+    const subAppOrigin = 'isolated-app://sub-app';
+    const parentAppOrigin = 'isolated-app://parent-app';
+
+    // Add exceptions for subAppOrigin and parentAppOrigin to prefs so that
+    // getOriginPermissions doesn't assert.
+    browserProxy.getCategoryListForTest(subAppOrigin).forEach(category => {
+      prefs.exceptions[category].push(createRawSiteException(subAppOrigin));
+    });
+    browserProxy.getCategoryListForTest(parentAppOrigin).forEach(category => {
+      prefs.exceptions[category].push(createRawSiteException(parentAppOrigin));
+    });
+
+    browserProxy.setPrefs(prefs);
+    browserProxy.setSubAppsPermissionExplanation({
+      isSubApp: true,
+      hasSubApps: false,
+      appName: 'Sub App',
+      parentAppName: 'Parent App',
+      parentAppOrigin: parentAppOrigin,
+    });
+
+    testElement = createSiteDetails(subAppOrigin);
+    await browserProxy.whenCalled('getSubAppsPermissionExplanation');
+    await flushTasks();
+
+    const explanation = testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#subAppsPermissionExplanation');
+    assert(explanation);
+    assertFalse(explanation.hidden);
+    const linkElement = explanation.querySelector('localized-link');
+    assert(linkElement);
+
+    // Click the link and verify navigation.
+    linkElement.dispatchEvent(new CustomEvent('link-clicked'));
+
+    assertEquals(
+        routes.SITE_SETTINGS_SITE_DETAILS.path,
+        Router.getInstance().getCurrentRoute().path);
+    assertEquals(
+        parentAppOrigin,
+        Router.getInstance().getQueryParameters().get('site'));
+  });
 });

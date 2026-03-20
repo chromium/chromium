@@ -264,10 +264,11 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   constexpr char kParamRequest[] = "site";
   GURL link_destination = GetSettingsUrl(chrome::kContentSettingsSubPage);
   if (SiteGURLIsValid(url)) {
-    std::string origin_string = url::Origin::Create(url).Serialize();
-    link_destination =
-        net::AppendQueryParameter(GetSettingsUrl(chrome::kSiteDetailsSubpage),
-                                  kParamRequest, origin_string);
+    std::string url_string = url.SchemeIs(webapps::kIsolatedAppScheme)
+                                 ? url.spec()
+                                 : url::Origin::Create(url).Serialize();
+    link_destination = net::AppendQueryParameter(
+        GetSettingsUrl(chrome::kSiteDetailsSubpage), kParamRequest, url_string);
   }
   NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

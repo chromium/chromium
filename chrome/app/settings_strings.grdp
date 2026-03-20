@@ -3547,6 +3547,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_CONFIRMATION" desc="Body text of a dialog that asks users to confirm that they want to reset all permissions for a site.">
     The next time you visit, <ph name="SITE">$1<ex>www.example.com</ex></ph> will use default permissions
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PARENT_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's site settings page. Any changes the user makes to this app's permissions also apply to any installed sub apps.">
+    Permissions you allow for <ph name="APP_NAME">$1<ex>Parent app</ex></ph> will also be allowed for its installed apps.
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's site settings page. Any changes the user makes to this app's permissions also apply to the parent app and its other sub apps.">
+    Permissions you allow for <ph name="APP_NAME">$1<ex>Sub app</ex></ph> will also be allowed for <ph name="PARENT_APP_NAME">$2<ex>Parent app</ex></ph> and its installed apps.
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DELETE_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting storage used by a site.">
     Delete site data?
   </message>

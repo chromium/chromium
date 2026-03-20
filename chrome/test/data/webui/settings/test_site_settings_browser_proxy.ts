@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {StorageAccessSiteException, AppProtocolEntry, ChooserType, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import type {StorageAccessSiteException, AppProtocolEntry, ChooserType, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingsBrowserProxy, SubAppsPermissionExplanationInfo, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -36,6 +36,10 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
   private recentSitePermissions_: RecentSitePermissions[] = [];
   private fileSystemGrantsList_: OriginFileSystemGrants[] = [];
   private storageAccessExceptionList_: StorageAccessSiteException[] = [];
+  private subAppsPermissionExplanation_: SubAppsPermissionExplanationInfo = {
+    isSubApp: false,
+    hasSubApps: false,
+  };
 
   constructor() {
     super([
@@ -76,6 +80,7 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
       'getNumCookiesString',
       'getSystemDeniedPermissions',
       'openSystemPermissionSettings',
+      'getSubAppsPermissionExplanation',
       'getExtensionName',
       'getFileSystemGrants',
       'revokeFileSystemGrant',
@@ -636,6 +641,15 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
 
   openSystemPermissionSettings(contentType: string): void {
     this.methodCalled('openSystemPermissionSettings', contentType);
+  }
+
+  setSubAppsPermissionExplanation(info: SubAppsPermissionExplanationInfo) {
+    this.subAppsPermissionExplanation_ = info;
+  }
+
+  getSubAppsPermissionExplanation(url: string) {
+    this.methodCalled('getSubAppsPermissionExplanation', url);
+    return Promise.resolve(this.subAppsPermissionExplanation_);
   }
 
   getExtensionName(id: string) {
