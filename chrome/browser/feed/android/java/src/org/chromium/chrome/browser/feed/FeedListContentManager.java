@@ -181,6 +181,7 @@ public class FeedListContentManager implements ListContentManager {
 
     /**
      * Clears existing handlers and sets current handlers to newHandlers.
+     *
      * @param newHandlers handlers to set.
      */
     public void setHandlers(Map<String, Object> newHandlers) {
@@ -445,6 +446,13 @@ public class FeedListContentManager implements ListContentManager {
         mObservers.remove(observer);
     }
 
+    @Override
+    public void destroy() {
+        mObservers.clear();
+        mFeedContentList.clear();
+        mHandlers.clear();
+    }
+
     private @Nullable NativeViewContent findNativeViewByType(int viewType) {
         // Note: since there's relatively few native views, they're mostly at the front, a linear
         // search isn't terrible. This function is also called infrequently.
@@ -455,5 +463,9 @@ public class FeedListContentManager implements ListContentManager {
             if (nativeContent.getViewType() == viewType) return nativeContent;
         }
         return null;
+    }
+
+    public boolean isObserversEmptyForTesting() {
+        return mObservers.isEmpty();
     }
 }

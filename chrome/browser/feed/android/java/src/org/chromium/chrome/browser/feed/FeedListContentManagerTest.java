@@ -308,6 +308,23 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
 
     @Test
     @SmallTest
+    public void testDestroy() {
+        mManager.setHandlers(Map.of("HKEY1", "someHandler"));
+        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
+        addContents(0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1}));
+        assertEquals(1, mManager.getItemCount());
+        assertEquals("someHandler", mManager.getContextValues(-1).get("HKEY1"));
+        assertFalse(mManager.isObserversEmptyForTesting());
+
+        mManager.destroy();
+
+        assertEquals(0, mManager.getItemCount());
+        assertTrue(mManager.getContextValues(-1).isEmpty());
+        assertTrue(mManager.isObserversEmptyForTesting());
+    }
+
+    @Test
+    @SmallTest
     public void testGetNativeViewAfterMove() {
         View v1 = new View(mContext);
         FeedListContentManager.FeedContent c1 = createNativeViewContent(v1);

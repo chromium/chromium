@@ -102,6 +102,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         onItemRangeRemoved(0, mManager.getItemCount());
         mView.setAdapter(null);
         mView.setLayoutManager(null);
+        mManager.destroy();
         mManager = null;
     }
 

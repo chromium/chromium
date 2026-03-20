@@ -76,4 +76,7 @@ public interface ListContentManager {
 
     /** Removes the observer so it's no longer notified of content changes. */
     default void removeObserver(ListContentManagerObserver o) {}
+
+    /** Destroy the ListContentManager and clean up. */
+    default void destroy() {}
 }
