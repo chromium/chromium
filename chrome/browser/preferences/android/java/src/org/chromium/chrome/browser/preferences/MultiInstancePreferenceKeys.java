@@ -30,8 +30,6 @@ public final class MultiInstancePreferenceKeys {
             "Chrome.MultiWindow.InstanceLimitDowngradeTriggered";
     public static final KeyPrefix MULTI_INSTANCE_PROFILE_TYPE =
             new KeyPrefix("Chrome.MultiInstance.ProfileType.*");
-    public static final String MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN =
-            "Chrome.MultiWindow.RestorationMessageShown";
     public static final KeyPrefix MULTI_INSTANCE_LATEST_PERSISTENT_STATE_ID =
             new KeyPrefix("Chrome.MultiInstance.LatestPersistentStateId.*");
 
@@ -101,7 +99,6 @@ public final class MultiInstancePreferenceKeys {
                 MULTI_INSTANCE_MAX_INSTANCE_LIMIT,
                 MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
                 MULTI_INSTANCE_PROFILE_TYPE.pattern(),
-                MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
                 MULTI_INSTANCE_LATEST_PERSISTENT_STATE_ID.pattern(),
                 MULTI_INSTANCE_START_TIME,
                 MULTI_INSTANCE_MAX_COUNT_TIME,

@@ -113,8 +113,6 @@ public class MultiInstanceManagerApi31Test {
     @After
     public void teardown() throws InterruptedException {
         MultiInstanceSharedPreferences.getInstance()
-                .removeKey(MultiInstancePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN);
-        MultiInstanceSharedPreferences.getInstance()
                 .removeKey(
                         MultiInstancePreferenceKeys
                                 .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
@@ -196,8 +194,6 @@ public class MultiInstanceManagerApi31Test {
         mActivityTestRule.waitForActivityCompletelyLoaded();
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 4);
-        waitForMessage(
-                newActivity, MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
     }
 
     // Initial state: max limit = 3, active tasks = 2, inactive tasks = 1.
@@ -237,8 +233,6 @@ public class MultiInstanceManagerApi31Test {
                         /* addIncognitoExtras= */ false);
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
-        waitForMessage(
-                newActivity, MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
     }
 
     @Test

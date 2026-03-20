@@ -53,13 +53,11 @@ message MultiInstanceData {
 
   optional bool multi_instance_instance_limit_downgrade_triggered = 10;
 
-  optional bool multi_instance_restoration_message_shown = 11;
-
   // Per-instance data, keyed by instance ID.
-  map<int32, InstanceData> instances = 12;
+  map<int32, InstanceData> instances = 11;
 
   // Per-windowing mode data, keyed by mode index.
-  map<int32, WindowModeData> window_modes = 13;
+  map<int32, WindowModeData> window_modes = 12;
 }
 
 // Data representing the state of a single Chrome instance.

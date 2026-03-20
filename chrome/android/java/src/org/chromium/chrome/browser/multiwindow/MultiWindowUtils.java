@@ -1304,67 +1304,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Creates and shows a message to notify a user about instance restoration when the number of
-     * persisted instances exceeds the max instance count after an instance limit downgrade. This is
-     * relevant only when both active and inactive instances contribute to the instance limit.
-     *
-     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
-     * @param context The current context.
-     * @param primaryActionRunnable The {@link Runnable} that will be executed when the message
-     *     primary action button is clicked.
-     * @return Whether the message was shown.
-     */
-    public static boolean maybeShowInstanceRestorationMessage(
-            @Nullable MessageDispatcher messageDispatcher,
-            Context context,
-            Runnable primaryActionRunnable) {
-        if (messageDispatcher == null || !isMultiInstanceApi31Enabled()) return false;
-
-        // Show the message only when robust window management is disabled and the number of
-        // persisted instances exceeds the instance limit.
-        if (UiUtils.isRobustWindowManagementEnabled()
-                || getInstanceCountWithFallback(PersistedInstanceType.ANY) <= getMaxInstances()) {
-            return false;
-        }
-
-        // Show the message only if the message is not already shown.
-        if (ChromeMultiInstancePersistentStore.readRestorationMessageShown()) {
-            return false;
-        }
-
-        Resources resources = context.getResources();
-        PropertyModel message =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(
-                                MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT)
-                        .with(
-                                MessageBannerProperties.TITLE,
-                                resources.getString(
-                                        R.string.multi_instance_restoration_message_title,
-                                        getMaxInstances()))
-                        .with(
-                                MessageBannerProperties.DESCRIPTION,
-                                resources.getString(
-                                        R.string.multi_instance_restoration_message_description))
-                        .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.ic_chrome)
-                        .with(
-                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                resources.getString(R.string.multi_instance_message_button))
-                        .with(
-                                MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    primaryActionRunnable.run();
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
-                        .build();
-
-        messageDispatcher.enqueueWindowScopedMessage(message, false);
-        ChromeMultiInstancePersistentStore.writeRestorationMessageShown(true);
-        return true;
-    }
-
-    /**
      * Creates and shows a message to notify a user that a new window cannot be created because
      * {@link MultiWindowUtils#getMaxInstances()} activities already exist.
      *

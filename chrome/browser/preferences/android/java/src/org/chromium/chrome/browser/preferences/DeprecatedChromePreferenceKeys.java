@@ -45,6 +45,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Flags.SafeValuesVersion",
                 "Chrome.IsolatedSplits.VersionCode",
                 "Chrome.MultiInstance.ClosedByUser.*",
+                "Chrome.MultiWindow.RestorationMessageShown",
                 "Chrome.MultiWindowMode.Activities.*",
                 "Chrome.MultiWindowMode.ActivityCount.*",
                 "Chrome.MultiWindowMode.CycleStartTime",

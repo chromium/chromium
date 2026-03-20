@@ -1363,7 +1363,8 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="CctAccountMismatchNotice"/>
   <int value="59" label="DEPRECATED: PromptHatsClearBrowsingData"/>
   <int value="60" label="OsAdvancedProtectionSettingChangedMessage"/>
-  <int value="61" label="MultiInstanceRestorationOnDowngradedLimit"/>
+  <int value="61"
+      label="DEPRECATED: MultiInstanceRestorationOnDowngradedLimit"/>
   <int value="62" label="UpdateChromeForTabGroupShare"/>
   <int value="63" label="ModeBRollbackMessage"/>
   <int value="64" label="ReloadPage"/>

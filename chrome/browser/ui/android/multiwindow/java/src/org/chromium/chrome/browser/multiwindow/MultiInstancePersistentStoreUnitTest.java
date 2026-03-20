@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.Windowing
 
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.After;
 
 /**
  * Unit tests for {@link MultiInstancePersistentStore}. Focuses on the Protobuf implementation for
@@ -124,19 +124,6 @@ public class MultiInstancePersistentStoreUnitTest {
 
         MultiInstancePersistentStore.writeInstanceLimitDowngradeTriggered(false);
         assertFalse(MultiInstancePersistentStore.readInstanceLimitDowngradeTriggered());
-    }
-
-    @Test
-    public void testRestorationMessageShown() {
-        // Test default value.
-        assertFalse(MultiInstancePersistentStore.readRestorationMessageShown());
-
-        // Verify that the value is successfully written to the store.
-        MultiInstancePersistentStore.writeRestorationMessageShown(true);
-        assertTrue(MultiInstancePersistentStore.readRestorationMessageShown());
-
-        MultiInstancePersistentStore.writeRestorationMessageShown(false);
-        assertFalse(MultiInstancePersistentStore.readRestorationMessageShown());
     }
 
     @Test

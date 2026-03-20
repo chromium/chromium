@@ -405,17 +405,6 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * Shows a message to notify the user when excess of {@link MultiWindowUtils#getMaxInstances()}
-     * running activities have been finished after an instance limit downgrade causing existence of
-     * more active instances than the instance limit.
-     *
-     * @return {@code true} if the instance restoration message was shown, {@code false} otherwise.
-     */
-    public boolean showInstanceRestorationMessage() {
-        return false;
-    }
-
-    /**
      * Shows a message to notify the user that a new window cannot be created because {@link
      * MultiWindowUtils#getMaxInstances()} activities already exist.
      */

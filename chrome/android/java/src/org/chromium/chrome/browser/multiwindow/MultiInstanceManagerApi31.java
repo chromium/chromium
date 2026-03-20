@@ -162,7 +162,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (maxInstances > prevInstanceLimit) {
             // Reset SharedPrefs for instance limit downgrade if limit has increased.
             ChromeMultiInstancePersistentStore.writeInstanceLimitDowngradeTriggered(false);
-            ChromeMultiInstancePersistentStore.writeRestorationMessageShown(false);
         }
         ChromeMultiInstancePersistentStore.writeMaxInstanceLimit(maxInstances);
     }
@@ -1455,12 +1454,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     private int getMaxInstances() {
         return Objects.requireNonNullElse(MultiWindowUtils.sMaxInstancesForTesting, mMaxInstances);
-    }
-
-    @Override
-    public boolean showInstanceRestorationMessage() {
-        return MultiWindowUtils.maybeShowInstanceRestorationMessage(
-                getMessageDispatcher(), mActivity, this::showInstanceSwitcherDialog);
     }
 
     @Override

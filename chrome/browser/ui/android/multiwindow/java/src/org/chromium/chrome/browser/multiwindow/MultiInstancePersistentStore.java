@@ -214,28 +214,6 @@ public class MultiInstancePersistentStore {
         }
     }
 
-    static boolean readRestorationMessageShown() {
-        if (sData != null) {
-            return sData.getMultiInstanceRestorationMessageShown();
-        }
-        return getManager()
-                .readBoolean(
-                        MultiInstancePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                        false);
-    }
-
-    static void writeRestorationMessageShown(boolean shown) {
-        if (sData != null) {
-            sData = sData.toBuilder().setMultiInstanceRestorationMessageShown(shown).build();
-            saveProto();
-        } else {
-            getManager()
-                    .writeBoolean(
-                            MultiInstancePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                            shown);
-        }
-    }
-
     static long readMaxCountHistogramStartTime() {
         if (sData != null) {
             return sData.getMultiInstanceMaxCountTime();

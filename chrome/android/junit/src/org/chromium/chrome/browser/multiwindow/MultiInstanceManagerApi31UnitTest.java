@@ -1921,24 +1921,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
-    public void showInstanceRestorationMessage() {
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        MultiWindowUtils.setMaxInstancesForTesting(2);
-        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
-
-        mMultiInstanceManager.showInstanceRestorationMessage();
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
-        assertTrue(
-                "SharedPref for tracking restoration message should be updated.",
-                MultiInstanceSharedPreferences.getInstance()
-                        .readBoolean(
-                                MultiInstancePreferenceKeys
-                                        .MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                                false));
-    }
-
-    @Test
     public void triggerInstanceLimitDowngrade() {
         // Set initial instance limit and allocate ids for max instances.
         MultiWindowUtils.setMaxInstancesForTesting(3);
