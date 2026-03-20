@@ -200,7 +200,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     // Clear state. We don't do this in disconnectedCallback because that's
     // not always reliabled called.
-    this.nodeStore_.clearDomNodes();
+    this.nodeStore_.clear();
     this.showLoading();
 
     this.settingsPrefs_ = {
