@@ -112198,6 +112198,32 @@
          {}
         ]
        ],
+       "color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html": [
+        "f0f0eac476a3a20a6d8b4180d833daa128c26283",
+        [
+         null,
+         [
+          [
+           "/css/css-color-adjust/rendering/dark-color-scheme/support/light-frame-scrolling.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "color-scheme-iframe-background-mismatch-dynamic.html": [
+        "9ec9ccde33dab303882bb9bc2b67b2cfe4637bf1",
+        [
+         null,
+         [
+          [
+           "/css/css-color-adjust/rendering/dark-color-scheme/support/light-frame-scrolling.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "color-scheme-iframe-background-mismatch-opaque-cross-origin-001.sub.html": [
         "1a9123e0d4f5a9ecb0f8c81db2788fa76d4f1457",
         [
@@ -353283,6 +353309,14 @@
      "bf2fa5cf828a4a48d9bcb3cc0ed61e794062ae5e",
      []
     ],
+    "idlharness.tentative.https.any-expected.txt": [
+     "24d7324c2072ceeb6847e69576bb798b6dbb60b3",
+     []
+    ],
+    "idlharness.tentative.https.any.worker-expected.txt": [
+     "24d7324c2072ceeb6847e69576bb798b6dbb60b3",
+     []
+    ],
     "import_export": {
      "AES-OCB_importKey.tentative.https.any-expected.txt": [
       "016a4e172e6831e16b3a939bef4141d53a2d1432",
@@ -357140,7 +357174,15 @@
       "b0bc58c1265c6287474f094cbb6b7113d1520a9c",
       []
      ],
-     "navigation-redirect.sub.window.js.headers": [
+     "navigation-redirect-allow.sub.window.js.headers": [
+      "3ef54bc42e4ab6be8f2706d85de4f9bee9a86bcb",
+      []
+     ],
+     "navigation-redirect-block.sub.window.js.headers": [
+      "bfa82e866c66fcc6b9f4616119cabdc2338020aa",
+      []
+     ],
+     "navigation-redirect-default.sub.window.js.headers": [
       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
       []
      ],
@@ -357155,6 +357197,10 @@
      "resources": {
       "key-value-store.py": [
        "9946855547db03082af92f4a743aa6537a214322",
+       []
+      ],
+      "navigation_redirect_test.js": [
+       "77ce4368c921402befb38df71e47ce6da2a1595f",
        []
       ],
       "post-message-opener.html": [
@@ -372803,6 +372849,10 @@
          "7f4da1e30af93712be4cd22f479c6c8cc2c3f1d5",
          []
         ],
+        "light-frame-scrolling.html": [
+         "ca9f86df7c263343893bf97059e33fd9a78f72f5",
+         []
+        ],
         "light-frame.html": [
          "c8c587f787c671dc1262bd089d6c00a9d9ef9149",
          []
@@ -385688,6 +385738,10 @@
      }
     },
     "css-forms": {
+     "appearance-base-basic-expected.txt": [
+      "eea635aa169adcbc7eaaadf38f70e99cb0d8d55c",
+      []
+     ],
      "datetime-stacking-context-ref.html": [
       "95bee383d2117d1c054e4706abfd130149d31fc8",
       []
@@ -411931,7 +411985,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "40da5311d0e840959f511cd6934c4e7ede7b02ae",
+      "39b0d2e9b0acb913b8354519120a0739dc393faa",
       []
      ],
      "attr-all-types-expected.txt": [
@@ -443043,6 +443097,10 @@
         []
        ],
        "image-map-processing-model": {
+        "hash-name-reference-id-update-expected.txt": [
+         "436838c2eabd1a745aa7ad36248970a794efdba0",
+         []
+        ],
         "hash-name-reference-test-data.html": [
          "1fb71431f7bd08348d56cee77ccaef6511959804",
          []
@@ -480017,20 +480075,20 @@
       []
      ]
     },
-    "idlharness.https.any-expected.txt": [
-     "f71eaa832367bf2a7e425c869c53a89781110c33",
+    "idlharness.https.sub.any-expected.txt": [
+     "a2a6fcb738df42033920013f103f4c8ed8474f96",
      []
     ],
-    "idlharness.https.any.serviceworker-expected.txt": [
-     "f71eaa832367bf2a7e425c869c53a89781110c33",
+    "idlharness.https.sub.any.serviceworker-expected.txt": [
+     "a2a6fcb738df42033920013f103f4c8ed8474f96",
      []
     ],
-    "idlharness.https.any.sharedworker-expected.txt": [
-     "f71eaa832367bf2a7e425c869c53a89781110c33",
+    "idlharness.https.sub.any.sharedworker-expected.txt": [
+     "a2a6fcb738df42033920013f103f4c8ed8474f96",
      []
     ],
-    "idlharness.https.any.worker-expected.txt": [
-     "f71eaa832367bf2a7e425c869c53a89781110c33",
+    "idlharness.https.sub.any.worker-expected.txt": [
+     "a2a6fcb738df42033920013f103f4c8ed8474f96",
      []
     ],
     "resources": {
@@ -530062,15 +530120,55 @@
        }
       ]
      ],
-     "navigation-redirect.sub.window.js": [
-      "8479ac304b19bc292d7abb8c9455baa1e380bfc3",
+     "navigation-redirect-allow.sub.window.js": [
+      "c8d8d3f40b976e704111c168ce863fd445440395",
       [
-       "connection-allowlist/tentative/navigation-redirect.sub.window.html",
+       "connection-allowlist/tentative/navigation-redirect-allow.sub.window.html",
        {
         "script_metadata": [
          [
           "script",
           "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "resources/navigation_redirect_test.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "navigation-redirect-block.sub.window.js": [
+      "352f79f82dcf3f17ab6e995d90821c21be66d7e1",
+      [
+       "connection-allowlist/tentative/navigation-redirect-block.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "resources/navigation_redirect_test.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "navigation-redirect-default.sub.window.js": [
+      "4d37af8aadb5ccf06dfae02f679683a37a37f56e",
+      [
+       "connection-allowlist/tentative/navigation-redirect-default.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "resources/navigation_redirect_test.js"
          ]
         ]
        }
@@ -844573,7 +844671,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "6d31a065a0c3451d9b0c68b53c1211c7a0c1ac1b",
+      "a9286d4e78c79143d54a5cfdea331472071f60e8",
       [
        "webnn/validation_tests/concat.https.any.html?cpu",
        {
@@ -846082,7 +846180,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "acd2b85b5f05f6ea91ae18fe5eb26d0f709b4b38",
+      "f30aa2dc05dd5445127aa6381346d470ee17d5fb",
       [
        "webnn/validation_tests/dequantizeLinear.https.any.html?cpu",
        {
