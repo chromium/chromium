@@ -226,12 +226,6 @@ bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object) {
     return true;
   }
 
-  // TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
-  // images are not rasterized correctly.
-  if (!layout_object.StyleRef().BackdropFilter().IsEmpty()) {
-    return true;
-  }
-
   return false;
 }
 
@@ -671,7 +665,8 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   // prevent unbounded mask images and limit perf degradation in this case, we
   // clip by the cull rect here. Visually, this should be a NOP.
   if (has_cc_clip_path_anim &&
-      clip_area_size.size() == InfiniteIntRect().size()) {
+      (clip_area_size.width() >= InfiniteIntRect().width() ||
+       clip_area_size.height() >= InfiniteIntRect().height())) {
     clip_area_size = gfx::ToEnclosingRect(
         gfx::RectF(layout_object.FirstFragment().GetContentsCullRect().Rect()));
   }

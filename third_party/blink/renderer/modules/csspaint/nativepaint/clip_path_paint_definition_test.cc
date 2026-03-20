@@ -707,21 +707,17 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
 // will-change: contents doesn't even apply to NPW-based clip-path animations,
 // since we don't need render surfaces. The only case we really care about is
 // when a clip-path animation is shared with a transform animation (which may
-// need a surface). Backdrop-filter should just be fixed, since masks already
-// work with backdrop filter, this behavior was just never moved to svg clips.
-// In the long term, fragmentation for clip-paths should simply be properly
-// defined so we don't need to fall back (see crbug.com/40241353), but in the
-// short term, it needs to be handled better than having a code block in the
-// middle of the pre-paint tree walk. See crbug.com/488268869. Perspective
-// transforms / child transform anims with clip-path: none will always be an
-// issue until/unless this feature is completely rewritten to clip differently
-// however, for various perf reasons. (ie, we don't want to allocate unbounded
-// mask tiles on cc). Though I envision a better way to handle that case.
+// need a surface). In the long term, fragmentation for clip-paths should simply
+// be properly defined so we don't need to fall back (see crbug.com/40241353),
+// but in the short term, it needs to be handled better than having a code block
+// in the middle of the pre-paint tree walk. See crbug.com/488268869.
+// Perspective transforms / child transform anims with clip-path: none will
+// always be an issue until/unless this feature is completely rewritten to clip
+// differently however, for various perf reasons. (ie, we don't want to allocate
+// unbounded mask tiles on cc). Though I envision a better way to handle that
+// case.
 
-// TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
-// images are not rasterized correctly. We fall back in this case to prevent
-// broken painting.
-TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
+TEST_F(ClipPathPaintDefinitionTest, CoincidentBackdropFilterNotFallback) {
   SetBodyInnerHTML(R"HTML(
     <style>
         @keyframes clippath {
@@ -747,13 +743,13 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
   element->setAttribute(html_names::kClassAttr,
                         AtomicString("animation bdfilter"));
 
-  StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 // This is a variation of the above test. The backdrop-filter is added later,
-// rather than immediately. This ensures the animation is still functioning
-// properly in this case.
-TEST_F(ClipPathPaintDefinitionTest, FallbackForLateBackdropFilter) {
+// rather than immediately. This ensures the animation remains composited even
+// when a backdrop-filter is added after the animation has started.
+TEST_F(ClipPathPaintDefinitionTest, LateBackdropFilterNotFallback) {
   SetBodyInnerHTML(R"HTML(
     <style>
         @keyframes clippath {
@@ -785,23 +781,22 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForLateBackdropFilter) {
   element->setAttribute(html_names::kClassAttr,
                         AtomicString("animation bdfilter"));
 
-  // Next main frame should proceed ordinarily
+  // Next main frame should proceed ordinarily.
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       CompositedPaintStatus::kComposited, element,
       UpdatesNeededForNextFrame::kMainThreadPropertyInvalidation);
 
-  // However, the animation will fall back during pre-paint.
+  // The animation should remain composited through painting.
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      CompositedPaintStatus::kNotComposited, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kMainThreadPropertyInvalidation);
 
-  // Animation should still producve frames on main as normal
+  // Animation should continue running on the compositor with no further
+  // main-thread updates.
   UpdateAndAdvanceTimeTo(2001);
-
-  // Main thread should still be producing frames.
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kNotComposited, element, animation,
-      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
 }
 
 // When clip-path: none exists as part of an animation, we use the cull rect to
