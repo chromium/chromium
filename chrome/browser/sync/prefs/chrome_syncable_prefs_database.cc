@@ -441,6 +441,7 @@ enum {
   kDesktopToiOSPriceTrackingPromoImpressionsCounter = 100377,
   kDesktopToiOSPriceTrackingPromoOptOut = 100378,
   kAccessibilityReadAnythingLastNonDisabledLineFocus = 100379,
+  kAppRatingPromptShown = 100380,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -458,6 +459,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
      {syncable_prefs_ids::kAppLanguagePromptShown, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAppRatingPromptShown,
+     {syncable_prefs_ids::kAppRatingPromptShown, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kContextualSearchEnabled,

@@ -3737,6 +3737,9 @@ inline constexpr char kAndroidTipNotificationShownRecentTabs[] =
 // history entry that is donated to AppSearch.
 inline constexpr char kAuxiliarySearchLastDonatedHistoryEntryVisitTime[] =
     "auxiliary_search.last_donated_history_entry_visit_time";
+
+// Boolean pref indicating whether the app rating prompt has been shown.
+inline constexpr char kAppRatingPromptShown[] = "app_rating_prompt_shown";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace prefs
