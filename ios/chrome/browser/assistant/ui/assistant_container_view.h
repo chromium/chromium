@@ -19,6 +19,9 @@
 // +----------------------------------+
 @interface AssistantContainerView : UIView
 
+// The grabber button used to minimize and expand the sheet.
+@property(nonatomic, strong, readonly) UIButton* grabberButton;
+
 // The content view where subviews should be added.
 @property(nonatomic, strong, readonly) UIView* contentView;
 

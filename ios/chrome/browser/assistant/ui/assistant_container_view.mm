@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -23,7 +24,6 @@ constexpr CGFloat kGrabberTopMargin = 8.0;
 }  // namespace
 
 @implementation AssistantContainerView {
-  UIView* _grabberView;
   UIView* _bottomRoundingView;
   CGFloat _topCornerRadius;
   CGFloat _bottomCornerRadius;
@@ -128,16 +128,16 @@ constexpr CGFloat kGrabberTopMargin = 8.0;
   _contentView = [self createContentView];
   [_bottomRoundingView addSubview:_contentView];
 
-  _grabberView = [self createGrabberView];
-  [self addSubview:_grabberView];
+  _grabberButton = [self createGrabberButton];
+  [self addSubview:_grabberButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    // Grabber view constraints.
-    [_grabberView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    [_grabberView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                           constant:kGrabberTopMargin],
-    [_grabberView.widthAnchor constraintEqualToConstant:kGrabberWidth],
-    [_grabberView.heightAnchor constraintEqualToConstant:kGrabberHeight],
+    // Grabber button constraints.
+    [_grabberButton.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    [_grabberButton.topAnchor constraintEqualToAnchor:self.topAnchor
+                                             constant:kGrabberTopMargin],
+    [_grabberButton.widthAnchor constraintEqualToConstant:kGrabberWidth],
+    [_grabberButton.heightAnchor constraintEqualToConstant:kGrabberHeight],
   ]];
 
   AddSameConstraints(_bottomRoundingView, self);
@@ -164,13 +164,14 @@ constexpr CGFloat kGrabberTopMargin = 8.0;
   return view;
 }
 
-// Creates and configures the grabber view.
-- (UIView*)createGrabberView {
-  UIView* grabberView = [[UIView alloc] init];
-  grabberView.translatesAutoresizingMaskIntoConstraints = NO;
-  grabberView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
-  grabberView.layer.cornerRadius = kGrabberHeight / 2.0;
-  return grabberView;
+// Creates and configures the grabber button.
+- (UIButton*)createGrabberButton {
+  UIButton* grabberButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
+  grabberButton.translatesAutoresizingMaskIntoConstraints = NO;
+  grabberButton.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+  grabberButton.layer.cornerRadius = kGrabberHeight / 2.0;
+  return grabberButton;
 }
 
 @end

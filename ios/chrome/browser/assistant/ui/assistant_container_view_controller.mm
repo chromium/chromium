@@ -317,7 +317,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
               return a < b;
             });
   [self updateDetentHeights];
-  [self updatePanGestureEnabledState];
+  [self updateInteractionEnabledState];
   [self.view setNeedsLayout];
 }
 
@@ -341,7 +341,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     return;
   }
   _isAnimating = isAnimating;
-  [self updatePanGestureEnabledState];
+  [self updateInteractionEnabledState];
 }
 
 - (UIView*)dimmingView {
@@ -360,7 +360,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     return YES;
   }
   CGPoint location = [touch locationInView:_assistantContainerView];
-  // Restrict the pan gesture to the top area.
+  // Restrict the gesture to the top area.
   return location.y <= kGestureTopAreaHeight;
 }
 
@@ -451,12 +451,19 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 // Adds gesture recognizers to the view.
 - (void)setUpGestures {
+  // Pan gesture for resizing the container.
   _headerPanGesture = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handlePanGesture:)];
   _headerPanGesture.delegate = self;
   [_assistantContainerView addGestureRecognizer:_headerPanGesture];
-  [self updatePanGestureEnabledState];
+
+  // Configure the grabber button action for toggling container size.
+  [_assistantContainerView.grabberButton
+             addTarget:self
+                action:@selector(handleGrabberButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  [self updateInteractionEnabledState];
 }
 
 // Called when the animation to a detent completes.
@@ -477,15 +484,38 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   }
 }
 
-// Updates the pan gesture enabled state based on animation and detents.
-- (void)updatePanGestureEnabledState {
-  // Prevent the gesture recognizer from interfering with the animation.
+// Updates the interaction enabled state based on animation and detents.
+- (void)updateInteractionEnabledState {
+  // Prevent interactions from interfering with the animation.
   if (self.isAnimating) {
     _headerPanGesture.enabled = NO;
+    _assistantContainerView.grabberButton.enabled = NO;
     return;
   }
 
   _headerPanGesture.enabled = YES;
+  _assistantContainerView.grabberButton.enabled = YES;
+}
+
+// Handles the tap on the grabber button to toggle container size.
+- (void)handleGrabberButtonTapped:(UIButton*)sender {
+  if (self.isAnimating) {
+    return;
+  }
+
+  AssistantContainerDetent minDetent = self.detents.front();
+  AssistantContainerDetent maxDetent = self.detents.back();
+
+  if (minDetent == maxDetent) {
+    return;
+  }
+
+  AssistantContainerDetent targetDetent =
+      _activeDetent.value() == maxDetent ? minDetent : maxDetent;
+
+  [self animateToDetent:targetDetent
+               duration:kSpringDuration
+                  curve:UIViewAnimationCurveEaseInOut];
 }
 
 // Handles the pan gesture on the header to resize the container.
