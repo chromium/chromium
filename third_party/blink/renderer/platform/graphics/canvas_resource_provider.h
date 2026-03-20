@@ -172,7 +172,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   ResourceProviderType GetType() const { return type_; }
 
-  void FlushIfRecordingLimitExceeded();
+  void FlushIfRecordingLimitExceededForCanvas2D();
 
   const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
   MemoryManagedPaintRecorder& Recorder() { return *recorder_; }

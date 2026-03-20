@@ -429,7 +429,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   }
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    resource_provider_->FlushIfRecordingLimitExceeded();
+    resource_provider_->FlushIfRecordingLimitExceededForCanvas2D();
   }
 }
 

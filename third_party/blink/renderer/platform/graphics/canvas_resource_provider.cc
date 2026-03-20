@@ -1704,7 +1704,8 @@ void CanvasResourceProvider::SetRecorder(
   DisableLineDrawingAsPathsIfNecessary();
 }
 
-void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
+void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
+  CHECK(IsCanvas2D());
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_) {
