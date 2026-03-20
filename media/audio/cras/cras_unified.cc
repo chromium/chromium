@@ -193,9 +193,16 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   // Channel map to CRAS_CHANNEL, values in the same order of
   // corresponding source in Chromium defined Channels.
+  static constexpr int kUnsupportedChannel = -4;
   static const int kChannelMap[] = {
-      CRAS_CH_FL,  CRAS_CH_FR,  CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
-      CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL,  CRAS_CH_SR};
+      CRAS_CH_FL, CRAS_CH_FR, CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
+      CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL, CRAS_CH_SR,
+      // CRAS doesn't currently define explicit mappings for x.y.4 height
+      // channels.
+      kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
+      kUnsupportedChannel};
+  static_assert(std::size(kChannelMap) == CHANNELS_MAX + 1,
+                "kChannelMap array size should match");
 
   source_callback_ = callback;
 
@@ -237,8 +244,10 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that does not present in params_.channel_layout().
   for (size_t i = 0; i < std::size(kChannelMap); ++i) {
-    layout.at(kChannelMap[i]) =
-        ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
+    if (kChannelMap[i] != kUnsupportedChannel) {
+      layout.at(kChannelMap[i]) =
+          ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
+    }
   }
 
   rc = libcras_stream_params_set_channel_layout(stream_params, CRAS_CH_MAX,

@@ -204,6 +204,10 @@ static constexpr REQUIRES_ANDROID_API(
         AAUDIO_CHANNEL_BACK_CENTER,
         AAUDIO_CHANNEL_SIDE_LEFT,
         AAUDIO_CHANNEL_SIDE_RIGHT,
+        AAUDIO_CHANNEL_TOP_FRONT_LEFT,
+        AAUDIO_CHANNEL_TOP_FRONT_RIGHT,
+        AAUDIO_CHANNEL_TOP_BACK_LEFT,
+        AAUDIO_CHANNEL_TOP_BACK_RIGHT,
     });
 
 REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
@@ -243,6 +247,17 @@ std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
     return AAUDIO_CHANNEL_5POINT1;
   }
 
+  if (layout == CHANNEL_LAYOUT_5_1_4) {
+    return AAUDIO_CHANNEL_5POINT1POINT4;
+  }
+
+  if (layout == CHANNEL_LAYOUT_7_1_4) {
+    return AAUDIO_CHANNEL_7POINT1POINT4;
+  }
+
+  // TODO(crbug.com/474106765): We are in the process of natively
+  // supporting 5.1.4 and 7.1.4. Leave these for now as edge cases, but
+  // eventually this should be removed in favor of the native enums.
   if (layout == CHANNEL_LAYOUT_DISCRETE) {
     switch (channels) {
       case 10:

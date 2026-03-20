@@ -58,6 +58,18 @@ bool AudioChannelLabelToChannel(AudioChannelLabel input_channel,
     case kAudioChannelLabel_RightSurround:
       *output_channel = Channels::SIDE_RIGHT;
       break;
+    case kAudioChannelLabel_LeftTopFront:
+      *output_channel = Channels::TOP_FRONT_LEFT;
+      break;
+    case kAudioChannelLabel_RightTopFront:
+      *output_channel = Channels::TOP_FRONT_RIGHT;
+      break;
+    case kAudioChannelLabel_LeftTopRear:
+      *output_channel = Channels::TOP_BACK_LEFT;
+      break;
+    case kAudioChannelLabel_RightTopRear:
+      *output_channel = Channels::TOP_BACK_RIGHT;
+      break;
     default:
       return false;
   }
@@ -88,6 +100,14 @@ AudioChannelLabel ChannelToAudioChannelLabel(Channels input_channel) {
       return kAudioChannelLabel_LeftSurround;
     case Channels::SIDE_RIGHT:
       return kAudioChannelLabel_RightSurround;
+    case Channels::TOP_FRONT_LEFT:
+      return kAudioChannelLabel_LeftTopFront;
+    case Channels::TOP_FRONT_RIGHT:
+      return kAudioChannelLabel_RightTopFront;
+    case Channels::TOP_BACK_LEFT:
+      return kAudioChannelLabel_LeftTopRear;
+    case Channels::TOP_BACK_RIGHT:
+      return kAudioChannelLabel_RightTopRear;
   }
 }
 

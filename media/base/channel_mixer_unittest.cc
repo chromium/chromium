@@ -31,13 +31,20 @@ TEST(ChannelMixerTest, ConstructAllPossibleLayouts) {
       // DISCRETE, BITSTREAM can't be tested here based on the current approach.
       // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is deprecated.
       // Stereo down mix should never be the output layout.
+      // TODO(crbug.com/474106765): 5.1.4 and 7.1.4 are not supported yet. Once
+      // `kMaxConcurrentChannels` is upgraded to 12, then we can include these
+      // test cases.
       if (input_layout == CHANNEL_LAYOUT_BITSTREAM ||
           input_layout == CHANNEL_LAYOUT_DISCRETE ||
           input_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC ||
+          input_layout == CHANNEL_LAYOUT_5_1_4 ||
+          input_layout == CHANNEL_LAYOUT_7_1_4 ||
           output_layout == CHANNEL_LAYOUT_BITSTREAM ||
           output_layout == CHANNEL_LAYOUT_DISCRETE ||
           output_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC ||
-          output_layout == CHANNEL_LAYOUT_STEREO_DOWNMIX) {
+          output_layout == CHANNEL_LAYOUT_STEREO_DOWNMIX ||
+          output_layout == CHANNEL_LAYOUT_5_1_4 ||
+          output_layout == CHANNEL_LAYOUT_7_1_4) {
         continue;
       }
 

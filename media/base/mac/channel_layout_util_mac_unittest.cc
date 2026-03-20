@@ -365,6 +365,14 @@ TEST(ChannelLayoutUtilMac,
 TEST(ChannelLayoutUtilMac, ChannelLayoutConvertBackToChannelLayout) {
   for (int i = 0; i <= CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout input_layout = static_cast<ChannelLayout>(i);
+    // TODO(crbug.com/474106765): 5.1.4 and 7.1.4 are not supported yet. Once
+    // `kMaxConcurrentChannels` is upgraded to 12, then we can include these
+    // test cases.
+    if (input_layout == CHANNEL_LAYOUT_5_1_4 ||
+        input_layout == CHANNEL_LAYOUT_7_1_4) {
+      continue;
+    }
+
     // Skip invalid channel layout.
     int input_channels = ChannelLayoutToChannelCount(input_layout);
     if (input_channels == 0) {

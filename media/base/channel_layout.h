@@ -131,8 +131,16 @@ enum ChannelLayout {
   // Front L, Front R, LFE, Back C
   CHANNEL_LAYOUT_3_1_BACK = 35,
 
+  // Front L, Front R, Front C, LFE, Side L, Side R,
+  // Top Front L, Top Front R, Top Back L, Top Back R
+  CHANNEL_LAYOUT_5_1_4 = 36,
+
+  // Front L, Front R, Front C, LFE, Back L, Back R, Side L, Side R,
+  // Top Front L, Top Front R, Top Back L, Top Back R
+  CHANNEL_LAYOUT_7_1_4 = 37,
+
   // Max value, must always equal the largest entry ever logged.
-  CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_3_1_BACK
+  CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_7_1_4
 };
 
 // The channel order matches the order of the bitmask in the Windows
@@ -157,8 +165,12 @@ enum Channels {
   BACK_CENTER = 8,
   SIDE_LEFT = 9,
   SIDE_RIGHT = 10,
+  TOP_FRONT_LEFT = 11,
+  TOP_FRONT_RIGHT = 12,
+  TOP_BACK_LEFT = 13,
+  TOP_BACK_RIGHT = 14,
   CHANNELS_MAX =
-      SIDE_RIGHT,  // Must always equal the largest value ever logged.
+      TOP_BACK_RIGHT,  // Must always equal the largest value ever logged.
 };
 
 // The maximum number of concurrently active channels for all possible layouts.
