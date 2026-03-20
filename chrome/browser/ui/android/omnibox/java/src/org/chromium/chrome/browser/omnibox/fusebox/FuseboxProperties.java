@@ -18,6 +18,22 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** The properties associated with the Fusebox bar. */
 @NullMarked
 class FuseboxProperties {
+    /** Encapsulates the state for a button in the Fusebox popup. */
+    public static class PopupButtonData {
+        public final Runnable onClicked;
+        public final boolean visible;
+        public final boolean enabled;
+        public final boolean selected;
+
+        public PopupButtonData(
+                Runnable onClicked, boolean visible, boolean enabled, boolean selected) {
+            this.onClicked = onClicked;
+            this.visible = visible;
+            this.enabled = enabled;
+            this.selected = selected;
+        }
+    }
+
     /** The adapter for the attachments RecyclerView. */
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();
@@ -135,21 +151,9 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_TAB_PICKER_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Action to perform when the user clicks the auto model button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_MODEL_AUTO_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the auto model button in the popup is enabled. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** Whether the auto model button in the popup is selected. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_SELECTED =
-            new WritableBooleanPropertyKey();
-
     /** Whether the auto model button in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_VISIBLE =
-            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<PopupButtonData> POPUP_MODEL_AUTO_DATA =
+            new WritableObjectPropertyKey<>();
 
     /** Whether the models divider in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_MODEL_DIVIDER_VISIBLE =
@@ -159,21 +163,9 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Action to perform when the user clicks the pro model button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_MODEL_PRO_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the pro model button in the popup is enabled. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** Whether the pro model button in the popup is selected. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_SELECTED =
-            new WritableBooleanPropertyKey();
-
     /** Whether the pro model button in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_VISIBLE =
-            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<PopupButtonData> POPUP_MODEL_PRO_DATA =
+            new WritableObjectPropertyKey<>();
 
     /** Action to perform when the user clicks the AI Mode button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_AI_MODE_CLICKED =
@@ -265,16 +257,10 @@ class FuseboxProperties {
         POPUP_ATTACH_TAB_PICKER_CLICKED,
         POPUP_ATTACH_TAB_PICKER_ENABLED,
         POPUP_ATTACH_TAB_PICKER_VISIBLE,
-        POPUP_MODEL_AUTO_CLICKED,
-        POPUP_MODEL_AUTO_ENABLED,
-        POPUP_MODEL_AUTO_SELECTED,
-        POPUP_MODEL_AUTO_VISIBLE,
+        POPUP_MODEL_AUTO_DATA,
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_VISIBLE,
-        POPUP_MODEL_PRO_CLICKED,
-        POPUP_MODEL_PRO_ENABLED,
-        POPUP_MODEL_PRO_SELECTED,
-        POPUP_MODEL_PRO_VISIBLE,
+        POPUP_MODEL_PRO_DATA,
         POPUP_TOOL_AI_MODE_CLICKED,
         POPUP_TOOL_AI_MODE_ENABLED,
         POPUP_TOOL_AI_MODE_VISIBLE,

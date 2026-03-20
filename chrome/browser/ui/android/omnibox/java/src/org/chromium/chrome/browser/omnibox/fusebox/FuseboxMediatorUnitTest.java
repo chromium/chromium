@@ -699,7 +699,7 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
-        mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).onClicked.run();
 
         verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
@@ -713,7 +713,7 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
 
-        mModel.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).onClicked.run();
 
         verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
@@ -1159,14 +1159,14 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).visible);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).enabled);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).visible);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).enabled);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).selected);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
@@ -1187,8 +1187,8 @@ public class FuseboxMediatorUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .build();
         mInputStateSupplier.set(state);
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).selected);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
 
         state =
                 new InputState.Builder()
@@ -1199,8 +1199,8 @@ public class FuseboxMediatorUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .build();
         mInputStateSupplier.set(state);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_DATA).selected);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
     }
 
     @Test
@@ -1220,7 +1220,7 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(state);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).enabled);
     }
 
     @Test
@@ -1238,7 +1238,7 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(state);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).visible);
     }
 
     @Test
@@ -1250,12 +1250,12 @@ public class FuseboxMediatorUnitTest {
                         .build();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         mInputStateSupplier.set(inputState);
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
 
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_DATA).selected);
     }
 }

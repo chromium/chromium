@@ -37,8 +37,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -431,7 +433,9 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void autoButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED, runnable);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                new PopupButtonDataBuilder().withOnClicked(runnable).build());
 
         mPopup.mAutoButton.performClick();
         verify(runnable).run();
@@ -440,7 +444,9 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void proButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_CLICKED, runnable);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_DATA,
+                new PopupButtonDataBuilder().withOnClicked(runnable).build());
 
         mPopup.mProButton.performClick();
         verify(runnable).run();
@@ -466,19 +472,27 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void autoButtonVisibility_setsVisibility() {
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, true);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                new PopupButtonDataBuilder().withVisible(true).build());
         assertEquals(View.VISIBLE, mPopup.mAutoButton.getVisibility());
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, false);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                new PopupButtonDataBuilder().withVisible(false).build());
         assertEquals(View.GONE, mPopup.mAutoButton.getVisibility());
     }
 
     @Test
     public void proButtonVisibility_setsVisibility() {
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, true);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_DATA,
+                new PopupButtonDataBuilder().withVisible(true).build());
         assertEquals(View.VISIBLE, mPopup.mProButton.getVisibility());
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, false);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_DATA,
+                new PopupButtonDataBuilder().withVisible(false).build());
         assertEquals(View.GONE, mPopup.mProButton.getVisibility());
     }
 
@@ -525,19 +539,27 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void autoButtonEnabled_setsEnabled() {
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED, true);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                new PopupButtonDataBuilder().withEnabled(true).build());
         assertTrue(mPopup.mAutoButton.isEnabled());
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED, false);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                new PopupButtonDataBuilder().withEnabled(false).build());
         assertFalse(mPopup.mAutoButton.isEnabled());
     }
 
     @Test
     public void proButtonEnabled_setsEnabled() {
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_ENABLED, true);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_DATA,
+                new PopupButtonDataBuilder().withEnabled(true).build());
         assertTrue(mPopup.mProButton.isEnabled());
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_ENABLED, false);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_DATA,
+                new PopupButtonDataBuilder().withEnabled(false).build());
         assertFalse(mPopup.mProButton.isEnabled());
     }
 
@@ -576,18 +598,51 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void modelSelectionDrawables() {
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, false);
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_SELECTED, false);
+        PopupButtonData selectedData = new PopupButtonDataBuilder().withSelected(true).build();
+        PopupButtonData notSelectedData = new PopupButtonDataBuilder().withSelected(false).build();
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_DATA, notSelectedData);
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_DATA, notSelectedData);
         assertNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
         assertNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, true);
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_DATA, selectedData);
         assertNotNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
         assertNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
 
-        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, false);
-        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_SELECTED, true);
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_DATA, notSelectedData);
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_DATA, selectedData);
         assertNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
         assertNotNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
+    }
+
+    private static class PopupButtonDataBuilder {
+        private Runnable mOnClicked = CallbackUtils.emptyRunnable();
+        private boolean mEnabled = true;
+        private boolean mSelected;
+        private boolean mVisible = true;
+
+        PopupButtonDataBuilder withOnClicked(Runnable onClicked) {
+            mOnClicked = onClicked;
+            return this;
+        }
+
+        PopupButtonDataBuilder withEnabled(boolean enabled) {
+            mEnabled = enabled;
+            return this;
+        }
+
+        PopupButtonDataBuilder withSelected(boolean selected) {
+            mSelected = selected;
+            return this;
+        }
+
+        PopupButtonDataBuilder withVisible(boolean visible) {
+            mVisible = visible;
+            return this;
+        }
+
+        PopupButtonData build() {
+            return new PopupButtonData(mOnClicked, mVisible, mEnabled, mSelected);
+        }
     }
 }
