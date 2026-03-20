@@ -2491,6 +2491,15 @@ void GLES2TraceImplementation::GetFramebufferPixelLocalStorageParameterivANGLE(
   gl_->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname, params);
 }
 
+void GLES2TraceImplementation::GetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLuint* params) {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::GetFramebufferPixelLocalStorageParameteruivANGLE");
+  gl_->GetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname, params);
+}
+
 void GLES2TraceImplementation::ClipControlEXT(GLenum origin, GLenum depth) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::ClipControlEXT");
   gl_->ClipControlEXT(origin, depth);

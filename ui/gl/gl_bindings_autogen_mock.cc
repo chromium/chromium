@@ -1482,49 +1482,42 @@ MockGLInterface::Mock_glGetFramebufferAttachmentParameterivRobustANGLE(
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glGetFramebufferPixelLocalStorageParameterfvANGLE(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) {
-  MakeGlMockFunctionUnique("glGetFramebufferPixelLocalStorageParameterfvANGLE");
-  interface_->GetFramebufferPixelLocalStorageParameterfvANGLE(plane, pname,
-                                                              params);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glGetFramebufferPixelLocalStorageParameterfvRobustANGLE(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) {
   MakeGlMockFunctionUnique(
       "glGetFramebufferPixelLocalStorageParameterfvRobustANGLE");
   interface_->GetFramebufferPixelLocalStorageParameterfvRobustANGLE(
-      plane, pname, bufSize, length, params);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGetFramebufferPixelLocalStorageParameterivANGLE(
-    GLint plane,
-    GLenum pname,
-    GLint* params) {
-  MakeGlMockFunctionUnique("glGetFramebufferPixelLocalStorageParameterivANGLE");
-  interface_->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname,
-                                                              params);
+      plane, pname, paramCount, length, params);
 }
 
 void GL_BINDING_CALL
 MockGLInterface::Mock_glGetFramebufferPixelLocalStorageParameterivRobustANGLE(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) {
   MakeGlMockFunctionUnique(
       "glGetFramebufferPixelLocalStorageParameterivRobustANGLE");
   interface_->GetFramebufferPixelLocalStorageParameterivRobustANGLE(
-      plane, pname, bufSize, length, params);
+      plane, pname, paramCount, length, params);
+}
+
+void GL_BINDING_CALL
+MockGLInterface::Mock_glGetFramebufferPixelLocalStorageParameteruivRobustANGLE(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) {
+  MakeGlMockFunctionUnique(
+      "glGetFramebufferPixelLocalStorageParameteruivRobustANGLE");
+  interface_->GetFramebufferPixelLocalStorageParameteruivRobustANGLE(
+      plane, pname, paramCount, length, params);
 }
 
 GLenum GL_BINDING_CALL MockGLInterface::Mock_glGetGraphicsResetStatusEXT(void) {
@@ -4071,20 +4064,19 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glGetFramebufferAttachmentParameterivRobustANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetFramebufferAttachmentParameterivRobustANGLE);
-  if (strcmp(name, "glGetFramebufferPixelLocalStorageParameterfvANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glGetFramebufferPixelLocalStorageParameterfvANGLE);
   if (strcmp(name, "glGetFramebufferPixelLocalStorageParameterfvRobustANGLE") ==
       0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetFramebufferPixelLocalStorageParameterfvRobustANGLE);
-  if (strcmp(name, "glGetFramebufferPixelLocalStorageParameterivANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glGetFramebufferPixelLocalStorageParameterivANGLE);
   if (strcmp(name, "glGetFramebufferPixelLocalStorageParameterivRobustANGLE") ==
       0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetFramebufferPixelLocalStorageParameterivRobustANGLE);
+  if (strcmp(name,
+             "glGetFramebufferPixelLocalStorageParameteruivRobustANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glGetFramebufferPixelLocalStorageParameteruivRobustANGLE);
+  }
   if (strcmp(name, "glGetGraphicsResetStatusEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetGraphicsResetStatusEXT);

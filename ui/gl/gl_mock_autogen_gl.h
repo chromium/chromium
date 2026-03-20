@@ -464,22 +464,24 @@ MOCK_METHOD6(GetFramebufferAttachmentParameterivRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLint* params));
-MOCK_METHOD3(GetFramebufferPixelLocalStorageParameterfvANGLE,
-             void(GLint plane, GLenum pname, GLfloat* params));
 MOCK_METHOD5(GetFramebufferPixelLocalStorageParameterfvRobustANGLE,
              void(GLint plane,
                   GLenum pname,
-                  GLsizei bufSize,
+                  GLsizei paramCount,
                   GLsizei* length,
                   GLfloat* params));
-MOCK_METHOD3(GetFramebufferPixelLocalStorageParameterivANGLE,
-             void(GLint plane, GLenum pname, GLint* params));
 MOCK_METHOD5(GetFramebufferPixelLocalStorageParameterivRobustANGLE,
              void(GLint plane,
                   GLenum pname,
-                  GLsizei bufSize,
+                  GLsizei paramCount,
                   GLsizei* length,
                   GLint* params));
+MOCK_METHOD5(GetFramebufferPixelLocalStorageParameteruivRobustANGLE,
+             void(GLint plane,
+                  GLenum pname,
+                  GLsizei paramCount,
+                  GLsizei* length,
+                  GLuint* params));
 MOCK_METHOD0(GetGraphicsResetStatusARB, GLenum());
 MOCK_METHOD3(GetInteger64i_v, void(GLenum target, GLuint index, GLint64* data));
 MOCK_METHOD5(GetInteger64i_vRobustANGLE,

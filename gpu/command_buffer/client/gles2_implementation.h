@@ -597,6 +597,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   bool GetFramebufferPixelLocalStorageParameterivANGLEHelper(GLint plane,
                                                              GLenum pname,
                                                              GLint* params);
+  bool GetFramebufferPixelLocalStorageParameteruivANGLEHelper(GLint plane,
+                                                              GLenum pname,
+                                                              GLuint* params);
   bool GetInteger64vHelper(GLenum pname, GLint64* params);
   bool GetIntegervHelper(GLenum pname, GLint* params);
   bool GetIntegeri_vHelper(GLenum pname, GLuint index, GLint* data);
@@ -882,6 +885,14 @@ GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLEHelper(
     GLint /* plane */,
     GLenum /* pname */,
     GLint* /* params */) {
+  return false;
+}
+
+inline bool
+GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLEHelper(
+    GLint /* plane */,
+    GLenum /* pname */,
+    GLuint* /* params */) {
   return false;
 }
 

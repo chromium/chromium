@@ -3247,6 +3247,19 @@ void GetFramebufferPixelLocalStorageParameterivANGLE(
   }
 }
 
+void GetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    uint32_t params_shm_id,
+    uint32_t params_shm_offset) {
+  gles2::cmds::GetFramebufferPixelLocalStorageParameteruivANGLE* c =
+      GetCmdSpace<
+          gles2::cmds::GetFramebufferPixelLocalStorageParameteruivANGLE>();
+  if (c) {
+    c->Init(plane, pname, params_shm_id, params_shm_offset);
+  }
+}
+
 void ClipControlEXT(GLenum origin, GLenum depth) {
   gles2::cmds::ClipControlEXT* c = GetCmdSpace<gles2::cmds::ClipControlEXT>();
   if (c) {

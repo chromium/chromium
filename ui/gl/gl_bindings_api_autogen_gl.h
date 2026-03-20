@@ -482,26 +482,24 @@ void glGetFramebufferAttachmentParameterivRobustANGLEFn(GLenum target,
                                                         GLsizei bufSize,
                                                         GLsizei* length,
                                                         GLint* params) override;
-void glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) override;
 void glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) override;
-void glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLint* params) override;
 void glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) override;
+void glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) override;
 GLenum glGetGraphicsResetStatusARBFn(void) override;
 void glGetInteger64i_vFn(GLenum target, GLuint index, GLint64* data) override;
 void glGetInteger64i_vRobustANGLEFn(GLenum target,

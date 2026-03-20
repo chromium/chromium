@@ -5048,6 +5048,42 @@ error::Error GLES2DecoderPassthroughImpl::
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::
+    HandleGetFramebufferPixelLocalStorageParameteruivANGLE(
+        uint32_t immediate_data_size,
+        const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
+    return error::kUnknownCommand;
+  }
+  const volatile gles2::cmds::GetFramebufferPixelLocalStorageParameteruivANGLE&
+      c = *static_cast<const volatile gles2::cmds::
+                           GetFramebufferPixelLocalStorageParameteruivANGLE*>(
+          cmd_data);
+  GLint plane = static_cast<GLint>(c.plane);
+  GLenum pname = static_cast<GLenum>(c.pname);
+  unsigned int buffer_size = 0;
+  typedef cmds::GetFramebufferPixelLocalStorageParameteruivANGLE::Result Result;
+  Result* result = GetSharedMemoryAndSizeAs<Result*>(
+      c.params_shm_id, c.params_shm_offset, sizeof(Result), &buffer_size);
+  GLuint* params = result ? result->GetData() : nullptr;
+  if (params == nullptr) {
+    return error::kOutOfBounds;
+  }
+  GLsizei bufsize = Result::ComputeMaxResults(buffer_size);
+  GLsizei written_values = 0;
+  GLsizei* length = &written_values;
+  error::Error error = DoGetFramebufferPixelLocalStorageParameteruivANGLE(
+      plane, pname, bufsize, length, params);
+  if (error != error::kNoError) {
+    return error;
+  }
+  if (written_values > bufsize) {
+    return error::kOutOfBounds;
+  }
+  result->SetNumResults(written_values);
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleClipControlEXT(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

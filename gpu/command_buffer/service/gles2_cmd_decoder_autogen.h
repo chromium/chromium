@@ -5748,6 +5748,52 @@ GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterivANGLE(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameteruivANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
+    return error::kUnknownCommand;
+  }
+  const volatile gles2::cmds::GetFramebufferPixelLocalStorageParameteruivANGLE&
+      c = *static_cast<const volatile gles2::cmds::
+                           GetFramebufferPixelLocalStorageParameteruivANGLE*>(
+          cmd_data);
+  GLint plane = static_cast<GLint>(c.plane);
+  GLenum pname = static_cast<GLenum>(c.pname);
+  typedef cmds::GetFramebufferPixelLocalStorageParameteruivANGLE::Result Result;
+  GLsizei num_values = 0;
+  if (!GetNumValuesReturnedForGLGet(pname, &num_values)) {
+    LOCAL_SET_GL_ERROR_INVALID_ENUM(
+        ":GetFramebufferPixelLocalStorageParameteruivANGLE", pname, "pname");
+    return error::kNoError;
+  }
+  uint32_t checked_size = 0;
+  if (!Result::ComputeSize(num_values).AssignIfValid(&checked_size)) {
+    return error::kOutOfBounds;
+  }
+  Result* result = GetSharedMemoryAs<Result*>(
+      c.params_shm_id, c.params_shm_offset, checked_size);
+  GLuint* params = result ? result->GetData() : nullptr;
+  if (params == nullptr) {
+    return error::kOutOfBounds;
+  }
+  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(
+      "GetFramebufferPixelLocalStorageParameteruivANGLE");
+  // Check that the client initialized the result.
+  if (result->size != 0) {
+    return error::kInvalidArguments;
+  }
+  DoGetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname, params,
+                                                     num_values);
+  GLenum error =
+      LOCAL_PEEK_GL_ERROR("GetFramebufferPixelLocalStorageParameteruivANGLE");
+  if (error == GL_NO_ERROR) {
+    result->SetNumResults(num_values);
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleClipControlEXT(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

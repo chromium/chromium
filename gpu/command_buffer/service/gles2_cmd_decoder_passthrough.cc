@@ -1865,6 +1865,28 @@ error::Error GLES2DecoderPassthroughImpl::
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::
+    PatchGetFramebufferPixelLocalStorageParameteruivANGLE(GLint plane,
+                                                          GLenum pname,
+                                                          GLsizei length,
+                                                          GLuint* params) {
+  // Likely a gl error if no parameters were returned
+  if (length < 1) {
+    return error::kNoError;
+  }
+
+  switch (pname) {
+    case GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE:
+      if (*params != 0 &&
+          !GetClientID(&resources_->texture_id_map, *params, params)) {
+        return error::kInvalidArguments;
+      }
+      break;
+  }
+
+  return error::kNoError;
+}
+
 error::Error
 GLES2DecoderPassthroughImpl::PatchGetFramebufferAttachmentParameter(
     GLenum target,

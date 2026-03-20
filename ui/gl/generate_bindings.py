@@ -745,29 +745,26 @@ GL_FUNCTIONS = [
       'GLenum target, GLenum attachment, GLenum pname, GLsizei bufSize, '
       'GLsizei* length, GLint* params', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glGetFramebufferPixelLocalStorageParameterfvANGLE',
-                'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
-  'arguments':
-      'GLint plane, GLenum pname, GLfloat* params', },
-{ 'return_type': 'void',
   'versions': [{'name': 'glGetFramebufferPixelLocalStorageParameterfvRobustANGLE',
                 'extensions': ['GL_ANGLE_robust_client_memory',
                                'GL_ANGLE_shader_pixel_local_storage']}],
   'arguments':
-      'GLint plane, GLenum pname, GLsizei bufSize, GLsizei* length, '
+      'GLint plane, GLenum pname, GLsizei paramCount, GLsizei* length, '
       'GLfloat* params', },
-{ 'return_type': 'void',
-  'versions': [{'name': 'glGetFramebufferPixelLocalStorageParameterivANGLE',
-                'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
-  'arguments':
-      'GLint plane, GLenum pname, GLint* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetFramebufferPixelLocalStorageParameterivRobustANGLE',
                 'extensions': ['GL_ANGLE_robust_client_memory',
                                'GL_ANGLE_shader_pixel_local_storage']}],
   'arguments':
-      'GLint plane, GLenum pname, GLsizei bufSize, GLsizei* length, '
+      'GLint plane, GLenum pname, GLsizei paramCount, GLsizei* length, '
       'GLint* params', },
+{ 'return_type': 'void',
+  'versions': [{'name': 'glGetFramebufferPixelLocalStorageParameteruivRobustANGLE',
+                'extensions': ['GL_ANGLE_robust_client_memory',
+                               'GL_ANGLE_shader_pixel_local_storage']}],
+  'arguments':
+      'GLint plane, GLenum pname, GLsizei paramCount, GLsizei* length, '
+      'GLuint* params', },
 { 'return_type': 'GLenum',
   'known_as': 'glGetGraphicsResetStatusARB',
   'names': ['glGetGraphicsResetStatusKHR',

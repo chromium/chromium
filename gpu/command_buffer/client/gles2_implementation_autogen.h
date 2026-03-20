@@ -1205,6 +1205,10 @@ void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                      GLenum pname,
                                                      GLint* params) override;
 
+void GetFramebufferPixelLocalStorageParameteruivANGLE(GLint plane,
+                                                      GLenum pname,
+                                                      GLuint* params) override;
+
 void ClipControlEXT(GLenum origin, GLenum depth) override;
 
 void PolygonModeANGLE(GLenum face, GLenum mode) override;

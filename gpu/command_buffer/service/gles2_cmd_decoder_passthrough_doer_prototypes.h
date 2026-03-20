@@ -1080,6 +1080,11 @@ error::Error DoGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                                GLsizei bufsize,
                                                                GLsizei* length,
                                                                GLint* params);
+error::Error DoGetFramebufferPixelLocalStorageParameteruivANGLE(GLint plane,
+                                                                GLenum pname,
+                                                                GLsizei bufsize,
+                                                                GLsizei* length,
+                                                                GLuint* params);
 error::Error DoProvokingVertexANGLE(GLenum provokeMode);
 error::Error DoClipControlEXT(GLenum origin, GLenum depth);
 error::Error DoPolygonModeANGLE(GLenum face, GLenum mode);

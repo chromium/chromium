@@ -1074,13 +1074,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
                 "glGetFramebufferAttachmentParameterivRobustANGLE"));
   }
 
-  if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
-    fn.glGetFramebufferPixelLocalStorageParameterfvANGLEFn =
-        reinterpret_cast<glGetFramebufferPixelLocalStorageParameterfvANGLEProc>(
-            get_proc_address(
-                "glGetFramebufferPixelLocalStorageParameterfvANGLE"));
-  }
-
   if (ext.b_GL_ANGLE_robust_client_memory ||
       ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn =
@@ -1090,13 +1083,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
                 "glGetFramebufferPixelLocalStorageParameterfvRobustANGLE"));
   }
 
-  if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
-    fn.glGetFramebufferPixelLocalStorageParameterivANGLEFn =
-        reinterpret_cast<glGetFramebufferPixelLocalStorageParameterivANGLEProc>(
-            get_proc_address(
-                "glGetFramebufferPixelLocalStorageParameterivANGLE"));
-  }
-
   if (ext.b_GL_ANGLE_robust_client_memory ||
       ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn =
@@ -1104,6 +1090,15 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             glGetFramebufferPixelLocalStorageParameterivRobustANGLEProc>(
             get_proc_address(
                 "glGetFramebufferPixelLocalStorageParameterivRobustANGLE"));
+  }
+
+  if (ext.b_GL_ANGLE_robust_client_memory ||
+      ext.b_GL_ANGLE_shader_pixel_local_storage) {
+    fn.glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn =
+        reinterpret_cast<
+            glGetFramebufferPixelLocalStorageParameteruivRobustANGLEProc>(
+            get_proc_address(
+                "glGetFramebufferPixelLocalStorageParameteruivRobustANGLE"));
   }
 
   if (ext.b_GL_KHR_robustness) {
@@ -3015,40 +3010,34 @@ void GLApiBase::glGetFramebufferAttachmentParameterivRobustANGLEFn(
       target, attachment, pname, bufSize, length, params);
 }
 
-void GLApiBase::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) {
-  driver_->fn.glGetFramebufferPixelLocalStorageParameterfvANGLEFn(plane, pname,
-                                                                  params);
-}
-
 void GLApiBase::glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) {
   driver_->fn.glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
-      plane, pname, bufSize, length, params);
-}
-
-void GLApiBase::glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLint* params) {
-  driver_->fn.glGetFramebufferPixelLocalStorageParameterivANGLEFn(plane, pname,
-                                                                  params);
+      plane, pname, paramCount, length, params);
 }
 
 void GLApiBase::glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) {
   driver_->fn.glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
-      plane, pname, bufSize, length, params);
+      plane, pname, paramCount, length, params);
+}
+
+void GLApiBase::glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) {
+  driver_->fn.glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+      plane, pname, paramCount, length, params);
 }
 
 GLenum GLApiBase::glGetGraphicsResetStatusARBFn(void) {
@@ -5822,50 +5811,43 @@ void TraceGLApi::glGetFramebufferAttachmentParameterivRobustANGLEFn(
       target, attachment, pname, bufSize, length, params);
 }
 
-void TraceGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetFramebufferPixelLocalStorageParameterfvANGLE");
-  gl_api_->glGetFramebufferPixelLocalStorageParameterfvANGLEFn(plane, pname,
-                                                               params);
-}
-
 void TraceGLApi::glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu",
       "TraceGLAPI::glGetFramebufferPixelLocalStorageParameterfvRobustANGLE");
   gl_api_->glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
-      plane, pname, bufSize, length, params);
-}
-
-void TraceGLApi::glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetFramebufferPixelLocalStorageParameterivANGLE");
-  gl_api_->glGetFramebufferPixelLocalStorageParameterivANGLEFn(plane, pname,
-                                                               params);
+      plane, pname, paramCount, length, params);
 }
 
 void TraceGLApi::glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu",
       "TraceGLAPI::glGetFramebufferPixelLocalStorageParameterivRobustANGLE");
   gl_api_->glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
-      plane, pname, bufSize, length, params);
+      plane, pname, paramCount, length, params);
+}
+
+void TraceGLApi::glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu",
+      "TraceGLAPI::glGetFramebufferPixelLocalStorageParameteruivRobustANGLE");
+  gl_api_->glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+      plane, pname, paramCount, length, params);
 }
 
 GLenum TraceGLApi::glGetGraphicsResetStatusARBFn(void) {
@@ -9218,54 +9200,49 @@ void LogGLApi::glGetFramebufferAttachmentParameterivRobustANGLEFn(
       target, attachment, pname, bufSize, length, params);
 }
 
-void LogGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) {
-  GL_SERVICE_LOG("glGetFramebufferPixelLocalStorageParameterfvANGLE"
-                 << "(" << plane << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << static_cast<const void*>(params) << ")");
-  gl_api_->glGetFramebufferPixelLocalStorageParameterfvANGLEFn(plane, pname,
-                                                               params);
-}
-
 void LogGLApi::glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) {
   GL_SERVICE_LOG("glGetFramebufferPixelLocalStorageParameterfvRobustANGLE"
                  << "(" << plane << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(length)
-                 << ", " << static_cast<const void*>(params) << ")");
+                 << ", " << paramCount << ", "
+                 << static_cast<const void*>(length) << ", "
+                 << static_cast<const void*>(params) << ")");
   gl_api_->glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
-      plane, pname, bufSize, length, params);
-}
-
-void LogGLApi::glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLint* params) {
-  GL_SERVICE_LOG("glGetFramebufferPixelLocalStorageParameterivANGLE"
-                 << "(" << plane << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << static_cast<const void*>(params) << ")");
-  gl_api_->glGetFramebufferPixelLocalStorageParameterivANGLEFn(plane, pname,
-                                                               params);
+      plane, pname, paramCount, length, params);
 }
 
 void LogGLApi::glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) {
   GL_SERVICE_LOG("glGetFramebufferPixelLocalStorageParameterivRobustANGLE"
                  << "(" << plane << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(length)
-                 << ", " << static_cast<const void*>(params) << ")");
+                 << ", " << paramCount << ", "
+                 << static_cast<const void*>(length) << ", "
+                 << static_cast<const void*>(params) << ")");
   gl_api_->glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
-      plane, pname, bufSize, length, params);
+      plane, pname, paramCount, length, params);
+}
+
+void LogGLApi::glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) {
+  GL_SERVICE_LOG("glGetFramebufferPixelLocalStorageParameteruivRobustANGLE"
+                 << "(" << plane << ", " << GLEnums::GetStringEnum(pname)
+                 << ", " << paramCount << ", "
+                 << static_cast<const void*>(length) << ", "
+                 << static_cast<const void*>(params) << ")");
+  gl_api_->glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+      plane, pname, paramCount, length, params);
 }
 
 GLenum LogGLApi::glGetGraphicsResetStatusARBFn(void) {
@@ -12594,36 +12571,31 @@ void NoContextGLApi::glGetFramebufferAttachmentParameterivRobustANGLEFn(
   NoContextHelper("glGetFramebufferAttachmentParameterivRobustANGLE");
 }
 
-void NoContextGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params) {
-  NoContextHelper("glGetFramebufferPixelLocalStorageParameterfvANGLE");
-}
-
 void NoContextGLApi::glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params) {
   NoContextHelper("glGetFramebufferPixelLocalStorageParameterfvRobustANGLE");
 }
 
-void NoContextGLApi::glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-    GLint plane,
-    GLenum pname,
-    GLint* params) {
-  NoContextHelper("glGetFramebufferPixelLocalStorageParameterivANGLE");
-}
-
 void NoContextGLApi::glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params) {
   NoContextHelper("glGetFramebufferPixelLocalStorageParameterivRobustANGLE");
+}
+
+void NoContextGLApi::glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params) {
+  NoContextHelper("glGetFramebufferPixelLocalStorageParameteruivRobustANGLE");
 }
 
 GLenum NoContextGLApi::glGetGraphicsResetStatusARBFn(void) {

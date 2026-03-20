@@ -1173,6 +1173,10 @@ void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterivANGLE(
     GLint /* plane */,
     GLenum /* pname */,
     GLint* /* params */) {}
+void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint /* plane */,
+    GLenum /* pname */,
+    GLuint* /* params */) {}
 void GLES2InterfaceStub::ClipControlEXT(GLenum /* origin */,
                                         GLenum /* depth */) {}
 void GLES2InterfaceStub::PolygonModeANGLE(GLenum /* face */,

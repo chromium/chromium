@@ -570,30 +570,27 @@ typedef void(
     GLsizei bufSize,
     GLsizei* length,
     GLint* params);
-typedef void(
-    GL_BINDING_CALL* glGetFramebufferPixelLocalStorageParameterfvANGLEProc)(
-    GLint plane,
-    GLenum pname,
-    GLfloat* params);
 typedef void(GL_BINDING_CALL*
                  glGetFramebufferPixelLocalStorageParameterfvRobustANGLEProc)(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLfloat* params);
-typedef void(
-    GL_BINDING_CALL* glGetFramebufferPixelLocalStorageParameterivANGLEProc)(
-    GLint plane,
-    GLenum pname,
-    GLint* params);
 typedef void(GL_BINDING_CALL*
                  glGetFramebufferPixelLocalStorageParameterivRobustANGLEProc)(
     GLint plane,
     GLenum pname,
-    GLsizei bufSize,
+    GLsizei paramCount,
     GLsizei* length,
     GLint* params);
+typedef void(GL_BINDING_CALL*
+                 glGetFramebufferPixelLocalStorageParameteruivRobustANGLEProc)(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params);
 typedef GLenum(GL_BINDING_CALL* glGetGraphicsResetStatusARBProc)(void);
 typedef void(GL_BINDING_CALL* glGetInteger64i_vProc)(GLenum target,
                                                      GLuint index,
@@ -1762,14 +1759,12 @@ struct ProcsGL {
       glGetFramebufferAttachmentParameterivEXTFn;
   glGetFramebufferAttachmentParameterivRobustANGLEProc
       glGetFramebufferAttachmentParameterivRobustANGLEFn;
-  glGetFramebufferPixelLocalStorageParameterfvANGLEProc
-      glGetFramebufferPixelLocalStorageParameterfvANGLEFn;
   glGetFramebufferPixelLocalStorageParameterfvRobustANGLEProc
       glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn;
-  glGetFramebufferPixelLocalStorageParameterivANGLEProc
-      glGetFramebufferPixelLocalStorageParameterivANGLEFn;
   glGetFramebufferPixelLocalStorageParameterivRobustANGLEProc
       glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn;
+  glGetFramebufferPixelLocalStorageParameteruivRobustANGLEProc
+      glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn;
   glGetGraphicsResetStatusARBProc glGetGraphicsResetStatusARBFn;
   glGetInteger64i_vProc glGetInteger64i_vFn;
   glGetInteger64i_vRobustANGLEProc glGetInteger64i_vRobustANGLEFn;
@@ -2501,26 +2496,24 @@ class GL_EXPORT GLApi {
       GLsizei bufSize,
       GLsizei* length,
       GLint* params) = 0;
-  virtual void glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
-      GLint plane,
-      GLenum pname,
-      GLfloat* params) = 0;
   virtual void glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
       GLint plane,
       GLenum pname,
-      GLsizei bufSize,
+      GLsizei paramCount,
       GLsizei* length,
       GLfloat* params) = 0;
-  virtual void glGetFramebufferPixelLocalStorageParameterivANGLEFn(
-      GLint plane,
-      GLenum pname,
-      GLint* params) = 0;
   virtual void glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
       GLint plane,
       GLenum pname,
-      GLsizei bufSize,
+      GLsizei paramCount,
       GLsizei* length,
       GLint* params) = 0;
+  virtual void glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+      GLint plane,
+      GLenum pname,
+      GLsizei paramCount,
+      GLsizei* length,
+      GLuint* params) = 0;
   virtual GLenum glGetGraphicsResetStatusARBFn(void) = 0;
   virtual void glGetInteger64i_vFn(GLenum target,
                                    GLuint index,
@@ -3576,18 +3569,15 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glGetFramebufferAttachmentParameterivEXTFn
 #define glGetFramebufferAttachmentParameterivRobustANGLE \
   ::gl::g_current_gl_context->glGetFramebufferAttachmentParameterivRobustANGLEFn
-#define glGetFramebufferPixelLocalStorageParameterfvANGLE \
-  ::gl::g_current_gl_context                              \
-      ->glGetFramebufferPixelLocalStorageParameterfvANGLEFn
 #define glGetFramebufferPixelLocalStorageParameterfvRobustANGLE \
   ::gl::g_current_gl_context                                    \
       ->glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn
-#define glGetFramebufferPixelLocalStorageParameterivANGLE \
-  ::gl::g_current_gl_context                              \
-      ->glGetFramebufferPixelLocalStorageParameterivANGLEFn
 #define glGetFramebufferPixelLocalStorageParameterivRobustANGLE \
   ::gl::g_current_gl_context                                    \
       ->glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn
+#define glGetFramebufferPixelLocalStorageParameteruivRobustANGLE \
+  ::gl::g_current_gl_context                                     \
+      ->glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn
 #define glGetGraphicsResetStatusARB \
   ::gl::g_current_gl_context->glGetGraphicsResetStatusARBFn
 #define glGetInteger64i_v ::gl::g_current_gl_context->glGetInteger64i_vFn

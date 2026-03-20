@@ -3965,6 +3965,15 @@ _FUNCTION_INFO = {
     'result': ['SizedResult<GLint>'],
     'decoder_func': 'DoGetFramebufferPixelLocalStorageParameterivANGLE',
   },
+  'GetFramebufferPixelLocalStorageParameteruivANGLE': {
+    'extension': 'ANGLE_shader_pixel_local_storage',
+    'extension_flag': 'angle_shader_pixel_local_storage',
+    'type': 'GETn',
+    'unit_test': False,
+    'es3': True,
+    'result': ['SizedResult<GLuint>'],
+    'decoder_func': 'DoGetFramebufferPixelLocalStorageParameteruivANGLE',
+  },
 
 }
 

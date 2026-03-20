@@ -1137,6 +1137,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                                          GLenum pname,
                                                          GLint* params,
                                                          GLsizei params_size);
+  void DoGetFramebufferPixelLocalStorageParameteruivANGLE(GLint plane,
+                                                          GLenum pname,
+                                                          GLuint* params,
+                                                          GLsizei params_size);
 
   // Creates a Program for the given program.
   Program* CreateProgram(GLuint client_id, GLuint service_id) {
@@ -16864,6 +16868,14 @@ void GLES2DecoderImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
     GLint plane,
     GLenum pname,
     GLint* params,
+    GLsizei params_size) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoGetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLuint* params,
     GLsizei params_size) {
   NOTIMPLEMENTED();
 }

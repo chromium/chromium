@@ -3794,6 +3794,41 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLE(
   });
   CheckGLError();
 }
+void GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLuint* params) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glGetFramebufferPixelLocalStorageParameteruivANGLE("
+                     << plane << ", " << GLES2Util::GetStringEnum(pname) << ", "
+                     << static_cast<const void*>(params) << ")");
+  TRACE_EVENT0(
+      "gpu",
+      "GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLE");
+  if (GetFramebufferPixelLocalStorageParameteruivANGLEHelper(plane, pname,
+                                                             params)) {
+    return;
+  }
+  typedef cmds::GetFramebufferPixelLocalStorageParameteruivANGLE::Result Result;
+  ScopedResultPtr<Result> result = GetResultAs<Result>();
+  if (!result) {
+    return;
+  }
+  result->SetNumResults(0);
+  helper_->GetFramebufferPixelLocalStorageParameteruivANGLE(
+      plane, pname, GetResultShmId(), result.offset());
+  if (!WaitForCmd()) {
+    return;
+  }
+  result->CopyResult(params);
+  GPU_CLIENT_LOG_CODE_BLOCK({
+    for (int32_t i = 0; i < result->GetNumResults(); ++i) {
+      GPU_CLIENT_LOG("  " << i << ": " << result->GetData()[i]);
+    }
+  });
+  CheckGLError();
+}
 void GLES2Implementation::ClipControlEXT(GLenum origin, GLenum depth) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glClipControlEXT("

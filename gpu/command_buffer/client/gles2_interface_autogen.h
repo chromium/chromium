@@ -902,6 +902,10 @@ virtual void GetFramebufferPixelLocalStorageParameterfvANGLE(
 virtual void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                              GLenum pname,
                                                              GLint* params) = 0;
+virtual void GetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLuint* params) = 0;
 virtual void ClipControlEXT(GLenum origin, GLenum depth) = 0;
 virtual void PolygonModeANGLE(GLenum face, GLenum mode) = 0;
 virtual void PolygonOffsetClampEXT(GLfloat factor,

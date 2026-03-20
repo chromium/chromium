@@ -3127,6 +3127,26 @@ TEST_F(GLES2ImplementationTest,
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
 
+TEST_F(GLES2ImplementationTest,
+       GetFramebufferPixelLocalStorageParameteruivANGLE) {
+  struct Cmds {
+    cmds::GetFramebufferPixelLocalStorageParameteruivANGLE cmd;
+  };
+  typedef cmds::GetFramebufferPixelLocalStorageParameteruivANGLE::Result::Type
+      ResultType;
+  ResultType result = 0;
+  Cmds expected;
+  ExpectedMemoryInfo result1 =
+      GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
+  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  EXPECT_CALL(*command_buffer(), OnFlush())
+      .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
+      .RetiresOnSaturation();
+  gl_->GetFramebufferPixelLocalStorageParameteruivANGLE(123, 2, &result);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(static_cast<ResultType>(1), result);
+}
+
 TEST_F(GLES2ImplementationTest, ClipControlEXT) {
   struct Cmds {
     cmds::ClipControlEXT cmd;

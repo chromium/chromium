@@ -257,35 +257,43 @@ WebGLShaderPixelLocalStorage::getFramebufferPixelLocalStorageParameterWEBGL(
   }
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
   switch (pname) {
+    // Unsigned integer queries
     case GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE: {
-      GLint value{};
-      gl->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname, &value);
-      return WebGLAny(script_state, static_cast<GLenum>(value));
+      GLenum value{};
+      gl->GetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname,
+                                                           &value);
+      return WebGLAny(script_state, value);
     }
     case GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE: {
       DCHECK(framebuffer);
       WebGLTexture* tex = framebuffer->GetPLSTexture(plane);
-      GLint attachedTextureID{};
-      gl->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname,
-                                                          &attachedTextureID);
-      if (static_cast<GLuint>(attachedTextureID) != ObjectOrZero(tex)) {
+      GLuint attachedTextureID{};
+      gl->GetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname,
+                                                           &attachedTextureID);
+      if (attachedTextureID != ObjectOrZero(tex)) {
         // Implementation gap! Tracked PLS texture is out of sync with actual.
         return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       return WebGLAny(script_state, tex);
     }
     case GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE:
-    case GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE:
     case GL_PIXEL_LOCAL_USAGE_ANGLE: {
+      GLuint value{};
+      gl->GetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname,
+                                                           &value);
+      return WebGLAny(script_state, value);
+    }
+    case GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE: {
+      DOMUint32Array* values = DOMUint32Array::Create(4);
+      gl->GetFramebufferPixelLocalStorageParameteruivANGLE(plane, pname,
+                                                           values->Data());
+      return WebGLAny(script_state, values);
+    }
+    // Signed integer queries
+    case GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE: {
       GLint value{};
       gl->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname, &value);
       return WebGLAny(script_state, value);
-    }
-    case GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE: {
-      DOMFloat32Array* values = DOMFloat32Array::Create(4);
-      gl->GetFramebufferPixelLocalStorageParameterfvANGLE(plane, pname,
-                                                          values->Data());
-      return WebGLAny(script_state, values);
     }
     case GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE: {
       DOMInt32Array* values = DOMInt32Array::Create(4);
@@ -293,14 +301,20 @@ WebGLShaderPixelLocalStorage::getFramebufferPixelLocalStorageParameterWEBGL(
                                                           values->Data());
       return WebGLAny(script_state, values);
     }
-    case GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE: {
-      DOMUint32Array* values = DOMUint32Array::Create(4);
-      gl->GetFramebufferPixelLocalStorageParameterivANGLE(
-          plane, pname, reinterpret_cast<GLint*>(values->Data()));
+    // Floating-point queries
+    case GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE: {
+      DOMFloat32Array* values = DOMFloat32Array::Create(4);
+      gl->GetFramebufferPixelLocalStorageParameterfvANGLE(plane, pname,
+                                                          values->Data());
       return WebGLAny(script_state, values);
     }
+    default: {
+      scoped.Context()->SynthesizeGLError(
+          GL_INVALID_ENUM, "getFramebufferPixelLocalStorageParameterWEBGL",
+          "invalid parameter name");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+    }
   }
-  return ScriptValue::CreateNull(script_state->GetIsolate());
 }
 
 }  // namespace blink

@@ -614,25 +614,24 @@ Mock_glGetFramebufferAttachmentParameterivRobustANGLE(GLenum target,
                                                       GLsizei* length,
                                                       GLint* params);
 static void GL_BINDING_CALL
-Mock_glGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
-                                                       GLenum pname,
-                                                       GLfloat* params);
-static void GL_BINDING_CALL
 Mock_glGetFramebufferPixelLocalStorageParameterfvRobustANGLE(GLint plane,
                                                              GLenum pname,
-                                                             GLsizei bufSize,
+                                                             GLsizei paramCount,
                                                              GLsizei* length,
                                                              GLfloat* params);
 static void GL_BINDING_CALL
-Mock_glGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
-                                                       GLenum pname,
-                                                       GLint* params);
-static void GL_BINDING_CALL
 Mock_glGetFramebufferPixelLocalStorageParameterivRobustANGLE(GLint plane,
                                                              GLenum pname,
-                                                             GLsizei bufSize,
+                                                             GLsizei paramCount,
                                                              GLsizei* length,
                                                              GLint* params);
+static void GL_BINDING_CALL
+Mock_glGetFramebufferPixelLocalStorageParameteruivRobustANGLE(
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params);
 static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatusEXT(void);
 static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatusKHR(void);
 static void GL_BINDING_CALL Mock_glGetInteger64i_v(GLenum target,

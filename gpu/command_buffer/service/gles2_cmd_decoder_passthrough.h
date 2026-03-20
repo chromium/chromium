@@ -426,6 +426,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
       GLsizei length,
       GLint* params);
 
+  error::Error PatchGetFramebufferPixelLocalStorageParameteruivANGLE(
+      GLint plane,
+      GLenum pname,
+      GLsizei length,
+      GLuint* params);
+
   void InsertError(GLenum error, const std::string& message);
   GLenum PopError();
   bool FlushErrors();

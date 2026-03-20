@@ -383,6 +383,8 @@
   GLES2_GET_FUN(GetFramebufferPixelLocalStorageParameterfvANGLE)
 #define glGetFramebufferPixelLocalStorageParameterivANGLE \
   GLES2_GET_FUN(GetFramebufferPixelLocalStorageParameterivANGLE)
+#define glGetFramebufferPixelLocalStorageParameteruivANGLE \
+  GLES2_GET_FUN(GetFramebufferPixelLocalStorageParameteruivANGLE)
 #define glClipControlEXT GLES2_GET_FUN(ClipControlEXT)
 #define glPolygonModeANGLE GLES2_GET_FUN(PolygonModeANGLE)
 #define glPolygonOffsetClampEXT GLES2_GET_FUN(PolygonOffsetClampEXT)

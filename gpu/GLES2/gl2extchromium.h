@@ -370,6 +370,10 @@ GL_APICALL void GL_APIENTRY
 glGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                   GLenum pname,
                                                   GLint* params);
+GL_APICALL void GL_APIENTRY
+glGetFramebufferPixelLocalStorageParameteruivANGLE(GLint plane,
+                                                   GLenum pname,
+                                                   GLuint* params);
 #endif
 typedef void(GL_APIENTRYP PFNGLFRAMEBUFFERMEMORYLESSPIXELLOCALSTORAGEANGLEPROC)(
     GLint plane,
@@ -407,6 +411,11 @@ typedef void(
     GLint plane,
     GLenum pname,
     GLint* params);
+typedef void(
+    GL_APIENTRYP PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGEPARAMETERUIVANGLEPROC)(
+    GLint plane,
+    GLenum pname,
+    GLuint* params);
 #endif /* GL_ANGLE_shader_pixel_local_storage */
 
 /* GL_ANGLE_clip_cull_distance */

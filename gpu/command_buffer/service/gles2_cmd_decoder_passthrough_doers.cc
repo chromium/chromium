@@ -5164,6 +5164,38 @@ GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameteruivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLsizei bufsize,
+    GLsizei* length,
+    GLuint* params) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    *length = 0;
+    return error::kNoError;
+  }
+
+  CheckErrorCallbackState();
+
+  api()->glGetFramebufferPixelLocalStorageParameteruivRobustANGLEFn(
+      plane, pname, bufsize, length, params);
+
+  if (CheckErrorCallbackState()) {
+    *length = 0;
+    return error::kNoError;
+  }
+
+  if (PatchGetFramebufferPixelLocalStorageParameteruivANGLE(
+          plane, pname, *length, params) != error::kNoError) {
+    *length = 0;
+    return error::kInvalidArguments;
+  }
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoProvokingVertexANGLE(
     GLenum provokeMode) {
   api()->glProvokingVertexANGLEFn(provokeMode);
