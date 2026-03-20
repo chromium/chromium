@@ -95,6 +95,10 @@ void OmniboxPopupAimHandler::AddContext(
   page_->AddContext(std::move(search_context));
 }
 
+void OmniboxPopupAimHandler::FocusInput() {
+  page_->FocusInput();
+}
+
 OmniboxAimPopupWebUIContent* OmniboxPopupAimHandler::GetAimPopupContent() {
   if (!embedder_) {
     return nullptr;
