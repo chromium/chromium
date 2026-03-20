@@ -27,6 +27,7 @@ config("warnings_config") {
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
+    "-Wno-unused-function",
   ]
   if (is_win) {
     # Override warnings in litert_shared_library.cc.
@@ -83,7 +84,9 @@ source_set("litert_headers") {
     "src/litert/c/internal/litert_accelerator.h",
     "src/litert/c/internal/litert_accelerator_registration.h",
     "src/litert/c/internal/litert_delegate_wrapper.h",
+    "src/litert/c/internal/litert_external_litert_buffer_context.h",
     "src/litert/c/internal/litert_logging.h",
+    "src/litert/c/internal/litert_runtime_context.h",
     "src/litert/c/internal/litert_tensor_buffer_registry.h",
     "src/litert/c/litert_builder.h",
     "src/litert/c/litert_common.h",
@@ -116,6 +119,7 @@ source_set("litert_headers") {
     "src/litert/cc/internal/litert_shared_library.h",
     "src/litert/cc/internal/litert_tensor_buffer_utils.h",
     "src/litert/cc/internal/scoped_file.h",
+    "src/litert/cc/internal/scoped_weight_source.h",
     "src/litert/cc/litert_buffer_ref.h",
     "src/litert/cc/litert_compiled_model.h",
     "src/litert/cc/litert_element_type.h",
@@ -172,6 +176,7 @@ source_set("litert_headers") {
     "src/litert/runtime/tensor_buffer_registry.h",
     "src/litert/runtime/tensor_buffer_requirements.h",
     "src/litert/runtime/tfl_utils.h",
+    "src/weight_loader/external_weight_loader_litert.h",
   ]
   public_deps = [
     ":mutable_tflite_schema",
@@ -210,7 +215,9 @@ source_set("litert_c") {
     "src/litert/c/internal/litert_accelerator.cc",
     "src/litert/c/internal/litert_accelerator_registration.cc",
     "src/litert/c/internal/litert_delegate_wrapper.cc",
+    "src/litert/c/internal/litert_external_litert_buffer_context.cc",
     "src/litert/c/internal/litert_logging.cc",
+    "src/litert/c/internal/litert_runtime_context.cc",
     "src/litert/c/internal/litert_tensor_buffer_registry.cc",
     "src/litert/c/litert_builder.cc",
     "src/litert/c/litert_common.cc",
@@ -357,6 +364,7 @@ source_set("litert_runtime") {
     "src/litert/runtime/tensor_buffer_registry.cc",
     "src/litert/runtime/tensor_buffer_requirements.cc",
     "src/litert/runtime/tfl_utils.cc",
+    "src/weight_loader/external_weight_loader_litert.cc",
   ]
   if (is_android) {
     sources += [

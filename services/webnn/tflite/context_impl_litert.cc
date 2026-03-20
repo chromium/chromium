@@ -155,5 +155,6 @@ ContextImplLiteRt::CreateTensorFromSharedImageImpl(
 
 std::string_view ContextImplLiteRt::GetBackendName() const {
   return "LiteRT";
+}
 
 }  // namespace webnn::litert

@@ -232,6 +232,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/multinomial.cc",
     "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
     "src/tensorflow/lite/kernels/random_uniform_custom.cc",
+    "src/tensorflow/lite/kernels/register_ref.cc",
     "src/tensorflow/lite/kernels/right_shift.cc",
     "src/tensorflow/lite/kernels/sign.cc",
     "src/tensorflow/lite/kernels/sign_custom.cc",
@@ -366,6 +367,7 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
     "src/tensorflow/lite/kernels/kernel_util.h",
     "src/tensorflow/lite/kernels/op_macros.h",
+    "src/tensorflow/lite/kernels/register_ref.h",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
     "src/tensorflow/lite/type_to_tflitetype.h",
   ]
