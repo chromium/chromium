@@ -13,13 +13,8 @@
 #include "components/performance_manager/public/features.h"
 #include "components/sync/base/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
-#include "pdf/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace whats_new {
 using BrowserCommand = browser_command::mojom::Command;
@@ -39,12 +34,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule(::syncer::kSyncAccountSettings, "vizcay@google.com",
                      BrowserCommand::kOpenAutofillSettings));
-
-  // M144
-#if BUILDFLAG(ENABLE_PDF)
-  registry->RegisterModule(
-      WhatsNewModule(chrome_pdf::features::kPdfInk2, "andyphan@chromium.org"));
-#endif  // BUILDFLAG(ENABLE_PDF)
 
   // M147
   registry->RegisterModule(WhatsNewModule(tabs::kVerticalTabsLaunch,

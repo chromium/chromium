@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//pdf/features.gni")
 
 assert(!is_android && !is_fuchsia)
 
@@ -90,12 +89,8 @@ source_set("impl") {
       "//components/history_embeddings/core",
       "//components/user_education/common",
       "//components/variations/service",
-      "//pdf:buildflags",
       "//ui/webui",
     ]
-    if (enable_pdf) {
-      deps += [ "//pdf:features" ]
-    }
   }
 }
 
