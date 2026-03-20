@@ -187,6 +187,26 @@ TEST_F(ScopedJavaRefTest, Conversions) {
   str.Reset();
 }
 
+TEST_F(ScopedJavaRefTest, DuplicateRefs) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> str;
+  // The ConvertJavaStringToUTF8 below creates a new string that would normally
+  // return a local ref. We simulate that by starting the g_local_refs count at
+  // 1.
+  g_local_refs = 1;
+  str.Reset(ConvertUTF8ToJavaString(env, "string"));
+  EXPECT_EQ(1, g_local_refs);
+  EXPECT_EQ(0, g_global_refs);
+  {
+    ScopedJavaGlobalRef<jstring> global_str(str);
+    ScopedJavaGlobalRef<jstring> global_str1(str);
+    EXPECT_EQ(1, g_local_refs);
+
+    // Each global ref should be counted separately.
+    EXPECT_EQ(2, g_global_refs);
+  }
+}
+
 TEST_F(ScopedJavaRefTest, RefCounts) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> str;
