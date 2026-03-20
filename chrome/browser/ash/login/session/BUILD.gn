@@ -104,6 +104,7 @@ static_library("session") {
     "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
+    "//chromeos/ash/experiences/frozen_update",
     "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",
     "//chromeos/dbus/tpm_manager",

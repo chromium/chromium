@@ -60,6 +60,7 @@ class OnboardingUserActivityCounter;
 class AuthenticatorBuilder;
 class LegacyTokenHandleFetcher;
 class EolNotification;
+class FrozenUpdateNotification;
 class InputEventsBlocker;
 class TokenHandleService;
 
@@ -262,6 +263,10 @@ class UserSessionManager
   // Check to see if given profile should show EndOfLife Notification
   // and show the message accordingly.
   void CheckEolInfo(Profile* profile);
+
+  // Check to see if given user should show Frozen Update Notification
+  // and show the message accordingly.
+  void CheckFrozenUpdateInfo(user_manager::User* user);
 
   // Removes a profile from the per-user input methods states map.
   void RemoveProfileForTesting(Profile* profile);
@@ -566,6 +571,10 @@ class UserSessionManager
   // Per-user-session EndofLife Notification
   std::map<Profile*, std::unique_ptr<EolNotification>, ProfileCompare>
       eol_notification_handler_;
+
+  // Per-user-session Frozen Update Notification
+  std::map<AccountId, std::unique_ptr<FrozenUpdateNotification>>
+      frozen_update_notification_handler_;
 
   // Keeps track of which password-requiring-service has already told us whether
   // they need the login password or not.

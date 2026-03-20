@@ -149,6 +149,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/frozen_update/frozen_update_notification.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/ui/base/app_types.h"
@@ -2387,6 +2388,27 @@ void UserSessionManager::CheckEolInfo(Profile* profile) {
   iter->second->CheckEolInfo();
 }
 
+void UserSessionManager::CheckFrozenUpdateInfo(user_manager::User* user) {
+  PrefService* prefs = user->GetProfilePrefs();
+  if (!prefs ||
+      !FrozenUpdateNotification::ShouldShowFrozenUpdateNotification(*prefs)) {
+    return;
+  }
+
+  auto iter = frozen_update_notification_handler_.find(user->GetAccountId());
+  if (iter == frozen_update_notification_handler_.end()) {
+    auto frozen_update_notification =
+        std::make_unique<FrozenUpdateNotification>(*prefs);
+
+    iter = frozen_update_notification_handler_
+               .insert(std::make_pair(user->GetAccountId(),
+                                      std::move(frozen_update_notification)))
+               .first;
+  }
+
+  iter->second->MaybeShowNotification();
+}
+
 void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
                                                  bool locale_pref_checked) {
   TRACE_EVENT0("login", "UserSessionManager::DoBrowserLaunchInternal");
@@ -2502,9 +2524,14 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   BootTimesRecorder::Get()->LoginDone(
       user_manager::UserManager::Get()->IsCurrentUserNew());
 
-  // Check to see if this profile should show EndOfLife Notification and show
+  // Check to see if this user should show EndOfLife Notification and show
   // the message accordingly.
   CheckEolInfo(profile);
+
+  // Check to see if this profile should show the FrozenUpdateNotification and
+  // show the message accordingly.
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  CheckFrozenUpdateInfo(user);
 
   ShowNotificationsIfNeeded(profile);
 }
@@ -2617,6 +2644,7 @@ void UserSessionManager::Shutdown() {
   password_was_saved_ = false;
   xdr_manager_.reset();
   token_handle_store_ = nullptr;
+  frozen_update_notification_handler_.clear();
 }
 
 void UserSessionManager::SetSwitchesForUser(
