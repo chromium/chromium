@@ -97,6 +97,10 @@
   background-image: url(chrome://new-tab-page/icons/banana.svg);
 }
 
+.icon-type-search-spark {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/search_spark.svg);
+}
+
 .action-chip {
   align-items: center;
   background-color: var(--chip-background-color);
