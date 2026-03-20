@@ -68,7 +68,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
-            @composebox-initialized="${this.onComposeboxInitialized_}"
+            .state="${this.composeboxState_}"
             @close-composebox="${this.onCloseComposebox_}"
             @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
