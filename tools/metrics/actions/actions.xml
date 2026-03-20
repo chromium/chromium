@@ -117,6 +117,7 @@ should be able to be added at any place in this file.
 </variants>
 
 <variants name="ContextualSearchContextState">
+  <variant name="WithContextNoText" summary="with context but no typed text"/>
   <variant name="WithNonTabContext"
       summary="with non-tab context (e.g. files)"/>
   <variant name="WithoutContext" summary="without any context"/>
@@ -10962,12 +10963,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action
-    name="ContextualSearch.UserAction.SubmitQuery.{ContextualSearchContextState}.{ContextualSearchSource}">
+    name="ContextualSearch.UserAction.SubmitQueryV2.{ContextualSearchContextState}.{ContextualSearchSource}">
   <owner>niharm@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <description>
     Recorded when a query is submitted {ContextualSearchContextState} from
-    {ContextualSearchSource}.
+    {ContextualSearchSource}. Note that more than one entry can be submitted per
+    query submission if it overlaps with WithContextNoText.
   </description>
   <token key="ContextualSearchContextState"
       variants="ContextualSearchContextState"/>

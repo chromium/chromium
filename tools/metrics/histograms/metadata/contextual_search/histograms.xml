@@ -31,6 +31,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ContextualSearchContextState">
+  <variant name="WithContextNoText"
+      summary="recorded when a query is submitted with context but no typed
+               text"/>
   <variant name="WithNonTabContext"
       summary="recorded when a query is submitted with non-tab context"/>
   <variant name="WithoutContext"
@@ -754,13 +757,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.UserAction.SubmitQuery.{ContextualSearchContextState}.{ContextualSearchSource}"
-    enum="Boolean" expires_after="2026-08-09">
-  <owner>sophiechang@chromium.org</owner>
+    name="ContextualSearch.UserAction.SubmitQueryV2.{ContextualSearchContextState}.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-03-15">
+  <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Recorded when a query is submitted {ContextualSearchContextState} from
-    {ContextualSearchSource}. Always recorded as true.
+    {ContextualSearchSource}. Always recorded as true. Note that more than one
+    entry can be submitted per query submission if it overlaps with
+    WithContextNoText.
   </summary>
   <token key="ContextualSearchContextState"
       variants="ContextualSearchContextState"/>

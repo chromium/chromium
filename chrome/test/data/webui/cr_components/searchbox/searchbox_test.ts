@@ -422,7 +422,7 @@ suite('SearchboxTest', () => {
 
     // Assert.
     const submitMetricName =
-        'ContextualSearch.UserAction.SubmitQuery.WithoutContext.NewTabPage';
+        'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
     // One histogram and one action metric should be emitted.
     assertEquals(2, metrics.count(submitMetricName));
     // Only one histogram should be recorded.

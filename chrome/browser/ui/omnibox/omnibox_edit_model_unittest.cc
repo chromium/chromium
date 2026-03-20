@@ -1773,11 +1773,11 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
             controller()->popup_state_manager()->popup_state());
 
   EXPECT_EQ(user_action_tester.GetActionCount(
-                "ContextualSearch.UserAction.SubmitQuery.WithoutContext."
+                "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext."
                 "Omnibox"),
             1);
   histogram_tester.ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Omnibox", true,
+      "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox", true,
       1);
 
   testing::Mock::VerifyAndClearExpectations(client());

@@ -712,7 +712,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
     if (!this.composeboxEnabled || this.$.input.inputElement.value.trim()) {
       const metricName =
-          'ContextualSearch.UserAction.SubmitQuery.WithoutContext.NewTabPage';
+          'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
       chrome.histograms.recordUserAction(metricName);
       chrome.histograms.recordBoolean(metricName, true);
 
