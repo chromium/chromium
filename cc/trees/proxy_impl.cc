@@ -569,17 +569,8 @@ void ProxyImpl::RenewTreePriority() {
   // have a scroll listener. This gives the scroll listener a better chance of
   // handling scroll updates within the same frame. The tree itself is still
   // kept in prefer smoothness mode to allow checkerboarding.
-  //
-  // Note: `is_current_scroll_main_painted` does not imply
-  // SCROLL_AFFECTS_SCROLL_HANDLER, as on some platforms we don't attempt to
-  // synchronize non=passive scroll handlers. See `kSynchronizedScrolling`.
-  ScrollHandlerState scroll_handler_state =
-      host_impl_->ScrollAffectsScrollHandler()
-          ? ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER
-          : ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
-
-  scheduler_->SetTreePrioritiesAndScrollState(
-      tree_priority, scroll_handler_state, is_current_scroll_main_painted);
+  scheduler_->SetTreePrioritiesAndScrollState(tree_priority,
+                                              is_current_scroll_main_painted);
 }
 
 void ProxyImpl::PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,

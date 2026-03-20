@@ -377,7 +377,6 @@ void LayerTreeHostImpl::DidUpdatePinchZoom() {
 }
 
 void LayerTreeHostImpl::DidStartScroll() {
-  scroll_affects_scroll_handler_ = active_tree()->have_scroll_event_handlers();
   if (!settings().single_thread_proxy_scheduler) {
     client_->SetHasActiveThreadedScroll(true);
   }
@@ -391,8 +390,6 @@ void LayerTreeHostImpl::DidEndScroll() {
           ::features::kNewContentForCheckerboardedScrollsPerScroll) {
     prioritize_new_content_due_to_checkerboarding_ = false;
   }
-
-  scroll_affects_scroll_handler_ = false;
 
   if (!settings().single_thread_proxy_scheduler) {
     client_->SetHasActiveThreadedScroll(false);
@@ -4133,14 +4130,6 @@ bool LayerTreeHostImpl::IsHandlingInteraction() const {
 
 bool LayerTreeHostImpl::IsCurrentScrollMainRepainted() const {
   return input_delegate_ && input_delegate_->IsCurrentScrollMainRepainted();
-}
-
-bool LayerTreeHostImpl::ScrollAffectsScrollHandler() const {
-  if (!input_delegate_) {
-    return false;
-  }
-  return settings_.enable_synchronized_scrolling &&
-         scroll_affects_scroll_handler_;
 }
 
 void LayerTreeHostImpl::SetExternalPinchGestureActive(bool active) {

@@ -225,8 +225,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
   cc::LayerTreeSettings settings;
 
-  settings.enable_synchronized_scrolling =
-      base::FeatureList::IsEnabled(::features::kSynchronizedScrolling);
   Platform* platform = Platform::Current();
 
   settings.commit_to_active_tree = !is_threaded;

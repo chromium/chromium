@@ -18,11 +18,6 @@
 
 namespace cc {
 
-enum class ScrollHandlerState {
-  SCROLL_AFFECTS_SCROLL_HANDLER,
-  SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
-};
-
 // The SchedulerStateMachine decides how to coordinate main thread activites
 // like painting/running javascript with rendering and input activities on the
 // impl thread.
@@ -256,7 +251,6 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates whether to prioritize impl thread latency (i.e., animation
   // smoothness) over new content activation.
   void SetTreePrioritiesAndScrollState(TreePriority tree_priority,
-                                       ScrollHandlerState scroll_handler_state,
                                        bool is_current_scroll_main_painted);
 
   // Indicates if the main thread will likely respond within 1 vsync.
@@ -496,8 +490,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool active_tree_needs_first_draw_ = false;
   bool did_create_and_initialize_first_layer_tree_frame_sink_ = false;
   TreePriority tree_priority_ = NEW_CONTENT_TAKES_PRIORITY;
-  ScrollHandlerState scroll_handler_state_ =
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   bool is_current_scroll_main_painted_ = false;
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;

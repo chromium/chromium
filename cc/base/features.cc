@@ -23,10 +23,6 @@ std::atomic<bool> s_is_eligible_for_throttle_main_frame_to_60hz = false;
 BASE_FEATURE(kComputeRasterTranslateForExternalScale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the compositor should attempt to sync with the scroll handlers before
-// submitting a frame.
-BASE_FEATURE(kSynchronizedScrolling, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/446920991): Reduce back to 1 frame delay once we have a

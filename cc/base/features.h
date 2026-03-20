@@ -15,7 +15,6 @@
 namespace features {
 
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kComputeRasterTranslateForExternalScale);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing

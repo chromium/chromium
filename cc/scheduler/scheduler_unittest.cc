@@ -626,7 +626,7 @@ class SchedulerTest
   void BeginFramesNotFromClient(BeginFrameSourceType bfs_type);
   void BeginFramesNotFromClient_IsDrawThrottled(BeginFrameSourceType bfs_type);
   bool BeginMainFrameOnCriticalPath(TreePriority tree_priority,
-                                    ScrollHandlerState scroll_handler_state,
+                                    bool is_current_scroll_main_painted,
                                     base::TimeDelta durations);
 
   scoped_refptr<SchedulerTestTaskRunner> task_runner_;
@@ -1722,9 +1722,7 @@ TEST_P(SchedulerTest,
 TEST_P(SchedulerTest,
        MainFrameNotSkippedAfterLateCommitInPreferImplLatencyMode) {
   SetUpScheduler(EXTERNAL_BFS);
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+  scheduler_->SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
 
   EXPECT_SCOPED(CheckMainFrameNotSkippedAfterLateCommit());
@@ -3164,36 +3162,18 @@ TEST_P(SchedulerTest, AuthoritativeVSyncInterval) {
 TEST_P(SchedulerTest, ImplLatencyTakesPriority) {
   SetUpScheduler(THROTTLED_BFS);
 
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
-  EXPECT_TRUE(scheduler_->ImplLatencyTakesPriority());
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
+  scheduler_->SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
   EXPECT_TRUE(scheduler_->ImplLatencyTakesPriority());
 
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
-  EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
+  scheduler_->SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, true);
   EXPECT_TRUE(scheduler_->ImplLatencyTakesPriority());
 
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
-  EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
+  scheduler_->SetTreePrioritiesAndScrollState(SAME_PRIORITY_FOR_BOTH_TREES,
+                                              false);
   EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
 
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
-  EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
-  scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
+  scheduler_->SetTreePrioritiesAndScrollState(SAME_PRIORITY_FOR_BOTH_TREES,
+                                              true);
   EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
 }
 
@@ -3305,15 +3285,13 @@ TEST_P(SchedulerTest, InvalidationNotBlockedOnMainFrame) {
 // durations: F = fast durations; S = slow durations
 bool SchedulerTest::BeginMainFrameOnCriticalPath(
     TreePriority tree_priority,
-    ScrollHandlerState scroll_handler_state,
+    bool is_current_scroll_main_painted,
     base::TimeDelta durations) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(durations);
   client_->Reset();
-  scheduler_->SetTreePrioritiesAndScrollState(
-      tree_priority, scroll_handler_state,
-      scroll_handler_state ==
-          ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
+  scheduler_->SetTreePrioritiesAndScrollState(tree_priority,
+                                              is_current_scroll_main_painted);
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_FALSE(client_->last_begin_main_frame_args().IsValid());
   EXPECT_SCOPED(AdvanceFrame());
@@ -3322,55 +3300,43 @@ bool SchedulerTest::BeginMainFrameOnCriticalPath(
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_BNF) {
-  EXPECT_TRUE(BeginMainFrameOnCriticalPath(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
-      kFastDuration));
+  EXPECT_TRUE(BeginMainFrameOnCriticalPath(SAME_PRIORITY_FOR_BOTH_TREES, false,
+                                           kFastDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_BNS) {
-  EXPECT_TRUE(BeginMainFrameOnCriticalPath(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
-      kSlowDuration));
+  EXPECT_TRUE(BeginMainFrameOnCriticalPath(SAME_PRIORITY_FOR_BOTH_TREES, false,
+                                           kSlowDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_BHF) {
-  EXPECT_TRUE(BeginMainFrameOnCriticalPath(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kFastDuration));
+  EXPECT_TRUE(BeginMainFrameOnCriticalPath(SAME_PRIORITY_FOR_BOTH_TREES, true,
+                                           kFastDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_BHS) {
-  EXPECT_TRUE(BeginMainFrameOnCriticalPath(
-      SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kSlowDuration));
+  EXPECT_TRUE(BeginMainFrameOnCriticalPath(SAME_PRIORITY_FOR_BOTH_TREES, true,
+                                           kSlowDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_ANF) {
-  EXPECT_FALSE(BeginMainFrameOnCriticalPath(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
-      kFastDuration));
+  EXPECT_FALSE(BeginMainFrameOnCriticalPath(SMOOTHNESS_TAKES_PRIORITY, false,
+                                            kFastDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_ANS) {
-  EXPECT_FALSE(BeginMainFrameOnCriticalPath(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
-      kSlowDuration));
+  EXPECT_FALSE(BeginMainFrameOnCriticalPath(SMOOTHNESS_TAKES_PRIORITY, false,
+                                            kSlowDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_AHF) {
-  EXPECT_TRUE(BeginMainFrameOnCriticalPath(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kFastDuration));
+  EXPECT_FALSE(BeginMainFrameOnCriticalPath(SMOOTHNESS_TAKES_PRIORITY, true,
+                                            kFastDuration));
 }
 
 TEST_P(SchedulerTest, BeginMainFrameOnCriticalPath_AHS) {
-  EXPECT_FALSE(BeginMainFrameOnCriticalPath(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kSlowDuration));
+  EXPECT_FALSE(BeginMainFrameOnCriticalPath(SMOOTHNESS_TAKES_PRIORITY, true,
+                                            kSlowDuration));
 }
 
 TEST_P(SchedulerTest, BeginFrameAckForFinishedImplFrame) {
@@ -3581,9 +3547,7 @@ TEST_P(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
 
   // If we have a scroll handler but the critical main frame is slow, we should
   // still prioritize impl thread latency.
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
+  scheduler_->SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, true);
   scheduler_->SetNeedsRedraw();
   // An interval of 2ms makes sure that the main frame is considered slow.
   base::TimeDelta interval = base::Milliseconds(2);
@@ -3601,7 +3565,8 @@ TEST_P(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
   // Set an interval of 10ms. The bmf_to_activate_interval should be 1*4 = 4ms,
   // to account for queue + main_frame + pending_tree + activation durations.
   // With a draw time of 1ms and fudge factor of 1ms, the interval available for
-  // the main frame to be activated is 8ms, so it should be considered fast.
+  // the main frame to be activated is 8ms, but it should still be considered
+  // slow because we prioritize impl latency during smoothness.
   scheduler_->SetNeedsRedraw();
   interval = base::Milliseconds(10);
   task_runner_->AdvanceMockTickClock(interval);
@@ -3610,7 +3575,7 @@ TEST_P(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
                                      task_runner_->NowTicks() + interval,
                                      interval, viz::BeginFrameArgs::NORMAL);
   fake_external_begin_frame_source_->TestOnBeginFrame(args);
-  EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
+  EXPECT_TRUE(scheduler_->ImplLatencyTakesPriority());
 
   task_runner_->RunPendingTasks();  // Run posted deadline to finish the frame.
   ASSERT_FALSE(client_->IsInsideBeginImplFrame());
@@ -3754,8 +3719,7 @@ TEST_P(SchedulerTest, ShouldDeferInvalidation_BMFQueueDurationNotCriticalSlow) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   scheduler_->SetTreePrioritiesAndScrollState(
-      TreePriority::SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+      TreePriority::SMOOTHNESS_TAKES_PRIORITY, false);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_
       ->SetBeginMainFrameQueueDurationNotCriticalEstimate(kSlowDuration);

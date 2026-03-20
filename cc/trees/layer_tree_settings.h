@@ -192,10 +192,6 @@ class CC_EXPORT LayerTreeSettings {
   // https://crbug.com/414283.
   bool commit_fractional_scroll_deltas = false;
 
-  // Whether the compositor should attempt to sync with the scroll handlers
-  // before submitting a frame.
-  bool enable_synchronized_scrolling = true;
-
 #if DCHECK_IS_ON()
   // Whether to check if any double blur exists.
   bool log_on_ui_double_background_blur = false;

@@ -1192,9 +1192,7 @@ TEST(SchedulerStateMachineTest,
   state.FrameIntervalUpdated(base::Hertz(120));
   state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
   // Main thread scrolling.
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, true);
 
   int begin_main_frame_count = 0;
   for (int i = 0; i < 10; i++) {
@@ -1208,9 +1206,7 @@ TEST(SchedulerStateMachineTest,
   EXPECT_EQ(begin_main_frame_count, 10);
 
   // Non-passive scroll handler, but not blocking.
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, false);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
   begin_main_frame_count = 0;
   for (int i = 0; i < 10; i++) {
     state.SetNeedsBeginMainFrame(false);
@@ -2595,9 +2591,7 @@ TEST(SchedulerStateMachineTest, TestImplLatencyTakesPriorityImplInvalidations) {
   SET_UP_STATE(state);
 
   // Set smoothness priority (used while scrolling).
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
 
   // Impl-side invalidation creates a pending tree which is not yet activated.
   bool needs_first_draw_on_activation = true;
@@ -3407,9 +3401,7 @@ TEST_P(DisableFrameRateLimitSchedulerStateMachineTests,
   // Verify the deadline is not triggered early until we enter
   // prefer impl latency mode.
   EXPECT_FALSE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
   EXPECT_TRUE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
 
   // Trigger the deadline.
@@ -3513,9 +3505,7 @@ void ScrollingSchedulerStateMachineTest::SetUp() {
   DisableFrameRateLimitSchedulerStateMachineTests::SetUp();
   SET_UP_STATE(state);
   state.set_is_scrolling(true);
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
 }
 
 // Tests that when we should wait for scroll events, that we do not send

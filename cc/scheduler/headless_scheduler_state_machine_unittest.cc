@@ -205,9 +205,7 @@ TEST(HeadlessSchedulerStateMachineTest, TestFullPipelineMode) {
 
   // Even with SMOOTHNESS_TAKES_PRIORITY, we don't prioritize impl thread and we
   // should wait for main frame.
-  state.SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
+  state.SetTreePrioritiesAndScrollState(SMOOTHNESS_TAKES_PRIORITY, false);
   EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::BLOCKED,
             state.CurrentBeginImplFrameDeadlineMode());
 

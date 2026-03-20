@@ -179,20 +179,6 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
   NOTREACHED();
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
-    ScrollHandlerState
-    ScrollHandlerStateToProtozeroEnum(ScrollHandlerState state) {
-  using pbzeroMinorStateV2 =
-      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2;
-  switch (state) {
-    case ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER:
-      return pbzeroMinorStateV2::SCROLL_AFFECTS_SCROLL_HANDLER;
-    case ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER:
-      return pbzeroMinorStateV2::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
-  }
-  NOTREACHED();
-}
-
 perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2
 SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
   using pbzeroSchedulerAction =
@@ -282,8 +268,6 @@ void SchedulerStateMachine::AsProtozeroInto(
   minor_state->set_did_create_and_initialize_first_layer_tree_frame_sink(
       did_create_and_initialize_first_layer_tree_frame_sink_);
   minor_state->set_tree_priority(TreePriorityToProtozeroEnum(tree_priority_));
-  minor_state->set_scroll_handler_state(
-      ScrollHandlerStateToProtozeroEnum(scroll_handler_state_));
   minor_state->set_critical_begin_main_frame_to_activate_is_fast(
       critical_begin_main_frame_to_activate_is_fast_);
   minor_state->set_main_thread_missed_last_deadline(
@@ -1567,10 +1551,8 @@ void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
 
 void SchedulerStateMachine::SetTreePrioritiesAndScrollState(
     TreePriority tree_priority,
-    ScrollHandlerState scroll_handler_state,
     bool is_current_scroll_main_painted) {
   tree_priority_ = tree_priority;
-  scroll_handler_state_ = scroll_handler_state;
   is_current_scroll_main_painted_ = is_current_scroll_main_painted;
 }
 
@@ -1580,14 +1562,11 @@ void SchedulerStateMachine::SetCriticalBeginMainFrameToActivateIsFast(
 }
 
 bool SchedulerStateMachine::ImplLatencyTakesPriority() const {
-  // Attempt to synchronize with the main thread if it has a scroll listener
-  // and is fast.
-  if (ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER ==
-          scroll_handler_state_ &&
-      critical_begin_main_frame_to_activate_is_fast_)
-    return false;
-
   // Don't wait for the main thread if we are prioritizing smoothness.
+  // We do not attempt to synchronize with the main thread for scroll handlers.
+  // Even when `critical_begin_main_frame_to_activate_is_fast_` the threshold
+  // for that calculation does not account for GPU process time required. Due to
+  // this we end up having significant scroll jank when synchronizing.
   if (SMOOTHNESS_TAKES_PRIORITY == tree_priority_)
     return true;
 

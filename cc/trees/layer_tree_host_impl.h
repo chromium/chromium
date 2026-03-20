@@ -671,7 +671,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ActivelyScrollingType GetActivelyScrollingType() const;
   bool IsHandlingInteraction() const;
   bool IsCurrentScrollMainRepainted() const;
-  bool ScrollAffectsScrollHandler() const;
   void SetExternalPinchGestureActive(bool active);
   void set_force_smooth_wheel_scrolling_for_testing(bool enabled) {
     GetInputHandler().set_force_smooth_wheel_scrolling_for_testing(enabled);
@@ -1348,13 +1347,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Use to track when doing a synchronous draw.
   bool doing_sync_draw_ = false;
 #endif
-
-  // This is used to tell the scheduler there are active scroll handlers on the
-  // page so we should prioritize latency during a scroll to try to keep
-  // scroll-linked effects up to data.
-  // TODO(bokan): This is quite old and scheduling has become much more
-  // sophisticated since so it's not clear how much value it's still providing.
-  bool scroll_affects_scroll_handler_ = false;
 
   // Provides support for PaintWorklets which depend on input properties that
   // are being animated by the compositor (aka 'animated' PaintWorklets).

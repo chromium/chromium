@@ -1832,36 +1832,6 @@ TEST_P(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
   }
 }
 
-TEST_P(LayerTreeHostImplTest, ScrollHandlerNotPresent) {
-  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
-  EXPECT_FALSE(host_impl_->active_tree()->have_scroll_event_handlers());
-  DrawFrame();
-
-  EXPECT_FALSE(host_impl_->ScrollAffectsScrollHandler());
-  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
-                                           ui::ScrollInputType::kTouchscreen)
-                                    .get(),
-                                ui::ScrollInputType::kTouchscreen);
-  EXPECT_FALSE(host_impl_->ScrollAffectsScrollHandler());
-  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
-  EXPECT_FALSE(host_impl_->ScrollAffectsScrollHandler());
-}
-
-TEST_P(LayerTreeHostImplTest, ScrollHandlerPresent) {
-  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
-  host_impl_->active_tree()->set_have_scroll_event_handlers(true);
-  DrawFrame();
-
-  EXPECT_FALSE(host_impl_->ScrollAffectsScrollHandler());
-  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
-                                           ui::ScrollInputType::kTouchscreen)
-                                    .get(),
-                                ui::ScrollInputType::kTouchscreen);
-  EXPECT_TRUE(host_impl_->ScrollAffectsScrollHandler());
-  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
-  EXPECT_FALSE(host_impl_->ScrollAffectsScrollHandler());
-}
-
 TEST_P(LayerTreeHostImplTest, ScrollUpdateReturnsCorrectValue) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();

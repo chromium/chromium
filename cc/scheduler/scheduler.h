@@ -194,7 +194,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void DidReceiveCompositorFrameAck();
 
   void SetTreePrioritiesAndScrollState(TreePriority tree_priority,
-                                       ScrollHandlerState scroll_handler_state,
                                        bool is_current_scroll_main_painted);
 
   // Commit step happens after the main thread has completed updating for a
