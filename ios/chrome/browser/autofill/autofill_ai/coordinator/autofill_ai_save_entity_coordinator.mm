@@ -7,12 +7,10 @@
 #import "base/check.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
-#import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
+#import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface AutofillAISaveEntityCoordinator () <
     UIAdaptivePresentationControllerDelegate>
@@ -23,7 +21,7 @@
   __weak id<AutofillCommands> _autofillHandler;
 
   // Navigation controller that owns the save entity view controller.
-  TableViewNavigationController* _navigationController;
+  UINavigationController* _navigationController;
 
   // Mediator that handles the business logic of the save entity UI.
   AutofillAISaveEntityMediator* _mediator;
@@ -52,15 +50,14 @@
                                         AutofillCommands);
   CHECK(_autofillHandler);
 
-  AutofillAISaveEntityTableViewController* saveViewController =
-      [[AutofillAISaveEntityTableViewController alloc]
-          initWithStyle:ChromeTableViewStyle()];
+  AutofillAISaveEntityContainerViewController* saveViewController =
+      [[AutofillAISaveEntityContainerViewController alloc] init];
   saveViewController.mutator = _mediator;
   saveViewController.autofillHandler = _autofillHandler;
   _mediator.consumer = saveViewController;
 
-  _navigationController =
-      [[TableViewNavigationController alloc] initWithTable:saveViewController];
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:saveViewController];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 
   [self.baseViewController presentViewController:_navigationController
