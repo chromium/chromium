@@ -233,7 +233,7 @@ TEST_F(ResponsivenessWatcherTest, TaskNesting) {
 TEST_F(ResponsivenessWatcherTest, NativeEvents) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  void* opaque_identifier = reinterpret_cast<void*>(0x1234);
+  uintptr_t opaque_identifier = 0x1234;
   watcher_->WillRunEventOnUIThread(opaque_identifier);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));

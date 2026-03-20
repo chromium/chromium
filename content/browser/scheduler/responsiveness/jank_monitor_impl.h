@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_JANK_MONITOR_IMPL_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_JANK_MONITOR_IMPL_H_
 
+#include <stdint.h>
+
 #include <atomic>
 #include <optional>
 
@@ -51,8 +53,8 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
                              bool was_blocked_or_low_priority) override;
   void DidRunTaskOnIOThread(const base::PendingTask* task) override;
 
-  void WillRunEventOnUIThread(const void* opaque_identifier) override;
-  void DidRunEventOnUIThread(const void* opaque_identifier) override;
+  void WillRunEventOnUIThread(uintptr_t opaque_identifier) override;
+  void DidRunEventOnUIThread(uintptr_t opaque_identifier) override;
 
   // Exposed for tests
   virtual void DestroyOnMonitorThread();
@@ -69,12 +71,12 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
     ThreadExecutionState();
     ~ThreadExecutionState();
 
-    void WillRunTaskOrEvent(const void* opaque_identifier);
-    void DidRunTaskOrEvent(const void* opaque_identifier);
+    void WillRunTaskOrEvent(uintptr_t opaque_identifier);
+    void DidRunTaskOrEvent(uintptr_t opaque_identifier);
 
     // Checks the jankiness of the target thread. Returns the opaque identifier
     // of the janky task or std::nullopt if the current task is not janky.
-    std::optional<const void*> CheckJankiness();
+    std::optional<uintptr_t> CheckJankiness();
     void AssertOnTargetThread();
 
    private:
@@ -82,7 +84,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
     base::Lock lock_;
 
     struct TaskMetadata {
-      TaskMetadata(base::TimeTicks execution_start_time, const void* identifier)
+      TaskMetadata(base::TimeTicks execution_start_time, uintptr_t identifier)
           : execution_start_time(execution_start_time),
             identifier(identifier) {}
       ~TaskMetadata();
@@ -92,7 +94,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
       // profiler data (JankMonitorImpl::WillRunTaskOrEvent ->
       // JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent -> emplaces
       // TaskMetadata in a vector).
-      RAW_PTR_EXCLUSION const void* identifier;
+      uintptr_t identifier;
     };
     std::vector<TaskMetadata> task_execution_metadata_;
 
@@ -106,9 +108,9 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
   void RemoveObserverOnMonitorThread(Observer* observer);
 
   void WillRunTaskOrEvent(ThreadExecutionState* thread_exec_state,
-                          const void* opaque_identifier);
+                          uintptr_t opaque_identifier);
   void DidRunTaskOrEvent(ThreadExecutionState* thread_exec_state,
-                         const void* opaque_identifier);
+                         uintptr_t opaque_identifier);
 
   // Called in WillRunTaskOrEvent() to start the timer to monitor janks if
   // the timer is not running.
@@ -117,11 +119,11 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
   void StopTimerIfIdle();
 
   // Sends out notifications.
-  void OnJankStarted(const void* opaque_identifier);
-  void OnJankStopped(MayBeDangling<const void> opaque_identifier);
+  void OnJankStarted(uintptr_t opaque_identifier);
+  void OnJankStopped(uintptr_t opaque_identifier);
 
   // Call in DidRunTaskOrEvent() to for notification of jank stops.
-  void NotifyJankStopIfNecessary(const void* opaque_identifier);
+  void NotifyJankStopIfNecessary(uintptr_t opaque_identifier);
 
   // The source that emits responsiveness events.
   std::unique_ptr<content::responsiveness::MetricSource> metric_source_;
@@ -143,7 +145,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
   // a janky task is detected. Checked when a task finishes running on UI or IO
   // thread to notify observers (from the monitor thread) that the jank has
   // stopped.
-  std::atomic<const void*> janky_task_id_;
+  std::atomic<uintptr_t> janky_task_id_;
 
   // The timestamp of last activity on either UI or IO thread. Checked on the
   // monitor thread for stopping the timer on inactivity. Updated on UI or IO

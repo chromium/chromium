@@ -52,15 +52,16 @@ void BrowserUINativeEventObserver::UnregisterObserver() {
 
 void BrowserUINativeEventObserver::WillProcessEvent(
     const ui::PlatformEvent& event) {
-  EventInfo info{&event};
+  uintptr_t id = reinterpret_cast<uintptr_t>(&event);
+  EventInfo info{id};
   events_being_processed_.push_back(info);
-  will_run_event_callback_.Run(&event);
+  will_run_event_callback_.Run(id);
 }
 
 void BrowserUINativeEventObserver::DidProcessEvent(
     const ui::PlatformEvent& event) {
   EventInfo& info = events_being_processed_.back();
-  did_run_event_callback_.Run(info.unique_id.get());
+  did_run_event_callback_.Run(info.unique_id);
   events_being_processed_.pop_back();
 }
 
@@ -75,21 +76,24 @@ void BrowserUINativeEventObserver::PlatformEventSourceDestroying() {
 void BrowserUINativeEventObserver::RegisterObserver() {
   base::CurrentUIThread::Get()->RegisterNativeEventObserver(this);
 }
+
 void BrowserUINativeEventObserver::UnregisterObserver() {
   base::CurrentUIThread::Get()->UnregisterNativeEventObserver(this);
 }
-void BrowserUINativeEventObserver::WillDispatchMSG(const MSG& msg) {
-  will_run_event_callback_.Run(&msg);
+
+void BrowserUINativeEventObserver::WillRunNativeEvent(uintptr_t identifier) {
+  will_run_event_callback_.Run(identifier);
 }
-void BrowserUINativeEventObserver::DidDispatchMSG(const MSG& msg) {
-  did_run_event_callback_.Run(&msg);
+
+void BrowserUINativeEventObserver::DidRunNativeEvent(uintptr_t identifier) {
+  did_run_event_callback_.Run(identifier);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 void BrowserUINativeEventObserver::RegisterObserver() {}
 void BrowserUINativeEventObserver::UnregisterObserver() {}
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif
 
 }  // namespace responsiveness
 }  // namespace content

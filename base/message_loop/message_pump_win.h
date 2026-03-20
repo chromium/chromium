@@ -5,6 +5,8 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_WIN_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_WIN_H_
 
+#include <stdint.h>
+
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -149,8 +151,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // There is at most one observer at a time.
   class BASE_EXPORT NativeEventObserver {
    public:
-    virtual void WillDispatchMSG(const MSG& msg) = 0;
-    virtual void DidDispatchMSG(const MSG& msg) = 0;
+    virtual void WillRunNativeEvent(uintptr_t identifier) = 0;
+    virtual void DidRunNativeEvent(uintptr_t identifier) = 0;
   };
 
   void RegisterNativeEventObserver(NativeEventObserver* observer);

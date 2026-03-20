@@ -24,11 +24,11 @@ void BrowserUINativeEventObserver::UnregisterObserver() {
 }
 
 void BrowserUINativeEventObserver::WillRunNativeEvent(
-    const void* opaque_identifier) {
+    uintptr_t opaque_identifier) {
   will_run_event_callback_.Run(opaque_identifier);
 }
 void BrowserUINativeEventObserver::DidRunNativeEvent(
-    const void* opaque_identifier) {
+    uintptr_t opaque_identifier) {
   did_run_event_callback_.Run(opaque_identifier);
 }
 

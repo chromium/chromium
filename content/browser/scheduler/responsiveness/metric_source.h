@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_METRIC_SOURCE_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_METRIC_SOURCE_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -59,8 +61,8 @@ class CONTENT_EXPORT MetricSource {
 
     // These methods are called by the NativeEventObserver of the UI thread to
     // allow Delegate to collect metadata about the events being run.
-    virtual void WillRunEventOnUIThread(const void* opaque_identifier) = 0;
-    virtual void DidRunEventOnUIThread(const void* opaque_identifier) = 0;
+    virtual void WillRunEventOnUIThread(uintptr_t opaque_identifier) = 0;
+    virtual void DidRunEventOnUIThread(uintptr_t opaque_identifier) = 0;
   };
 
   explicit MetricSource(Delegate* delegate);

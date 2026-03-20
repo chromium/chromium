@@ -35,7 +35,7 @@ static constexpr int64_t kInactivityThresholdUs =
 JankMonitorImpl::JankMonitorImpl()
     : timer_(std::make_unique<base::RepeatingTimer>()),
       timer_running_(false),
-      janky_task_id_(nullptr),
+      janky_task_id_(0),
       last_activity_time_us_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DETACH_FROM_SEQUENCE(monitor_sequence_checker_);
@@ -114,39 +114,43 @@ void JankMonitorImpl::WillRunTaskOnUIThread(
     const base::PendingTask* task,
     bool /* was_blocked_or_low_priority */) {
   DCHECK(ui_thread_exec_state_);
-  WillRunTaskOrEvent(ui_thread_exec_state_.get(), task);
+  WillRunTaskOrEvent(ui_thread_exec_state_.get(),
+                     reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::DidRunTaskOnUIThread(const base::PendingTask* task) {
   DCHECK(ui_thread_exec_state_);
-  DidRunTaskOrEvent(ui_thread_exec_state_.get(), task);
+  DidRunTaskOrEvent(ui_thread_exec_state_.get(),
+                    reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::WillRunTaskOnIOThread(
     const base::PendingTask* task,
     bool /* was_blocked_or_low_priority */) {
   DCHECK(io_thread_exec_state_);
-  WillRunTaskOrEvent(io_thread_exec_state_.get(), task);
+  WillRunTaskOrEvent(io_thread_exec_state_.get(),
+                     reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::DidRunTaskOnIOThread(const base::PendingTask* task) {
   DCHECK(io_thread_exec_state_);
-  DidRunTaskOrEvent(io_thread_exec_state_.get(), task);
+  DidRunTaskOrEvent(io_thread_exec_state_.get(),
+                    reinterpret_cast<uintptr_t>(task));
 }
 
-void JankMonitorImpl::WillRunEventOnUIThread(const void* opaque_identifier) {
+void JankMonitorImpl::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
   DCHECK(ui_thread_exec_state_);
   WillRunTaskOrEvent(ui_thread_exec_state_.get(), opaque_identifier);
 }
 
-void JankMonitorImpl::DidRunEventOnUIThread(const void* opaque_identifier) {
+void JankMonitorImpl::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
   DCHECK(ui_thread_exec_state_);
   DidRunTaskOrEvent(ui_thread_exec_state_.get(), opaque_identifier);
 }
 
 void JankMonitorImpl::WillRunTaskOrEvent(
     ThreadExecutionState* thread_exec_state,
-    const void* opaque_identifier) {
+    uintptr_t opaque_identifier) {
   thread_exec_state->WillRunTaskOrEvent(opaque_identifier);
   if (!timer_running_) {
     monitor_task_runner_->PostTask(
@@ -156,7 +160,7 @@ void JankMonitorImpl::WillRunTaskOrEvent(
 }
 
 void JankMonitorImpl::DidRunTaskOrEvent(ThreadExecutionState* thread_exec_state,
-                                        const void* opaque_identifier) {
+                                        uintptr_t opaque_identifier) {
   thread_exec_state->DidRunTaskOrEvent(opaque_identifier);
   NotifyJankStopIfNecessary(opaque_identifier);
 
@@ -245,7 +249,7 @@ void JankMonitorImpl::OnCheckJankiness() {
   StopTimerIfIdle();
 }
 
-void JankMonitorImpl::OnJankStarted(const void* opaque_identifier) {
+void JankMonitorImpl::OnJankStarted(uintptr_t opaque_identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
 
   janky_task_id_ = opaque_identifier;
@@ -255,34 +259,28 @@ void JankMonitorImpl::OnJankStarted(const void* opaque_identifier) {
     observer.OnJankStarted();
 }
 
-void JankMonitorImpl::OnJankStopped(
-    MayBeDangling<const void> opaque_identifier) {
+void JankMonitorImpl::OnJankStopped(uintptr_t opaque_identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
-  DCHECK_NE(opaque_identifier, nullptr);
+  DCHECK_NE(opaque_identifier, 0u);
   if (janky_task_id_ != opaque_identifier)
     return;
 
-  janky_task_id_ = nullptr;
+  janky_task_id_ = 0;
 
   base::AutoLock auto_lock(observers_lock_);
   for (content::JankMonitor::Observer& observer : observers_)
     observer.OnJankStopped();
 }
 
-void JankMonitorImpl::NotifyJankStopIfNecessary(const void* opaque_identifier) {
+void JankMonitorImpl::NotifyJankStopIfNecessary(uintptr_t opaque_identifier) {
   if (!janky_task_id_ || janky_task_id_ != opaque_identifier) [[likely]] {
     // Most tasks are unlikely to be janky.
     return;
   }
 
   monitor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&JankMonitorImpl::OnJankStopped, base::RetainedRef(this),
-                     // It is relatively safe to have `UnsafeDangling` here
-                     // because the ptr is only used as an identifier, and since
-                     // the events should be coming in order, it is unlikely
-                     // that we encounter issue with memory being reused.
-                     base::UnsafeDangling(opaque_identifier)));
+      FROM_HERE, base::BindOnce(&JankMonitorImpl::OnJankStopped,
+                                base::RetainedRef(this), opaque_identifier));
 }
 
 JankMonitorImpl::ThreadExecutionState::TaskMetadata::~TaskMetadata() = default;
@@ -296,7 +294,7 @@ JankMonitorImpl::ThreadExecutionState::ThreadExecutionState() {
 
 JankMonitorImpl::ThreadExecutionState::~ThreadExecutionState() = default;
 
-std::optional<const void*>
+std::optional<uintptr_t>
 JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
 
@@ -316,7 +314,7 @@ JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
 }
 
 void JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent(
-    const void* opaque_identifier) {
+    uintptr_t opaque_identifier) {
   AssertOnTargetThread();
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -326,7 +324,7 @@ void JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent(
 }
 
 void JankMonitorImpl::ThreadExecutionState::DidRunTaskOrEvent(
-    const void* opaque_identifier) {
+    uintptr_t opaque_identifier) {
   AssertOnTargetThread();
 
   base::AutoLock lock(lock_);

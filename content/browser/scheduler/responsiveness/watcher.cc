@@ -21,7 +21,7 @@
 namespace content {
 namespace responsiveness {
 
-Watcher::Metadata::Metadata(const void* identifier,
+Watcher::Metadata::Metadata(uintptr_t identifier,
                             bool was_blocked_or_low_priority,
                             base::TimeTicks execution_start_time)
     : identifier(identifier),
@@ -92,7 +92,8 @@ void Watcher::WillRunTask(const base::PendingTask* task,
   }
 
   const base::TimeTicks execution_start_time = base::TimeTicks::Now();
-  currently_running_metadata->emplace_back(task, was_blocked_or_low_priority,
+  currently_running_metadata->emplace_back(reinterpret_cast<uintptr_t>(task),
+                                           was_blocked_or_low_priority,
                                            execution_start_time);
 }
 
@@ -105,7 +106,8 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   // TaskRunner Observers may be added while a task is being run, which means
   // that there was no corresponding WillRunTask.
   if (currently_running_metadata->empty() ||
-      (task != currently_running_metadata->back().identifier)) [[unlikely]] {
+      (reinterpret_cast<uintptr_t>(task) !=
+       currently_running_metadata->back().identifier)) [[unlikely]] {
     *mismatched_task_identifiers += 1;
     // Mismatches can happen, so just ignore them for now. See
     // https://crbug.com/929813 and https://crbug.com/931874 for details.
@@ -148,7 +150,7 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   callback(queue_time, metadata.execution_start_time, execution_finish_time);
 }
 
-void Watcher::WillRunEventOnUIThread(const void* opaque_identifier) {
+void Watcher::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Reentrancy should be rare.
   if (!currently_running_metadata_ui_.empty()) [[unlikely]] {
@@ -161,7 +163,7 @@ void Watcher::WillRunEventOnUIThread(const void* opaque_identifier) {
       execution_start_time);
 }
 
-void Watcher::DidRunEventOnUIThread(const void* opaque_identifier) {
+void Watcher::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Calls to DidRunEventOnUIThread should always be paired with

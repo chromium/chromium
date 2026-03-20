@@ -5,15 +5,15 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 #define CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 
+#include <stdint.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 
 #if __OBJC__
-
 @class NSEvent;
-
 #endif  // __OBJC__
 
 namespace content {
@@ -21,10 +21,10 @@ namespace content {
 class NativeEventProcessorObserver {
  public:
   // Called right before a native event is run.
-  virtual void WillRunNativeEvent(const void* opaque_identifier) = 0;
+  virtual void WillRunNativeEvent(uintptr_t opaque_identifier) = 0;
 
   // Called right after a native event is run.
-  virtual void DidRunNativeEvent(const void* opaque_identifier) = 0;
+  virtual void DidRunNativeEvent(uintptr_t opaque_identifier) = 0;
 };
 
 #if __OBJC__

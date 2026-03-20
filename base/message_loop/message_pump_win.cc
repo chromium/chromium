@@ -635,12 +635,14 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
               });
 
   if (native_event_observer_) {
-    native_event_observer_->WillDispatchMSG(msg);
+    native_event_observer_->WillRunNativeEvent(
+        reinterpret_cast<uintptr_t>(&msg));
   }
   ::TranslateMessage(&msg);
   ::DispatchMessage(&msg);
   if (native_event_observer_) {
-    native_event_observer_->DidDispatchMSG(msg);
+    native_event_observer_->DidRunNativeEvent(
+        reinterpret_cast<uintptr_t>(&msg));
   }
 
   return true;
