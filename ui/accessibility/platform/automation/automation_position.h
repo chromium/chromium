@@ -19,7 +19,7 @@ namespace ui {
 //
 // For new additions, consider whether it should be public to the
 // chrome.automation extension api. If so, please update
-// extensions/common/api/automation.idl.
+// extensions/common/api/automation.webidl.
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
     : public gin::Wrappable<AutomationPosition> {
  public:

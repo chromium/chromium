@@ -51,6 +51,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('web_accessible_resources_mv2.idl',
          'web_accessible_resources_mv2.webidl'),
         ('automation_internal.idl', 'automation_internal.webidl'),
+        ('automation.idl', 'automation.webidl'),
         ('feedback_private.idl', 'feedback_private.webidl'),
         ('media_perception_private.idl', 'media_perception_private.webidl'),
         ('mojo_private.idl', 'mojo_private.webidl'),

@@ -51,7 +51,7 @@ browser process. These are usually defined in `.idl` or `.json` files in
 
 The most important extension API for accessibility is the automation API, which
 is the ChromeOS-specific implementation of the Chrome accessibility API. See
-`//extensions/common/api/automation.idl` for the interface definition and
+`//extensions/common/api/automation.webidl` for the interface definition and
 `//ui/accessibility/platform/automation/` for the implementation.
 
 Another important extension API is the accessibility private API, which is

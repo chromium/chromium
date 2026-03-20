@@ -9,7 +9,7 @@ import os
 import re
 
 AX_MOJOM = 'ui/accessibility/ax_enums.mojom'
-AUTOMATION_IDL = 'extensions/common/api/automation.idl'
+AUTOMATION_IDL = 'extensions/common/api/automation.webidl'
 
 AX_TS_FILE = 'chrome/browser/resources/accessibility/accessibility.ts'
 AX_MODE_HEADER = 'ui/accessibility/ax_mode.h'

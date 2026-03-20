@@ -4,9 +4,9 @@
 
 /**
  * @fileoverview Definitions for chrome.automation API
- * Generated from: extensions/common/api/automation.idl
+ * Generated from: extensions/common/api/automation.webidl
  * run `tools/json_schema_compiler/compiler.py
- * extensions/common/api/automation.idl -g ts_definitions` to regenerate.
+ * extensions/common/api/automation.webidl -g ts_definitions` to regenerate.
  */
 
 

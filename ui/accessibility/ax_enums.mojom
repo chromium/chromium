@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Must also be kept in sync with extensions/common/api/automation.idl.
+// Must also be kept in sync with extensions/common/api/automation.webidl.
 module ax.mojom;
 
 // For new entries to the following four enums, also add to
-// extensions/common/api/automation.idl. This is enforced
+// extensions/common/api/automation.webidl. This is enforced
 // by a PRESUBMIT check.
 //
 // Explanation of in-lined comments next to some enum values/attributes:

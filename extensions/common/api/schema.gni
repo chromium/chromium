@@ -69,7 +69,7 @@ if (enable_extensions) {
     "app_window.webidl",
     "audio.webidl",
     "automation_internal.webidl",
-    "automation.idl",
+    "automation.webidl",
     "bluetooth_low_energy.webidl",
     "bluetooth_private.webidl",
     "bluetooth_socket.webidl",

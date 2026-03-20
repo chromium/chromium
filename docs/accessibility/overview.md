@@ -534,7 +534,7 @@ The accessibility tree is also exposed via the [chrome.automation API], which
 gives extension JavaScript access to the accessibility tree, events, and
 actions. This API is implemented in C++ by [AutomationInternalCustomBindings],
 which is renderer-side code, and in JavaScript by the [automation API]. The API
-is defined by [automation.idl], which must be kept synchronized with
+is defined by [automation.webidl], which must be kept synchronized with
 [ax_enums.mojom].
 
 ## Further reading
@@ -567,7 +567,7 @@ For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Wo
 [ui::AXNodeData]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_node_data.h
 [WebAXObject]: https://cs.chromium.org/chromium/src/third_party/blink/public/web/web_ax_object.h
 [automation API]: https://cs.chromium.org/chromium/src/chrome/renderer/resources/extensions/automation
-[automation.idl]: https://cs.chromium.org/chromium/src/extensions/common/api/automation.idl
+[automation.webidl]: https://cs.chromium.org/chromium/src/extensions/common/api/automation.webidl
 [ax_enums.mojom]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_enums.mojom
 [chrome.automation API]: https://developer.chrome.com/extensions/automation
 [webui-js]: https://cs.chromium.org/chromium/src/ui/webui/resources/js/cr/ui/
