@@ -271,4 +271,22 @@ suite('SearchSettingsTest', function() {
     assertEquals(1, highlights.length);
     assertEquals(1, document.querySelectorAll('.search-bubble').length);
   });
+
+  test('Korean option', async () => {
+    document.body.innerHTML = getTrustedStaticHtml`
+        <settings-section>
+          <select>
+            <option>한국</option>
+          </select>
+          <button></button>
+          danger zone
+        </setting-section>`;
+
+    await searchManager.search('한국', document.body);
+
+    const highlights = document.querySelectorAll('.search-highlight-wrapper');
+    // TODO(crbug.com/494073456): Should be 1.
+    assertEquals(0, highlights.length);
+    assertEquals(1, document.querySelectorAll('.search-bubble').length);
+  });
 });
