@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_SKILLS_PUBLIC_SKILLS_MOJOM_TRAITS_H_
 #define COMPONENTS_SKILLS_PUBLIC_SKILLS_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom-shared.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "url/gurl.h"
 
 namespace mojo {
 
@@ -69,6 +72,12 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   }
   static const std::string& description(const skills::Skill& skill) {
     return skill.description;
+  }
+  static std::optional<GURL> image_url(const skills::Skill& skill) {
+    if (skill.image_url.is_empty()) {
+      return std::nullopt;
+    }
+    return skill.image_url;
   }
   static base::Time creation_time(const skills::Skill& skill) {
     return skill.creation_time;

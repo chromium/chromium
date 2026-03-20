@@ -5,6 +5,7 @@
 module skills.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // LINT.IfChange(SkillSource)
 enum SkillSource {
@@ -47,6 +48,9 @@ struct Skill {
 
   // The description of the skill.
   string description;
+
+  // The image URL for the skill.
+  url.mojom.Url? image_url;
 
   // The Time when the skill was created.
   mojo_base.mojom.Time creation_time;

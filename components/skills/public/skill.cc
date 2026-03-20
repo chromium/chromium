@@ -13,12 +13,14 @@ Skill::Skill(const std::string& id,
              const std::string& icon,
              const std::string& prompt,
              const std::string& description,
+             const GURL& image_url,
              const sync_pb::SkillSource& source)
     : id(id),
       name(name),
       icon(icon),
       prompt(prompt),
       description(description),
+      image_url(image_url),
       source(source) {}
 
 Skill::Skill(const Skill&) = default;

@@ -6,6 +6,7 @@
 
 #include "base/uuid.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
 
@@ -14,14 +15,17 @@ bool StructTraits<skills::mojom::SkillDataView, skills::Skill>::Read(
     skills::mojom::SkillDataView data,
     skills::Skill* out) {
   std::optional<std::string> source_skill_id;
+  std::optional<GURL> image_url;
   if (!data.ReadId(&out->id) || !data.ReadName(&out->name) ||
       !data.ReadIcon(&out->icon) || !data.ReadSourceSkillId(&source_skill_id) ||
       !data.ReadPrompt(&out->prompt) || !data.ReadSource(&out->source) ||
       !data.ReadDescription(&out->description) ||
+      !data.ReadImageUrl(&image_url) ||
       !data.ReadCreationTime(&out->creation_time) ||
       !data.ReadLastUpdateTime(&out->last_update_time)) {
     return false;
   }
+  out->image_url = image_url.value_or(GURL());
 
   const bool is_derived_from_first_party =
       out->source ==

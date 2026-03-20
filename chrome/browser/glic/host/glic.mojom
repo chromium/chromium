@@ -769,6 +769,8 @@ struct SkillPreview {
   SkillSource source;
   // The description of the skill.
   string description;
+  // The image URL to use when rendering this skill.
+  url.mojom.Url? image_url;
 };
 
 // A single skill.

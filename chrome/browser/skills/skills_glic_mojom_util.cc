@@ -4,9 +4,12 @@
 
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/skills/public/skill.h"
+#include "url/gurl.h"
 
 namespace skills {
 
@@ -43,9 +46,14 @@ sync_pb::SkillSource GlicMojomToSyncPbSkillSource(
 glic::mojom::SkillPreviewPtr SkillToGlicMojomSkillPreview(
     const skills::Skill* skill) {
   CHECK(skill);
+  std::optional<GURL> image_url;
+  if (!skill->image_url.is_empty()) {
+    image_url = skill->image_url;
+  }
   return glic::mojom::SkillPreview::New(
       skill->id, skill->name, skill->icon,
-      SyncPbToGlicMojomSkillSource(skill->source), skill->description);
+      SyncPbToGlicMojomSkillSource(skill->source), skill->description,
+      image_url);
 }
 
 }  // namespace skills

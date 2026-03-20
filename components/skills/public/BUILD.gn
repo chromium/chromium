@@ -22,7 +22,10 @@ mojom("mojo_bindings") {
       traits_public_deps = [ ":skill" ]
     },
   ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 source_set("skill") {
@@ -33,6 +36,7 @@ source_set("skill") {
   public_deps = [
     "//base",
     "//components/sync/protocol",
+    "//url",
   ]
 }
 

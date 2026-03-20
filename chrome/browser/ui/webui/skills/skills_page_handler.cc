@@ -34,6 +34,7 @@ FirstPartySkillsMap Translate1PSkillsMap(
     translated_skill.icon = skill.icon();
     translated_skill.prompt = skill.prompt();
     translated_skill.description = skill.description();
+    translated_skill.image_url = GURL(skill.image_url());
     translated_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
     translated_map[skill.category()].push_back(std::move(translated_skill));
   }
