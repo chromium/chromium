@@ -67,6 +67,7 @@ NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
 NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
 NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
+NSString* const kCobrowseGwsURL = @"CobrowseGwsURL";
 NSString* const kForceDisableAIMEligibility = @"ForceDisableAIMEligibility";
 NSString* const kForceDisableCreateImagesEligibility =
     @"ForceDisableCreateImagesEligibility";
@@ -366,6 +367,10 @@ bool EnableAIPrototypingMenu() {
 NSString* GetLensResultPanelGwsURL() {
   return [[NSUserDefaults standardUserDefaults]
       stringForKey:kLensResultPanelGwsURL];
+}
+
+NSString* GetCobrowseGwsURL() {
+  return [[NSUserDefaults standardUserDefaults] stringForKey:kCobrowseGwsURL];
 }
 
 bool ShouldForceDisableComposeboxAIM() {

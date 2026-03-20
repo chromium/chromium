@@ -176,6 +176,10 @@ bool EnableAIPrototypingMenu();
 // there is no alternative URL specified.
 NSString* GetLensResultPanelGwsURL();
 
+// Gets GWS URL base used to generate Cobrowse URLs. Returns nil if there is no
+// alternative URL specified.
+NSString* GetCobrowseGwsURL();
+
 // Returns true if Composebox AIM eligibility should be disabled.
 bool ShouldForceDisableComposeboxAIM();
 

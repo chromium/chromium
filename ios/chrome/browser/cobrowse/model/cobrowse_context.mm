@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 
+#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
@@ -23,7 +25,21 @@ const char kBaseSearchURL[] = "https://www.google.com/search?udm=50";
 - (instancetype)initWithURL:(const GURL&)url {
   self = [super init];
   if (self) {
-    _url = net::AppendOrReplaceQueryParameter(url, "gsc", "2");
+    NSString* overrideURL = experimental_flags::GetCobrowseGwsURL();
+    if (overrideURL) {
+      DVLOG(1)
+          << "\n"
+          << "***********************************************************\n"
+          << "*                                                         *\n"
+          << "*   COBROWSE GWS URL OVERRIDDEN VIA EXPERIMENTAL SETTINGS *\n"
+          << "*   URL: " << base::SysNSStringToUTF8(overrideURL) << "\n"
+          << "*                                                         *\n"
+          << "***********************************************************\n";
+      _url = GURL(base::SysNSStringToUTF8(overrideURL));
+    } else {
+      _url = url;
+    }
+    _url = net::AppendOrReplaceQueryParameter(_url, "gsc", "2");
     _url = net::AppendOrReplaceQueryParameter(_url, "sourceid", "chrome-mobile");
     _url = net::AppendOrReplaceQueryParameter(_url, "gsas", "4");
 

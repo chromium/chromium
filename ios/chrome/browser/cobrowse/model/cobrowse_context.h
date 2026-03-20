@@ -36,6 +36,8 @@ class GURL;
 + (instancetype)defaultContext;
 
 // Initializes the context with `url`, adding cobrowse query parameters.
+// Note: `url` may be ignored if the "CobrowseGwsURL" experimental setting is
+// set.
 - (instancetype)initWithURL:(const GURL&)url NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
