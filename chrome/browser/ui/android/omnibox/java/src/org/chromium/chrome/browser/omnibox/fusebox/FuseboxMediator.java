@@ -58,6 +58,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -615,6 +616,12 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                         && OmniboxFeatures.sCompactFusebox.getValue());
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
         updatePopupButtonEnabledStates();
+        if (OmniboxFeatures.sShowModelPicker.getValue() && isInInputSession()) {
+            InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
+            if (inputState != null) {
+                onInputStateChange(inputState);
+            }
+        }
     }
 
     private void updatePopupButtonEnabledStates() {
@@ -851,6 +858,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void onInputStateChange(InputState inputState) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
+        // Note that some of the time that this method is called in the middle of beginInput(), so
+        // checking avoid checking isInInputSession() or using mModelList.
 
         boolean deepSearchVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);
@@ -879,12 +888,20 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 FuseboxProperties.POPUP_MODEL_PRO_ENABLED,
                 inputState.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
 
+        // The InputState is always targeting an AI Mode request and what would be possible, but the
+        // user might not have activate AI Mode yet, in which case we do not want to show any
+        // selected model, even if we're going to automatically selected a default model as soon as
+        // we transition to AI Mode.
+        boolean isAimRequest =
+                mInput != null && ToolModeUtils.isAimRequest(mInput.getRequestType());
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_AUTO_SELECTED,
-                inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+                isAimRequest
+                        && inputState.activeModel
+                                == ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_PRO_SELECTED,
-                inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+                isAimRequest && inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
         boolean anyModels = autoVisible || proVisible;
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, anyModels);
@@ -912,6 +929,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         assert OmniboxFeatures.sShowModelPicker.getValue();
         mPopup.dismiss();
         if (!isInInputSession()) return;
+
+        if (ToolModeUtils.isConventionalRequest(mInput.getRequestType())) {
+            mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        }
 
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
