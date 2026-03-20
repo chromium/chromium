@@ -183,10 +183,30 @@
                     "name": "ContentAnnotatorEnabledFullAnnotationDisabled",
                     "params": {
                         "content_annotator_classifier_relevance_values": "{\"ShoppingCart\":2}",
+                        "content_annotator_classifier_semantic_match_rules": "{\"ShoppingCart\":[\"Shopping Cart\", \"Cart\", \"Shopping Bag\"]}",
                         "content_annotator_classifier_title_keyword_rules": "{\"ShoppingCart\":[\"\\\\\\\\bcart\\\\\\\\b\",\"\\\\\\\\bbag\\\\\\\\b\",\"\\\\\\\\bbasket\\\\\\\\b\",\"\\\\\\\\bpac\\\\\\\\b\"]}",
                         "content_annotator_classifier_url_match_rules": "{\"ShoppingCart\":[\".*/cart(?:[/?#].*|$)\",\".*/bag(?:[/?#].*|$)\",\".*/basket(?:[/?#].*|$)\",\".*/pac(?:[/?#].*|$)\"]}"
                     },
                     "enable_features": [
+                        "ContentAnnotator"
+                    ]
+                },
+                {
+                    "name": "ContentAnnotatorEnabledFullInnerTextAnnotation",
+                    "params": {
+                        "content_annotator_classifier_relevance_values": "{\"ShoppingCart\":2}",
+                        "content_annotator_classifier_semantic_match_rules": "{\"ShoppingCart\":[\"Shopping Cart\", \"Cart\", \"Shopping Bag\"]}",
+                        "content_annotator_classifier_title_keyword_rules": "{\"ShoppingCart\":[\"\\\\\\\\bcart\\\\\\\\b\",\"\\\\\\\\bbag\\\\\\\\b\",\"\\\\\\\\bbasket\\\\\\\\b\",\"\\\\\\\\bpac\\\\\\\\b\"]}",
+                        "content_annotator_classifier_url_match_rules": "{\"ShoppingCart\":[\".*/cart(?:[/?#].*|$)\",\".*/bag(?:[/?#].*|$)\",\".*/basket(?:[/?#].*|$)\",\".*/pac(?:[/?#].*|$)\"]}",
+                        "content_annotator_enable_full_annotation": "true"
+                    },
+                    "enable_features": [
+                        "ContentAnnotator"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
                         "ContentAnnotator"
                     ]
                 }
