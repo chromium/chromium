@@ -982,4 +982,10 @@ BASE_DECLARE_FEATURE(kGridMediatorSnapshotUpdateBatchGuard);
 // Whether the grid mediator snapshot update batch guard is enabled.
 bool IsGridMediatorSnapshotUpdateBatchGuardEnabled();
 
+// Enables the AssistantSidePanel feature.
+BASE_DECLARE_FEATURE(kAssistantSidePanel);
+
+// Returns true if the AssistantSidePanel feature is enabled.
+bool IsAssistantSidePanelEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -2685,6 +2685,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillEnableWalletBrandingV2Description,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBrandingV2)},
+    {"assistant-side-panel", flag_descriptions::kAssistantSidePanelName,
+     flag_descriptions::kAssistantSidePanelDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAssistantSidePanel)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

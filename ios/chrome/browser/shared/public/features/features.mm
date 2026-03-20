@@ -1168,3 +1168,9 @@ BASE_FEATURE(kGridMediatorSnapshotUpdateBatchGuard,
 bool IsGridMediatorSnapshotUpdateBatchGuardEnabled() {
   return base::FeatureList::IsEnabled(kGridMediatorSnapshotUpdateBatchGuard);
 }
+
+BASE_FEATURE(kAssistantSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAssistantSidePanelEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantSidePanel);
+}

@@ -71,6 +71,10 @@ const char kAssistantContainerName[] = "Assistant Container";
 const char kAssistantContainerDescription[] =
     "Enables the Assistant Container feature.";
 
+const char kAssistantSidePanelName[] = "AssistantSidePanel";
+const char kAssistantSidePanelDescription[] =
+    "Enables the AssistantSidePanel feature.";
+
 const char kAutofillAcrossIframesName[] = "Enables Autofill across iframes";
 const char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "

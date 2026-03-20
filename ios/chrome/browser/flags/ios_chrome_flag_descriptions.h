@@ -62,6 +62,9 @@ extern const char kAskGeminiChipDescription[];
 extern const char kAssistantContainerName[];
 extern const char kAssistantContainerDescription[];
 
+extern const char kAssistantSidePanelName[];
+extern const char kAssistantSidePanelDescription[];
+
 extern const char kAutofillAcrossIframesName[];
 extern const char kAutofillAcrossIframesDescription[];
 
