@@ -1319,24 +1319,29 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                  context_provider.get());
 }
 
-bool VideoFrame::CopyToAsync(
-    ScriptPromiseResolver<IDLSequence<PlaneLayout>>* resolver,
+VideoFrame::CopyToPromise VideoFrame::CopyToAsync(
+    ScriptState* script_state,
     scoped_refptr<media::VideoFrame> frame,
     gfx::Rect src_rect,
     const AllowSharedBufferSource* destination,
     const VideoFrameLayout& dest_layout) {
-  auto* background_readback = BackgroundReadback::From(
-      *ExecutionContext::From(resolver->GetScriptState()));
+  auto* background_readback =
+      BackgroundReadback::From(*ExecutionContext::From(script_state));
   if (!background_readback) {
-    return false;
+    return CopyToPromise();
   }
 
   ArrayBufferContents contents = PinSharedArrayBufferContent(destination);
   if (!contents.IsValid() || !contents.DataLength()) {
     // `contents` is empty, most likely destination isn't a shared buffer.
     // Async copyTo() can't be used.
-    return false;
+    return CopyToPromise();
   }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<PlaneLayout>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   auto readback_done_handler =
       [](ArrayBufferContents contents,
@@ -1354,41 +1359,37 @@ bool VideoFrame::CopyToAsync(
   auto buffer = AsSpan<uint8_t>(destination);
   background_readback->ReadbackTextureBackedFrameToBuffer(
       std::move(frame), src_rect, dest_layout, buffer, std::move(done_cb));
-  return true;
+  return promise;
 }
 
-ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
+VideoFrame::CopyToPromise VideoFrame::copyTo(
     ScriptState* script_state,
     const AllowSharedBufferSource* destination,
     VideoFrameCopyToOptions* options,
     ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<PlaneLayout>>>(
-          script_state);
-  auto promise = resolver->Promise();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot copy closed VideoFrame.");
-    return promise;
+    return CopyToPromise();
   }
 
   VideoFrameLayout dest_layout;
   gfx::Rect src_rect;
   if (!ParseCopyToOptions(*local_frame, options, exception_state, &dest_layout,
                           &src_rect)) {
-    return promise;
+    return CopyToPromise();
   }
 
   // Validate destination buffer.
   auto buffer = AsSpan<uint8_t>(destination);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("destination is detached.");
-    return promise;
+    return CopyToPromise();
   }
   if (buffer.size() < dest_layout.Size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
-    return promise;
+    return CopyToPromise();
   }
 
   if (options->hasFormat()) {
@@ -1397,12 +1398,13 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
           DOMExceptionCode::kNotSupportedError,
           "copyTo() doesn't support explicit copy to non-RGB formats. Remove "
           "format parameter to use VideoFrame's pixel format.");
+      return CopyToPromise();
     }
     PredefinedColorSpace target_color_space = PredefinedColorSpace::kSRGB;
     if (options->hasColorSpace()) {
       if (!ValidateAndConvertColorSpace(options->colorSpace(),
                                         target_color_space, exception_state)) {
-        return ScriptPromise<IDLSequence<PlaneLayout>>();
+        return CopyToPromise();
       }
     }
     ConvertAndCopyToRGB(local_frame, src_rect, dest_layout, buffer,
@@ -1414,28 +1416,29 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
     if (!mapped_frame) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
-      return promise;
+      return CopyToPromise();
     }
     CopyMappablePlanes(*mapped_frame, src_rect, dest_layout, buffer);
   } else {
     DCHECK(local_frame->HasSharedImage());
 
     // Check if we can run copyTo() asynchronously.
-    if (CopyToAsync(resolver, local_frame, src_rect, destination,
-                    dest_layout)) {
-      return promise;
+    auto async_promise = CopyToAsync(script_state, local_frame, src_rect,
+                                     destination, dest_layout);
+    if (!async_promise.IsEmpty()) {
+      return async_promise;
     }
 
     // Async version didn't work, let's copy planes synchronously.
     if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
-      return promise;
+      return CopyToPromise();
     }
   }
 
-  resolver->Resolve(ConvertLayout(dest_layout));
-  return promise;
+  return ToResolvedPromise<IDLSequence<PlaneLayout>>(
+      script_state, ConvertLayout(dest_layout));
 }
 
 void VideoFrame::close() {

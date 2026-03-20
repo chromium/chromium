@@ -56,6 +56,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  using CopyToPromise = ScriptPromise<IDLSequence<PlaneLayout>>;
+
   // Creates a VideoFrame with a new VideoFrameHandle wrapping |frame|, and
   // monitored using |monitoring_source_id|.
   VideoFrame(scoped_refptr<media::VideoFrame> frame,
@@ -104,11 +106,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromise<IDLSequence<PlaneLayout>> copyTo(
-      ScriptState* script_state,
-      const AllowSharedBufferSource* destination,
-      VideoFrameCopyToOptions* options,
-      ExceptionState& exception_state);
+  CopyToPromise copyTo(ScriptState* script_state,
+                       const AllowSharedBufferSource* destination,
+                       VideoFrameCopyToOptions* options,
+                       ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
@@ -148,11 +149,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                            base::span<uint8_t> buffer,
                            PredefinedColorSpace target_color_space);
 
-  bool CopyToAsync(ScriptPromiseResolver<IDLSequence<PlaneLayout>>*,
-                   scoped_refptr<media::VideoFrame> frame,
-                   gfx::Rect src_rect,
-                   const AllowSharedBufferSource* destination,
-                   const VideoFrameLayout& dest_layout);
+  CopyToPromise CopyToAsync(ScriptState* script_state,
+                            scoped_refptr<media::VideoFrame> frame,
+                            gfx::Rect src_rect,
+                            const AllowSharedBufferSource* destination,
+                            const VideoFrameLayout& dest_layout);
 
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
