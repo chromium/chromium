@@ -1697,6 +1697,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DefaultBrowserPromo.Click"
+    enum="DefaultBrowserPromoSourceType" expires_after="2027-03-01">
+  <owner>xinyiji@chromium.org</owner>
+  <owner>hanxi@chromium.org</owner>
+  <summary>
+    Records the total count of clicks on the default browser promo. Includes
+    clicks on message banners, the Settings page promo card, and the Magic Stack
+    (Educational Tip) module. For Message Banners, the metric triggers when the
+    user clicks the &quot;Settings&quot; button. For Settings Page Promo Card,
+    the metric triggers when the user clicks the &quot;Open Settings&quot;
+    button. For Magic Stack (Educational Tip), the metric triggers when the user
+    clicks the &quot;Show me how&quot; button. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DefaultBrowserPromo.EntryPoint.{Source}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-01-26">
   <owner>eleanorlee@google.com</owner>

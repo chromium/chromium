@@ -65,6 +65,8 @@ public class DefaultBrowserPromoMessageController {
     @PrimaryActionClickBehavior
     int onPrimaryAction() {
         mTracker.notifyEvent("default_browser_promo_messages_used");
+        DefaultBrowserPromoMetrics.recordPromoClick(
+                DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType.MESSAGES_PROMO);
 
         Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

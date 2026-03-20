@@ -1025,6 +1025,16 @@ chromium-metrics-reviews@google.com.
              of the setWebContentsDebuggingEnabled value."/>
 </enum>
 
+<!-- LINT.IfChange(DefaultBrowserPromoSourceType) -->
+
+<enum name="DefaultBrowserPromoSourceType">
+  <int value="0" label="Messages Promo"/>
+  <int value="1" label="Setting Card Promo"/>
+  <int value="2" label="Educational Tip Promo"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/default_browser_promo/java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java:DefaultBrowserPromoSourceType) -->
+
 <enum name="DesktopWindowHeuristicResult">
   <int value="0" label="Invalid result."/>
   <int value="1" label="The app is in a desktop window."/>

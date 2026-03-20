@@ -4,14 +4,41 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
-/** Helper class to record histograms related to the default browser promo. */
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/** Helper class to record histograms. */
 @NullMarked
-class DefaultBrowserPromoMetrics {
+public class DefaultBrowserPromoMetrics {
+    /**
+     * The source/location of the default browser promo that was clicked.
+     *
+     * <p>Note: this should be kept in sync with DefaultBrowserPromoSourceType in
+     * tools/metrics/histograms/metadata/android/enums.xml.
+     */
+    // LINT.IfChange(DefaultBrowserPromoSourceType)
+    @IntDef({
+        DefaultBrowserPromoSourceType.MESSAGES_PROMO,
+        DefaultBrowserPromoSourceType.SETTING_CARD_PROMO,
+        DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DefaultBrowserPromoSourceType {
+        int MESSAGES_PROMO = 0;
+        int SETTING_CARD_PROMO = 1;
+        int EDUCATIONAL_TIP_PROMO = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:DefaultBrowserPromoSourceType)
 
     private static String getSourceSuffix(@DefaultBrowserPromoEntryPoint int source) {
         if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
@@ -105,5 +132,17 @@ class DefaultBrowserPromoMetrics {
         }
         name += postFix;
         RecordHistogram.recordEnumeratedHistogram(name, newState, DefaultBrowserState.NUM_ENTRIES);
+    }
+
+    /**
+     * Record the click event on a default browser promo.
+     *
+     * @param promoType The source/type of promo that was clicked.
+     */
+    public static void recordPromoClick(@DefaultBrowserPromoSourceType int promoType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DefaultBrowserPromo.Click",
+                promoType,
+                DefaultBrowserPromoSourceType.NUM_ENTRIES);
     }
 }

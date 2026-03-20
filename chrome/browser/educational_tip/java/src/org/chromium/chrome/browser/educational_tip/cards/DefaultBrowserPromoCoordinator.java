@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.widget.ButtonCompat;
@@ -88,7 +90,11 @@ public class DefaultBrowserPromoCoordinator
                 mOnModuleClickedCallback.run();
                 return;
             }
+        } else {
+            DefaultBrowserPromoMetrics.recordPromoClick(
+                    DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO);
         }
+
         Context context = mActionDelegate.getContext();
         View defaultBrowserBottomSheetView =
                 LayoutInflater.from(context)
