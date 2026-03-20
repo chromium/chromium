@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -36,7 +37,6 @@
 #include "components/on_device_translation/translation_manager_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
-#include "metrics.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,15 +57,32 @@ using mojom::OnDeviceTranslationServiceConfigPtr;
 
 // Prefix for the display name of the on-device translation service. The origin
 // is appended to the prefix.
-const char kOnDeviceTranslationServiceDisplayNamePrefix[] =
+constexpr std::string_view kOnDeviceTranslationServiceDisplayNamePrefix =
     "On-device Translation Service: ";
 
-constexpr char kCreateTranslatorMetricActionName[] = "CreateTranslator";
-constexpr char kCanTranslateMetricActionName[] = "CanTranslate";
+constexpr std::string_view kCreateTranslatorMetricActionName =
+    "CreateTranslator";
+constexpr std::string_view kCanTranslateMetricActionName = "CanTranslate";
+
+constexpr std::string_view
+    kCreateTranslatorSourceLanguageIsSupportedMetricName =
+        "Translate.OnDeviceTranslation.CreateTranslator."
+        "IsSourceLanguageSupported";
+constexpr std::string_view
+    kCreateTranslatorTargetLanguageIsSupportedMetricName =
+        "Translate.OnDeviceTranslation.CreateTranslator."
+        "IsTargetLanguageSupported";
+constexpr std::string_view kCanTranslateSourceLanguageIsSupportedMetricName =
+    "Translate.OnDeviceTranslation.CanTranslate.IsSourceLanguageSupported";
+constexpr std::string_view kCanTranslateTargetLanguageIsSupportedMetricName =
+    "Translate.OnDeviceTranslation.CanTranslate.IsTargetLanguageSupported";
 
 // TODO(crbug.com/419848973): This is a workaround until the "he" language code
 // is fully supported.
 std::string SwitchLanguageCodeToIwIfHe(std::string_view language_code) {
+  if (language_code == "he") {
+    return "iw";
+  }
   auto split = base::SplitStringOnce(language_code, "-");
   if (!split || split->first != "he") {
     return std::string(language_code);
@@ -197,11 +214,12 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       GetBestFitLanguageCode(source_lang);
   std::optional<std::string> best_fit_target_language =
       GetBestFitLanguageCode(target_lang);
-
-  RecordOnDeviceTranslationSupportedSourceLanguage(
-      "CreateTranslator", best_fit_source_language.has_value());
-  RecordOnDeviceTranslationSupportedTargetLanguage(
-      "CreateTranslator", best_fit_target_language.has_value());
+  base::UmaHistogramBoolean(
+      kCreateTranslatorSourceLanguageIsSupportedMetricName,
+      best_fit_source_language.has_value());
+  base::UmaHistogramBoolean(
+      kCreateTranslatorTargetLanguageIsSupportedMetricName,
+      best_fit_target_language.has_value());
   if (!best_fit_source_language.has_value() ||
       !best_fit_target_language.has_value()) {
     std::move(callback).Run(
@@ -306,10 +324,10 @@ void OnDeviceTranslationServiceController::CanTranslate(
       GetBestFitLanguageCode(source_lang_arg);
   std::optional<std::string> best_fit_target_language =
       GetBestFitLanguageCode(target_lang_arg);
-  RecordOnDeviceTranslationSupportedSourceLanguage(
-      "CanTranslate", best_fit_source_language.has_value());
-  RecordOnDeviceTranslationSupportedTargetLanguage(
-      "CanTranslate", best_fit_target_language.has_value());
+  base::UmaHistogramBoolean(kCanTranslateSourceLanguageIsSupportedMetricName,
+                            best_fit_source_language.has_value());
+  base::UmaHistogramBoolean(kCanTranslateTargetLanguageIsSupportedMetricName,
+                            best_fit_target_language.has_value());
   if (!best_fit_source_language.has_value() ||
       !best_fit_target_language.has_value()) {
     std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);

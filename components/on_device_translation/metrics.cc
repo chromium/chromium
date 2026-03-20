@@ -89,24 +89,6 @@ void RecordTranslationLength(std::string_view product_name,
 
 }  // namespace
 
-void RecordOnDeviceTranslationSupportedSourceLanguage(
-    std::string_view action_name,
-    bool is_supported) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Translate.OnDeviceTranslation.", action_name,
-                    ".IsSourceLanguageSupported"}),
-      is_supported);
-}
-
-void RecordOnDeviceTranslationSupportedTargetLanguage(
-    std::string_view action_name,
-    bool is_supported) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Translate.OnDeviceTranslation.", action_name,
-                    ".IsTargetLanguageSupported"}),
-      is_supported);
-}
-
 void RecordLanguageUma(std::string_view uma_name,
                        std::string_view language_code) {
   std::optional<SupportedLanguage> code = ToSupportedLanguage(language_code);
