@@ -639,10 +639,16 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   }
 
   if (ai_overlay_dialog_view_) {
-    layouts.child_layouts.emplace_back(
-        ai_overlay_dialog_view_.get(), ai_overlay_dialog_view_->GetVisible(),
-        non_devtools_contents_bounds,
-        views::SizeBounds(non_devtools_contents_bounds.size()));
+    // TODO(b/490458384): Look into whether the view can be transparent to hit
+    // testing (in transparent parts) - otherwise autosize it to the inner web
+    // content.
+    gfx::Size size(200, 200);
+    gfx::Point top_left = non_devtools_contents_bounds.bottom_right() -
+                          gfx::Vector2d(size.width(), size.height());
+    gfx::Rect rect(top_left, size);
+    layouts.child_layouts.emplace_back(ai_overlay_dialog_view_.get(),
+                                       ai_overlay_dialog_view_->GetVisible(),
+                                       rect, views::SizeBounds(rect.size()));
   }
 
   if (glic_selection_overlay_view_) {
