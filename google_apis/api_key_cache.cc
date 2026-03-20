@@ -235,6 +235,15 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys)
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  cdm_server_certificate_ = CalculateKeyValue(
+      default_api_keys.google_cdm_server_certificate,
+      STRINGIZE_NO_EXPANSION(GOOGLE_CDM_SERVER_CERTIFICATE), std::string(),
+      nullptr, std::string(), environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
+      default_api_keys.allow_unset_values);
+#endif
+
   std::string default_client_id = CalculateKeyValue(
       default_api_keys.google_default_client_id,
       STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), std::string(), nullptr,

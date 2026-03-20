@@ -28,8 +28,14 @@
 #include "google_apis/google_api_keys.h"
 
 GoogleAPIKeysTest::GoogleAPIKeysTest() : env_(base::Environment::Create()) {
-  static_assert(9 == 3 + 2 * google_apis::CLIENT_NUM_ITEMS,
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  static constexpr int kExpectedNumberOfEntries = 10;
+#else
+  static constexpr int kExpectedNumberOfEntries = 9;
+#endif
+  static_assert(kExpectedNumberOfEntries == kTotalCacheLength,
                 "Unexpected number of key entries.");
+
   env_cache_[0].variable_name = "GOOGLE_API_KEY";
   env_cache_[1].variable_name = "GOOGLE_CLIENT_ID_MAIN";
   env_cache_[2].variable_name = "GOOGLE_CLIENT_SECRET_MAIN";
@@ -39,6 +45,9 @@ GoogleAPIKeysTest::GoogleAPIKeysTest() : env_(base::Environment::Create()) {
   env_cache_[6].variable_name = "GOOGLE_CLIENT_SECRET_REMOTING_HOST";
   env_cache_[7].variable_name = "GOOGLE_DEFAULT_CLIENT_ID";
   env_cache_[8].variable_name = "GOOGLE_DEFAULT_CLIENT_SECRET";
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  env_cache_[9].variable_name = "GOOGLE_CDM_SERVER_CERTIFICATE";
+#endif
 }
 
 GoogleAPIKeysTest::~GoogleAPIKeysTest() {}
@@ -95,6 +104,7 @@ namespace official_build {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 // Try setting some keys, these should be ignored since it's a build
 // with official keys.
@@ -135,6 +145,9 @@ TEST_F(GoogleAPIKeysTest, OfficialKeys) {
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  std::string cdm_certificate = google_apis::GetCdmServerCertificate();
+#endif
 
   EXPECT_NE(0u, api_key.size());
   EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, api_key);
@@ -158,6 +171,11 @@ TEST_F(GoogleAPIKeysTest, OfficialKeys) {
 
   EXPECT_NE(0u, secret_remoting_host.size());
   EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
+
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_NE(0u, cdm_certificate.size());
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, cdm_certificate);
+#endif
 }
 
 // While in an official build, override all the keys using GaiaConfig.
@@ -174,6 +192,7 @@ namespace override_all_official_keys_config {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
@@ -218,6 +237,10 @@ TEST_F(GoogleAPIKeysTest, OverrideAllOfficialKeysUsingConfig) {
   EXPECT_EQ(
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST),
       "config-SECRET_REMOTING_HOST");
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ("config-CDM_SERVER_CERTIFICATE",
+            google_apis::GetCdmServerCertificate());
+#endif
 }
 #endif  // defined(USE_OFFICIAL_GOOGLE_API_KEYS)
 
@@ -243,6 +266,7 @@ namespace default_keys {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #include "google_apis/default_api_keys-inc.cc"
 
@@ -279,6 +303,10 @@ TEST_F(GoogleAPIKeysTest, DefaultKeys) {
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting);
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting_host);
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken,
+            google_apis::GetCdmServerCertificate());
+#endif
 }
 
 // Override a couple of keys, leave the rest default.
@@ -295,6 +323,7 @@ namespace override_some_keys {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY override"
 #define GOOGLE_CLIENT_ID_REMOTING "CLIENT_ID_REMOTING override"
@@ -334,6 +363,10 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeys) {
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting);
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting_host);
   EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken,
+            google_apis::GetCdmServerCertificate());
+#endif
 }
 
 // Override all keys.
@@ -350,6 +383,7 @@ namespace override_all_keys {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 #define GOOGLE_CLIENT_ID_MAIN "ID_MAIN"
@@ -358,6 +392,7 @@ namespace override_all_keys {
 #define GOOGLE_CLIENT_SECRET_REMOTING "SECRET_REMOTING"
 #define GOOGLE_CLIENT_ID_REMOTING_HOST "ID_REMOTING_HOST"
 #define GOOGLE_CLIENT_SECRET_REMOTING_HOST "SECRET_REMOTING_HOST"
+#define GOOGLE_CDM_SERVER_CERTIFICATE "CDM_SERVER_CERTIFICATE"
 
 #include "google_apis/default_api_keys-inc.cc"
 
@@ -394,6 +429,9 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_EQ("SECRET_REMOTING", secret_remoting);
   EXPECT_EQ("ID_REMOTING_HOST", id_remoting_host);
   EXPECT_EQ("SECRET_REMOTING_HOST", secret_remoting_host);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ("CDM_SERVER_CERTIFICATE", google_apis::GetCdmServerCertificate());
+#endif
 }
 
 // Override API key via an experiment feature.
@@ -410,6 +448,7 @@ namespace override_api_key_via_feature_without_param {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 
@@ -448,6 +487,7 @@ namespace override_api_key_via_feature {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 
@@ -488,6 +528,7 @@ namespace override_all_keys_env {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 #define GOOGLE_CLIENT_ID_MAIN "ID_MAIN"
@@ -510,6 +551,9 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
   env->SetVar("GOOGLE_CLIENT_SECRET_MAIN", "env-SECRET_MAIN");
   env->SetVar("GOOGLE_CLIENT_SECRET_REMOTING", "env-SECRET_REMOTING");
   env->SetVar("GOOGLE_CLIENT_SECRET_REMOTING_HOST", "env-SECRET_REMOTING_HOST");
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  env->SetVar("GOOGLE_CDM_SERVER_CERTIFICATE", "env-CDM_SERVER_CERTIFICATE");
+#endif
 
   google_apis::ApiKeyCache api_key_cache(
       override_all_keys_env::GetDefaultApiKeysFromDefinedValues());
@@ -535,6 +579,9 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  std::string cdm_server_certificate = google_apis::GetCdmServerCertificate();
+#endif
 
   EXPECT_EQ("env-API_KEY", api_key);
   EXPECT_EQ("env-ID_MAIN", id_main);
@@ -543,6 +590,9 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
   EXPECT_EQ("env-SECRET_REMOTING", secret_remoting);
   EXPECT_EQ("env-ID_REMOTING_HOST", id_remoting_host);
   EXPECT_EQ("env-SECRET_REMOTING_HOST", secret_remoting_host);
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ("env-CDM_SERVER_CERTIFICATE", cdm_server_certificate);
+#endif
 }
 
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -563,6 +613,7 @@ namespace override_all_keys_setters {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 #define GOOGLE_CLIENT_ID_MAIN "ID_MAIN"
@@ -571,6 +622,7 @@ namespace override_all_keys_setters {
 #define GOOGLE_CLIENT_SECRET_REMOTING "SECRET_REMOTING"
 #define GOOGLE_CLIENT_ID_REMOTING_HOST "ID_REMOTING_HOST"
 #define GOOGLE_CLIENT_SECRET_REMOTING_HOST "SECRET_REMOTING_HOST"
+#define GOOGLE_CDM_SERVER_CERTIFICATE "CDM_SERVER_CERTIFICATE"
 
 #include "google_apis/default_api_keys-inc.cc"
 
@@ -609,6 +661,10 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
             google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST));
   EXPECT_EQ(client_secret, google_apis::GetOAuth2ClientSecret(
                                google_apis::CLIENT_REMOTING_HOST));
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  std::string cdm_server_certificate("setter-CDM_SERVER_CERTIFICATE");
+  EXPECT_EQ(cdm_server_certificate, google_apis::GetCdmServerCertificate());
+#endif
 }
 #endif  // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 
@@ -627,6 +683,7 @@ namespace override_all_keys_config {
 #undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
 #undef GOOGLE_DEFAULT_CLIENT_ID
 #undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
 
 #define GOOGLE_API_KEY "API_KEY"
 #define GOOGLE_CLIENT_ID_MAIN "ID_MAIN"
@@ -673,4 +730,8 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_EQ(
       "config-SECRET_REMOTING_HOST",
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST));
+#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  EXPECT_EQ("config-CDM_SERVER_CERTIFICATE",
+            google_apis::GetCdmServerCertificate());
+#endif
 }

@@ -60,6 +60,9 @@ declare_args() {
   # iOS and Fuchsia builds that do not use the built-in key use this.
   support_external_google_api_key =
       is_ios || (is_fuchsia && !use_official_google_api_keys)
+
+  # Whether to support the CDM Server Certificate.
+  support_cdm_server_certificate = is_mac || is_linux || is_win
 }
 
 # internal:generate_metrics_key_header must be a deps when
@@ -72,7 +75,10 @@ _use_official_google_keys_and_generate_metrics_key_header =
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "SUPPORT_EXTERNAL_GOOGLE_API_KEY=$support_external_google_api_key" ]
+  flags = [
+    "SUPPORT_EXTERNAL_GOOGLE_API_KEY=$support_external_google_api_key",
+    "SUPPORT_CDM_SERVER_CERTIFICATE=$support_cdm_server_certificate",
+  ]
 }
 
 config("key_defines") {
