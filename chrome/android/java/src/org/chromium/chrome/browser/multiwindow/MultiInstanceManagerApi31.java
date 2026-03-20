@@ -28,7 +28,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -234,19 +233,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void moveTabsToNewWindow(
-            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
-        if (tabs.isEmpty()) return;
-        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
-        if (isInstanceLimitReached()) {
-            showInstanceCreationLimitMessage();
-        } else {
-            mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
-        }
-    }
-
-    @Override
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
         // Check the number of instances that the tab/s is able to move into.
@@ -267,7 +253,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
 
         if (instanceCount <= 1) {
-            moveTabsToNewWindow(tabs, /* finalizeCallback= */ null, source);
+            mMultiInstanceOrchestrator.moveTabsToNewWindow(
+                    tabs, /* finalizeCallback= */ null, source);
 
             // Close the source instance window, if needed.
             closeChromeWindowIfEmpty(mInstanceId);
@@ -322,7 +309,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         ? MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ needsActive)
                         : MultiWindowUtils.getInstanceCountWithFallback(instanceType);
         if (instanceCount <= 1 || preferNew) {
-            if (preferNew && isInstanceLimitReached()) {
+            if (preferNew && !MultiWindowUtils.canCreateNewWindow()) {
                 assumeNonNull(mActiveTab);
                 showInstanceCreationLimitMessage();
                 return;
@@ -521,7 +508,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // instance limit, which is the case when Robust Window Management is enabled. Otherwise
             // we cannot return an invalid id, because we want to allocate a valid id for an
             // inactive instance that is being restored, when limit includes both instance types.
-            if (isInstanceLimitReached() && UiUtils.isRobustWindowManagementEnabled()) {
+            if (!MultiWindowUtils.canCreateNewWindow()
+                    && UiUtils.isRobustWindowManagementEnabled()) {
                 profileType = getProfileType(instanceIdForTask, isIncognitoIntent);
                 return new AllocatedIdInfo(
                         instanceIdForTask, InstanceAllocationType.INVALID_INSTANCE, profileType);
@@ -558,7 +546,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // this case, we want to avoid allocating an available id in the new range if we are at
             // or over instance limit, so that we avoid allowing successful creation of the current
             // activity in this scenario.
-            if (!isInstanceLimitReached()) {
+            if (MultiWindowUtils.canCreateNewWindow()) {
                 for (int i = 0; i < TabWindowManager.MAX_SELECTORS_1000; ++i) {
                     if (!ChromeMultiInstancePersistentStore.hasInstance(i)) {
                         logNewInstanceId(i);
@@ -737,12 +725,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void initialize(
-            int instanceId,
-            int taskId,
-            @SupportedProfileType int profileType,
-            UnownedUserDataHost host) {
-        super.initialize(instanceId, taskId, profileType, host);
+    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
+        super.initialize(instanceId, taskId, profileType);
         mInstanceId = instanceId;
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
@@ -1119,7 +1103,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             instanceInfoList.add(instanceInfo);
         }
 
-        if (instanceInfoList.size() > 0) {
+        if (!instanceInfoList.isEmpty()) {
             RecentlyClosedEntriesManagerTrackerFactory.getInstance()
                     .onInstancesClosed(instanceInfoList, isPermanentDeletion);
         }
@@ -1332,7 +1316,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void moveTabGroupToNewWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
-        if (isInstanceLimitReached()) {
+        if (!MultiWindowUtils.canCreateNewWindow()) {
             showInstanceCreationLimitMessage();
         } else {
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
@@ -1443,13 +1427,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         TabModelUtils.runOnTabStateInitialized(
                 selector,
                 (TabModelSelector initializedSelector) -> cleanupSyncedTabGroupsIfLastInstance());
-    }
-
-    private boolean isInstanceLimitReached() {
-        int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
-        // TODO (crbug.com/460800897): Update conditional logic for opening URLs in other windows.
-        return instanceCount >= getMaxInstances();
     }
 
     private int getMaxInstances() {

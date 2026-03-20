@@ -23,7 +23,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
@@ -125,18 +124,13 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public void initialize(
-            int instanceId,
-            int taskId,
-            @SupportedProfileType int profileType,
-            UnownedUserDataHost host) {
-        MultiInstanceManagerFactory.attachToHost(host, this);
+    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
+        mMultiInstanceOrchestrator.onInitialize(mActivity, this);
     }
 
     @Override
     public void onDestroy() {
         mDestroyed = true;
-        MultiInstanceManagerFactory.detachFromAllHosts(this);
         mMultiWindowModeStateDispatcher.removeObserver(this);
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
         mActivityLifecycleDispatcher.unregister(this);

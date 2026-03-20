@@ -308,6 +308,18 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
+     * Determines whether a new ChromeTabbedActivity window can be created on Android S+ devices
+     * that support the multi-instance feature. A new window can be created if the instance limit is
+     * not reached.
+     *
+     * @return {@code true} if a new window can be created, {@code false} otherwise.
+     */
+    /* package */ static boolean canCreateNewWindow() {
+        if (!isMultiInstanceApi31Enabled()) return false;
+        return getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) < getMaxInstances();
+    }
+
+    /**
      * @param tabModelSelector Used to pull total tab count.
      * @return whether it is last tab with homepage enabled and set to an custom url.
      */
@@ -1382,10 +1394,17 @@ public class MultiWindowUtils implements ActivityStateListener {
         return true;
     }
 
-    /* package */ static @Nullable Activity getActivityById(int windowId) {
+    /**
+     * Gets an {@link Activity} associated with the given window id.
+     *
+     * @param windowId The window id of the required activity.
+     * @return The {@link Activity} associated with the given window id.
+     */
+    public static @Nullable Activity getActivityById(int windowId) {
         if (sActivitySupplierForTesting != null) {
             return sActivitySupplierForTesting.get();
         }
+
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             if (windowId == windowManager.getIdForWindow(activity)) return activity;

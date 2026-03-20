@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import android.app.Activity;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
@@ -15,6 +19,27 @@ import java.util.List;
  */
 @NullMarked
 public interface MultiInstanceOrchestrator {
+    /**
+     * Tracks {@link Activity} / {@link MultiInstanceManager} associations when an activity-scoped
+     * {@link MultiInstanceManager} is fully initialized. This is expected to be invoked during
+     * {@link MultiInstanceManager#initialize(int, int, int)}.
+     *
+     * @param activity The {@link Activity} that was started.
+     * @param multiInstanceManager The {@link MultiInstanceManager} created for {@code activity}.
+     */
+    void onInitialize(Activity activity, MultiInstanceManager multiInstanceManager);
+
+    /**
+     * Moves the specified tabs to a new ChromeTabbedActivity instance.
+     *
+     * @param tabs The list of tabs to move.
+     * @param finalizeCallback A runnable that will be invoked after the tabs have finished
+     *     reparenting to the new window.
+     * @param source The new window creation source used for metrics.
+     */
+    void moveTabsToNewWindow(
+            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source);
+
     /**
      * Moves the specified tabs to the specified ChromeTabbedActivity instance. This accepts inputs
      * to determine the position of the moved tabs in the destination window. The operation will

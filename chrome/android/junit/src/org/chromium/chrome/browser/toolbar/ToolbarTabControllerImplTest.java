@@ -31,8 +31,9 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -82,7 +83,7 @@ public class ToolbarTabControllerImplTest {
     @Mock private Supplier<Tab> mActivityTabProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mTabCreator;
-    @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private Supplier<Boolean> mIsOffTheRecordSupplier;
 
     private final GURL mGURL = new GURL("https://example.com");
@@ -102,6 +103,7 @@ public class ToolbarTabControllerImplTest {
                 .getHandleBackPressChangedSupplier();
         doReturn(false).when(mIsOffTheRecordSupplier).get();
         TrackerFactory.setTrackerForTests(mTracker);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         initToolbarTabController();
     }
 
@@ -231,7 +233,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2);
 
         // Call backInNewTab with foregroundNewTab = true.
         mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
@@ -250,7 +252,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2);
 
         // Call backInNewTab with foregroundNewTab = false.
         mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
@@ -269,7 +271,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceOrchestrator);
 
         // Call backInNewWindow.
         mToolbarTabController.backInNewWindow();
@@ -278,7 +280,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goBack();
-        inOrder.verify(mMultiInstanceManager)
+        inOrder.verify(mMultiInstanceOrchestrator)
                 .moveTabsToNewWindow(
                         Collections.singletonList(mTab2),
                         /* finalizeCallback= */ null,
@@ -293,7 +295,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2);
 
         // Call forwardInNewTab with foregroundNewTab = true.
         mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ true);
@@ -312,7 +314,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2);
 
         // Call forwardInNewTab with foregroundNewTab = false.
         mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ false);
@@ -331,7 +333,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
-        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceOrchestrator);
 
         // Call forwardInNewWindow.
         mToolbarTabController.forwardInNewWindow();
@@ -340,7 +342,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goForward();
-        inOrder.verify(mMultiInstanceManager)
+        inOrder.verify(mMultiInstanceOrchestrator)
                 .moveTabsToNewWindow(
                         Collections.singletonList(mTab2),
                         /* finalizeCallback= */ null,
@@ -402,7 +404,6 @@ public class ToolbarTabControllerImplTest {
                         mRunnable,
                         mActivityTabProvider,
                         mTabCreatorManager,
-                        mMultiInstanceManager,
                         mIsOffTheRecordSupplier);
     }
 

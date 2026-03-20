@@ -8,8 +8,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -36,8 +37,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Runnable mOnSuccessRunnable;
     private final Supplier<@Nullable Tab> mActivityTabSupplier;
     private final TabCreatorManager mTabCreatorManager;
-    private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private final Supplier<Boolean> mIsOffTheRecordSupplier;
+    private final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     /**
      * @param tabSupplier Supplier for the currently active tab.
@@ -52,7 +53,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      *     interactable. But activityTabSupplier will return null if it is non-interactable, such as
      *     on overview mode.
      * @param tabCreatorManager The {@link TabCreatorManager} used to create new tabs.
-     * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new windows
      * @param isOffTheRecordSupplier Supplier for whether the current UI is off-the-record.
      */
     public ToolbarTabControllerImpl(
@@ -63,7 +63,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             Runnable onSuccessRunnable,
             Supplier<@Nullable Tab> activityTabSupplier,
             TabCreatorManager tabCreatorManager,
-            @Nullable MultiInstanceManager multiInstanceManager,
             Supplier<Boolean> isOffTheRecordSupplier) {
         mTabSupplier = tabSupplier;
         mTrackerSupplier = trackerSupplier;
@@ -72,8 +71,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         mOnSuccessRunnable = onSuccessRunnable;
         mActivityTabSupplier = activityTabSupplier;
         mTabCreatorManager = tabCreatorManager;
-        mMultiInstanceManager = multiInstanceManager;
         mIsOffTheRecordSupplier = isOffTheRecordSupplier;
+        mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
     }
 
     @Override
@@ -118,9 +117,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             @Nullable Tab newTab = createTabWithHistory(tab, /* foregroundNewTab= */ false);
             if (newTab == null) return false;
             newTab.goBack();
-            if (mMultiInstanceManager == null) return false;
             // Move tab to a new window.
-            mMultiInstanceManager.moveTabsToNewWindow(
+            mMultiInstanceOrchestrator.moveTabsToNewWindow(
                     Collections.singletonList(newTab),
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -161,9 +159,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             @Nullable Tab newTab = createTabWithHistory(tab, /* foregroundNewTab= */ false);
             if (newTab == null) return false;
             newTab.goForward();
-            if (mMultiInstanceManager == null) return false;
             // Move tab to a new window.
-            mMultiInstanceManager.moveTabsToNewWindow(
+            mMultiInstanceOrchestrator.moveTabsToNewWindow(
                     Collections.singletonList(newTab),
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -264,9 +261,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                                 TabLaunchType.FROM_CHROME_UI,
                                 currentTab);
 
-        if (mMultiInstanceManager == null) return;
         // Move tab to a new window.
-        mMultiInstanceManager.moveTabsToNewWindow(
+        mMultiInstanceOrchestrator.moveTabsToNewWindow(
                 Collections.singletonList(newTab),
                 /* finalizeCallback= */ null,
                 NewWindowAppSource.KEYBOARD_SHORTCUT);

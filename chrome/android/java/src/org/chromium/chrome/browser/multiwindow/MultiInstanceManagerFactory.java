@@ -6,16 +6,12 @@ package org.chromium.chrome.browser.multiwindow;
 
 import android.app.Activity;
 
-import org.chromium.base.UnownedUserDataHost;
-import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -23,9 +19,6 @@ import java.util.function.Supplier;
 /** Creates {@link MultiInstanceManager}. */
 @NullMarked
 public class MultiInstanceManagerFactory extends MultiInstanceOrchestratorFactory {
-
-    private static final UnownedUserDataKey<MultiInstanceManager> KEY = new UnownedUserDataKey<>();
-
     /**
      * Creates a new {@link MultiInstanceManager}.
      *
@@ -70,23 +63,8 @@ public class MultiInstanceManagerFactory extends MultiInstanceOrchestratorFactor
         }
     }
 
-    /** Returns the {@link MultiInstanceManager} associated with the given {@link WindowAndroid}. */
-    public static @Nullable MultiInstanceManager from(@Nullable WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
-        return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
-    }
-
     /** Instantiates the {@link MultiInstanceOrchestrator} singleton. */
     public static void initializeMultiInstanceOrchestrator() {
         setInstance(MultiInstanceOrchestratorImpl.getInstance());
-    }
-
-    /* package */ static void attachToHost(
-            UnownedUserDataHost host, MultiInstanceManager multiInstanceManager) {
-        KEY.attachToHost(host, multiInstanceManager);
-    }
-
-    /* package */ static void detachFromAllHosts(MultiInstanceManager multiInstanceManager) {
-        KEY.detachFromAllHosts(multiInstanceManager);
     }
 }

@@ -3590,11 +3590,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mMultiInstanceManager != null) {
             int assignedIndex = TabWindowManagerSingleton.getInstance().getIdForWindow(this);
             int taskId = ApplicationStatus.getTaskId(this);
-            mMultiInstanceManager.initialize(
-                    assignedIndex,
-                    taskId,
-                    mSupportedProfileType,
-                    getWindowAndroid().getUnownedUserDataHost());
+            mMultiInstanceManager.initialize(assignedIndex, taskId, mSupportedProfileType);
         }
 
         mTabModelSelector = assertNonNull(mTabModelOrchestrator.getTabModelSelector());

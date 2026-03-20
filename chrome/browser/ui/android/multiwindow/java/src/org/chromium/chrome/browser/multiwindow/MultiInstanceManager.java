@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.UnownedUserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -224,19 +223,6 @@ public abstract class MultiInstanceManager {
     public abstract void maybeMergeTabs();
 
     /**
-     * Moves the specified tabs to a new ChromeTabbedActivity instance.
-     *
-     * @param tabs The list of tabs to move.
-     * @param finalizeCallback A runnable that will be invoked after the tabs have finished
-     *     reparenting to the new window.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabsToNewWindow(
-            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
      * Moves the specified tabs to a selected ChromeTabbedActivity instance. If there is only one
      * eligible window currently, tabs will be moved to a new window. Otherwise, the user will be
      * presented with a UI to select a window to move the tabs to.
@@ -334,18 +320,13 @@ public abstract class MultiInstanceManager {
 
     /**
      * Initialize the manager with the allocated instance ID, and perform other post-inflation
-     * activity startup tasks.
+     * activity startup tasks, including relevant instance state persistence.
      *
      * @param instanceId Instance ID of the activity.
      * @param taskId Task ID of the activity.
      * @param profileType The type of tab/profile the activity supports.
-     * @param host The {@link UnownedUserDataHost} to attach the current manager to.
      */
-    public void initialize(
-            int instanceId,
-            int taskId,
-            @SupportedProfileType int profileType,
-            UnownedUserDataHost host) {}
+    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {}
 
     /** Perform initialization tasks for the manager after the tab state is initialized. */
     public void onTabStateInitialized() {}

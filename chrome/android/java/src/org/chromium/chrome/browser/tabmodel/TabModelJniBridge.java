@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -427,13 +427,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         Tab tab = warmupManager.takeSpareTab(profile, /* initiallyHidden= */ false, launchType);
         tab.loadUrl(loadParams);
 
-        var multiInstanceManager = MultiInstanceManagerFactory.from(tab.getWindowAndroid());
-        if (multiInstanceManager != null) {
-            multiInstanceManager.moveTabsToNewWindow(
-                    Collections.singletonList(tab),
-                    /* finalizeCallback= */ null,
-                    NewWindowAppSource.DEV_TOOLS);
-        }
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToNewWindow(
+                        Collections.singletonList(tab),
+                        /* finalizeCallback= */ null,
+                        NewWindowAppSource.DEV_TOOLS);
 
         return tab;
     }

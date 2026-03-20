@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
@@ -229,16 +229,12 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     public void startReparentingTaskToNewWindow() {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                () -> {
-                    var multiInstanceManager =
-                            MultiInstanceManagerFactory.from(mTab.getWindowAndroid());
-                    if (multiInstanceManager != null) {
-                        multiInstanceManager.moveTabsToNewWindow(
-                                Collections.singletonList(mTab),
-                                cleanupPendingTabClosure(),
-                                NewWindowAppSource.EXTERNAL_NAVIGATION);
-                    }
-                });
+                () ->
+                        MultiInstanceOrchestratorFactory.getInstance()
+                                .moveTabsToNewWindow(
+                                        Collections.singletonList(mTab),
+                                        cleanupPendingTabClosure(),
+                                        NewWindowAppSource.EXTERNAL_NAVIGATION));
     }
 
     private Runnable cleanupPendingTabClosure() {

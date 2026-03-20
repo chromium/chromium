@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
+
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -16,7 +20,9 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Implements {@link MultiInstanceOrchestrator} as a singleton. */
 @NullMarked
@@ -25,6 +31,8 @@ import java.util.List;
     private static @Nullable TabReparentingDelegate sTabReparentingDelegateForTesting;
 
     private final TabReparentingDelegate mTabReparentingDelegate;
+    private final Map<Activity, MultiInstanceManager> mActivityMultiInstanceManagerAssignments =
+            new HashMap<>();
 
     /** Returns the singleton instance for {@link MultiInstanceOrchestrator}. */
     public static MultiInstanceOrchestrator getInstance() {
@@ -41,6 +49,36 @@ import java.util.List;
 
     private MultiInstanceOrchestratorImpl(TabReparentingDelegate tabReparentingDelegate) {
         mTabReparentingDelegate = tabReparentingDelegate;
+        ApplicationStatus.registerStateListenerForAllActivities(this::onActivityStateChange);
+    }
+
+    @Override
+    public void onInitialize(Activity activity, MultiInstanceManager multiInstanceManager) {
+        assert !mActivityMultiInstanceManagerAssignments.containsKey(activity)
+                : "A MultiInstanceManager for this Activity already exists.";
+        mActivityMultiInstanceManagerAssignments.put(activity, multiInstanceManager);
+    }
+
+    @Override
+    public void moveTabsToNewWindow(
+            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        if (tabs.isEmpty()) return;
+        Context tabContext = tabs.get(0).getContext();
+
+        if (!MultiWindowUtils.canCreateNewWindow()) {
+            var multiInstanceManager = getMultiInstanceManager(tabContext);
+            if (multiInstanceManager != null) {
+                multiInstanceManager.showInstanceCreationLimitMessage();
+            }
+            return;
+        }
+
+        boolean openAdjacently =
+                !(tabContext instanceof Activity)
+                        || MultiWindowUtils.shouldOpenInAdjacentWindow((Activity) tabContext);
+        mTabReparentingDelegate.reparentTabsToNewWindow(
+                tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
     }
 
     @Override
@@ -81,6 +119,19 @@ import java.util.List;
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
         }
+    }
+
+    private void onActivityStateChange(Activity activity, @ActivityState int newState) {
+        if (newState == ActivityState.DESTROYED) {
+            mActivityMultiInstanceManagerAssignments.remove(activity);
+        }
+    }
+
+    private @Nullable MultiInstanceManager getMultiInstanceManager(Context context) {
+        if (!(context instanceof Activity activity)) return null;
+        // Avoid using the MultiInstanceManager for a finishing activity, even if it exists.
+        if (activity.isFinishing()) return null;
+        return mActivityMultiInstanceManagerAssignments.getOrDefault(activity, null);
     }
 
     /* package */ static void setTabReparentingDelegateForTesting(TabReparentingDelegate delegate) {

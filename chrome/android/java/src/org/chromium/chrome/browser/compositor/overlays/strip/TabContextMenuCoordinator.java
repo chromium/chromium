@@ -794,7 +794,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
-                        mMultiInstanceManager.moveTabsToNewWindow(
+                        mMultiInstanceOrchestrator.moveTabsToNewWindow(
                                 tabs, /* finalizeCallback= */ null, NewWindowAppSource.MENU));
     }
 

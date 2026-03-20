@@ -401,7 +401,6 @@ public class ToolbarManager
             ObservableSuppliers.createNonNull(false);
     private final TabStripTopControlLayer mTabStripTopControlLayer;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private final OneshotSupplierImpl<TabStripTransitionDelegate>
             mTabStripTransitionDelegateSupplier = new OneshotSupplierImpl<>();
 
@@ -872,7 +871,6 @@ public class ToolbarManager
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateManager = desktopWindowStateManager;
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
-        mMultiInstanceManager = multiInstanceManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTopInsetProvider = topInsetProvider;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
@@ -967,7 +965,6 @@ public class ToolbarManager
                         this::updateButtonStatus,
                         mActivityTabProvider,
                         mTabCreatorManager,
-                        mMultiInstanceManager,
                         mLocationBarModel::isOffTheRecord);
 
         if (backPressManager != null) {
