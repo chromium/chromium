@@ -989,4 +989,11 @@ BASE_DECLARE_FEATURE(kPageToolsFeatureUnavailability);
 // Returns true if the PageToolsFeatureUnavailability feature is enabled.
 bool IsPageToolsFeatureUnavailabilityEnabled();
 
+// Feature flag to guard against snapshot updates in the grid mediator during
+// batch operations.
+BASE_DECLARE_FEATURE(kGridMediatorSnapshotUpdateBatchGuard);
+
+// Whether the grid mediator snapshot update batch guard is enabled.
+bool IsGridMediatorSnapshotUpdateBatchGuardEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

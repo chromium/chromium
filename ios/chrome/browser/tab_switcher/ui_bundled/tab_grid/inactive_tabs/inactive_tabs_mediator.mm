@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
@@ -245,6 +246,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 #pragma mark - SnapshotStorageObserver
 
 - (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
+  if (IsGridMediatorSnapshotUpdateBatchGuardEnabled() && _webStateList &&
+      _webStateList->IsBatchInProgress()) {
+    return;
+  }
   web::WebState* webState =
       WebStateWithSnapshotID(*_webStateList, snapshotID.snapshot_id);
   if (webState) {

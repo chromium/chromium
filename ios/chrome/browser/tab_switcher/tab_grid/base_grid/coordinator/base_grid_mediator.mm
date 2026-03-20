@@ -853,6 +853,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 #pragma mark - SnapshotStorageObserver
 
 - (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
+  if (IsGridMediatorSnapshotUpdateBatchGuardEnabled() && self.webStateList &&
+      self.webStateList->IsBatchInProgress()) {
+    return;
+  }
   web::WebState* webState = WebStateWithSnapshotID(
       CHECK_DEREF(self.webStateList), snapshotID.snapshot_id);
   if (webState) {

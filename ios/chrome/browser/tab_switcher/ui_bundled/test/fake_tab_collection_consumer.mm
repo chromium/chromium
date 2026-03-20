@@ -81,6 +81,7 @@
   if (it != _items.end()) {
     *it = replacementItem.tabSwitcherItem.identifier;
   }
+  _replaceItemCount++;
 }
 
 - (void)moveItem:(GridItemIdentifier*)item
@@ -117,6 +118,14 @@
 }
 
 - (void)reload {
+}
+
+#pragma mark - InactiveTabsInfoConsumer
+
+- (void)updateInactiveTabsCount:(NSInteger)count {
+}
+
+- (void)updateInactiveTabsDaysThreshold:(NSInteger)daysThreshold {
 }
 
 @end

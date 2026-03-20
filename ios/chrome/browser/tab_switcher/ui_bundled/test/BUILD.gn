@@ -37,6 +37,7 @@ source_set("fakes") {
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:inactive_tabs_button_ui",
     "//ios/web/public",
   ]
   frameworks = [ "UIKit.framework" ]

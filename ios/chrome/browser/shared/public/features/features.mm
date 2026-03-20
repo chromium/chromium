@@ -1182,3 +1182,10 @@ bool IsAskAboutThisPageEnabled() {
   return IsAimCobrowseEnabled() &&
          base::FeatureList::IsEnabled(kAskAboutThisPage);
 }
+
+BASE_FEATURE(kGridMediatorSnapshotUpdateBatchGuard,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGridMediatorSnapshotUpdateBatchGuardEnabled() {
+  return base::FeatureList::IsEnabled(kGridMediatorSnapshotUpdateBatchGuard);
+}
