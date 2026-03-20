@@ -159,6 +159,16 @@ BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 BASE_DECLARE_FEATURE(kSplitViewTabDraggingUpdates);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kShowDropTargetForTabDelay);
 
+// Overrides the `kSplitViewTabDraggingUpdates` feature flag if set.
+// The drop target is only shown if the mouse hasn't moved a certain distance
+// over a period of time. The timer and distance used scales linearly with the
+// size of the drop target.
+BASE_DECLARE_FEATURE(kSplitViewDragAndDropVelocity);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSplitViewDragAndDropMinDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSplitViewDragAndDropMaxDelay);
+BASE_DECLARE_FEATURE_PARAM(int, kSplitViewDragAndDropMinDistanceThreshold);
+BASE_DECLARE_FEATURE_PARAM(int, kSplitViewDragAndDropMaxDistanceThreshold);
+
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
