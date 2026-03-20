@@ -1006,6 +1006,7 @@ test("components_unittests") {
   }
 
   fuzztests = [
+    "AndroidAppDescriptionToolsFuzzTest.MaintainsSingleActivityInvariant",
     "CurrencyFormatterFuzzTest.FormatDoesNotCrash",
     "FilterDataTest.Matches",
     "OsRegistrationTest.Parses",
