@@ -22,7 +22,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/platform_thread.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "net/filter/gzip_header.h"
@@ -191,6 +193,53 @@ inline int GetLastErrorOrErrno() {
 }
 #endif
 
+// Opens `path`, retrying after a short delay at most three extra times (four
+// attempts in total) if the file cannot be opened due to it being in use.
+base::expected<base::File, DataPack::ErrorState> OpenDataPack(
+    const base::FilePath& path) {
+  // Retry until at most 300ms has passed.
+  static constexpr base::TimeDelta kMaxRetryDelay = base::Milliseconds(300);
+  // Sleep 100ms between retries.
+  static constexpr base::TimeDelta kRetryPause = base::Milliseconds(100);
+  // The total number of attempts, including the first without delay.
+  static constexpr int kFileSystemAttempts = kMaxRetryDelay / kRetryPause + 1;
+  int i = 0;
+  while (true) {
+    // Open the file for reading; allowing other consumers to also open it for
+    // reading and deleting. Do not allow others to write to it.
+    base::File data_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                   base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                   base::File::FLAG_WIN_SHARE_DELETE);
+    if (data_file.IsValid()) {
+      if (i > 0) {
+        // Record the number of retries if the file wasn't opened on the first
+        // attempt.
+        base::UmaHistogramExactLinear("DataPack.BusyOpenRetryCount", i,
+                                      kFileSystemAttempts);
+      }
+      return data_file;
+    }
+
+    const auto error = GetLastErrorOrErrno();
+    if (data_file.error_details() == base::File::FILE_ERROR_IN_USE) {
+      // crbug.com/394631579: On Windows, it is not uncommon to get
+      // ERROR_SHARING_VIOLATION due to some other program holding the file
+      // open. Retry up to three more times in this case in the hope that this
+      // is a transient issue.
+      if (++i < kFileSystemAttempts) {
+        base::PlatformThread::Sleep(kRetryPause);
+        continue;
+      }
+      // Otherwise, record that all retries failed.
+      base::UmaHistogramBoolean("DataPack.BusyOpenRetriesFailed", true);
+    }
+
+    DPLOG(ERROR) << "Failed to open datapack";
+    return base::unexpected(DataPack::ErrorState{
+        DataPack::FailureReason::kOpenFile, error, data_file.error_details()});
+  }
+}
+
 }  // namespace
 
 // static
@@ -198,17 +247,7 @@ base::expected<std::unique_ptr<DataPack::DataSource>, DataPack::ErrorState>
 DataPack::LoadFromPathInternal(const base::FilePath& path) {
   std::unique_ptr<base::MemoryMappedFile> mmap =
       std::make_unique<base::MemoryMappedFile>();
-  // Open the file for reading; allowing other consumers to also open it for
-  // reading and deleting. Do not allow others to write to it.
-  base::File data_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE |
-                                 base::File::FLAG_WIN_SHARE_DELETE);
-  if (!data_file.IsValid()) {
-    const auto error = GetLastErrorOrErrno();
-    DPLOG(ERROR) << "Failed to open datapack";
-    return base::unexpected(
-        ErrorState{FailureReason::kOpenFile, error, data_file.error_details()});
-  }
+  ASSIGN_OR_RETURN(base::File data_file, OpenDataPack(path));
   if (!mmap->Initialize(std::move(data_file))) {
     const auto error = GetLastErrorOrErrno();
     DPLOG(ERROR) << "Failed to mmap datapack";

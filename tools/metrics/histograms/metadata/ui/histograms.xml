@@ -278,6 +278,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataPack.BusyOpenRetriesFailed" enum="BooleanHit"
+    expires_after="2027-03-19">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    A .pak file was prevented from being opened because it was in use, and this
+    error persisted for at least 300ms. Recorded once for each attempt to open a
+    .pak file that fails due to FILE_ERROR_IN_USE.
+  </summary>
+</histogram>
+
+<histogram name="DataPack.BusyOpenRetryCount" units="count"
+    expires_after="2027-03-19">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of retries (not counting the initial attempt) required to open a
+    .pak file that could not initially be opened because it was in use. Recorded
+    once for each successfully opened .pak file after an initial
+    FILE_ERROR_IN_USE.
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.InfoBar.TimesShownBeforeAccept" units="count"
     expires_after="2026-08-02">
   <owner>agale@chromium.org</owner>
