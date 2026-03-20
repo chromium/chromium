@@ -78,7 +78,6 @@ const CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
 const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
-const CGFloat kEndButtonMIAEnlargedFakebox = 20.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // Distance between the trailing fakebox icon and the placeholder text.
@@ -94,10 +93,6 @@ const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
 const CGFloat kFakeboxImageLeadingSpace = 13.0;
 const CGFloat kOmniboxImageLeadingSpace = 22.0;
 const CGFloat kFakeboxImageSize = 20.0;
-
-// The amount to inset the Fakebox from the rest of the modules on Home, when
-// Large Fakebox is enabled.
-const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
 
 // The spacing between the items in the button stack.
 const CGFloat kButtonSpacing = 9.0;
@@ -122,10 +117,6 @@ NSString* const kMIACircleAnimationDarkMode = @"mia_glowing_circle_animation";
 // The value of the sides of the MIA circle animation for the normal size of the
 // fakebox.
 const CGFloat kMIACircleAnimationSizeNormal = 40.0;
-
-// The value of the sides of the MIA circle animation for the enlarged size of
-// the fakebox.
-const CGFloat kMIACircleAnimationSizeEnlarged = 48.0;
 
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
@@ -241,17 +232,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // View used to simulate the top toolbar when the header is stuck to the top of
 // the NTP.
 @property(nonatomic, strong) UIView* fakeToolbar;
-
-// Whether to use MIA inline with other action buttons.
-@property(nonatomic, readonly) BOOL useInlineMIA;
-// Whether to only display the MIA button.
-@property(nonatomic, readonly) BOOL useSingleButtonMIA;
-// Whether the MIA entry point is being shown.
-@property(nonatomic, readonly) BOOL shouldShowMIAEntrypoint;
-// Whether the fakebox is enlarged due to a MIA entry point variation.
-@property(nonatomic, readonly) BOOL useMIAEnlargedFakebox;
-// The amount to inset the Fakebox from the rest of the modules on Home.
-@property(nonatomic, readonly) CGFloat fakeboxHorizontalMargin;
 
 @end
 
@@ -473,11 +453,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   self.fakeLocationBarTopConstraint = [self.fakeLocationBar.topAnchor
       constraintEqualToAnchor:searchField.topAnchor];
   self.fakeLocationBarLeadingConstraint = [self.fakeLocationBar.leadingAnchor
-      constraintEqualToAnchor:searchField.leadingAnchor
-                     constant:self.fakeboxHorizontalMargin];
+      constraintEqualToAnchor:searchField.leadingAnchor];
   self.fakeLocationBarTrailingConstraint = [self.fakeLocationBar.trailingAnchor
-      constraintEqualToAnchor:searchField.trailingAnchor
-                     constant:self.fakeboxHorizontalMargin];
+      constraintEqualToAnchor:searchField.trailingAnchor];
   self.fakeLocationBarHeightConstraint = [self.fakeLocationBar.heightAnchor
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
   [NSLayoutConstraint activateConstraints:@[
@@ -522,10 +500,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Updates button styling for the current trait collection.
 - (void)updateButtonsForCurrentTraitCollection {
   // Variations containing MIA entry point force disable colors in the icons.
-  const BOOL aimInQuickActions = GetNTPMIAEntrypointVariation() ==
-                                 NTPMIAEntrypointVariation::kAIMInQuickAction;
-  const BOOL forceDisableColors =
-      self.shouldShowMIAEntrypoint || aimInQuickActions;
+  const BOOL forceDisableColors = IsAimEnabledInNtp();
   const BOOL darkUIStyle =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
   const BOOL ntpHasCustomBackground =
@@ -636,7 +611,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // If MIA animation view is shown then add an aditional spacing to avoid any
   // overlap with the label.
   self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
-                                              [self miaButtonHintLabelOffset] -
                                               kHintLabelFakeboxTrailingSpace;
 
   // Animate the leading image from its fakebox position to its scrolled omnibox
@@ -702,13 +676,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
-  CGFloat horizontalMargin = self.fakeboxHorizontalMargin;
   self.fakeLocationBarLeadingConstraint.constant = Interpolate(
-      horizontalMargin,
-      safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
+      0, safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
   self.fakeLocationBarTrailingConstraint.constant = -Interpolate(
-      horizontalMargin,
-      safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
+      0, safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
 
   self.fakeLocationBarTopConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint * percent;
@@ -1019,40 +990,16 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 // Adds the necessary buttons to the fakebox stack.
 - (void)addFakeboxButtonsToStack {
-  if (self.shouldShowMIAEntrypoint) {
-    ExtendedTouchTargetButton* miaButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    if (self.useSingleButtonMIA) {
-      miaButton.minimumDiameter = sqrt(2) * [self miaAnimationSize].width;
-    }
-    self.miaButton = miaButton;
-
-    [self.miaButton
-        setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
-    [self.miaButton setAccessibilityIdentifier:kNTPMIAIdentifier];
-
-    [_buttonStack addArrangedSubview:self.miaButton];
-    if (self.useInlineMIA) {
-      [self addMIAAndVoiceDivider];
-    } else if (self.useSingleButtonMIA) {
-      [self updateAnimationOnMIAButton];
-    }
-  }
-
-  BOOL displayOtherActions = !self.useSingleButtonMIA;
-
-  if (displayOtherActions) {
-    // Voice search.
-    self.voiceSearchButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [_buttonStack addArrangedSubview:self.voiceSearchButton];
-  }
+  // Voice search.
+  self.voiceSearchButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
-  if (useLens && displayOtherActions) {
+  if (useLens) {
     [self addVoiceAndLensDivider];
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -1096,8 +1043,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
       constraintLessThanOrEqualToAnchor:referenceView.leadingAnchor
-                               constant:-[self miaButtonHintLabelOffset] -
-                                        kHintLabelFakeboxTrailingSpace];
+                               constant:-kHintLabelFakeboxTrailingSpace];
   self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
     [referenceView.centerYAnchor
@@ -1266,13 +1212,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Returns end button fakebox trailing space depending on fakebox size and
 // whether the new badge is displayed.
 - (CGFloat)endButtonFakeboxTrailingSpace {
-  // If the MIA entry point is shown add a bigger space to the trailing edge to
-  // accomodate the animation view.
-  if (self.useMIAEnlargedFakebox) {
-    return kEndButtonMIAEnlargedFakebox;
-  }
   // If normal sized fakebox and new bade is showing, reduce trailing space.
-  if (_useNewBadgeForLensButton && !ShouldEnlargeNTPFakeboxForMIA()) {
+  if (_useNewBadgeForLensButton && !IsAimEnabledInNtp()) {
     return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
   }
   // Common trailing space.
@@ -1298,30 +1239,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
           AccountParticleDiscBadgeBackgroundColor(
               self.traitCollection.userInterfaceStyle);
     }
-
-    if (self.useSingleButtonMIA) {
-      [_miaAnimationView removeFromSuperview];
-      _miaAnimation = nil;
-      [self updateAnimationOnMIAButton];
-    }
   }
 }
 
 #pragma mark - MIA
-
-- (BOOL)useInlineMIA {
-  return _isAIMAllowed &&
-         GetNTPMIAEntrypointVariation() ==
-             NTPMIAEntrypointVariation::kOmniboxContainedInline;
-}
-
-- (BOOL)useSingleButtonMIA {
-  return _isAIMAllowed && ShowOnlyMIAEntrypointInNTPFakebox();
-}
-
-- (BOOL)shouldShowMIAEntrypoint {
-  return self.useInlineMIA || self.useSingleButtonMIA;
-}
 
 // Creates an animation view for the MIA entry point.
 - (UIView*)createMIAAnimationView {
@@ -1371,39 +1292,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
 }
 
-- (CGFloat)miaButtonHintLabelOffset {
-  if (self.useSingleButtonMIA && _miaAnimationView) {
-    return ([self miaAnimationSize].width / 2);
-  }
-
-  return 0;
-}
-
 // The size for the animation view dependant on the fakebox size.
 - (CGSize)miaAnimationSize {
-  if (self.useMIAEnlargedFakebox) {
-    return CGSizeMake(kMIACircleAnimationSizeEnlarged,
-                      kMIACircleAnimationSizeEnlarged);
-  } else {
-    return CGSizeMake(kMIACircleAnimationSizeNormal,
-                      kMIACircleAnimationSizeNormal);
-  }
-}
-
-- (BOOL)useMIAEnlargedFakebox {
-  return self.isGoogleDefaultSearchEngine && ShouldEnlargeNTPFakeboxForMIA() &&
-         self.shouldShowMIAEntrypoint;
+  return CGSizeMake(kMIACircleAnimationSizeNormal,
+                    kMIACircleAnimationSizeNormal);
 }
 
 #pragma mark - helpers
-
-- (CGFloat)fakeboxHorizontalMargin {
-  if (IsSplitToolbarMode(self) && ShouldEnlargeNTPFakeboxForMIA() &&
-      !ShouldEnlargeNTPFakeboxForMIA()) {
-    return kLargeFakeboxHorizontalMargin;
-  }
-  return 0.0;
-}
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {

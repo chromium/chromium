@@ -91,27 +91,6 @@ BASE_FEATURE(kLensOverlayCustomBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchHeadersCheckEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Variations of MIA NTP entrypoint.
-const char kNTPMIAEntrypointParam[] = "kNTPMIAEntrypointParam";
-const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[] =
-    "kNTPMIAEntrypointParamOmniboxContainedSingleButton";
-const char kNTPMIAEntrypointParamOmniboxContainedInline[] =
-    "kNTPMIAEntrypointParamOmniboxContainedInline";
-const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[] =
-    "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox";
-const char kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito[] =
-    "kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito";
-const char kNTPMIAEntrypointParamAIMInQuickActions[] =
-    "kNTPMIAEntrypointParamAIMInQuickActions";
-
-// Feature flag to change the MIA entrypoint in NTP.
-BASE_FEATURE(kNTPMIAEntrypoint,
-             "kNTPMIAEntrypoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kNTPMIAEntrypointAllLocales,
-             "kNTPMIAEntrypointAllLocales",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Used to gate the immersive SRP in the Composebox.
 BASE_FEATURE(kComposeboxImmersiveSRP, base::FEATURE_DISABLED_BY_DEFAULT);
 

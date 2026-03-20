@@ -43,12 +43,6 @@ NSString* const kFakeboxMatchingBackgroundColor =
 
 // Returns the color needed for the background of the button.
 UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
-  if (GetNTPMIAEntrypointVariation() ==
-      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
-    return colorPalette ? colorPalette.secondaryCellColor
-                        : [UIColor colorNamed:kBackgroundColor];
-  }
-
   // All other treatments use the same color as the fakebox.
   return colorPalette ? colorPalette.omniboxColor
                       : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
@@ -70,9 +64,7 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   [NSLayoutConstraint
       activateConstraints:@[ [_buttonStackView.heightAnchor
                               constraintEqualToConstant:kQuickActionsHeight] ]];
-  BOOL showAIMEntrypoint = GetNTPMIAEntrypointVariation() ==
-                           NTPMIAEntrypointVariation::kAIMInQuickAction;
-  if (showAIMEntrypoint) {
+  if (IsAimEnabledInNtp()) {
     _aimButton =
         [self createButtonWithSymbolName:kMagnifyingglassSparkSymbol
                                    title:l10n_util::GetNSString(
@@ -80,42 +72,14 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
     [_buttonStackView addArrangedSubview:_aimButton];
   }
 
-  BOOL showIncognito = GetNTPMIAEntrypointVariation() !=
-                       NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
-  if (showIncognito) {
-    if (showAIMEntrypoint) {
-      _incognitoButton = [self
-          createButtonWithSymbolName:kIncognitoSymbol
-                               title:l10n_util::GetNSString(
-                                         IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
-    } else {
-      _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
-    }
-    [_buttonStackView addArrangedSubview:_incognitoButton];
-  }
-
-  BOOL showVoiceLens = GetNTPMIAEntrypointVariation() !=
-                       NTPMIAEntrypointVariation::kAIMInQuickAction;
-
-  if (showVoiceLens) {
-    _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
-    _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
-
-    [_buttonStackView addArrangedSubview:_voiceSearchButton];
-    [_buttonStackView addArrangedSubview:_lensButton];
-  }
+  _incognitoButton = [self
+      createButtonWithSymbolName:kIncognitoSymbol
+                           title:l10n_util::GetNSString(
+                                     IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
+  [_buttonStackView addArrangedSubview:_incognitoButton];
 
   [self setupQuickActionsButtonsAccessibility];
 
-  [_lensButton addTarget:self
-                  action:@selector(openLensViewFinder)
-        forControlEvents:UIControlEventTouchUpInside];
-  [_voiceSearchButton addTarget:self
-                         action:@selector(loadVoiceSearch)
-               forControlEvents:UIControlEventTouchUpInside];
-  [_voiceSearchButton addTarget:self
-                         action:@selector(preloadVoiceSearch:)
-               forControlEvents:UIControlEventTouchDown];
   [_incognitoButton addTarget:self
                        action:@selector(openIncognitoSearch)
              forControlEvents:UIControlEventTouchUpInside];
@@ -134,12 +98,6 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   _incognitoButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB);
   _incognitoButton.accessibilityIdentifier = kNTPIncognitoQuickActionIdentifier;
-  _lensButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
-  _lensButton.accessibilityIdentifier = kNTPLensQuickActionIdentifier;
-  _voiceSearchButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_ACCNAME_VOICE_SEARCH);
-  _voiceSearchButton.accessibilityIdentifier =
-      kNTPVoiceSearchQuickActionIdentifier;
 }
 
 // Creates a new horizontal button stack view.
@@ -184,23 +142,13 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   UIButton* button = [[UIButton alloc] init];
   UIColor* baseTintColor =
       content_suggestions::DefaultIconTintColorWithAIMAllowed(YES);
-  if (GetNTPMIAEntrypointVariation() ==
-      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
-    button.configurationUpdateHandler =
-        CreateThemedButtonConfigurationUpdateHandler(
-            baseTintColor, ^(NewTabPageColorPalette* palette) {
-              return ButtonBackgroundColor(palette);
-            });
-  } else {
-    // Other variations change the blur background to match the omnibox.
-    button.configurationUpdateHandler =
-        CreateThemedButtonConfigurationUpdateHandler(
-            baseTintColor,
-            ^(NewTabPageColorPalette* palette) {
-              return ButtonBackgroundColor(palette);
-            },
-            UIBlurEffectStyleSystemThickMaterial);
-  }
+  button.configurationUpdateHandler =
+      CreateThemedButtonConfigurationUpdateHandler(
+          baseTintColor,
+          ^(NewTabPageColorPalette* palette) {
+            return ButtonBackgroundColor(palette);
+          },
+          UIBlurEffectStyleSystemThickMaterial);
 
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.configuration = configuration;
@@ -208,21 +156,6 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 }
 
 #pragma mark - Button actions
-
-- (void)openLensViewFinder {
-  [self.NTPShortcutsHandler openLensViewFinder];
-}
-
-- (void)loadVoiceSearch {
-  [self.NTPShortcutsHandler loadVoiceSearchFromView:_voiceSearchButton];
-}
-
-- (void)preloadVoiceSearch:(id)sender {
-  [sender removeTarget:self
-                action:@selector(preloadVoiceSearch:)
-      forControlEvents:UIControlEventTouchDown];
-  [self.NTPShortcutsHandler preloadVoiceSearch];
-}
 
 - (void)openIncognitoSearch {
   [self.NTPShortcutsHandler openIncognitoSearch];

@@ -176,7 +176,7 @@ CGFloat DoodleHeight(SearchEngineLogoState logo_state,
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
     return kGoogleSearchDoodleShrunkHeight;
   }
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
+  if (IsAimEnabledInNtp()) {
     return kLargeFakeboxGoogleSearchLogoHeight;
   }
   return kGoogleSearchLogoHeight;
@@ -188,8 +188,7 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
     return kDoodleTopMarginRegularXRegular;
   }
   CGFloat top_inset = 0;
-  if ((logo_state == SearchEngineLogoState::kLogo) &&
-      ShouldEnlargeNTPFakeboxForMIA()) {
+  if ((logo_state == SearchEngineLogoState::kLogo) && IsAimEnabledInNtp()) {
     // Shrink the top inset so that the enlarged logo has the same bottom
     // positioning as the regular logo.
     top_inset = kGoogleSearchLogoHeight - kLargeFakeboxGoogleSearchLogoHeight;
@@ -216,8 +215,8 @@ CGFloat HeaderSeparatorHeight() {
 }
 
 CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state) {
-  CGFloat margin = ShouldEnlargeNTPFakeboxForMIA() ? kMIASearchFieldTopMargin
-                                                   : kSearchFieldTopMargin;
+  CGFloat margin =
+      IsAimEnabledInNtp() ? kMIASearchFieldTopMargin : kSearchFieldTopMargin;
   if (IsConsistentLogoDoodleHeightEnabled() &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     if (logo_state == SearchEngineLogoState::kDoodle) {
@@ -232,7 +231,7 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
     return kSearchFieldLarge;
   }
 
-  if (ShouldEnlargeNTPFakeboxForMIA() && !IsCompactHeight(trait_collection)) {
+  if (IsAimEnabledInNtp() && !IsCompactHeight(trait_collection)) {
     return std::max(width - kMIASearchFieldMinMargin * 2, kSearchFieldSmallMin);
   }
 
@@ -242,7 +241,7 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
 }
 
 CGFloat FakeOmniboxHeight() {
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
+  if (IsAimEnabledInNtp()) {
     CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
     return AlignValueToPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
                                  multiplier +
@@ -253,7 +252,7 @@ CGFloat FakeOmniboxHeight() {
 }
 
 CGFloat PinnedFakeOmniboxHeight() {
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
+  if (IsAimEnabledInNtp()) {
     CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
     return AlignValueToPixel(
         (kPinnedFakeboxHeight - kPinnedFakeboxHeightNonDynamic) * multiplier +
@@ -264,7 +263,7 @@ CGFloat PinnedFakeOmniboxHeight() {
 }
 
 CGFloat FakeToolbarHeight() {
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
+  if (IsAimEnabledInNtp()) {
     return PinnedFakeOmniboxHeight() + FakeToolbarVerticalMargin();
   }
   return ToolbarExpandedHeight(
@@ -439,7 +438,7 @@ UIColor* SearchHintLabelColor() {
 }
 
 UIColor* DefaultIconTintColorWithAIMAllowed(bool aim_allowed) {
-  if (aim_allowed && ShouldEnlargeNTPFakeboxForMIA()) {
+  if (aim_allowed && IsAimEnabledInNtp()) {
     return [UIColor colorNamed:kSolidBlackColor];
   }
   return [UIColor colorNamed:kGrey700Color];

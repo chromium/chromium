@@ -218,13 +218,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     "doodle_test/ddljson_android0.json"));
   }
 
-  if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
-    config.features_enabled.push_back(kNTPMIAEntrypoint);
-    config.additional_args.push_back(
-        "--kNTPMIAEntrypointParam="
-        "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox");
-  }
-
   if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
     config.additional_args.push_back(base::StringPrintf(

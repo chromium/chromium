@@ -1101,10 +1101,6 @@ const char kNTPBackgroundCustomizationName[] =
 const char kNTPBackgroundCustomizationDescription[] =
     "When enabled, the background customization menu is available on the NTP.";
 
-const char kNTPMIAEntrypointName[] = "Entrypoint for MIA in the new tab page";
-const char kNTPMIAEntrypointDescription[] =
-    "Selects which variant of the MIA entrypoint is used in the new tab page";
-
 const char kNativeFindInPageName[] = "Native Find in Page";
 const char kNativeFindInPageDescription[] =
     "When enabled, the JavaScript implementation of the Find in Page feature "

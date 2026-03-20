@@ -152,35 +152,6 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
-const FeatureEntry::FeatureParam
-    kNTPMIAEntrypointOmniboxContainedSingleButton[] = {
-        {kNTPMIAEntrypointParam,
-         kNTPMIAEntrypointParamOmniboxContainedSingleButton}};
-const FeatureEntry::FeatureParam kNTPMIAEntrypointOmniboxContainedInline[] = {
-    {kNTPMIAEntrypointParam, kNTPMIAEntrypointParamOmniboxContainedInline}};
-const FeatureEntry::FeatureParam
-    kNTPMIAEntrypointOmniboxContainedEnlargedFakebox[] = {
-        {kNTPMIAEntrypointParam,
-         kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-const FeatureEntry::FeatureParam kNTPMIAEntrypointEnlargedFakeboxNoIncognito[] =
-    {{kNTPMIAEntrypointParam,
-      kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}};
-const FeatureEntry::FeatureParam kNTPMIAEntrypointAIMInQuickActions[] = {
-    {kNTPMIAEntrypointParam, kNTPMIAEntrypointParamAIMInQuickActions}};
-
-const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
-    {"A: Contained in Omnibox, single button",
-     kNTPMIAEntrypointOmniboxContainedSingleButton, nullptr},
-    {"B: Contained in Omnibox, inline with Voice and Lens",
-     kNTPMIAEntrypointOmniboxContainedInline, nullptr},
-    {"C: Contained in Omnibox, enlarged fakebox",
-     kNTPMIAEntrypointOmniboxContainedEnlargedFakebox, nullptr},
-    {"D: Contained in enlarged fakebox, without incognito shortcut",
-     kNTPMIAEntrypointEnlargedFakeboxNoIncognito, nullptr},
-    {"E: AIM entry point in quick actions, enlarged fakebox",
-     kNTPMIAEntrypointAIMInQuickActions, nullptr},
-};
-
 const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
     {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlySymbols}};
 
@@ -2043,12 +2014,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kNotificationCollisionManagementName,
      flag_descriptions::kNotificationCollisionManagementDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNotificationCollisionManagement)},
-    {"ntp-mia-entrypoint", flag_descriptions::kNTPMIAEntrypointName,
-     flag_descriptions::kNTPMIAEntrypointDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kNTPMIAEntrypoint,
-                                    kNTPMIAEntrypointVariations,
-                                    "kNTPMIAEntrypoint")},
-
     {"autofill-enable-support-for-home-and-work",
      flag_descriptions::kAutofillEnableSupportForHomeAndWorkName,
      flag_descriptions::kAutofillEnableSupportForHomeAndWorkDescription,

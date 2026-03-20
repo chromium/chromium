@@ -93,15 +93,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhonePortrait) {
                                       IPhonePortraitTraitCollection());
   CGFloat topMarginNoLogo = DoodleTopMargin(SearchEngineLogoState::kNone,
                                             IPhonePortraitTraitCollection());
-
-  // Action when large logo is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams large_fakebox_params = {
-      {kNTPMIAEntrypointParam,
-       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
-      /*disabled_features=*/{});
   CGFloat heightLargeLogo = DoodleHeight(SearchEngineLogoState::kLogo,
                                          IPhonePortraitTraitCollection());
   CGFloat topMarginLargeLogo = DoodleTopMargin(SearchEngineLogoState::kLogo,
@@ -110,8 +101,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhonePortrait) {
   // Test.
   EXPECT_EQ(68, heightDoodle);
   EXPECT_EQ(55, topMarginDoodle);
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 50 : 36, heightLogo);
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 41 : 55, topMarginLogo);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 50 : 36, heightLogo);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 41 : 55, topMarginLogo);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogo);
   EXPECT_EQ(55, topMarginNoLogo);
   EXPECT_EQ(50, heightLargeLogo);
@@ -137,14 +128,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   CGFloat topMarginNoLogo = DoodleTopMargin(SearchEngineLogoState::kNone,
                                             IPhoneLandscapeTraitCollection());
 
-  // Action when large logo is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams large_fakebox_params = {
-      {kNTPMIAEntrypointParam,
-       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
-      /*disabled_features=*/{});
   CGFloat heightLargeLogo = DoodleHeight(SearchEngineLogoState::kLogo,
                                          IPhonePortraitTraitCollection());
   CGFloat topMarginLargeLogo = DoodleTopMargin(SearchEngineLogoState::kLogo,
@@ -153,8 +136,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   // Test.
   EXPECT_EQ(68, heightDoodle);
   EXPECT_EQ(55, topMarginDoodle);
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 50 : 36, heightLogo);
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 41 : 55, topMarginLogo);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 50 : 36, heightLogo);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 41 : 55, topMarginLogo);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogo);
   EXPECT_EQ(55, topMarginNoLogo);
   EXPECT_EQ(50, heightLargeLogo);
@@ -195,8 +178,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhonePortrait) {
   CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
 
   // Test.
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 29 : 22, topMargin);
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 452 : 343, resultWidth);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 29 : 22, topMargin);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 452 : 343, resultWidth);
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
@@ -212,7 +195,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
   CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
 
   // Test.
-  EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 29 : 22, topMargin);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 29 : 22, topMargin);
   EXPECT_EQ(343, resultWidth);
 }
 
@@ -237,7 +220,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPhone) {
   }
 
   // Extra spacing when MIA is shown.
-  CGFloat gain_for_MIA = ShouldEnlargeNTPFakeboxForMIA() ? 21 : 0;
+  CGFloat gain_for_MIA = IsAimEnabledInNtp() ? 21 : 0;
   // Action, tests.
   EXPECT_EQ(200 + gain_for_MIA,
             HeightForLogoHeader(SearchEngineLogoState::kDoodle,
@@ -267,42 +250,18 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
-  CGFloat expectedHeight = ShouldEnlargeNTPFakeboxForMIA() ? 64 : 50;
+  CGFloat expectedHeight = IsAimEnabledInNtp() ? 64 : 50;
   EXPECT_EQ(expectedHeight, FakeOmniboxHeight());
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams large_fakebox_params = {
-      {kNTPMIAEntrypointParam,
-       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
-      /*disabled_features=*/{});
-  EXPECT_EQ(64, FakeOmniboxHeight());
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
-  CGFloat expectedHeight = ShouldEnlargeNTPFakeboxForMIA() ? 48 : 36;
+  CGFloat expectedHeight = IsAimEnabledInNtp() ? 48 : 36;
   EXPECT_EQ(expectedHeight, PinnedFakeOmniboxHeight());
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams large_fakebox_params = {
-      {kNTPMIAEntrypointParam,
-       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
-      /*disabled_features=*/{});
-  EXPECT_EQ(48, PinnedFakeOmniboxHeight());
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeighta) {
-  CGFloat expectedHeight = ShouldEnlargeNTPFakeboxForMIA() ? 62 : 50;
+  CGFloat expectedHeight = IsAimEnabledInNtp() ? 62 : 50;
   EXPECT_EQ(expectedHeight, FakeToolbarHeight());
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams large_fakebox_params = {
-      {kNTPMIAEntrypointParam,
-       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
-      /*disabled_features=*/{});
-  EXPECT_EQ(62, FakeToolbarHeight());
 }
 
 // Tests that the header height is the same for Logo and Doodle, when the

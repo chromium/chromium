@@ -31,12 +31,6 @@ NSString* const kNTPFakeOmniboxAccessibilityButton =
 
 NSString* const kNTPMIAIdentifier = @"kNTPMIAIdentifier";
 
-NSString* const kNTPLensQuickActionIdentifier =
-    @"kNTPLensQuickActionIdentifier";
-
-NSString* const kNTPVoiceSearchQuickActionIdentifier =
-    @"kNTPVoiceSearchQuickActionIdentifier";
-
 NSString* const kNTPIncognitoQuickActionIdentifier =
     @"kNTPIncognitoQuickActionIdentifier";
 

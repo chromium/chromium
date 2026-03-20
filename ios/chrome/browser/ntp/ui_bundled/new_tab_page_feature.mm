@@ -79,53 +79,13 @@ bool UseFeedEligibilityService() {
   return base::FeatureList::IsEnabled(kUseFeedEligibilityService);
 }
 
-NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kNTPMIAEntrypoint, kNTPMIAEntrypointParam);
-  if (feature_param == kNTPMIAEntrypointParamOmniboxContainedSingleButton) {
-    return NTPMIAEntrypointVariation::kOmniboxContainedSingleButton;
-  } else if (feature_param == kNTPMIAEntrypointParamOmniboxContainedInline) {
-    return NTPMIAEntrypointVariation::kOmniboxContainedInline;
-  } else if (feature_param ==
-             kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox) {
-    return NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox;
-  } else if (feature_param ==
-             kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito) {
-    return NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
-  } else if (feature_param == kNTPMIAEntrypointParamAIMInQuickActions) {
-    return NTPMIAEntrypointVariation::kAIMInQuickAction;
-  } else {
-    // Disabled on iPad.
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-        !base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet)) {
-      return NTPMIAEntrypointVariation::kDisabled;
-    }
-    // Default value.
-    return NTPMIAEntrypointVariation::kAIMInQuickAction;
+bool IsAimEnabledInNtp() {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet)) {
+    return NO;
   }
-}
 
-bool ShowOnlyMIAEntrypointInNTPFakebox() {
-  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
-  return variation ==
-             NTPMIAEntrypointVariation::kOmniboxContainedSingleButton ||
-         variation ==
-             NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox ||
-         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
-}
-
-bool ShouldShowQuickActionsRow() {
-  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
-  return ShowOnlyMIAEntrypointInNTPFakebox() ||
-         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
-}
-
-bool ShouldEnlargeNTPFakeboxForMIA() {
-  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
-  return variation ==
-             NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox ||
-         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito ||
-         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
+  return YES;
 }
 
 bool IsContentSuggestionsCustomizable() {

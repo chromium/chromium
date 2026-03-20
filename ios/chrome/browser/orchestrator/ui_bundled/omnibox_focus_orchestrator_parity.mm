@@ -320,14 +320,14 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (ShouldEnlargeNTPFakeboxForMIA()) {
+    if (IsAimEnabledInNtp()) {
       // Set the location bar height to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
     [self.toolbarAnimatee setToolbarFaded:NO];
     switch (_trigger) {
       case OmniboxFocusTrigger::kPinnedFakebox:
-        if (ShouldEnlargeNTPFakeboxForMIA()) {
+        if (IsAimEnabledInNtp()) {
           [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
         }
         break;
@@ -449,7 +449,7 @@
   } else if (_completion) {
     _completion();
     _completion = nil;
-    if (ShouldEnlargeNTPFakeboxForMIA()) {
+    if (IsAimEnabledInNtp()) {
       // Reset the location bar height back to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
@@ -466,7 +466,7 @@
   [self.toolbarAnimatee showCancelButton];
   switch (_trigger) {
     case OmniboxFocusTrigger::kPinnedFakebox:
-      if (ShouldEnlargeNTPFakeboxForMIA()) {
+      if (IsAimEnabledInNtp()) {
         [self.toolbarAnimatee setLocationBarHeightExpanded];
       }
       break;
@@ -481,8 +481,7 @@
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_trigger == OmniboxFocusTrigger::kPinnedFakebox &&
-      ShouldEnlargeNTPFakeboxForMIA()) {
+  if (_trigger == OmniboxFocusTrigger::kPinnedFakebox && IsAimEnabledInNtp()) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }
 }

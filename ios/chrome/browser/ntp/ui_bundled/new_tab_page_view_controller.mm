@@ -1161,8 +1161,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  return _isAIMAllowed && ShouldShowQuickActionsRow() &&
-         !self.incognitoDisabled;
+  return _isAIMAllowed && IsAimEnabledInNtp();
 }
 
 // Returns YES if scroll should be skipped when focusing the omnibox.
