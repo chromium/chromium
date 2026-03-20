@@ -97,7 +97,7 @@ class Zipper {
   // A sentinel used by the iterator to constrain the comparison to make sure it
   // has the proper end of each range.
   struct ZipEnd {
-    constexpr bool operator==(iterator it) const { return it == *this; }
+    constexpr bool operator==(iterator it) const { return !(it != *this); }
   };
 
   constexpr iterator begin() noexcept LIFETIME_BOUND {

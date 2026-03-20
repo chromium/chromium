@@ -231,4 +231,21 @@ TEST(ZipTest, ZipAsRange) {
   EXPECT_FALSE(std::ranges::all_of(zip(a, b), elements_are_equal));
 }
 
+TEST(ZipTest, SentinelEquality) {
+  std::vector<int> a = {1, 2, 3};
+  std::vector<int> b = {4, 5, 6};
+
+  auto z = zip(a, b);
+  auto it = z.begin();
+  auto end = z.end();
+
+  // Both directions must work without infinite recursion via C++20.
+  EXPECT_FALSE(end == it);
+  EXPECT_TRUE(end != it);
+
+  std::advance(it, 3);
+  EXPECT_TRUE(end == it);
+  EXPECT_FALSE(end != it);
+}
+
 }  // namespace base
