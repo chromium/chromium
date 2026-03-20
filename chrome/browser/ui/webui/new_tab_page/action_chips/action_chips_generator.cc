@@ -579,7 +579,7 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
       base::BindOnce(
           &ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse,
           this->weak_factory_.GetWeakPtr(),
-          CreateTabInfo(*tab_id_generator_, tab), std::move(page_vertical),
+          CreateTabInfo(*tab_id_generator_, tab), page_vertical,
           std::move(callback)));
 }
 
