@@ -1,6 +1,6 @@
 [package]
 name = "clap_lex"
-version = "1.0.0"
+version = "1.1.0"
 description = "Minimal, flexible command line parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -27,7 +27,7 @@ pre-release-replacements = [
 ]
 
 [dev-dependencies]
-automod = "1.0.14"
+automod = "1.0.16"
 
 [lib]
 bench = false

@@ -1,7 +1,7 @@
 Name: clap_lex
 URL: https://crates.io/crates/clap_lex
-Version: 1.0.0
-Revision: d37483586ff582e07a3fc62b10fa98ce7d227b4f
+Version: 1.1.0
+Revision: 9ab6dee710aa384e02ec5e9e2cfeadb2f35abf2a
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/clap_lex-v1/LICENSE-APACHE
