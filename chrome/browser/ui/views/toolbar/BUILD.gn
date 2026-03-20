@@ -362,10 +362,7 @@ if (!is_android && !is_chromeos_device) {
     if (toolkit_views) {
       sources = [
         "app_menu_interactive_uitest.cc",
-        "back_button_accessibility_interactive_uitest.cc",
         "browser_app_menu_button_interactive_uitest.cc",
-        "forward_button_accessibility_interactive_uitest.cc",
-        "home_button_accessibility_interactive_uitest.cc",
         "reload_button_accessibility_interactive_uitest.cc",
         "reload_button_browsertest.cc",
         "split_tabs_button_interactive_ui_test.cc",
@@ -404,8 +401,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/feature_engagement/test:test_support",
       "//components/policy/core/browser",
       "//components/prefs",
-      "//components/strings:components_strings",
-      "//components/strings:components_strings_grit",
       "//components/user_education/views",
       "//content/test:test_support",
       "//testing/gtest",
