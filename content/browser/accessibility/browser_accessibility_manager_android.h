@@ -207,6 +207,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   void FireDocumentSelectionChangedEvent(WebContentsAccessibilityAndroid* wcax);
 
+  // If the anchor node of `position` does not exist on Android, update
+  // `position` to the highest leaf node (ancestor of node).
+  void MaybeUpdateTextPositionForSelection(
+      ui::BrowserAccessibility::AXPosition& position) const;
+
   // A weak reference to WebContentsAccessibility for reaching Java layer.
   // Only the root manager has the reference. Should be accessed through
   // |GetWebContentsAXFromRootManager| rather than directly.

@@ -26,30 +26,6 @@
 
 namespace content {
 
-namespace {
-
-// In case the `node` does not exist on Android, updates node and offset to the
-// highest leaf node (ancestor of node).
-void UpdateTextPositionForSelection(BrowserAccessibilityAndroid*& node,
-                                    int& offset) {
-  ui::BrowserAccessibility* platform_ancestor =
-      node->PlatformGetLowestPlatformAncestor();
-  if (platform_ancestor == node) {
-    return;
-  }
-  ui::BrowserAccessibility::AXPosition position =
-      node->CreatePositionForSelectionAt(offset);
-  while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
-    position = position->CreateParentPosition();
-  }
-
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, position->kind());
-  node = static_cast<BrowserAccessibilityAndroid*>(platform_ancestor);
-  offset = position->text_offset();
-}
-
-}  // namespace
-
 // static
 ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     const ui::AXTreeUpdate& initial_tree,
@@ -1007,21 +983,35 @@ BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   }
 
   SelectionRange selection_range;
-  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
-      GetFromAXNode(anchor_position->GetAnchor()));
-  selection_range.anchor_offset = anchor_position->text_offset();
   // TODO(crbug.com/490266495): Remove the following when range iterator returns
   // platform leaf positions.
-  UpdateTextPositionForSelection(node, selection_range.anchor_offset);
-  selection_range.anchor_object = node;
+  MaybeUpdateTextPositionForSelection(anchor_position);
+  selection_range.anchor_object = static_cast<BrowserAccessibilityAndroid*>(
+      GetFromAXNode(anchor_position->GetAnchor()));
+  selection_range.anchor_offset = anchor_position->text_offset();
 
-  node = static_cast<BrowserAccessibilityAndroid*>(
+  MaybeUpdateTextPositionForSelection(focus_position);
+  selection_range.focus_object = static_cast<BrowserAccessibilityAndroid*>(
       GetFromAXNode(focus_position->GetAnchor()));
   selection_range.focus_offset = focus_position->text_offset();
-  UpdateTextPositionForSelection(node, selection_range.focus_offset);
-  selection_range.focus_object = node;
 
   return selection_range;
+}
+
+void BrowserAccessibilityManagerAndroid::MaybeUpdateTextPositionForSelection(
+    ui::BrowserAccessibility::AXPosition& position) const {
+  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
+      GetFromAXNode(position->GetAnchor()));
+  ui::BrowserAccessibility* platform_ancestor =
+      node->PlatformGetLowestPlatformAncestor();
+  if (platform_ancestor == node) {
+    return;
+  }
+  while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
+    position = position->CreateParentPosition();
+  }
+
+  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, position->kind());
 }
 
 // TODO(crbug.com/485227837): Remove experiment's methods
