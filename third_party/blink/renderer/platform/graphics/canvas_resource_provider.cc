@@ -765,7 +765,7 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
   return true;
 }
 
-bool CanvasNon2DResourceProviderSharedImage::WritePixels(
+bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     const SkImageInfo& src_info,
     uint32_t src_x,
@@ -805,7 +805,9 @@ bool CanvasNon2DResourceProviderSharedImage::WritePixels(
                                     dest_row_bytes, /*x=*/0, /*y=*/0);
   }
 
-  TRACE_EVENT0("blink", "CanvasNon2DResourceProviderSharedImage::WritePixels");
+  TRACE_EVENT0("blink",
+               "CanvasNon2DResourceProviderSharedImage::"
+               "UploadToBackingSharedImage");
   if (IsGpuContextLost()) {
     return false;
   }
@@ -837,7 +839,6 @@ bool CanvasNon2DResourceProviderSharedImage::WritePixels(
 
   return true;
 }
-
 bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,

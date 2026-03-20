@@ -123,8 +123,8 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     return false;
   }
 
-  return resource_provider->WritePixels(pixmap, paint_image_.GetSkImageInfo(),
-                                        src_x, src_y);
+  return resource_provider->UploadToBackingSharedImage(
+      pixmap, paint_image_.GetSkImageInfo(), src_x, src_y);
 }
 
 SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfo() const {
