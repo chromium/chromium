@@ -554,6 +554,9 @@ BASE_FEATURE(kIPHTabSwitcherButtonFeature,
 BASE_FEATURE(kIPHTabSwitcherButtonSwitchIncognitoFeature,
              "IPH_TabSwitcherButtonSwitchIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHThreeDotMenuBackButton,
+             "IPH_ThreeDotMenuBackButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTouchToSearchCalloutFeature,
              "IPH_TouchToSearchCallout",
              base::FEATURE_DISABLED_BY_DEFAULT);

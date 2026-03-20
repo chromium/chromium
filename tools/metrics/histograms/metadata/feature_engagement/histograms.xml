@@ -667,6 +667,8 @@ chromium-metrics-reviews@google.com.
       summary="Switch to incognito via tab switcher button"/>
   <variant name="IPH_TabSwitcherFloatingActionButton"
       summary="tab switcher floating action button"/>
+  <variant name="IPH_ThreeDotMenuBackButton"
+      summary="tab switcher floating action button"/>
   <variant name="IPH_ToolbarManagementButton"
       summary="toolbar management button"/>
   <variant name="IPH_TouchToSearchCallout"

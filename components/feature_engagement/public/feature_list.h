@@ -196,6 +196,8 @@ DEFINE_VARIATION_PARAM(kIPHTabSwitcherAddToGroup, "IPH_TabSwitcherAddToGroup");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonSwitchIncognitoFeature,
                        "IPH_TabSwitcherButtonSwitchIncognito");
+DEFINE_VARIATION_PARAM(kIPHThreeDotMenuBackButton,
+                       "IPH_ThreeDotMenuBackButton");
 DEFINE_VARIATION_PARAM(kIPHTouchToSearchCalloutFeature,
                        "IPH_TouchToSearchCallout");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,

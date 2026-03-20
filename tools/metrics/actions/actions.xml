@@ -785,6 +785,8 @@ should be able to be added at any place in this file.
       summary="For tab switcher button switch to incognito."/>
   <variant name="_TabSwitcherFloatingActionButton"
       summary="For tab switcher new tab floating action button."/>
+  <variant name="_ThreeDotMenuBackButton"
+      summary="For the three dot menu back button."/>
   <variant name="_ToolbarManagementButton"
       summary="For the toolbar managmeent button."/>
   <variant name="_TouchToSearchCallout"

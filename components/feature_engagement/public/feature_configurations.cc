@@ -2114,6 +2114,20 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 3), 360, 360));
     return config;
   }
+
+  if (kIPHThreeDotMenuBackButton.name == feature->name) {
+    // TODO(crbug.com/493306650): Add final values for IPH
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);  // Always available
+    config.session_rate = Comparator(
+        EQUAL, 0);  // Only shows when no other IPH has been shown this session
+
+    // Only show the IPH once per year
+    config.trigger = EventConfig("three_dot_menu_back_button_trigger",
+                                 Comparator(ANY, 0), 0, 360);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

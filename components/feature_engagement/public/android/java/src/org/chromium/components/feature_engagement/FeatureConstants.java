@@ -87,6 +87,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
     FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
+    FeatureConstants.THREE_DOT_MENU_BACK_BUTTON,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
@@ -326,6 +327,9 @@ public @interface FeatureConstants {
      * hiding a tab group.
      */
     String TAB_GROUPS_SURFACE_ON_HIDE = "IPH_TabGroupsSurfaceOnHide";
+
+    /** An IPH feature to prompt users to use the back button on the three dot app menu. */
+    String THREE_DOT_MENU_BACK_BUTTON = "IPH_ThreeDotMenuBackButton";
 
     /**
      * An IPH feature to show a video tutorial card on NTP to educate about an introduction to
