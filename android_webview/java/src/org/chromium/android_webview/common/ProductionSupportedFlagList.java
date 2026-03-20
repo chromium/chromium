@@ -1361,7 +1361,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.PRERENDER2_WARM_UP_COMPOSITOR_FOR_WEBVIEW,
                 "Requests the compositor warm-up for the WebView prerender triggers."),
-
+        Flag.baseFeature(
+                "UseDynamicBackingAllocations",
+                "Allows CompoundImageBacking to allocate backings during runtime if a compatible"
+                        + " backing to serve clients requested usage is not already present."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
