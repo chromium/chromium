@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var mediaGalleries = chrome.mediaGalleries;
+const mediaGalleries = chrome.mediaGalleries;
 
-var galleries;
-var testResults = [];
-var expectedFileSystems;
+let galleries;
+const testResults = [];
+let expectedFileSystems;
 
 function checkFinished() {
   if (testResults.length != galleries.length)
     return;
-  var success = true;
-  for (var i = 0; i < testResults.length; i++) {
+  let success = true;
+  for (let i = 0; i < testResults.length; i++) {
     if (testResults[i]) {
       success = false;
     }
@@ -24,22 +24,22 @@ function checkFinished() {
   chrome.test.fail(testResults);
 }
 
-var mediaFileSystemsDirectoryEntryCallback = function(entries) {
-  testResults.push("Shouldn't have been able to get a directory listing.");
+const mediaFileSystemsDirectoryEntryCallback = function(entries) {
+  testResults.push(`Shouldn't have been able to get a directory listing.`);
   checkFinished();
 }
 
-var mediaFileSystemsDirectoryErrorCallback = function(err) {
-  testResults.push("");
+const mediaFileSystemsDirectoryErrorCallback = function(err) {
+  testResults.push('');
   checkFinished();
 };
 
-var mediaFileSystemsListCallback = function(results) {
+const mediaFileSystemsListCallback = function(results) {
   galleries = results;
 };
 
 chrome.test.getConfig(function(config) {
-  customArg = JSON.parse(config.customArg);
+  const customArg = JSON.parse(config.customArg);
   expectedFileSystems = customArg[0];
 
   chrome.test.runTests([
@@ -49,17 +49,17 @@ chrome.test.getConfig(function(config) {
     },
     function testGalleries() {
       chrome.test.assertEq(expectedFileSystems, galleries.length);
-      for (var i = 0; i < galleries.length; i++) {
-        var dirReader = galleries[i].root.createReader();
+      for (let i = 0; i < galleries.length; i++) {
+        const dirReader = galleries[i].root.createReader();
         dirReader.readEntries(mediaFileSystemsDirectoryEntryCallback,
                               mediaFileSystemsDirectoryErrorCallback);
       }
     },
     function validFileCopyToShouldFail() {
-      runCopyToTest(validWEBPImageCase, false /* expect failure */);
+      runCopyToTest(VALID_WEBP_IMAGE_CASE, false /* expect failure */);
     },
     function invalidFileCopyToShouldFail() {
-      runCopyToTest(invalidWEBPImageCase, false /* expect failure */);
+      runCopyToTest(INVALID_WEBP_IMAGE_CASE, false /* expect failure */);
     },
   ]);
 })

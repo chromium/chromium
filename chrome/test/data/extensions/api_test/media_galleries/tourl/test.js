@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function check_result_factory(expected) {
+function checkResultFactory(expected) {
   return function() {
     if (expected) {
       chrome.test.succeed();
@@ -12,38 +12,38 @@ function check_result_factory(expected) {
   };
 }
 
-function TestImageLoadFactory(url, should_load) {
+function TestImageLoadFactory(url, shouldLoad) {
   return function() {
-    test_image = document.createElement('img');
-    document.body.appendChild(test_image);
-    test_image.addEventListener('load', check_result_factory(should_load));
-    test_image.addEventListener('error', check_result_factory(!should_load));
+    testImage = document.createElement('img');
+    document.body.appendChild(testImage);
+    testImage.addEventListener('load', checkResultFactory(shouldLoad));
+    testImage.addEventListener('error', checkResultFactory(!shouldLoad));
 
-    test_image.src = url;
+    testImage.src = url;
   };
 }
 
 chrome.test.getConfig(function(config) {
-  var customArg = JSON.parse(config.customArg);
-  var gallery_id = customArg[0];
-  var profile_path = customArg[1];
-  var extension_url = chrome.runtime.getURL('/');
-  var extension_id = extension_url.split('/')[2];
+  const customArg = JSON.parse(config.customArg);
+  const galleryId = customArg[0];
+  const profilePath = customArg[1];
+  const extensionUrl = chrome.runtime.getURL('/');
+  const extensionId = extensionUrl.split('/')[2];
 
-  var bad_mount_point = 'filesystem:' + extension_url +
-    'external/invalid-' + profile_path + '-' + extension_id + '-' + gallery_id +
+  const badMountPoint = `filesystem:${extensionUrl}` +
+    `external/invalid-${profilePath}-${extensionId}-${galleryId}` +
     '/test.jpg';
 
-  var bad_mount_name = 'filesystem:' + extension_url +
-    'external/media_galleries-' + profile_path + '-' + gallery_id + '/test.jpg';
+  const badMountName = `filesystem:${extensionUrl}` +
+    `external/media_galleries-${profilePath}-${galleryId}/test.jpg`;
 
-  var good_url = 'filesystem:' + extension_url +
-    'external/media_galleries-' + profile_path + '-' + extension_id + '-' +
-    gallery_id + '/test.jpg';
+  const goodUrl = `filesystem:${extensionUrl}` +
+    `external/media_galleries-${profilePath}-${extensionId}-` +
+    `${galleryId}/test.jpg`;
 
   chrome.test.runTests([
-    TestImageLoadFactory(bad_mount_point, false),
-    TestImageLoadFactory(bad_mount_name, false),
-    TestImageLoadFactory(good_url, true),
+    TestImageLoadFactory(badMountPoint, false),
+    TestImageLoadFactory(badMountName, false),
+    TestImageLoadFactory(goodUrl, true),
   ]);
 })
