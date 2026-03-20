@@ -209,6 +209,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
+  test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
   EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 
   const GURL no_migration_url = embedded_test_server()->GetURL(
