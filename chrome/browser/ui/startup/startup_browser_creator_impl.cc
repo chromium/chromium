@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/supports_user_data.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_infobar_observer.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -418,6 +420,26 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
   bool is_post_crash_launch = HasPendingUncleanExit(profile_);
 
+  // Defer adding info bars until the browser window is ready. The observer
+  // will delete itself once the infobars are added.
+  // It is safe to store Profile* in the callback as callback will be destroyed
+  // upon Profile teardown.
+  StartupInfoBarObserver::AddInfoBarsCallback add_infobars_callback =
+      base::BindOnce(
+          [](const base::CommandLine& startup_command_line,
+             chrome::startup::IsFirstRun is_first_run,
+             bool is_post_crash_launch, bool was_restarted, Profile* profile,
+             BrowserWindowInterface* browser) {
+            AddInfoBarsIfNecessary(browser, profile, startup_command_line,
+                                   is_first_run, /*is_web_app=*/false,
+                                   is_post_crash_launch, was_restarted);
+          },
+          *command_line_, is_first_run_, is_post_crash_launch,
+          StartupBrowserCreator::WasRestarted(), base::Unretained(profile_));
+
+  StartupInfoBarObserver::ObserveProfile(*profile_,
+                                         std::move(add_infobars_callback));
+
   // Presentation of promotional and/or educational tabs may be controlled via
   // administrative policy.
   bool promotions_enabled = true;
@@ -489,11 +511,6 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   Browser* browser = RestoreOrCreateBrowser(
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
-
-  // Finally, add info bars.
-  AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
-                         /*is_web_app=*/false, is_post_crash_launch,
-                         StartupBrowserCreator::WasRestarted());
 
   tab_groups::MaybeShowSharedTabGroupVersionOutOfDateModal(browser);
   tab_groups::MaybeShowSharedTabGroupVersionUpToDateToast(browser);

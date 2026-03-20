@@ -49,6 +49,7 @@ source_set("startup") {
       "profile_launch_observer.h",
       "startup_browser_creator.h",
       "startup_browser_creator_impl.h",
+      "startup_infobar_observer.h",
       "startup_tab_provider.h",
       "startup_types.h",
     ]
@@ -60,6 +61,7 @@ source_set("startup") {
       "//chrome/browser/search_integrity",
       "//chrome/browser/sessions",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//components/infobars/content",
       "//components/signin/public/base:signin_buildflags",
     ]
@@ -185,6 +187,7 @@ source_set("impl") {
       "profile_launch_observer.cc",
       "startup_browser_creator.cc",
       "startup_browser_creator_impl.cc",
+      "startup_infobar_observer.cc",
       "startup_tab_provider.cc",
     ]
     deps += [
@@ -386,6 +389,7 @@ source_set("unit_tests") {
       "launch_mode_recorder_unittest.cc",
       "startup_browser_creator_impl_unittest.cc",
       "startup_browser_creator_unittest.cc",
+      "startup_infobar_observer_unittest.cc",
       "startup_tab_provider_unittest.cc",
     ]
     deps += [
@@ -396,6 +400,7 @@ source_set("unit_tests") {
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/startup/focus:unit_tests",
+      "//chrome/browser/ui/tabs:test_support",
       "//chrome/common",
       "//chrome/common:non_code_constants",
       "//chrome/common:version_header",
