@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "actor_filling_observer_unittest.cc",
     "actor_form_filling_service_unittest.cc",
     "actor_form_section_splitter_unittest.cc",
+    "actor_key_metrics_recorder_unittest.cc",
   ]
 
   deps = [
@@ -58,6 +59,8 @@ static_library("test_support") {
 
   sources = [
     "actor_form_filling_service_impl_test_api.h",
+    "actor_test_utils.cc",
+    "actor_test_utils.h",
     "mock_actor_form_filling_service.cc",
     "mock_actor_form_filling_service.h",
   ]
@@ -65,5 +68,8 @@ static_library("test_support") {
   public_deps = [
     ":actor",
     "//base",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/tabs:test_support",
   ]
 }

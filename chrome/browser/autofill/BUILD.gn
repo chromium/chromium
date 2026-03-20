@@ -213,10 +213,7 @@ static_library("test_support") {
   }
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/autofill/actor:test_support",
-      "//components/autofill/core/browser:test_support",
-    ]
+    deps += [ "//components/autofill/core/browser:test_support" ]
   }
 }
 
