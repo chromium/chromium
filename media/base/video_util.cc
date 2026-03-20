@@ -699,6 +699,11 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
            : VideoFrame::CreateFrame(
                  format, txt_frame.coded_size(), txt_frame.visible_rect(),
                  txt_frame.natural_size(), txt_frame.timestamp());
+  if (!result) {
+    DLOG(ERROR) << "Failed to create VideoFrame, coded_size="
+                << txt_frame.coded_size().ToString();
+    return nullptr;
+  }
   result->set_color_space(txt_frame.ColorSpace());
   result->metadata().MergeMetadataFrom(txt_frame.metadata());
   result->metadata().ClearTextureFrameMetadata();
