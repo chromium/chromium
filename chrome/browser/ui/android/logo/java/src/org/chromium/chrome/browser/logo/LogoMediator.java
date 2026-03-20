@@ -251,6 +251,13 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         // record, don't bother loading the logo image.
         if (mHasLogoLoadedForCurrentSearchEngine || mProfile == null || !mShouldShowLogo) return;
 
+        if (mLogoBridge == null) {
+            mLogoBridge = new LogoBridge(mProfile);
+            mImageFetcher =
+                    ImageFetcherFactory.createImageFetcher(
+                            ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey());
+        }
+
         @Nullable Logo cachedDoodle =
                 DoodleCache.getInstance().getCachedDoodle(mSearchEngineKeyword);
         boolean isCacheHit = cachedDoodle != null;
@@ -260,6 +267,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mLogoModel.set(LogoProperties.ANIMATION_ENABLED, animationEnabled && !isCacheHit);
 
         if (isCacheHit) {
+            mOnLogoClickUrl = assumeNonNull(cachedDoodle).onClickUrl;
+            mAnimatedLogoUrl = assumeNonNull(cachedDoodle).animatedLogoUrl;
             updateModelWithLogo(cachedDoodle);
             RecordHistogram.recordEnumeratedHistogram(
                     LOGO_SHOWN_FROM_CACHE_UMA_NAME,
@@ -271,13 +280,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         showSearchProviderInitialView();
-
-        if (mLogoBridge == null) {
-            mLogoBridge = new LogoBridge(mProfile);
-            mImageFetcher =
-                    ImageFetcherFactory.createImageFetcher(
-                            ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey());
-        }
 
         getSearchProviderLogo(
                 new LogoBridge.LogoObserver() {
