@@ -177,3 +177,54 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInSameTab) {
 
   [mock_scene_commands_handler_ verify];
 }
+
+// Tests that showAssistant is NOT called when navigating in an incognito
+// browser.
+TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
+  GURL aim_url("https://www.google.com/search?q=test&udm=50");
+  GURL next_url("https://www.example.com");
+
+  // Create an incognito browser.
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  std::unique_ptr<TestBrowser> incognito_browser =
+      std::make_unique<TestBrowser>(incognito_profile, mock_scene_state_);
+
+  // Create an opener WebState in the incognito browser.
+  auto opener_web_state = std::make_unique<web::FakeWebState>();
+  opener_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  opener_web_state->SetCurrentURL(aim_url);
+  web::FakeWebState* opener_ptr = opener_web_state.get();
+  CobrowseTabHelper::CreateForWebState(opener_web_state.get());
+  incognito_browser->GetWebStateList()->InsertWebState(
+      std::move(opener_web_state));
+
+  // Create a new WebState with the opener in the incognito browser.
+  auto new_web_state = std::make_unique<web::FakeWebState>();
+  new_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  new_web_state->SetCurrentURL(GURL::EmptyGURL());
+  web::FakeWebState* new_web_state_ptr = new_web_state.get();
+  CobrowseTabHelper::CreateForWebState(new_web_state_ptr);
+  incognito_browser->GetWebStateList()->InsertWebState(
+      std::move(new_web_state),
+      WebStateList::InsertionParams::Automatic().WithOpener(
+          WebStateOpener(opener_ptr)));
+
+  CobrowseTabHelper* incognito_tab_helper =
+      CobrowseTabHelper::FromWebState(new_web_state_ptr);
+
+  // In an incognito browser, CobrowseBrowserAgent is not created, so the
+  // delegate and scene commands handler should be null.
+
+  web::FakeNavigationContext context;
+  context.SetUrl(next_url);
+
+  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+
+  [[mock_scene_commands_handler_ reject] showAssistantWithContext:[OCMArg any]];
+
+  incognito_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
+
+  [mock_scene_commands_handler_ verify];
+}
