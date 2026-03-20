@@ -254,13 +254,6 @@ export class WebviewController {
     }
 
     const zoomFactors = [
-      0.25,
-      0.33,
-      0.5,
-      0.67,
-      0.75,
-      0.8,
-      0.9,
       1.0,
       1.1,
       1.25,
