@@ -939,8 +939,12 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     // if being viewed in the side panel, but only if it is intercepted without
     // the side panel-specific params. If the params have already been added, do
     // nothing, otherwise this logic causes an infinite "intercept" loop. Any
-    // "allowed domain" (e.g. Google) should not be treated as a thread link.
-    if (IsAllowedHost(url_params.url) || is_nav_to_ai) {
+    // "allowed domain" (e.g. Google) should not be treated as a thread link
+    // unless the link is expected to open in a new tab (e.g. the anchor tag was
+    // set to target="_blank").
+    bool is_allowed_host = IsAllowedHost(url_params.url) &&
+                           !(is_from_embedded_page && is_to_new_tab);
+    if (is_allowed_host || is_nav_to_ai) {
       if (tab) {
         if (!is_nav_to_ai) {
           OMNIBOX_LOG("nav_trace")

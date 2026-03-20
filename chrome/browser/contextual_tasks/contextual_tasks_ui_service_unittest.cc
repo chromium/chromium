@@ -761,6 +761,40 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
   run_loop.Run();
 }
 
+// If navigation to an allowed host is explicitly to a new tab (e.g.
+// target="_blank"), it should be treated as a thread link instead of navigating
+// the same tab.
+TEST_F(ContextualTasksUiServiceTest,
+       AllowedHostNavigation_ToNewTab_InterceptedAsThreadLink) {
+  GURL navigated_url("https://google.com");
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/true));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 // Any other link that isn't AI or an allowed host should be treated as a thread
 // link when viewed in a tab.
 TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInTab) {
