@@ -187,6 +187,7 @@
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/dom/tree_walker.h"
+#include "third_party/blink/renderer/core/dom/user_action_element_traversal.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
@@ -5695,20 +5696,8 @@ void Document::DynamicViewportUnitsChanged() {
 //
 // This reimplements TraversalParent<FlatTreeTraversal> with that slight
 // variation so that we can do traversals this way in a bunch of places.
-class FlatTreeTraversalParentElementExceptSelectPopover {
- public:
-  using Traversal = FlatTreeTraversal;
-  using TraversalNodeType = Element;
-  static TraversalNodeType* Next(const TraversalNodeType& node) {
-    if (HTMLSelectElement::IsPopoverPickerElement(&node)) {
-      return nullptr;
-    }
-    return Traversal::ParentElement(node);
-  }
-};
-
-using InclusiveAncestorsForActiveOrHover = TraversalRange<
-    TraversalIterator<FlatTreeTraversalParentElementExceptSelectPopover>>;
+using InclusiveAncestorsForActiveOrHover =
+    TraversalRange<TraversalIterator<UserActionElementTraversal>>;
 
 void EmitDidChangeHoverElement(Document& document, Element* new_hover_element) {
   LocalFrame* local_frame = document.GetFrame();
@@ -5871,8 +5860,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   Element* ancestor =
       (old_focused_element && old_focused_element->isConnected() &&
        new_focused_element)
-          ? DynamicTo<Element>(FlatTreeTraversal::CommonAncestor(
-                *old_focused_element, *new_focused_element))
+          ? DynamicTo<Element>(old_focused_element->CommonAncestor(
+                *new_focused_element, UserActionElementParent))
           : nullptr;
 
   // Remove focus from the existing focus node (if any)
@@ -5896,8 +5885,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
         new_focused_element = nullptr;
 
         if (ancestor) {
-          auto* new_ancestor = DynamicTo<Element>(
-              FlatTreeTraversal::CommonAncestor(*ancestor, *focused_element_));
+          auto* new_ancestor = DynamicTo<Element>(ancestor->CommonAncestor(
+              *focused_element_, UserActionElementParent));
           if (new_ancestor != ancestor) {
             ancestor->SetHasFocusWithinUpToAncestor(
                 false, new_ancestor,
@@ -5924,8 +5913,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
         new_focused_element = nullptr;
 
         if (ancestor) {
-          auto* new_ancestor = DynamicTo<Element>(
-              FlatTreeTraversal::CommonAncestor(*ancestor, *focused_element_));
+          auto* new_ancestor = DynamicTo<Element>(ancestor->CommonAncestor(
+              *focused_element_, UserActionElementParent));
           if (new_ancestor != ancestor) {
             ancestor->SetHasFocusWithinUpToAncestor(
                 false, new_ancestor,

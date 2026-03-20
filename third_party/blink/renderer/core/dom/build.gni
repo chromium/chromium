@@ -23,6 +23,7 @@ blink_core_hot_sources_dom = [
   "qualified_name.h",
   "tree_scope.cc",
   "tree_scope.h",
+  "user_action_element_traversal.h",
 ]
 
 blink_core_sources_dom = [

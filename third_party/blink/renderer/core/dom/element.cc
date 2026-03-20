@@ -149,6 +149,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/user_action_element_traversal.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -4351,8 +4352,8 @@ void Element::MovedFrom(ContainerNode& old_parent) {
   Element* old_parent_element = &To<Element>(old_parent);
   if (focused_element && old_parent.HasFocusWithin() &&
       contains(focused_element) && old_parent != *new_parent_element) {
-    Element* common_ancestor = To<Element>(NodeTraversal::CommonAncestor(
-        *old_parent_element, *new_parent_element));
+    Element* common_ancestor = To<Element>(old_parent_element->CommonAncestor(
+        *new_parent_element, UserActionElementParent));
 
     // The "focus within" flag is set separately on each ancestor, and affects
     // the :focus-within CSS property. We set it to the right value here because
@@ -8812,7 +8813,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
   bool reached_ancestor = false;
   for (Element* element = this;
        element && (need_snap_container_search || !reached_ancestor);
-       element = FlatTreeTraversal::ParentElement(*element)) {
+       element = UserActionElementTraversal::Next(*element)) {
     if (!reached_ancestor && element != ancestor) {
       element->SetHasFocusWithin(has_focus_within);
       element->FocusWithinStateChanged();
