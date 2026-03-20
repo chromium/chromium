@@ -2631,11 +2631,6 @@ BASE_FEATURE(kWebAppManifestLockScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables web apps to be migrated from one manifest id to another.
 BASE_FEATURE(kWebAppMigrationApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow denormals in AudioWorklet and ScriptProcessorNode, to enable strict
-// JavaScript denormal compliance.  See https://crbug.com/382005099.
-BASE_FEATURE(kWebAudioAllowDenormalInProcessing,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use deferred pull status update instead of updating the status directly
 // on audio thread. See https://crbug.com/40249972.
 BASE_FEATURE(kWebAudioDeferPullStatusUpdate, base::FEATURE_DISABLED_BY_DEFAULT);

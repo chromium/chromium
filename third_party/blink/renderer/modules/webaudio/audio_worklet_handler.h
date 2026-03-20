@@ -61,10 +61,6 @@ class AudioWorkletHandler final : public AudioHandler {
   // management from the renderer.
   bool RequiresTailProcessing() const override { return true; }
 
-  // Used to avoid code duplication when using scoped objects that affect
-  // `Process`.
-  void ProcessInternal(uint32_t frames_to_process);
-
   void NotifyProcessorError(
       const AudioWorkletProcessorErrorDetails& error_details);
 
@@ -98,9 +94,6 @@ class AudioWorkletHandler final : public AudioHandler {
   // lifecycle of an AudioWorkletNode and its handler. This flag becomes false
   // when a processor stops invoking the user-defined `process()` callback.
   bool is_processor_active_ = true;
-
-  // Cached feature flag value
-  const bool allow_denormal_in_processing_;
 
   base::WeakPtrFactory<AudioWorkletHandler> weak_ptr_factory_{this};
 };
