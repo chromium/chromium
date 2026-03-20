@@ -3242,6 +3242,15 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.OmniboxChipDecision"
+    enum="ReadAnythingOmniboxChipDecision" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the decision to show or hide the Reading mode omnibox chip and why.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.OmniboxIconShown"
     enum="BooleanShown" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

@@ -37,6 +37,23 @@ enum class ReadAnythingCloseReason {
   kMaxValue = kPageChangedSoftNavigation,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReadAnythingOmniboxChipDecision)
+enum class ReadAnythingOmniboxChipDecision {
+  kShowArticle = 0,
+  kShowPdf = 1,
+  kHideAppWindow = 2,
+  kHideNonHttp = 3,
+  kHideDenyList = 4,
+  kHideOptimizationGuide = 5,
+  kHideReadability = 6,
+  kHideShortPdf = 7,
+  kHideLowAlphabeticPdf = 8,
+  kMaxValue = kHideLowAlphabeticPdf,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOmniboxChipDecision)
+
 namespace read_anything {
 
 inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(

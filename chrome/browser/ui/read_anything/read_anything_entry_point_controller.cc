@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -62,6 +65,8 @@ constexpr const char* kDenyList[] = {
     "youtube.com",
     "photos.google.com",
 };
+constexpr std::string_view kOmniboxDecisionHistogram =
+    "Accessibility.ReadAnything.OmniboxChipDecision";
 
 int GetOmniboxChipIgnoredCount(PrefService* prefs) {
   return prefs->GetInteger(
@@ -79,6 +84,10 @@ bool IsTriggeredByOmnibox(const actions::ActionInvocationContext& context) {
   return (page_action_trigger != page_actions::kInvalidPageActionTrigger) &&
          features::IsReadAnythingOmniboxChipEnabled() &&
          base::FeatureList::IsEnabled(features::kPageActionsMigration);
+}
+
+void LogDecision(ReadAnythingOmniboxChipDecision decision) {
+  base::UmaHistogramEnumeration(kOmniboxDecisionHistogram, decision);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -104,9 +113,19 @@ void OnPdfTextReceived(base::OnceCallback<void(bool)> result_callback,
   // Show the omnibox on PDFs above a certain length, with a high percentage of
   // alphabetic characters. In this case, it is likely going to distill well in
   // Reading mode.
-  std::move(result_callback)
-      .Run((text.size() > g_min_pdf_text_length_for_omnibox) &&
-           IsMostlyAlphaChars(text));
+  bool long_enough = text.size() > g_min_pdf_text_length_for_omnibox;
+  bool should_show = long_enough && IsMostlyAlphaChars(text);
+  std::move(result_callback).Run(should_show);
+
+  ReadAnythingOmniboxChipDecision decision;
+  if (should_show) {
+    decision = ReadAnythingOmniboxChipDecision::kShowPdf;
+  } else if (!long_enough) {
+    decision = ReadAnythingOmniboxChipDecision::kHideShortPdf;
+  } else {
+    decision = ReadAnythingOmniboxChipDecision::kHideLowAlphabeticPdf;
+  }
+  LogDecision(decision);
 }
 
 void RunPdfDistillableHeuristic(
@@ -130,10 +149,21 @@ pdf::PDFDocumentHelper* GetPdf(content::WebContents* contents) {
 #endif
 }
 
+void OnReadabilityDecision(base::OnceCallback<void(bool)> result_callback,
+                           bool should_show) {
+  std::move(result_callback).Run(should_show);
+  ReadAnythingOmniboxChipDecision decision =
+      should_show ? ReadAnythingOmniboxChipDecision::kShowArticle
+                  : ReadAnythingOmniboxChipDecision::kHideReadability;
+  LogDecision(decision);
+}
+
 void RunReadabilityHeuristic(content::WebContents* contents,
                              base::OnceCallback<void(bool)> result_callback) {
   CHECK(contents);
-  RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
+  RunReadabilityHeuristicsOnWebContents(
+      contents,
+      base::BindOnce(&OnReadabilityDecision, std::move(result_callback)));
 }
 
 void OnOptimizationGuideDecision(
@@ -153,6 +183,7 @@ void OnOptimizationGuideDecision(
       // Optimization guide decided no, so immediately callback with a negative
       // result, bypassing the Readability check.
       std::move(result_callback).Run(false);
+      LogDecision(ReadAnythingOmniboxChipDecision::kHideOptimizationGuide);
       break;
     case optimization_guide::OptimizationGuideDecision::kTrue:
     case optimization_guide::OptimizationGuideDecision::kUnknown:
@@ -346,6 +377,7 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
   // omnibox support.
   Browser* browser = bwi->GetBrowserForMigrationOnly();
   if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+    LogDecision(ReadAnythingOmniboxChipDecision::kHideAppWindow);
     return false;
   }
 
@@ -355,12 +387,14 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
   content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
   const GURL& url = contents->GetLastCommittedURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    LogDecision(ReadAnythingOmniboxChipDecision::kHideNonHttp);
     return false;
   }
 
   // Don't show the omnibox entrypoint for sites we know don't distill well.
   for (const char* domain : kDenyList) {
     if (url.DomainIs(domain)) {
+      LogDecision(ReadAnythingOmniboxChipDecision::kHideDenyList);
       return false;
     }
   }
