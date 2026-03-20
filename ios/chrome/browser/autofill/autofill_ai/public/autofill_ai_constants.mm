@@ -8,3 +8,5 @@ NSString* const kAutofillAISaveEntityTableViewId =
     @"kAutofillAISaveEntityTableViewId";
 NSString* const kAutofillAISaveEntityCancelButtonId =
     @"kAutofillAISaveEntityCancelButtonId";
+NSString* const kAutofillAISaveEntitySaveButtonId =
+    @"kAutofillAISaveEntitySaveButtonId";

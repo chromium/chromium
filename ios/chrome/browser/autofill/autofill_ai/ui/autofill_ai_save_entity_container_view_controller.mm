@@ -74,6 +74,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   if (_buttonTitle) {
     [_saveButton setTitle:_buttonTitle forState:UIControlStateNormal];
   }
+  _saveButton.accessibilityIdentifier = kAutofillAISaveEntitySaveButtonId;
   [_saveButton addTarget:self
                   action:@selector(saveButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
