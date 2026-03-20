@@ -147,12 +147,12 @@ BASE_FEATURE_PARAM(int,
                    kSplitViewDragAndDropMinDistanceThreshold,
                    &kSplitViewDragAndDropVelocity,
                    "min_distance_threshold",
-                   15);
+                   20);
 BASE_FEATURE_PARAM(int,
                    kSplitViewDragAndDropMaxDistanceThreshold,
                    &kSplitViewDragAndDropVelocity,
                    "max_distance_threshold",
-                   15);
+                   20);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
