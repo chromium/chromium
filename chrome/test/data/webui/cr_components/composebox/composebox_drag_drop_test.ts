@@ -16,7 +16,7 @@ import {DragAndDropHandler} from 'chrome://resources/cr_components/search/drag_d
 import type {DragAndDropHost} from 'chrome://resources/cr_components/search/drag_drop_host.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {InputType, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -442,9 +442,10 @@ suite('ComposeboxDragAndDrop', () => {
     const contextEntrypoint =
         composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
     assertTrue(!!contextEntrypoint);
-    contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {tool: ToolMode.kDeepSearch},
-    }));
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kDeepSearch},
+        }));
     await microtasksFinished();
 
     const imageFile = new File([''], 'test.png', {type: 'image/png'});
@@ -484,9 +485,10 @@ suite('ComposeboxDragAndDrop', () => {
     const contextEntrypoint =
         composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
     assertTrue(!!contextEntrypoint);
-    contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {tool: ToolMode.kImageGen},
-    }));
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kImageGen},
+        }));
     await microtasksFinished();
 
     // 1. Drop a PDF (should be blocked).
@@ -535,9 +537,10 @@ suite('ComposeboxDragAndDrop', () => {
     const contextEntrypoint =
         composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
     assertTrue(!!contextEntrypoint);
-    contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {tool: ToolMode.kCanvas},
-    }));
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kCanvas},
+        }));
     await microtasksFinished();
 
     // 1. Drop an image.

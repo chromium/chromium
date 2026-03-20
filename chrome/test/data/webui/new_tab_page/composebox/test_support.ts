@@ -6,7 +6,7 @@ import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -64,7 +64,7 @@ export const mockInputState: InputState = {
   hintText: '',  // Will be set in setup
   toolConfigs: [
     {
-      tool: ToolMode.kDeepSearch,
+      tool: ComposeboxToolMode.kDeepSearch,
       hintText: 'Research anything',
       menuLabel: '',
       chipLabel: '',
@@ -72,7 +72,7 @@ export const mockInputState: InputState = {
       aimUrlParams: [],
     },
     {
-      tool: ToolMode.kImageGen,
+      tool: ComposeboxToolMode.kImageGen,
       hintText: 'Describe your image',
       menuLabel: '',
       chipLabel: '',
@@ -80,7 +80,7 @@ export const mockInputState: InputState = {
       aimUrlParams: [],
     },
     {
-      tool: ToolMode.kCanvas,
+      tool: ComposeboxToolMode.kCanvas,
       hintText: 'Create anything',
       menuLabel: '',
       chipLabel: '',

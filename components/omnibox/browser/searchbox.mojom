@@ -111,7 +111,14 @@ struct TabInfo {
   mojo_base.mojom.TimeTicks last_active;
 };
 
-
+// See also:
+// https://crsrc.org/c/third_party/omnibox_proto/aim_tools.proto
+enum ToolMode {
+  kDefault = 0,
+  kDeepSearch = 1,
+  kCanvas = 2,
+  kCreateImage = 4,
+};
 
 // Represents a file attachment who's upload was started browser-side (currently
 // an image or PDF only).
@@ -154,7 +161,7 @@ struct SearchContext {
   // A list of attachments to the search context.
   array<SearchContextAttachment> attachments;
   // The mode of the search query.
-  composebox_query.mojom.ToolMode tool_mode;
+  ToolMode tool_mode;
 };
 
 // Information about a contextual input.

@@ -17,7 +17,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -111,12 +110,12 @@ TEST_F(OmniboxPopupAimHandlerTest, RequestClose) {
 TEST_F(OmniboxPopupAimHandlerTest, OnPopupShown) {
   auto context = std::make_unique<SearchboxContextData::Context>();
   context->text = "test query";
-  context->mode = omnibox::TOOL_MODE_UNSPECIFIED;
+  context->mode = searchbox::mojom::ToolMode::kDefault;
 
   EXPECT_CALL(page_, OnPopupShown(testing::_))
       .WillOnce([&](searchbox::mojom::SearchContextPtr context_ptr) {
         EXPECT_EQ("test query", context_ptr->input);
-        EXPECT_EQ(omnibox::TOOL_MODE_UNSPECIFIED, context_ptr->tool_mode);
+        EXPECT_EQ(searchbox::mojom::ToolMode::kDefault, context_ptr->tool_mode);
       });
 
   handler_->OnPopupShown(std::move(context));

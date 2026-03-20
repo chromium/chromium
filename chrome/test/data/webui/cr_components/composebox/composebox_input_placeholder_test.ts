@@ -9,7 +9,7 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ModelMode, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -40,7 +40,7 @@ suite('ComposeboxInputPlaceholder', () => {
     composebox.state = {
       text: '',
       files: [],
-      mode: ToolMode.kUnspecified,
+      mode: ComposeboxToolMode.kUnspecified,
       model: ModelMode.kUnspecified,
     };
 
@@ -122,17 +122,17 @@ suite('ComposeboxInputPlaceholder', () => {
 
   const toolConfigTestCases = [
     {
-      tool: ToolMode.kDeepSearch,
+      tool: ComposeboxToolMode.kDeepSearch,
       hint: 'Research anything',
       name: 'DeepSearch',
     },
     {
-      tool: ToolMode.kImageGen,
+      tool: ComposeboxToolMode.kImageGen,
       hint: 'Describe your image',
       name: 'ImageGen',
     },
     {
-      tool: ToolMode.kCanvas,
+      tool: ComposeboxToolMode.kCanvas,
       hint: 'Create anything',
       name: 'Canvas',
     },
@@ -186,7 +186,7 @@ suite('ComposeboxInputPlaceholder', () => {
       await microtasksFinished();
       searchboxPageRemote.onInputStateChanged({
         ...mockInputState,
-        activeTool: ToolMode.kUnspecified,
+        activeTool: ComposeboxToolMode.kUnspecified,
       });
       await searchboxPageRemote.$.flushForTesting();
       microtasksFinished();

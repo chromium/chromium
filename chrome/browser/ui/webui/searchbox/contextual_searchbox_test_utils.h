@@ -140,14 +140,18 @@ class MockContextualSearchMetricsRecorder
                int file_count),
               (override));
   MOCK_METHOD(void, ActivateMetricsFunnel, (const std::string&), (override));
-  MOCK_METHOD(void, RecordToolMode, (omnibox::ToolMode tool_mode), (override));
+  MOCK_METHOD(void,
+              RecordToolMode,
+              (composebox_query::mojom::ToolMode tool_mode),
+              (override));
   MOCK_METHOD(void,
               RecordModelMode,
-              (omnibox::ModelMode model_mode),
+              (composebox_query::mojom::ModelMode model_mode),
               (override));
   MOCK_METHOD(void,
               RecordModesOnSubmission,
-              (omnibox::ToolMode tool_mode, omnibox::ModelMode model_mode),
+              (composebox_query::mojom::ToolMode tool_mode,
+               composebox_query::mojom::ModelMode model_mode),
               (override));
   MOCK_METHOD(void, RecordZeroSuggestClick, (bool is_contextual), (override));
   MOCK_METHOD(void,
@@ -168,16 +172,17 @@ class MockContextualSearchMetricsRecorder
         has_tab_context, has_non_tab_context, query_text_length, file_count);
   }
 
-  void RecordToolModeBase(omnibox::ToolMode tool_mode) {
+  void RecordToolModeBase(composebox_query::mojom::ToolMode tool_mode) {
     ContextualSearchMetricsRecorder::RecordToolMode(tool_mode);
   }
 
-  void RecordModelModeBase(omnibox::ModelMode model_mode) {
+  void RecordModelModeBase(composebox_query::mojom::ModelMode model_mode) {
     ContextualSearchMetricsRecorder::RecordModelMode(model_mode);
   }
 
-  void RecordModesOnSubmissionBase(omnibox::ToolMode tool_mode,
-                                   omnibox::ModelMode model_mode) {
+  void RecordModesOnSubmissionBase(
+      composebox_query::mojom::ToolMode tool_mode,
+      composebox_query::mojom::ModelMode model_mode) {
     ContextualSearchMetricsRecorder::RecordModesOnSubmission(tool_mode,
                                                              model_mode);
   }

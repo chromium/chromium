@@ -499,14 +499,20 @@ void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool) {
 void ContextualSearchboxHandler::RecordToolSelectionAction(
     omnibox::ToolMode tool) {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->RecordToolMode(tool);
+    composebox_query::mojom::ToolMode mojom_tool_mode =
+        mojo::EnumTraits<composebox_query::mojom::ToolMode,
+                         omnibox::ToolMode>::ToMojom(tool);
+    metrics_recorder->RecordToolMode(mojom_tool_mode);
   }
 }
 
 void ContextualSearchboxHandler::RecordModelSelectionAction(
     omnibox::ModelMode model) {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->RecordModelMode(model);
+    composebox_query::mojom::ModelMode mojom_model_mode =
+        mojo::EnumTraits<composebox_query::mojom::ModelMode,
+                         omnibox::ModelMode>::ToMojom(model);
+    metrics_recorder->RecordModelMode(mojom_model_mode);
   }
 }
 

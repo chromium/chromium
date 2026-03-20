@@ -346,31 +346,34 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
 
 TEST_F(ContextualSearchMetricsRecorderTest, ToolMode) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  metrics().RecordToolMode(composebox_query::mojom::ToolMode::kImageGen);
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
-      kContextualSearchToolMode, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+      kContextualSearchToolMode, composebox_query::mojom::ToolMode::kImageGen,
+      1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  metrics().RecordModelMode(composebox_query::mojom::ModelMode::kGeminiPro);
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
-      kContextualSearchModelMode, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+      kContextualSearchModelMode,
+      composebox_query::mojom::ModelMode::kGeminiPro, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, ModesOnSubmission) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordModesOnSubmission(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
-                                    omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  metrics().RecordModesOnSubmission(
+      composebox_query::mojom::ToolMode::kImageGen,
+      composebox_query::mojom::ModelMode::kGeminiPro);
   DestructMetricsRecorder();
-  histogram_tester().ExpectUniqueSample(kContextualSearchToolModeOnSubmission,
-                                        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
-                                        1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchToolModeOnSubmission,
+      composebox_query::mojom::ToolMode::kImageGen, 1);
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelModeOnSubmission,
-      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+      composebox_query::mojom::ModelMode::kGeminiPro, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, TabContextAdded) {

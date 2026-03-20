@@ -10,7 +10,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -67,7 +67,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
 
-  async function setActiveTool(tool: ToolMode) {
+  async function setActiveTool(tool: ComposeboxToolMode) {
     searchboxCallbackRouterRemote.onInputStateChanged({
       ...mockInputState,
       activeTool: tool,
@@ -721,7 +721,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        assertEquals(0, composebox.files_.size);
+        assertEquals(0, composebox.files.size);
 
         // Should be no longer `EXPANDING` after successful upload and submit
         // click.
@@ -732,24 +732,25 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
 
   interface ToolModeInfo {
-    toolMode: ToolMode;
+    toolMode: ComposeboxToolMode;
     text: string;
   }
 
   [{
-    toolMode: ToolMode.kDeepSearch,
+    toolMode: ComposeboxToolMode.kDeepSearch,
     text: 'Deep Search',
   },
    {
-     toolMode: ToolMode.kImageGen,
+     toolMode: ComposeboxToolMode.kImageGen,
      text: 'Create Images',
    },
    {
-     toolMode: ToolMode.kCanvas,
+     toolMode: ComposeboxToolMode.kCanvas,
      text: 'Canvas',
    }].forEach((toolModeInfo: ToolModeInfo) => {
     test(toolModeInfo.text + ': thread change resets input', async () => {
       await setActiveTool(toolModeInfo.toolMode);
+
 
       await composebox.updateComplete;
       await microtasksFinished();
@@ -766,7 +767,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       await microtasksFinished();
 
       toolChip = composebox.shadowRoot.querySelector('cr-composebox-tool-chip');
-      assertFalse(!!composebox.input_, 'Input value should be cleared');
+      assertFalse(!!composebox.input, 'Input value should be cleared');
       assertTrue(
           composebox.fileUploadsComplete, 'File uploads should be complete');
       assertFalse(

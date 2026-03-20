@@ -464,7 +464,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files_.size);
+    assertEquals(0, composebox.files.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -480,7 +480,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
-    composebox.input_ = 'test';
+    composebox.input = 'test';
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await composebox.updateComplete;
@@ -667,7 +667,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files_.size);
+    assertEquals(0, composebox.files.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -675,7 +675,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
   test('Composebox submit button disabled when uploading tabs', async () => {
     const callback = (file: ComposeboxFile) => {
-      composebox.files_.set(file.uuid, file);
+      composebox.files.set(file.uuid, file);
       composebox.contextFilesSize_ += 1;
       composebox.submitEnabled_ = composebox.computeSubmitEnabled_();
       composebox.requestUpdate();
@@ -766,7 +766,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files_.size);
+    assertEquals(0, composebox.files.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -825,12 +825,12 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is submitted via submitQuery_()');
 
-    assertEquals(0, composebox.files_.size);
+    assertEquals(0, composebox.files.size);
   });
 
   test('delayed tabs do not delay submission', async () => {
     const callback = (file: any) => {
-      composebox.files_.set(file.uuid, file);
+      composebox.files.set(file.uuid, file);
       composebox.contextFilesSize_ = 1;
       composebox.submitEnabled_ = composebox.computeSubmitEnabled_();
       composebox.requestUpdate();
@@ -1100,7 +1100,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
             /*supportsUnimodal=*/ false);
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
-        composebox.input_ = 'test';
+        composebox.input = 'test';
 
         // Multiple calls needed to avoid flaking.
         // TODO(crbug.com/490496860): Investigate removing.
