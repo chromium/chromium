@@ -747,7 +747,7 @@ CanvasRenderingContext2D::GetLastRecordingForCanvas2D() {
   if (!provider) {
     return empty_recording_;
   }
-  return provider->LastRecording();
+  return provider->LastRecordingForCanvas2D();
 }
 
 bool CanvasRenderingContext2D::CanCreateResourceProvider() {

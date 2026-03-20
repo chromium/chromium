@@ -189,7 +189,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
     always_enable_raster_timers_for_testing_ = value;
   }
 
-  const std::optional<cc::PaintRecord>& LastRecording() {
+  const std::optional<cc::PaintRecord>& LastRecordingForCanvas2D() {
+    CHECK(IsCanvas2D());
     return last_recording_;
   }
 
