@@ -50,6 +50,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.widget.RemoteViews;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -101,6 +102,7 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinat
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -209,6 +211,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     static final String EXTRA_CUSTOM_CONTENT_ACTIONS =
             "androidx.browser.customtabs.extra.CUSTOM_CONTENT_ACTIONS";
+
+    private static final String EXTRA_TRANSLUCENT_BACKGROUND =
+            "androidx.browser.customtabs.extra.TRANSLUCENT_BACKGROUND";
 
     @IntDef({
         CustomTabsButtonState.BUTTON_STATE_OFF,
@@ -498,6 +503,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         || roundedCornersPosition > ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP
                 ? ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE
                 : roundedCornersPosition;
+    }
+
+    @Override
+    public @ColorInt int getTranslucentBackgroundColor(Context context) {
+        int defValue = SemanticColorUtils.getDefaultBgColor(context);
+        // TODO(crbug.com/493918709): Limit the minimum alpha to 50% to avoid too much transparency.
+        return IntentUtils.safeGetIntExtra(mIntent, EXTRA_TRANSLUCENT_BACKGROUND, defValue);
     }
 
     private static boolean getIsCloseButtonEnabled(Intent intent, int uiType) {

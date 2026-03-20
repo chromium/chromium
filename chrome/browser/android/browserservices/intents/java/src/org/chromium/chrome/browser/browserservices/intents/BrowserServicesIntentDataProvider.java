@@ -13,10 +13,12 @@ import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomContentAction;
@@ -696,8 +698,16 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * Returns the background color in ARGB format. For now, used only by Partial Custom Tabs to
+     * have a transparency to keep the host app visible while the page is loading.
+     */
+    public @ColorInt int getTranslucentBackgroundColor(Context context) {
+        return 0;
+    }
+
+    /**
      * @return true, as by default having a PCCT launched still allows interaction with the
-     * background application
+     *     background application
      */
     public boolean canInteractWithBackground() {
         return false;

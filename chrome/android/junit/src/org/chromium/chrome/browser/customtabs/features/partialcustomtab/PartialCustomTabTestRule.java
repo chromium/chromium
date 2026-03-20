@@ -95,6 +95,8 @@ public class PartialCustomTabTestRule implements TestRule {
     static final int DEVICE_WIDTH_COMPACT_PORTRAIT = DEVICE_HEIGHT_COMPACT;
     static final int DEVICE_HEIGHT_COMPACT_PORTRAIT = DEVICE_WIDTH_COMPACT;
 
+    private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
+
     @Mock Activity mActivity;
     @Mock Window mWindow;
     @Mock WindowManager mWindowManager;
@@ -117,6 +119,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock FullscreenManager mFullscreenManager;
     @Mock ViewStub mHandleViewStub;
     @Mock ImageView mHandleView;
+    @Mock FrameLayout mContentBackground;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock LinearLayout mNavbar;
     @Mock ViewPropertyAnimator mViewAnimator;
@@ -157,6 +160,7 @@ public class PartialCustomTabTestRule implements TestRule {
         MockitoAnnotations.initMocks(this);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);
+        SemanticColorUtils.setDefaultBgColorForTesting(DEFAULT_BG_COLOR);
 
         setUpActivityAndWindowMocks();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -184,6 +188,8 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mActivity.findViewById(android.R.id.content)).thenReturn(mContentFrame);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
+        when(mActivity.findViewById(R.id.custom_tabs_content_background))
+                .thenReturn(mContentBackground);
         when(mActivity.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
         when(mActivity.findViewById(R.id.drag_handle)).thenReturn(mDragHandlebar);
 

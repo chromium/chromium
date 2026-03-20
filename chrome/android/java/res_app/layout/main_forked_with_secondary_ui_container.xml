@@ -23,7 +23,7 @@ TODO(http://crbug.com/485940935): Delete this.
          make the custom tab rounded. -->
     <ViewStub
         android:id="@+id/custom_tabs_handle_view_stub"
-        android:inflatedId="@+id/custom_tabs_handle_view"
+        android:inflatedId="@+id/custom_tabs_handle_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/custom_tabs_shadow_offset"
