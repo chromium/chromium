@@ -162,16 +162,18 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     // Inject our own PrefServices for each user which enables us to setup the
     // desks restore data before the user signs in.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_prefs_ = user_prefs.get();
-    RegisterUserProfilePrefs(user_prefs_->registry(), /*country=*/"",
+    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
                              /*for_test=*/true);
 
-    SimulateUserLogin({kUserEmail},
-                      /*account_id=*/std::nullopt, std::move(user_prefs));
+    AccountId account_id =
+        SimulateUserLogin({kUserEmail},
+                          /*account_id=*/std::nullopt, std::move(user_prefs));
 
-    user_prefs_->registry()->RegisterBooleanPref(
-        ash::prefs::kUserPairedWithFastPair,
-        /*default_value=*/false);
+    static_cast<TestingPrefServiceSimple*>(
+        ash_test_helper()->prefs_provider()->GetUserPrefs(account_id))
+        ->registry()
+        ->RegisterBooleanPref(ash::prefs::kUserPairedWithFastPair,
+                              /*default_value=*/false);
 
     adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
@@ -183,22 +185,6 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     metadata.set_device_type(
         nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
     fake_fast_pair_repository_->SetFakeMetadata(kValidModelId, metadata);
-
-    scanner_broker_ = std::make_unique<MockScannerBroker>();
-    mock_scanner_broker_ =
-        static_cast<MockScannerBroker*>(scanner_broker_.get());
-
-    retroactive_pairing_detector_ =
-        std::make_unique<FakeRetroactivePairingDetector>();
-    fake_retroactive_pairing_detector_ =
-        static_cast<FakeRetroactivePairingDetector*>(
-            retroactive_pairing_detector_.get());
-
-    pairer_broker_ = std::make_unique<MockPairerBroker>();
-    mock_pairer_broker_ = static_cast<MockPairerBroker*>(pairer_broker_.get());
-
-    ui_broker_ = std::make_unique<MockUIBroker>();
-    mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker_.get());
 
     initial_device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
                                                    Protocol::kFastPairInitial);
@@ -214,19 +200,17 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
                                                   /*default_value=*/true);
 
     metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
-        scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
-        retroactive_pairing_detector_.get());
+        &scanner_broker_, &pairer_broker_, &ui_broker_,
+        &retroactive_pairing_detector_);
   }
-
-  void TearDown() override { NoSessionAshTestBase::TearDown(); }
 
   void SimulateDiscoveryUiShown(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+        scanner_broker_.NotifyDeviceFound(initial_device_);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+        scanner_broker_.NotifyDeviceFound(subsequent_device_);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -236,12 +220,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateDiscoveryUiDismissed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
-                                               DiscoveryAction::kDismissedByOs);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByOs);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                               DiscoveryAction::kDismissedByOs);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByOs);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -251,12 +235,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateDiscoveryUiDismissedByUser(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(
-            initial_device_, DiscoveryAction::kDismissedByUser);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(
-            subsequent_device_, DiscoveryAction::kDismissedByUser);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -266,12 +250,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateDiscoveryUiDismissedByTimeout(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(
-            initial_device_, DiscoveryAction::kDismissedByTimeout);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByTimeout);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(
-            subsequent_device_, DiscoveryAction::kDismissedByTimeout);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByTimeout);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -281,12 +265,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateDiscoveryUiLearnMorePressed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
-                                               DiscoveryAction::kLearnMore);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kLearnMore);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                               DiscoveryAction::kLearnMore);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kLearnMore);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -296,12 +280,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateDiscoveryUiConnectPressed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
-                                               DiscoveryAction::kPairToDevice);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kPairToDevice);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                               DiscoveryAction::kPairToDevice);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kPairToDevice);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -311,17 +295,17 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulatePairingFailed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_pairer_broker_->NotifyPairFailure(
+        pairer_broker_.NotifyPairFailure(
             initial_device_,
             PairFailure::kKeyBasedPairingCharacteristicDiscovery);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_pairer_broker_->NotifyPairFailure(
+        pairer_broker_.NotifyPairFailure(
             subsequent_device_,
             PairFailure::kKeyBasedPairingCharacteristicDiscovery);
         break;
       case Protocol::kFastPairRetroactive:
-        mock_pairer_broker_->NotifyPairFailure(
+        pairer_broker_.NotifyPairFailure(
             retroactive_device_,
             PairFailure::kKeyBasedPairingCharacteristicDiscovery);
         break;
@@ -332,15 +316,15 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     switch (protocol) {
       case Protocol::kFastPairInitial:
         initial_device_->set_classic_address(kTestAddress);
-        mock_pairer_broker_->NotifyDevicePaired(initial_device_);
+        pairer_broker_.NotifyDevicePaired(initial_device_);
         break;
       case Protocol::kFastPairSubsequent:
         subsequent_device_->set_classic_address(kTestAddress);
-        mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
+        pairer_broker_.NotifyDevicePaired(subsequent_device_);
         break;
       case Protocol::kFastPairRetroactive:
         retroactive_device_->set_classic_address(kTestAddress);
-        mock_pairer_broker_->NotifyDevicePaired(retroactive_device_);
+        pairer_broker_.NotifyDevicePaired(retroactive_device_);
         break;
     }
   }
@@ -348,32 +332,32 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulatePairingFlow(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                               DiscoveryAction::kPairToDevice);
-        mock_pairer_broker_->NotifyPairingStart(subsequent_device_);
-        mock_pairer_broker_->NotifyHandshakeComplete(subsequent_device_);
-        mock_pairer_broker_->NotifyDevicePaired(initial_device_);
-        mock_pairer_broker_->NotifyPairComplete(subsequent_device_);
+        ui_broker_.NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kPairToDevice);
+        pairer_broker_.NotifyPairingStart(subsequent_device_);
+        pairer_broker_.NotifyHandshakeComplete(subsequent_device_);
+        pairer_broker_.NotifyDevicePaired(initial_device_);
+        pairer_broker_.NotifyPairComplete(subsequent_device_);
         break;
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
-                                               DiscoveryAction::kPairToDevice);
-        mock_pairer_broker_->NotifyPairingStart(initial_device_);
-        mock_pairer_broker_->NotifyHandshakeComplete(initial_device_);
-        mock_pairer_broker_->NotifyDevicePaired(initial_device_);
-        mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
-                                                   /*error=*/std::nullopt);
-        mock_pairer_broker_->NotifyPairComplete(initial_device_);
+        ui_broker_.NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kPairToDevice);
+        pairer_broker_.NotifyPairingStart(initial_device_);
+        pairer_broker_.NotifyHandshakeComplete(initial_device_);
+        pairer_broker_.NotifyDevicePaired(initial_device_);
+        pairer_broker_.NotifyAccountKeyWrite(initial_device_,
+                                             /*error=*/std::nullopt);
+        pairer_broker_.NotifyPairComplete(initial_device_);
         break;
       case Protocol::kFastPairRetroactive:
-        fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+        retroactive_pairing_detector_.NotifyRetroactivePairFound(
             retroactive_device_);
-        mock_ui_broker_->NotifyAssociateAccountAction(
+        ui_broker_.NotifyAssociateAccountAction(
             retroactive_device_, AssociateAccountAction::kAssociateAccount);
-        mock_pairer_broker_->NotifyPairingStart(retroactive_device_);
-        mock_pairer_broker_->NotifyHandshakeComplete(retroactive_device_);
-        mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
-                                                   /*error=*/std::nullopt);
+        pairer_broker_.NotifyPairingStart(retroactive_device_);
+        pairer_broker_.NotifyHandshakeComplete(retroactive_device_);
+        pairer_broker_.NotifyAccountKeyWrite(retroactive_device_,
+                                             /*error=*/std::nullopt);
         break;
     }
   }
@@ -381,11 +365,11 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateErrorUiDismissedByUser(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyPairingFailedAction(
+        ui_broker_.NotifyPairingFailedAction(
             initial_device_, PairingFailedAction::kDismissedByUser);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyPairingFailedAction(
+        ui_broker_.NotifyPairingFailedAction(
             subsequent_device_, PairingFailedAction::kDismissedByUser);
         break;
       case Protocol::kFastPairRetroactive:
@@ -396,12 +380,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateErrorUiDismissed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyPairingFailedAction(
-            initial_device_, PairingFailedAction::kDismissed);
+        ui_broker_.NotifyPairingFailedAction(initial_device_,
+                                             PairingFailedAction::kDismissed);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyPairingFailedAction(
-            subsequent_device_, PairingFailedAction::kDismissed);
+        ui_broker_.NotifyPairingFailedAction(subsequent_device_,
+                                             PairingFailedAction::kDismissed);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -411,11 +395,11 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateErrorUiSettingsPressed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_ui_broker_->NotifyPairingFailedAction(
+        ui_broker_.NotifyPairingFailedAction(
             initial_device_, PairingFailedAction::kNavigateToSettings);
         break;
       case Protocol::kFastPairSubsequent:
-        mock_ui_broker_->NotifyPairingFailedAction(
+        ui_broker_.NotifyPairingFailedAction(
             subsequent_device_, PairingFailedAction::kNavigateToSettings);
         break;
       case Protocol::kFastPairRetroactive:
@@ -424,46 +408,44 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   }
 
   void SimulateAssociateAccountUiShown() {
-    fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+    retroactive_pairing_detector_.NotifyRetroactivePairFound(
         retroactive_device_);
   }
 
   void SimulateAssociateAccountUiDismissed() {
-    mock_ui_broker_->NotifyAssociateAccountAction(
+    ui_broker_.NotifyAssociateAccountAction(
         retroactive_device_, AssociateAccountAction::kDismissedByOs);
   }
 
   void SimulateAssociateAccountUiDismissedByUser() {
-    mock_ui_broker_->NotifyAssociateAccountAction(
+    ui_broker_.NotifyAssociateAccountAction(
         retroactive_device_, AssociateAccountAction::kDismissedByUser);
   }
 
   void SimulateAssociateAccountUiDismissedByTimeout() {
-    mock_ui_broker_->NotifyAssociateAccountAction(
+    ui_broker_.NotifyAssociateAccountAction(
         retroactive_device_, AssociateAccountAction::kDismissedByTimeout);
   }
 
   void SimulateAssociateAccountUiSavePressed() {
-    mock_ui_broker_->NotifyAssociateAccountAction(
+    ui_broker_.NotifyAssociateAccountAction(
         retroactive_device_, AssociateAccountAction::kAssociateAccount);
   }
 
   void SimulateAssociateAccountUiLearnMorePressed() {
-    mock_ui_broker_->NotifyAssociateAccountAction(
-        retroactive_device_, AssociateAccountAction::kLearnMore);
+    ui_broker_.NotifyAssociateAccountAction(retroactive_device_,
+                                            AssociateAccountAction::kLearnMore);
   }
 
   void SimulateAccountKeyWritten(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
-                                                   std::nullopt);
+        pairer_broker_.NotifyAccountKeyWrite(initial_device_, std::nullopt);
         break;
       case Protocol::kFastPairSubsequent:
         break;
       case Protocol::kFastPairRetroactive:
-        mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
-                                                   std::nullopt);
+        pairer_broker_.NotifyAccountKeyWrite(retroactive_device_, std::nullopt);
         break;
     }
   }
@@ -471,13 +453,13 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   void SimulateAccountKeyFailure(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
-        mock_pairer_broker_->NotifyAccountKeyWrite(
+        pairer_broker_.NotifyAccountKeyWrite(
             initial_device_, AccountKeyFailure::kGattErrorFailed);
         break;
       case Protocol::kFastPairSubsequent:
         break;
       case Protocol::kFastPairRetroactive:
-        mock_pairer_broker_->NotifyAccountKeyWrite(
+        pairer_broker_.NotifyAccountKeyWrite(
             retroactive_device_, AccountKeyFailure::kGattErrorFailed);
         break;
     }
@@ -487,7 +469,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     auto fp_device = base::MakeRefCounted<Device>(kValidModelId, address,
                                                   Protocol::kFastPairInitial);
     fp_device->set_classic_address(address);
-    mock_pairer_broker_->NotifyDevicePaired(fp_device);
+    pairer_broker_.NotifyDevicePaired(fp_device);
   }
 
   void PairFastPairDeviceWithClassicBluetooth(bool new_paired_status,
@@ -519,19 +501,12 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
 
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_prefs_;
-
-  raw_ptr<MockScannerBroker, DanglingUntriaged> mock_scanner_broker_ = nullptr;
-  raw_ptr<MockPairerBroker, DanglingUntriaged> mock_pairer_broker_ = nullptr;
-  raw_ptr<MockUIBroker, DanglingUntriaged> mock_ui_broker_ = nullptr;
-  raw_ptr<FakeRetroactivePairingDetector, DanglingUntriaged>
-      fake_retroactive_pairing_detector_ = nullptr;
 
   std::unique_ptr<FakeFastPairRepository> fake_fast_pair_repository_;
-  std::unique_ptr<ScannerBroker> scanner_broker_;
-  std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
-  std::unique_ptr<PairerBroker> pairer_broker_;
-  std::unique_ptr<UIBroker> ui_broker_;
+  MockScannerBroker scanner_broker_;
+  FakeRetroactivePairingDetector retroactive_pairing_detector_;
+  MockPairerBroker pairer_broker_;
+  MockUIBroker ui_broker_;
   std::unique_ptr<QuickPairMetricsLogger> metrics_logger_;
 };
 
