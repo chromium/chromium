@@ -7,8 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+class FullscreenBrowserAgent;
+
 // The mediator for the fullscreen feature.
 @interface FullscreenMediator : NSObject
+
+// Initializer for the mediator.
+- (instancetype)initWithBrowserAgent:(FullscreenBrowserAgent*)browserAgent
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.
 - (void)disconnect;

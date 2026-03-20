@@ -2,32 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("coordinator") {
+source_set("model") {
   sources = [
-    "fullscreen_coordinator.h",
-    "fullscreen_coordinator.mm",
-    "fullscreen_mediator.h",
-    "fullscreen_mediator.mm",
+    "fullscreen_browser_agent.h",
+    "fullscreen_browser_agent.mm",
+    "fullscreen_browser_agent_observer.h",
+    "fullscreen_browser_agent_observer_bridge.h",
+    "fullscreen_browser_agent_observer_bridge.mm",
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/fullscreen/model",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "fullscreen_coordinator_unittest.mm",
-    "fullscreen_mediator_unittest.mm",
-  ]
+  sources = [ "fullscreen_browser_agent_unittest.mm" ]
   deps = [
-    ":coordinator",
+    ":model",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",

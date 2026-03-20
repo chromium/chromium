@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
@@ -133,6 +134,9 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   // regular and incognito Browser (since the other Browser do not present the
   // WebStates, and may not create the tab helpers which would lead to crashes).
   if (!browser_is_inactive && !browser_is_temporary) {
+    if (IsFullscreenRefactoringEnabled()) {
+      FullscreenBrowserAgent::CreateForBrowser(browser);
+    }
     FullscreenController::CreateForBrowser(browser);
     if (IsReaderModeAvailable()) {
       ReaderModeBrowserAgent::CreateForBrowser(browser);

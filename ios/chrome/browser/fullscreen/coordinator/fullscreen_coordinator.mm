@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
 
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 
 @implementation FullscreenCoordinator {
   FullscreenMediator* _mediator;
@@ -13,7 +15,8 @@
 #pragma mark - public
 
 - (void)start {
-  _mediator = [[FullscreenMediator alloc] init];
+  _mediator = [[FullscreenMediator alloc]
+      initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(self.browser)];
 }
 
 - (void)stop {

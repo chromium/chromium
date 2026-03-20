@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/platform_test.h"
