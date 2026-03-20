@@ -42,10 +42,13 @@ import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.JumpStartContext;
@@ -53,8 +56,12 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
@@ -78,9 +85,14 @@ public class SearchEngineUtilsUnitTest {
     @Mock Profile mProfile;
     @Mock SearchEngineUtils.SearchBoxHintTextObserver mHintTextObserver;
     @Mock SearchEngineUtils.SearchEngineIconObserver mEngineIconObserver;
+    @Mock FuseboxSessionState mFuseboxSessionState;
+    @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
 
     private Context mContext;
     private Bitmap mBitmap;
+
+    private final SettableNullableObservableSupplier<InputState> mInputStateSupplier =
+            ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {
@@ -132,7 +144,8 @@ public class SearchEngineUtilsUnitTest {
         // Verify default placeholder text.
         verify(mHintTextObserver).onSearchBoxHintTextChanged();
         assertEquals(
-                searchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH),
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null),
                 mContext.getString(R.string.omnibox_empty_hint));
     }
 
@@ -296,7 +309,8 @@ public class SearchEngineUtilsUnitTest {
             verify(mHintTextObserver).onSearchBoxHintTextChanged();
             assertEquals(
                     "Search Google or type URL",
-                    searchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
+                    searchEngineUtils.getOmniboxHintText(
+                            AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
             clearInvocations(mHintTextObserver);
 
             // Make an update
@@ -330,7 +344,8 @@ public class SearchEngineUtilsUnitTest {
             verify(mHintTextObserver).onSearchBoxHintTextChanged();
             assertEquals(
                     "Search Another Engine or type URL",
-                    searchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
+                    searchEngineUtils.getOmniboxHintText(
+                            AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
         }
 
         clearInvocations(mHintTextObserver);
@@ -353,7 +368,8 @@ public class SearchEngineUtilsUnitTest {
             verify(mHintTextObserver).onSearchBoxHintTextChanged();
             assertEquals(
                     "Search or type URL",
-                    searchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
+                    searchEngineUtils.getOmniboxHintText(
+                            AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
         }
 
         clearInvocations(mHintTextObserver);
@@ -373,7 +389,8 @@ public class SearchEngineUtilsUnitTest {
             verify(mHintTextObserver).onSearchBoxHintTextChanged();
             assertEquals(
                     "Search or type URL",
-                    searchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
+                    searchEngineUtils.getOmniboxHintText(
+                            AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
         }
     }
 
@@ -529,5 +546,101 @@ public class SearchEngineUtilsUnitTest {
         assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
 
         verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
+    }
+
+    @Test
+    public void testGetOmniboxHintText_FuseboxSessionState() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        configureSearchEngine("google", "Google");
+        SearchEngineUtils searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        String searchEngineHint = "Search Google or type URL";
+        String aiModeHint = "Ask Google anything";
+        String imageGenHint = "Image Gen Tool Hint";
+        String deepSearchHint = "Deep Search Tool Hint";
+        String canvasHint = "Canvas Tool Hint";
+        doReturn(mComposeboxQueryControllerBridge)
+                .when(mFuseboxSessionState)
+                .getComposeboxQueryControllerBridge();
+        doReturn(mInputStateSupplier)
+                .when(mComposeboxQueryControllerBridge)
+                .getInputStateSupplier();
+
+        ToolConfig imageGenConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setHintText(imageGenHint)
+                        .build();
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setHintText(deepSearchHint)
+                        .build();
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setHintText(canvasHint)
+                        .build();
+        byte[][] toolConfigs =
+                new byte[][] {
+                    imageGenConfig.toByteArray(),
+                    deepSearchConfig.toByteArray(),
+                    canvasConfig.toByteArray()
+                };
+        InputState inputState = new InputState.Builder().withToolConfigs(toolConfigs).build();
+        mInputStateSupplier.set(inputState);
+
+        assertEquals(
+                imageGenHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.IMAGE_GENERATION, mFuseboxSessionState));
+
+        assertEquals(
+                deepSearchHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, mFuseboxSessionState));
+
+        assertEquals(
+                canvasHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.CANVAS, mFuseboxSessionState));
+
+        assertEquals(
+                aiModeHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.AI_MODE, mFuseboxSessionState));
+
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        assertEquals(
+                searchEngineHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, mFuseboxSessionState));
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+
+        assertEquals(
+                searchEngineHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, /* fuseboxSessionState= */ null));
+
+        doReturn(null).when(mFuseboxSessionState).getComposeboxQueryControllerBridge();
+        assertEquals(
+                searchEngineHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, mFuseboxSessionState));
+        doReturn(mComposeboxQueryControllerBridge)
+                .when(mFuseboxSessionState)
+                .getComposeboxQueryControllerBridge();
+
+        mInputStateSupplier.set(null);
+        assertEquals(
+                searchEngineHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, mFuseboxSessionState));
+
+        InputState emptyHintState = new InputState.Builder().withHintText("").build();
+        mInputStateSupplier.set(emptyHintState);
+        assertEquals(
+                searchEngineHint,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.DEEP_SEARCH, mFuseboxSessionState));
     }
 }

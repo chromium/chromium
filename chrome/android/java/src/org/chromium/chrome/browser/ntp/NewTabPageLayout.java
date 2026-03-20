@@ -445,7 +445,8 @@ public class NewTabPageLayout extends LinearLayout {
 
     public void onSearchBoxHintTextChanged() {
         mSearchBoxCoordinator.setSearchBoxHintText(
-                mSearchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
+                mSearchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH,
+                    /* fuseboxSessionState= */ null));
     }
 
     private void setDseIconViewVisibility() {

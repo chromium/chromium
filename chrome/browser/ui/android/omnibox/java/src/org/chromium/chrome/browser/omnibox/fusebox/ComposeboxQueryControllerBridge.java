@@ -189,7 +189,7 @@ public class ComposeboxQueryControllerBridge {
      * ContextualSearchSessionHandle, and may not be during other types of sessions. Callers should
      * be careful that updates may occur outside of when they expect.
      */
-    MonotonicObservableSupplier<InputState> getInputStateSupplier() {
+    public MonotonicObservableSupplier<InputState> getInputStateSupplier() {
         return mInputStateSupplier;
     }
 
