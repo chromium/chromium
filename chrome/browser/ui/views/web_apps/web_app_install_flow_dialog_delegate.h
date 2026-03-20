@@ -34,6 +34,8 @@ enum class InstallDialogStep {
 
 class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallDialogFlowViewId);
+
   WebAppInstallFlowDialogDelegate(
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,

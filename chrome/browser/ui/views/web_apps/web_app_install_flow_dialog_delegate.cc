@@ -49,6 +49,9 @@
 
 namespace web_app {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kInstallDialogFlowViewId);
+
 WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
@@ -205,13 +208,12 @@ void WebAppInstallFlowDialogDelegate::Show(
               std::move(flow_view),
               views::BubbleDialogModelHost::FieldType::kControl,
               focusable_view),
-          WebAppInstallDialogDelegate::kDiyAppsDialogInputTextId);
+          WebAppInstallFlowDialogDelegate::kInstallDialogFlowViewId);
 
   if (install_type == InstallDialogType::kDiy) {
     dialog_model_builder.SetSubtitle(
         l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE));
-    dialog_model_builder.SetInitiallyFocusedField(
-        WebAppInstallDialogDelegate::kDiyAppsDialogInputTextId);
+    dialog_model_builder.SetInitiallyFocusedField(kInstallDialogFlowViewId);
   }
 
   if (show_initiating_origin) {

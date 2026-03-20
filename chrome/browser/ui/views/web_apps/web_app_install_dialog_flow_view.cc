@@ -27,20 +27,21 @@ WebAppInstallFlowView::WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
       install_dialog_view;
 
   // kInstallerOptions
-  auto* options =
-      AddChildView(std::make_unique<views::Label>(u"Installer Options View"));
+  auto* options = AddChildView(views::Builder<views::Label>()
+                                   .SetText(u"Installer Options View")
+                                   .Build());
   options->SetVisible(false);
   install_step_to_view_[InstallDialogStep::kInstallerOptions] = options;
 
   // kProgress
-  auto* progress =
-      AddChildView(std::make_unique<views::Label>(u"Progress View"));
+  auto* progress = AddChildView(
+      views::Builder<views::Label>().SetText(u"Progress View").Build());
   progress->SetVisible(false);
   install_step_to_view_[InstallDialogStep::kProgress] = progress;
 
   // kSuccessful launch app button
-  auto* successful =
-      AddChildView(std::make_unique<views::Label>(u"Successful View"));
+  auto* successful = AddChildView(
+      views::Builder<views::Label>().SetText(u"Successful View").Build());
   successful->SetVisible(false);
   install_step_to_view_[InstallDialogStep::kSuccessful] = successful;
 }
