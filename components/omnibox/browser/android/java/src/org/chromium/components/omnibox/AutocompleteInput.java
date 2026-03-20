@@ -70,7 +70,6 @@ public class AutocompleteInput implements UserData {
     private GURL mPageUrl;
     private int mPageClassification;
     private String mPageTitle;
-    private String mUserText;
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
     private boolean mSuppressAutomaticSuggestionsUntilUserStartsTyping;
@@ -80,6 +79,8 @@ public class AutocompleteInput implements UserData {
     private @OmniboxFocusReason int mFocusReason;
     private /* ModelMode */ int mModelMode;
 
+    private final SettableNonNullObservableSupplier<String> mUserText =
+            ObservableSuppliers.createNonNull("");
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
@@ -117,7 +118,6 @@ public class AutocompleteInput implements UserData {
         mPageUrl = other.mPageUrl;
         mPageClassification = other.mPageClassification;
         mPageTitle = other.mPageTitle;
-        mUserText = other.mUserText;
         mAllowExactKeywordMatch = other.mAllowExactKeywordMatch;
         mHasAttachments = other.mHasAttachments;
         mSuppressAutomaticSuggestionsUntilUserStartsTyping =
@@ -127,6 +127,7 @@ public class AutocompleteInput implements UserData {
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
         mFocusReason = other.mFocusReason;
         mModelMode = other.mModelMode;
+        mUserText.set(other.mUserText.get());
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
         mToolModeSupplier.set(other.mToolModeSupplier.get());
         mSiteSearchData.set(other.mSiteSearchData.get());
@@ -293,10 +294,12 @@ public class AutocompleteInput implements UserData {
      */
     public AutocompleteInput setUserText(@Nullable String text) {
         if (text == null) text = "";
-        if (TextUtils.equals(text, mUserText)) return this;
+
+        String oldText = mUserText.get();
+        if (TextUtils.equals(text, oldText)) return this;
 
         boolean oldTextUsesKeywordActivator =
-                !TextUtils.isEmpty(mUserText) && TextUtils.indexOf(mUserText, ' ') > 0;
+                !TextUtils.isEmpty(oldText) && TextUtils.indexOf(oldText, ' ') > 0;
         boolean newTextUsesKeywordActivator =
                 !TextUtils.isEmpty(text) && TextUtils.indexOf(text, ' ') > 0;
 
@@ -305,7 +308,7 @@ public class AutocompleteInput implements UserData {
         // Suppress Keyword mode when reverting back to the url.
         mAllowExactKeywordMatch &= !(oldTextUsesKeywordActivator && !newTextUsesKeywordActivator);
 
-        mUserText = text;
+        mUserText.set(text);
         // Place cursor at the end of text.
         mSelection = Range.create(text.length(), text.length());
         return this;
@@ -330,9 +333,9 @@ public class AutocompleteInput implements UserData {
     public String getTextForAutocomplete() {
         SiteSearchData siteSearchData = getSiteSearchData();
         if (siteSearchData != null) {
-            return siteSearchData.keyword + " " + mUserText;
+            return siteSearchData.keyword + " " + mUserText.get();
         }
-        return mUserText;
+        return mUserText.get();
     }
 
     /**
@@ -349,7 +352,7 @@ public class AutocompleteInput implements UserData {
             // It's possible the UI text has not synchronously updated yet, meaning the reported
             // cursor position is out of bounds for the logical text. Cap it to the length of the
             // user text.
-            int safeCursorPosition = Math.min(currentCursorPosition, mUserText.length());
+            int safeCursorPosition = Math.min(currentCursorPosition, mUserText.get().length());
             return safeCursorPosition + siteSearchData.keyword.length() + 1;
         }
         return currentCursorPosition;
@@ -357,12 +360,17 @@ public class AutocompleteInput implements UserData {
 
     /** Returns the text as currently typed by the User. */
     public String getUserText() {
+        return mUserText.get();
+    }
+
+    /** Returns the supplier for the text as currently typed by the User. */
+    public NonNullObservableSupplier<String> getUserTextSupplier() {
         return mUserText;
     }
 
     /** Returns whether current context represents zero-prefix context. */
     public boolean isInZeroPrefixContext() {
-        return TextUtils.isEmpty(mUserText);
+        return TextUtils.isEmpty(mUserText.get());
     }
 
     /** Returns whether current context enables suggestions caching. */
@@ -421,7 +429,6 @@ public class AutocompleteInput implements UserData {
      */
     @Initializer
     public AutocompleteInput reset() {
-        mUserText = "";
         mAllowExactKeywordMatch = false;
         mPageUrl = GURL.emptyGURL();
         mPageTitle = "";
@@ -431,6 +438,7 @@ public class AutocompleteInput implements UserData {
         mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
+        mUserText.set("");
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mSiteSearchData.set(null);
         mUrlFocusTime = 0;
