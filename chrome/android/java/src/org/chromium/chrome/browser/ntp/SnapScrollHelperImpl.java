@@ -152,9 +152,20 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         return scrollPosition;
     }
 
+    @Override
+    public void destroy() {
+        if (mView != null) {
+            mView.setOnTouchListener(null);
+            mView.removeCallbacks(mSnapScrollRunnable);
+            mView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
+            mView = null;
+        }
+    }
+
     /**
      * Calculates the position to scroll to in order to move out of a region where {@code mView}
      * should not stay at rest.
+     *
      * @param currentScroll the current scroll position.
      * @param regionStart the beginning of the region to scroll out of.
      * @param regionEnd the end of the region to scroll out of.

@@ -172,6 +172,7 @@ public class FeedSurfaceCoordinator
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private @Nullable NtpBackgroundImageCoordinator mNtpBackgroundImageCoordinator;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
+    private RecyclerView.@Nullable ItemDecoration mItemDecoration;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -716,6 +717,11 @@ public class FeedSurfaceCoordinator
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
+        mRecyclerView.setItemAnimator(null);
+        if (mItemDecoration != null) {
+            mRecyclerView.removeItemDecoration(mItemDecoration);
+        }
+
         if (mSwipeRefreshLayout != null) {
             if (mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -965,14 +971,15 @@ public class FeedSurfaceCoordinator
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
             // Used to draw containment background.
-            view.addItemDecoration(
+            mItemDecoration =
                     new FeedItemDecoration(
                             mActivity,
                             this,
                             (resId) -> {
                                 return AppCompatResources.getDrawable(mActivity, resId);
                             },
-                            gutterPadding));
+                            gutterPadding);
+            view.addItemDecoration(mItemDecoration);
         }
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after

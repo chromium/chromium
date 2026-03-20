@@ -124,6 +124,13 @@ public class FeedSurfaceMediator
 
         void destroy() {
             mSigninPromoCoordinator.destroy();
+            if (mOnLayoutChangeListener != null) {
+                mCoordinator.getView().removeOnLayoutChangeListener(mOnLayoutChangeListener);
+            }
+
+            if (mSnapScrollHelper != null) {
+                mSnapScrollHelper.destroy();
+            }
             mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
         }
 
@@ -204,6 +211,7 @@ public class FeedSurfaceMediator
     private final SigninManager mSigninManager;
     private final TemplateUrlService mTemplateUrlService;
     private final FeedActionDelegate mActionDelegate;
+    private View.@Nullable OnLayoutChangeListener mOnLayoutChangeListener;
 
     private final SettableNonNullObservableSupplier<Integer> mGetRestoringStateSupplier =
             ObservableSuppliers.createNonNull(RestoringState.WAITING_TO_RESTORE);
@@ -338,15 +346,14 @@ public class FeedSurfaceMediator
         // Listen for layout changes on the NewTabPageView itself to catch changes in scroll
         // position that are due to layout changes after e.g. device rotation. This contrasts with
         // regular scrolling, which is observed through an OnScrollListener.
-        mCoordinator
-                .getView()
-                .addOnLayoutChangeListener(
-                        (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                            mCoordinator.getView().postOnAnimation(mSnapScrollHelper::handleScroll);
-                            float pixelToDp = mContext.getResources().getDisplayMetrics().density;
-                            int widthDp = (int) ((right - left) / pixelToDp);
-                            updateLayout(widthDp < SMALL_WIDTH_DP);
-                        });
+        mOnLayoutChangeListener =
+                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    mCoordinator.getView().postOnAnimation(mSnapScrollHelper::handleScroll);
+                    float pixelToDp = mContext.getResources().getDisplayMetrics().density;
+                    int widthDp = (int) ((right - left) / pixelToDp);
+                    updateLayout(widthDp < SMALL_WIDTH_DP);
+                };
+        mCoordinator.getView().addOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
     /**
@@ -698,6 +705,8 @@ public class FeedSurfaceMediator
             mStreamHolder.destroy();
             mStreamHolder = null;
         }
+
+        mRecyclerViewAnimationFinishDetector.destroy();
         mStreamContentChangedListener = null;
         unbindStream();
 
@@ -951,6 +960,12 @@ public class FeedSurfaceMediator
         private void onFinished() {
             if (mFinishedCallback != null) {
                 mFinishedCallback.run();
+                mFinishedCallback = null;
+            }
+        }
+
+        void destroy() {
+            if (mFinishedCallback != null) {
                 mFinishedCallback = null;
             }
         }

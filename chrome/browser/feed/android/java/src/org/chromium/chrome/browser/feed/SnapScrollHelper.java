@@ -31,4 +31,7 @@ public interface SnapScrollHelper {
      * @return The modified scroll position that accounts for snap scroll.
      */
     int calculateSnapPosition(int scrollPosition);
+
+    /** Destroys the snap scroll helper and cleans up. */
+    void destroy();
 }
