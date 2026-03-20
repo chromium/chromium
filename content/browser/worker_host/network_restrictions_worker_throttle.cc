@@ -9,6 +9,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 
 namespace content {
@@ -60,6 +61,15 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
   if (!policies.connection_allowlists.enforced &&
       !policies.connection_allowlists.report_only) {
     return;
+  }
+
+  if (policies.connection_allowlists.enforced) {
+    network::LogConnectionAllowlistTypeHistogram(
+        network::ConnectionAllowlistType::kEnforced);
+  }
+  if (policies.connection_allowlists.report_only) {
+    network::LogConnectionAllowlistTypeHistogram(
+        network::ConnectionAllowlistType::kReportOnly);
   }
 
   *defer = true;

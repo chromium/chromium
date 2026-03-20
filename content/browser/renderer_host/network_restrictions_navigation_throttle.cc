@@ -12,6 +12,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 
 namespace content {
@@ -54,6 +55,15 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
 
   const auto& policy_container_policies =
       navigation_request.GetPolicyContainerPolicies();
+
+  if (policy_container_policies.connection_allowlists.enforced) {
+    network::LogConnectionAllowlistTypeHistogram(
+        network::ConnectionAllowlistType::kEnforced);
+  }
+  if (policy_container_policies.connection_allowlists.report_only) {
+    network::LogConnectionAllowlistTypeHistogram(
+        network::ConnectionAllowlistType::kReportOnly);
+  }
 
   // The origin trial status is tied to the existence of allowlists in policy
   // container. If there does not exist an enforced allowlist in policies, it

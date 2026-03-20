@@ -63,6 +63,7 @@ component("cpp") {
     "avail_language_header_parser.h",
     "browsing_topics_parser.cc",
     "browsing_topics_parser.h",
+    "connection_allowlist_metrics.h",
     "connection_allowlist_parser.cc",
     "connection_allowlist_parser.h",
     "constants.cc",

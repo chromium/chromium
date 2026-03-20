@@ -27,6 +27,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +87,11 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_content(it->second.content);
       for (const auto& [key, value] : it->second.headers) {
-        response->AddCustomHeader(key, value);
+        if (key == "Content-Type") {
+          response->set_content_type(value);
+        } else {
+          response->AddCustomHeader(key, value);
+        }
       }
 
       return response;
@@ -558,6 +563,121 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreconnect) {
 
   connection_tracker.WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker.GetAcceptedSocketCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, EnforceHistogramForDocument) {
+  base::HistogramTester histogram_tester;
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  histogram_tester.ExpectTotalCount(network::kConnectionAllowlistTypeHistogram,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      network::kConnectionAllowlistTypeHistogram,
+      network::ConnectionAllowlistType::kEnforced, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       ReportOnlyHistogramForDocument) {
+  base::HistogramTester histogram_tester;
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist-Report-Only",
+                                   "(response-origin)"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  histogram_tester.ExpectTotalCount(network::kConnectionAllowlistTypeHistogram,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      network::kConnectionAllowlistTypeHistogram,
+      network::ConnectionAllowlistType::kReportOnly, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, EnforceHistogramForWorker) {
+  base::HistogramTester histogram_tester;
+  RegisterResponse(
+      "/worker.js",
+      ResponseEntry("onmessage = async (e) => { postMessage('end'); }",
+                    {{"Connection-Allowlist", "(response-origin)"},
+                     {"Content-Type", "text/javascript"}}));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(R"(<html><body>Hello</body></html>)", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // To ensure that fetching the worker (and its separate Connection-Allowlist)
+  // completes, we create a Promise that only resolves when the worker is
+  // running.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     R"(
+            (async () => {
+              await new Promise((resolve) => {
+                window.myworker = new Worker('../worker.js', { type: 'module'});
+                window.myworker.onmessage = async (e) => {
+                  resolve();
+                };
+                window.myworker.postMessage('start');
+              });
+            })();
+          )"));
+
+  histogram_tester.ExpectTotalCount(network::kConnectionAllowlistTypeHistogram,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      network::kConnectionAllowlistTypeHistogram,
+      network::ConnectionAllowlistType::kEnforced, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, ReportOnlyHistogramForWorker) {
+  base::HistogramTester histogram_tester;
+  RegisterResponse(
+      "/worker.js",
+      ResponseEntry("onmessage = async (e) => { postMessage('end'); }",
+                    {{"Connection-Allowlist-Report-Only", "(response-origin)"},
+                     {"Content-Type", "text/javascript"}}));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(R"(<html><body>Hello</body></html>)", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // To ensure that fetching the worker (and its separate
+  // Connection-Allowlist-Report-Only) completes, we create a Promise that only
+  // resolves when the worker is running.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     R"(
+            (async () => {
+              await new Promise((resolve) => {
+                window.myworker = new Worker('../worker.js', { type: 'module'});
+                window.myworker.onmessage = async (e) => {
+                  resolve();
+                };
+                window.myworker.postMessage('start');
+              });
+            })();
+          )"));
+
+  histogram_tester.ExpectTotalCount(network::kConnectionAllowlistTypeHistogram,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      network::kConnectionAllowlistTypeHistogram,
+      network::ConnectionAllowlistType::kReportOnly, 1);
 }
 
 }  // namespace content

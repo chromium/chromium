@@ -5122,6 +5122,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.ConnectionAllowlist.Type"
+    enum="ConnectionAllowlistType" expires_after="2026-10-10">
+  <owner>averge@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the presence of parsed Connection-Allowlist and
+    Connection-Allowlist-Report-Only headers. This is recorded when the network
+    restrictions throttles are executed for either navigations or worker
+    scripts, immediately before the allowlist takes effect.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.CorsPreflightMethodAllowed"
     enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="2023-06-18">
   <owner>hiroshige@chromium.org</owner>
