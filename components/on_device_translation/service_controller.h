@@ -145,12 +145,6 @@ class OnDeviceTranslationServiceController
                             const std::string& target_lang,
                             CreateTranslatorCallback callback);
 
-  // Called when the TranslateKitBinaryPath pref is changed.
-  void OnTranslateKitBinaryPathChanged(const std::string& pref_name);
-
-  // Called when the language pack key pref is changed.
-  void OnLanguagePackKeyPrefChanged(const std::string& pref_name);
-
   // Tries to start the service if it is not already running. Returns true if
   // the service is running or is started successfully.
   bool MaybeStartService();

@@ -34,27 +34,16 @@ constexpr char kLiveOnDeviceTranslateDispatcherResult[] =
 constexpr char kLiveGoogleApiTranslateDispatcherResult[] =
     "Accessibility.LiveTranslate.GoogleApiTranslation.Result";
 
-void OnGetTranslation(std::string_view source_language,
-                      std::string_view target_language,
-                      TranslateEventCallback callback,
-                      const TranslateEvent& translate_event) {
-  std::string_view histogram_name =
-      base::FeatureList::IsEnabled(
-          live_caption::kLiveCaptionOnDeviceTranslation)
-          ? kLiveOnDeviceTranslateDispatcherResult
-          : kLiveGoogleApiTranslateDispatcherResult;
-  base::UmaHistogramBoolean(histogram_name, translate_event.has_value());
-  std::move(callback).Run(translate_event);
-}
-
 }  // namespace
 
 LiveTranslateController::LiveTranslateController(
     PrefService* profile_prefs,
-    std::unique_ptr<TranslationDispatcher> translation_dispatcher)
+    std::unique_ptr<TranslationDispatcher> on_device_dispatcher,
+    std::unique_ptr<TranslationDispatcher> google_api_dispatcher)
     : profile_prefs_(profile_prefs),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
-      translation_dispatcher_(std::move(translation_dispatcher)) {
+      on_device_dispatcher_(std::move(on_device_dispatcher)),
+      google_api_dispatcher_(std::move(google_api_dispatcher)) {
   pref_change_registrar_->Init(profile_prefs_);
   pref_change_registrar_->Add(
       prefs::kLiveTranslateEnabled,
@@ -84,10 +73,48 @@ void LiveTranslateController::GetTranslation(const std::string& result,
   base::UmaHistogramSparse(
       "Accessibility.LiveTranslate.GetTranslation.SourceLanguage",
       base::HashMetricName(source_language));
-  translation_dispatcher_->GetTranslation(
-      result, source_language, target_language,
-      base::BindOnce(OnGetTranslation, source_language, target_language,
-                     std::move(callback)));
+
+  if (base::FeatureList::IsEnabled(
+          live_caption::kLiveCaptionOnDeviceTranslation)) {
+    on_device_dispatcher_->GetTranslation(
+        result, source_language, target_language,
+        base::BindOnce(&LiveTranslateController::OnOnDeviceTranslated,
+                       weak_factory_.GetWeakPtr(), result, source_language,
+                       target_language, std::move(callback)));
+  } else {
+    google_api_dispatcher_->GetTranslation(
+        result, source_language, target_language,
+        base::BindOnce(&LiveTranslateController::OnGoogleApiTranslated,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+void LiveTranslateController::OnOnDeviceTranslated(
+    std::string_view result,
+    std::string_view source_language,
+    std::string_view target_language,
+    TranslateEventCallback callback,
+    const TranslateEvent& translate_event) {
+  base::UmaHistogramBoolean(kLiveOnDeviceTranslateDispatcherResult,
+                            translate_event.has_value());
+  if (!translate_event.has_value() && google_api_dispatcher_) {
+    google_api_dispatcher_->GetTranslation(
+        std::string(result), std::string(source_language),
+        std::string(target_language),
+        base::BindOnce(&LiveTranslateController::OnGoogleApiTranslated,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(translate_event);
+}
+
+void LiveTranslateController::OnGoogleApiTranslated(
+    TranslateEventCallback callback,
+    const TranslateEvent& translate_event) {
+  base::UmaHistogramBoolean(kLiveGoogleApiTranslateDispatcherResult,
+                            translate_event.has_value());
+  std::move(callback).Run(translate_event);
 }
 
 void LiveTranslateController::OnLiveTranslateEnabledChanged() {

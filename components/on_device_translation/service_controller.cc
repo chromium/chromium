@@ -110,7 +110,7 @@ std::string ToString(const base::FilePath& path) {
 std::vector<base::FilePath> GetLanguagePackInfo(
     std::vector<mojom::OnDeviceTranslationLanguagePackagePtr>& packages) {
   CHECK(packages.empty());
-  std::vector<base::FilePath> package_pathes;
+  std::vector<base::FilePath> package_paths;
   for (const auto& it : kLanguagePackComponentConfigMap) {
     auto file_path =
         OnDeviceTranslationInstaller::GetInstance()->GetLanguagePackPath(
@@ -119,11 +119,11 @@ std::vector<base::FilePath> GetLanguagePackInfo(
       packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
           std::string(ToLanguageCode(it.second->language1)),
           std::string(ToLanguageCode(it.second->language2))));
-      package_pathes.push_back(file_path);
+      package_paths.push_back(file_path);
     }
   }
 
-  return package_pathes;
+  return package_paths;
 }
 
 LanguagePackRequirements GetLanguagePackRequirements(
@@ -385,13 +385,6 @@ void OnDeviceTranslationServiceController::OnLanguagePackInstallationChanged(
 }
 
 void OnDeviceTranslationServiceController::OnInstallationChanged() {
-  service_remote_.reset();
-  MaybeRunPendingTasks();
-}
-
-// Called when the TranslateKitBinaryPath pref is changed.
-void OnDeviceTranslationServiceController::OnTranslateKitBinaryPathChanged(
-    const std::string& pref_name) {
   service_remote_.reset();
   MaybeRunPendingTasks();
 }
