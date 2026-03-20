@@ -450,6 +450,7 @@ source_set("tests") {
     "dns_alias_utility_unittest.cc",
     "dns_config_service_unittest.cc",
     "dns_hosts_unittest.cc",
+    "dns_http_attempt_unittest.cc",
     "dns_names_util_unittest.cc",
     "dns_query_unittest.cc",
     "dns_response_result_extractor_unittest.cc",

@@ -37,7 +37,8 @@ namespace net {
 class ResolveContext;
 
 // An implementation of DnsAttempt over an HTTP transport.
-class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
+class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
+                                          public URLRequest::Delegate {
  public:
   // Information about an HTTP attempt.
   struct DnsHttpAttemptInfo {
@@ -55,13 +56,22 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
                  const GURL& gurl_without_parameters,
                  bool use_post,
                  URLRequestContext* url_request_context,
-                 const IsolationInfo& isolation_info,
                  RequestPriority request_priority_,
                  bool is_probe);
   ~DnsHTTPAttempt() override;
 
   DnsHTTPAttempt(const DnsHTTPAttempt&) = delete;
   DnsHTTPAttempt& operator=(const DnsHTTPAttempt&) = delete;
+
+  // Returns `IsolationInfo` that should be used for DoH requests. Using the
+  // same `IsolationInfo` with a DoH-specific `NetworkIsolationPartition`
+  // ensures that DNS requests aren't pooled with normal web requests, but still
+  // allows them to be pooled with each other, to allow reusing connections to
+  // the DoH server across different third party contexts. This `IsolationInfo`
+  // also allows metadata such as AltSvc info to be written to disk and reused
+  // across restarts, which enables remembering which servers supports QUIC so
+  // that it can be used immediately for subsequent DoH requests.
+  static const IsolationInfo& GetDohIsolationInfo();
 
   // DnsAttempt overrides.
   int Start(CompletionOnceCallback callback) override;

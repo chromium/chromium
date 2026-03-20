@@ -27,6 +27,9 @@ bool EnumTraits<network::mojom::NetworkIsolationPartition,
     case NetworkIsolationPartition::kFedCmUncredentialedRequests:
       *out = net::NetworkIsolationPartition::kFedCmUncredentialedRequests;
       return true;
+    case NetworkIsolationPartition::kDnsOverHttps:
+      *out = net::NetworkIsolationPartition::kDnsOverHttps;
+      return true;
   }
   return false;
 }
@@ -44,6 +47,8 @@ network::mojom::NetworkIsolationPartition EnumTraits<
       return NetworkIsolationPartition::kProtectedAudienceSellerWorklet;
     case net::NetworkIsolationPartition::kFedCmUncredentialedRequests:
       return NetworkIsolationPartition::kFedCmUncredentialedRequests;
+    case net::NetworkIsolationPartition::kDnsOverHttps:
+      return NetworkIsolationPartition::kDnsOverHttps;
   }
   NOTREACHED();
 }

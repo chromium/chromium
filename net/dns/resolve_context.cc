@@ -143,8 +143,7 @@ ResolveContext::ResolveContext(URLRequestContext* url_request_context,
     : url_request_context_(url_request_context),
       host_cache_(CreateHostCache(enable_caching)),
       host_resolver_cache_(
-          CreateHostResolverCache(enable_caching, clock, tick_clock)),
-      isolation_info_(IsolationInfo::CreateTransient(/*nonce=*/std::nullopt)) {
+          CreateHostResolverCache(enable_caching, clock, tick_clock)) {
   max_fallback_period_ = GetMaxFallbackPeriod();
 }
 

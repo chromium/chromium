@@ -10,4 +10,5 @@ enum NetworkIsolationPartition {
   kGeneral,
   kProtectedAudienceSellerWorklet,
   kFedCmUncredentialedRequests,
+  kDnsOverHttps,
 };

@@ -614,7 +614,7 @@ TEST_F(IsolationInfoTest, Serialization) {
       IsolationInfo(),
       // Empty with non-general NetworkIsolationPartition
       IsolationInfo::CreateEmptyWithPartition(
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          NetworkIsolationPartition::kDnsOverHttps),
       // Using CreateTransient (no nonce)
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       // With nonce (i.e transient).
@@ -633,13 +633,13 @@ TEST_F(IsolationInfoTest, Serialization) {
 
 TEST_F(IsolationInfoTest, CreateEmptyWithPartition) {
   IsolationInfo isolation_info = IsolationInfo::CreateEmptyWithPartition(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kDnsOverHttps);
 
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_FALSE(isolation_info.top_frame_origin().has_value());
   EXPECT_FALSE(isolation_info.frame_origin().has_value());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kDnsOverHttps,
             isolation_info.GetNetworkIsolationPartition());
   EXPECT_FALSE(isolation_info.nonce().has_value());
   EXPECT_FALSE(isolation_info.frame_ancestor_relation().has_value());
@@ -648,14 +648,14 @@ TEST_F(IsolationInfoTest, CreateEmptyWithPartition) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsEmpty());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      NetworkIsolationPartition::kDnsOverHttps,
       isolation_info.network_isolation_key().GetNetworkIsolationPartition());
 
   // Check the NetworkAnonymizationKey.
   EXPECT_TRUE(isolation_info.network_anonymization_key().IsEmpty());
   EXPECT_TRUE(isolation_info.network_anonymization_key().IsTransient());
   EXPECT_EQ(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      NetworkIsolationPartition::kDnsOverHttps,
       isolation_info.network_anonymization_key().network_isolation_partition());
 }
 

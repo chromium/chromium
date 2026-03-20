@@ -19,7 +19,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/dns/dns_attempt.h"
@@ -235,15 +234,6 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     return doh_autoupgrade_success_metric_timer_.IsRunning();
   }
 
-  // Returns IsolationInfo that should be used for DoH requests. Using a single
-  // transient IsolationInfo ensures that DNS requests aren't pooled with normal
-  // web requests, but still allows them to be pooled with each other, to allow
-  // reusing connections to the DoH server across different third party
-  // contexts. One downside of a transient IsolationInfo is that it means
-  // metadata about the DoH server itself will not be cached across restarts
-  // (alternative service info if it supports QUIC, for instance).
-  const IsolationInfo& isolation_info() const { return isolation_info_; }
-
   // Network to perform the DNS lookups for. When equal to
   // handles::kInvalidNetworkHandle the decision of which one to target is left
   // to the resolver. Virtual for testing.
@@ -378,8 +368,6 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   std::vector<ServerStats> classic_server_stats_;
   // Track runtime statistics of each DoH server.
   std::vector<ServerStats> doh_server_stats_;
-
-  const IsolationInfo isolation_info_;
 
   base::OneShotTimer doh_autoupgrade_success_metric_timer_;
 

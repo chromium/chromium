@@ -13,9 +13,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
@@ -53,6 +55,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -141,7 +145,8 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
 
   URLRequestContext* context() { return request_context_.get(); }
 
-  void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure) {
+  void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure,
+                    bool require_network_anonymization_key = false) {
     // TODO(crbug.com/40198637): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
@@ -167,6 +172,8 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
         HostResolverSystemTask::Params(host_resolver_proc_, 1));
 
     auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_require_network_anonymization_key(
+        require_network_anonymization_key);
     context_builder->set_host_resolver(std::move(resolver));
     auto ssl_config_service =
         std::make_unique<TestSSLConfigService>(SSLContextConfig());
@@ -348,6 +355,36 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   EXPECT_TRUE(d.response_completed());
   EXPECT_EQ(d.request_status(), 0);
   EXPECT_EQ(d.data_received(), kTestBody);
+}
+
+TEST_F(HttpsWithDnsOverHttpsTest, EndToEndWithIsolationInfo) {
+  // Reset context with require_network_anonymization_key = true.
+  ResetContext(SecureDnsMode::kSecure,
+               /*require_network_anonymization_key=*/true);
+
+  // Make a request with a valid IsolationInfo.
+  TestDelegate d;
+  GURL main_url = https_server_.GetURL(kHostname, "/test");
+  std::unique_ptr<URLRequest> req(context()->CreateRequest(
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  url::Origin origin = url::Origin::Create(main_url);
+  req->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, origin,
+                            origin, SiteForCookies::FromOrigin(origin)));
+
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
+
+  // There should be three DoH lookups for kHostname (A, AAAA, and HTTPS).
+  EXPECT_EQ(doh_server_.QueriesServed(), 3);
+
+  // We are also implicitly checking that the DoH requests bypassed the
+  // IsolationInfo-is-not-empty check in `URLRequest::Start` that occurs when
+  // `require_network_anonymization_key` is set since DoH requests use an empty
+  // IsolationInfo with a custom partition (which we exempt from the check).
 }
 
 TEST_F(HttpsWithDnsOverHttpsTest, EndToEndFail) {

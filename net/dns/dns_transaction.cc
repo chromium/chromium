@@ -123,7 +123,6 @@ void ConstructDnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
                              const OptRecordRdata* opt_rdata,
                              std::vector<std::unique_ptr<DnsAttempt>>* attempts,
                              URLRequestContext* url_request_context,
-                             const IsolationInfo& isolation_info,
                              RequestPriority request_priority,
                              bool is_probe) {
   DCHECK(url_request_context);
@@ -145,8 +144,7 @@ void ConstructDnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
   attempts->push_back(std::make_unique<DnsHTTPAttempt>(
       std::move(resolve_context), session, doh_server_index, std::move(query),
       doh_server.server_template(), gurl_without_parameters,
-      doh_server.use_post(), url_request_context, isolation_info,
-      request_priority, is_probe));
+      doh_server.use_post(), url_request_context, request_priority, is_probe));
 }
 
 // ----------------------------------------------------------------------------
@@ -277,8 +275,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         context_->GetWeakPtr(), session_.get(), doh_server_index,
         formatted_probe_qname_, dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
         &probe_stats->probe_attempts, context_->url_request_context(),
-        context_->isolation_info(), RequestPriority::DEFAULT_PRIORITY,
-        /*is_probe=*/true);
+        RequestPriority::DEFAULT_PRIORITY, /*is_probe=*/true);
 
     DnsAttempt* probe_attempt = probe_stats->probe_attempts.back().get();
     probe_attempt->Start(base::BindOnce(
@@ -652,7 +649,6 @@ class DnsTransactionImpl final : public DnsTransaction {
                             doh_server_index, qnames_.front(), qtype_,
                             opt_rdata_, &attempts_,
                             resolve_context_->url_request_context(),
-                            resolve_context_->isolation_info(),
                             request_priority_, /*is_probe=*/false);
     ++attempts_count_;
     DnsAttempt* attempt = attempts_.back().get();

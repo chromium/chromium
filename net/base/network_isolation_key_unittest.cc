@@ -135,19 +135,18 @@ TEST(NetworkIsolationKeyTest, KeyWithNonGeneralNetworkPartition) {
 
 TEST(NetworkIsolationKeyTest, CreateEmptyWithPartition) {
   NetworkIsolationKey key = NetworkIsolationKey::CreateEmptyWithPartition(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kDnsOverHttps);
   EXPECT_TRUE(key.IsEmpty());
   EXPECT_TRUE(key.IsTransient());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kDnsOverHttps,
             key.GetNetworkIsolationPartition());
   EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
-  EXPECT_EQ("null null (protected audience seller worklet partition)",
-            key.ToDebugString());
+  EXPECT_EQ("null null (dns over https)", key.ToDebugString());
 
   // Create another NetworkIsolationKey with the same partition, and check that
   // they're equal.
   NetworkIsolationKey same_key = NetworkIsolationKey::CreateEmptyWithPartition(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kDnsOverHttps);
   EXPECT_EQ(key, same_key);
 
   // Create another NetworkIsolationKey with a different partition, and check

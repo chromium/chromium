@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "net/base/net_export.h"
+
 namespace net {
 
 // Specifies the use case for IsolationInfo, NetworkIsolationKey, and
@@ -28,8 +30,10 @@ enum class NetworkIsolationPartition : int32_t {
   kProtectedAudienceSellerWorklet = 1,
   // This use case isolates network state for FedCM-related requests.
   kFedCmUncredentialedRequests = 2,
+  // This use case isolates network state for DNS over HTTPS requests.
+  kDnsOverHttps = 3,
 
-  kMaxValue = kFedCmUncredentialedRequests
+  kMaxValue = kDnsOverHttps,
 };
 
 std::string NetworkIsolationPartitionToDebugString(
@@ -38,7 +42,7 @@ std::string NetworkIsolationPartitionToDebugString(
 // Returns true if requests in this partition are allowed to have an empty
 // IsolationInfo, even when
 // `URLRequestContext::require_network_anonymization_key()` is true.
-bool NetworkIsolationPartitionAlwaysAllowEmptyPartition(
+NET_EXPORT_PRIVATE bool NetworkIsolationPartitionAlwaysAllowEmptyPartition(
     NetworkIsolationPartition network_isolation_partition);
 
 }  // namespace net

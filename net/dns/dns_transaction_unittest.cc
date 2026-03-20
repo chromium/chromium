@@ -36,6 +36,7 @@
 #include "base/values.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_address.h"
+#include "net/base/isolation_info.h"
 #include "net/base/port_util.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/url_util.h"
@@ -898,21 +899,10 @@ class DnsTransactionTestBase : public testing::Test {
     }
     EXPECT_TRUE(server_found);
 
-    EXPECT_TRUE(
-        request->isolation_info().network_isolation_key().IsTransient());
-
-    // All DoH requests for the same ResolveContext should use the same
-    // IsolationInfo, so network objects like sockets can be reused between
-    // requests.
-    if (!expect_multiple_isolation_infos_) {
-      if (!isolation_info_) {
-        isolation_info_ =
-            std::make_unique<IsolationInfo>(request->isolation_info());
-      } else {
-        EXPECT_TRUE(
-            isolation_info_->IsEqualForTesting(request->isolation_info()));
-      }
-    }
+    // All DoH requests should use the same IsolationInfo, so network objects
+    // like sockets can be reused between requests.
+    EXPECT_TRUE(DnsHTTPAttempt::GetDohIsolationInfo().IsEqualForTesting(
+        request->isolation_info()));
 
     EXPECT_FALSE(request->allow_credentials());
     EXPECT_EQ(SecureDnsPolicy::kBootstrap, request->secure_dns_policy());
@@ -999,11 +989,6 @@ class DnsTransactionTestBase : public testing::Test {
     filter->ClearHandlers();
   }
 
-  void set_expect_multiple_isolation_infos(
-      bool expect_multiple_isolation_infos) {
-    expect_multiple_isolation_infos_ = expect_multiple_isolation_infos;
-  }
-
  protected:
   int GetNextId(int min, int max) {
     EXPECT_FALSE(transaction_ids_.empty());
@@ -1031,15 +1016,6 @@ class DnsTransactionTestBase : public testing::Test {
   ResponseModifierCallback response_modifier_;
   UrlRequestStartedCallback on_start_;
   DohJobMakerCallback doh_job_maker_;
-
-  // Whether multiple IsolationInfos should be expected (due to there being
-  // multiple RequestContexts in use).
-  bool expect_multiple_isolation_infos_ = false;
-
-  // IsolationInfo used by DoH requests. Populated on first DoH request, and
-  // compared to IsolationInfo used by all subsequent requests, unless
-  // |expect_multiple_isolation_infos_| is true.
-  std::unique_ptr<IsolationInfo> isolation_info_;
 };
 
 class DnsTransactionTest : public DnsTransactionTestBase,
@@ -3761,11 +3737,6 @@ TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunners) {
 }
 
 TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunners_SeparateContexts) {
-  // Each RequestContext uses its own transient IsolationInfo. Since there's
-  // typically only one RequestContext per URLRequestContext, there's no
-  // advantage in using the same IsolationInfo across RequestContexts.
-  set_expect_multiple_isolation_infos(true);
-
   ConfigureDohServers(true /* use_post */, 1 /* num_doh_servers */,
                       false /* make_available */);
   AddQueryAndResponse(0 /* id */, kT4HostName, kT4Qtype, kT4ResponseDatagram,

@@ -57,7 +57,7 @@ TEST_F(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
       NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
   NetworkIsolationKey empty_nik_with_partition =
       IsolationInfo::CreateEmptyWithPartition(
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet)
+          NetworkIsolationPartition::kDnsOverHttps)
           .network_isolation_key();
   NetworkIsolationKey empty_nik;
 
@@ -86,7 +86,7 @@ TEST_F(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   EXPECT_TRUE(nak_from_empty_nik_with_partition.IsEmpty());
   EXPECT_FALSE(nak_from_empty_nik_with_partition.IsCrossSite());
   EXPECT_EQ(nak_from_empty_nik_with_partition.network_isolation_partition(),
-            NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+            NetworkIsolationPartition::kDnsOverHttps);
 
   // Top site should be populated correctly.
   EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
@@ -261,7 +261,7 @@ TEST_F(NetworkAnonymizationKeyTest, IsTransient) {
 
   EXPECT_TRUE(empty_key.IsTransient());
   EXPECT_TRUE(IsolationInfo::CreateEmptyWithPartition(
-                  NetworkIsolationPartition::kFedCmUncredentialedRequests)
+                  NetworkIsolationPartition::kDnsOverHttps)
                   .network_anonymization_key()
                   .IsTransient());
   EXPECT_FALSE(populated_key.IsTransient());
@@ -293,20 +293,20 @@ TEST_F(NetworkAnonymizationKeyTest, Getters) {
 TEST_F(NetworkAnonymizationKeyTest, CreateEmptyWithPartition) {
   NetworkAnonymizationKey key =
       NetworkAnonymizationKey::CreateEmptyWithPartition(
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+          NetworkIsolationPartition::kDnsOverHttps);
   base::Value key_value;
   ASSERT_TRUE(key.ToValue(&key_value));
 
   EXPECT_TRUE(key.IsEmpty());
   EXPECT_TRUE(key.IsTransient());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kDnsOverHttps,
             key.network_isolation_partition());
 
   // Create another NetworkAnonymizationKey with the same partition, and check
   // that they're equal.
   NetworkAnonymizationKey same_key =
       NetworkAnonymizationKey::CreateEmptyWithPartition(
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+          NetworkIsolationPartition::kDnsOverHttps);
   base::Value same_key_value;
   ASSERT_TRUE(same_key.ToValue(&same_key_value));
 
@@ -507,7 +507,7 @@ TEST_F(NetworkAnonymizationKeyTest,
        EmptyValueSerializationWithNonGeneralNetworkPartition) {
   NetworkAnonymizationKey original_key =
       NetworkAnonymizationKey::CreateEmptyWithPartition(
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+          NetworkIsolationPartition::kDnsOverHttps);
   base::Value value;
   ASSERT_TRUE(original_key.ToValue(&value));
 
@@ -516,8 +516,7 @@ TEST_F(NetworkAnonymizationKeyTest,
   EXPECT_EQ(value.GetList().size(), 1u);
   EXPECT_TRUE(value.GetList()[0].is_int());
   EXPECT_EQ(value.GetList()[0].GetInt(),
-            static_cast<int>(
-                NetworkIsolationPartition::kProtectedAudienceSellerWorklet));
+            static_cast<int>(NetworkIsolationPartition::kDnsOverHttps));
 
   // Verify it round-trips.
   NetworkAnonymizationKey from_value_key;

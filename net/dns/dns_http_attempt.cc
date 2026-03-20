@@ -11,6 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -19,6 +20,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/dns/dns_names_util.h"
@@ -48,6 +50,14 @@ constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
 
 }  // namespace
 
+// static
+const IsolationInfo& DnsHTTPAttempt::GetDohIsolationInfo() {
+  static const base::NoDestructor<IsolationInfo> kIsolationInfo(
+      IsolationInfo::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kDnsOverHttps));
+  return *kIsolationInfo;
+}
+
 DnsHTTPAttempt::DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
                                DnsSession* session,
                                size_t doh_server_index,
@@ -56,7 +66,6 @@ DnsHTTPAttempt::DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
                                const GURL& gurl_without_parameters,
                                bool use_post,
                                URLRequestContext* url_request_context,
-                               const IsolationInfo& isolation_info,
                                RequestPriority request_priority_,
                                bool is_probe)
     : DnsAttempt(doh_server_index),
@@ -162,7 +171,7 @@ DnsHTTPAttempt::DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
   request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                          LOAD_BYPASS_PROXY);
   request_->set_disallow_credentials();
-  request_->set_isolation_info(isolation_info);
+  request_->set_isolation_info(GetDohIsolationInfo());
 }
 
 DnsHTTPAttempt::~DnsHTTPAttempt() = default;
