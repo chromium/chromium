@@ -36,11 +36,14 @@ struct FeatureEligibility {
   bool contextual_tasks_enabled;
   // Whether the AIM backend is eligible for use.
   bool aim_eligible;
+  // Whether the cobrowse experience is eligible for use.
+  bool cobrowse_eligible;
   // Whether context sharing is enabled.
   bool context_sharing_enabled;
 
   bool IsEligible() const {
-    return contextual_tasks_enabled && aim_eligible && context_sharing_enabled;
+    return contextual_tasks_enabled && aim_eligible && cobrowse_eligible &&
+           context_sharing_enabled;
   }
 };
 
