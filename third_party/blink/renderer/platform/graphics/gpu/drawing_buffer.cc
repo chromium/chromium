@@ -2001,7 +2001,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // First see if creating a SharedImage that can be used as an overlay is
   // feasible.
 #if BUILDFLAG(IS_WIN)
-  if (can_use_low_latency_) {
+  if (SharedGpuContext::IsGpuCompositingEnabled() && can_use_low_latency_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
