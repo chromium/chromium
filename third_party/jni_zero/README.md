@@ -183,9 +183,9 @@ all usage has been migrated.
    will depend on the location of the `generate_jni` build rule that lists your
    Java source code).
 
-3. Call the generated methods using the `JClassNameJni` class or the `JClassName` type.
-   * **Constructors:** `ScopedJavaLocalRef<JMyClass> obj = JMyClassJni::New(env, ...);`
-   * **Static Methods:** `JMyClassJni::staticMethod(env, ...);`
+3. Call the generated methods using the `ClassNameJni` class or the `JClassName` type.
+   * **Constructors:** `ScopedJavaLocalRef<JMyClass> obj = MyClassJni::New(env, ...);`
+   * **Static Methods:** `MyClassJni::staticMethod(env, ...);`
    * **Instance Methods:** `obj->instanceMethod(env, ...);`
 
 **Note**: For test-only methods, use `@CalledByNativeForTesting` which will ensure
@@ -213,7 +213,7 @@ class MyClass {
 
 void Example() {
     JNIEnv* env = jni_zero::AttachCurrentThread();
-    jni_zero::ScopedJavaLocalRef<JMyClass> ref = JMyClassJni::New(env);
+    jni_zero::ScopedJavaLocalRef<JMyClass> ref = MyClassJni::New(env);
     ref->method(env);
 }
 ```
