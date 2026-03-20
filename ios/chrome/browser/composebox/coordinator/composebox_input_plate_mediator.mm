@@ -2161,31 +2161,34 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL eligibleToAIM = [self isEligibleToAIM];
   BOOL lensAvailable = lens_availability::CheckAvailabilityForLensEntryPoint(
       LensEntrypoint::Composebox, [self isDSEGoogle]);
-  BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
+  BOOL isCobrowse = _entrypoint == ComposeboxEntrypoint::kCobrowse;
+  BOOL compactInCobrowse = compactMode && isCobrowse;
+  BOOL allowsMultimodalActions =
+      dseGoogle && eligibleToAIM && !compactInCobrowse;
   BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
   BOOL showShortcuts =
       !hasContent && !canSend &&
       !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
-  BOOL hidePlusButton = NO;
-  if (IsComposeboxConditionalPlusButtonEnabled() &&
-      _entrypoint != ComposeboxEntrypoint::kCobrowse &&
+
+  if (IsComposeboxConditionalPlusButtonEnabled() && !isCobrowse &&
       _modeHolder.isRegularSearch && compactMode) {
     BOOL isPreEditURL = !_userInputInProgress && _hasText;
     BOOL isURLQuery = _userInputInProgress && _hasText && !_isSearchQuery;
-    hidePlusButton = isURLQuery;
+    allowsMultimodalActions = !isURLQuery;
     if (GetComposeboxConditionalPlusButtonVariant() ==
             ComposeboxConditionalPlusButtonVariant::kHideInPreEdit &&
         isPreEditURL) {
-      hidePlusButton = YES;
+      allowsMultimodalActions = YES;
     }
   }
+
   BOOL showLeadingImage =
-      !compactMode || !allowsMultimodalActions || hidePlusButton;
+      !isCobrowse && (!compactMode || !allowsMultimodalActions);
   BOOL shouldPersistAIMButton =
       IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
-      (allowsMultimodalActions && !hidePlusButton) ? kPlus : kNone;
+      allowsMultimodalActions ? kPlus : kNone;
 
   ComposeboxInputPlateControls leadingImage =
       showLeadingImage ? kLeadingImage : kNone;
