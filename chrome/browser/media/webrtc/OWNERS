@@ -1,10 +1,8 @@
 tommi@chromium.org
 guidou@chromium.org
+hbos@chromium.org
 eladalon@chromium.org
 tovep@chromium.org
-
-# For WebRTC browser tests.
-per-file *webrtc*browsertest*=hbos@chromium.org
 
 # For changes related to the tab media indicators.
 per-file media_stream_capture_indicator*=mfoltz@chromium.org
