@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -25,8 +26,21 @@ JSEventHandlerForContentAttribute* JSEventHandlerForContentAttribute::Create(
   if (value.IsNull())
     return nullptr;
   DCHECK(IsA<LocalDOMWindow>(context));
-  return MakeGarbageCollected<JSEventHandlerForContentAttribute>(context, name,
-                                                                 value, type);
+  auto* handler = MakeGarbageCollected<JSEventHandlerForContentAttribute>(
+      context, name, value, type);
+
+  if (AdTracker* ad_tracker = AdTracker::FromExecutionContext(context)) {
+    AdTracker::AdScriptAncestry ancestry;
+    if (ad_tracker->IsAdScriptInStack(AdTracker::StackType::kTopOnly,
+                                      AdTracker::MonkeyPatchableApi::kNone,
+                                      &ancestry)) {
+      handler->SetAdRelated(!ancestry.ancestry_chain.empty()
+                                ? std::make_optional(ancestry.ancestry_chain[0])
+                                : std::nullopt);
+    }
+  }
+
+  return handler;
 }
 
 JSEventHandlerForContentAttribute::JSEventHandlerForContentAttribute(
@@ -229,6 +243,15 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
     //   3. Return null.
     if (!maybe_result.ToLocal(&compiled_function))
       return v8::Null(isolate);
+  }
+
+  if (is_ad_related_) {
+    if (AdTracker* ad_tracker = AdTracker::FromExecutionContext(
+            execution_context_of_event_target)) {
+      ad_tracker->RegisterAdScript(v8_context_of_event_target,
+                                   V8ScriptId(compiled_function->ScriptId()),
+                                   parent_ad_script_);
+    }
   }
 
   // Step 12. Set eventHandler's value to the result of creating a Web IDL

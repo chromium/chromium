@@ -123,6 +123,14 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // Called when the ad-related task has finished running.
   void DidFinishAsyncTask(probe::AsyncTaskContext* task_context);
 
+  // Registers a script as an ad script with the given provenance. This is used
+  // for scripts that are not loaded via a resource request but are instead
+  // created dynamically (e.g., from a DOM attribute).
+  void RegisterAdScript(
+      v8::Local<v8::Context> v8_context,
+      V8ScriptId script_id,
+      const std::optional<AdScriptIdentifier>& parent_ad_script);
+
   // Returns true if any script in the pseudo call stack has previously been
   // identified as an ad resource, if the current ExecutionContext is a known ad
   // execution context, or if the script at the top of isolate's

@@ -4060,4 +4060,231 @@ TEST_F(AdTrackerSimTest, AdImageLoadInMutationObserverFromAdScriptIsAd) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
 }
 
+// Tests that an event handler added as an attribute by an ad script is
+// correctly attributed to that ad script.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_AttributeScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String image_url = "https://example.com/pixel.png";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div id='test_div'>Click me</div>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  // The ad script adds an onclick attribute to the div.
+  ad_script.Complete(R"SCRIPT(
+    const div = document.getElementById('test_div');
+    div.setAttribute('onclick', "const img = document.createElement('img'); img.src = 'pixel.png';");
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad because it was initiated by the
+  // attribute script, which was created by the ad script.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+
+  // Verify that the ad script itself is known.
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), ad_script_url));
+}
+
+// Tests that an event handler added via document.write by an ad script is
+// correctly attributed.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_DocumentWriteAttributeScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String image_url = "https://example.com/pixel.png";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  // The ad script uses document.write to add a div with an onclick attribute.
+  ad_script.Complete(R"SCRIPT(
+    document.write("<div id='test_div' onclick='const img = document.createElement(\"img\"); img.src = \"pixel.png\";'>Click me</div>");
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  ASSERT_TRUE(div);
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+}
+
+// Tests that an event handler added via innerHTML by an ad script is
+// correctly attributed.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_InnerHTMLAttributeScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String image_url = "https://example.com/pixel.png";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div id='container'></div>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  // The ad script uses innerHTML to add a div with an onclick attribute.
+  ad_script.Complete(R"SCRIPT(
+    document.getElementById('container').innerHTML =
+        "<div id='test_div' onclick='const img = document.createElement(\"img\"); img.src = \"pixel.png\";'>Click me</div>";
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  ASSERT_TRUE(div);
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+}
+
+// Tests that an event handler added via document.write into a subframe by an ad
+// script is correctly attributed.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_SubframeDocumentWriteAttributeScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String image_url = "https://example.com/pixel.png";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <iframe id='subframe'></iframe>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  // The ad script uses document.write to add a div with an onclick attribute to
+  // the subframe.
+  ad_script.Complete(R"SCRIPT(
+    const subframe = document.getElementById('subframe');
+    const doc = subframe.contentWindow.document;
+    doc.open();
+    doc.write("<div id='test_div' onclick='const img = document.createElement(\"img\"); img.src = \"https://example.com/pixel.png\";'>Click me</div>");
+    doc.close();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  LocalFrame* subframe =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  Element* div =
+      subframe->GetDocument()->getElementById(AtomicString("test_div"));
+  ASSERT_TRUE(div);
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+}
+
+// Tests that an event handler added via setAttributeNode by an ad script is
+// correctly attributed.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_SetAttributeNodeAttributeScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String image_url = "https://example.com/pixel.png";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div id='test_div'>Click me</div>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  // The ad script adds an onclick attribute to the div using setAttributeNode.
+  ad_script.Complete(R"SCRIPT(
+    const div = document.getElementById('test_div');
+    const attr = document.createAttribute('onclick');
+    attr.value = "const img = document.createElement('img'); img.src = 'pixel.png';";
+    div.setAttributeNode(attr);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  ASSERT_TRUE(div);
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+}
+
+// Tests that an event handler in the initial HTML of an ad frame is correctly
+// attributed.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_InitialHTMLAttributeScriptInAdFrame) {
+  String image_url = "https://example.com/pixel.png";
+  SimRequest ad_frame("https://example.com/ad_frame.html", "text/html");
+  SimSubresourceRequest image(image_url, "image/png");
+
+  // Create an iframe that's considered an ad.
+  main_resource_->Complete(
+      "<body><iframe src='ad_frame.html'></iframe></body>");
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  SetIsAdFrame(child_frame);
+
+  // The ad frame has an onclick attribute in its initial HTML.
+  ad_frame.Complete(R"HTML(
+    <div id='test_div' onclick='const img = document.createElement("img"); img.src = "pixel.png";'>Click me</div>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  // Click the div to trigger the event handler.
+  Element* div =
+      child_frame->GetDocument()->getElementById(AtomicString("test_div"));
+  ASSERT_TRUE(div);
+  div->DispatchSimulatedClick(nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ad_tracker_->WaitForSubresource(image_url);
+  image.Complete();
+
+  // The image request should be tagged as an ad because it was initiated from
+  // an ad frame.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
+}
+
 }  // namespace blink
