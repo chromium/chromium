@@ -10095,6 +10095,7 @@ from previous Chrome versions.
   <int value="-1477560322" label="kiosk"/>
   <int value="-1477491889" label="cast-streaming-force-enable-hardware-vp9"/>
   <int value="-1476930281" label="Windows10CustomTitlebar:enabled"/>
+  <int value="-1476593544" label="Apb144Patch6:disabled"/>
   <int value="-1475773986" label="FeedBoCSigninInterstitial:enabled"/>
   <int value="-1475681031" label="AutomotiveBackButtonBarStreamline:enabled"/>
   <int value="-1474724634"
@@ -12843,6 +12844,7 @@ from previous Chrome versions.
   <int value="-558588766" label="FedCmAlternativeIdentifiers:enabled"/>
   <int value="-558471324" label="PreviewsCoinFlipHoldback_UKMOnly:disabled"/>
   <int value="-557742250" label="ContentSuggestionsCategories:disabled"/>
+  <int value="-557537770" label="Apb144Patch6:enabled"/>
   <int value="-556662059" label="AuraWindowSubtreeCapture:enabled"/>
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
   <int value="-556166412"

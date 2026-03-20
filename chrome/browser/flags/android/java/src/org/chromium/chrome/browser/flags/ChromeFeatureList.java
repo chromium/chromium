@@ -236,6 +236,7 @@ public abstract class ChromeFeatureList {
     public static final String APB144_PATCH3 = "Apb144Patch3";
     public static final String APB144_PATCH4 = "Apb144Patch4";
     public static final String APB144_PATCH5 = "Apb144Patch5";
+    public static final String APB144_PATCH6 = "Apb144Patch6";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String APP_SPECIFIC_HISTORY_VIEW_INTENT = "AppSpecificHistoryViewIntent";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
@@ -732,6 +733,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidApb144Patch3 = newCachedFlag(APB144_PATCH3, true);
     public static final CachedFlag sAndroidApb144Patch4 = newCachedFlag(APB144_PATCH4, true);
     public static final CachedFlag sAndroidApb144Patch5 = newCachedFlag(APB144_PATCH5, true);
+    public static final CachedFlag sAndroidApb144Patch6 = newCachedFlag(APB144_PATCH6, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
@@ -1170,6 +1172,7 @@ public abstract class ChromeFeatureList {
                     sAndroidApb144Patch3,
                     sAndroidApb144Patch4,
                     sAndroidApb144Patch5,
+                    sAndroidApb144Patch6,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,
                     sAndroidAppRatingPrompt,

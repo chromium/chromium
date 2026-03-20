@@ -13103,6 +13103,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"webcrypto-pqc", flag_descriptions::kWebCryptoPQCName,
      flag_descriptions::kWebCryptoPQCDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebCryptoPQC)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"apb144-patch6", flag_descriptions::kApb144Patch6Name,
+     flag_descriptions::kApb144Patch6Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch6)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
