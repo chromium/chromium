@@ -61,7 +61,11 @@ public class CaptioningBridge extends CaptioningManager.CaptioningChangeListener
     private void syncToDelegate() {
         mCaptioningChangeDelegate.onEnabledChanged(mCaptioningManager.isEnabled());
         mCaptioningChangeDelegate.onFontScaleChanged(mCaptioningManager.getFontScale());
-        mCaptioningChangeDelegate.onLocaleChanged(mCaptioningManager.getLocale());
+        try {
+            mCaptioningChangeDelegate.onLocaleChanged(mCaptioningManager.getLocale());
+        } catch (java.util.IllformedLocaleException e) {
+            mCaptioningChangeDelegate.onLocaleChanged(null);
+        }
         mCaptioningChangeDelegate.onUserStyleChanged(
                 getCaptioningStyleFrom(mCaptioningManager.getUserStyle()));
     }
