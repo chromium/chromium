@@ -98,18 +98,6 @@ bool IsThinkingModel(omnibox::ModelMode model) {
          model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
 }
 
-searchbox::mojom::ToolMode GetSearchboxToolMode(omnibox::ToolMode tool) {
-  switch (tool) {
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
-      return searchbox::mojom::ToolMode::kCreateImage;
-    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      return searchbox::mojom::ToolMode::kDeepSearch;
-    case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      return searchbox::mojom::ToolMode::kCanvas;
-    default:
-      return searchbox::mojom::ToolMode::kDefault;
-  }
-}
 }  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
@@ -478,7 +466,7 @@ void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
 
 void OmniboxContextMenuController::UpdateSearchboxContext(
     std::optional<TabInfo> tab_info,
-    std::optional<searchbox::mojom::ToolMode> tool_mode) {
+    std::optional<omnibox::ToolMode> tool_mode) {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
   if (!browser_window_interface) {
@@ -870,7 +858,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != tool_for_command_id_.end()) {
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
-            /*tool_mode=*/GetSearchboxToolMode(it->second));
+            /*tool_mode=*/it->second);
         base::UmaHistogramEnumeration(sliced_prefix,
                                       CommandIdToEnum(it->first));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
@@ -914,7 +902,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
-            /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
+            /*tool_mode=*/omnibox::TOOL_MODE_IMAGE_GEN);
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
@@ -922,7 +910,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
-            /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
+            /*tool_mode=*/omnibox::TOOL_MODE_DEEP_SEARCH);
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
@@ -930,7 +918,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_CANVAS:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
-            /*tool_mode=*/searchbox::mojom::ToolMode::kCanvas);
+            /*tool_mode=*/omnibox::TOOL_MODE_CANVAS);
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);

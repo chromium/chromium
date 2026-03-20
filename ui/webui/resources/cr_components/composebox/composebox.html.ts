@@ -25,11 +25,11 @@ export function getHtml(this: ComposeboxElement) {
   ` : ''}
     <ntp-error-scrim id="errorScrim" part="error-scrim"
         ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
-                         this.files.size === 0}"
-        .errorMessage="${this.errorMessage}"
+                         this.files_.size === 0}"
+        .errorMessage="${this.errorMessage_}"
         @dismiss-error-scrim="${this.onDismissErrorScrim_}">
     </ntp-error-scrim>
-    <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
+    <div id="composebox" part="composebox" ?inert="${!!this.errorMessage_}"
         @keydown="${this.onKeydown_}"
         @focusin="${this.onComposeboxFocusin_}"
         @focusout="${this.onComposeboxFocusout_}"
@@ -52,9 +52,9 @@ export function getHtml(this: ComposeboxElement) {
             aria-expanded="${this.showDropdown_}" aria-controls="matches"
             role="combobox" autocomplete="off" id="input"
             type="search" spellcheck="false"
-            placeholder="${this.inputPlaceholder}"
+            placeholder="${this.inputPlaceholder_}"
             part="input"
-            .value="${this.input}"
+            .value="${this.input_}"
             @click="${this.onInputClick_}"
             @keyup="${this.onInputKeyup_}"
             @input="${this.onInputInput_}"
@@ -65,7 +65,7 @@ export function getHtml(this: ComposeboxElement) {
             <div id="smartCompose" part="smart-compose">
               <!-- Comments in between spans to eliminate spacing between
                    spans -->
-              <span id="invisibleText">${this.input}</span><!--
+              <span id="invisibleText">${this.input_}</span><!--
               --><span id="ghostText">${this.smartComposeInlineHint_}</span><!--
               --><span id="tabChip">${this.i18n('composeboxSmartComposeTabTitle')}</span>
             </div>
@@ -101,7 +101,7 @@ export function getHtml(this: ComposeboxElement) {
                   exportparts="thumbnail, thumbnail-title"
                   id="carousel"
                   class="${this.carouselOnTop_ ? 'top' : ''}"
-                  .files="${Array.from(this.files.values())}"
+                  .files="${Array.from(this.files_.values())}"
                   ?enable-scrolling="${this.enableCarouselScrolling}"
                   @delete-file="${this.onDeleteFile_}">
                 </cr-composebox-file-carousel> ` : ''}
@@ -110,7 +110,7 @@ export function getHtml(this: ComposeboxElement) {
                     part="tool-chips-container">
                     <cr-composebox-tool-chip
                       exportparts="tool-chip-label"
-                      .inputState="${this.inputState}"
+                      .inputState="${this.inputState_}"
                       @tool-click="${this.onToolClick_}">
                     </cr-composebox-tool-chip>
                 </div>
@@ -131,7 +131,7 @@ export function getHtml(this: ComposeboxElement) {
               .result="${this.result_}"
               .selectedMatchIndex="${this.selectedMatchIndex_}"
               .maxSuggestions="${this.maxSuggestions}"
-              .toolMode="${this.inputState?.activeTool}"
+              .toolMode="${this.inputState_?.activeTool}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
               @match-focusin="${this.onMatchFocusin_}"
               @match-click="${this.onMatchClick_}"

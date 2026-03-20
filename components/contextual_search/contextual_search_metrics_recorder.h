@@ -13,6 +13,8 @@
 
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace base {
 class ElapsedTimer;
@@ -150,15 +152,14 @@ class ContextualSearchMetricsRecorder {
                                        bool success);
 
   // Records the tool mode (i.e. Deep Search, Create Images, etc.).
-  virtual void RecordToolMode(composebox_query::mojom::ToolMode tool_mode);
+  virtual void RecordToolMode(omnibox::ToolMode tool_mode);
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
-  virtual void RecordModelMode(composebox_query::mojom::ModelMode model_mode);
+  virtual void RecordModelMode(omnibox::ModelMode model_mode);
 
   // Records tool mode and model mode on query submission.
-  virtual void RecordModesOnSubmission(
-      composebox_query::mojom::ToolMode tool_mode,
-      composebox_query::mojom::ModelMode model_mode);
+  virtual void RecordModesOnSubmission(omnibox::ToolMode tool_mode,
+                                       omnibox::ModelMode model_mode);
 
   // Records when a zero-suggest suggestion is clicked.
   virtual void RecordZeroSuggestClick(bool is_contextual);

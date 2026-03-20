@@ -4,8 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ComposeboxElement} from './composebox.js';
+import {ToolMode} from './composebox_query.mojom-webui.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -28,14 +28,14 @@ export function getHtml(this: ComposeboxElement) {
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
         .showModelPicker="${this.showModelPicker_}"
-        .inputState="${this.inputState}"
+        .inputState="${this.inputState_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"
         .inCreateImageMode="${
-            this.inputState?.activeTool === ComposeboxToolMode.kImageGen}"
+            this.inputState_?.activeTool === ToolMode.kImageGen}"
         .hasImageFiles="${this.hasImageFiles_()}"
-        .disabledTabIds="${this.addedTabsIds}"
-        .fileNum="${this.files.size}"
+        .disabledTabIds="${this.addedTabsIds_}"
+        .fileNum="${this.files_.size}"
         ?upload-button-disabled="${this.uploadButtonDisabled_}"
         ?show-context-menu-description="${this.showContextMenuDescription_}">
     </cr-composebox-contextual-entrypoint-and-menu>
@@ -45,7 +45,7 @@ export function getHtml(this: ComposeboxElement) {
         part="composebox-entrypoint"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
-        .inputState="${this.inputState}"
+        .inputState="${this.inputState_}"
         ?upload-button-disabled="${this.uploadButtonDisabled_}"
         ?show-context-menu-description="${this.showContextMenuDescription_}">
     </cr-composebox-contextual-entrypoint-button>
@@ -61,7 +61,7 @@ export function getHtml(this: ComposeboxElement) {
     ${this.inToolMode_ ? html`
       <cr-composebox-tool-chip
         exportparts="tool-chip-label"
-        .inputState="${this.inputState}"
+        .inputState="${this.inputState_}"
         @tool-click="${this.onToolClick_}">
       </cr-composebox-tool-chip>
     ` : ''}

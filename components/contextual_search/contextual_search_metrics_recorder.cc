@@ -561,30 +561,30 @@ void ContextualSearchMetricsRecorder::RecordConfigParseSuccess(
 }
 
 void ContextualSearchMetricsRecorder::RecordToolMode(
-    composebox_query::mojom::ToolMode tool_mode) {
+    omnibox::ToolMode tool_mode) {
   base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Tools", ".", metrics_suffix_}),
-      tool_mode);
+      base::StrCat({"ContextualSearch.Tools", ".", metrics_suffix_}), tool_mode,
+      static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
 }
 
 void ContextualSearchMetricsRecorder::RecordModelMode(
-    composebox_query::mojom::ModelMode model_mode) {
+    omnibox::ModelMode model_mode) {
   base::UmaHistogramEnumeration(
       base::StrCat({"ContextualSearch.Models", ".", metrics_suffix_}),
-      model_mode);
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
 }
 
 void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
-    composebox_query::mojom::ToolMode tool_mode,
-    composebox_query::mojom::ModelMode model_mode) {
+    omnibox::ToolMode tool_mode,
+    omnibox::ModelMode model_mode) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"ContextualSearch.Tools.ModeOnSubmission", ".", metrics_suffix_}),
-      tool_mode);
+      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"ContextualSearch.Models.ModeOnSubmission", ".", metrics_suffix_}),
-      model_mode);
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
 }
 
 void ContextualSearchMetricsRecorder::RecordZeroSuggestClick(

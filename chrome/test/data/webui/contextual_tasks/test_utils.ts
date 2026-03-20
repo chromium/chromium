@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {type PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -56,7 +56,7 @@ export const mockInputState: InputState = {
   hintText: '',
   toolConfigs: [
     {
-      tool: ComposeboxToolMode.kDeepSearch,
+      tool: ToolMode.kDeepSearch,
       hintText: '',
       menuLabel: '',
       chipLabel: '',
@@ -64,7 +64,7 @@ export const mockInputState: InputState = {
       aimUrlParams: [],
     },
     {
-      tool: ComposeboxToolMode.kImageGen,
+      tool: ToolMode.kImageGen,
       hintText: '',
       menuLabel: '',
       chipLabel: '',
@@ -72,7 +72,7 @@ export const mockInputState: InputState = {
       aimUrlParams: [],
     },
     {
-      tool: ComposeboxToolMode.kCanvas,
+      tool: ToolMode.kCanvas,
       hintText: '',
       menuLabel: '',
       chipLabel: '',

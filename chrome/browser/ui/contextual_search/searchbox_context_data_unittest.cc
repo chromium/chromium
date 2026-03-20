@@ -7,6 +7,7 @@
 #include "base/unguessable_token.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -45,13 +46,13 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContext) {
 TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithToolMode) {
   SearchboxContextData data;
   auto context = std::make_unique<SearchboxContextData::Context>();
-  context->mode = searchbox::mojom::ToolMode::kCreateImage;
+  context->mode = omnibox::TOOL_MODE_IMAGE_GEN;
   data.SetPendingContext(std::move(context));
 
   std::unique_ptr<SearchboxContextData::Context> taken_context =
       data.TakePendingContext();
   EXPECT_NE(nullptr, taken_context);
-  EXPECT_EQ(searchbox::mojom::ToolMode::kCreateImage, taken_context->mode);
+  EXPECT_EQ(omnibox::TOOL_MODE_IMAGE_GEN, taken_context->mode);
   EXPECT_EQ(nullptr, data.TakePendingContext());
 }
 

@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ToolMode} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -529,13 +528,13 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
 
         // Enter create image mode.
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
-            {...testInputState, activeTool: ComposeboxToolMode.kImageGen});
+            {...testInputState, activeTool: ToolMode.kImageGen});
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
 
         // Exit create image mode. `uploadButtonDisabled` should be false.
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
-            {...testInputState, activeTool: ComposeboxToolMode.kUnspecified});
+            {...testInputState, activeTool: ToolMode.kUnspecified});
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
       });
@@ -956,19 +955,19 @@ suite('NewTabPageComposeboxUploadToolModeTest', () => {
     const contextEntrypoint = $$(testProxy.element, '#contextEntrypoint');
     assertTrue(!!contextEntrypoint);
     contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
-      detail: {toolMode: ComposeboxToolMode.kImageGen},
+      detail: {toolMode: ToolMode.kImageGen},
     }));
     await microtasksFinished();
     assertEquals(
         testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 1);
     assertEquals(
-        ComposeboxToolMode.kImageGen,
+        ToolMode.kImageGen,
         testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
     assertEquals(
         testProxy.searchboxHandler.getCallCount('recordToolSelectionAction'),
         1);
     assertEquals(
-        ComposeboxToolMode.kImageGen,
+        ToolMode.kImageGen,
         testProxy.searchboxHandler.getArgs('recordToolSelectionAction')[0]);
 
   });
@@ -1364,7 +1363,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       attachments: [
         {fileAttachment: fileAttachment, tabAttachment: undefined},
       ],
-      toolMode: ToolMode.kDefault,
+      toolMode: ToolMode.kUnspecified,
     };
 
     testProxy.element.addSearchContext(context);
@@ -1396,7 +1395,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       attachments: [
         {fileAttachment: fileAttachment, tabAttachment: undefined},
       ],
-      toolMode: ToolMode.kDefault,
+      toolMode: ToolMode.kUnspecified,
     };
 
     testProxy.element.addSearchContext(context);
@@ -1429,7 +1428,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       attachments: [
         {fileAttachment: undefined, tabAttachment: tabAttachment},
       ],
-      toolMode: ToolMode.kDefault,
+      toolMode: ToolMode.kUnspecified,
     };
 
     testProxy.searchboxHandler.setPromiseResolveFor(
@@ -1469,24 +1468,22 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     };
     testProxy.element.addSearchContext(deepSearchContext);
     await microtasksFinished();
-
     let activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ComposeboxToolMode.kDeepSearch, activeTool);
+    assertEquals(ToolMode.kDeepSearch, activeTool);
     testProxy.searchboxHandler.resetResolver('setActiveToolMode');
 
     const imageContext = {
       input: '',
       files: [],
       attachments: [],
-      toolMode: ToolMode.kCreateImage,
+      toolMode: ToolMode.kImageGen,
     };
     testProxy.element.addSearchContext(imageContext);
     await microtasksFinished();
-
     activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ComposeboxToolMode.kImageGen, activeTool);
+    assertEquals(ToolMode.kImageGen, activeTool);
     testProxy.searchboxHandler.resetResolver('setActiveToolMode');
 
     const canvasContext = {
@@ -1497,10 +1494,9 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     };
     testProxy.element.addSearchContext(canvasContext);
     await microtasksFinished();
-
     activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ComposeboxToolMode.kCanvas, activeTool);
+    assertEquals(ToolMode.kCanvas, activeTool);
     testProxy.searchboxHandler.resetResolver('setActiveToolMode');
   });
 

@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
             omnibox_controller->popup_state_manager()->popup_state());
   auto context = searchbox_context_data->TakePendingContext();
   ASSERT_TRUE(context);
-  EXPECT_EQ(context->mode, searchbox::mojom::ToolMode::kDeepSearch);
+  EXPECT_EQ(context->mode, omnibox::TOOL_MODE_DEEP_SEARCH);
   searchbox_context_data->SetPendingContext(std::move(context));
 
   omnibox_controller->popup_state_manager()->SetPopupState(
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
             omnibox_controller->popup_state_manager()->popup_state());
   context = searchbox_context_data->TakePendingContext();
   ASSERT_TRUE(context);
-  EXPECT_EQ(context->mode, searchbox::mojom::ToolMode::kCreateImage);
+  EXPECT_EQ(context->mode, omnibox::TOOL_MODE_IMAGE_GEN);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,

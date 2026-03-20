@@ -22,14 +22,13 @@ import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_h
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReachedCase} from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -42,9 +41,8 @@ import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
-import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
@@ -55,24 +53,6 @@ import {WindowProxy} from './window_proxy.js';
 export enum VoiceSearchAction {
   ACTIVATE = 0,
   QUERY_SUBMITTED = 1,
-}
-
-export function isTerminalState(status: ContextUploadStatus): boolean {
-  switch (status) {
-    case ContextUploadStatus.kUploadSuccessful:
-    case ContextUploadStatus.kUploadFailed:
-    case ContextUploadStatus.kValidationFailed:
-    case ContextUploadStatus.kUploadExpired:
-    case ContextUploadStatus.kUploadReplaced:
-      return true;
-    case ContextUploadStatus.kNotUploaded:
-    case ContextUploadStatus.kProcessing:
-    case ContextUploadStatus.kUploadStarted:
-    case ContextUploadStatus.kProcessingSuggestSignalsReady:
-      return false;
-    default:
-      assertNotReachedCase(status, 'Unknown enum value');
-  }
 }
 
 const DEBOUNCE_TIMEOUT_MS: number = 20;
@@ -128,8 +108,8 @@ enum ProcessFilesError {
 }
 
 
-export class ComposeboxElement extends ComposeboxEmbedderMixin
-(I18nMixinLit(CrLitElement)) implements DragAndDropHost {
+export class ComposeboxElement extends I18nMixinLit
+(CrLitElement) implements DragAndDropHost {
   static get is() {
     return 'cr-composebox';
   }
@@ -148,6 +128,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       showLensButton: {type: Boolean},
       suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
+      input_: {type: String},
       isCollapsible: {
         reflect: true,
         type: Boolean,
@@ -179,6 +160,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      inputPlaceholder_: {
+        reflect: true,
+        type: String,
+      },
       smartComposeEnabled_: {
         reflect: true,
         type: Boolean,
@@ -192,8 +177,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
-      inToolMode_: {
-        type: Boolean,
+      activeToolMode_: {
+        type: Number,
         reflect: true,
       },
       /**
@@ -219,6 +204,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      errorMessage_: {type: String},
       searchboxLayoutMode: {
         type: String,
         reflect: true,
@@ -250,6 +236,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
       },
       showModelPicker: {type: Boolean},
+      inputState_: {type: Object},
       showModelPicker_: {
         type: Boolean,
         reflect: true,
@@ -260,7 +247,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       },
       enableCarouselScrolling: {type: Boolean},
       inputPlaceholderOverride: {type: String},
+      files_: {type: Object},
       contextMenuEnabled_: {type: Boolean},
+      addedTabsIds_: {type: Object},
       showContextMenuDescription_: {type: Boolean},
       uploadButtonDisabled_: {
         type: Boolean,
@@ -315,6 +304,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Whether the composebox is currently expanded. Always true if isCollapsible
   // is false.
   protected accessor expanding_: boolean = false;
+  protected accessor input_: string = '';
   protected accessor showDropdown_: boolean =
       loadTimeData.getBoolean('composeboxShowZps');
   protected accessor enableImageContextualSuggestions_: boolean =
@@ -326,10 +316,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor smartComposeInlineHint_: string = '';
   protected accessor smartComposeEnabled_: boolean =
       loadTimeData.getBoolean('composeboxSmartComposeEnabled');
+  protected accessor inputPlaceholder_: string =
+      loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor showFileCarousel_: boolean = false;
+  protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
+  protected accessor errorMessage_: string = '';
   protected accessor transcript_: string = '';
   protected accessor receivedSpeech_: boolean = false;
   protected accessor canSubmitFilesAndInput_: boolean = true;
+  protected accessor inputState_: InputState|null = null;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
@@ -340,16 +335,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.getBoolean('contextualMenuUsePecApi') :
       false;
   protected accessor hasAllowedInputs_: boolean = false;
+  protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
+  protected accessor addedTabsIds_: Map<number, UnguessableToken> = new Map();
   protected accessor uploadButtonDisabled_: boolean = false;
   protected contextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor isOmniboxInCompactMode_: boolean = false;
-  protected accessor inVoiceSearchMode_: boolean = false;
-  protected accessor inToolMode_: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';
@@ -385,6 +380,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.valueExists('autoSubmitVoiceSearchQuery') ?
       loadTimeData.getBoolean('autoSubmitVoiceSearchQuery') :
       true;
+  protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
   // Whether the composebox is actively waiting for an autocomplete response. If
   // this is false, that means at least one response has been received (even if
@@ -406,6 +402,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.getString('composeboxImageFileTypes').split(',');
   private lensSendRawFileMediaTypesEnabled_: boolean =
       loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
+
+  protected get inToolMode_(): boolean {
+    return this.activeToolMode_ !== ToolMode.kUnspecified;
+  }
 
   protected get shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
@@ -484,7 +484,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     const inputState = await this.searchboxHandler_.getInputState();
       if (inputState) {
-        this.inputState = inputState.state;
+        this.inputState_ = inputState.state;
     }
 
     this.setupResizeObservers_();
@@ -541,11 +541,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     // When the result initially gets set check if dropdown should show.
-    if (changedPrivateProperties.has('input') ||
+    if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('files') ||
-        changedPrivateProperties.has('errorMessage')) {
-      this.showFileCarousel_ = this.files.size > 0;
+        changedPrivateProperties.has('files_') ||
+        changedPrivateProperties.has('errorMessage_')) {
+      this.showFileCarousel_ = this.files_.size > 0;
       this.showDropdown_ = this.computeShowDropdown_();
     }
     if (changedPrivateProperties.has('submitEnabled_') ||
@@ -555,23 +555,23 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           this.submitEnabled_ && this.fileUploadsComplete;
     }
 
-    if (changedPrivateProperties.has('inputState') && this.inputState) {
+    if (changedPrivateProperties.has('inputState_') && this.inputState_) {
       this.hasAllowedInputs_ =
-          (this.inputState.allowedModels.length > 0 ||
-           this.inputState.allowedTools.length > 0 ||
-           this.inputState.allowedInputTypes.length > 0);
-      this.inToolMode_ =
-          this.inputState.activeTool !== ComposeboxToolMode.kUnspecified;
+          (this.inputState_.allowedModels.length > 0 ||
+           this.inputState_.allowedTools.length > 0 ||
+           this.inputState_.allowedInputTypes.length > 0);
+
+      this.activeToolMode_ = this.inputState_.activeTool;
       this.dispatchEvent(new CustomEvent('input-state-changed', {
-        detail: {inputState: this.inputState},
+        detail: {inputState: this.inputState_},
       }));
     }
 
     if (changedPrivateProperties.has('inputPlaceholderOverride') ||
-        changedPrivateProperties.has('files') ||
+        changedPrivateProperties.has('files_') ||
         changedPrivateProperties.has('enableFileHint') ||
-        changedPrivateProperties.has('inputState') ||
-        changedPrivateProperties.has('inputState.activeTool')) {
+        changedPrivateProperties.has('inputState_') ||
+        changedPrivateProperties.has('inputState_.activeTool')) {
       this.updateInputPlaceholder_();
     }
   }
@@ -588,7 +588,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       if (this.selectedMatch_) {
         // Update the input.
         const text = this.selectedMatch_.fillIntoEdit;
-        this.input = text;
+        this.input_ = text;
       } else if (!this.lastQueriedInput_) {
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
@@ -596,14 +596,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       } else {
         // For typed queries reset the input back to typed value when
         // focus leaves the match.
-        this.input = this.lastQueriedInput_;
+        this.input_ = this.lastQueriedInput_;
       }
     }
 
     if (changedPrivateProperties.has('selectedMatchIndex_') ||
-        changedPrivateProperties.has('inputState') ||
+        changedPrivateProperties.has('inputState_') ||
         changedPrivateProperties.has('isFollowupQuery') ||
-        changedPrivateProperties.has('files')) {
+        changedPrivateProperties.has('files_')) {
       this.submitEnabled_ = this.computeSubmitEnabled_();
       this.canSubmitFilesAndInput_ =
           this.submitEnabled_ && this.fileUploadsComplete;
@@ -641,7 +641,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   getText() {
-    return this.input;
+    return this.input_;
   }
 
   queryAutocomplete(clearMatches: boolean) {
@@ -671,34 +671,35 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   setText(text: string) {
-    this.input = text;
+    this.input_ = text;
   }
 
   resetModes() {
-    const previousTool = this.inputState?.activeTool;
+    const previousTool = this.inputState_?.activeTool;
     this.uploadButtonDisabled_ = false;
 
-    if (previousTool !== ComposeboxToolMode.kUnspecified) {
+    if (previousTool !== ToolMode.kUnspecified) {
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
-      this.handleToolModeUpdate_(ComposeboxToolMode.kUnspecified);
+      this.handleToolModeUpdate_(ToolMode.kUnspecified);
     }
   }
 
   setDefaultModel() {
-    if (this.inputState?.activeModel &&
-        (this.inputState.activeModel as ModelMode) !== ModelMode.kUnspecified) {
-      this.searchboxHandler_.setActiveModelMode(this.inputState.activeModel);
+    if (this.inputState_?.activeModel &&
+        (this.inputState_.activeModel as ModelMode) !==
+            ModelMode.kUnspecified) {
+      this.searchboxHandler_.setActiveModelMode(this.inputState_.activeModel);
     } else if (
-        this.inputState?.allowedModels &&
-        this.inputState.allowedModels.length > 0) {
+        this.inputState_?.allowedModels &&
+        this.inputState_.allowedModels.length > 0) {
       this.searchboxHandler_.setActiveModelMode(
-          this.inputState.allowedModels[0]!);
+          this.inputState_.allowedModels[0]!);
     }
   }
 
   resetToolsAndModels() {
-    if (this.inputState) {
-      this.searchboxHandler_.setActiveToolMode(ComposeboxToolMode.kUnspecified);
+    if (this.inputState_) {
+      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
       this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
     }
   }
@@ -734,7 +735,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   hasFiles(): boolean {
-    return this.files.size > 0;
+    return this.files_.size > 0;
   }
 
   isExpanded(): boolean {
@@ -748,11 +749,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected async updateState_(state: ComposeboxState) {
     const text = state.text || '';
     const files = state.files || [];
-    const mode = state.mode ?? ComposeboxToolMode.kUnspecified;
+    const mode = state.mode ?? ToolMode.kUnspecified;
     let model = state.model ?? ModelMode.kUnspecified;
 
     if (text) {
-      this.input = text;
+      this.input_ = text;
       this.lastQueriedInput_ = text;
     }
     if (this.showZps && files.length === 0) {
@@ -786,13 +787,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
       this.processFiles_(dataTransfer.files);
     }
-    if (mode !== ComposeboxToolMode.kUnspecified) {
+    if (mode !== ToolMode.kUnspecified) {
       this.handleToolClick_(mode);
     }
 
-    if (!!this.inputState && model === ModelMode.kUnspecified &&
-        this.inputState.allowedModels.length > 0) {
-      model = this.inputState.allowedModels[0]!;
+    if (!!this.inputState_ && model === ModelMode.kUnspecified &&
+        this.inputState_.allowedModels.length > 0) {
+      model = this.inputState_.allowedModels[0]!;
     }
     this.searchboxHandler_.setActiveModelMode(model);
     this.updateInputPlaceholder_();
@@ -810,7 +811,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected computeCancelButtonTitle_() {
-    return this.input.trim().length > 0 || this.files.size > 0 ?
+    return this.input_.trim().length > 0 || this.files_.size > 0 ?
         this.i18n('composeboxCancelButtonTitleInput') :
         this.i18n('composeboxCancelButtonTitle');
   }
@@ -842,7 +843,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   private computeShowDropdown_() {
     // Don't show dropdown if there's multiple files.
-    if (this.files.size > 1) {
+    if (this.files_.size > 1) {
       return false;
     }
 
@@ -852,7 +853,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     // Do not show dropdown if there's an error scrim.
-    if (this.errorMessage !== '') {
+    if (this.errorMessage_ !== '') {
       return false;
     }
 
@@ -865,7 +866,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (this.showTypedSuggest_ && this.lastQueriedInput_.trim()) {
       // If context is present, but not enabled, continue to avoid showing the
       // dropdown.
-      if (!this.showTypedSuggestWithContext_ && this.files.size > 0) {
+      if (!this.showTypedSuggestWithContext_ && this.files_.size > 0) {
         return false;
       }
       // Do not show the dropdown for multiline input or if only the verbatim
@@ -876,8 +877,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    // lastQueriedInput_ is used here since the input changes based on
-    // the selected match. If typed suggest is not enabled and input is used,
+    // lastQueriedInput_ is used here since the input_ changes based on
+    // the selected match. If typed suggest is not enabled and input_ is used,
     // the dropdown will hide if the user keys down over zps matches.
     return this.showZps && !this.lastQueriedInput_;
   }
@@ -885,7 +886,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private hasValidQuery_() {
     // If there is at least one file that supports unimodal search, query is
     // valid.
-    if (this.files.values().find(
+    if (this.files_.values().find(
             (file: ComposeboxFile) => file.supportsUnimodal)) {
       return true;
     }
@@ -895,14 +896,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return true;
     }
 
-    if (this.input.trim().length > 0) {
+    if (this.input_.trim().length > 0) {
       return true;
     }
 
     // TODO(crbug.com/485648942): Update to drive Deep Search behavior from the
     //   PEC API's ToolSubstateConfig.
     // Allow empty query for Deep Search follow-ups.
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch &&
+    if (this.inputState_?.activeTool === ToolMode.kDeepSearch &&
         this.isFollowupQuery) {
       return true;
     }
@@ -926,7 +927,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected shouldShowVoiceSearch_(): boolean {
-    const isExpanded = this.showDropdown_ || this.files.size > 0;
+    const isExpanded = this.showDropdown_ || this.files_.size > 0;
     const isFeatureEnabled = isExpanded ?
         this.showVoiceSearchInExpandedComposebox_ :
         this.showVoiceSearchInSteadyComposebox_;
@@ -949,13 +950,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
-    if (!uuidToDelete || !this.files.has(uuidToDelete)) {
+    if (!uuidToDelete || !this.files_.has(uuidToDelete)) {
       return;
     }
 
-    const file = this.files.get(uuidToDelete);
+    const file = this.files_.get(uuidToDelete);
     if (file?.tabId) {
-      this.addedTabsIds = new Map([...this.addedTabsIds.entries()].filter(
+      this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
           ([id, _]) => id !== file.tabId));
     }
 
@@ -981,8 +982,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       recordBoolean(metricName, true);
     }
 
-    this.files = new Map(
-        [...this.files.entries()].filter(([uuid, _]) => uuid !== uuidToDelete));
+    this.files_ = new Map([...this.files_.entries()].filter(
+        ([uuid, _]) => uuid !== uuidToDelete));
     this.pendingUploads_.delete(uuidToDelete);
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
     this.searchboxHandler_.deleteContext(uuidToDelete, fromAutoSuggestedChip);
@@ -1030,7 +1031,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       } catch (e) {
         const err = e as ContextUploadErrorType;
         if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
-          this.errorMessage = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+          this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
         }
         continue;
       }
@@ -1047,8 +1048,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('composeboxFileUploadStartedText'));
     }
-    this.files =
-        new Map([...this.files.entries(), ...composeboxFiles.entries()]);
+    this.files_ =
+        new Map([...this.files_.entries(), ...composeboxFiles.entries()]);
     this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);
     this.focusInput();
   }
@@ -1145,10 +1146,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private onInputStateChanged_(inputState: InputState) {
-    this.inputState = inputState;
+    this.inputState_ = inputState;
 
-    const allowedTypes = this.inputState.allowedInputTypes;
-    this.files.forEach((file, uuid) => {
+    const allowedTypes = this.inputState_.allowedInputTypes;
+    this.files_.forEach((file, uuid) => {
       if (!allowedTypes.includes(file.inputType)) {
         this.deleteFile(uuid);
       }
@@ -1200,10 +1201,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
                                       tabUpload.title,
           tabUpload.url, {supportsUnimodal: true});
 
-      this.files =
-          new Map([...this.files.entries(), [attachment.uuid, attachment]]);
-      this.addedTabsIds = new Map(
-          [...this.addedTabsIds.entries(), [tabUpload.tabId, attachment.uuid]]);
+      this.files_ =
+          new Map([...this.files_.entries(), [attachment.uuid, attachment]]);
+      this.addedTabsIds_ = new Map([
+        ...this.addedTabsIds_.entries(),
+        [tabUpload.tabId, attachment.uuid],
+      ]);
 
       // Do not reset pending active tab to avoid overwriting
       // synchronous "pending statuses" that are queued (since this function
@@ -1218,7 +1221,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     } catch (e) {
       const err = e as ContextUploadErrorType;
       if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
-        this.errorMessage = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+        this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
       }
       return;
     }
@@ -1300,7 +1303,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
       this.fire(
           'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
-      this.input = e.detail;
+      this.input_ = e.detail;
       const metricName = `ContextualSearch.UserAction.SubmitVoiceQuery.${
           this.composeboxSource_}`;
       recordUserAction(metricName);
@@ -1313,7 +1316,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // If auto-submit is not enabled, update the input to the voice search
       // query, clear autocomplete matches, and recompute whether submission
       // should be enabled.
-      this.input = e.detail;
+      this.input_ = e.detail;
       this.queryAutocomplete_(/* clearMatches= */ true);
       this.submitEnabled_ = this.computeSubmitEnabled_();
       await this.updateComplete;
@@ -1382,8 +1385,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private hasContent_(): boolean {
-    return this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified ||
-        this.input.trim().length > 0 || this.files.size > 0;
+    return this.inputState_?.activeTool !== ToolMode.kUnspecified ||
+        this.input_.trim().length > 0 || this.files_.size > 0;
   }
 
   protected onLensClick_() {
@@ -1404,85 +1407,89 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   private updateInputPlaceholder_() {
     if (this.inputPlaceholderOverride) {
-      this.inputPlaceholder = this.inputPlaceholderOverride;
+      this.inputPlaceholder_ = this.inputPlaceholderOverride;
       return;
     }
 
     // The file hint should only be shown when there is context that was
     // deliberately added by the user (i.e. not the automatic active tab).
-    const isOnlyAutoTab = this.files.size === 1 && !!this.automaticActiveTab_;
+    const isOnlyAutoTab = this.files_.size === 1 && !!this.automaticActiveTab_;
     const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
         !isOnlyAutoTab &&
-        this.inputState?.activeTool === ComposeboxToolMode.kUnspecified;
+        this.inputState_?.activeTool === ToolMode.kUnspecified;
     if (shouldUseFileHint) {
-      if (this.files.size > 1) {
-        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThese');
+      if (this.files_.size > 1) {
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThese');
         return;
       }
-      const file = this.files.values().next().value!;
+      const file = this.files_.values().next().value!;
       if (file.type === 'tab') {
-        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThisTab');
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThisTab');
         return;
       } else if (file.type.includes('image')) {
-        this.inputPlaceholder =
+        this.inputPlaceholder_ =
             this.i18n('composeboxHintTextAskAboutThisImage');
         return;
       } else if (file.type === 'pdf' || file.type === 'application/pdf') {
-        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThisDoc');
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThisDoc');
         return;
       }
     }
 
-    if (this.inputState) {
-      if (this.inputState.activeTool !== ComposeboxToolMode.kUnspecified) {
-        const config = this.inputState.toolConfigs.find(
-            c => c.tool === this.inputState!.activeTool);
+    if (this.inputState_) {
+      if (this.inputState_.activeTool !== ToolMode.kUnspecified) {
+        const config = this.inputState_.toolConfigs.find(
+            c => c.tool === this.inputState_!.activeTool);
         if (config?.hintText) {
-          this.inputPlaceholder = config.hintText;
+          this.inputPlaceholder_ = config.hintText;
           return;
         }
       }
 
-      if (this.inputState.activeModel !== ModelMode.kUnspecified) {
-        const config = this.inputState.modelConfigs.find(
-            c => c.model === this.inputState!.activeModel);
+      if (this.inputState_.activeModel !== ModelMode.kUnspecified) {
+        const config = this.inputState_.modelConfigs.find(
+            c => c.model === this.inputState_!.activeModel);
         if (config?.hintText) {
-          this.inputPlaceholder = config.hintText;
+          this.inputPlaceholder_ = config.hintText;
           return;
         }
       }
 
-      if (this.inputState.hintText) {
-        this.inputPlaceholder = this.inputState.hintText;
+      if (this.inputState_.hintText) {
+        this.inputPlaceholder_ = this.inputState_.hintText;
         return;
       }
     }
 
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
-      this.inputPlaceholder =
+    if (this.inputState_?.activeTool === ToolMode.kDeepSearch) {
+      this.inputPlaceholder_ =
           loadTimeData.getString('composeDeepSearchPlaceholder');
-    } else if (this.inputState?.activeTool === ComposeboxToolMode.kImageGen) {
-      this.inputPlaceholder =
+    } else if (this.inputState_?.activeTool === ToolMode.kImageGen) {
+      this.inputPlaceholder_ =
           loadTimeData.getString('composeCreateImagePlaceholder');
     } else {
-      this.inputPlaceholder =
+      this.inputPlaceholder_ =
           loadTimeData.getString('searchboxComposePlaceholder');
     }
   }
 
-  protected onToolClick_(e: CustomEvent<{toolMode: ComposeboxToolMode}>) {
+  get activeToolMode(): ToolMode {
+    return this.activeToolMode_;
+  }
+
+  protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {
     this.handleToolClick_(e.detail.toolMode);
   }
 
-  protected handleToolClick_(tool: ComposeboxToolMode) {
-    const isTogglingOff = this.inputState?.activeTool === tool;
+  protected handleToolClick_(tool: ToolMode) {
+    const isTogglingOff = this.inputState_?.activeTool === tool;
 
     if (this.contextMenuDescriptionEnabled_) {
       this.showContextMenuDescription_ =
-          isTogglingOff || tool === ComposeboxToolMode.kUnspecified;
+          isTogglingOff || tool === ToolMode.kUnspecified;
     }
 
-    const newToolMode = isTogglingOff ? ComposeboxToolMode.kUnspecified : tool;
+    const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
 
     if (isTogglingOff) {
       const metricName = `ContextualSearch.UserAction.InputStateDeletion.Tool.${
@@ -1495,7 +1502,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.handleToolModeUpdate_(newToolMode);
   }
 
-  private handleToolModeUpdate_(newTool: ComposeboxToolMode) {
+  private handleToolModeUpdate_(newTool: ToolMode) {
     this.searchboxHandler_.setActiveToolMode(newTool);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
@@ -1508,14 +1515,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onDismissErrorScrim_() {
-    this.errorMessage = '';
+    this.errorMessage_ = '';
   }
 
   // Sets the input property to compute the cancel button title without using
   // "$." syntax  as this is not allowed in WillUpdate().
   protected onInputInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
-    this.input = inputElement.value;
+    this.input_ = inputElement.value;
 
     if (!this.disableCaretColorAnimation) {
       this.updateMirror_();
@@ -1530,12 +1537,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // If the composebox no flickering fix is enabled, stop the ACController
       // from querying for suggestions when the input is empty, but don't clear
       // the matches so the dropdown doesn't close.
-      if (this.input === '') {
+      if (this.input_ === '') {
         this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
       }
       this.queryAutocomplete_(/* clearMatches= */ false);
     } else {
-      this.queryAutocomplete_(/* clearMatches= */ this.input === '');
+      this.queryAutocomplete_(/* clearMatches= */ this.input_ === '');
     }
   }
 
@@ -1547,7 +1554,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     mirror.textContent = '';
 
-    const chars = this.input.split('');
+    const chars = this.input_.split('');
 
     if (chars.length === 0) {
       const emptySpan = document.createElement('span');
@@ -1709,7 +1716,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       if (e.shiftKey) {
         this.$.matches.unselect();
       } else if (this.smartComposeEnabled_ && this.smartComposeInlineHint_) {
-        this.input = this.input + this.smartComposeInlineHint_;
+        this.input_ = this.input_ + this.smartComposeInlineHint_;
         this.smartComposeInlineHint_ = '';
         e.preventDefault();
         this.queryAutocomplete_(/* clearMatches= */ true);
@@ -1838,7 +1845,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected onSubmitContainerFocusin_() {
     // Matches should always be greater than 0 due to verbatim match.
-    if (this.input && !this.selectedMatch_) {
+    if (this.input_ && !this.selectedMatch_) {
       this.selectFirstMatch();
     }
   }
@@ -1846,7 +1853,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
-        this.input = context.input;
+        this.input_ = context.input;
       }
       for (const attachment of context.attachments) {
         if (attachment.fileAttachment) {
@@ -1858,13 +1865,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
       switch (context.toolMode) {
         case ToolMode.kDeepSearch:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kDeepSearch);
+          this.handleToolModeUpdate_(ToolMode.kDeepSearch);
           break;
-        case ToolMode.kCreateImage:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kImageGen);
+        case ToolMode.kImageGen:
+          this.handleToolModeUpdate_(ToolMode.kImageGen);
           break;
         case ToolMode.kCanvas:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kCanvas);
+          this.handleToolModeUpdate_(ToolMode.kCanvas);
           break;
         default:
       }
@@ -1879,7 +1886,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.resetModes();
     this.searchboxHandler_.clearFiles(/*shouldBlockAutoSuggestedTabs=*/ false);
     this.resetToolsAndModels();
-    this.fire('close-composebox', {composeboxText: this.input});
+    this.fire('close-composebox', {composeboxText: this.input_});
 
     if (this.isCollapsible) {
       this.expanding_ = false;
@@ -1926,8 +1933,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
     } else {
       this.searchboxHandler_.submitQuery(
-          this.input.trim(), (e as MouseEvent).button || 0, e.altKey, e.ctrlKey,
-          e.metaKey, e.shiftKey);
+          this.input_.trim(), (e as MouseEvent).button || 0, e.altKey,
+          e.ctrlKey, e.metaKey, e.shiftKey);
     }
 
     this.submitCleanup_();
@@ -1969,7 +1976,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   getFilesForTesting(): ComposeboxFile[] {
-    return [...this.files.values()];
+    return [...this.files_.values()];
   }
 
   getResultForTesting(): AutocompleteResult|null {
@@ -2037,7 +2044,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.selectFirstMatch();
     } else if (
-        this.input.trim() && hasMatches && this.selectedMatchIndex_ >= 0 &&
+        this.input_.trim() && hasMatches && this.selectedMatchIndex_ >= 0 &&
         this.selectedMatchIndex_ < this.result_.matches.length) {
       // Restore the selection and update the input. Don't restore when the
       // user deletes all their input and autocomplete is queried or else the
@@ -2048,7 +2055,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // (and therefore `selectedMatch_` does not get updated since
       // `onSelectedMatchIndexChanged_` is not called).
       this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_]!;
-      this.input = this.selectedMatch_.fillIntoEdit;
+      this.input_ = this.selectedMatch_.fillIntoEdit;
     } else {
       this.$.matches.unselect();
     }
@@ -2070,13 +2077,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const {file, errorMessage} =
         this.updateFileStatus_(token, status, errorType);
     if (errorMessage) {  // `file` value is definitely stale.
-      this.errorMessage = errorMessage;
+      this.errorMessage_ = errorMessage;
       this.pendingUploads_.delete(token);
       this.fileUploadsComplete = this.pendingUploads_.size === 0;
     } else if (file) {
       // Treat `kUploadReplaced` like an error upload state
       // (like `kUploadFailed`. `kValidationFailed`,
-      // `kUploadExpired`), just without setting `errorMessage`.
+      // `kUploadExpired`), just without setting `errorMessage_`.
       // This means for `kUploadReplaced`, we do not fetch suggestions,
       // etc.
       if (file.status === ContextUploadStatus.kUploadReplaced) {
@@ -2163,9 +2170,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (clearMatches) {
       this.clearAutocompleteMatches();
     }
-    this.lastQueriedInput_ = this.input;
+    this.lastQueriedInput_ = this.input_;
     this.haveReceivedAutcompleteResponse_ = false;
-    this.searchboxHandler_.queryAutocomplete(this.input, false);
+    this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 
   clearAllInputs(
@@ -2181,14 +2188,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.resetModes();
     }
     const undeletableFiles =
-        Array.from(this.files.values()).filter(file => !file.isDeletable);
-    if (undeletableFiles.length !== this.files.size) {
-      this.files = new Map(undeletableFiles.map(file => [file.uuid, file]));
-      this.addedTabsIds = new Map(undeletableFiles.filter(file => file.tabId)
-                                      .map(file => [file.tabId!, file.uuid]));
+        Array.from(this.files_.values()).filter(file => !file.isDeletable);
+    if (undeletableFiles.length !== this.files_.size) {
+      this.files_ = new Map(undeletableFiles.map(file => [file.uuid, file]));
+      this.addedTabsIds_ = new Map(undeletableFiles.filter(file => file.tabId)
+                                       .map(file => [file.tabId!, file.uuid]));
     }
     // Reset files in set to match remaining files in carousel.
-    this.setPendingUploads([...this.files.keys()]);
+    this.setPendingUploads([...this.files_.keys()]);
     this.smartComposeInlineHint_ = '';
     if (!querySubmitted) {
       // If the query was submitted, the searchbox handler will clear its own
@@ -2202,7 +2209,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   clearInput() {
-    this.input = '';
+    this.input_ = '';
     this.lastQueriedInput_ = '';
     this.$.matches.unselect();
     if (!this.disableCaretColorAnimation) {
@@ -2212,11 +2219,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   getInputText(): string {
-    return this.input;
+    return this.input_;
   }
 
   getNumOfFilesForTesting(): number {
-    return this.files.size;
+    return this.files_.size;
   }
 
   private selectFirstMatch() {
@@ -2237,7 +2244,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected hasImageFiles_() {
-    return Array.from(this.files.values())
+    return Array.from(this.files_.values())
         .some(file => file.type.includes('image'));
   }
 
@@ -2246,9 +2253,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // contrasts with the workflows where the frontend starts a file upload flow
   // (`addFileContext_`).
   private onFileContextAdded_(file: ComposeboxFile) {
-    const newFiles = new Map(this.files);
+    const newFiles = new Map(this.files_);
     newFiles.set(file.uuid, file);
-    this.files = newFiles;
+    this.files_ = newFiles;
     this.addToPendingUploads_(file.uuid);
   }
 
@@ -2262,29 +2269,29 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     switch (error) {
       case ProcessFilesError.MAX_FILES_EXCEEDED:
         metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-        this.errorMessage = this.i18n('maxFilesReachedError');
+        this.errorMessage_ = this.i18n('maxFilesReachedError');
         break;
       case ProcessFilesError.MAX_IMAGES_EXCEEDED:
         metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-        this.errorMessage = this.i18n('maxImagesReachedError');
+        this.errorMessage_ = this.i18n('maxImagesReachedError');
         break;
       case ProcessFilesError.MAX_PDFS_EXCEEDED:
         metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-        this.errorMessage = this.i18n('maxPdfsReachedError');
+        this.errorMessage_ = this.i18n('maxPdfsReachedError');
         break;
       case ProcessFilesError.FILE_EMPTY:
         metric = ComposeboxFileValidationError.FILE_EMPTY;
-        this.errorMessage = this.i18n('composeboxFileUploadInvalidEmptySize');
+        this.errorMessage_ = this.i18n('composeboxFileUploadInvalidEmptySize');
         break;
       case ProcessFilesError.FILE_TOO_LARGE:
         metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
-        this.errorMessage = this.i18n('composeboxFileUploadInvalidTooLarge');
+        this.errorMessage_ = this.i18n('composeboxFileUploadInvalidTooLarge');
         break;
       case ProcessFilesError.INVALID_TYPE:
-        this.errorMessage = this.i18n('composeFileTypesAllowedError');
+        this.errorMessage_ = this.i18n('composeFileTypesAllowedError');
         break;
       case ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED:
-        this.errorMessage = this.i18n('composeboxFileUploadNotAllowed');
+        this.errorMessage_ = this.i18n('composeboxFileUploadNotAllowed');
         break;
       default:
         break;
@@ -2298,14 +2305,18 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|null) {
     let errorMessage = null;
-    let file = this.files.get(token);
+    let file = this.files_.get(token);
     if (file) {
-      if (isTerminalState(status) &&
-          status !== ContextUploadStatus.kUploadSuccessful) {
-        this.files.delete(token);
+      if ([
+            ContextUploadStatus.kValidationFailed,
+            ContextUploadStatus.kUploadFailed,
+            ContextUploadStatus.kUploadExpired,
+            ContextUploadStatus.kUploadReplaced,
+          ].includes(status)) {
+        this.files_.delete(token);
 
         if (file.tabId) {
-          this.addedTabsIds = new Map([...this.addedTabsIds.entries()].filter(
+          this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
               ([id, _]) => id !== file!.tabId));
         }
         switch (status) {
@@ -2338,9 +2349,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.closeMenu_();
       } else {
         file = {...file, status: status};
-        this.files.set(token, file);
+        this.files_.set(token, file);
       }
-      this.files = new Map([...this.files]);
+      this.files_ = new Map([...this.files_]);
     } else {
       // File is unknown but its status is known. Show this if
       // ghost/unknown files in frontend are allowed to be in
@@ -2374,7 +2385,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (!files || files.length === 0) {
       return;
     }
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
+    if (this.inputState_?.activeTool === ToolMode.kDeepSearch) {
       this.handleProcessFilesError_(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
       return;
     }
@@ -2387,16 +2398,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     counts.set(InputType.kLensFile, 0);
     counts.set(InputType.kBrowserTab, 0);
 
-    for (const file of this.files.values()) {
+    for (const file of this.files_.values()) {
       const type = this.getInputType_(file.type);
       counts.set(type, (counts.get(type) || 0) + 1);
     }
 
-    let totalCount = this.files.size;
+    let totalCount = this.files_.size;
 
     let maxTotal = this.maxFileCount_;
-    if (this.inputState && this.inputState.maxTotalInputs > 0) {
-      maxTotal = this.inputState.maxTotalInputs;
+    if (this.inputState_ && this.inputState_.maxTotalInputs > 0) {
+      maxTotal = this.inputState_.maxTotalInputs;
     }
 
     if (totalCount + files.length > maxTotal) {
@@ -2405,8 +2416,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     for (const file of files) {
       const inputType = this.getInputType_(file.type);
-      if (this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified) {
-        const disabledTypes = this.inputState?.disabledInputTypes || [];
+      if (this.inputState_?.activeTool !== ToolMode.kUnspecified) {
+        const disabledTypes = this.inputState_?.disabledInputTypes || [];
         if (disabledTypes.includes(inputType)) {
           errorToDisplay =
               Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
@@ -2428,9 +2439,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
 
       let maxType = maxTotal;
-      if (this.inputState &&
-          this.inputState.maxInputsByType[inputType] !== undefined) {
-        maxType = this.inputState.maxInputsByType[inputType];
+      if (this.inputState_ &&
+          this.inputState_.maxInputsByType[inputType] !== undefined) {
+        maxType = this.inputState_.maxInputsByType[inputType];
       }
 
       const currentTypeCount = counts.get(inputType) || 0;
@@ -2489,7 +2500,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.handleProcessFilesError_(ProcessFilesError.INVALID_TYPE);
       return;
     }
-    const pendingStatus = this.files.get(fileAttachment.uuid)?.status;
+    const pendingStatus = this.files_.get(fileAttachment.uuid)?.status;
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid as unknown as UnguessableToken,
         {name: fileAttachment.name, type: fileAttachment.mimeType},
@@ -2561,6 +2572,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   setAutomaticActiveTabForTesting(file: ComposeboxFile) {
     this.automaticActiveTab_ = file;
   }
+
 
   updateAutoSuggestedTabContextForTesting(tab: TabInfo|null) {
     this.updateAutoSuggestedTabContext_(tab);
