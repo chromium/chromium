@@ -253,8 +253,9 @@ TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
   ASSERT_FALSE(verifier.GetTokenIsValid().has_value());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
   std::optional<bool> token = verifier.GetTokenIsValid();
@@ -279,7 +280,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenTransientFailure) {
   ASSERT_FALSE(verifier.GetTokenIsValid().has_value());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
   ASSERT_FALSE(verifier.GetTokenIsValid().has_value());
@@ -298,7 +299,7 @@ TEST(ForceSigninVerifierTest, OnLostConnection) {
       identity_test_env.identity_manager());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   ASSERT_EQ(1, verifier.FailureCount());
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
@@ -323,7 +324,7 @@ TEST(ForceSigninVerifierTest, OnReconnected) {
       identity_test_env.identity_manager());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   ASSERT_EQ(1, verifier.FailureCount());
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
