@@ -14,10 +14,12 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
@@ -37,9 +39,12 @@ import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -288,6 +293,7 @@ final class SigninButtonMediator
         if (mProfile == null) {
             return;
         }
+        recordSigninButtonUsed(mProfile);
 
         Profile originalProfile = mProfile.getOriginalProfile();
         if (assumeNonNull(mSigninManager).isSigninAllowed()) {
@@ -333,6 +339,18 @@ final class SigninButtonMediator
                     originalProfile,
                     SigninSurveyController.SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP);
         }
+    }
+
+    /**
+     * Records SigninButton usage with feature engagement tracker. This signal can be used to decide
+     * whether to show in-product help. We also record the clicking actions on the profile icon in
+     * histograms.
+     */
+    private void recordSigninButtonUsed(Profile profile) {
+        BrowserUiUtils.recordIdentityDiscClicked(true);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);
+        RecordUserAction.record("MobileToolbarIdentityDiscTap");
     }
 
     private void initializeSigninCoordinator() {
