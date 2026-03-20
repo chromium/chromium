@@ -14,7 +14,7 @@ function setupListener() {
 }
 
 function fileInfoReceived(fileInfo) {
-  chrome.test.fail("Feature deprecated. Should not receive fileInfo");
+  chrome.test.fail('Feature deprecated. Should not receive fileInfo');
 }
 
 chrome.test.runTests([

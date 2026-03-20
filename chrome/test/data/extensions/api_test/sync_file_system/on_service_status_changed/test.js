@@ -13,7 +13,7 @@ function setupListener() {
 }
 
 function checkEventReceived(serviceInfo) {
-  chrome.test.fail("Feature deprecated. Should not receive event");
+  chrome.test.fail('Feature deprecated. Should not receive event');
 }
 
 chrome.test.runTests([

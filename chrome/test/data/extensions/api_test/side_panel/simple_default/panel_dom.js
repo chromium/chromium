@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 document.body.onload = () => {
-  window.domAutomationController.send("panel_dom");
+  window.domAutomationController.send('panel_dom');
 }

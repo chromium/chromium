@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testStep = [
+const testStep = [
   function() {
     chrome.syncFileSystem.requestFileSystem(testStep.shift());
   },
@@ -16,13 +16,13 @@ var testStep = [
     chrome.syncFileSystem.getFileStatus(fileEntry, testStep.shift());
   },
   function(fileStatus) {
-    chrome.test.assertEq("pending", fileStatus);
+    chrome.test.assertEq('pending', fileStatus);
     chrome.test.succeed();
   }
 ];
 
 function errorHandler(e) {
-  console.log("Failed test with error" + e.name);
+  console.log(`Failed test with error ${e.name}`);
   chrome.test.fail();
 }
 

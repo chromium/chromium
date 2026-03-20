@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var fileEntry;
-var fileSystem;
-var usageBeforeWrite;
-var testData = '12345';
-var dataSize;
+let fileEntry;
+let fileSystem;
+let usageBeforeWrite;
+const TEST_DATA = '12345';
+let dataSize;
 
-var testStep = [
+const testStep = [
   function () {
     chrome.syncFileSystem.requestFileSystem(testStep.shift());
   },
@@ -41,7 +41,7 @@ var testStep = [
       testStep.shift()();
     };
     fileWriter.onerror = errorHandler('write');
-    var blob = new Blob([testData], {type: "text/plain"});
+    const blob = new Blob([TEST_DATA], {type: 'text/plain'});
     dataSize = blob.size;
     fileWriter.write(blob);
   },
@@ -58,7 +58,7 @@ var testStep = [
     chrome.syncFileSystem.getUsageAndQuota(fileSystem, testStep.shift());
   },
   function(storageInfo) {
-    var usageAfterWrite = storageInfo.usageBytes;
+    const usageAfterWrite = storageInfo.usageBytes;
     chrome.test.assertEq(dataSize, usageAfterWrite - usageBeforeWrite);
     chrome.test.succeed();
   }
@@ -66,7 +66,7 @@ var testStep = [
 
 function errorHandler(msg) {
   return function(error) {
-    chrome.test.fail(msg + ": " + error.name);
+    chrome.test.fail(`${msg}: ${error.name}`);
   };
 }
 

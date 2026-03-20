@@ -4,13 +4,13 @@
 
 const socket = chrome.socket;
 
-var onListen = function(result) {
+const onListen = function(result) {
   chrome.test.assertEq(0, result);
   chrome.test.succeed();
 };
 
-var onCreate = function(socketInfo) {
-  sid = socketInfo.socketId;
+const onCreate = function(socketInfo) {
+  const sid = socketInfo.socketId;
   socket.listen(sid, '0.0.0.0', 1234, onListen);
 };
 

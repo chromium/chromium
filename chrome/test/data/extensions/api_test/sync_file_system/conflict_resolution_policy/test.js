@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
-var callbackFail = chrome.test.callbackFail;
+const callbackPass = chrome.test.callbackPass;
+const callbackFail = chrome.test.callbackFail;
 
-var testStep = [
+const testStep = [
   function testNonDefaultConflictResolutionPolicy() {
     chrome.syncFileSystem.setConflictResolutionPolicy(
         'manual',
@@ -19,8 +19,8 @@ var testStep = [
     chrome.syncFileSystem.getConflictResolutionPolicy(
         callbackPass(testStep.shift()));
   },
-  function checkConflictResolutionPolicy(policy_returned) {
-    chrome.test.assertEq('last_write_win', policy_returned);
+  function checkConflictResolutionPolicy(policyReturned) {
+    chrome.test.assertEq('last_write_win', policyReturned);
     chrome.test.succeed();
   }
 ];

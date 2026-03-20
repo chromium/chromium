@@ -14,7 +14,7 @@
 // `ExtensionCorruptLocalSettingsApiTest.InvalidJsonClear` verification).
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'local') {
-    chrome.test.sendMessage('on_changed_success: ' + JSON.stringify(changes));
+    chrome.test.sendMessage(`on_changed_success: ${JSON.stringify(changes)}`);
   }
 });
 
@@ -41,7 +41,7 @@ function onCommand(command) {
     });
   } else if (command === 'set_data') {
     chrome.storage.local.set(
-        {'test_key': 'test_value', 'good_key': 'good_value'}, () => {
+        {test_key: 'test_value', good_key: 'good_value'}, () => {
           report('set');
         });
   }
@@ -60,9 +60,9 @@ function onCommand(command) {
 function report(operation, data) {
   let message = operation;
   if (chrome.runtime.lastError) {
-    message += '_error: ' + chrome.runtime.lastError.message;
+    message += `_error: ${chrome.runtime.lastError.message}`;
   } else {
-    message += '_success' + (data ? ': ' + JSON.stringify(data) : '');
+    message += `_success${data ? `: ${JSON.stringify(data)}` : ''}`;
   }
 
   chrome.test.sendMessage(message, (reply) => {

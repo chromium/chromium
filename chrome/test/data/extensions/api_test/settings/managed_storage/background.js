@@ -59,7 +59,7 @@ chrome.test.runTests([
             'boolean-policy': true,
             'list-policy': [ 'one', 'two', 'three' ],
             'dict-policy': {
-              'list': [ { 'one': 1, 'two': 2 }, { 'three': 3} ]
+              list: [ { one: 1, two: 2 }, { three: 3} ]
             }
           }, results);
         }));
@@ -73,13 +73,13 @@ chrome.test.runTests([
   },
 
   function writingFails() {
-    var kReadOnlyError = 'This is a read-only store.';
+    const kReadOnlyError = 'This is a read-only store.';
     chrome.storage.managed.clear(chrome.test.callbackFail(kReadOnlyError));
     chrome.storage.managed.remove(
         'string-policy',
         chrome.test.callbackFail(kReadOnlyError));
     chrome.storage.managed.set({
-      'key': 'value'
+      key: 'value'
     }, chrome.test.callbackFail(kReadOnlyError));
   }
 ]);

@@ -10,29 +10,29 @@
 // order to succeed. Changes to any prefs listed below or their behavior may
 // result in these tests failing.
 
-var kTestPrefName = 'autofill.profile_enabled';
-var kTestPrefValue = true;
+const kTestPrefName = 'autofill.profile_enabled';
+const kTestPrefValue = true;
 
 // This corresponds to policy key: kHomepageIsNewTabPage used in
 // settings_private_apitest.cc.
-var kTestEnforcedPrefName = 'homepage_is_newtabpage';
+const kTestEnforcedPrefName = 'homepage_is_newtabpage';
 
 // Command line switch is set in settings_private_apitest.cc such that this
 // preference is disabled.
-var kTestDisabledPrefName = 'generated.https_first_mode_enabled';
+const kTestDisabledPrefName = 'generated.https_first_mode_enabled';
 
-var kTestPageId = 'pageId';
+const kTestPageId = 'pageId';
 
-var kTestSupervisedPrefName = 'signin.allowed_on_next_startup';
+const kTestSupervisedPrefName = 'signin.allowed_on_next_startup';
 
 function callbackResult(result) {
   if (chrome.runtime.lastError)
     chrome.test.fail(chrome.runtime.lastError.message);
   else if (result == false)
-    chrome.test.fail('Failed: ' + result);
+    chrome.test.fail(`Failed: ${result}`);
 }
 
-var availableTests = [
+const availableTests = [
   function setPref() {
     chrome.settingsPrivate.setPref(
         kTestPrefName,

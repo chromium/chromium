@@ -2,43 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var fileSystem;
-var testFiles = ['Test1', 'Test2'];
+let fileSystem;
+const TEST_FILES = ['Test1', 'Test2'];
 
-var testStep = [
+const testStep = [
   function() {
     chrome.syncFileSystem.requestFileSystem(testStep.shift());
   },
   // Create empty files.
   function(fs) {
     fileSystem = fs;
-    createFiles(fileSystem, testFiles.slice(0), testStep.shift());
+    createFiles(fileSystem, TEST_FILES.slice(0), testStep.shift());
   },
   // Read entries in root directory.
   function() {
-    var reader = fileSystem.root.createReader();
+    const reader = fileSystem.root.createReader();
     reader.readEntries(testStep.shift(), errorHandler);
   },
   // Query file statuses for the returned entries.
   function(entries) {
-    chrome.test.assertEq(testFiles.length, entries.length);
+    chrome.test.assertEq(TEST_FILES.length, entries.length);
     chrome.syncFileSystem.getFileStatuses(
       entries, chrome.test.callbackPass(testStep.shift()));
   },
   // Verify the returned statuses.
   function(fileStatuses) {
     // Sort the input and results array so that their orders match.
-    testFiles.sort();
+    TEST_FILES.sort();
     fileStatuses.sort(sortByFilePath);
 
-    chrome.test.assertEq(testFiles.length, fileStatuses.length);
-    for (var i = 0; i < testFiles.length; ++i) {
-      chrome.test.assertEq(testFiles[i], fileStatuses[i].fileEntry.name);
-      chrome.test.assertEq('/' + testFiles[i],
+    chrome.test.assertEq(TEST_FILES.length, fileStatuses.length);
+    for (let i = 0; i < TEST_FILES.length; ++i) {
+      chrome.test.assertEq(TEST_FILES[i], fileStatuses[i].fileEntry.name);
+      chrome.test.assertEq(`/${TEST_FILES[i]}`,
                            fileStatuses[i].fileEntry.fullPath);
       chrome.test.assertTrue(fileStatuses[i].fileEntry.isFile);
       chrome.test.assertTrue(!fileStatuses[i].error);
-      var expectedStatus = 'pending';
+      const expectedStatus = 'pending';
       chrome.test.assertEq(expectedStatus, fileStatuses[i].status);
     }
     chrome.test.succeed();
@@ -65,7 +65,7 @@ function sortByFilePath(a, b) {
 }
 
 function errorHandler(e) {
-  console.log("Failed test with error" + e.name);
+  console.log(`Failed test with error ${e.name}`);
   chrome.test.fail();
 }
 

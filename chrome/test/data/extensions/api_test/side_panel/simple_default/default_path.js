@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 document.body.onload = () => {
-  chrome.test.sendMessage("default_path");
+  chrome.test.sendMessage('default_path');
 }

@@ -11,9 +11,9 @@ let onEventSeen;
 
 ['sync', 'local', 'session'].forEach(function(namespace) {
   chrome.storage[namespace].notifications = {};
-  chrome.storage.onChanged.addListener(function(changes, event_namespace) {
-    if (event_namespace == namespace) {
-      var notifications = chrome.storage[namespace].notifications;
+  chrome.storage.onChanged.addListener(function(changes, eventNamespace) {
+    if (eventNamespace == namespace) {
+      const notifications = chrome.storage[namespace].notifications;
       Object.keys(changes).forEach(function(key) {
         notifications[key] = changes[key];
       });
@@ -44,9 +44,9 @@ function waitForEvent() {
 // non-incognito modes.
 // Each function accepts a callback which should be run when the settings
 // operation fully completes.
-var testActions = {
+const testActions = {
   noop: function(callback) {
-    this.get("", callback);
+    this.get('', callback);
   },
   assertEmpty: function(callback) {
     this.get(null, function(settings) {
@@ -56,17 +56,17 @@ var testActions = {
   },
   assertFoo: function(callback) {
     this.get(null, function(settings) {
-      chrome.test.assertEq({foo: "bar"}, settings);
+      chrome.test.assertEq({foo: 'bar'}, settings);
       callback();
     });
   },
   setFoo: function(callback) {
     seenLatestEvent = false;
-    this.set({foo: "bar"}, callback);
+    this.set({foo: 'bar'}, callback);
   },
   removeFoo: function(callback) {
     seenLatestEvent = false;
-    this.remove("foo", callback);
+    this.remove('foo', callback);
   },
   clear: function(callback) {
     this.clear(callback);
@@ -101,17 +101,17 @@ var testActions = {
 // to stop (when the message has isFinalAction set to true).
 function testEverything() {
   function next() {
-    var waiting =
-        chrome.extension.inIncognitoContext ? "waiting_incognito" : "waiting";
+    const waiting =
+        chrome.extension.inIncognitoContext ? 'waiting_incognito' : 'waiting';
     chrome.test.sendMessage(waiting, function(messageJson) {
       // We will get empty messages, which are considered a noop.
-      var message = { action: 'noop', isFinalAction: false, namespace: 'sync' };
+      let message = { action: 'noop', isFinalAction: false, namespace: 'sync' };
       if (messageJson.length != 0) {
         message = JSON.parse(messageJson);
       }
-      var action = testActions[message.action];
+      const action = testActions[message.action];
       if (!action) {
-        chrome.test.fail("Unknown action: " + message.action);
+        chrome.test.fail(`Unknown action: ${message.action}`);
         return;
       }
       action.bind(chrome.storage[message.namespace])(

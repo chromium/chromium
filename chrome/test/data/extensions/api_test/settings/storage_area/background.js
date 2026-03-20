@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var storageAreaOnChanged = function() {
+const storageAreaOnChanged = function() {
   // Checks the onChanged callback is called from both StorageArea and
   // chrome.storage.
-  var localStorageArea = chrome.storage.local;
+  const localStorageArea = chrome.storage.local;
   chrome.test.listenOnce(localStorageArea.onChanged, function(changes) {
     chrome.test.assertEq({key:{newValue:'value'}}, changes);
   });

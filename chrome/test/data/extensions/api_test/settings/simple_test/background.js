@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
-var succeed = chrome.test.succeed;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
+const succeed = chrome.test.succeed;
 
 function test(stage0) {
-  let apis =
+  const apis =
       [chrome.storage.sync, chrome.storage.local, chrome.storage.session];
   apis.forEach(function(api) {
     api.succeed = chrome.test.callbackPass(api.clear.bind(api));
@@ -38,9 +38,9 @@ chrome.test.runTests([
   function getWhenNonempty() {
     function stage0() {
       this.set({
-        'foo'  : 'bar',
-        'baz'  : 'qux',
-        'hello': 'world'
+        foo  : 'bar',
+        baz  : 'qux',
+        hello: 'world'
       }, stage1.bind(this));
     }
     function stage1() {
@@ -48,23 +48,23 @@ chrome.test.runTests([
     }
     function stage2(settings) {
       assertEq({
-        'foo': 'bar',
-        'baz': 'qux'
+        foo: 'bar',
+        baz: 'qux'
       }, settings);
       this.get(['nothing', 'baz', 'hello', 'ignore'], stage3.bind(this));
     }
     function stage3(settings) {
       assertEq({
-        'baz'  : 'qux',
-        'hello': 'world'
+        baz  : 'qux',
+        hello: 'world'
       }, settings);
       this.get(null, stage4.bind(this));
     }
     function stage4(settings) {
       assertEq({
-        'foo'  : 'bar',
-        'baz'  : 'qux',
-        'hello': 'world'
+        foo  : 'bar',
+        baz  : 'qux',
+        hello: 'world'
       }, settings);
       this.succeed();
     }
@@ -85,8 +85,8 @@ chrome.test.runTests([
   function getKeysWhenNonEmpty() {
     function stage0() {
       this.set({
-        'foo'  : 'bar',
-        'baz'  : 'qux'
+        foo  : 'bar',
+        baz  : 'qux'
       }, stage1.bind(this));
     }
     function stage1() {
@@ -112,9 +112,9 @@ chrome.test.runTests([
   function removeWhenNonempty() {
     function stage0() {
       this.set({
-        'foo'  : 'bar',
-        'baz'  : 'qux',
-        'hello': 'world'
+        foo  : 'bar',
+        baz  : 'qux',
+        hello: 'world'
       }, stage1.bind(this));
     }
     function stage1() {
@@ -125,8 +125,8 @@ chrome.test.runTests([
     }
     function stage3(settings) {
       assertEq({
-        'baz'  : 'qux',
-        'hello': 'world'
+        baz  : 'qux',
+        hello: 'world'
       }, settings);
       this.remove(['baz', 'nothing'], stage4.bind(this));
     }
@@ -135,7 +135,7 @@ chrome.test.runTests([
     }
     function stage5(settings) {
       assertEq({
-        'hello': 'world'
+        hello: 'world'
       }, settings);
       this.remove('hello', stage6.bind(this));
     }
@@ -152,15 +152,15 @@ chrome.test.runTests([
   function setWhenOverwriting() {
     function stage0() {
       this.set({
-        'foo'  : 'bar',
-        'baz'  : 'qux',
-        'hello': 'world'
+        foo  : 'bar',
+        baz  : 'qux',
+        hello: 'world'
       }, stage1.bind(this));
     }
     function stage1() {
       this.set({
-        'foo'  : 'otherBar',
-        'baz'  : 'otherQux'
+        foo  : 'otherBar',
+        baz  : 'otherQux'
       }, stage2.bind(this));
     }
     function stage2() {
@@ -168,14 +168,14 @@ chrome.test.runTests([
     }
     function stage3(settings) {
       assertEq({
-        'foo'  : 'otherBar',
-        'baz'  : 'otherQux',
-        'hello': 'world'
+        foo  : 'otherBar',
+        baz  : 'otherQux',
+        hello: 'world'
       }, settings);
       this.set({
-        'baz'  : 'anotherQux',
-        'hello': 'otherWorld',
-        'some' : 'value'
+        baz  : 'anotherQux',
+        hello: 'otherWorld',
+        some : 'value'
       }, stage4.bind(this));
     }
     function stage4() {
@@ -183,10 +183,10 @@ chrome.test.runTests([
     }
     function stage5(settings) {
       assertEq({
-        'foo'  : 'otherBar',
-        'baz'  : 'anotherQux',
-        'hello': 'otherWorld',
-        'some' : 'value'
+        foo  : 'otherBar',
+        baz  : 'anotherQux',
+        hello: 'otherWorld',
+        some : 'value'
       }, settings);
       this.succeed();
     }
@@ -210,9 +210,9 @@ chrome.test.runTests([
   function clearWhenNonempty() {
     function stage0() {
       this.set({
-        'foo'  : 'bar',
-        'baz'  : 'qux',
-        'hello': 'world'
+        foo  : 'bar',
+        baz  : 'qux',
+        hello: 'world'
       }, stage1.bind(this));
     }
     function stage1() {
@@ -232,7 +232,7 @@ chrome.test.runTests([
     function stage0() {
       this.set({
         'foo.bar' : 'baz',
-        'one'     : {'two': 'three'}
+        one     : {two: 'three'}
       }, stage1.bind(this));
     }
     function stage1() {
@@ -241,7 +241,7 @@ chrome.test.runTests([
     function stage2(settings) {
       assertEq({
         'foo.bar' : 'baz',
-        'one'     : {'two': 'three'}
+        one     : {two: 'three'}
       }, settings);
       this.get('one.two', stage3.bind(this));
     }
@@ -254,7 +254,7 @@ chrome.test.runTests([
     }
     function stage5(settings) {
       assertEq({
-        'one'     : {'two': 'three'}
+        one     : {two: 'three'}
       }, settings);
       this.succeed();
     }
@@ -264,57 +264,57 @@ chrome.test.runTests([
   function getWithDefaultValues() {
     function stage0() {
       this.get({
-        'foo': 'defaultBar',
-        'baz': [1, 2, 3]
+        foo: 'defaultBar',
+        baz: [1, 2, 3]
       }, stage1.bind(this));
     }
     function stage1(settings) {
       assertEq({
-        'foo': 'defaultBar',
-        'baz': [1, 2, 3]
+        foo: 'defaultBar',
+        baz: [1, 2, 3]
       }, settings);
       this.get(null, stage2.bind(this));
     }
     function stage2(settings) {
       assertEq({}, settings);
-      this.set({'foo': 'bar'}, stage3.bind(this));
+      this.set({foo: 'bar'}, stage3.bind(this));
     }
     function stage3() {
       this.get({
-        'foo': 'defaultBar',
-        'baz': [1, 2, 3]
+        foo: 'defaultBar',
+        baz: [1, 2, 3]
       }, stage4.bind(this));
     }
     function stage4(settings) {
       assertEq({
-        'foo': 'bar',
-        'baz': [1, 2, 3]
+        foo: 'bar',
+        baz: [1, 2, 3]
       }, settings);
-      this.set({'baz': {}}, stage5.bind(this));
+      this.set({baz: {}}, stage5.bind(this));
     }
     function stage5() {
       this.get({
-        'foo': 'defaultBar',
-        'baz': [1, 2, 3]
+        foo: 'defaultBar',
+        baz: [1, 2, 3]
       }, stage6.bind(this));
     }
     function stage6(settings) {
       assertEq({
-        'foo': 'bar',
-        'baz': {}
+        foo: 'bar',
+        baz: {}
       }, settings);
       this.remove('foo', stage7.bind(this));
     }
     function stage7() {
       this.get({
-        'foo': 'defaultBar',
-        'baz': [1, 2, 3]
+        foo: 'defaultBar',
+        baz: [1, 2, 3]
       }, stage8.bind(this));
     }
     function stage8(settings) {
       assertEq({
-        'foo': 'defaultBar',
-        'baz': {}
+        foo: 'defaultBar',
+        baz: {}
       }, settings);
       this.succeed();
     }
@@ -332,7 +332,7 @@ chrome.test.runTests([
     assertEq('undefined', typeof chrome.storage.local.QUOTA_BYTES_PER_ITEM);
     assertEq('undefined', typeof chrome.storage.local.MAX_ITEMS);
 
-    var area = chrome.storage.sync;
+    const area = chrome.storage.sync;
     function stage0() {
       area.getBytesInUse(null, stage1);
     }
@@ -366,13 +366,13 @@ chrome.test.runTests([
     // This only tests that getBytesInUse returns a size bigger than zero when
     // there is a value stored in session. More in depth testing is made in
     // extensions/browser/api/storage/session_storage_manager_unittest.cc .
-    var area = chrome.storage.session;
+    const area = chrome.storage.session;
     function stage0() {
       area.getBytesInUse(null, stage1);
     }
     function stage1(bytesInUse) {
       assertEq(0, bytesInUse);
-      let val = 'a'.repeat(32);
+      const val = 'a'.repeat(32);
       area.set({a: val}, stage2);
     }
     function stage2() {
@@ -387,7 +387,7 @@ chrome.test.runTests([
   },
 
   function nullsInArgs() {
-    var area = chrome.storage.local;
+    const area = chrome.storage.local;
     function stage0() {
       area.get({
         foo: 'foo',
