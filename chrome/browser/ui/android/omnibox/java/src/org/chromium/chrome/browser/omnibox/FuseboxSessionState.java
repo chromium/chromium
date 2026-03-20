@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 
 import java.util.Optional;
 
@@ -109,7 +110,9 @@ public class FuseboxSessionState implements UserData {
     /** Constructs a new, empty FuseboxSessionState. */
     private FuseboxSessionState(AutocompleteInput input) {
         mAutocompleteInput = input;
-        mAutocompleteInput.getToolModeSupplier().addSyncObserver(mOnToolModeChanged);
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            mAutocompleteInput.getToolModeSupplier().addSyncObserver(mOnToolModeChanged);
+        }
     }
 
     /** Returns the current {@link Profile} for this session. */
@@ -214,6 +217,9 @@ public class FuseboxSessionState implements UserData {
     @Override
     public void destroy() {
         tearDownSessionControllers();
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            mAutocompleteInput.getToolModeSupplier().removeObserver(mOnToolModeChanged);
+        }
     }
 
     /** Tear down session controllers. */
@@ -243,7 +249,14 @@ public class FuseboxSessionState implements UserData {
     }
 
     private void onToolModeChanged(int toolMode) {
+        assert OmniboxFeatures.sShowModelPicker.getValue();
         if (mComposeBoxQueryControllerBridge != null) {
+            // TODO(https://crbug.com/492562651): Infra either needs to consistently support this
+            // changing tool mode, or simplify the API in some way such that this code can avoid
+            // knowing about it. This logic should not be here.
+            if (toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE) {
+                toolMode = ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
+            }
             mComposeBoxQueryControllerBridge.setActiveTool(toolMode);
         }
     }
