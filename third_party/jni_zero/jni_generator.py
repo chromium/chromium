@@ -5,7 +5,6 @@
 
 import collections
 import dataclasses
-import itertools
 import os
 import pickle
 import shutil
@@ -185,6 +184,7 @@ class CalledByNative:
 
 @dataclasses.dataclass
 class Field:
+  java_class: java_types.JavaClass  # Containing class (might be a nested class).
   name: str
   java_type: java_types.JavaType
   static: bool
@@ -256,12 +256,13 @@ class JniObject:
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
     self.fields = [
-        Field(name=f.name,
+        Field(java_class=f.java_class,
+              name=f.name,
               java_type=f.java_type,
               static=f.static,
               final=f.final,
               is_system_class=from_javap,
-              const_value=f.const_value if f.java_type.is_primitive() else None)
+              const_value=f.const_value)
         for f in parsed_file.fields
     ]
 
@@ -309,7 +310,7 @@ class JniObject:
     return [n for n in self.natives if not n.is_proxy]
 
   def GetClassesToBeImported(self):
-    classes = set()
+    ret = set()
     for n in self.proxy_natives:
       for t in list(n.signature.param_types) + [n.return_type]:
         class_obj = t.java_class
@@ -319,27 +320,30 @@ class JniObject:
         if class_obj.full_name_with_slashes.startswith('java/lang/'):
           # java.lang** are never imported.
           continue
-        classes.add(class_obj)
+        ret.add(class_obj)
 
-    return sorted(classes)
+    return sorted(ret)
 
   def GetClassesToBeLazilyDefined(self):
-    classes = set()
+    ret = {f.java_class for f in self.fields if f.java_type.enable_mirror()}
+    ret.update(f.java_type.java_class for f in self.fields
+               if f.java_type.enable_mirror())
     for n in self.called_by_natives + self.natives:
       if n.java_class.enable_mirror():
-        classes.add(n.java_class)
-      classes.update(t.java_class for t in n.signature.param_types
-                     if t.enable_mirror())
+        ret.add(n.java_class)
+      ret.update(t.java_class for t in n.signature.param_types
+                 if t.enable_mirror())
       if n.return_type.enable_mirror():
-        classes.add(n.return_type.java_class)
-    return sorted(classes)
+        ret.add(n.return_type.java_class)
+    return sorted(ret)
 
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
 
 
 def _CollectReferencedClasses(jni_obj):
-  ret = set()
+  ret = {f.java_class for f in jni_obj.fields}
+
   # @CalledByNatives can appear on nested classes, so check each one.
   for called_by_native in jni_obj.called_by_natives:
     ret.add(called_by_native.java_class)
@@ -420,25 +424,19 @@ def _generate_headers(jni_mode,
       header_common.class_accessors(sb, java_classes, jni_obj.module_name)
 
   if jni_obj.fields:
-    non_const_fields = [f for f in jni_obj.fields if f.const_value is None]
-    if non_const_fields:
+    fields_needing_accessors = [
+        f for f in jni_obj.fields
+        if f.const_value is None or f.java_type.is_string()
+    ]
+    if fields_needing_accessors:
       with sb.section('FieldId Accessors'):
         sb('#pragma clang diagnostic push\n')
         sb('#pragma clang diagnostic ignored "-Wunique-object-duplication"\n')
         called_by_native_header.field_accessors(sb, jni_obj.java_class,
-                                                non_const_fields)
+                                                fields_needing_accessors)
         sb('#pragma clang diagnostic pop\n')
 
   with sb.namespace(jni_obj.jni_namespace):
-    constant_fields = [
-        f for f in jni_obj.fields
-        if f.const_value and f.java_type == java_types.INT
-    ]
-    if constant_fields:
-      with sb.section('Constants'):
-        called_by_native_header.constants_enums(sb, jni_obj.java_class,
-                                                constant_fields)
-
     if jni_obj.natives and not enable_definition_macros:
       with sb.section('Java to native functions'):
         for native in jni_obj.natives:
@@ -450,17 +448,15 @@ def _generate_headers(jni_mode,
                                             unshared_header_file,
                                             include_forward_declaration=True)
 
-    if jni_obj.called_by_natives or jni_obj.fields:
+    if jni_obj.called_by_natives:
       with sb.section('Native to Java functions'):
         for called_by_native in jni_obj.called_by_natives:
           called_by_native_header.method_definition(sb, called_by_native)
-      if jni_obj.fields:
-        with sb.section('Field Accessors'):
-          for field in jni_obj.fields:
-            called_by_native_header.field_definition(sb, jni_obj.java_class,
-                                                     field)
 
-  if jni_obj.called_by_natives:
+  if jni_obj.called_by_natives or jni_obj.fields:
+    all_classes = {f.java_class for f in jni_obj.fields}
+    all_classes.update(c.java_class for c in jni_obj.called_by_natives)
+    all_classes = sorted(all_classes)
     with sb.section('jobject-subclass-aware definitions:'):
       if jni_obj.jni_namespace:
         sb('// Ensure namespace exists for "using namespace"\n')
@@ -470,15 +466,17 @@ def _generate_headers(jni_mode,
       with sb.namespace('jni_zero_internal'):
         if jni_obj.jni_namespace:
           sb(f'using namespace ::{jni_obj.jni_namespace};\n\n')
-        grouped = itertools.groupby(jni_obj.called_by_natives,
-                                    key=lambda cbn: cbn.java_class)
-        for java_class, cbns in grouped:
+
+        for java_class in all_classes:
+          fields = [f for f in jni_obj.fields if f.java_class == java_class]
+          cbns = [
+              c for c in jni_obj.called_by_natives if c.java_class == java_class
+          ]
           called_by_native_header.called_by_natives_specialization(
-              sb, java_class, list(cbns))
+              sb, java_class, fields, cbns)
 
       sb('\n')
-      cbn_classes = sorted({x.java_class for x in jni_obj.called_by_natives})
-      called_by_native_header.called_by_natives_aliases(sb, cbn_classes)
+      called_by_native_header.called_by_natives_aliases(sb, all_classes)
 
   sb(epilogue)
   unshared_header_content = sb.to_string()

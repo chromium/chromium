@@ -36,7 +36,7 @@ PlatformEvent NativeEventFromEvent(Event& event) {
 }
 
 #define ACTION_CASE(x)              \
-  case JNI_MotionEvent::ACTION_##x: \
+  case JMotionEventJni::ACTION_##x: \
     return MotionEvent::Action::x
 
 MotionEvent::Action FromAndroidAction(int android_action) {
@@ -63,15 +63,15 @@ MotionEvent::Action FromAndroidAction(int android_action) {
 
 MotionEvent::ToolType FromAndroidToolType(int android_tool_type) {
   switch (android_tool_type) {
-    case JNI_MotionEvent::TOOL_TYPE_UNKNOWN:
+    case JMotionEventJni::TOOL_TYPE_UNKNOWN:
       return MotionEvent::ToolType::UNKNOWN;
-    case JNI_MotionEvent::TOOL_TYPE_FINGER:
+    case JMotionEventJni::TOOL_TYPE_FINGER:
       return MotionEvent::ToolType::FINGER;
-    case JNI_MotionEvent::TOOL_TYPE_STYLUS:
+    case JMotionEventJni::TOOL_TYPE_STYLUS:
       return MotionEvent::ToolType::STYLUS;
-    case JNI_MotionEvent::TOOL_TYPE_MOUSE:
+    case JMotionEventJni::TOOL_TYPE_MOUSE:
       return MotionEvent::ToolType::MOUSE;
-    case JNI_MotionEvent::TOOL_TYPE_ERASER:
+    case JMotionEventJni::TOOL_TYPE_ERASER:
       return MotionEvent::ToolType::ERASER;
     default:
       NOTREACHED() << "Invalid Android MotionEvent tool type: "

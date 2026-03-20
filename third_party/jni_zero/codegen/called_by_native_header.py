@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Codegen for calling Java methods from C++."""
 
+import json
+
 from codegen import convert_type
 from codegen import header_common
 import common
@@ -45,6 +47,8 @@ def field_accessors(sb, java_class, fields):
 
 def _const_value(field):
   value = field.const_value
+  if field.java_type.is_string():
+    return json.dumps(value)
   if field.java_type == java_types.LONG:
     # C++ parser can't parse MIN_VALUE :P.
     if value == '-9223372036854775808':
@@ -157,14 +161,6 @@ def field_definition(sb, java_class, field):
       with sb.statement():
         sb(f'env->{_jni_field_function_name(field, True)}({receiver_arg}, '
            f'field_id, {param_rvalue})')
-
-
-def constants_enums(sb, java_class, constant_fields):
-  sb(f'enum Java_{java_class.name}_constant_fields {{\n')
-  with sb.indent(2):
-    for f in constant_fields:
-      sb(f'{f.name} = {f.const_value},\n')
-  sb('};\n\n')
 
 
 def _return_type_cpp_non_mirror(return_type):
@@ -353,15 +349,112 @@ using {java_class.mirror_namespace}::{jobject_name}Jni;
 """)
 
 
-def called_by_natives_specialization(sb, java_class, called_by_natives):
+def called_by_natives_specialization(sb, java_class, fields, called_by_natives):
   sb('template<>\n')
   sb(f'class _CalledByNatives<{java_class.to_mirror_cpp()}>')
   with sb.block(after=';'):
     sb('public:\n')
+    for f in fields:
+      if f.const_value is not None:
+        if f.java_type.is_string():
+          sb(f'static inline constexpr char {f.name}[] = {_const_value(f)};\n')
+        else:
+          sb(f'static inline constexpr {f.java_type.to_cpp()} '
+             f'{f.name} = {_const_value(f)};\n')
+    for f in fields:
+      _mirrored_field_getter(sb, java_class, f)
+      if not f.final:
+        _mirrored_field_setter(sb, java_class, f)
     for cbn in called_by_natives:
       _mirrored_cpp_function(sb, cbn)
       sb('\n')
   sb('\n')
+
+
+def _mirrored_field_getter(sb, java_class, field):
+  jobject_type = java_class.to_mirror_cpp()
+  if field.java_type.enable_mirror():
+    return_jobject_type = field.java_type.java_class.to_mirror_cpp()
+    return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
+  else:
+    return_jobject_type = field.java_type.to_cpp()
+    return_type_cpp = _return_type_cpp_non_mirror(field.java_type)
+
+  if field.static:
+    sb('static ')
+
+  sb(f'{return_type_cpp} Get_{field.name}(JNIEnv* env)')
+  if not field.static:
+    sb(' const')
+
+  with sb.block():
+    if field.const_value is not None and field.java_type.is_primitive():
+      sb(f'return {_const_value(field)};\n')
+      return
+
+    if field.static:
+      class_accessor = header_common.class_accessor_expression(java_class)
+      sb(f'jclass clazz = {class_accessor};\n')
+      sb('JNI_ZERO_DCHECK(clazz);\n')
+      receiver = 'clazz'
+    else:
+      sb('auto this_obj = reinterpret_cast')
+      sb(f'<const ::jni_zero::JavaRef<{jobject_type}>*>(this);\n')
+      receiver = 'this_obj->obj()'
+
+    field_id_accessor = _field_id_accessor_name(java_class, field)
+    sb(f'jfieldID field_id = {field_id_accessor}(env);\n')
+    jni_func_name = _jni_field_function_name(field, False)
+    getter_part = f'env->{jni_func_name}({receiver}, field_id)'
+
+    with sb.statement():
+      sb('return ')
+      if field.java_type.is_primitive():
+        sb(getter_part)
+        return
+
+      sb(f'::jni_zero::ScopedJavaLocalRef<>::Adopt(env, {getter_part})')
+      if return_jobject_type != 'jobject':
+        sb(f'\n    .As<{return_jobject_type}>()')
+
+
+def _mirrored_field_setter(sb, java_class, field):
+  jobject_type = java_class.to_mirror_cpp()
+  param_type = _param_type_cpp_mirror(field.java_type)
+  if field.static:
+    sb('static ')
+
+  sb(f'void Set_{field.name}(JNIEnv* env, {param_type} value)')
+  if not field.static:
+    sb(' const')
+
+  with sb.block():
+    if field.static:
+      class_accessor = header_common.class_accessor_expression(java_class)
+      sb(f'jclass clazz = {class_accessor};\n')
+      sb('JNI_ZERO_DCHECK(clazz);\n')
+      receiver_arg = 'clazz'
+    else:
+      sb('auto this_obj = reinterpret_cast')
+      sb(f'<const ::jni_zero::JavaRef<{jobject_type}>*>(this);\n')
+      receiver_arg = 'this_obj->obj()'
+
+    param_rvalue = 'value'
+    if field.java_type.converted_type:
+      convert_type.to_jni_assignment(sb, 'converted_value', 'value',
+                                     field.java_type)
+      param_rvalue = 'converted_value'
+
+    if not field.java_type.is_primitive():
+      param_rvalue = f'{param_rvalue}.obj()'
+    elif field.java_type.primitive_name == 'int' and not field.java_type.converted_type:
+      param_rvalue = f'as_jint({param_rvalue})'
+
+    field_id_accessor = _field_id_accessor_name(java_class, field)
+    sb(f'jfieldID field_id = {field_id_accessor}(env);\n')
+    with sb.statement():
+      sb(f'env->{_jni_field_function_name(field, True)}({receiver_arg}, '
+         f'field_id, {param_rvalue})')
 
 
 def _mirrored_cpp_function(sb, cbn):

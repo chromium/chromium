@@ -558,7 +558,7 @@ void WebContentsViewAndroid::UpdateDragOperation(
 // changes, we resend the entered event before sending the update or drop.
 bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   switch (event.action()) {
-    case JNI_DragEvent::ACTION_DRAG_ENTERED: {
+    case JDragEventJni::ACTION_DRAG_ENTERED: {
       drag_metadata_.clear();
       for (const std::u16string& mime_type : event.mime_types()) {
         if (mime_type == ui::kMimeTypePlainText16 ||
@@ -581,10 +581,10 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       OnDragEntered(event.location(), event.screen_location());
       break;
     }
-    case JNI_DragEvent::ACTION_DRAG_LOCATION:
+    case JDragEventJni::ACTION_DRAG_LOCATION:
       OnDragUpdated(event.location(), event.screen_location());
       break;
-    case JNI_DragEvent::ACTION_DROP: {
+    case JDragEventJni::ACTION_DROP: {
       drop_data_ = std::make_unique<DropData>();
       drop_data_->did_originate_from_renderer = false;
       drop_data_->document_is_handling_drag = document_is_handling_drag_;
@@ -611,13 +611,13 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       OnPerformDrop(event.location(), event.screen_location());
       break;
     }
-    case JNI_DragEvent::ACTION_DRAG_EXITED:
+    case JDragEventJni::ACTION_DRAG_EXITED:
       OnDragExited();
       break;
-    case JNI_DragEvent::ACTION_DRAG_ENDED:
+    case JDragEventJni::ACTION_DRAG_ENDED:
       OnDragEnded();
       break;
-    case JNI_DragEvent::ACTION_DRAG_STARTED:
+    case JDragEventJni::ACTION_DRAG_STARTED:
       // Nothing meaningful to do.
       break;
   }

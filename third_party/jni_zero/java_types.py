@@ -250,6 +250,9 @@ class JavaType:
   def is_void(self):
     return self.primitive_name == 'void'
 
+  def is_string(self):
+    return self == STRING
+
   def to_array_element_type(self):
     assert self.is_array()
     return JavaType(array_dimensions=self.array_dimensions - 1,
@@ -507,6 +510,7 @@ INT = JavaType(primitive_name='int', nullable=False)
 DOUBLE = JavaType(primitive_name='double', nullable=False)
 FLOAT = JavaType(primitive_name='float', nullable=False)
 LONG = JavaType(primitive_name='long', nullable=False)
+STRING = JavaType(java_class=STRING_CLASS)
 VOID = JavaType(primitive_name='void', nullable=False)
 
 _EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)

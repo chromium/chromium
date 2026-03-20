@@ -16,36 +16,32 @@ template <>
 gfx::Rect FromJniType<gfx::Rect>(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_rect) {
-  return gfx::Rect(JNI_Rect::Java_Rect_GetField_left(env, j_rect),
-                   JNI_Rect::Java_Rect_GetField_top(env, j_rect),
-                   JNI_Rect::Java_Rect_width(env, j_rect),
-                   JNI_Rect::Java_Rect_height(env, j_rect));
+  const auto& rect = j_rect.As<JRect>();
+  return gfx::Rect(rect->Get_left(env), rect->Get_top(env), rect->width(env),
+                   rect->height(env));
 }
 
 template <>
 base::android::ScopedJavaLocalRef<jobject> ToJniType<gfx::Rect>(
     JNIEnv* env,
     const gfx::Rect& rect) {
-  return JNI_Rect::Java_Rect_Constructor(env, rect.x(), rect.y(), rect.right(),
-                                         rect.bottom());
+  return JRectJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
 }
 
 template <>
 gfx::RectF FromJniType<gfx::RectF>(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_rect) {
-  return gfx::RectF(JNI_RectF::Java_RectF_GetField_left(env, j_rect),
-                    JNI_RectF::Java_RectF_GetField_top(env, j_rect),
-                    JNI_RectF::Java_RectF_width(env, j_rect),
-                    JNI_RectF::Java_RectF_height(env, j_rect));
+  const auto& rect = j_rect.As<JRectF>();
+  return gfx::RectF(rect->Get_left(env), rect->Get_top(env), rect->width(env),
+                    rect->height(env));
 }
 
 template <>
 base::android::ScopedJavaLocalRef<jobject> ToJniType<gfx::RectF>(
     JNIEnv* env,
     const gfx::RectF& rect) {
-  return JNI_RectF::Java_RectF_Constructor(env, rect.x(), rect.y(),
-                                           rect.right(), rect.bottom());
+  return JRectFJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
 }
 
 }  // namespace jni_zero

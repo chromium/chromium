@@ -28,7 +28,7 @@ bool IsVirtualKeyboardEvent(JNIEnv* env,
                             const base::android::JavaRef<jobject>& event) {
   int flags =
       static_cast<int>(JNI_KeyEvent::Java_KeyEvent_getFlags(env, event));
-  return (flags & JNI_KeyEvent::FLAG_SOFT_KEYBOARD) != 0;
+  return (flags & JKeyEventJni::FLAG_SOFT_KEYBOARD) != 0;
 }
 
 }  // namespace android

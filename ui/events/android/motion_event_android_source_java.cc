@@ -73,20 +73,20 @@ float MotionEventAndroidSourceJava::GetPressure(size_t pointer_index) const {
 }
 
 float MotionEventAndroidSourceJava::GetAxisHscroll(size_t pointer_index) const {
-  return Java_MotionEvent_getAxisValue(AttachCurrentThread(), event_,
-                                       JNI_MotionEvent::AXIS_HSCROLL,
-                                       pointer_index);
+  return JNI_MotionEvent::Java_MotionEvent_getAxisValue(
+      AttachCurrentThread(), event_, JMotionEventJni::AXIS_HSCROLL,
+      pointer_index);
 }
 
 float MotionEventAndroidSourceJava::GetAxisVscroll(size_t pointer_index) const {
-  return Java_MotionEvent_getAxisValue(AttachCurrentThread(), event_,
-                                       JNI_MotionEvent::AXIS_VSCROLL,
-                                       pointer_index);
+  return JNI_MotionEvent::Java_MotionEvent_getAxisValue(
+      AttachCurrentThread(), event_, JMotionEventJni::AXIS_VSCROLL,
+      pointer_index);
 }
 
 float MotionEventAndroidSourceJava::GetRawTilt(size_t pointer_index) const {
-  return Java_MotionEvent_getAxisValue(
-      AttachCurrentThread(), event_, JNI_MotionEvent::AXIS_TILT, pointer_index);
+  return JNI_MotionEvent::Java_MotionEvent_getAxisValue(
+      AttachCurrentThread(), event_, JMotionEventJni::AXIS_TILT, pointer_index);
 }
 
 MotionEvent::ToolType MotionEventAndroidSourceJava::GetToolType(

@@ -49,6 +49,7 @@ class ParsedCalledByNative:
 
 @dataclasses.dataclass(order=True)
 class ParsedField:
+  java_class: java_types.JavaClass
   name: str
   java_type: java_types.JavaType
   static: bool
@@ -520,7 +521,8 @@ def parse_javap(filename, contents):
     if value:
       value = value.rstrip('LlDdFf')
     fields.append(
-        ParsedField(name=name,
+        ParsedField(java_class=java_class,
+                    name=name,
                     java_type=java_types.JavaType.from_descriptor(descriptor),
                     static='static' in modifiers,
                     final='final' in modifiers,
