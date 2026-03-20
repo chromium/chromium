@@ -14,6 +14,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/proto/features/finds.pb.h"
 
 namespace history {
 class HistoryService;
@@ -21,6 +22,8 @@ class QueryResults;
 }  // namespace history
 
 class OptimizationGuideKeyedService;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace finds {
 
@@ -33,8 +36,12 @@ class FindsService : public KeyedService, public base::SupportsUserData {
     virtual void OnOptInCriteriaFulfilled() = 0;
   };
 
+  // Registers the profile prefs used by FindsService.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   explicit FindsService(OptimizationGuideKeyedService* opt_guide_service,
-                        history::HistoryService* history_service);
+                        history::HistoryService* history_service,
+                        PrefService* pref_service);
   ~FindsService() override;
 
   FindsService(const FindsService&) = delete;
@@ -56,19 +63,26 @@ class FindsService : public KeyedService, public base::SupportsUserData {
     std::string message;
   };
 
-  void GetModelResponse(base::OnceCallback<void(Result)> callback);
+  void MarkNotificationShown(PrefService* pref_service);
+  void MarkThemeNotInterested(
+      PrefService* pref_service,
+      optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme::
+          ThemeType theme);
+  void ExecuteModelAndScheduleNotification(
+      base::OnceCallback<void(Result)> callback);
 
  private:
+  void CheckModelCooldownCriteriaAndMaybeExecute();
+  void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
+                              history::QueryResults results);
   void OnModelExecutionComplete(
       base::OnceCallback<void(Result)> callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
-  void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
-                              history::QueryResults results);
-
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_;
   raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<PrefService> pref_service_;
   base::ObserverList<Observer> observers_;
   base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<FindsService> weak_ptr_factory_{this};

@@ -75,7 +75,7 @@ void ChromeFindsAgent::GetFindsServiceModelResponse() {
 
   AddLogMessage("Executing model via FindsService...");
 
-  finds_service_->GetModelResponse(
+  finds_service_->ExecuteModelAndScheduleNotification(
       base::BindOnce(&ChromeFindsAgent::OnModelResponseComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

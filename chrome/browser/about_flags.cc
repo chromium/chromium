@@ -40,6 +40,7 @@
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -10089,7 +10090,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-finds", flag_descriptions::kChromeFindsName,
      flag_descriptions::kChromeFindsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeFinds,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(finds::features::kChromeFinds,
                                     kChromeFindsVariations,
                                     "ChromeFinds")},
 
@@ -12957,7 +12958,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-finds-internals", flag_descriptions::kChromeFindsInternalsName,
      flag_descriptions::kChromeFindsInternalsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kChromeFindsInternals)},
+     FEATURE_VALUE_TYPE(finds::features::kChromeFindsInternals)},
 
     {"devtools-enable-durable-messages",
      flag_descriptions::kDevToolsEnableDurableMessagesName,

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals_ui.h"
 
 #include "base/values.h"
+#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_agent.h"
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_agent_factory.h"
@@ -67,7 +68,7 @@ class PageHandlerImpl : public mojom::PageHandler,
 
 bool ChromeFindsInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kChromeFindsInternals);
+  return base::FeatureList::IsEnabled(finds::features::kChromeFindsInternals);
 }
 
 ChromeFindsInternalsUI::ChromeFindsInternalsUI(content::WebUI* web_ui)

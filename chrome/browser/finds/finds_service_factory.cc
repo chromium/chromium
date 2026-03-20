@@ -49,7 +49,8 @@ FindsServiceFactory::BuildServiceInstanceForBrowserContext(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  return std::make_unique<FindsService>(opt_guide_service, history_service);
+  return std::make_unique<FindsService>(opt_guide_service, history_service,
+                                        profile->GetPrefs());
 }
 
 }  // namespace finds
