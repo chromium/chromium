@@ -23,7 +23,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -116,14 +115,14 @@ public class AutocompleteController {
         AutocompleteControllerJni.get()
                 .start(
                         mNativeController,
-                        input.getUserText(),
-                        cursorPosition,
+                        input.getTextForAutocomplete(),
+                        input.getCursorPositionForAutocomplete(cursorPosition),
                         null,
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
                         input.getToolModeSupplier().get(),
                         preventInlineAutocomplete,
-                        OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
+                        input.getSiteSearchData() != null,
                         input.allowExactKeywordMatch(),
                         true);
     }

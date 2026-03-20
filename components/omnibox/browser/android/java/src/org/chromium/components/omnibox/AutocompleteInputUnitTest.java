@@ -427,4 +427,42 @@ public class AutocompleteInputUnitTest {
                 input2.getToolModeSupplier().get().intValue());
         assertEquals(siteSearchData, input2.getSiteSearchData());
     }
+
+    @Test
+    public void getTextForAutocomplete() {
+        mInput.setUserText("user query");
+
+        // Without Site Search data, should return the exact user text.
+        assertEquals("user query", mInput.getTextForAutocomplete());
+
+        // With Site Search data, should prepend the keyword and a space.
+        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+        assertEquals("example.com user query", mInput.getTextForAutocomplete());
+    }
+
+    @Test
+    public void getCursorPositionForAutocomplete() {
+        mInput.setUserText("user query");
+
+        // Without Site Search data, should return the given cursor position unmodified.
+        assertEquals(0, mInput.getCursorPositionForAutocomplete(0));
+        assertEquals(5, mInput.getCursorPositionForAutocomplete(5));
+        assertEquals(10, mInput.getCursorPositionForAutocomplete(10));
+        assertEquals(15, mInput.getCursorPositionForAutocomplete(15));
+        assertEquals(-1, mInput.getCursorPositionForAutocomplete(-1));
+
+        // With Site Search data, should offset by keyword length + 1 (for space).
+        // Keyword "example.com" length is 11. Offset is 12.
+        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+
+        assertEquals(12, mInput.getCursorPositionForAutocomplete(0)); // 0 + 12
+        assertEquals(17, mInput.getCursorPositionForAutocomplete(5)); // 5 + 12
+
+        // Should cap cursor position to user text length (10) + offset (12) = 22.
+        assertEquals(22, mInput.getCursorPositionForAutocomplete(10));
+        assertEquals(22, mInput.getCursorPositionForAutocomplete(15));
+
+        // Should return original value if cursor position < 0.
+        assertEquals(-1, mInput.getCursorPositionForAutocomplete(-1));
+    }
 }
