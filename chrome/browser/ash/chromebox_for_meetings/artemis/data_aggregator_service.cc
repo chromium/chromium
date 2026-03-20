@@ -739,6 +739,9 @@ void DataAggregatorService::HandleEnqueueResponse(
     return;
   }
 
+  // TODO(crbug.com/475558926): Remove when fixed.
+  SYSLOG(INFO) << "Recent enqueue succeeded.";
+
   VLOG(1) << "Recent enqueue succeeded.";
   enqueue_retry_backoff_.Reset();
 
