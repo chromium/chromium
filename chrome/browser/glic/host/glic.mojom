@@ -1330,6 +1330,10 @@ interface WebClientHandler {
   // Called when the user receives a response with closed captions showing.
   OnClosedCaptionsShown();
 
+  // Called when the web client sends a browser actuation result over the
+  // network.
+  OnActionSubmitted(bool is_retry);
+
   // Scrolls to and (optionally) highlights content specified by `params`. Only
   // one highlight is active at a time. Returns an error reason if the scroll
   // fails, or null otherwise.

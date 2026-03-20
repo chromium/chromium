@@ -65,6 +65,9 @@ enum class GlicTurnSource {
 
 }  // namespace
 
+GlicInstanceMetrics::TurnInfo::TurnInfo() = default;
+GlicInstanceMetrics::TurnInfo::~TurnInfo() = default;
+
 GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
@@ -790,8 +793,17 @@ void GlicInstanceMetrics::OnResponseStarted() {
   base::RecordAction(base::UserMetricsAction("GlicResponseStart"));
   turn_.response_started_ = true;
 
-  // It doesn't make sense to record response start without input submission.
-  if (turn_.input_submitted_time_.is_null()) {
+  bool is_response_for_actuation =
+      !turn_.action_result_submitted_time_.is_null();
+  if (is_response_for_actuation) {
+    base::UmaHistogramMediumTimes(
+        "Glic.Turn.Actuation.ResponseStartTime",
+        base::TimeTicks::Now() - turn_.action_result_submitted_time_);
+  }
+
+  // It doesn't make sense to record response start without input submission,
+  // unless we just submitted an actuation result.
+  if (turn_.input_submitted_time_.is_null() && !is_response_for_actuation) {
     base::UmaHistogramEnumeration(
         "Glic.Instance.Metrics.Error",
         GlicInstanceMetricsError::kResponseStartWithoutInput);
@@ -807,20 +819,22 @@ void GlicInstanceMetrics::OnResponseStarted() {
 
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
 
-  base::TimeDelta start_time =
-      base::TimeTicks::Now() - turn_.input_submitted_time_;
-  base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime", start_time);
-  std::string_view mode_string = GetInputModeString(input_mode_);
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"Glic.Turn.ResponseStartTime.InputMode.", mode_string}),
-      start_time);
+  if (!turn_.input_submitted_time_.is_null()) {
+    base::TimeDelta start_time =
+        base::TimeTicks::Now() - turn_.input_submitted_time_;
+    base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime", start_time);
+    std::string_view mode_string = GetInputModeString(input_mode_);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Glic.Turn.ResponseStartTime.InputMode.", mode_string}),
+        start_time);
 
-  if (turn_.did_request_context_) {
-    base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime.WithContext",
-                                  start_time);
-  } else {
-    base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime.WithoutContext",
-                                  start_time);
+    if (turn_.did_request_context_) {
+      base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime.WithContext",
+                                    start_time);
+    } else {
+      base::UmaHistogramMediumTimes(
+          "Glic.Turn.ResponseStartTime.WithoutContext", start_time);
+    }
   }
 
   ukm::builders::Glic_Response(turn_.chosen_source_id_)
@@ -832,9 +846,13 @@ void GlicInstanceMetrics::OnResponseStarted() {
 
 void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
   LogEvent(GlicInstanceEvent::kResponseStopped);
+
+  bool has_input = !turn_.input_submitted_time_.is_null();
+  bool has_action_result = !turn_.action_result_submitted_time_.is_null();
+
   // The client may call "stopped" without "started" for very short responses.
   // We synthetically call it ourselves in this case.
-  if (!turn_.input_submitted_time_.is_null() && !turn_.response_started_) {
+  if ((has_input || has_action_result) && !turn_.response_started_) {
     OnResponseStarted();
   }
 
@@ -856,7 +874,7 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
       break;
   }
 
-  if (turn_.input_submitted_time_.is_null()) {
+  if (!has_input && !has_action_result) {
     base::UmaHistogramEnumeration(
         "Glic.Instance.Metrics.Error",
         GlicInstanceMetricsError::kResponseStopWithoutInput);
@@ -865,9 +883,20 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
         GlicInstanceMetricsError::kResponseStopWithoutInput);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta latency = now - turn_.input_submitted_time_;
-    base::UmaHistogramMediumTimes(
-        base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}), latency);
+    base::TimeDelta latency;
+    if (has_input) {
+      latency = now - turn_.input_submitted_time_;
+      base::UmaHistogramMediumTimes("Glic.Turn.ResponseStopTime", latency);
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}), latency);
+    } else if (has_action_result) {
+      latency = now - turn_.action_result_submitted_time_;
+      base::UmaHistogramMediumTimes("Glic.Turn.Actuation.ResponseStopTime",
+                                    latency);
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Glic.Turn.Actuation.ResponseStopTime", cause_suffix}),
+          latency);
+    }
     RecordResponseLatencyByAttachedTabCount(latency);
   }
 
@@ -969,6 +998,11 @@ void GlicInstanceMetrics::OnReaction(
       }
       return;
   }
+}
+
+void GlicInstanceMetrics::OnActionSubmitted(bool is_retry) {
+  turn_.action_result_submitted_time_ = base::TimeTicks::Now();
+  base::UmaHistogramBoolean("Glic.Turn.Actuation.IsRetry", is_retry);
 }
 
 void GlicInstanceMetrics::OnSessionStarted() {

@@ -1731,6 +1731,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->LogClosedCaptionsShown();
   }
 
+  void OnActionSubmitted(bool is_retry) override {
+    host().instance_metrics()->OnActionSubmitted(is_retry);
+  }
+
   void ScrollTo(mojom::ScrollToParamsPtr params,
                 ScrollToCallback callback) override {
     if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {

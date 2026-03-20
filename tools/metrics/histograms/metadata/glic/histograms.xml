@@ -218,6 +218,7 @@ chromium-metrics-reviews@google.com.
     <variant name="LogEndAsyncEvent"/>
     <variant name="LogInstantEvent"/>
     <variant name="MaybeRefreshUserStatus"/>
+    <variant name="OnActionSubmitted"/>
     <variant name="OnClosedCaptionsShown"/>
     <variant name="OnContextUploadCompleted"/>
     <variant name="OnContextUploadStarted"/>
@@ -2506,6 +2507,56 @@ chromium-metrics-reviews@google.com.
     Emitted in every UMA record from the current session (at the time the record
     is finalized), but only if there is at least one Glic-eligible profile.
   </summary>
+</histogram>
+
+<histogram name="Glic.Turn.Actuation.IsRetry" enum="Boolean"
+    expires_after="2026-10-16">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records whether a browser actuation result submitted by the web client is a
+    retry of a previous actuation in the same turn. Recorded for each actuation
+    result submitted.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.Actuation.ResponseStartTime" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the web client sends a browser actuation result
+    over the network until a response starts being presented to the user.
+    Recorded for each turn in a Glic instance where an actuation result was
+    submitted.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.Actuation.ResponseStopTime" units="ms"
+    expires_after="2026-10-16">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when the web client sends a browser actuation result
+    until a response stops. Recorded for each turn where an actuation result was
+    submitted.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.Actuation.ResponseStopTime.{Cause}" units="ms"
+    expires_after="2026-10-16">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when the web client sends a browser actuation result
+    until a response stops for the specific cause: {Cause}. Recorded for each
+    turn where an actuation result was submitted.
+  </summary>
+  <token key="Cause">
+    <variant name="ByUser"/>
+    <variant name="Other"/>
+    <variant name="UnknownCause"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Turn.Duration.{Model}" units="ms"

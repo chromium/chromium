@@ -72,6 +72,15 @@ TEST_F(GlicInstanceMetricsTest, OnResponseStarted_WithoutInput_LogsError) {
       GlicInstanceMetricsError::kResponseStartWithoutInput, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       OnResponseStarted_WithActuation_DoesNotLogError) {
+  metrics_.OnActionSubmitted(/*is_retry=*/false);
+  metrics_.OnResponseStarted();
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kResponseStartWithoutInput, 0);
+}
+
 TEST_F(GlicInstanceMetricsTest, OnResponseStarted_WhileHidden_LogsError) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
@@ -112,6 +121,15 @@ TEST_F(GlicInstanceMetricsTest,
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error.UnknownCause",
       GlicInstanceMetricsError::kResponseStopWithoutInput, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       OnResponseStopped_WithActuation_DoesNotLogError) {
+  metrics_.OnActionSubmitted(/*is_retry=*/false);
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kResponseStopWithoutInput, 0);
 }
 
 TEST_F(GlicInstanceMetricsTest, OnFloatyClosed_WithoutOpening_LogsError) {
@@ -440,6 +458,34 @@ TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponse"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStop"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStopByUser"));
+}
+
+TEST_F(GlicInstanceMetricsTest, ActuationIsRetry) {
+  metrics_.OnActionSubmitted(true);
+  histogram_tester_.ExpectUniqueSample("Glic.Turn.Actuation.IsRetry", true, 1);
+
+  metrics_.OnActionSubmitted(false);
+  histogram_tester_.ExpectBucketCount("Glic.Turn.Actuation.IsRetry", false, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.Actuation.IsRetry", 2);
+}
+
+TEST_F(GlicInstanceMetricsTest, ActuationResponseStopTime) {
+  metrics_.OnVisibilityChanged(true);
+
+  // Submit an action result which sets up the actuation timing.
+  metrics_.OnActionSubmitted(false);
+
+  // Advance time so we have a non-zero measurable latency.
+  task_environment_.FastForwardBy(base::Milliseconds(123));
+
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+
+  histogram_tester_.ExpectTotalCount("Glic.Turn.Actuation.ResponseStartTime",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.Actuation.ResponseStopTime", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.Actuation.ResponseStopTime.ByUser", 1);
 }
 
 TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {

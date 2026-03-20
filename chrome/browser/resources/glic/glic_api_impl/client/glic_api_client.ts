@@ -1541,6 +1541,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.sender.requestNoResponse('glicBrowserOnReaction', {reactionType});
   }
 
+  onPerformActionResultSubmitted(isRetry?: boolean): void {
+    this.sender.requestNoResponse('glicBrowserOnActionSubmitted', {isRetry});
+  }
+
   onContextUploadStarted(): void {
     this.sender.requestNoResponse(
         'glicBrowserOnContextUploadStarted', undefined);

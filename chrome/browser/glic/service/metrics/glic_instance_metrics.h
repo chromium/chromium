@@ -277,6 +277,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // metrics funnels.
   void RecordSkillsWebClientEvent(mojom::SkillsWebClientEvent action);
 
+  // Called when the web client sends a browser actuation result over the
+  // network.
+  void OnActionSubmitted(bool is_retry);
+
   int GetPinnedTabCount() const;
 
   bool is_active() const {
@@ -296,7 +300,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Stores info scoped to the current turn. These members are cleared in
   // OnResponseStopped.
   struct TurnInfo {
+    TurnInfo();
+    ~TurnInfo();
+
     base::TimeTicks input_submitted_time_;
+    base::TimeTicks action_result_submitted_time_;
     // Set to true in OnResponseStarted() and set to false in
     // OnResponseStopped(). This is a workaround copied from GlicMetrics and
     // should be removed, see crbug.com/399151164.

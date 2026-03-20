@@ -606,6 +606,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onReaction(request.reactionType);
   }
 
+  glicBrowserOnActionSubmitted(request: {isRetry?: boolean}): void {
+    this.handler.onActionSubmitted(request.isRetry ?? false);
+  }
+
   glicBrowserOnResponseStarted(): void {
     this.handler.onResponseStarted();
   }
