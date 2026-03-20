@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1034,5 +1035,17 @@ public class CustomTabsConnectionTest {
                 new PrefetchOptions.Builder()
                         .setSourceOrigin(Uri.parse(invalidSourceOrigin))
                         .build());
+    }
+
+    @Test
+    @SmallTest
+    public void testMaybeAddAdditionalContentExtrasToOutboundIntent() {
+        Intent outboundIntent = new Intent();
+        BrowserServicesIntentDataProvider browserServicesIntentDataProvider =
+                org.mockito.Mockito.mock(BrowserServicesIntentDataProvider.class);
+        mCustomTabsConnection.maybeAddAdditionalContentExtrasToOutboundIntent(
+                () -> null, browserServicesIntentDataProvider, outboundIntent, 1);
+
+        Assert.assertNull(outboundIntent.getExtras());
     }
 }

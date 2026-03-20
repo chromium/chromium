@@ -2576,6 +2576,27 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.TRUSTED_WEB_ACTIVITY));
     }
 
+    @Test
+    public void testMaybeAddAdditionalContentExtrasToOutboundIntent() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        Intent outboundIntent = new Intent();
+        java.util.function.Supplier<org.chromium.chrome.browser.tab.Tab> tabProvider = () -> null;
+        int viewId = 123;
+
+        dataProvider.maybeAddAdditionalContentExtrasToOutboundIntent(
+                tabProvider, outboundIntent, viewId);
+
+        Mockito.verify(connection)
+                .maybeAddAdditionalContentExtrasToOutboundIntent(
+                        eq(tabProvider), eq(dataProvider), eq(outboundIntent), eq(viewId));
+    }
+
     private int getOibStateForType(int type) {
         if (type == CustomTabsUiType.AUTH_TAB) {
             Intent intent = new Intent(Intent.ACTION_VIEW);

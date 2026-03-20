@@ -1537,6 +1537,20 @@ public class CustomTabsConnection {
         }
     }
 
+    /**
+     * Adds additional content to the Intent, if present.
+     *
+     * @param tabProvider The tab provider for which the content should be retrieved.
+     * @param dataProvider The data provider for which the content should be retrieved.
+     * @param outboundIntent The intent to add the content to.
+     * @param viewId The ID of the view clicked.
+     */
+    public void maybeAddAdditionalContentExtrasToOutboundIntent(
+            Supplier<@Nullable Tab> tabProvider,
+            BrowserServicesIntentDataProvider dataProvider,
+            Intent outboundIntent,
+            int viewId) {}
+
     /** Called when a resizable Custom Tab is resized. */
     public void onResized(@Nullable SessionHolder<?> session, int height, int width) {
         Bundle args = new Bundle();

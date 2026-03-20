@@ -35,6 +35,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -45,6 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Base class for model classes which parse incoming intent for customization data. */
 @NullMarked
@@ -856,4 +858,14 @@ public abstract class BrowserServicesIntentDataProvider {
     public @IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
         return IncognitoCctCallerId.OTHER_APPS;
     }
+
+    /**
+     * Adds additional content to the Intent, if present.
+     *
+     * @param tabProvider The tab provider for which the content should be retrieved.
+     * @param outboundIntent The intent to add the content to.
+     * @param viewId The ID of the view clicked.
+     */
+    public void maybeAddAdditionalContentExtrasToOutboundIntent(
+            Supplier<@Nullable Tab> tabProvider, Intent outboundIntent, int viewId) {}
 }

@@ -111,7 +111,12 @@ public class CustomTabBottomBarDelegate
                     int originalId = (Integer) v.getTag(R.id.view_id_tag_key);
                     extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
                     sendPendingIntentWithUrl(
-                            mClickPendingIntent, extraIntent, mActivity, mTabProvider);
+                            mClickPendingIntent,
+                            extraIntent,
+                            mActivity,
+                            mTabProvider,
+                            mDataProvider,
+                            originalId);
                 }
             };
 
@@ -199,7 +204,14 @@ public class CustomTabBottomBarDelegate
             OnClickListener clickListener = null;
             if (pendingIntent != null) {
                 clickListener =
-                        v -> sendPendingIntentWithUrl(pendingIntent, null, mActivity, mTabProvider);
+                        v ->
+                                sendPendingIntentWithUrl(
+                                        pendingIntent,
+                                        null,
+                                        mActivity,
+                                        mTabProvider,
+                                        mDataProvider,
+                                        params.getId());
             }
             layout.addView(
                     params.buildBottomBarButton(
@@ -477,12 +489,18 @@ public class CustomTabBottomBarDelegate
             PendingIntent pendingIntent,
             @Nullable Intent extraIntent,
             Activity activity,
-            Supplier<@Nullable Tab> tabProvider) {
+            Supplier<@Nullable Tab> tabProvider,
+            BrowserServicesIntentDataProvider dataProvider,
+            @Nullable Integer viewId) {
         Intent addedIntent = extraIntent == null ? new Intent() : new Intent(extraIntent);
         Tab tab = tabProvider.get();
         if (tab != null) {
             addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
             addedIntent.putExtra(Intent.EXTRA_SUBJECT, tab.getTitle());
+            if (viewId != null) {
+                dataProvider.maybeAddAdditionalContentExtrasToOutboundIntent(
+                        tabProvider, addedIntent, viewId);
+            }
         }
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
@@ -605,8 +623,14 @@ public class CustomTabBottomBarDelegate
     @Override
     public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
         if (mSwipeUpPendingIntent == null) return;
-        // Do not send URL for swipe action.
-        sendPendingIntentWithUrl(mSwipeUpPendingIntent, null, mActivity, () -> null);
+        // Do not send URL or additional content for swipe action.
+        sendPendingIntentWithUrl(
+                mSwipeUpPendingIntent,
+                null,
+                mActivity,
+                () -> null,
+                mDataProvider,
+                /* viewId= */ null);
     }
 
     @Override

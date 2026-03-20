@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
@@ -114,6 +115,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A model class that parses the incoming intent for Custom Tabs specific customization data.
@@ -1955,5 +1957,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return new WindowFeatures();
         }
         return new WindowFeatures(bundle);
+    }
+
+    @Override
+    public void maybeAddAdditionalContentExtrasToOutboundIntent(
+            Supplier<@Nullable Tab> tabProvider, Intent outboundIntent, int viewId) {
+        CustomTabsConnection.getInstance()
+                .maybeAddAdditionalContentExtrasToOutboundIntent(
+                        tabProvider, this, outboundIntent, viewId);
     }
 }
