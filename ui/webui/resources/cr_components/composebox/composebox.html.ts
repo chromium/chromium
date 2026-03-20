@@ -58,7 +58,6 @@ export function getHtml(this: ComposeboxElement) {
             @click="${this.onInputClick_}"
             @keyup="${this.onInputKeyup_}"
             @input="${this.onInputInput_}"
-            @scroll="${this.onInputScroll_}"
             @focusin="${this.onInputFocusin_}"></textarea>
           </textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`

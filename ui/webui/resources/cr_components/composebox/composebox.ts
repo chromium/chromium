@@ -618,8 +618,14 @@ export class ComposeboxElement extends I18nMixinLit
             this.smartComposeInlineHint_ + ', ' +
             this.i18n('composeboxSmartComposeTitle'));
       } else {
-        // Unset the height override so input can expand through typing.
-        this.$.input.style.height = 'unset';
+        // Unset the style overrides so input can resize through typing.
+        this.$.input.style.height = '';
+        this.$.input.style.minHeight = '';
+        const smartCompose =
+            this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
+        if (smartCompose) {
+          smartCompose.style.minHeight = '';
+        }
       }
     }
   }
@@ -1834,15 +1840,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.fire('composebox-focus-out');
   }
 
-  protected onInputScroll_() {
-    const smartCompose =
-        this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
-    if (!smartCompose) {
-      return;
-    }
-    smartCompose.scrollTop = this.$.input.scrollTop;
-  }
-
   protected onSubmitContainerFocusin_() {
     // Matches should always be greater than 0 due to verbatim match.
     if (this.input_ && !this.selectedMatch_) {
@@ -2143,23 +2140,11 @@ export class ComposeboxElement extends I18nMixinLit
         this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
 
     const ghostHeight = smartCompose!.scrollHeight;
-    const maxHeight = 190;
-    this.$.input.style.height = `${Math.min(ghostHeight, maxHeight)}px`;
     // If smart compose goes to two lines. The tab chip will be cut off as it
     // has a height of 28px. Add 4px to show the whole tab chip.
     if (ghostHeight > 48) {
       this.$.input.style.minHeight = `68px`;
       smartCompose!.style.minHeight = `68px`;
-    }
-
-    // If the height of the input + smart complete hint is greater than the max
-    // height, scroll the smart compose as the input will already scroll. Note
-    // there is an issue at the break point since the input will not have
-    // scrolled yet as it does not have enough content. The smart compose will
-    // display the ghost text below the input and it will be cut off. However,
-    // the current response only works for queries below the max height.
-    if (ghostHeight > maxHeight) {
-      smartCompose!.scrollTop = this.$.input.scrollTop;
     }
   }
 
