@@ -1314,7 +1314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.GenericPromoDisplayCount"
-    units="count" expires_after="2026-08-16">
+    units="count" expires_after="2026-10-16">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1325,7 +1325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
-    expires_after="2026-08-23">
+    expires_after="2026-10-16">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1334,8 +1334,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2026-08-23">
-  <owner>sebsg@chromium.org</owner>
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2026-10-16">
+  <owner>pabouchard@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logged when an action happens on the {Impression} impression of a non modal
@@ -1356,7 +1356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{PromoType}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2026-08-23">
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2026-10-16">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1371,8 +1371,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2026-07-26">
-  <owner>sebsg@chromium.org</owner>
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2026-10-16">
+  <owner>pabouchard@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -1383,15 +1383,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.Shown"
-    enum="IOSDefaultBrowserPromoType" expires_after="2026-08-23">
-  <owner>gayane@chromium.org</owner>
+    enum="IOSDefaultBrowserPromoType" expires_after="2026-10-16">
+  <owner>gujen@google.com</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The default browser promo type shown to the user.</summary>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.TailoredPromoDisplayCount"
-    units="count" expires_after="2026-08-23">
+    units="count" expires_after="2026-10-16">
   <owner>gayane@google.com</owner>
+  <owner>gujen@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     Represents number of tailored default browser promos displayed to the user.
