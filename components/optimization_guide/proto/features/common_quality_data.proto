@@ -2173,7 +2173,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 15
+// Next ID: 17
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -2232,10 +2232,18 @@ enum ClickabilityReason {
   // in Chrome to know what properties the rule might effect, so this reason
   // just indicates that a :hover rule is defined.
   CLICKABILITY_REASON_HOVER_PSEUDO_CLASS = 14;
+
+  // The node has the aria-checked or aria-pressed attribute indicating it can
+  // be toggled.
+  CLICKABILITY_REASON_ARIA_TOGGLE = 15;
+
+  // The node has the aria-selected attribute indicating it can be selected or
+  // unselected.
+  CLICKABILITY_REASON_ARIA_SELECTABLE = 16;
 }
 
 // Provides hints that indicate that interaction with this node is disabled.
-// Next ID: 4
+// Next ID: 6
 enum InteractionDisabledReason {
   INTERACTION_DISABLED_REASON_UNSPECIFIED = 0;
 
@@ -2247,6 +2255,13 @@ enum InteractionDisabledReason {
 
   // The node has the style `cursor: not-allowed`.
   INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED = 3;
+
+  // The node is hidden from the accessibility tree via `aria-hidden="true"`
+  // on an ancestor node or itself.
+  INTERACTION_DISABLED_REASON_ARIA_HIDDEN = 4;
+
+  // The node has an ARIA Role of `presentation` or `none`.
+  INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL = 5;
 }
 
 // Next ID: 5

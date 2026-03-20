@@ -6,6 +6,8 @@ edition = "2023";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/on_device_model_execution_config.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -43,4 +45,21 @@ message ProofreaderApiResponse {
   // Response from Proofreader API for proofread execution call. The output will
   // be the fully corrected version of the input text sent in the request.
   string output = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Type for OnDeviceModelExecutionFeatureConfig::feature_metadata.
+message ProofreaderApiMetadata {
+  // A version for config changes that require implementor updates.
+  int32 version = 1 [features = { field_presence: EXPLICIT }];
+
+  // Supported localizations for the prompt.
+  repeated string available_prompt_languages = 2;
+
+  // Grouped constraints to keep the top-level metadata clean.
+  ProofreaderApiConstraints constraints = 3 [features = { field_presence: EXPLICIT }];
+}
+
+// Container for all mode-specific constraints.
+message ProofreaderApiConstraints {
+  ResponseConstraint label_mode_constraint = 1 [features = { field_presence: EXPLICIT }];
 }
