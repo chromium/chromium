@@ -91,6 +91,17 @@ android_library("metrics_java") {
   ]
 }
 
+static_library("features") {
+  sources = [ "read_aloud_features.cc" ]
+  deps = [
+    ":features_jni_headers",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/flags:flags_android",
+    "//components/metrics",
+  ]
+}
+
 android_library("features_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
