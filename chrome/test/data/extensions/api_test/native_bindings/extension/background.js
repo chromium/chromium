@@ -5,7 +5,7 @@
 if (!chrome || !chrome.test)
   throw new Error('chrome.test is undefined');
 
-var portNumber;
+let portNumber;
 
 // This is a good end-to-end test for two reasons. The first is obvious - it
 // tests a simple API and makes sure it behaves as expected, as well as testing
@@ -16,7 +16,7 @@ var portNumber;
 // enters JS) and custom JS bindings (in order to have our runTests, assert*
 // methods, etc). If any of these stages failed, the test itself would also
 // fail.
-var tests = [
+const tests = [
   function historyApi() {
     chrome.test.assertTrue(!!chrome.history);
     chrome.test.assertTrue(!!chrome.history.TransitionType);
@@ -50,12 +50,12 @@ var tests = [
     chrome.test.succeed();
   },
   function events() {
-    var createdEvent = new Promise((resolve, reject) => {
+    const createdEvent = new Promise((resolve, reject) => {
       chrome.tabs.onCreated.addListener(tab => {
         resolve(tab.id);
       });
     });
-    var createdCallback = new Promise((resolve, reject) => {
+    const createdCallback = new Promise((resolve, reject) => {
       chrome.tabs.create({url: 'http://example.com'}, tab => {
         resolve(tab.id);
       });
@@ -67,11 +67,11 @@ var tests = [
     });
   },
   function testMessaging() {
-    var tabId;
+    let tabId;
 
-    var createPort = function() {
+    const createPort = function() {
       chrome.test.assertTrue(!!tabId);
-      var port = chrome.tabs.connect(tabId);
+      const port = chrome.tabs.connect(tabId);
       chrome.test.assertTrue(!!port, 'Port does not exist');
       port.onMessage.addListener(message => {
         chrome.test.assertEq('content script', message);
@@ -92,7 +92,7 @@ var tests = [
       chrome.runtime.onMessage.removeListener(listener);
     });
 
-    var url = 'http://localhost:' + portNumber +
+    const url = `http://localhost:${portNumber}` +
               '/native_bindings/extension/messaging_test.html';
     chrome.tabs.create({url: url}, function(tab) {
       chrome.test.assertNoLastError();
@@ -102,8 +102,7 @@ var tests = [
     });
   },
   function injectScript() {
-    var url =
-        'http://example.com:' + portNumber + '/native_bindings/simple.html';
+    const url = `http://example.com:${portNumber}/native_bindings/simple.html`;
     // Create a tab, and inject code in it to change its title.
     // chrome.tabs.executeScript relies on external type references
     // (extensionTypes.InjectDetails), so this exercises that flow as well.
@@ -113,7 +112,7 @@ var tests = [
       chrome.test.assertTrue(!!chrome.tabs.TAB_ID_NONE);
       chrome.test.assertNe(chrome.tabs.TAB_ID_NONE, tab.id);
       chrome.test.assertEq(new URL(url).host, new URL(tab.pendingUrl).host);
-      var code = 'document.title = "new title";';
+      const code = `document.title = 'new title';`;
       chrome.tabs.executeScript(tab.id, {code: code}, function(results) {
         chrome.test.assertTrue(!!results, 'results');
         chrome.test.assertEq(1, results.length);
@@ -127,7 +126,7 @@ var tests = [
   },
   function testLastError() {
     chrome.runtime.setUninstallURL('chrome://newtab', function() {
-      var expectedError = 'Invalid URL: "chrome://newtab".';
+      const expectedError = 'Invalid URL: "chrome://newtab".';
       chrome.test.assertLastError(expectedError);
       // Explicitly also test the old extension.lastError property.
       chrome.test.assertTrue(!!chrome.extension.lastError);
@@ -173,7 +172,7 @@ var tests = [
   function testChromeSetting() {
     chrome.test.assertTrue(!!chrome.privacy, 'privacy');
     chrome.test.assertTrue(!!chrome.privacy.websites, 'websites');
-    var cookiePolicy = chrome.privacy.websites.thirdPartyCookiesAllowed;
+    const cookiePolicy = chrome.privacy.websites.thirdPartyCookiesAllowed;
     chrome.test.assertTrue(!!cookiePolicy, 'cookie policy');
     chrome.test.assertTrue(!!cookiePolicy.get, 'get');
     chrome.test.assertTrue(!!cookiePolicy.set, 'set');
@@ -185,7 +184,7 @@ var tests = [
     // a hack in our schema generation because we curry in the different types
     // of restrictions. Trying to pass in the wrong type for value should fail
     // (synchronously).
-    var caught = false;
+    let caught = false;
     try {
       cookiePolicy.set({value: 'not a bool'});
     } catch (e) {
@@ -193,7 +192,7 @@ var tests = [
     }
     chrome.test.assertTrue(caught, 'caught');
 
-    var listenerPromise = new Promise((resolve, reject) => {
+    const listenerPromise = new Promise((resolve, reject) => {
       cookiePolicy.onChange.addListener(function listener(details) {
         chrome.test.assertTrue(!!details, 'listener details');
         chrome.test.assertEq(false, details.value);
@@ -202,7 +201,7 @@ var tests = [
       });
     });
 
-    var methodPromise = new Promise((resolve, reject) => {
+    const methodPromise = new Promise((resolve, reject) => {
       cookiePolicy.get({}, (details) => {
         chrome.test.assertTrue(!!details, 'get details');
         chrome.test.assertTrue(details.value, 'details value true');
@@ -223,9 +222,9 @@ var tests = [
   function testWebNavigationAndFilteredEvents() {
     // Tests unfiltered events, which can be exercised with the webNavigation
     // API.
-    var unfiltered = new Promise((resolve, reject) => {
-      var sawSimple1 = false;
-      var sawSimple2 = false;
+    const unfiltered = new Promise((resolve, reject) => {
+      let sawSimple1 = false;
+      let sawSimple2 = false;
       chrome.webNavigation.onBeforeNavigate.addListener(
           function listener(details) {
         // We create a bunch of tabs in other tests, which can potentially
@@ -248,7 +247,7 @@ var tests = [
       });
     });
 
-    var filtered = new Promise((resolve, reject) => {
+    const filtered = new Promise((resolve, reject) => {
       chrome.webNavigation.onBeforeNavigate.addListener(
           function listener(details) {
         chrome.test.assertNe(-1, details.url.indexOf('unique'));
@@ -259,10 +258,8 @@ var tests = [
       }, {url: [{pathContains: 'simple2.html'}]});
     });
 
-    var url1 =
-        'http://unique.com:' + portNumber + '/native_bindings/simple.html';
-    var url2 =
-        'http://unique.com:' + portNumber + '/native_bindings/simple2.html';
+    const url1 = `http://unique.com:${portNumber}/native_bindings/simple.html`;
+    const url2 = `http://unique.com:${portNumber}/native_bindings/simple2.html`;
     chrome.tabs.create({url: url1});
     chrome.tabs.create({url: url2});
 
@@ -271,7 +268,7 @@ var tests = [
   function testContentSettings() {
     chrome.test.assertTrue(!!chrome.contentSettings);
     chrome.test.assertTrue(!!chrome.contentSettings.javascript);
-    var jsPolicy = chrome.contentSettings.javascript;
+    const jsPolicy = chrome.contentSettings.javascript;
     chrome.test.assertTrue(!!jsPolicy.get);
     chrome.test.assertTrue(!!jsPolicy.set);
     chrome.test.assertTrue(!!jsPolicy.clear);
@@ -282,9 +279,9 @@ var tests = [
     // is just a hack in our schema generation because we curry in the different
     // types of restrictions. Trying to pass in the wrong type for value should
     // fail (synchronously).
-    var caught = false;
-    var url = 'http://example.com/path';
-    var pattern = 'http://example.com/*';
+    let caught = false;
+    const url = 'http://example.com/path';
+    const pattern = 'http://example.com/*';
     try {
       jsPolicy.set({primaryPattern: pattern, value: 'invalid'});
     } catch (e) {
@@ -292,7 +289,7 @@ var tests = [
     }
     chrome.test.assertTrue(caught);
 
-    var normalSettingTest = new Promise(function(resolve, reject) {
+    const normalSettingTest = new Promise(function(resolve, reject) {
       jsPolicy.get({primaryUrl: url}, (details) => {
         chrome.test.assertTrue(!!details);
         chrome.test.assertEq('allow', details.setting);
@@ -307,8 +304,8 @@ var tests = [
     });
 
     // The fullscreen setting is deprecated.
-    var fullscreen = chrome.contentSettings.fullscreen;
-    var deprecatedSettingTest = new Promise(function(resolve, reject) {
+    const fullscreen = chrome.contentSettings.fullscreen;
+    const deprecatedSettingTest = new Promise(function(resolve, reject) {
       fullscreen.get({primaryUrl: url}, (details) => {
         chrome.test.assertTrue(!!details);
         chrome.test.assertEq('allow', details.setting);

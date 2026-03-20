@@ -6,11 +6,11 @@
 // in the host. Send messages after registration of the rule is complete and
 // when the page action is clicked.
 
-const kRuleId = 'rule1';
+const RULE_ID = 'rule1';
 
-var imageData = new ImageData(19, 19);
+const imageData = new ImageData(19, 19);
 
-var rule = {
+const rule = {
   conditions: [
     new chrome.declarativeContent.PageStateMatcher(
         {pageUrl: {hostPrefix: 'example'}}),
@@ -18,11 +18,11 @@ var rule = {
     new chrome.declarativeContent.ShowAction(),
     new chrome.declarativeContent.SetIcon({imageData: imageData}),
   ],
-  id: kRuleId,
+  id: RULE_ID,
 };
 
 chrome.pageAction.onClicked.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules([kRuleId], function() {
+  chrome.declarativeContent.onPageChanged.removeRules([RULE_ID], function() {
     chrome.declarativeContent.onPageChanged.getRules(function(rules) {
       chrome.test.assertEq(0, rules.length);
       chrome.test.sendMessage('clicked and removed');
@@ -33,13 +33,13 @@ chrome.pageAction.onClicked.addListener(function() {
 chrome.declarativeContent.onPageChanged.addRules([rule], function() {
   chrome.declarativeContent.onPageChanged.getRules(function(rules) {
     chrome.test.assertEq(1, rules.length);
-    chrome.test.assertEq(kRuleId, rules[0].id);
+    chrome.test.assertEq(RULE_ID, rules[0].id);
     chrome.test.sendMessage('ready');
   });
 });
 
 function didThrow(func) {
-  var caught = false;
+  let caught = false;
   try {
     func();
   } catch (e) {
@@ -52,7 +52,7 @@ chrome.test.runTests([
   function validationCheck() {
     // Test that type constructions are properly validated.
     chrome.test.assertTrue(didThrow(function() {
-      var matcher = new chrome.declarativeContent.PageStateMatcher(
+      const matcher = new chrome.declarativeContent.PageStateMatcher(
           {pageUrl: {fake: 'bogus'}});
     }));
     chrome.test.succeed();

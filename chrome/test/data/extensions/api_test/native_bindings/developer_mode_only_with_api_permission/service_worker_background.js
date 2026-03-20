@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var inDeveloperMode = config.customArg == 'in_developer_mode';
+  const inDeveloperMode = config.customArg == 'in_developer_mode';
 
   chrome.test.runTests([async function testDevModeApiAccess() {
     if (inDeveloperMode) {
@@ -24,7 +24,7 @@ chrome.test.getConfig(function(config) {
       const expectedError =
           `Failed to read the 'debugger' property from 'Object': The ` +
           `'debugger' API is only available for users in developer mode.`;
-      var functionThatThrows = function() {
+      const functionThatThrows = function() {
         chrome.debugger;
       };
       chrome.test.assertThrows(functionThatThrows, [], expectedError);

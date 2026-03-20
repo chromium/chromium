@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tests = [
+const tests = [
   function testAppBindings() {
     chrome.test.assertTrue(!!chrome.app, 'app');
     chrome.test.assertTrue(!!chrome.app.window, 'app.window');
     chrome.test.succeed();
   },
   function testCurrentWindow() {
-    var currentWindow = chrome.app.window.current();
+    const currentWindow = chrome.app.window.current();
     chrome.test.assertTrue(currentWindow.contentWindow == window);
     // Current window is pretty funny and has a ton of custom JS bindings, also
     // utilizing an internal API (currentWindowInternal). Test a bunch of stuff.
@@ -25,7 +25,7 @@ var tests = [
     chrome.test.succeed();
   },
   function testWebView() {
-    var webview = document.createElement('webview');
+    const webview = document.createElement('webview');
     webview.src = 'data:text/html,<html><body>hello world</body></html>';
     document.body.appendChild(webview);
     webview.addEventListener('loadabort', chrome.test.fail);
