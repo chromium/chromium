@@ -40,8 +40,6 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
                        ListPermissionsResult callback) override;
   void ListAllPermissions(ListPermissionsResult callback) override;
   void DeletePermission(const url::Origin& embedder_origin,
-                        DeletePermissionResult callback) override;
-  void DeletePermission(const url::Origin& embedder_origin,
                         const std::string& display_name,
                         DeletePermissionResult callback) override;
   void GrantPermission(const FederatedPermission& permission,

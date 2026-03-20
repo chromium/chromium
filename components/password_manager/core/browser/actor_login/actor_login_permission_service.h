@@ -66,11 +66,6 @@ class ActorLoginPermissionService : public KeyedService {
   // Lists all actor login permissions for the primary profile.
   virtual void ListAllPermissions(ListPermissionsResult callback) = 0;
 
-  // Deletes permission for the given embedder origin. If the origin is opaque,
-  // the callback will be called with false.
-  virtual void DeletePermission(const url::Origin& embedder_origin,
-                                DeletePermissionResult callback) = 0;
-
   // Deletes permission for the given embedder origin and display name. If the
   // origin is opaque, the callback will be called with false.
   // `display_name` is a human-readable name of a federated account, e.g.

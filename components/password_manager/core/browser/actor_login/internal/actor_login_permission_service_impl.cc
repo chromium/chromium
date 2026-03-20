@@ -370,12 +370,6 @@ void ActorLoginPermissionServiceImpl::ListAllPermissions(
 
 void ActorLoginPermissionServiceImpl::DeletePermission(
     const url::Origin& embedder_origin,
-    DeletePermissionResult callback) {
-  DeletePermission(embedder_origin, "", std::move(callback));
-}
-
-void ActorLoginPermissionServiceImpl::DeletePermission(
-    const url::Origin& embedder_origin,
     const std::string& display_name,
     DeletePermissionResult callback) {
   if (embedder_origin.opaque()) {

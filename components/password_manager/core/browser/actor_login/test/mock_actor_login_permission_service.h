@@ -23,10 +23,6 @@ class MockActorLoginPermissionService : public ActorLoginPermissionService {
   MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
   MOCK_METHOD(void,
               DeletePermission,
-              (const url::Origin&, DeletePermissionResult),
-              (override));
-  MOCK_METHOD(void,
-              DeletePermission,
               (const url::Origin&, const std::string&, DeletePermissionResult),
               (override));
   MOCK_METHOD(void,

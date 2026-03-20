@@ -271,33 +271,6 @@ TEST_F(ActorLoginPermissionServiceImplTest,
 }
 
 TEST_F(ActorLoginPermissionServiceImplTest,
-       DeletePermissionSendsCorrectRequest) {
-  base::test::TestFuture<bool> future;
-  service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
-                            future.GetCallback());
-  IssueAccessToken();
-
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-  const network::ResourceRequest& request =
-      test_url_loader_factory_.GetPendingRequest(0)->request;
-
-  EXPECT_EQ(kTestDeleteUrl, request.url.spec());
-  EXPECT_EQ("POST", request.method);
-  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
-  EXPECT_EQ(base::test::ParseJson(R"({
-              "filter": [
-                {
-                  "federatedCredentialPermissionFilter": {
-                    "matchAffiliatedRequesterOrigins": true,
-                    "rpEmbedderOrigin": "https://embedder.com"
-                  }
-                }
-              ]
-            })"),
-            base::test::ParseJson(network::GetUploadData(request)));
-}
-
-TEST_F(ActorLoginPermissionServiceImplTest,
        DeletePermissionWithDisplayNameSendsCorrectRequest) {
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
@@ -329,7 +302,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        DeletePermissionReturnsTrueOnSuccess) {
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
-                            future.GetCallback());
+                            "username", future.GetCallback());
   IssueAccessToken();
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestDeleteUrl,
@@ -342,7 +315,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        DeletePermissionReturnsFalseOnError) {
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
-                            future.GetCallback());
+                            "username", future.GetCallback());
   IssueAccessToken();
 
   test_url_loader_factory_.AddResponse(kTestDeleteUrl, "",
