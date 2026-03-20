@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -44,6 +46,11 @@ void DeferredTimeline::AttachTimeline(ScrollTimeline* timeline) {
   }
 
   attached_timelines_.insert(insertion_point, timeline);
+
+  if (attached_timelines_.size() > 1) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCSSTimelineScopeAttachedMultiple);
+  }
 
   if (original_timeline != EffectiveScrollTimeline()) {
     OnAttachedTimelineChange();

@@ -1428,6 +1428,8 @@ ScrollSnapshotTimeline* CSSAnimations::FindAncestorTimeline(
 
   Element* parent_element = ParentElementForTimelineTraversal(*node);
   if (!parent_element) {
+    UseCounter::Count(node->GetDocument(),
+                      WebFeature::kCSSTimelineLookupFoundNothing);
     if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
       return &node->GetDocument()
                   .GetDocumentAnimations()

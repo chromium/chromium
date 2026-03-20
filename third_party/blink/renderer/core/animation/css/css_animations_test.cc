@@ -2877,4 +2877,115 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
                      /*is_scroll=*/true, /*is_document=*/false);
 }
 
+// The lookup of --t on #target does not find anything here
+// because there is no timeline defined in the ancestor chain.
+TEST_P(CSSAnimationsTest, CSSTimelineFoundNothing_Count) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scroller { scroll-timeline: --t; }
+      #target {
+        animation: --anim 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTimelineLookupFoundNothing));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineFoundNothing_NoCount) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scroller { scroll-timeline: --t; }
+      #target {
+        animation: --anim 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scroller">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineLookupFoundNothing));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_Count) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scope { timeline-scope: --t; }
+      #scroll1, #scroll2 { scroll-timeline: --t; }
+      #target {
+        animation: --anim, 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scope">
+      <div id="scroll1"></div>
+      <div id="scroll2"></div>
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_NoCount_Zero) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scope { timeline-scope: --t; }
+      #target {
+        animation: --anim, 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scope">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_NoCount_One) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scope { timeline-scope: --t; }
+      #scroll1 { scroll-timeline: --t; }
+      #target {
+        animation: --anim, 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scope">
+      <div id="scroll1"></div>
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
+}
+
 }  // namespace blink

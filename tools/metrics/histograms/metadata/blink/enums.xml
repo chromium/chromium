@@ -6480,6 +6480,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5839" label="XRMeshDetection"/>
   <int value="5840" label="XRFrameDetectedMeshes"/>
   <int value="5841" label="CSSLightDarkImage"/>
+  <int value="5842" label="CSSTimelineLookupFoundNothing"/>
+  <int value="5843" label="CSSTimelineScopeAttachedMultiple"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
