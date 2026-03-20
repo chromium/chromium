@@ -431,6 +431,10 @@
     pointer-events: none;
   }
 
+  #composebox::part(context-menu-and-tools) {
+    min-height: var(--cr-icon-button-size);
+  }
+
   #composeboxFooter {
     height: 0px;
     transition: height var(--emphasized-curve);
@@ -452,6 +456,7 @@
 
   #composebox::part(input) {
     color: var(--color-composebox-font);
+    min-height: 48px;
     padding-inline-start: var(--text-input-left-spacing);
   }
 

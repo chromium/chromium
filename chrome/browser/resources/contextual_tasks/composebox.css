@@ -229,7 +229,12 @@
 
 #composebox::part(input),
 #composebox::part(smart-compose) {
+  min-height: 48px;
   padding-inline-start: var(--g-input-left-spacing);
+}
+
+#composebox::part(context-menu-and-tools) {
+  min-height: var(--cr-icon-button-size);
 }
 
 #composebox::part(input)::placeholder {
