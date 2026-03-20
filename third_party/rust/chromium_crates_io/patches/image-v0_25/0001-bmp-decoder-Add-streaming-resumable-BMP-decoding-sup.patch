@@ -24,10 +24,10 @@ arrives incrementally, which is essential for network image loading.
 
 Upstream: https://github.com/image-rs/image
 
-diff --git a/src/codecs/bmp/decoder.rs b/src/codecs/bmp/decoder.rs
+diff --git a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
 index 5771665..00799e3 100644
---- a/src/codecs/bmp/decoder.rs
-+++ b/src/codecs/bmp/decoder.rs
+--- a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
 @@ -5,15 +5,23 @@ use std::iter::{repeat, Rev};
  use std::slice::ChunksExactMut;
  use std::{error, fmt};
