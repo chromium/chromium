@@ -2170,7 +2170,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
 
   stream.ConsumeWhitespace();
 
-  if (n_string.empty() || !IsASCIIAlphaCaselessEqual(n_string[0], 'n')) {
+  if (n_string.empty() || !EqualIgnoringAsciiCase<'n'>(n_string[0])) {
     return false;
   }
   if (n_string.length() > 1 && n_string[1] != '-') {

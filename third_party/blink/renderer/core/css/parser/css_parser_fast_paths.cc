@@ -1892,7 +1892,7 @@ static inline CSSValue* ParseCSSWideKeywordValue(
     return CSSInheritedValue::Create();
   }
   if (length == 5 && MatchesCaseInsensitiveLiteral4(ptr, "unse") &&
-      IsASCIIAlphaCaselessEqual(UNSAFE_BUFFERS(ptr[4]), 't')) {
+      EqualIgnoringAsciiCase<'t'>(UNSAFE_BUFFERS(ptr[4]))) {
     return cssvalue::CSSUnsetValue::Create();
   }
   if (length == 6 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
@@ -1907,7 +1907,7 @@ static inline CSSValue* ParseCSSWideKeywordValue(
   if (length == 11 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
       MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 4), "rt-r") &&
       MatchesCaseInsensitiveLiteral2(UNSAFE_BUFFERS(ptr + 8), "ul") &&
-      IsASCIIAlphaCaselessEqual(UNSAFE_BUFFERS(ptr[10]), 'e')) {
+      EqualIgnoringAsciiCase<'e'>(UNSAFE_BUFFERS(ptr[10]))) {
     if (RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
       return cssvalue::CSSRevertRuleValue::Create();
     }
@@ -2062,11 +2062,11 @@ static CSSFunctionValue* ParseSimpleTransformValue(
     CSSValueID transform_type;
     unsigned expected_argument_count = 1;
     unsigned argument_start = 11;
-    if (IsASCIIAlphaCaselessEqual(chars[9], 'x') && chars[10] == '(') {
+    if (EqualIgnoringAsciiCase<'x'>(chars[9]) && chars[10] == '(') {
       transform_type = CSSValueID::kTranslateX;
-    } else if (IsASCIIAlphaCaselessEqual(chars[9], 'y') && chars[10] == '(') {
+    } else if (EqualIgnoringAsciiCase<'y'>(chars[9]) && chars[10] == '(') {
       transform_type = CSSValueID::kTranslateY;
-    } else if (IsASCIIAlphaCaselessEqual(chars[9], 'z') && chars[10] == '(') {
+    } else if (EqualIgnoringAsciiCase<'z'>(chars[9]) && chars[10] == '(') {
       transform_type = CSSValueID::kTranslateZ;
     } else if (chars[9] == '(') {
       transform_type = CSSValueID::kTranslate;
@@ -2120,7 +2120,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(
     if (chars[6] == '(') {
       chars = chars.subspan(7u);
       rotate_value_id = CSSValueID::kRotate;
-    } else if (IsASCIIAlphaCaselessEqual(chars[6], 'z') && chars[7] == '(') {
+    } else if (EqualIgnoringAsciiCase<'z'>(chars[6]) && chars[7] == '(') {
       chars = chars.subspan(8u);
       rotate_value_id = CSSValueID::kRotateZ;
     } else {

@@ -193,13 +193,13 @@ inline char UpperNibbleToAsciiHexDigit(char c) {
   return nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
 }
 
-template <typename CharType>
-inline bool IsASCIIAlphaCaselessEqual(CharType css_character, char character) {
+template <char lower_char, typename CharType>
+inline bool EqualIgnoringAsciiCase(CharType css_character) {
   // This function compares a (preferably) constant ASCII
   // lowercase letter to any input character.
-  DCHECK_GE(character, 'a');
-  DCHECK_LE(character, 'z');
-  if ((css_character | 0x20) == character) [[likely]] {
+  static_assert(lower_char >= 'a' && lower_char <= 'z',
+                "The template argument must be a lowercase ASCII letter");
+  if ((css_character | 0x20) == lower_char) [[likely]] {
     return true;
   }
   return false;
