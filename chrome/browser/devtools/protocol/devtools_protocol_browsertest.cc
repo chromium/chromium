@@ -2080,46 +2080,6 @@ IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       TargetCreateToFileUrlRequiresFileAccess) {
-  AttachToBrowserTarget();
-
-  base::DictValue params;
-  params.Set("url", "file:///some/path");
-  SendCommandSync("Target.createTarget", params.Clone());
-  EXPECT_TRUE(result());
-
-  DetachProtocolClient();
-  SetMayReadLocalFiles(false);
-
-  AttachToBrowserTarget();
-
-  SendCommandSync("Target.createTarget", params.Clone());
-  ASSERT_TRUE(error());
-  EXPECT_THAT(error()->FindInt("code"),
-              testing::Optional(-32000));  // SERVER_ERROR
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       TargetCreateToViewSourceFileUrlRequiresFileAccess) {
-  AttachToBrowserTarget();
-
-  base::DictValue params;
-  params.Set("url", "view-source:file:///some/path");
-  SendCommandSync("Target.createTarget", params.Clone());
-  EXPECT_TRUE(result());
-
-  DetachProtocolClient();
-  SetMayReadLocalFiles(false);
-
-  AttachToBrowserTarget();
-
-  SendCommandSync("Target.createTarget", params.Clone());
-  ASSERT_TRUE(error());
-  EXPECT_THAT(error()->FindInt("code"),
-              testing::Optional(-32000));  // SERVER_ERROR
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        HiddenTargetIsNotVisibleInTabStrip) {
   AttachToBrowserTarget();
 

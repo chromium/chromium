@@ -25,28 +25,10 @@ async function test() {
   if (newPageURL.startsWith('file:')) {
     chrome.test.openFileUrl(newPageURL);
   } else {
-    try {
-      await new Promise((resolve, reject) => {
-        chrome.debugger.attach({tabId: inspectedTabId}, '1.3', () => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-            return;
-          }
-          chrome.debugger.sendCommand(
-              {tabId: inspectedTabId}, 'Page.navigate', {url: newPageURL},
-              () => {
-                if (chrome.runtime.lastError) {
-                  reject(chrome.runtime.lastError);
-                  return;
-                }
-                resolve();
-              });
-        });
-      });
-    } catch (error) {
-      output('PASS');
-      return;
-    }
+    chrome.debugger.attach(
+        {tabId: inspectedTabId}, '1.3',
+        () => chrome.debugger.sendCommand(
+            {tabId: inspectedTabId}, 'Page.navigate', {url: newPageURL}));
   }
   await new Promise(
       resolve => chrome.tabs.onUpdated.addListener((tabId, changedProps) => {

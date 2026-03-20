@@ -875,13 +875,7 @@ void PageHandler::Navigate(const std::string& url,
         Response::ServerError("Cannot navigate to invalid URL"));
     return;
   }
-
-  GURL inner_url = gurl;
-  if (gurl.SchemeIs(content::kViewSourceScheme)) {
-    inner_url = GURL(gurl.GetContent());
-  }
-
-  if (inner_url.SchemeIsFile() && !may_read_local_files_) {
+  if (gurl.SchemeIsFile() && !may_read_local_files_) {
     callback->sendFailure(
         Response::ServerError("Navigating to local URL is not allowed"));
     return;
@@ -894,8 +888,8 @@ void PageHandler::Navigate(const std::string& url,
 
   // chrome-untrusted:// WebUIs might perform high-priviledged actions on
   // navigation, disallow navigation to them unless the client is trusted.
-  if ((inner_url.SchemeIs(kChromeUIUntrustedScheme) ||
-       inner_url.SchemeIs(kChromeDevToolsScheme)) &&
+  if ((gurl.SchemeIs(kChromeUIUntrustedScheme) ||
+       gurl.SchemeIs(kChromeDevToolsScheme)) &&
       !is_trusted_) {
     callback->sendFailure(Response::ServerError(
         "Navigating to a URL with a privileged scheme is not allowed"));
