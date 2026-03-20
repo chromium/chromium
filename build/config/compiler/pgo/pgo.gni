@@ -25,9 +25,6 @@ declare_args() {
   # bad compile times.
   chrome_pgo_phase = 0
   if (!is_cronet_build && !dcheck_always_on && is_official_build &&
-      # TODO(crbug.com/1336055): Update this now-outdated condition with regard
-      # to chromecast and determine whether chromeos_is_browser_only is
-      # obsolete.
       (is_high_end_android || is_win || is_mac || is_fuchsia ||
        (is_linux && !is_castos) ||
        (is_ios && use_blink && target_environment == "device"))) {
