@@ -789,6 +789,14 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
+    /** Resolves the text appearance for header visibility text in the popup. */
+    public static @StyleRes int getPopupHeaderVisibilityTextRes(
+            @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextSmallSecondary(isIncognito);
+    }
+
     /** Returns the drawable that is to go behind the + button in the search box. */
     public static Drawable getSearchBoxIconBackground(
             Context context, @BrandedColorScheme int brandedColorScheme) {

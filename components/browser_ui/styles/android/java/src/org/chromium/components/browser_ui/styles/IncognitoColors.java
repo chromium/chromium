@@ -113,24 +113,31 @@ public class IncognitoColors {
                 : R.style.TextAppearance_TextMedium_OnAccent1Container;
     }
 
-    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    /** Returns the correct text appearance style res for primary colored medium thick text. */
     public static @StyleRes int getTextMediumThickPrimary(boolean isIncognito) {
         return isIncognito
                 ? R.style.TextAppearance_TextMediumThick_Primary_Baseline_Light
                 : R.style.TextAppearance_TextMediumThick_Primary;
     }
 
-    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    /** Returns the correct text appearance style res for accent 1 colored medium thick text. */
     public static @StyleRes int getTextMediumThickAccent1(boolean isIncognito) {
         return isIncognito
                 ? R.style.TextAppearance_TextMediumThick_Blue_Baseline_Light
                 : R.style.TextAppearance_TextMediumThick_Accent1;
     }
 
-    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    /** Returns the correct text appearance style res for secondary colored medium thick text. */
     public static @StyleRes int getTextMediumThickSecondary(boolean isIncognito) {
         return isIncognito
                 ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
                 : R.style.TextAppearance_TextMediumThick_Secondary;
+    }
+
+    /** Returns the correct text appearance style res for secondary colored small text. */
+    public static @StyleRes int getTextSmallSecondary(boolean isIncognito) {
+        return isIncognito
+                ? R.style.TextAppearance_TextSmall_Secondary_Baseline_Light
+                : R.style.TextAppearance_TextSmall_Secondary;
     }
 }
