@@ -112,7 +112,7 @@ class CORE_EXPORT StyleColor {
     // function.
     virtual Color Resolve(const Color& current_color) const = 0;
 
-    enum class Type { kColorMix, kRelativeColor, kContrastColor };
+    enum class Type { kColorMix, kRelativeColor, kContrastColor, kAlphaColor };
     Type GetType() const { return type_; }
 
     bool operator==(const UnresolvedColorFunction& other) const;
@@ -210,6 +210,24 @@ class CORE_EXPORT StyleColor {
    private:
     ColorOrUnresolvedColorFunction param_color_;
     UnderlyingColorType param_color_type_ = UnderlyingColorType::kColor;
+  };
+
+  class CORE_EXPORT UnresolvedAlphaColor : public UnresolvedColorFunction {
+   public:
+    UnresolvedAlphaColor(const StyleColor& origin_color,
+                         const CSSValue* alpha,
+                         const CSSLengthResolver& length_resolver);
+    virtual ~UnresolvedAlphaColor() = default;
+    CSSValue* ToCSSValue() const override;
+    Color Resolve(const Color& current_color) const override;
+    bool operator==(const UnresolvedAlphaColor& other) const;
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    ColorOrUnresolvedColorFunction origin_color_;
+    UnderlyingColorType origin_color_type_ = UnderlyingColorType::kColor;
+    bool alpha_was_specified_ = false;
+    Member<const CalculationValue> alpha_;
   };
 
   StyleColor() = default;
@@ -345,6 +363,14 @@ struct DowncastTraits<StyleColor::UnresolvedContrastColor> {
   static bool AllowFrom(const StyleColor::UnresolvedColorFunction& value) {
     return value.GetType() ==
            StyleColor::UnresolvedColorFunction::Type::kContrastColor;
+  }
+};
+
+template <>
+struct DowncastTraits<StyleColor::UnresolvedAlphaColor> {
+  static bool AllowFrom(const StyleColor::UnresolvedColorFunction& value) {
+    return value.GetType() ==
+           StyleColor::UnresolvedColorFunction::Type::kAlphaColor;
   }
 };
 

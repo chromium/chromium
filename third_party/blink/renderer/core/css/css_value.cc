@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 
+#include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
@@ -208,6 +209,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kBorderImageSliceClass:
         return CompareCSSValues<cssvalue::CSSBorderImageSliceValue>(*this,
                                                                     other);
+      case kAlphaColorClass:
+        return CompareCSSValues<cssvalue::CSSAlphaColorValue>(*this, other);
       case kColorClass:
         return CompareCSSValues<cssvalue::CSSColor>(*this, other);
       case kColorMixClass:
@@ -396,6 +399,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSBasicShapeXYWHValue>(this)->CustomCSSText();
     case kBorderImageSliceClass:
       return To<cssvalue::CSSBorderImageSliceValue>(this)->CustomCSSText();
+    case kAlphaColorClass:
+      return To<cssvalue::CSSAlphaColorValue>(this)->CustomCSSText();
     case kColorClass:
       return To<cssvalue::CSSColor>(this)->CustomCSSText();
     case kColorMixClass:
@@ -596,6 +601,7 @@ unsigned CSSValue::Hash() const {
       return HashInt(GetClassType());
     case kMathFunctionClass:
     case kScopedKeywordClass:
+    case kAlphaColorClass:
     case kColorMixClass:
     case kContrastColorClass:
     case kCounterClass:
@@ -719,6 +725,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kBorderImageSliceClass:
       To<cssvalue::CSSBorderImageSliceValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kAlphaColorClass:
+      To<cssvalue::CSSAlphaColorValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kColorClass:
       To<cssvalue::CSSColor>(this)->TraceAfterDispatch(visitor);
@@ -973,6 +982,8 @@ String CSSValue::ClassTypeToString() const {
       return "IdentifierClass";
     case kScopedKeywordClass:
       return "ScopedKeywordClass";
+    case kAlphaColorClass:
+      return "AlphaColorClass";
     case kColorClass:
       return "ColorClass";
     case kColorMixClass:
@@ -1148,6 +1159,8 @@ bool CSSValue::HasRandomFunctions() const {
       return To<cssvalue::CSSColorMixValue>(this)->HasRandomFunctions();
     case kRelativeColorClass:
       return To<cssvalue::CSSRelativeColorValue>(this)->HasRandomFunctions();
+    case kAlphaColorClass:
+      return To<cssvalue::CSSAlphaColorValue>(this)->HasRandomFunctions();
     case kContrastColorClass:
       return To<cssvalue::CSSContrastColorValue>(this)->HasRandomFunctions();
     case kPaletteMixClass:

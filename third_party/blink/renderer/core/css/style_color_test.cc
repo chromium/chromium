@@ -5,13 +5,16 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -369,6 +372,236 @@ TEST_F(StyleColorTest, UnresolvedContrastColor_Resolve) {
 
   EXPECT_EQ(contrast_light->Resolve(Color::kBlack), Color::kBlack);
   EXPECT_EQ(contrast_dark->Resolve(Color::kBlack), Color::kWhite);
+}
+
+TEST_F(StyleColorTest, UnresolvedAlphaColor_Equality) {
+  ScopedCSSAlphaColorFunctionForTest feature(true);
+
+  StyleColor currentcolor;
+  StyleColor red_rgb(Color(255, 0, 0));
+
+  CSSValue* number_half =
+      CSSNumericLiteralValue::Create(0.5, CSSPrimitiveValue::UnitType::kNumber);
+  CSSValue* number_one =
+      CSSNumericLiteralValue::Create(1.0, CSSPrimitiveValue::UnitType::kNumber);
+  CSSValue* percent_50 = CSSNumericLiteralValue::Create(
+      50, CSSPrimitiveValue::UnitType::kPercentage);
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetDocument().documentElement();
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData length_resolver(
+      element->ComputedStyleRef(), element->GetComputedStyle(),
+      element->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(), 1., ignored_flags, element);
+
+  using UnresolvedAlphaColor = StyleColor::UnresolvedAlphaColor;
+
+  // Same origin, same alpha => equal.
+  UnresolvedAlphaColor* alpha_1 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_half, length_resolver);
+  UnresolvedAlphaColor* alpha_2 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_half, length_resolver);
+  EXPECT_EQ(*alpha_1, *alpha_2);
+
+  // Different origin color => not equal.
+  UnresolvedAlphaColor* alpha_3 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      red_rgb, number_half, length_resolver);
+  EXPECT_NE(*alpha_1, *alpha_3);
+
+  // Different alpha value => not equal.
+  UnresolvedAlphaColor* alpha_4 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_one, length_resolver);
+  EXPECT_NE(*alpha_1, *alpha_4);
+
+  // Percentage alpha vs number alpha => not equal.
+  UnresolvedAlphaColor* alpha_5 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, percent_50, length_resolver);
+  EXPECT_NE(*alpha_1, *alpha_5);
+
+  // Alpha specified vs not specified => not equal.
+  UnresolvedAlphaColor* alpha_6 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, nullptr, length_resolver);
+  EXPECT_NE(*alpha_1, *alpha_6);
+
+  // Both with no alpha specified => equal.
+  UnresolvedAlphaColor* alpha_7 = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, nullptr, length_resolver);
+  EXPECT_EQ(*alpha_6, *alpha_7);
+}
+
+TEST_F(StyleColorTest, UnresolvedAlphaColor_ToCSSValue) {
+  ScopedCSSAlphaColorFunctionForTest feature(true);
+
+  StyleColor currentcolor;
+
+  CSSValue* number_half =
+      CSSNumericLiteralValue::Create(0.5, CSSPrimitiveValue::UnitType::kNumber);
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetDocument().documentElement();
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData length_resolver(
+      element->ComputedStyleRef(), element->GetComputedStyle(),
+      element->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(), 1., ignored_flags, element);
+
+  using UnresolvedAlphaColor = StyleColor::UnresolvedAlphaColor;
+  UnresolvedAlphaColor* alpha = MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_half, length_resolver);
+  CSSValue* value = alpha->ToCSSValue();
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->IsAlphaColorValue());
+  EXPECT_EQ(value->CssText(), "alpha(from currentcolor / 0.5)");
+}
+
+TEST_F(StyleColorTest, UnresolvedAlphaColor_Resolve) {
+  ScopedCSSAlphaColorFunctionForTest feature(true);
+
+  StyleColor currentcolor;
+  Color red = Color::FromRGB(255, 0, 0);
+  Color semi_transparent_blue =
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0, 0, 1.0, 0.5);
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetDocument().documentElement();
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData length_resolver(
+      element->ComputedStyleRef(), element->GetComputedStyle(),
+      element->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(), 1., ignored_flags, element);
+
+  using UnresolvedAlphaColor = StyleColor::UnresolvedAlphaColor;
+
+  // alpha(from red / 0.5) => red with alpha 0.5
+  CSSValue* half =
+      CSSNumericLiteralValue::Create(0.5, CSSPrimitiveValue::UnitType::kNumber);
+  UnresolvedAlphaColor* alpha_half = MakeGarbageCollected<UnresolvedAlphaColor>(
+      StyleColor(red), half, length_resolver);
+  Color resolved_half = alpha_half->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_half.Alpha(), 0.5f);
+  // Color components should be preserved (legacy sRGB uses 0-255 range).
+  EXPECT_EQ(resolved_half.Param0(), red.Param0());
+  EXPECT_EQ(resolved_half.Param1(), red.Param1());
+  EXPECT_EQ(resolved_half.Param2(), red.Param2());
+
+  // alpha(from red / 50%) => red with alpha 0.5
+  CSSValue* percent_50 = CSSNumericLiteralValue::Create(
+      50, CSSPrimitiveValue::UnitType::kPercentage);
+  UnresolvedAlphaColor* alpha_percent =
+      MakeGarbageCollected<UnresolvedAlphaColor>(StyleColor(red), percent_50,
+                                                 length_resolver);
+  Color resolved_percent = alpha_percent->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_percent.Alpha(), 0.5f);
+
+  // alpha(from red / none) => red with no alpha (nullopt)
+  CSSValue* none = CSSIdentifierValue::Create(CSSValueID::kNone);
+  UnresolvedAlphaColor* alpha_none = MakeGarbageCollected<UnresolvedAlphaColor>(
+      StyleColor(red), none, length_resolver);
+  Color resolved_none = alpha_none->Resolve(Color::kBlack);
+  // "none" alpha results in a missing alpha component, which serializes
+  // differently.
+  EXPECT_EQ(resolved_none.GetColorSpace(), red.GetColorSpace());
+
+  // alpha(from semiTransparentBlue / alpha) => preserves alpha from origin
+  CSSValue* alpha_keyword = CSSIdentifierValue::Create(CSSValueID::kAlpha);
+  UnresolvedAlphaColor* alpha_kw = MakeGarbageCollected<UnresolvedAlphaColor>(
+      StyleColor(semi_transparent_blue), alpha_keyword, length_resolver);
+  Color resolved_kw = alpha_kw->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_kw.Alpha(), 0.5f);
+
+  // alpha(from semiTransparentBlue / calc(alpha * 0.5)) => alpha becomes 0.25
+  CSSValue* calc_alpha = CSSMathFunctionValue::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionKeywordLiteral::Create(
+              CSSValueID::kAlpha,
+              CSSMathExpressionKeywordLiteral::Context::kColorChannel),
+          CSSMathExpressionNumericLiteral::Create(
+              CSSNumericLiteralValue::Create(
+                  0.5, CSSPrimitiveValue::UnitType::kNumber)),
+          CSSMathOperator::kMultiply));
+  UnresolvedAlphaColor* alpha_calc = MakeGarbageCollected<UnresolvedAlphaColor>(
+      StyleColor(semi_transparent_blue), calc_alpha, length_resolver);
+  Color resolved_calc = alpha_calc->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_calc.Alpha(), 0.25f);
+
+  // alpha(from red) with no alpha specified => defaults to origin alpha (1.0)
+  UnresolvedAlphaColor* alpha_default =
+      MakeGarbageCollected<UnresolvedAlphaColor>(StyleColor(red), nullptr,
+                                                 length_resolver);
+  Color resolved_default = alpha_default->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_default.Alpha(), 1.0f);
+
+  // Test alpha clamping: values > 1.0 clamp to 1.0
+  CSSValue* two =
+      CSSNumericLiteralValue::Create(2.0, CSSPrimitiveValue::UnitType::kNumber);
+  UnresolvedAlphaColor* alpha_clamp_high =
+      MakeGarbageCollected<UnresolvedAlphaColor>(StyleColor(red), two,
+                                                 length_resolver);
+  Color resolved_clamp_high = alpha_clamp_high->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_clamp_high.Alpha(), 1.0f);
+
+  // Test alpha clamping: values < 0 clamp to 0
+  CSSValue* negative = CSSNumericLiteralValue::Create(
+      -0.5, CSSPrimitiveValue::UnitType::kNumber);
+  UnresolvedAlphaColor* alpha_clamp_low =
+      MakeGarbageCollected<UnresolvedAlphaColor>(StyleColor(red), negative,
+                                                 length_resolver);
+  Color resolved_clamp_low = alpha_clamp_low->Resolve(Color::kBlack);
+  EXPECT_FLOAT_EQ(resolved_clamp_low.Alpha(), 0.0f);
+
+  // alpha(from currentcolor / 0.5) resolves currentcolor to provided color
+  UnresolvedAlphaColor* alpha_current =
+      MakeGarbageCollected<UnresolvedAlphaColor>(currentcolor, half,
+                                                 length_resolver);
+  Color resolved_current = alpha_current->Resolve(red);
+  EXPECT_FLOAT_EQ(resolved_current.Alpha(), 0.5f);
+  EXPECT_EQ(resolved_current.Param0(), red.Param0());
+}
+
+TEST_F(StyleColorTest, UnresolvedAlphaColor_EqualityInStyleColor) {
+  ScopedCSSAlphaColorFunctionForTest feature(true);
+
+  StyleColor currentcolor;
+  StyleColor red_rgb(Color(255, 0, 0));
+
+  CSSValue* number_half =
+      CSSNumericLiteralValue::Create(0.5, CSSPrimitiveValue::UnitType::kNumber);
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetDocument().documentElement();
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData length_resolver(
+      element->ComputedStyleRef(), element->GetComputedStyle(),
+      element->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(), 1., ignored_flags, element);
+
+  using UnresolvedAlphaColor = StyleColor::UnresolvedAlphaColor;
+
+  // Test that UnresolvedAlphaColor works correctly inside StyleColor equality.
+  StyleColor alpha_style_1(MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_half, length_resolver));
+  StyleColor alpha_style_2(MakeGarbageCollected<UnresolvedAlphaColor>(
+      currentcolor, number_half, length_resolver));
+  EXPECT_EQ(alpha_style_1, alpha_style_2);
+
+  // Different from a non-alpha StyleColor.
+  EXPECT_NE(alpha_style_1, red_rgb);
+  EXPECT_NE(alpha_style_1, currentcolor);
+
+  // Different from a color mix.
+  StyleColor mix(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
+      Color::ColorSpace::kSRGB, Color::HueInterpolationMethod::kShorter,
+      currentcolor, red_rgb, 0.5, 1.0));
+  EXPECT_NE(alpha_style_1, mix);
 }
 
 }  // namespace blink

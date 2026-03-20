@@ -41,6 +41,7 @@ bool CSSParserLocalContext::PercentagesDependOnUsedValue() const {
       case CSSValueID::kRay:
       case CSSValueID::kView:
         return true;
+      case CSSValueID::kAlpha:
       case CSSValueID::kBlur:
       case CSSValueID::kBrightness:
       case CSSValueID::kColor:

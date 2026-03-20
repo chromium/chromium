@@ -14,6 +14,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
+#include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -2108,6 +2109,95 @@ CSSValue* ConsumeColorMixFunction(
   return result;
 }
 
+// https://drafts.csswg.org/css-color-5/#relative-alpha
+CSSValue* ConsumeAlphaColorFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    const ColorParserContext& color_parser_context) {
+  CHECK(RuntimeEnabledFeatures::CSSAlphaColorFunctionEnabled());
+  DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kAlpha);
+
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kAlpha, local_context);
+
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  // "from" keyword is required.
+  if (!ConsumeIdent<CSSValueID::kFrom>(stream)) {
+    return nullptr;
+  }
+
+  CSSValue* origin_color = ConsumeColorInternal(stream, context, local_context,
+                                                /*accept_quirky_colors=*/false,
+                                                color_parser_context);
+  if (!origin_color) {
+    return nullptr;
+  }
+
+  // Optional: / <alpha-value>
+  CSSValue* alpha = nullptr;
+  if (ConsumeSlashIncludingWhitespace(stream)) {
+    // The alpha value can be a number, percentage, none, or the `alpha`
+    // channel keyword (or a calc() expression using `alpha`).
+    if (ConsumeIdent<CSSValueID::kNone>(stream)) {
+      alpha = CSSIdentifierValue::Create(CSSValueID::kNone);
+    } else if (CSSValue* number =
+                   ConsumeNumber(stream, context, local_context,
+                                 CSSPrimitiveValue::ValueRange::kAll)) {
+      alpha = number;
+    } else if (CSSValue* percent =
+                   ConsumePercent(stream, context, local_context,
+                                  CSSPrimitiveValue::ValueRange::kAll)) {
+      alpha = percent;
+    } else {
+      // Try to parse as the `alpha` channel keyword or a calc() expression
+      // referencing the `alpha` keyword.
+      CSSColorChannelMap color_channel_map = {
+          {CSSValueID::kAlpha, std::nullopt},
+      };
+      const CSSParserToken token = stream.Peek();
+      if (token.GetType() == kFunctionToken) {
+        using enum CSSMathExpressionNode::Flag;
+        using Flags = CSSMathExpressionNode::Flags;
+        CSSParserTokenStream::RestoringBlockGuard calc_guard(stream);
+        stream.ConsumeWhitespace();
+        CSSMathFunctionValue* calc_value = CSSMathFunctionValue::Create(
+            CSSMathExpressionNode::ParseMathFunction(
+                token.FunctionId(), stream, context, local_context,
+                Flags({AllowPercent}), kCSSAnchorQueryTypesNone,
+                color_channel_map),
+            CSSPrimitiveValue::ValueRange::kAll);
+        if (calc_value) {
+          const CalculationResultCategory category = calc_value->Category();
+          if (category != kCalcNumber && category != kCalcPercent) {
+            return nullptr;
+          }
+          calc_guard.Release();
+          stream.ConsumeWhitespace();
+          alpha = calc_value;
+        }
+      } else if (color_channel_map.Contains(token.Id())) {
+        alpha = ConsumeIdent(stream);
+      }
+    }
+    if (!alpha) {
+      return nullptr;
+    }
+  }
+
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+
+  guard.Release();
+  stream.ConsumeWhitespace();
+
+  return MakeGarbageCollected<cssvalue::CSSAlphaColorValue>(origin_color,
+                                                            alpha);
+}
+
 // https://www.w3.org/TR/css-color-5/#contrast-color
 CSSValue* ConsumeContrastColorFunction(
     CSSParserTokenStream& stream,
@@ -2205,6 +2295,12 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     CSSValue* color = ConsumeColorMixFunction(stream, context, local_context,
                                               color_parser_context);
     return color;
+  }
+
+  if (RuntimeEnabledFeatures::CSSAlphaColorFunctionEnabled() &&
+      stream.Peek().FunctionId() == CSSValueID::kAlpha) {
+    return ConsumeAlphaColorFunction(stream, context, local_context,
+                                     color_parser_context);
   }
 
   if (RuntimeEnabledFeatures::CSSContrastColorEnabled() &&

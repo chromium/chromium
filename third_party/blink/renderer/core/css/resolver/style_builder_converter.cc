@@ -34,6 +34,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -2980,6 +2981,20 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     }
   }
 
+  if (auto* alpha_color_value =
+          DynamicTo<cssvalue::CSSAlphaColorValue>(value)) {
+    const StyleColor origin_color =
+        ResolveColorValueImpl(alpha_color_value->OriginColor(), context);
+    const StyleColor::UnresolvedAlphaColor* unresolved_alpha_color =
+        MakeGarbageCollected<StyleColor::UnresolvedAlphaColor>(
+            origin_color, alpha_color_value->Alpha(), context.length_resolver);
+    if (origin_color.IsAbsoluteColor()) {
+      return StyleColor(unresolved_alpha_color->Resolve(Color()));
+    } else {
+      return StyleColor(unresolved_alpha_color);
+    }
+  }
+
   if (auto* unresolved_color_value =
           DynamicTo<cssvalue::CSSUnresolvedColorValue>(value)) {
     return StyleColor(unresolved_color_value->Resolve(context.length_resolver));
@@ -3584,8 +3599,9 @@ static const CSSValue& ComputeRegisteredPropertyValue(
                                           selected_value, context);
   }
 
-  if (value.IsColorMixValue() || value.IsRelativeColorValue() ||
-      value.IsContrastColorValue() || value.IsUnresolvedColorValue()) {
+  if (value.IsAlphaColorValue() || value.IsColorMixValue() ||
+      value.IsRelativeColorValue() || value.IsContrastColorValue() ||
+      value.IsUnresolvedColorValue()) {
     return ComputeColorValue(css_to_length_conversion_data, value, document,
                              color_scheme);
   }
