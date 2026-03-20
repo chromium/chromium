@@ -64,6 +64,7 @@ using ::action_chips::mojom::IconType;
 using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
+using ::action_chips::mojom::ToolMode;
 using ::sync_preferences::TestingPrefServiceSyncable;
 using ::tabs::TabInterface;
 using ::testing::_;
@@ -92,6 +93,7 @@ struct CreateSuggestionOptions {
   std::string secondary_a11y_text;
   std::u16string suggestion;
   omnibox::SuggestType suggest_type = omnibox::SuggestType::TYPE_FUSEBOX_ACTION;
+  omnibox::ToolMode preselected_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 };
 
 SearchSuggestionParser::SuggestResult CreateSuggestion(
@@ -123,6 +125,10 @@ SearchSuggestionParser::SuggestResult CreateSuggestion(
     if (!options.secondary_a11y_text.empty()) {
       *suggest_template_info.mutable_secondary_text()->mutable_a11y_text() =
           options.secondary_a11y_text;
+    }
+    if (options.preselected_tool) {
+      suggest_template_info.mutable_fusebox_action()->set_preselected_tool(
+          options.preselected_tool);
     }
     result.SetSuggestTemplateInfo(std::move(suggest_template_info));
   }
@@ -186,7 +192,8 @@ ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
   return CreateActionChip(
       "",
       SuggestTemplateInfo::New(IconType::kFavicon, CreateFormattedString(title),
-                               CreateFormattedString(subtitle)),
+                               CreateFormattedString(subtitle),
+                               ToolMode::kUnspecified),
       std::move(tab));
 }
 
@@ -195,7 +202,8 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
       /*suggestion=*/"",
       SuggestTemplateInfo::New(
           IconType::kGlobeWithSearchLoop, CreateFormattedString("Deep Search"),
-          CreateFormattedString("Dive deep into something new")),
+          CreateFormattedString("Dive deep into something new"),
+          ToolMode::kDeepSearch),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -205,7 +213,8 @@ const ActionChipPtr& GetStaticImageGenerationChip() {
       /*suggestion=*/"",
       SuggestTemplateInfo::New(
           IconType::kBanana, CreateFormattedString("Create images"),
-          CreateFormattedString("Add an image and reimagine it")),
+          CreateFormattedString("Add an image and reimagine it"),
+          ToolMode::kImageGen),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -217,7 +226,8 @@ const ActionChipPtr& GetStaticCanvasChip() {
                                CreateFormattedString(l10n_util::GetStringUTF8(
                                    IDS_NTP_ACTION_CHIP_CANVAS_HEADING)),
                                CreateFormattedString(l10n_util::GetStringUTF8(
-                                   IDS_NTP_ACTION_CHIP_CANVAS_BODY))),
+                                   IDS_NTP_ACTION_CHIP_CANVAS_BODY)),
+                               ToolMode::kCanvas),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -228,7 +238,8 @@ ActionChipPtr CreateStaticDeepDiveChip(TabInfoPtr tab,
       std::string(suggestion),
       SuggestTemplateInfo::New(IconType::kSubArrowRight,
                                /*primary_text=*/nullptr,
-                               CreateFormattedString(std::string(suggestion))),
+                               CreateFormattedString(std::string(suggestion)),
+                               ToolMode::kUnspecified),
       std::move(tab));
 }
 
@@ -968,21 +979,21 @@ TEST(ActionChipGeneratorTest, DeepDiveWithNewEndpoint) {
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr chip0 = CreateActionChip(
       base::UTF16ToUTF8(recent_tab_suggestion),
-      SuggestTemplateInfo::New(IconType::kFavicon,
-                               CreateFormattedString(recent_tab_title),
-                               CreateFormattedString(recent_tab_subtitle)),
+      SuggestTemplateInfo::New(
+          IconType::kFavicon, CreateFormattedString(recent_tab_title),
+          CreateFormattedString(recent_tab_subtitle), ToolMode::kUnspecified),
       tab_info->Clone());
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(deep_dive_suggestion_1),
-      SuggestTemplateInfo::New(IconType::kSubArrowRight,
-                               CreateFormattedString(deep_dive_title_1),
-                               CreateFormattedString(deep_dive_subtitle_1)),
+      SuggestTemplateInfo::New(
+          IconType::kSubArrowRight, CreateFormattedString(deep_dive_title_1),
+          CreateFormattedString(deep_dive_subtitle_1), ToolMode::kUnspecified),
       tab_info->Clone());
   ActionChipPtr chip2 = CreateActionChip(
       base::UTF16ToUTF8(deep_dive_suggestion_2),
-      SuggestTemplateInfo::New(IconType::kSubArrowRight,
-                               CreateFormattedString(deep_dive_title_2),
-                               CreateFormattedString(deep_dive_subtitle_2)),
+      SuggestTemplateInfo::New(
+          IconType::kSubArrowRight, CreateFormattedString(deep_dive_title_2),
+          CreateFormattedString(deep_dive_subtitle_2), ToolMode::kUnspecified),
       tab_info->Clone());
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -1016,33 +1027,34 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
                                ElementsAre(omnibox::TOOL_MODE_DEEP_SEARCH,
                                            omnibox::TOOL_MODE_IMAGE_GEN),
                                Eq(std::nullopt), _))
-      .WillOnce(WithArg<4>(
-          [&](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
-                                          ActionChipSuggestionsResult&&)>
-                  callback) {
-            std::move(callback).Run(SearchSuggestionParser::SuggestResults{
-                CreateSuggestion(
-                    {.group_id =
-                         omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION,
-                     .icon_type = omnibox::SuggestTemplateInfo::FAVICON,
-                     .match_contents = recent_tab_title,
-                     .annotation = recent_tab_subtitle,
-                     .suggestion = recent_tab_suggestion}),
-                CreateSuggestion(
-                    {.group_id = omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION,
-                     .icon_type =
-                         omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP,
-                     .match_contents = deep_search_title,
-                     .annotation = deep_search_subtitle,
-                     .suggestion = deep_search_suggestion}),
-                CreateSuggestion(
-                    {.group_id = omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION,
-                     .icon_type = omnibox::SuggestTemplateInfo::BANANA,
-                     .match_contents = image_gen_title,
-                     .annotation = image_gen_subtitle,
-                     .suggestion = image_gen_suggestion})});
-            return nullptr;
-          }));
+      .WillOnce(WithArg<4>([&](base::OnceCallback<void(
+                                   RemoteSuggestionsServiceSimple::
+                                       ActionChipSuggestionsResult&&)>
+                                   callback) {
+        std::move(callback).Run(SearchSuggestionParser::SuggestResults{
+            CreateSuggestion(
+                {.group_id = omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION,
+                 .icon_type = omnibox::SuggestTemplateInfo::FAVICON,
+                 .match_contents = recent_tab_title,
+                 .annotation = recent_tab_subtitle,
+                 .suggestion = recent_tab_suggestion}),
+            CreateSuggestion(
+                {.group_id = omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION,
+                 .icon_type =
+                     omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP,
+                 .match_contents = deep_search_title,
+                 .annotation = deep_search_subtitle,
+                 .suggestion = deep_search_suggestion,
+                 .preselected_tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH}),
+            CreateSuggestion(
+                {.group_id = omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION,
+                 .icon_type = omnibox::SuggestTemplateInfo::BANANA,
+                 .match_contents = image_gen_title,
+                 .annotation = image_gen_subtitle,
+                 .suggestion = image_gen_suggestion,
+                 .preselected_tool = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN})});
+        return nullptr;
+      }));
 
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
@@ -1061,21 +1073,22 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr chip0 = CreateActionChip(
       base::UTF16ToUTF8(recent_tab_suggestion),
-      SuggestTemplateInfo::New(IconType::kFavicon,
-                               CreateFormattedString(recent_tab_title),
-                               CreateFormattedString(recent_tab_subtitle)),
+      SuggestTemplateInfo::New(
+          IconType::kFavicon, CreateFormattedString(recent_tab_title),
+          CreateFormattedString(recent_tab_subtitle), ToolMode::kUnspecified),
       tab_info->Clone());
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(deep_search_suggestion),
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
-                               CreateFormattedString(deep_search_subtitle)),
+                               CreateFormattedString(deep_search_subtitle),
+                               ToolMode::kDeepSearch),
       nullptr);
   ActionChipPtr chip2 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(IconType::kBanana,
-                               CreateFormattedString(image_gen_title),
-                               CreateFormattedString(image_gen_subtitle)),
+      SuggestTemplateInfo::New(
+          IconType::kBanana, CreateFormattedString(image_gen_title),
+          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
       nullptr);
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -1114,13 +1127,17 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
                          omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP,
                      .match_contents = deep_search_title,
                      .annotation = deep_search_subtitle,
-                     .suggestion = deep_search_suggestion}),
+                     .suggestion = deep_search_suggestion,
+                     .preselected_tool =
+                         omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH}),
                 CreateSuggestion(
                     {.group_id = omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION,
                      .icon_type = omnibox::SuggestTemplateInfo::BANANA,
                      .match_contents = image_gen_title,
                      .annotation = image_gen_subtitle,
-                     .suggestion = image_gen_suggestion})});
+                     .suggestion = image_gen_suggestion,
+                     .preselected_tool =
+                         omnibox::ToolMode::TOOL_MODE_IMAGE_GEN})});
             return nullptr;
           }));
 
@@ -1141,13 +1158,14 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
       base::UTF16ToUTF8(deep_search_suggestion),
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
-                               CreateFormattedString(deep_search_subtitle)),
+                               CreateFormattedString(deep_search_subtitle),
+                               ToolMode::kDeepSearch),
       nullptr);
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(IconType::kBanana,
-                               CreateFormattedString(image_gen_title),
-                               CreateFormattedString(image_gen_subtitle)),
+      SuggestTemplateInfo::New(
+          IconType::kBanana, CreateFormattedString(image_gen_title),
+          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
       nullptr);
 
   std::vector<Matcher<const ActionChipPtr&>> expected;
@@ -1239,13 +1257,17 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
                          omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP,
                      .match_contents = deep_search_title,
                      .annotation = deep_search_subtitle,
-                     .suggestion = base::UTF8ToUTF16(deep_search_suggestion)}),
+                     .suggestion = base::UTF8ToUTF16(deep_search_suggestion),
+                     .preselected_tool =
+                         omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH}),
                 CreateSuggestion(
                     {.group_id = omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION,
                      .icon_type = omnibox::SuggestTemplateInfo::BANANA,
                      .match_contents = image_gen_title,
                      .annotation = image_gen_subtitle,
-                     .suggestion = base::UTF8ToUTF16(image_gen_suggestion)})});
+                     .suggestion = base::UTF8ToUTF16(image_gen_suggestion),
+                     .preselected_tool =
+                         omnibox::ToolMode::TOOL_MODE_IMAGE_GEN})});
             return nullptr;
           }));
 
@@ -1268,13 +1290,14 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
       deep_search_suggestion,
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
-                               CreateFormattedString(deep_search_subtitle)),
+                               CreateFormattedString(deep_search_subtitle),
+                               ToolMode::kDeepSearch),
       nullptr);
   ActionChipPtr chip1 = CreateActionChip(
       image_gen_suggestion,
-      SuggestTemplateInfo::New(IconType::kBanana,
-                               CreateFormattedString(image_gen_title),
-                               CreateFormattedString(image_gen_subtitle)),
+      SuggestTemplateInfo::New(
+          IconType::kBanana, CreateFormattedString(image_gen_title),
+          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
       nullptr);
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1))));
 }
@@ -1530,6 +1553,7 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
       CreateFormattedString("Valid Title", "Primary A11y Text");
   valid_chip->suggest_template_info->secondary_text =
       CreateFormattedString("Valid Annotation", "Secondary A11y Text");
+  valid_chip->suggest_template_info->preselected_tool = ToolMode::kUnspecified;
 
   // Expect only the valid chip.
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(valid_chip))));

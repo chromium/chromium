@@ -10,8 +10,8 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
+import {ToolMode} from '../action_chips.mojom-webui.js';
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 import {IconType} from '../action_chips.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
@@ -163,30 +163,28 @@ export class ActionChipsElement extends CrLitElement {
   protected onClick_(e: Event): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
-    switch (chip.suggestTemplateInfo.typeIcon) {
-      case IconType.kBanana:
+    switch (chip.suggestTemplateInfo.preselectedTool) {
+      case ToolMode.kImageGen:
         this.handler.activateMetricsFunnel('CreateImageChip');
-        this.onActionChipClick_(chip, ToolMode.kImageGen);
         break;
-      case IconType.kGlobeWithSearchLoop:
+      case ToolMode.kDeepSearch:
         this.handler.activateMetricsFunnel('DeepSearchChip');
-        this.onActionChipClick_(chip, ToolMode.kDeepSearch);
         break;
-      case IconType.kFavicon:
-        this.handler.activateMetricsFunnel('RecentTabChip');
-        this.onActionChipClick_(chip, ToolMode.kUnspecified);
-        break;
-      case IconType.kSubArrowRight:
-        this.handler.activateMetricsFunnel('DeepDiveChip');
-        this.onActionChipClick_(chip, ToolMode.kUnspecified);
-        break;
-      case IconType.kDraftSpark:
+      case ToolMode.kCanvas:
         this.handler.activateMetricsFunnel('CanvasChip');
-        this.onActionChipClick_(chip, ToolMode.kCanvas);
+        break;
+      case ToolMode.kUnspecified:
+        if (chip.suggestTemplateInfo.typeIcon === IconType.kFavicon) {
+          this.handler.activateMetricsFunnel('RecentTabChip');
+        } else if (
+            chip.suggestTemplateInfo.typeIcon === IconType.kSubArrowRight) {
+          this.handler.activateMetricsFunnel('DeepDiveChip');
+        }
         break;
       default:
         // Do nothing yet...
     }
+    this.onActionChipClick_(chip);
   }
 
   protected onRemoveClick_(e: MouseEvent) {
@@ -227,7 +225,7 @@ export class ActionChipsElement extends CrLitElement {
     return chip.tab ? this.getFaviconUrl_(chip.tab.url) : '';
   }
 
-  private onActionChipClick_(chip: ActionChip, mode: ToolMode) {
+  private onActionChipClick_(chip: ActionChip) {
     recordClick(chip.suggestTemplateInfo.typeIcon);
     const contextFiles: TabUpload[] = [];
     const tab = chip.tab;
@@ -241,9 +239,11 @@ export class ActionChipsElement extends CrLitElement {
       };
       contextFiles.push(tabInfo);
     }
-    this.fire(
-        'action-chip-click',
-        {searchboxText: chip.suggestion, contextFiles, mode});
+    this.fire('action-chip-click', {
+      searchboxText: chip.suggestion,
+      contextFiles,
+      mode: chip.suggestTemplateInfo.preselectedTool,
+    });
   }
 
   protected recentTabChipTitle_(chip: ActionChip) {
