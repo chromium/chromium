@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -88,43 +89,6 @@ std::unique_ptr<sync_sessions::SyncedSession> GetSampleSession() {
 }
 
 }  // namespace
-
-namespace sync_sessions {
-
-class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate() = default;
-  MockOpenTabsUIDelegate(const MockOpenTabsUIDelegate&) = delete;
-  MockOpenTabsUIDelegate& operator=(const MockOpenTabsUIDelegate&) = delete;
-  ~MockOpenTabsUIDelegate() override = default;
-
-  MOCK_METHOD1(
-      GetAllForeignSessions,
-      bool(std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
-               sessions));
-
-  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
-                     base::flat_map<std::string, base::Time>());
-
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
-
-  MOCK_METHOD1(GetLocalSession, bool(const SyncedSession** local_session));
-};
-
-}  // namespace sync_sessions
 
 namespace visited_url_ranking {
 

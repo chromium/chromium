@@ -25,6 +25,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/mock_sync_service.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -54,31 +55,6 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<syncer::DataTypeControllerDelegate>());
-};
-
-class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
- public:
-  OpenTabsUIDelegateMock() = default;
-  ~OpenTabsUIDelegateMock() override = default;
-
-  MOCK_METHOD1(GetAllForeignSessions,
-               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                        VectorExperimental>>* sessions));
-  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
-                     base::flat_map<std::string, base::Time>());
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
-  MOCK_METHOD1(GetLocalSession,
-               bool(const sync_sessions::SyncedSession** local));
 };
 
 multidevice::RemoteDeviceRef CreatePhoneDevice(const std::string& pii_name) {
@@ -165,7 +141,8 @@ class BrowserTabsModelProviderImplTest
     return false;
   }
 
-  testing::NiceMock<OpenTabsUIDelegateMock>* open_tabs_ui_delegate() {
+  testing::NiceMock<sync_sessions::MockOpenTabsUIDelegate>*
+  open_tabs_ui_delegate() {
     return enable_tab_sync_ ? &open_tabs_ui_delegate_ : nullptr;
   }
 
@@ -193,7 +170,8 @@ class BrowserTabsModelProviderImplTest
   testing::NiceMock<SessionSyncServiceMock> mock_session_sync_service_;
   std::unique_ptr<BrowserTabsModelProviderImpl> provider_;
 
-  testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
+  testing::NiceMock<sync_sessions::MockOpenTabsUIDelegate>
+      open_tabs_ui_delegate_;
 
   bool enable_tab_sync_ = true;
   raw_ptr<std::vector<

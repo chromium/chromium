@@ -19,6 +19,7 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,7 +61,7 @@ const sessions::SessionTab* GetTab(
   return session->windows.begin()->second->wrapped_window.tabs[0].get();
 }
 
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
+class MockOpenTabsUIDelegate : public sync_sessions::MockOpenTabsUIDelegate {
  public:
   MockOpenTabsUIDelegate() {
     local_session_ =
@@ -77,6 +78,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     session_to_tab_[kRemoteTabName2] =
         GetTab(foreign_sessions_owned_.back().get());
   }
+
+  ~MockOpenTabsUIDelegate() override = default;
 
   bool GetAllForeignSessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
@@ -115,16 +118,6 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     *tab = it->second;
     return true;
   }
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
 
  private:
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>>

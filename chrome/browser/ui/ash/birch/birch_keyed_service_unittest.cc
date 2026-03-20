@@ -58,6 +58,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -135,7 +136,7 @@ class MockSessionSyncService : public sync_sessions::MockSessionSyncService {
   base::RepeatingClosureList subscriber_list_;
 };
 
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
+class MockOpenTabsUIDelegate : public sync_sessions::MockOpenTabsUIDelegate {
  public:
   MockOpenTabsUIDelegate() {
     foreign_sessions_owned_.push_back(CreateNewSession(
@@ -191,20 +192,6 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     }
     return base::flat_map<std::string, base::Time>(std::move(timestamps));
   }
-
-  MOCK_METHOD1(GetLocalSession,
-               bool(const sync_sessions::SyncedSession** local_session));
-
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
 
   bool GetForeignSessionTabs(
       const std::string& tag,

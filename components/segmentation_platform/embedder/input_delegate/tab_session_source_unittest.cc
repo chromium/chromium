@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
@@ -52,7 +53,7 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   return session;
 }
 
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
+class MockOpenTabsUIDelegate : public sync_sessions::MockOpenTabsUIDelegate {
  public:
   MockOpenTabsUIDelegate() {
     local_session_ =
@@ -64,6 +65,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
         CreateNewSession(kRemoteTabName2, base::Time::Now() - kTime3));
     foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
   }
+
+  ~MockOpenTabsUIDelegate() override = default;
 
   bool GetAllForeignSessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
@@ -93,21 +96,6 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     *local_session = local_session_.get();
     return *local_session != nullptr;
   }
-
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
 
  private:
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
@@ -178,16 +166,22 @@ class TabSessionSourceTest : public testing::Test {
 };
 
 TEST_F(TabSessionSourceTest, Bucketize) {
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(0, /*max_buckets*/50), 0, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeLinear(0, /*max_buckets*/10), 0, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(1, /*max_buckets*/50), 1, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeLinear(1, /*max_buckets*/10), 1, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(5, /*max_buckets*/50), 4, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeLinear(5, /*max_buckets*/10), 5, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(10, /*max_buckets*/50), 8, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeLinear(10, /*max_buckets*/10), 10, 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(pow(2, 60), /*max_buckets*/50), pow(2, 50), 0.01);
-  EXPECT_NEAR(TabSessionSource::BucketizeLinear(16, /*max_buckets*/10), 10, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(0, /*max_buckets*/ 50), 0, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(0, /*max_buckets*/ 10), 0,
+              0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(1, /*max_buckets*/ 50), 1, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(1, /*max_buckets*/ 10), 1,
+              0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(5, /*max_buckets*/ 50), 4, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(5, /*max_buckets*/ 10), 5,
+              0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(10, /*max_buckets*/ 50), 8, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(10, /*max_buckets*/ 10), 10,
+              0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(pow(2, 60), /*max_buckets*/ 50),
+              pow(2, 50), 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(16, /*max_buckets*/ 10), 10,
+              0.01);
 }
 
 TEST_F(TabSessionSourceTest, ProcessLocal) {

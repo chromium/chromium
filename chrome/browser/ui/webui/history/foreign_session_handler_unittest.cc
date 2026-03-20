@@ -10,42 +10,13 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_sync {
-
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate() = default;
-
-  MOCK_METHOD1(GetAllForeignSessions,
-               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                        VectorExperimental>>* sessions));
-
-  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
-                     base::flat_map<std::string, base::Time>());
-
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
-
-  MOCK_METHOD1(GetLocalSession,
-               bool(const sync_sessions::SyncedSession** local_session));
-};
 
 // Partial SessionSyncService that can fake behavior for
 // SubscribeToForeignSessionsChanged() including the notification to
@@ -60,7 +31,7 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
   // SessionSyncService overrides.
   syncer::GlobalIdMapper* GetGlobalIdMapper() const override { return nullptr; }
 
-  MockOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
+  sync_sessions::MockOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
     return &mock_open_tabs_ui_delegate_;
   }
 
@@ -76,7 +47,7 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
 
  private:
   base::RepeatingClosureList subscriber_list_;
-  MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;
+  sync_sessions::MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;
 };
 
 class ForeignSessionHandlerTest : public ChromeRenderViewHostTestHarness {
