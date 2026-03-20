@@ -12,6 +12,8 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/send_tab_to_self/features.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
@@ -79,6 +81,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -189,6 +192,17 @@ using base::UserMetricsAction;
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [browserCoordinatorHandler hideComposebox];
+
+  CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
+  if ([commandDispatcher
+          dispatchingForProtocol:@protocol(AssistantContainerCommands)]) {
+    id<AssistantContainerCommands> assistantContainerHandler =
+        HandlerForProtocol(commandDispatcher, AssistantContainerCommands);
+    [assistantContainerHandler
+        animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                                 duration:kMaterialDuration1
+                                    curve:UIViewAnimationCurveEaseInOut];
+  }
 
   id<BrowserCommands> callableDispatcher =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);

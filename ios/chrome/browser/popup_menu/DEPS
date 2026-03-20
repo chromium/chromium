@@ -1,5 +1,7 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/assistant/coordinator/assistant_container_commands.h",
+  "+ios/chrome/browser/assistant/ui/assistant_container_detent.h",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   "+ios/chrome/browser/bookmarks/ui_bundled",
