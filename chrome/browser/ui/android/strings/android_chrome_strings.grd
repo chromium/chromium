@@ -546,6 +546,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_EXTENSIONS_DESCRIPTION" desc="Explanation for 'Extensions' section">
         Some extensions can add search engines to Chrome
       </message>
+      <message name="IDS_SITE_SEARCH_EXTENSIONS_MENU_MANAGE" desc="Menu item to manage extensions">
+        Manage
+      </message>
+      <message name="IDS_SITE_SEARCH_EXTENSIONS_MENU_DISABLE" desc="Menu item to disable the extension">
+        Disable
+      </message>
       <message name="IDS_SITE_SEARCH_DIALOG_TITLE_ADD" desc="Title for the Add Site Search dialog.">
         Add site search
       </message>

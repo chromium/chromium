@@ -27,14 +27,20 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -107,6 +113,34 @@ public class ExtensionSearchEngineMediatorUnitTest {
         verify(mModelList).clear();
         verify(mTemplateUrlService).getTemplateUrlsByCategory(TemplateUrlCategory.EXTENSION);
         verify(mModelList, Mockito.never()).add(any(ListItem.class));
+    }
+
+    @Test
+    public void testMenuDelegate() {
+        // Trigger the refreshList() to call mModelList.add().
+        mMediator.onTemplateURLServiceChanged();
+
+        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mModelList).add(itemCaptor.capture());
+
+        PropertyModel model = itemCaptor.getValue().model;
+        ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
+
+        assertNotNull(delegate);
+
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        ModelListAdapter adapter = listMenu.getContentAdapter();
+        assertEquals(2, adapter.getCount());
+
+        ListItem activateItem = (ListItem) adapter.getItem(0);
+        assertEquals(
+                R.string.site_search_extensions_menu_manage,
+                activateItem.model.get(ListMenuItemProperties.TITLE_ID));
+
+        ListItem makeDefaultItem = (ListItem) adapter.getItem(1);
+        assertEquals(
+                R.string.site_search_extensions_menu_disable,
+                makeDefaultItem.model.get(ListMenuItemProperties.TITLE_ID));
     }
 
     @Test
