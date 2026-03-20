@@ -322,6 +322,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Checks if the browser popup is tab modal dialog.
   virtual bool IsTabModalPopupDeprecated() const = 0;
 
+  // Checks if the browser was created by session restore.
+  virtual bool CreatedBySessionRestore() const = 0;
+
   virtual DesktopBrowserWindowCapabilities* capabilities() = 0;
   virtual const DesktopBrowserWindowCapabilities* capabilities() const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)

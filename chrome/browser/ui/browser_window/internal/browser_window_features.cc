@@ -322,8 +322,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
       if (!restored_state_collapsed.has_value() &&
           !restored_state_uncollapsed_width.has_value() &&
-          raw_browser->creation_source() !=
-              Browser::CreationSource::kSessionRestore) {
+          !browser->CreatedBySessionRestore()) {
         restored_state_collapsed =
             profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsCollapsedState);
         restored_state_uncollapsed_width = profile->GetPrefs()->GetInteger(

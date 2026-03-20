@@ -1229,6 +1229,10 @@ bool Browser::IsTabModalPopupDeprecated() const {
   return is_tab_modal_popup_deprecated_;
 }
 
+bool Browser::CreatedBySessionRestore() const {
+  return creation_source() == CreationSource::kSessionRestore;
+}
+
 ui::BaseWindow* Browser::GetWindow() {
   return window_.get();
 }

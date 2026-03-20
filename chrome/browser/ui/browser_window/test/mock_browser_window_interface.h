@@ -97,6 +97,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (),
               (const, override));
   MOCK_METHOD(bool, IsTabModalPopupDeprecated, (), (const, override));
+  MOCK_METHOD(bool, CreatedBySessionRestore, (), (const, override));
   MOCK_METHOD(DesktopBrowserWindowCapabilities*, capabilities, (), (override));
   MOCK_METHOD(const DesktopBrowserWindowCapabilities*,
               capabilities,
