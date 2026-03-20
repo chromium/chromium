@@ -197,11 +197,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   class CanvasImageProvider;
 
   SkSurface* GetSkSurface() const;
-  bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
-                                const void* pixels,
-                                size_t row_bytes,
-                                int x,
-                                int y);
+  bool UnacceleratedWritePixelsForCanvas2D(const SkImageInfo& orig_info,
+                                           const void* pixels,
+                                           size_t row_bytes,
+                                           int x,
+                                           int y);
 
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);

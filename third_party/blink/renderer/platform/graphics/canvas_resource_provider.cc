@@ -178,7 +178,8 @@ bool Canvas2DResourceProviderBitmap::WritePixelsForCanvas2D(
     size_t row_bytes,
     int x,
     int y) {
-  return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+  return UnacceleratedWritePixelsForCanvas2D(orig_info, pixels, row_bytes, x,
+                                             y);
 }
 
 BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -730,7 +731,8 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
     int y) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+    return UnacceleratedWritePixelsForCanvas2D(orig_info, pixels, row_bytes, x,
+                                               y);
   }
 
   TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::WritePixels");
@@ -1985,12 +1987,13 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         shared_image_interface_provider,
                                         delegate) {}
 
-bool CanvasResourceProvider::UnacceleratedWritePixels(
+bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
     const SkImageInfo& orig_info,
     const void* pixels,
     size_t row_bytes,
     int x,
     int y) {
+  CHECK(IsCanvas2D());
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
   CHECK(!IsAccelerated());
 
