@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 
+#include "base/test/mock_callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/sync/base/collaboration_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
@@ -98,9 +100,8 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, HoverStateChanges) {
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view =
-      widget->SetContentsView(std::make_unique<ProjectsPanelTabGroupsItemView>(
-          group, base::DoNothing(), base::DoNothing()));
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<ProjectsPanelTabGroupsItemView>(group));
   widget->Show();
 
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
@@ -130,4 +131,32 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, HoverStateChanges) {
   // Move mouse outside the view again.
   move_mouse_to(false);
   check_more_button_visible(false);
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewTest, RightClickTriggersContextMenu) {
+  tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
+                                  tab_groups::TabGroupColorId::kGrey, {});
+
+  base::MockCallback<ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback>
+      more_button_callback;
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view =
+      widget->SetContentsView(std::make_unique<ProjectsPanelTabGroupsItemView>(
+          group, /*pressed_callback=*/base::DoNothing(),
+          more_button_callback.Get()));
+  widget->Show();
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  generator.MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+
+  // Left click should not trigger context menu callback.
+  EXPECT_CALL(more_button_callback, Run(testing::_, testing::_)).Times(0);
+  generator.ClickLeftButton();
+
+  // Right click should trigger context menu callback.
+  EXPECT_CALL(more_button_callback, Run(group.saved_guid(), testing::_))
+      .Times(1);
+  generator.ClickRightButton();
 }
