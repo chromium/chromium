@@ -244,14 +244,13 @@ void PopulateMappableDrmFormatsForExo(
     base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers,
     const FeatureInfo* feature_info) {
   // Populate list of supported mappable formats based on FeatureFlags.
-  base::flat_set<viz::SharedImageFormat> mappable_formats =
-      base::MakeFlatSet<viz::SharedImageFormat>(std::vector({
-          viz::SinglePlaneFormat::kBGR_565,
-          viz::SinglePlaneFormat::kRGBA_8888,
-          viz::SinglePlaneFormat::kRGBX_8888,
-          viz::MultiPlaneFormat::kYV12,
-          viz::MultiPlaneFormat::kNV12,
-      }));
+  base::flat_set<viz::SharedImageFormat> mappable_formats = {
+      viz::SinglePlaneFormat::kBGR_565,    //
+      viz::SinglePlaneFormat::kRGBA_8888,  //
+      viz::SinglePlaneFormat::kRGBX_8888,  //
+      viz::MultiPlaneFormat::kYV12,        //
+      viz::MultiPlaneFormat::kNV12,        //
+  };
   const auto& flags = feature_info->feature_flags();
   if (flags.enable_texture_half_float_linear) {
     mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_F16);

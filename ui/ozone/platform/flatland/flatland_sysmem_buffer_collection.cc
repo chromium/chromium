@@ -191,13 +191,11 @@ std::unique_ptr<ImageConstraintsInfo> InitializeImageConstraintsInfo(
 bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
-      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
-          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-           viz::SinglePlaneFormat::kRGBA_8888,
-           viz::SinglePlaneFormat::kBGRA_8888,
-           viz::SinglePlaneFormat::kRGBX_8888,
-           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
+      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+       viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
+       viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
     return false;
   }
@@ -219,13 +217,11 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
 bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     NativePixmapUsageSet usage) {
-  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
-      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
-          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-           viz::SinglePlaneFormat::kRGBA_8888,
-           viz::SinglePlaneFormat::kBGRA_8888,
-           viz::SinglePlaneFormat::kRGBX_8888,
-           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
+      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+       viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
+       viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
     return false;
   }

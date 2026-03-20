@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
@@ -205,13 +206,11 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
 
 bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
     viz::SharedImageFormat format) const {
-  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
-      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
-          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-           viz::SinglePlaneFormat::kRGBA_8888,
-           viz::SinglePlaneFormat::kBGRA_8888,
-           viz::SinglePlaneFormat::kRGBX_8888,
-           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
+      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+       viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
+       viz::MultiPlaneFormat::kNV12});
   return kSupportedFormats.contains(format);
 }
 
