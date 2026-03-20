@@ -177,15 +177,13 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   base::TimeTicks LargestPaintTime() {
     return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
-        ->LatestLcpDetails()
+        .LatestLcpDetailsForTest()
         .largest_image_paint_time;
   }
 
   uint64_t LargestPaintSize() {
     return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
-        ->LatestLcpDetails()
+        .LatestLcpDetailsForTest()
         .largest_image_paint_size;
   }
 

@@ -120,6 +120,17 @@ class CORE_EXPORT PaintTimingDetector
   }
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
+  const LargestContentfulPaintDetails& LargestContentfulPaintDetailsForMetrics()
+      const {
+    return lcp_details_for_metrics_;
+  }
+
+  const LargestContentfulPaintDetails& LatestLcpDetailsForTest();
+
+  base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
+    return first_input_or_scroll_notified_timestamp_;
+  }
+
   void UpdateLcpCandidate();
 
   // Reports the largest image and text candidates painted under non-nested 0
@@ -148,14 +159,19 @@ class CORE_EXPORT PaintTimingDetector
   // computed. However, it is initialized lazily, so it may be nullptr because
   // it has not yet been initialized or because we have stopped computing LCP.
   Member<LargestContentfulPaintCalculator> largest_contentful_paint_calculator_;
-
-  // Set when first notified about an input or scroll event.
-  bool did_notify_first_input_or_scroll_ = false;
+  // Time at which the first input or scroll is notified to
+  // PaintTimingDetector, hence causing LCP to stop being recorded. This is
+  // the same time at which |largest_contentful_paint_calculator_| is set to
+  // nullptr.
+  base::TimeTicks first_input_or_scroll_notified_timestamp_;
 
   // Because PaintTimingVisualizer is a TraceSessionObserver, unique_ptr is
   // needed to avoid having a reference back into GCed memory, which is
   // forbidden by oilpan.
   std::unique_ptr<PaintTimingVisualizer> visualizer_;
+
+  // The LCP details reported to metrics (UKM).
+  LargestContentfulPaintDetails lcp_details_for_metrics_;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these

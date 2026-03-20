@@ -26,12 +26,7 @@ class InteractiveDetector;
 class PaintTiming;
 struct LargestContentfulPaintDetails;
 
-// This class serves as a bridge between blink and non-blink code for reading
-// performance data for non-web-exposed reporting purposes (e.g. UKM). This
-// class typically proxies reads to various parts of blink, e.g. getting data
-// from `PaintTiming` or `InteractiveDetector`, but some values are pushed and
-// cached here. See WebPerformanceMetricsForReporting for usage outside of
-// blink.
+// This class is only used for non-web-exposed reporting purposes (e.g. UKM).
 class CORE_EXPORT PerformanceTimingForReporting final
     : public GarbageCollected<PerformanceTimingForReporting>,
       public ExecutionContextClient {
@@ -102,14 +97,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
   uint64_t FirstMeaningfulPaintCandidate() const;
 
   LargestContentfulPaintDetailsForReporting
-  LargestContentfulPaintDetailsForMetrics() const {
-    return largest_contentful_paint_details_for_metrics_;
-  }
-  void SetLargestContentfulPaintDetailsForMetrics(
-      const LargestContentfulPaintDetails& details) {
-    largest_contentful_paint_details_for_metrics_ =
-        PopulateLargestContentfulPaintDetailsForReporting(details);
-  }
+  LargestContentfulPaintDetailsForMetrics() const;
 
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
@@ -117,10 +105,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   // The time at which we are notified of the first input or scroll event which
   // causes the largest contentful paint algorithm to stop.
-  uint64_t FirstInputOrScrollNotifiedTimestamp() const {
-    return first_input_or_scroll_notified_timestamp_;
-  }
-  void SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks);
+  uint64_t FirstInputOrScrollNotifiedTimestamp() const;
 
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancellable touchstart, or
@@ -198,6 +183,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
   const DocumentTiming* GetDocumentTiming() const;
   const DocumentParserTiming* GetDocumentParserTiming() const;
   const PaintTiming* GetPaintTiming() const;
+  PaintTimingDetector* GetPaintTimingDetector() const;
   DocumentLoader* GetDocumentLoader() const;
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   InteractiveDetector* GetInteractiveDetector() const;
@@ -205,9 +191,6 @@ class CORE_EXPORT PerformanceTimingForReporting final
       const std::optional<base::TimeTicks>&) const;
 
   bool cross_origin_isolated_capability_;
-  LargestContentfulPaintDetailsForReporting
-      largest_contentful_paint_details_for_metrics_;
-  uint64_t first_input_or_scroll_notified_timestamp_ = 0;
 };
 
 }  // namespace blink
