@@ -204,7 +204,7 @@ BASE_FEATURE(kWebViewUseStartupTasksLogicP2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Stop browser startup in isMultiProcessEnabled.
 BASE_FEATURE(kWebViewStopBrowserStartupInIsMultiProcessEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables running native startup tasks asynchronously if WebView startup is
 // asynchronous.

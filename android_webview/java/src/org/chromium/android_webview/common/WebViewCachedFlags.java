@@ -87,7 +87,7 @@ public class WebViewCachedFlags {
                                     Map.entry(
                                             AwFeatures
                                                     .WEBVIEW_STOP_BROWSER_STARTUP_IN_IS_MULTI_PROCESS_ENABLED,
-                                            DefaultState.DISABLED),
+                                            DefaultState.ENABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                                             DefaultState.DISABLED),
