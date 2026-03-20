@@ -476,6 +476,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.autofill"
 
     sources = [
+      "src/org/chromium/chrome/browser/autofill/AutofillDialogControllerTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtilsTest.java",
