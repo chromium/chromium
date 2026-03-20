@@ -55,7 +55,7 @@ class NET_EXPORT RequireCTDelegate
   // |public_key_hashes| must be in the same order as the certificate chain
   // (leaf to root).
   //
-  // If |delegate| is null, CT will not be required.
+  // If |delegate| is non-null, it can override whether CT will be required.
   static ct::CTRequirementsStatus CheckCTRequirements(
       const RequireCTDelegate* delegate,
       std::string_view host,

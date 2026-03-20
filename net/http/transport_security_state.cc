@@ -344,6 +344,12 @@ ct::CTRequirementsStatus TransportSecurityState::CheckCTRequirements(
     return ct::CTRequirementsStatus::CT_NOT_REQUIRED;
   }
 
+  // If CT is disabled, the delegate will be null. Don't require CT for any
+  // host.
+  if (!require_ct_delegate_) {
+    return ct::CTRequirementsStatus::CT_NOT_REQUIRED;
+  }
+
   return RequireCTDelegate::CheckCTRequirements(
       require_ct_delegate_.get(), host, is_issued_by_known_root,
       public_key_hashes, validated_certificate_chain, policy_compliance);

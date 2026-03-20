@@ -1210,8 +1210,8 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  // If a RequireCTDelegate is not supplied, SCT verification is done, but the
-  // cert verification result is not affected.
+  // If a RequireCTDelegate is not supplied, CT is required. Verification
+  // should fail.
   {
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
@@ -1220,18 +1220,21 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
            &verify_result, &verify_net_log_source, callback.callback());
 
     int error = callback.WaitForResult();
-    EXPECT_THAT(error, IsOk());
+    EXPECT_THAT(error, IsError(ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
     ASSERT_EQ(verify_result.scts.size(), 1u);
     EXPECT_EQ(verify_result.scts.front().status, kSctVerifyStatus);
     EXPECT_EQ(verify_result.scts.front().sct->log_id, kLogId);
     EXPECT_EQ(verify_result.policy_compliance,
               ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS);
     EXPECT_EQ(verify_result.ct_requirement_status,
-              ct::CTRequirementsStatus::CT_NOT_REQUIRED);
+              ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET);
   }
 
   // If a RequireCTDelegate is supplied, it is consulted to check whether the
   // CT result should affect the cert verification result.
+  //
+  // Use a mock RequireCTDelegate that returns CTRequirementLevel::REQUIRED.
+  // Verification should fail.
   auto mock_require_ct_delegate = base::MakeRefCounted<MockRequireCTDelegate>();
   instance_params.require_ct_delegate = mock_require_ct_delegate;
   EXPECT_CALL(*mock_require_ct_delegate, IsCTRequiredForHost(kHostname, _, _))
@@ -1261,6 +1264,39 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
               ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS);
     EXPECT_EQ(verify_result.ct_requirement_status,
               ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET);
+  }
+
+  // Use a mock RequireCTDelegate that returns CTRequirementLevel::NOT_REQUIRED.
+  // Verification should succeed.
+  mock_require_ct_delegate = base::MakeRefCounted<MockRequireCTDelegate>();
+  instance_params.require_ct_delegate = mock_require_ct_delegate;
+  EXPECT_CALL(*mock_require_ct_delegate, IsCTRequiredForHost(kHostname, _, _))
+      .WillRepeatedly(
+          testing::Return(RequireCTDelegate::CTRequirementLevel::NOT_REQUIRED));
+  InitializeVerifyProc(instance_params);
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _, _))
+      .WillRepeatedly(testing::SetArgPointee<4>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), kHostname, kOcspResponse, kSctList, /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 1u);
+    EXPECT_EQ(verify_result.scts.front().status, kSctVerifyStatus);
+    EXPECT_EQ(verify_result.scts.front().sct->log_id, kLogId);
+    EXPECT_EQ(verify_result.policy_compliance,
+              ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS);
+    EXPECT_EQ(verify_result.ct_requirement_status,
+              ct::CTRequirementsStatus::CT_NOT_REQUIRED);
   }
 }
 
@@ -1391,10 +1427,12 @@ TEST_F(CertVerifyProcBuiltinTest,
   ASSERT_EQ(verify_result.scts.size(), 1u);
   EXPECT_EQ(verify_result.scts.front().status, kSctVerifyStatus);
   EXPECT_EQ(verify_result.scts.front().sct->log_id, kLogId);
-  // Verification failed, so CT policy compliance isn't checked, and the default
+  // CT is not enabled, so CT policy compliance isn't checked, and the default
   // value should be COMPLIANCE_DETAILS_NOT_AVAILABLE.
   EXPECT_EQ(verify_result.policy_compliance,
             ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE);
+  EXPECT_EQ(verify_result.ct_requirement_status,
+            ct::CTRequirementsStatus::CT_NOT_REQUIRED);
 }
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)

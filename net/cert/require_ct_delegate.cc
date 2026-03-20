@@ -29,7 +29,7 @@ ct::CTRequirementsStatus RequireCTDelegate::CheckCTRequirements(
            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
        policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
 
-  CTRequirementLevel ct_required = CTRequirementLevel::NOT_REQUIRED;
+  CTRequirementLevel ct_required = CTRequirementLevel::REQUIRED;
   if (delegate) {
     // Allow the delegate to override the CT requirement state.
     ct_required = delegate->IsCTRequiredForHost(
