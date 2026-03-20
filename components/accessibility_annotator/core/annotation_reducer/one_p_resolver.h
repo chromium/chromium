@@ -23,7 +23,10 @@ class OnePResolver {
 
   // Retrieves accessibility annotations from the 1P service for a given
   // query and resolves it into memory search results.
-  virtual void Query(const std::u16string& query, QueryCallback callback) = 0;
+  // Note: Calling this method while a previous request is still in-flight
+  // cancels the previous request, and its callback is immediately
+  // invoked with an empty result set.
+  virtual void Query(std::u16string query, QueryCallback callback) = 0;
 };
 
 }  // namespace accessibility_annotator

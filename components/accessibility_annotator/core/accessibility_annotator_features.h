@@ -36,6 +36,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 
+BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
+
 }  // namespace accessibility_annotator
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_FEATURES_H_

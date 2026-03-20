@@ -8,30 +8,184 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/annotation_reducer/one_p_service.pb.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/credentials_mode.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "net/http/http_request_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
 
 namespace accessibility_annotator {
 
-OnePResolverImpl::OnePResolverImpl() = default;
+OnePResolverImpl::OnePResolverImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      identity_manager_(identity_manager) {}
 
 OnePResolverImpl::~OnePResolverImpl() = default;
 
-void OnePResolverImpl::Query(const std::u16string& query,
-                             QueryCallback callback) {
+void OnePResolverImpl::Query(std::u16string query, QueryCallback callback) {
+  // Explicitly cancels any in-flight request and invokes its callback with an
+  // empty result set. This enforces the contract that only one request can
+  // be active at a time.
+  if (in_flight_query_callback_) {
+    std::move(in_flight_query_callback_).Run({});
+  }
+  in_flight_query_callback_ = std::move(callback);
+
+  // Cancel any asynchronous operations (token fetch or URL loading) that were
+  // tied to the previous request.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  simple_url_loader_.reset();
+
+  // Helper to post an empty callback securely, avoiding re-entrancy issues
+  // with synchronous callers.
+  auto post_empty = [&]() {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(in_flight_query_callback_),
+                                  std::vector<MemorySearchResult>()));
+  };
+
+  // Pre-flight checks. Validate feature state, user sign-in status, and the
+  // configured endpoint URL.
   if (!base::FeatureList::IsEnabled(
           kAccessibilityAnnotationReducerOnePResolver)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::vector<MemorySearchResult>()));
+    post_empty();
     return;
   }
 
-  // TODO(crbug.com/487416734): Implement real 1P network request.
-  // For now, stub implementation:
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::vector<MemorySearchResult>()));
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    post_empty();
+    return;
+  }
+
+  GURL url(kAccessibilityAnnotatorOnePServiceUrl.Get());
+  if (!url.is_valid()) {
+    post_empty();
+    return;
+  }
+
+  // Request an OAuth access token to authenticate the service request.
+  access_token_fetcher_.reset();
+  access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      signin::OAuthConsumerId::kAccessibilityAnnotator,
+      base::BindOnce(&OnePResolverImpl::OnAccessTokenFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(query),
+                     std::move(url)),
+      signin::AccessTokenFetcher::Mode::kImmediate);
+}
+
+void OnePResolverImpl::OnAccessTokenFetched(
+    std::u16string query,
+    GURL url,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  // Helper to immediately execute the callback with an empty result set.
+  auto run_empty = [&]() {
+    if (in_flight_query_callback_) {
+      std::move(in_flight_query_callback_).Run({});
+    }
+  };
+
+  // Clean up the fetcher now that the token request is complete.
+  // This is safe to do inside the callback.
+  access_token_fetcher_.reset();
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    run_empty();
+    return;
+  }
+
+  // Construct the HTTP request with the newly acquired access token.
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = std::move(url);
+  resource_request->method = "POST";
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
+
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      "Bearer " + access_token_info.token);
+
+  // TODO(b:494582740): Add real traffic annotation later.
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), MISSING_TRAFFIC_ANNOTATION);
+
+  // Serialize the query into the protobuf request body.
+  accessibility_annotator::OnePAnnotationsRequest request_proto;
+  request_proto.set_query(base::UTF16ToUTF8(query));
+  std::string request_body;
+  request_proto.SerializeToString(&request_body);
+
+  simple_url_loader_->AttachStringForUpload(std::move(request_body),
+                                            "application/x-protobuf");
+
+  // Execute the network request to fetch annotations.
+  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&OnePResolverImpl::OnUrlLoadComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnePResolverImpl::OnUrlLoadComplete(
+    std::optional<std::string> response_body) {
+  // Helper to immediately execute the callback with an empty result set.
+  auto run_empty = [&]() {
+    if (in_flight_query_callback_) {
+      std::move(in_flight_query_callback_).Run({});
+    }
+  };
+
+  // Validate the network response and clean up the loader.
+  if (!simple_url_loader_ || simple_url_loader_->NetError() != net::OK ||
+      !response_body) {
+    simple_url_loader_.reset();
+    run_empty();
+    return;
+  }
+  simple_url_loader_.reset();
+
+  // Parse the protobuf response.
+  accessibility_annotator::OnePAnnotationsResponse response_proto;
+  if (!response_proto.ParseFromString(*response_body)) {
+    run_empty();
+    return;
+  }
+
+  // Extract the embedded JSON payload from the response proto.
+  std::optional<base::Value> root_value =
+      base::JSONReader::Read(response_proto.response(), base::JSON_PARSE_RFC);
+  if (!root_value || !root_value->is_dict()) {
+    run_empty();
+    return;
+  }
+
+  const std::string* context_str = root_value->GetDict().FindString("context");
+  if (!context_str) {
+    run_empty();
+    return;
+  }
+
+  // Resolve data.
+  // TODO(b:487416734): The next phase is to actually resolve the query and the
+  // fetched annotations into meaningful memory search results using the
+  // optimization keyed service. For now, we return empty results.
+  run_empty();
 }
 
 }  // namespace accessibility_annotator

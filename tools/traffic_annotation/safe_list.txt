@@ -56,6 +56,9 @@ missing,chrome/browser/indigo/indigo_script_loader.cc
 # annotation or by removing the code). b/485217840
 missing,components/gapis/token_downloader.cc
 
+# TODO(crbug.com/494582740): Remove this once the traffic annotation is added.
+missing,components/accessibility_annotator/core/annotation_reducer/one_p_resolver_impl.cc
+
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing_new_fields,missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package accessibility_annotator;
+
+option optimize_for = LITE_RUNTIME;
+option features.utf8_validation = NONE;
+
+message OnePAnnotationsRequest {
+  // The natural language user query.
+  string query = 1;
+}
+
+message OnePAnnotationsResponse {
+  // The relevant accessibility annotations as stringified JSON.
+  string response = 1;
+}

@@ -80,4 +80,10 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAccessibilityAnnotationReducerOnePResolver,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(std::string,
+                   kAccessibilityAnnotatorOnePServiceUrl,
+                   &kAccessibilityAnnotationReducerOnePResolver,
+                   "one_p_service_url",
+                   "");
+
 }  // namespace accessibility_annotator

@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("one_p_service_proto") {
+  sources = [ "one_p_service.proto" ]
+}
+
 source_set("one_p_resolver") {
   sources = [
     "one_p_resolver.h",
@@ -11,8 +17,13 @@ source_set("one_p_resolver") {
 
   deps = [
     ":annotation_reducer",
+    ":one_p_service_proto",
     "//base",
     "//components/accessibility_annotator/core:features",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -39,9 +50,14 @@ source_set("unit_tests") {
   deps = [
     ":annotation_reducer",
     ":one_p_resolver",
+    ":one_p_service_proto",
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core:features",
+    "//components/signin/public/identity_manager:test_support",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

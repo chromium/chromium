@@ -1,4 +1,10 @@
 include_rules = [
-  "+components/keyed_service/core",
-  "+components/sync/test",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+google_apis",
+  "+net/http",
+  "+net/test/embedded_test_server",
+  "+net/traffic_annotation",
+  "+services/network/public/cpp",
+  "+services/network/test",
 ]
