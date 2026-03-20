@@ -99,6 +99,17 @@ void LogScriptResultError(base::WeakPtr<web::WebState> web_state,
         << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
   }
 
+  // Ignore WKErrorJavaScriptResultTypeIsUnsupported error due to the WebView
+  // being released while a JavaScript function is executing.
+  bool isTypeUnsupportedResultError =
+      [error.domain isEqualToString:WKErrorDomain] &&
+      error.code == WKErrorJavaScriptResultTypeIsUnsupported;
+
+  if (!web_state && isTypeUnsupportedResultError) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
+    return;
+  }
+
   // Do not log invalid target frame errors. This error means that the frame is
   // no longer valid. This is an expected failure state as native code only has
   // an outdated view of the web frames (updated asyncronously via JS messages
@@ -168,12 +179,11 @@ void JSExecutionCompleteReplyWithResultForMessageId(
     bool is_main_frame,
     id value,
     NSError* error) {
-  if (error) {
-    LogScriptResultError(web_state, api, script, security_origin, is_main_frame,
-                         error);
-  }
-
   if (web_frame) {
+    if (error) {
+      LogScriptResultError(web_state, api, script, security_origin,
+                           is_main_frame, error);
+    }
     web_frame->OnJSResultReceivedForMessageWithId(message_id, value);
   }
 }
