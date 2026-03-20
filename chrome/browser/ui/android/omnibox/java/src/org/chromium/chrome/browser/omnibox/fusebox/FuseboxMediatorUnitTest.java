@@ -1308,4 +1308,49 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
     }
+
+    @Test
+    public void onInputStateChanged_setsCreateImageVisibilityAndEnablement() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState bothHidden = new InputState.Builder().build();
+        mInputStateSupplier.set(bothHidden);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        InputState imageGenVisibleDisabled =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .build();
+        mInputStateSupplier.set(imageGenVisibleDisabled);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        InputState imageGenUploadVisibleDisabled =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .build();
+        mInputStateSupplier.set(imageGenUploadVisibleDisabled);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        InputState imageGenEnabled =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .build();
+        mInputStateSupplier.set(imageGenEnabled);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        InputState imageGenUploadEnabled =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .build();
+        mInputStateSupplier.set(imageGenUploadEnabled);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+    }
 }

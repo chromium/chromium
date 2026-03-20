@@ -17,6 +17,7 @@ import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,7 +170,20 @@ public class InputState {
      * @return Whether the tool should be enabled in the UI.
      */
     public boolean isToolEnabled(int toolMode) {
-        return activeTool == toolMode || !disabledTools.contains(toolMode);
+        return activeTool == toolMode
+                || (allowedTools.contains(toolMode) && !disabledTools.contains(toolMode));
+    }
+
+    /** Returns whether the image gen tool should be visible, by checking both tool modes. */
+    public boolean isImageGenToolVisible() {
+        return isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                || isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
+    }
+
+    /** Returns whether the image gen tool should be enabled, by checking both tool modes. */
+    public boolean isImageGenToolEnabled() {
+        return isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                || isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
     }
 
     /**
@@ -185,7 +199,8 @@ public class InputState {
      * @return Whether the model should be enabled in the UI.
      */
     public boolean isModelEnabled(int modelMode) {
-        return activeModel == modelMode || !disabledModels.contains(modelMode);
+        return activeModel == modelMode
+                || (allowedModels.contains(modelMode) && !disabledModels.contains(modelMode));
     }
 
     private static List<Integer> toList(int @Nullable [] array) {
