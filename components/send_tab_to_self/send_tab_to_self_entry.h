@@ -45,7 +45,7 @@ class SendTabToSelfEntry {
 
   SendTabToSelfEntry(const SendTabToSelfEntry&);
 
-  SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = delete;
+  SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = default;
 
   ~SendTabToSelfEntry();
 
