@@ -7,12 +7,14 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -75,6 +78,12 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateTombstone(
       data_type, std::string(client_tag));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+base::FilePath GetTestFilePathForCacheGuid() {
+  base::FilePath user_data_path;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_path);
+  return user_data_path.AppendASCII("SyncTestTmpCacheGuid");
+}
 
 // Collects all the updated data types and used GetUpdates origins.
 class GetUpdatesObserver : public FakeServer::Observer {
@@ -276,6 +285,73 @@ IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Regression test for crbug.com/40624424 that verifies the cache GUID is not
+// reset upon restart of the browser.
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest, PRE_ReusesSameCacheGuid) {
+  if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTheFeature) {
+    GTEST_SKIP() << "This test applies to transport mode only.";
+  }
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTransportOnly));
+
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // On ChromeOS, IsInitialSyncFeatureSetupComplete() is always true.
+#if !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+  const std::string cache_guid = transport_data_prefs.GetCacheGuid();
+  ASSERT_FALSE(cache_guid.empty());
+
+  // Save the cache GUID to file to remember after restart, for test
+  // verification purposes only.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::WriteFile(GetTestFilePathForCacheGuid(), cache_guid));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest, ReusesSameCacheGuid) {
+  if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTheFeature) {
+    GTEST_SKIP() << "This test applies to transport mode only.";
+  }
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_FALSE(GetSyncService(0)->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // On ChromeOS, IsInitialSyncFeatureSetupComplete() is always true.
+#if !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+  ASSERT_FALSE(transport_data_prefs.GetCacheGuid().empty());
+
+  std::string old_cache_guid;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(
+      base::ReadFileToString(GetTestFilePathForCacheGuid(), &old_cache_guid));
+  ASSERT_FALSE(old_cache_guid.empty());
+
+  EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
+}
 
 IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        E2E_ENABLED(ShouldCrashAwaitQuiescenceForE2ETest)) {

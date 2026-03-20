@@ -5,7 +5,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/common/chrome_paths.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
@@ -57,12 +55,6 @@ syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
   return types;
 }
 
-base::FilePath GetTestFilePathForCacheGuid() {
-  base::FilePath user_data_path;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_path);
-  return user_data_path.AppendASCII("SyncTestTmpCacheGuid");
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {
  public:
@@ -72,17 +64,6 @@ class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync disabled by dashboard";
     return service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard();
-  }
-};
-#else
-class SyncConsentDisabledChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit SyncConsentDisabledChecker(syncer::SyncServiceImpl* service)
-      : SingleClientStatusChangeChecker(service) {}
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync consent being disabled";
-    return !service()->HasSyncConsent();
   }
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -113,32 +94,9 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
   base::test::ScopedFeatureList override_features_;
 };
 
-// On Chrome OS sync auto-starts on sign-in.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
-                       StartsSyncTransportOnSignin) {
-  ASSERT_TRUE(SetupClients());
-
-  // Signing in (without explicitly setting up Sync) should trigger starting the
-  // Sync machinery in standalone transport mode.
-  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTransportOnly));
-
-  EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-
-  // IsInitialSyncFeatureSetupComplete should remain false. It only gets set
-  // during the Sync setup flow, either by the Sync confirmation dialog or by
-  // the settings page if going through the advanced settings flow.
-  EXPECT_FALSE(GetSyncService(0)
-                   ->GetUserSettings()
-                   ->IsInitialSyncFeatureSetupComplete());
-
-  EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/40067025): Remove this test once
+// kReplaceSyncPromosWithSignInPromos is launched.
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        SwitchesBetweenTransportAndFeature) {
   const syncer::DataType kDataTypeExcludedInTransportMode = syncer::AUTOFILL;
@@ -234,72 +192,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
               ContainerEq(expected_types));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Regression test for crbug.com/40624424 that verifies the cache GUID is not
-// reset upon restart of the browser, in standalone transport mode.
-IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
-                       PRE_ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTransportOnly));
-
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-
-  // On platforms where Sync starts automatically (in practice, Android and
-  // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
-  // the full Sync feature will start upon sign-in to a primary account.
-#if !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_FALSE(GetSyncService(0)
-                   ->GetUserSettings()
-                   ->IsInitialSyncFeatureSetupComplete());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs(),
-      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
-  const std::string cache_guid = transport_data_prefs.GetCacheGuid();
-  ASSERT_FALSE(cache_guid.empty());
-
-  // Save the cache GUID to file to remember after restart, for test
-  // verification purposes only.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(base::WriteFile(GetTestFilePathForCacheGuid(), cache_guid));
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
-                       ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_FALSE(GetSyncService(0)->HasDisableReason(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-
-  // On platforms where Sync starts automatically (in practice, Android and
-  // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
-  // the full Sync feature will start upon sign-in to a primary account.
-#if !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_FALSE(GetSyncService(0)
-                   ->GetUserSettings()
-                   ->IsInitialSyncFeatureSetupComplete());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs(),
-      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
-  ASSERT_FALSE(transport_data_prefs.GetCacheGuid().empty());
-
-  std::string old_cache_guid;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(
-      base::ReadFileToString(GetTestFilePathForCacheGuid(), &old_cache_guid));
-  ASSERT_FALSE(old_cache_guid.empty());
-
-  EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
-}
 
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        DataTypesEnabledInTransportModeWithoutAdditionalOptIns) {
@@ -467,6 +359,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 // This test intends to test the mobile migration behavior, but runs on desktop.
 // Desktop and mobile have different behaviors, and as a consequence is test is
 // only an approximation.
+// TODO(crbug.com/40067025): Remove these tests once
+// kReplaceSyncPromosWithSignInPromos is launched.
 class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
  public:
   ReplaceSyncWithSigninMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -621,6 +515,8 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
 
 // On ChromeOS, there exists no sync setup incomplete state.
 #if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/40067025): Remove these tests once
+// kReplaceSyncPromosWithSignInPromos is launched.
 class SyncSetupIncompleteMigrationSyncTest : public SyncTest {
  public:
   SyncSetupIncompleteMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
