@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_win) {
+  source_set("taskbar") {
+    sources = [
+      "taskbar_decorator_win.cc",
+      "taskbar_decorator_win.h",
+    ]
+
+    public_deps = [ "//ui/gfx" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//skia",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}

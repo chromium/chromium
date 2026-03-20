@@ -4385,11 +4385,6 @@ static_library("browser") {
       "//chrome/browser/device_notifications:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when:
-      # - c/b/taskbar/taskbar_decorator_win.h
-      # gets componentized.
-      "//chrome/browser/badging:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when:
       # - c/b/browser_process_platform_part.h
       # - c/b/net/system_network_context_manager.h
       "//chrome/browser/device_api:impl",
@@ -6130,8 +6125,6 @@ static_library("browser") {
       "profiles/profile_shortcut_manager_win.cc",
       "profiles/profile_shortcut_manager_win.h",
       "shell_integration_win.cc",
-      "taskbar/taskbar_decorator_win.cc",
-      "taskbar/taskbar_decorator_win.h",
       "webshare/win/share_operation.cc",
       "webshare/win/share_operation.h",
       "webshare/win/show_share_ui_for_window_operation.cc",
@@ -6190,6 +6183,11 @@ static_library("browser") {
       "win/util_win_service.h",
     ]
 
+    # taskbar_decorator_win.cc in c/b/taskbar includes
+    # chrome/browser/profiles/avatar_menu.h which is in this target, hence
+    # causing a circular dependency.
+    allow_circular_includes_from += [ "//chrome/browser/taskbar" ]
+
     deps += [
       ":chrome_process_finder",
       "//chrome/app:chrome_exe_main_exports",
@@ -6199,6 +6197,7 @@ static_library("browser") {
       "//chrome/browser/platform_experience:prefs",
       "//chrome/browser/shortcuts",
       "//chrome/browser/startup",
+      "//chrome/browser/taskbar",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/webnn",
       "//chrome/browser/win:cloud_synced_folder_checker",

@@ -53,7 +53,10 @@ source_set("impl") {
 
   if (is_win) {
     sources += [ "badge_manager_delegate_win.cc" ]
-    deps += [ "//chrome/browser/ui/browser_window" ]
+    deps += [
+      "//chrome/browser/taskbar",
+      "//chrome/browser/ui/browser_window",
+    ]
   }
 
   if (is_mac) {
