@@ -127,6 +127,9 @@ class TabStateStorageDatabase {
   // Clears a divergence window from the database.
   void ClearDivergenceWindow(std::string_view window_tag);
 
+  // Clears all windows except for those with the provided tags.
+  bool ClearAllWindowsExcept(const std::vector<std::string>& window_tags);
+
   // Clears all nodes for a given window from the database except for the
   // provided storage IDs.
   bool ClearNodesForWindowExcept(std::string_view window_tag,

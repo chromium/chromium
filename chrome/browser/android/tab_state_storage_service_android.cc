@@ -153,6 +153,13 @@ void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
   tab_state_storage_service_->ClearDivergenceWindow(window_tag);
 }
 
+void TabStateStorageServiceAndroid::ClearAllWindowsExcept(
+    JNIEnv* env,
+    const std::vector<std::string>& window_tags) {
+  auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
+  tab_state_storage_service_->ClearAllWindowsExcept(window_tags);
+}
+
 void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
     JNIEnv* env,
     const std::string& window_tag,

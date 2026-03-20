@@ -154,6 +154,15 @@ void TabStateStorageBackend::ClearDivergenceWindow(
                                 std::string(window_tag)));
 }
 
+void TabStateStorageBackend::ClearAllWindowsExcept(
+    std::vector<std::string> window_tags) {
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&TabStateStorageDatabase::ClearAllWindowsExcept),
+          base::Unretained(database_.get()), std::move(window_tags)));
+}
+
 void TabStateStorageBackend::ClearNodesForWindowExcept(
     std::string_view window_tag,
     bool is_off_the_record,

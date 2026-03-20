@@ -51,6 +51,9 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void ClearWindow(JNIEnv* env, const std::string& window_tag);
 
+  void ClearAllWindowsExcept(JNIEnv* env,
+                             const std::vector<std::string>& window_tags);
+
   void ClearWindowWithOtrStatus(JNIEnv* env,
                                 const std::string& window_tag,
                                 bool is_off_the_record);

@@ -260,6 +260,11 @@ void TabStateStorageService::ClearDivergenceWindow(
   tab_backend_.ClearDivergenceWindow(window_tag);
 }
 
+void TabStateStorageService::ClearAllWindowsExcept(
+    std::vector<std::string> window_tags) {
+  tab_backend_.ClearAllWindowsExcept(std::move(window_tags));
+}
+
 void TabStateStorageService::ClearDivergentNodesForWindow(
     std::string_view window_tag,
     bool is_off_the_record) {

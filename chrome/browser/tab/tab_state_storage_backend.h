@@ -64,6 +64,8 @@ class TabStateStorageBackend {
 
   void ClearDivergenceWindow(std::string_view window_tag);
 
+  void ClearAllWindowsExcept(std::vector<std::string> window_tags);
+
   void ClearNodesForWindowExcept(std::string_view window_tag,
                                  bool is_off_the_record,
                                  std::vector<StorageId> ids);
