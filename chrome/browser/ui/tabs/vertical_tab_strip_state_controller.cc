@@ -196,6 +196,7 @@ VerticalTabStripStateController::RegisterOnModeChanged(
 
 void VerticalTabStripStateController::NotifyCollapseChanged() {
   UpdateSessionService();
+  UpdatePrefService();
   UpdateCollapseActionItem();
   on_collapse_changed_callback_list_.Notify(this);
 }
@@ -253,6 +254,15 @@ void VerticalTabStripStateController::UpdateSessionService() {
   }
 }
 
+void VerticalTabStripStateController::UpdatePrefService() {
+  if (pref_service_) {
+    pref_service_->SetBoolean(prefs::kVerticalTabsCollapsedState,
+                              state_.collapsed);
+    pref_service_->SetInteger(prefs::kVerticalTabsUncollapsedWidth,
+                              state_.uncollapsed_width);
+  }
+}
+
 void VerticalTabStripStateController::UpdateCollapseActionItem() {
   const gfx::VectorIcon& icon = (IsCollapsed() == base::i18n::IsRTL())
                                     ? views::kMenuOpenIcon
@@ -287,6 +297,7 @@ void VerticalTabStripStateController::OnBrowserCreated(
   if (browser == browser_window_) {
     browser_collection_observation_.Reset();
     UpdateSessionService();
+    UpdatePrefService();
   }
 }
 

@@ -1514,6 +1514,16 @@ inline constexpr char kVerticalTabsEnabled[] = "vertical_tabs.enabled";
 // used for metrics reporting purposes.
 inline constexpr char kVerticalTabsEnabledFirstTime[] =
     "vertical_tabs.enabled_first_time";
+
+// Boolean representing the most recently used vertical tab strip collapse
+// state. Only used during startup when session restore is not used.
+inline constexpr char kVerticalTabsCollapsedState[] =
+    "vertical_tabs.collapsed_state";
+
+// Integer representing the most recently used vertical tab strip uncollapsed
+// width. Only used during startup when session restore is not used.
+inline constexpr char kVerticalTabsUncollapsedWidth[] =
+    "vertical_tabs.uncollapsed_width";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

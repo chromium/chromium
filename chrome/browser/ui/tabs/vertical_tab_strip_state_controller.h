@@ -101,6 +101,10 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // uncollapsed width) for the associated session ID.
   void UpdateSessionService();
 
+  // Updates the PrefService with the current state (collapsed status and
+  // uncollapsed width) for startup when session restore is not available.
+  void UpdatePrefService();
+
   // Update the Collapse Button's Action Item (kActionToggleCollapseVertical)
   // based on the Vertical Tab Strip's Collapse State.
   void UpdateCollapseActionItem();

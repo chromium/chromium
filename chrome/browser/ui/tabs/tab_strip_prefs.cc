@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -44,6 +45,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabledFirstTime, false);
+  registry->RegisterBooleanPref(prefs::kVerticalTabsCollapsedState, false);
+  registry->RegisterIntegerPref(prefs::kVerticalTabsUncollapsedWidth,
+                                kVerticalTabStripDefaultUncollapsedWidth);
 }
 
 void MigrateTabSearchPref(PrefService* profile_prefs) {

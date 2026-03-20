@@ -247,4 +247,20 @@ TEST_F(VerticalTabStripStateControllerTest, ImmersiveModeLock) {
   EXPECT_EQ(2, call_count);
 }
 
+TEST_F(VerticalTabStripStateControllerTest, VerifyRecentlyUsedPrefs) {
+  // Initially, recently used prefs should be default.
+  EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsCollapsedState));
+  EXPECT_EQ(kVerticalTabStripDefaultUncollapsedWidth,
+            pref_service()->GetInteger(prefs::kVerticalTabsUncollapsedWidth));
+
+  // Change state.
+  controller()->SetCollapsed(true);
+  controller()->SetUncollapsedWidth(kUncollapsedWidth1);
+
+  // Verify recently used prefs are updated.
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsCollapsedState));
+  EXPECT_EQ(kUncollapsedWidth1,
+            pref_service()->GetInteger(prefs::kVerticalTabsUncollapsedWidth));
+}
+
 }  // namespace tabs

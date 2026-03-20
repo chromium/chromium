@@ -144,6 +144,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -312,12 +313,22 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {
-      const std::optional<bool>& restored_state_collapsed =
-          browser->GetBrowserForMigrationOnly()
-              ->is_vertical_tabs_initially_collapsed();
-      const std::optional<int>& restored_state_uncollapsed_width =
-          browser->GetBrowserForMigrationOnly()
-              ->get_vertical_tabs_initial_uncollapsed_width();
+      Browser* raw_browser = browser->GetBrowserForMigrationOnly();
+
+      std::optional<bool> restored_state_collapsed =
+          raw_browser->is_vertical_tabs_initially_collapsed();
+      std::optional<int> restored_state_uncollapsed_width =
+          raw_browser->get_vertical_tabs_initial_uncollapsed_width();
+
+      if (!restored_state_collapsed.has_value() &&
+          !restored_state_uncollapsed_width.has_value() &&
+          raw_browser->creation_source() !=
+              Browser::CreationSource::kSessionRestore) {
+        restored_state_collapsed =
+            profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsCollapsedState);
+        restored_state_uncollapsed_width = profile->GetPrefs()->GetInteger(
+            prefs::kVerticalTabsUncollapsedWidth);
+      }
 
       vertical_tab_strip_state_controller_ =
           GetUserDataFactory()
