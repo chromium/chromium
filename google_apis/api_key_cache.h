@@ -51,12 +51,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 
   const std::string& metrics_key() const { return metrics_key_; }
 
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-  const std::string& cdm_server_certificate() const {
-    return cdm_server_certificate_;
-  }
-#endif
-
   const std::string& GetClientID(OAuth2Client client) const;
   const std::string& GetClientSecret(OAuth2Client client) const;
 
@@ -88,11 +82,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 #endif
 
   std::string metrics_key_;
-
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-  std::string cdm_server_certificate_;
-#endif
-
   std::array<std::string, CLIENT_NUM_ITEMS> client_ids_;
   std::array<std::string, CLIENT_NUM_ITEMS> client_secrets_;
 

@@ -23,13 +23,6 @@
 #define GOOGLE_METRICS_SIGNING_KEY google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-#if !defined(GOOGLE_CDM_SERVER_CERTIFICATE)
-#define GOOGLE_CDM_SERVER_CERTIFICATE \
-  google_apis::DefaultApiKeys::kUnsetApiToken
-#endif
-#endif  // #if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-
 #if !defined(GOOGLE_CLIENT_ID_MAIN)
 #define GOOGLE_CLIENT_ID_MAIN google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
@@ -140,9 +133,6 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
 #endif
       .google_api_key = GOOGLE_API_KEY,
       .google_metrics_signing_key = GOOGLE_METRICS_SIGNING_KEY,
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-      .google_cdm_server_certificate = GOOGLE_CDM_SERVER_CERTIFICATE,
-#endif
 #if BUILDFLAG(IS_ANDROID)
       .google_api_key_android_non_stable = GOOGLE_API_KEY_ANDROID_NON_STABLE,
 #else

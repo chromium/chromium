@@ -6,7 +6,6 @@
 #define GOOGLE_APIS_DEFAULT_API_KEYS_H_
 
 #include "build/build_config.h"
-#include "google_apis/buildflags.h"
 
 namespace google_apis {
 
@@ -24,9 +23,6 @@ struct DefaultApiKeys {
 
   const char* google_api_key;
   const char* google_metrics_signing_key;
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-  const char* google_cdm_server_certificate;
-#endif
 #if BUILDFLAG(IS_ANDROID)
   const char* google_api_key_android_non_stable;
 #else

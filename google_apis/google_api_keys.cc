@@ -123,12 +123,6 @@ const std::string& GetCrosChromeGeoAPIKey() {
 }
 #endif
 
-#if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
-const std::string& GetCdmServerCertificate() {
-  return GetApiKeyCacheInstance().cdm_server_certificate();
-}
-#endif
-
 const std::string& GetMetricsKey() {
   return GetApiKeyCacheInstance().metrics_key();
 }
