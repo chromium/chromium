@@ -15,16 +15,18 @@ source_set("call_to_action") {
   ]
 }
 
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "call_to_action_lock_browsertest.cc" ]
-  deps = [
-    ":call_to_action",
-    "//chrome/browser",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "call_to_action_lock_browsertest.cc" ]
+    deps = [
+      ":call_to_action",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

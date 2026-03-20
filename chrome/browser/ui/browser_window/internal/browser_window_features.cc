@@ -307,8 +307,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
           browser, *glic::GlicKeyedService::Get(profile));
-      glic_nudge_controller_ =
-          std::make_unique<glic::GlicNudgeController>(browser);
+      glic_nudge_controller_ = std::make_unique<glic::GlicNudgeController>(
+          browser, tab_list_bridge_.get());
     }
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {

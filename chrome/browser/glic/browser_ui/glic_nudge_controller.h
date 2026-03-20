@@ -4,12 +4,14 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_H_
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/types/pass_key.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class TabListInterface;
 class BrowserWindowInterface;
 class ScopedCallToActionLock;
 
@@ -34,16 +36,16 @@ enum class GlicNudgeActivity {
 
 // Controller that mediates Glic Nudges and ensures that only the active tab is
 // targeted.
-class GlicNudgeController {
+class GlicNudgeController : public TabListInterfaceObserver {
  public:
   using GlicNudgeActivityCallback =
       base::RepeatingCallback<void(GlicNudgeActivity)>;
 
-  explicit GlicNudgeController(
-      BrowserWindowInterface* browser_window_interface);
+  explicit GlicNudgeController(BrowserWindowInterface* browser_window_interface,
+                               TabListInterface* tab_list);
   GlicNudgeController(const GlicNudgeController&) = delete;
   GlicNudgeController& operator=(const GlicNudgeController& other) = delete;
-  virtual ~GlicNudgeController();
+  ~GlicNudgeController() override;
 
   void SetTabStripDelegate(GlicNudgeDelegate* delegate) {
     tab_strip_delegate_ = delegate;
@@ -74,14 +76,14 @@ class GlicNudgeController {
   void ClearPromptSuggestion() { prompt_suggestion_.reset(); }
 
  private:
-  // Called when the active tab changes, to update the nudge UI appropriate for
-  // the tab.
-  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
 
   GlicNudgeDelegate* GetActiveDelegate();
 
-  // The BrowserWindowInterface that owns `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  const raw_ptr<TabListInterface> tab_list_;
 
   raw_ptr<GlicNudgeDelegate> tab_strip_delegate_ = nullptr;
   raw_ptr<GlicNudgeDelegate> toolbar_delegate_ = nullptr;
@@ -92,7 +94,8 @@ class GlicNudgeController {
   // Callback to invoke for user actions on the nudge.
   GlicNudgeActivityCallback nudge_activity_callback_;
 
-  std::vector<base::CallbackListSubscription> browser_subscriptions_;
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 };
 

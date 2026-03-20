@@ -239,6 +239,7 @@ source_set("ui_impl") {
     "//chrome/browser/contextual_search",
     "//chrome/browser/devtools",
     "//chrome/browser/feedback:feedback_enum",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/contextual_tasks:resources",
@@ -265,10 +266,8 @@ source_set("ui_impl") {
     "//google_apis",
     "//net",
   ]
-
   if (!is_android) {
     deps += [
-      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/contextual_search",

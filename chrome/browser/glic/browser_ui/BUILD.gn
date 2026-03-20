@@ -4,54 +4,73 @@
 
 import("//chrome/common/features.gni")
 
-if (!is_android) {
-  source_set("browser_ui") {
-    sources = [
+# No absolute !is_android wrapper for the whole file.
+
+source_set("browser_ui") {
+  sources = [
+    "glic_nudge_controller.h",
+    "glic_nudge_delegate.h",
+  ]
+  if (!is_android) {
+    sources += [
       "glic_button_controller.h",
       "glic_iph_controller.h",
-      "glic_nudge_controller.h",
-      "glic_nudge_delegate.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
       "scoped_glic_button_indicator.h",
     ]
-    public_deps = [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:mojo_bindings",
-    ]
-    deps = [
-      "//base",
-      "//components/keyed_service/core",
-    ]
   }
 
-  source_set("impl") {
-    sources = [
+  public_deps = [
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/tab_list",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "glic_nudge_controller.cc",
+    "glic_nudge_delegate.cc",
+  ]
+  if (!is_android) {
+    sources += [
       "glic_button_controller.cc",
       "glic_iph_controller.cc",
-      "glic_nudge_controller.cc",
-      "glic_nudge_delegate.cc",
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
       "scoped_glic_button_indicator.cc",
     ]
-    deps = [
-      ":browser_ui",
+  }
+
+  deps = [
+    ":browser_ui",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/call_to_action",
+    "//components/feature_engagement/public",
+  ]
+
+  if (!is_android) {
+    deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic/fre",
       "//chrome/browser/themes",
-      "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/glic",
-      "//components/feature_engagement/public",
     ]
-
-    public_deps = [ "//chrome/browser/glic" ]
   }
 
+  public_deps = [ "//chrome/browser/glic" ]
+}
+
+if (!is_android) {
   source_set("glow_controller") {
     sources = [
       "context_sharing_border_view_controller_impl.h",

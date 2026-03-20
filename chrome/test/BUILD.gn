@@ -10878,6 +10878,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:glic",
+      "//chrome/browser/ui/tabs:tab_list_bridge",
     ]
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/test:test_support" ]

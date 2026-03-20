@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
+#include "chrome/browser/ui/tabs/tab_list_bridge.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -134,6 +136,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     glic_nudge_controller_.reset();
     browser_window_interface_.reset();
     tab_interface_.reset();
+    tab_list_bridge_.reset();
+    raw_web_contents_ = nullptr;
     tab_strip_model_.reset();
     tab_strip_.reset();
 
@@ -160,6 +164,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
         &tab_strip_model_delegate_,
         tab_strip_->GetBrowserWindowInterface()->GetProfile());
 
+    tab_list_bridge_ =
+        std::make_unique<TabListBridge>(*tab_strip_model_, data_host_);
+
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
@@ -178,28 +185,23 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
     ON_CALL(*tab_interface_, GetContents)
         .WillByDefault(::testing::Return(web_contents_.get()));
-    ON_CALL(*browser_window_interface_, RegisterActiveTabDidChange)
-        .WillByDefault([this](auto callback) {
-          SetActiveTabChangedCallback(callback);
-          return base::CallbackListSubscription();
-        });
+
+    raw_web_contents_ = web_contents_.get();
+    tab_strip_model_->AppendWebContents(std::move(web_contents_),
+                                        /*foreground=*/true);
 
     glic_nudge_controller_ = std::make_unique<glic::GlicNudgeController>(
-        browser_window_interface_.get());
+        browser_window_interface_.get(), tab_list_bridge_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
         tab_strip_->GetBrowserWindowInterface(), glic_nudge_controller_.get());
-  }
-
-  void SetActiveTabChangedCallback(
-      base::RepeatingCallback<void(BrowserWindowInterface*)> cb) {
-    active_tab_changed_callback_ = cb;
   }
 
  protected:
   glic::GlicUnitTestEnvironment glic_test_environment_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<TabListBridge> tab_list_bridge_;
   std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
@@ -210,10 +212,13 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabStripActionContainer> tab_strip_action_container_;
 
-  content::WebContents* web_contents() { return web_contents_.get(); }
+  content::WebContents* web_contents() { return raw_web_contents_; }
 
   void SimulateActiveTabChanged() {
-    active_tab_changed_callback_.Run(browser_window_interface_.get());
+    auto new_contents = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    tab_strip_model_->AppendWebContents(std::move(new_contents),
+                                        /*foreground=*/true);
   }
 
  private:
@@ -225,9 +230,10 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> raw_web_contents_ = nullptr;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
-  base::RepeatingCallback<void(BrowserWindowInterface*)>
-      active_tab_changed_callback_;
+  tabs::TabModel::PreventFeatureInitializationForTesting
+      prevent_feature_initialization_;
 };
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonDrawing)) {

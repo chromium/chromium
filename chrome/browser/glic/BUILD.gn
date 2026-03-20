@@ -354,6 +354,7 @@ source_set("impl") {
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/media",
@@ -414,7 +415,6 @@ source_set("impl") {
     # Many of these deps will be needed in Android, but are not yet supported.
     deps += [
       "//chrome/browser/actor/ui",
-      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/themes",
