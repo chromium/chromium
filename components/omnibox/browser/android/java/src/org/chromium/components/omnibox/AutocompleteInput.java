@@ -78,10 +78,12 @@ public class AutocompleteInput implements UserData {
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
     private @OmniboxFocusReason int mFocusReason;
+    private /* ModelMode */ int mModelMode;
+
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
-    private final SettableNonNullObservableSupplier<Integer> mToolModeSupplier =
+    private final SettableNonNullObservableSupplier</* ToolMode */ Integer> mToolModeSupplier =
             ObservableSuppliers.createNonNull(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
     private final SettableNullableObservableSupplier<SiteSearchData> mSiteSearchData =
             ObservableSuppliers.createNullable();
@@ -124,6 +126,7 @@ public class AutocompleteInput implements UserData {
         mRefineActionUsage = other.mRefineActionUsage;
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
         mFocusReason = other.mFocusReason;
+        mModelMode = other.mModelMode;
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
         mToolModeSupplier.set(other.mToolModeSupplier.get());
         mSiteSearchData.set(other.mSiteSearchData.get());
@@ -428,6 +431,16 @@ public class AutocompleteInput implements UserData {
             boolean suppress) {
         mSuppressAutomaticSuggestionsUntilUserStartsTyping = suppress;
         return this;
+    }
+
+    /** Returns the current model mode or MODEL_MODE_UNSPECIFIED if never set. */
+    public /* ModelMode */ int getModelMode() {
+        return mModelMode;
+    }
+
+    /** Sets the ModelMode that should be used. */
+    public void setModelMode(int modelMode) {
+        mModelMode = modelMode;
     }
 
     private void updateToolMode() {

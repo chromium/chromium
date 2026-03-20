@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
@@ -381,6 +382,7 @@ public class AutocompleteInputUnitTest {
         int selectionEnd = 2;
         int refineActionUsage = AutocompleteInput.RefineActionUsage.SEARCH_WITH_PREFIX;
         int focusReason = OmniboxFocusReason.OMNIBOX_TAP;
+        int modelMode = ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE;
         int requestType = AutocompleteRequestType.IMAGE_GENERATION;
         SiteSearchData siteSearchData = new SiteSearchData("keyword", "name");
 
@@ -397,6 +399,7 @@ public class AutocompleteInputUnitTest {
         input1.setRefineActionUsage(refineActionUsage);
         input1.setSuggestionsListScrolled();
         input1.setFocusReason(focusReason);
+        input1.setModelMode(modelMode);
         input1.setRequestType(requestType);
         input1.setSiteSearchData(siteSearchData);
 
@@ -417,6 +420,7 @@ public class AutocompleteInputUnitTest {
         assertEquals(refineActionUsage, input2.getRefineActionUsage());
         assertTrue(input2.isSuggestionsListScrolled());
         assertEquals(focusReason, input2.getFocusReason());
+        assertEquals(modelMode, input2.getModelMode());
         assertEquals(requestType, input2.getRequestType());
         assertEquals(
                 ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE,

@@ -88,7 +88,6 @@ found in the LICENSE file.
 
         <TextView
             android:id="@+id/fusebox_tools_header"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fusebox_tools_header"
@@ -120,7 +119,6 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_deep_search_button"
-            android:visibility="gone"
             android:drawableStart="@drawable/travel_explore_24dp"
             android:text="@string/ntp_compose_deep_search"
             app:layout_constraintTop_toBottomOf="@id/fusebox_create_image_button"
@@ -129,7 +127,6 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_canvas_button"
-            android:visibility="gone"
             android:drawableStart="@drawable/draft_spark_24dp"
             android:text="@string/ntp_compose_canvas"
             app:layout_constraintTop_toBottomOf="@id/fusebox_deep_search_button"
@@ -138,13 +135,11 @@ found in the LICENSE file.
         <View
             style="@style/Fusebox.PopupMenu.Divider"
             android:id="@+id/fusebox_models_divider"
-            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/fusebox_canvas_button"
             app:layout_constraintBottom_toTopOf="@id/fusebox_models_header"/>
 
         <TextView
             android:id="@+id/fusebox_models_header"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fusebox_models_header"
@@ -158,7 +153,6 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_auto_button"
-            android:visibility="gone"
             android:drawableStart="@drawable/autorenew_24dp"
             android:text="@string/ntp_compose_auto_model"
             app:layout_constraintTop_toBottomOf="@id/fusebox_models_header"
@@ -167,7 +161,6 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_pro_button"
-            android:visibility="gone"
             android:drawableStart="@drawable/ic_timer"
             android:text="@string/fusebox_model_pro"
             app:layout_constraintTop_toBottomOf="@id/fusebox_auto_button"
