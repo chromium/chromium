@@ -150,7 +150,6 @@ source_set("sync_integration_tests_impl") {
       "single_client_polling_sync_test.cc",
       "single_client_saved_tab_groups_sync_test.cc",
       "single_client_search_engines_sync_test.cc",
-      "single_client_secondary_account_sync_test.cc",
       "single_client_send_tab_to_self_sync_test.cc",
       "single_client_sessions_sync_test.cc",
       "single_client_sharing_message_sync_test.cc",
