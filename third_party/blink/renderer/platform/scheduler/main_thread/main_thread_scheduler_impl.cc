@@ -586,8 +586,10 @@ void MainThreadSchedulerImpl::OnInputScenarioChanged(
     performance_scenarios::ScenarioScope scope,
     performance_scenarios::InputScenario old_scenario,
     performance_scenarios::InputScenario new_scenario) {
-  DCHECK(
-      base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario));
+  if (!base::FeatureList::IsEnabled(
+          kInputHandlingModeFromPerformanceScenario)) {
+    return;
+  }
   if (isolate()) {
     isolate()->SetIsInputHandling(
         ComputeIsInputHandlingFromPerformanceScenario(new_scenario));
@@ -598,7 +600,9 @@ void MainThreadSchedulerImpl::OnLoadingScenarioChanged(
     performance_scenarios::ScenarioScope scope,
     performance_scenarios::LoadingScenario old_scenario,
     performance_scenarios::LoadingScenario new_scenario) {
-  DCHECK(base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario));
+  if (!base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario)) {
+    return;
+  }
   if (isolate()) {
     isolate()->SetIsLoading(
         ComputeIsLoadingFromPerformanceScenario(new_scenario));
