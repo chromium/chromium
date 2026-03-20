@@ -829,13 +829,7 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
       SkPixmap(copy_rect_info, pixels.data(), dest_row_bytes));
   resource()->EndAccess(std::move(access));
 
-  // If the overdraw optimization kicked in, we need to indicate that the
-  // pixels do not need to be cleared, otherwise the subsequent
-  // rasterizations will clobber canvas contents.
-  if (copy_rect_info.width() >= Size().width() &&
-      copy_rect_info.height() >= Size().height()) {
-    is_cleared_ = true;
-  }
+  is_cleared_ = true;
 
   return true;
 }
