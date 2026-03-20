@@ -6,8 +6,10 @@
 
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
+#import <mach/mach.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
@@ -23,8 +25,15 @@
 
 namespace {
 
-// Delay between each invocations of `UpdateMemoryValues`.
-constexpr base::TimeDelta kMemoryMonitorDelay = base::Seconds(30);
+BASE_FEATURE(kRestoreLongMemoryMonitorDelay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns the delay between each invocation of `UpdateMemoryValues`.
+base::TimeDelta GetMemoryMonitorDelay() {
+  if (base::FeatureList::IsEnabled(kRestoreLongMemoryMonitorDelay)) {
+    return base::Seconds(30);
+  }
+  return base::Seconds(5);
+}
 
 // Checks the values of free RAM and free disk space and updates crash keys with
 // these values. Also updates available free disk space for PreviousSessionInfo.
@@ -33,17 +42,27 @@ void UpdateMemoryValues() {
                                                 base::BlockingType::WILL_BLOCK);
   crash_keys::SetCurrentFreeMemoryInKB(
       base::SysInfo::AmountOfAvailablePhysicalMemory().InKiB());
+
+  task_vm_info_data_t task_vm_info;
+  mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+  kern_return_t result =
+      task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&task_vm_info), &count);
+  if (result == KERN_SUCCESS && count >= TASK_VM_INFO_REV1_COUNT) {
+    crash_keys::SetCurrentMemoryLimitBytesRemainingInKB(
+        task_vm_info.limit_bytes_remaining / 1024);
+  }
 }
 
 // Invokes `UpdateMemoryValues` and schedules itself to be called after
-// `kMemoryMonitorDelay`.
+// the delay.
 void AsynchronousFreeMemoryMonitor() {
   UpdateMemoryValues();
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&AsynchronousFreeMemoryMonitor), kMemoryMonitorDelay);
+      base::BindOnce(&AsynchronousFreeMemoryMonitor), GetMemoryMonitorDelay());
 }
 }  // namespace
 

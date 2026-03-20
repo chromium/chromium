@@ -61,6 +61,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetMemoryWarningCount(2);
   crash_keys::SetMemoryWarningInProgress(true);
   crash_keys::SetCurrentFreeMemoryInKB(1234);
+  crash_keys::SetCurrentMemoryLimitBytesRemainingInKB(5678);
   crash_keys::SetCurrentTabIsPDF(true);
   crash_keys::SetCurrentOrientation(3, 7);
   crash_keys::SetCurrentHorizontalSizeClass(2);
@@ -98,6 +99,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   EXPECT_NSEQ(reportParameters[@"memory_warning_count"], @"2");
   EXPECT_NSEQ(reportParameters[@"crashed_in_background"], @"yes");
   EXPECT_NSEQ(reportParameters[@"free_memory_in_kb"], @"1234");
+  EXPECT_NSEQ(reportParameters[@"memory_limit_bytes_remaining_in_kb"], @"5678");
   EXPECT_NSEQ(reportParameters[@"user_application_state"],
               @"{\"OTRTabs\":999,\"avplay\":1,\"destroyingAndRebuildingOTR\":1,"
               @"\"fgScenes\":999,\"inactiveTabs\":999,\"orient\":37,\"pdf\":1,"
