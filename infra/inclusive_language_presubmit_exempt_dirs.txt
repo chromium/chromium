@@ -393,7 +393,6 @@ third_party/blink/web_tests/external/wpt/docs/reviewing-tests
 third_party/blink/web_tests/external/wpt/docs/writing-tests
 third_party/blink/web_tests/external/wpt/dom/traversal
 third_party/blink/web_tests/external/wpt/encrypted-media/content
-third_party/blink/web_tests/external/wpt/feature-policy/resources
 third_party/blink/web_tests/external/wpt/fenced-frame/resources
 third_party/blink/web_tests/external/wpt/html/browsers/sandboxing
 third_party/blink/web_tests/external/wpt/html/canvas/tools
@@ -669,6 +668,7 @@ third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback
 third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/benches/data
 third_party/rust/chromium_crates_io/vendor/image-v0_25
 third_party/rust/chromium_crates_io/vendor/indexmap-v2/.github/workflows
+third_party/rust/chromium_crates_io/vendor/itertools-v0_14
 third_party/rust/chromium_crates_io/vendor/itertools-v0_14/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/.github/workflows
@@ -849,6 +849,7 @@ tools/crates/gnrt
 tools/crates/gnrt/lib
 tools/emacs
 tools/git
+tools/json_schema_compiler/test/converted_schemas
 tools/mac/power/protos/third_party/pprof
 tools/md_browser
 tools/memory/partition_allocator/palloc_viewer

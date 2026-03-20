@@ -4,7 +4,7 @@
 pub enum Color {
     /// Available 4-bit ANSI color palette codes
     ///
-    /// The user's terminal defines the meaning of the each palette code.
+    /// The user's terminal defines the meaning of each palette code.
     Ansi(AnsiColor),
     /// 256 (8-bit) color support
     ///
@@ -131,7 +131,7 @@ impl From<(u8, u8, u8)> for Color {
 
 /// Available 4-bit ANSI color palette codes
 ///
-/// The user's terminal defines the meaning of the each palette code.
+/// The user's terminal defines the meaning of each palette code.
 #[allow(clippy::exhaustive_enums)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
