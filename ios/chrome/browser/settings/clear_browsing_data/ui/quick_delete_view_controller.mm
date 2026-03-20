@@ -50,11 +50,7 @@ constexpr CGFloat kTrashIconContainerViewSize = 64;
 constexpr CGFloat kTrashIconContainerViewCornerRadius = 15;
 
 // Trash icon size that sits inside the entire view.
-constexpr CGFloat kOldTrashIconSize = 32;
-
-// New trash icon size that sits inside the entire view when the feature flag
-// `kPasswordRemovalFromDeleteBrowsingData` is enabled.
-constexpr CGFloat kTrashIconSize = 24;
+constexpr CGFloat kTrashIconSize = 32;
 
 // Top padding for the trash icon view.
 constexpr CGFloat kTrashIconContainerViewTopPadding = 33;
@@ -83,12 +79,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierTimeRange = kItemTypeEnumZero,
   ItemIdentifierBrowsingData,
 };
-
-// Returns the Trash icon size.
-CGFloat TrashIconSize() {
-  return IsPasswordRemovalFromDeleteBrowsingDataEnabled() ? kTrashIconSize
-                                                          : kOldTrashIconSize;
-}
 
 }  // namespace
 
@@ -675,7 +665,7 @@ CGFloat TrashIconSize() {
   // Trash icon that inside the container with the red background.
   UIImageView* icon =
       [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
-                                             kTrashSymbol, TrashIconSize())];
+                                             kTrashSymbol, kTrashIconSize)];
   icon.clipsToBounds = YES;
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   icon.tintColor = [UIColor colorNamed:kRedColor];

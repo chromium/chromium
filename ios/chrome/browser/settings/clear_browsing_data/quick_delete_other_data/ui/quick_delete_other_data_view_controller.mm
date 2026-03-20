@@ -152,7 +152,6 @@ NSString* AccessibilityIdentifierForItemIdentifier(
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
     @(kPasswordsAndPasskeysSection), @(kGoogleAccountDataSection),
-    @(kFooterSection)
   ]];
   [snapshot appendItemsWithIdentifiers:@[ @(kPasswordsAndPasskeysIdentifier) ]
              intoSectionWithIdentifier:@(kPasswordsAndPasskeysSection)];
@@ -208,30 +207,25 @@ NSString* AccessibilityIdentifierForItemIdentifier(
     viewForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
-  switch (sectionIdentifier) {
-    case kFooterSection: {
-      TableViewTextHeaderFooterView* footer =
-          DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
-              tableView);
-      footer.accessibilityIdentifier = kQuickDeleteOtherDataFooterIdentifier;
-      [footer setSubtitle:l10n_util::GetNSString(
-                              IDS_SETTINGS_OTHER_DATA_DESCRIPTION)
-                withColor:[UIColor colorNamed:kTextSecondaryColor]];
-      return footer;
-    }
-    case kPasswordsAndPasskeysSection:
-    case kGoogleAccountDataSection:
-      // These sections don't have a footer.
-      return nil;
+
+  if (![self shouldShowFooterInSection:sectionIdentifier]) {
+    return nil;
   }
-  NOTREACHED();
+
+  TableViewTextHeaderFooterView* footer =
+      DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(tableView);
+  footer.accessibilityIdentifier = kQuickDeleteOtherDataFooterIdentifier;
+  [footer
+      setSubtitle:l10n_util::GetNSString(IDS_SETTINGS_OTHER_DATA_DESCRIPTION)
+        withColor:[UIColor colorNamed:kTextSecondaryColor]];
+  return footer;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
-  if (sectionIdentifier == kFooterSection) {
+  if ([self shouldShowFooterInSection:sectionIdentifier]) {
     return UITableViewAutomaticDimension;
   }
   return kSectionFooterHeight;
@@ -287,6 +281,11 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
+// Returns if the Google account data section has visible items.
+- (BOOL)googleAccountDataSectionHasItems {
+  return _shouldShowSearchHistoryCell || _shouldShowMyActivityCell;
+}
+
 // Sets the accessory type of the cell.
 - (void)setAccessoryTypeForCell:(UITableViewCell*)cell
                  itemIdentifier:(ItemIdentifier)itemIdentifier {
@@ -309,6 +308,21 @@ NSString* AccessibilityIdentifierForItemIdentifier(
                             kExternalLinkSymbol)];
       cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
       return;
+  }
+  NOTREACHED();
+}
+
+// Tells if the current section should show a footer.
+- (BOOL)shouldShowFooterInSection:(SectionIdentifier)sectionIdentifier {
+  BOOL googleAccountDataSectionHasItems =
+      [self googleAccountDataSectionHasItems];
+  switch (sectionIdentifier) {
+    case kPasswordsAndPasskeysSection:
+      return !googleAccountDataSectionHasItems;
+    case kGoogleAccountDataSection:
+      return googleAccountDataSectionHasItems;
+    case kFooterSection:
+      return NO;
   }
   NOTREACHED();
 }
