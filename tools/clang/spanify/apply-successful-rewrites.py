@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 #
 # This script is used to apply patches that successfully compile from the
-# 'rewrite-multiple-platforms.sh` script in the Chromium codebase, and then
+# 'rewrite_multiple_platforms.py` script in the Chromium codebase, and then
 # test on various gn configurations until a merged patch that is likely to
 # compile successfully on the bots is generated.
 #

@@ -251,7 +251,7 @@ except:
 run(f"gn gen out/{platform}", f"Failed to generate out/{platform}.")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
-rewrite_script = "./tools/clang/spanify/rewrite-multiple-platforms.sh"
+rewrite_script = "./tools/clang/spanify/rewrite_multiple_platforms.py"
 print(f"{rewrite_script} --platform={platform}")
 run(f"{rewrite_script} --platform={platform}")
 
