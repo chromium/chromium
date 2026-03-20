@@ -46,17 +46,15 @@ class ReadAnythingEntryPointController {
   // user.
   static void OnPageActionIgnored(BrowserWindowInterface* bwi);
 
-  // Returns false if the reading mode suggestion should be hidden immediately
-  // for the current page. This is separate from CheckIfShouldSuggestReadingMode
-  // to allow callers to avoid running the asynchronous readability heuristic if
-  // they just want to do a quick synchronous check if the suggestion should be
-  // hidden.
-  static bool CheckIfShouldSuggestReadingModeNaive(BrowserWindowInterface* bwi);
+  // Does the necessary setup to get the signal from the optimization guide on
+  // whether the current page is a good candidate for reading mode. This must be
+  // called before CheckIfShouldSuggestReadingMode.
+  static void RegisterForSuggestReadingMode(Profile* profile);
 
   // Checks whether to suggest reading mode to the user on the current page and
   // asynchronously returns the result via `result_callback`. This is
-  // asynchronous because it runs a heuristic to determine if the page is a good
-  // candidate for reading mode.
+  // asynchronous because it runs some heuristics to determine if the page is a
+  // good candidate for reading mode.
   static void CheckIfShouldSuggestReadingMode(
       BrowserWindowInterface* bwi,
       base::OnceCallback<void(bool)> result_callback);
@@ -69,6 +67,11 @@ class ReadAnythingEntryPointController {
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);
+
+  // Returns false if the reading mode suggestion should be hidden immediately
+  // for the current page. This check uses very basic information about the
+  // browser and checks for any explicitly blocked sites.
+  static bool CheckIfShouldSuggestReadingModeNaive(BrowserWindowInterface* bwi);
 };
 
 }  // namespace read_anything

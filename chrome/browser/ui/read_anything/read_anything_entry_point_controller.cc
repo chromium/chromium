@@ -5,12 +5,16 @@
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 
 #include <type_traits>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
@@ -25,7 +29,12 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_filter.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "pdf/buildflags.h"
@@ -99,7 +108,75 @@ void OnPdfTextReceived(base::OnceCallback<void(bool)> result_callback,
       .Run((text.size() > g_min_pdf_text_length_for_omnibox) &&
            IsMostlyAlphaChars(text));
 }
+
+void RunPdfDistillableHeuristic(
+    pdf::PDFDocumentHelper* pdf_helper,
+    base::OnceCallback<void(bool)> result_callback) {
+  CHECK(pdf_helper);
+
+  // Use the text on the first page of the document to estimate if this could
+  // be a distillable PDF.
+  pdf_helper->GetPageText(
+      /*page_index=*/0,
+      base::BindOnce(&OnPdfTextReceived, std::move(result_callback)));
+}
 #endif
+
+pdf::PDFDocumentHelper* GetPdf(content::WebContents* contents) {
+#if BUILDFLAG(ENABLE_PDF)
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+#else
+  return nullptr;
+#endif
+}
+
+void RunReadabilityHeuristic(content::WebContents* contents,
+                             base::OnceCallback<void(bool)> result_callback) {
+  CHECK(contents);
+  RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
+}
+
+void OnOptimizationGuideDecision(
+    content::WebContents* contents,
+    base::OnceCallback<void(bool)> result_callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  // This check is already done in CheckIfShouldSuggestReadingMode but it's
+  // possible that the page was not detected as a PDF yet so check again.
+  if (auto* pdf_helper = GetPdf(contents)) {
+    RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
+    return;
+  }
+
+  switch (decision) {
+    case optimization_guide::OptimizationGuideDecision::kFalse:
+      // Optimization guide decided no, so immediately callback with a negative
+      // result, bypassing the Readability check.
+      std::move(result_callback).Run(false);
+      break;
+    case optimization_guide::OptimizationGuideDecision::kTrue:
+    case optimization_guide::OptimizationGuideDecision::kUnknown:
+      // If the optimization guide decided yes, or if it doesn't have enough
+      // info yet, defer the decision to Readability.
+      RunReadabilityHeuristic(contents, std::move(result_callback));
+      break;
+  }
+}
+
+void RunOptimizationGuide(
+    OptimizationGuideKeyedService* optimization_guide_decider,
+    BrowserWindowInterface* bwi,
+    base::OnceCallback<void(bool)> result_callback) {
+  CHECK(optimization_guide_decider);
+  CHECK(bwi);
+
+  optimization_guide_decider->CanApplyOptimization(
+      bwi->GetActiveTabInterface()->GetContents()->GetLastCommittedURL(),
+      optimization_guide::proto::READER_MODE_ELIGIBLE,
+      base::BindOnce(&OnOptimizationGuideDecision,
+                     bwi->GetActiveTabInterface()->GetContents(),
+                     std::move(result_callback)));
+}
 
 static int check_count_;
 
@@ -255,7 +332,13 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 // static
 bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
     BrowserWindowInterface* bwi) {
-  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+  CHECK(features::IsReadAnythingOmniboxChipEnabled());
+  CHECK(bwi);
+
+  // Don't show the omnibox entrypoint if automation is enabled, such as
+  // during automated testing.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableAutomation)) {
     return false;
   }
 
@@ -286,47 +369,52 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
 }
 
 // static
+void ReadAnythingEntryPointController::RegisterForSuggestReadingMode(
+    Profile* profile) {
+  if (auto* optimization_guide_decider =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+    optimization_guide_decider->RegisterOptimizationTypes(
+        {optimization_guide::proto::READER_MODE_ELIGIBLE});
+  }
+}
+
+// static
 void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
     BrowserWindowInterface* bwi,
     base::OnceCallback<void(bool)> result_callback) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi ||
+      !CheckIfShouldSuggestReadingModeNaive(bwi)) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
   check_count_++;
-  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
-    std::move(result_callback).Run(false);
-    return;
-  }
-  // Don't show the omnibox entrypoint if automation is enabled, such as
-  // during automated testing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableAutomation)) {
-    std::move(result_callback).Run(false);
-    return;
-  }
 
-  if (!CheckIfShouldSuggestReadingModeNaive(bwi)) {
-    std::move(result_callback).Run(false);
-    return;
-  }
-
+  // If this page is a PDF, then other heuristics will always return false.
+  // But since PDFs are distilled via Screen2x, use a custom heuristic to
+  // determine if the PDF will distill well with RM.
   content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
-
-#if BUILDFLAG(ENABLE_PDF)
-  // If this contents is a PDF, then Readability will always return false. But
-  // since PDFs are distilled via Screen2x, use our own heuristic to determine
-  // if the PDF will distill well with RM.
-  auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
-  if (pdf_helper) {
-    // Use the text on the first page of the document to estimate if this could
-    // be a distillable PDF.
-    pdf_helper->GetPageText(
-        /*page_index=*/0,
-        base::BindOnce(&OnPdfTextReceived, std::move(result_callback)));
+  if (auto* pdf_helper = GetPdf(contents)) {
+    RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
   }
-#endif  // BUILDFLAG(ENABLE_PDF)
 
-  // Readability will callback with whether or not the current contents are a
-  // good candidate for distillation.
-  RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(bwi->GetProfile());
+  // If there is no optimization guide, cut straight to using Readability
+  // instead, which would be used anyway after receiving the decision from the
+  // optimization guide. This should only happen if the optimization guide flag
+  // is explicitly disabled (it's enabled by default) or for a select few types
+  // of internal profiles on ChromeOS.
+  if (!optimization_guide_decider) {
+    RunReadabilityHeuristic(contents, std::move(result_callback));
+    return;
+  }
+
+  // The optimization guide uses the lattice article score and other info to
+  // determine Reading mode eligibility.
+  RunOptimizationGuide(optimization_guide_decider, bwi,
+                       std::move(result_callback));
 }
 
 // static

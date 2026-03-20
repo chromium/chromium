@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -64,6 +66,10 @@ class ReadAnythingOmniboxControllerTest
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+        ->AddHintForTesting(
+            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
+            std::optional<optimization_guide::OptimizationMetadata>());
   }
 
   void TearDownOnMainThread() override {

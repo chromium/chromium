@@ -28,6 +28,10 @@ ReadAnythingOmniboxController::ReadAnythingOmniboxController(
   CHECK(features::IsReadAnythingOmniboxChipEnabled() &&
         base::FeatureList::IsEnabled(features::kPageActionsMigration));
 
+  read_anything::ReadAnythingEntryPointController::
+      RegisterForSuggestReadingMode(
+          tab_->GetBrowserWindowInterface()->GetProfile());
+
   RegisterAsPageActionObserver(
       *tab_->GetTabFeatures()->page_action_controller());
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
@@ -143,18 +147,15 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  UpdateIgnored(GetCurrentPageActionState().showing);
-  if (!read_anything::ReadAnythingEntryPointController::
-          CheckIfShouldSuggestReadingModeNaive(
-              tab_->GetBrowserWindowInterface())) {
-    UpdateVisibility(false);
-  }
-
   StopTimers();
+  UpdateIgnored(GetCurrentPageActionState().showing);
+  DebounceCheckSuggestion();
 }
 
 void ReadAnythingOmniboxController::DidStopLoading() {
-  DebounceCheckSuggestion();
+  if (check_suggestion_debouncer_ && check_suggestion_debouncer_->IsRunning()) {
+    check_suggestion_debouncer_->Reset();
+  }
 }
 
 void ReadAnythingOmniboxController::DebounceCheckSuggestion() {

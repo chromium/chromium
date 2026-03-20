@@ -12,6 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +41,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "url/url_constants.h"
+
+using read_anything::ReadAnythingEntryPointController;
 
 class ReadAnythingEntryPointControllerTestBase
     : public InProcessBrowserTest,
@@ -111,8 +115,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
       kSidePanelOpenTriggerKey,
       static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
   if (!IsImmersiveEnabled()) {
@@ -132,8 +135,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
-  read_anything::ReadAnythingEntryPointController::ShowUI(
-      browser(), ReadAnythingOpenTrigger::kAppMenu);
+  ReadAnythingEntryPointController::ShowUI(browser(),
+                                           ReadAnythingOpenTrigger::kAppMenu);
 
   VerifyUIState();
   if (!IsImmersiveEnabled()) {
@@ -152,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
-  read_anything::ReadAnythingEntryPointController::ShowUI(
+  ReadAnythingEntryPointController::ShowUI(
       browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
 
   VerifyUIState();
@@ -196,8 +199,7 @@ IN_PROC_BROWSER_TEST_P(
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   histogram_tester.ExpectTotalCount("SidePanel.ReadAnything.ShowTriggered", 0);
   histogram_tester.ExpectTotalCount("Accessibility.ReadAnything.ShowTriggered",
@@ -207,8 +209,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest,
     OnPageActionIgnored_DoesNothingWithFlagDisabled) {
-  read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
-      browser());
+  ReadAnythingEntryPointController::OnPageActionIgnored(browser());
 
   EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->HasPrefPath(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount));
@@ -217,14 +218,11 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest,
     UpdatePageActionVisibility_DoesNothingWithFlagDisabled) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
 
   ASSERT_FALSE(GetCurrentPageActionState().showing);
 }
@@ -242,8 +240,8 @@ class ReadAnythingEntryPointControllerOmniboxBrowserTest
       : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHReadingModePageActionLabelFeature})),
         test_min_pdf_text_length_for_omnibox_(
-            read_anything::ReadAnythingEntryPointController::
-                SetMinPdfTextLengthForTesting(500)) {
+            ReadAnythingEntryPointController::SetMinPdfTextLengthForTesting(
+                500)) {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kReadAnythingOmniboxChip,
         feature_engagement::kIPHReadingModePageActionLabelFeature};
@@ -269,8 +267,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
   if (!IsImmersiveEnabled()) {
@@ -293,8 +290,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 3);
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
   EXPECT_EQ(0, browser()->GetProfile()->GetPrefs()->GetInteger(
@@ -308,14 +304,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
       true, browser(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
   histogram_tester.ExpectUniqueSample(
@@ -325,28 +320,22 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsPageAction) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
 
   VerifyPageActionIsShowing(true);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsChip) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
 
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(true);
@@ -355,16 +344,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     UpdatePageActionVisibility_DoesNotShowChipIfIgnoredManyTimes) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 10);
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
 
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(false);
@@ -372,13 +358,11 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_ShowsPromo) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   base::test::TestFuture<user_education::FeaturePromoResult> future;
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
       true, browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
@@ -387,10 +371,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_HidesPageAction) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
   browser()
       ->GetActiveTabInterface()
@@ -399,8 +381,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
       ->Show(kActionSidePanelShowReadAnything);
   VerifyPageActionIsShowing(true);
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      false, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
 
   VerifyPageActionIsShowing(false);
   VerifyChipIsShowing(false);
@@ -409,20 +391,18 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        UpdatePageActionVisibility_AbortsPromo) {
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
   base::test::TestFuture<user_education::FeaturePromoResult> future;
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
       true, browser(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      false, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
 
   EXPECT_FALSE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
@@ -439,14 +419,13 @@ IN_PROC_BROWSER_TEST_P(
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
       true, browser(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
-                                                                    context);
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
   histogram_tester.ExpectUniqueSample(
@@ -455,8 +434,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      false, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
   histogram_tester.ExpectBucketCount(
       "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
       user_education::FeaturePromoClosedReason::kAbortedByFeature, 0);
@@ -469,26 +448,80 @@ IN_PROC_BROWSER_TEST_P(
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
 
-  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      false, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
 
   histogram_tester.ExpectBucketCount(
       "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
       user_education::FeaturePromoClosedReason::kAbortedByFeature, 0);
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
-                       CheckIfShouldSuggestReadingMode_RunsHeuristic) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_OptimizationGuideYesAndReadabilityYesIsCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/long_text_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+      ->AddHintForTesting(
+          url, optimization_guide::proto::READER_MODE_ELIGIBLE,
+          std::optional<optimization_guide::OptimizationMetadata>());
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_OptimizationGuideNoAndReadabilityYesIsNotCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/long_text_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::test::TestFuture<bool> future;
+
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_OptimizationGuideYesAndReadabilityNoIsNotCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+      ->AddHintForTesting(
+          url, optimization_guide::proto::READER_MODE_ELIGIBLE,
+          std::optional<optimization_guide::OptimizationMetadata>());
+  base::test::TestFuture<bool> future;
+
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_OptimizationGuideNoAndReadabilityNoIsNotCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::test::TestFuture<bool> future;
+
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -503,8 +536,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get());
@@ -521,8 +554,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
@@ -541,8 +574,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
@@ -550,14 +583,12 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        CheckIfShouldSuggestReadingMode_NonHttpIsNotCandidate) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
@@ -566,53 +597,15 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     CheckIfShouldSuggestReadingMode_DeniedDomainIsNotCandidate) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.docs.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.docs.google.com")));
   base::test::TestFuture<bool> future;
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ReadAnythingEntryPointControllerOmniboxBrowserTest,
-    CheckIfShouldSuggestReadingModeNaive_ReturnsFalseForNonHttp) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  ASSERT_FALSE(read_anything::ReadAnythingEntryPointController::
-                   CheckIfShouldSuggestReadingModeNaive(browser()));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ReadAnythingEntryPointControllerOmniboxBrowserTest,
-    CheckIfShouldSuggestReadingModeNaive_ReturnsFalseForDenyList) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.docs.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  ASSERT_FALSE(read_anything::ReadAnythingEntryPointController::
-                   CheckIfShouldSuggestReadingModeNaive(browser()));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ReadAnythingEntryPointControllerOmniboxBrowserTest,
-    CheckIfShouldSuggestReadingModeNaive_ReturnsTrueForAllowedDomains) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.blog.google.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  ASSERT_TRUE(read_anything::ReadAnythingEntryPointController::
-                  CheckIfShouldSuggestReadingModeNaive(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -625,8 +618,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 3);
 
-  read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
-      browser());
+  ReadAnythingEntryPointController::OnPageActionIgnored(browser());
 
   EXPECT_EQ(4, browser()->GetProfile()->GetPrefs()->GetInteger(
                    prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount));
@@ -671,8 +663,8 @@ IN_PROC_BROWSER_TEST_P(
       },
       &is_good_candidate, &run_loop);
 
-  read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), std::move(result_callback));
   run_loop.Run();
 
   EXPECT_FALSE(is_good_candidate);
