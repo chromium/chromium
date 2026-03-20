@@ -112,8 +112,10 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     uint32_t src_y) {
   DCHECK(resource_provider);
 
-  gfx::Rect copy_rect(src_x, src_y, resource_provider->Size().width(),
-                      resource_provider->Size().height());
+  const size_t dest_width =
+      static_cast<size_t>(resource_provider->Size().width());
+  const size_t dest_height =
+      static_cast<size_t>(resource_provider->Size().height());
 
   // Extract content to SkPixmap. Pixels are CPU backed resource and this
   // should be freed.
@@ -132,18 +134,17 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
   const size_t source_height = pixmap.height();
 
   SkImageInfo copy_rect_info = paint_image_.GetSkImageInfo().makeWH(
-      copy_rect.width(), copy_rect.height());
-  const size_t dest_row_bytes =
-      copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.width());
-  const size_t dest_height = static_cast<size_t>(copy_rect.height());
+      static_cast<int>(dest_width), static_cast<int>(dest_height));
+  const size_t dest_row_bytes = copy_rect_info.bytesPerPixel() * dest_width;
 
   std::vector<uint8_t> dest_pixels;
   if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
     dest_pixels.resize(dest_row_bytes * dest_height);
 
     const size_t x_offset_bytes =
-        copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.x());
-    size_t src_offset = copy_rect.y() * source_row_bytes + x_offset_bytes;
+        copy_rect_info.bytesPerPixel() * static_cast<size_t>(src_x);
+    size_t src_offset =
+        static_cast<size_t>(src_y) * source_row_bytes + x_offset_bytes;
 
     base::span<uint8_t> dest_data(dest_pixels);
     for (size_t dst_y = 0; dst_y < dest_height;
