@@ -219,9 +219,6 @@ export class SearchboxElement extends SearchboxElementBase implements
        */
       lastInput_: {type: Object},
 
-      /** The last queried input text. */
-      lastQueriedInput_: {type: String},
-
       /**
        * True if user just pasted into the input. Used to prevent the default
        * match from offering inline autocompletion.
@@ -303,7 +300,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.getBoolean('isLensSearchbox');
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
-  private accessor lastQueriedInput_: string|null = null;
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -447,6 +443,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     return this.getDropdownElement();
   }
 
+  override getWrapperElement(): HTMLElement {
+    return this.$.inputWrapper;
+  }
+
   override pageHandler(): PageHandlerInterface {
     return this.pageHandler_;
   }
@@ -537,14 +537,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
 
-  protected onInputWrapperFocusout_(e: FocusEvent) {
+  override onInputWrapperFocusout(e: FocusEvent) {
     const newlyFocusedEl = e.relatedTarget as Element;
-    // Hide the matches and stop autocomplete only when the focus goes outside
-    // of the searchbox wrapper. If focus is still in the searchbox wrapper,
-    // exit early.
-    if (this.$.inputWrapper.contains(newlyFocusedEl)) {
-      return;
-    }
 
     // If this is a Lens searchbox, treat the ghost loader as keeping searchbox
     // focus.
@@ -556,22 +550,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       return;
     }
 
-    if (this.lastQueriedInput_ === '') {
-      // Clear the input as well as the matches if the input was empty when
-      // the matches arrived.
-      this.$.input.setInput({text: '', inline: ''});
-      this.clearAutocompleteMatches();
-    } else {
-      this.dropdownIsVisible = false;
-
-      // Stop autocomplete but leave (potentially stale) results and continue
-      // listening for key presses. These stale results should never be shown.
-      // They correspond to the potentially stale suggestion left in the
-      // searchbox when blurred. That stale result may be navigated to by
-      // focusing and pressing 'Enter'.
-      this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
-    }
-    this.pageHandler_.onFocusChanged(false);
+    super.onInputWrapperFocusout(e);
     this.placeholderCycler_?.start();
   }
 
