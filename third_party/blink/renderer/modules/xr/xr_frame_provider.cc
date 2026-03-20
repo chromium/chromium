@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/display/display.h"
@@ -860,17 +859,6 @@ void XRFrameProvider::SubmitFrame(
 
   frame_transport_->FramePreImage(transport_delegate);
 
-  size_t n_layers = layers_.size();
-  Vector<device::LayerId> layer_ids;
-  Vector<std::unique_ptr<SharedImageHolder>> image_refs;
-  layer_ids.reserve(n_layers);
-  image_refs.reserve(n_layers);
-
-  for (auto& layer : layers_) {
-    layer_ids.push_back(layer.layer_id);
-    image_refs.push_back(std::move(layer.current_frame_image));
-  }
-
   // The backend expects layer ID list to contain a single element (i.e. the
   // base layer) if the 'layers' feature is not enabled.
   if (!layer_manager_.is_bound()) {
@@ -881,7 +869,7 @@ void XRFrameProvider::SubmitFrame(
 
   bool succeeded = frame_transport_->FrameSubmit(
       immersive_presentation_provider_.get(), transport_delegate,
-      std::move(layer_ids), std::move(image_refs), this_frame_id);
+      std::move(layers_), this_frame_id);
 
   succeeded ? num_frames_++ : dropped_frames_++;
   if (succeeded) {

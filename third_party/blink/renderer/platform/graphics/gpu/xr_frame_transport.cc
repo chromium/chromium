@@ -91,8 +91,7 @@ void XRFrameTransport::FrameSubmitMissing(
 bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     XRFrameTransportDelegate* delegate,
-    Vector<device::LayerId> layer_ids,
-    Vector<std::unique_ptr<SharedImageHolder>> image_refs,
+    Vector<XRLayerUpdate> layers,
     int16_t vr_frame_id) {
   DCHECK(transport_options_);
   CHECK(delegate);
@@ -109,9 +108,9 @@ bool XRFrameTransport::FrameSubmit(
     }
     // TODO(crbug.com/359418629): This only works because we're restricted to a
     // single layer at the moment.
-    CHECK_EQ(image_refs.size(), 1UL);
+    CHECK_EQ(layers.size(), 1UL);
     auto [gpu_memory_buffer_handle, sync_token] = delegate->CopyImage(
-        image_refs.begin()->get(), last_transfer_succeeded_);
+        layers[0].current_frame_image.get(), last_transfer_succeeded_);
 
     // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
@@ -139,7 +138,7 @@ bool XRFrameTransport::FrameSubmit(
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::
                  SUBMIT_AS_TEST) {
-    CHECK_EQ(image_refs.size(), 1UL);
+    CHECK_EQ(layers.size(), 1UL);
 
     // Conditionally wait for the previous render to finish. A late wait here
     // attempts to overlap work in parallel with the previous frame's
@@ -156,7 +155,10 @@ bool XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification) {
       WaitForPreviousTransfer();
     }
-    previous_images_ = std::move(image_refs);
+    previous_images_.clear();
+    for (auto& layer : layers) {
+      previous_images_.push_back(std::move(layer.current_frame_image));
+    }
 
     TRACE_EVENT_BEGIN0("gpu", "XRFrameTransport::SubmitFrame");
     vr_presentation_provider->SubmitFrame(vr_frame_id, frame_wait_time_);
@@ -171,6 +173,11 @@ bool XRFrameTransport::FrameSubmit(
     }
     if (waiting_for_previous_frame_render_) {
       frame_wait_time_ += WaitForPreviousRenderToFinish();
+    }
+    Vector<device::LayerId> layer_ids;
+    layer_ids.reserve(layers.size());
+    for (auto& layer : layers) {
+      layer_ids.push_back(layer.layer_id);
     }
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
         vr_frame_id, std::move(layer_ids), sync_token, frame_wait_time_);

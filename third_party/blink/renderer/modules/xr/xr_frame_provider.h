@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -34,11 +35,6 @@ class XRSystem;
 class XRWebGLLayer;
 class XrLayerClient;
 class XRFrameTransportDelegate;
-
-struct XRLayerUpdate {
-  device::LayerId layer_id;
-  std::unique_ptr<SharedImageHolder> current_frame_image;
-};
 
 // This class manages requesting and dispatching frame updates, which includes
 // pose information for a given XRDevice.
