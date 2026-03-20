@@ -2042,6 +2042,10 @@ const CGFloat kTopDynamicIslandInset = 24;
 }
 
 - (void)omniboxDidResignFirstResponder {
+  // NO-OP
+}
+
+- (void)omniboxDidEndEditing {
   CHECK(!IsComposeboxIOSEnabled());
   [_sideSwipeCoordinator setEnabled:YES];
 

@@ -36,6 +36,9 @@
 /// Called when the omnibox text field starts editing.
 - (void)onDidBeginEditing;
 
+/// Called when the omnibox text field ends editing.
+- (void)onDidEndEditing;
+
 /// Called before the omnibox text field changes. `newText` will replace the
 /// text currently in `range`.
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range

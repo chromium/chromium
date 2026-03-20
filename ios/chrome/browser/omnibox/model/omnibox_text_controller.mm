@@ -166,7 +166,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   // The controller looks at the current pre-edit state, so the call to
   // OnKillFocus() must come after exiting pre-edit.
-  [self.focusDelegate omniboxDidResignFirstResponder];
+  [self.focusDelegate omniboxDidEndEditing];
 
   // Composebox is destroyed on endEditing, skip revert to avoid resizing on
   // revert.
@@ -576,6 +576,10 @@ const char kOmniboxFocusResultedInNavigation[] =
   if (!popupOpenBeforeEdit) {
     [self.focusDelegate omniboxDidBecomeFirstResponder];
   }
+}
+
+- (void)onDidEndEditing {
+  [self.focusDelegate omniboxDidResignFirstResponder];
 }
 
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range

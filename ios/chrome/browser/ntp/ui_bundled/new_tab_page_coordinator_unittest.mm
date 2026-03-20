@@ -589,7 +589,7 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
     ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusOmnibox));
   }
   ExpectMethodToProxyToVC(@selector(locationBarDidResignFirstResponder),
-                          @selector(omniboxDidResignFirstResponder));
+                          @selector(omniboxDidEndEditing));
 
   [coordinator_ stop];
 }

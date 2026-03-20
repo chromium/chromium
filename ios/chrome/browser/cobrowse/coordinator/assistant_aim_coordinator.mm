@@ -140,6 +140,13 @@
       setAssistantContainerDetents:{AssistantContainerDetent::kMinimized,
                                     AssistantContainerDetent::kMedium,
                                     AssistantContainerDetent::kLarge}];
+
+  [_inputPlateCoordinator endEditing];
+}
+
+- (void)assistantAIMViewControllerDidRequestEndEditing:
+    (AssistantAIMViewController*)viewController {
+  [_inputPlateCoordinator endEditing];
 }
 
 #pragma mark - AssistantContainerDelegate

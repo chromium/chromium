@@ -12,8 +12,12 @@
 
 // Called when the omnibox gains keyboard focus.
 - (void)omniboxDidBecomeFirstResponder;
+
 // Called when the omnibox loses keyboard focus.
 - (void)omniboxDidResignFirstResponder;
+
+// Called when the omnibox ends editing.
+- (void)omniboxDidEndEditing;
 
 @end
 

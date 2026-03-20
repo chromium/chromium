@@ -314,7 +314,7 @@ TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
 
   // Defocus from OmniboxFocusDelegate.
   ExpectOmniboxDefocus();
-  [mediator_ omniboxDidResignFirstResponder];
+  [mediator_ omniboxDidEndEditing];
   EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
   EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
 }

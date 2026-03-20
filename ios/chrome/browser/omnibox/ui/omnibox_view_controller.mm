@@ -315,6 +315,8 @@ using base::UserMetricsAction;
     RecordAction(
         UserMetricsAction("Mobile_FocusedDefocusedOmnibox_WithNoAction"));
   }
+
+  [self.mutator onDidEndEditing];
 }
 
 - (UIMenu*)textInput:(id<OmniboxTextInput>)textInput

@@ -123,7 +123,7 @@
 - (CGFloat)headerHeight;
 
 // Shows the fakebox.
-- (void)omniboxDidResignFirstResponder;
+- (void)omniboxDidEndEditing;
 
 // Hides the new feature badge on the Home customization menu's entrypoint.
 - (void)hideBadgeOnCustomizationMenu;

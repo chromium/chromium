@@ -216,6 +216,10 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 }
 
 - (void)omniboxDidResignFirstResponder {
+  // NO-OP
+}
+
+- (void)omniboxDidEndEditing {
   [self defocusOmnibox];
 }
 

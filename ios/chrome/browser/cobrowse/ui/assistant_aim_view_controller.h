@@ -28,6 +28,10 @@
 - (void)assistantAIMViewControllerDidHideKeyboard:
     (AssistantAIMViewController*)viewController;
 
+// Called when the UI requests ending editing.
+- (void)assistantAIMViewControllerDidRequestEndEditing:
+    (AssistantAIMViewController*)viewController;
+
 @end
 
 @interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>

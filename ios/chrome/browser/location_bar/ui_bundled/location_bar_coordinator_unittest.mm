@@ -62,6 +62,8 @@ using variations::VariationsIdsProvider;
 }
 - (void)omniboxDidResignFirstResponder {
 }
+- (void)omniboxDidEndEditing {
+}
 
 - (LocationBarModel*)locationBarModel {
   if (!_model) {

@@ -553,7 +553,7 @@
 }
 
 - (void)locationBarDidResignFirstResponder {
-  [self.NTPViewController omniboxDidResignFirstResponder];
+  [self.NTPViewController omniboxDidEndEditing];
 }
 
 - (void)constrainNamedGuideForFeedIPH {

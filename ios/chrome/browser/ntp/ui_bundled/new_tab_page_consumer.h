@@ -37,7 +37,7 @@
 - (void)omniboxWillResignFirstResponder;
 
 // Indicates that the omnibox stopped being the first responder to the keyboard.
-- (void)omniboxDidResignFirstResponder;
+- (void)omniboxDidEndEditing;
 
 // Restores a given scroll position if applicable.
 - (void)restoreScrollPosition:(CGFloat)scrollPosition;

@@ -691,6 +691,9 @@ const CGFloat kSnackbarBottomMargin = 10;
 - (void)omniboxDidResignFirstResponder {
 }
 
+- (void)omniboxDidEndEditing {
+}
+
 #pragma mark - Private helpers
 
 - (void)focusComposebox {

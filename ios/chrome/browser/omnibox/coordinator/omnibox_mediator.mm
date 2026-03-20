@@ -245,6 +245,10 @@ using base::UserMetricsAction;
   [self.delegate omniboxMediatorDidBeginEditing:self];
 }
 
+- (void)onDidEndEditing {
+  [self.omniboxTextController onDidEndEditing];
+}
+
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range
                     replacementString:(NSString*)newText {
   return [self.omniboxTextController shouldChangeCharactersInRange:range
