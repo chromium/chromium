@@ -181,13 +181,45 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
 
         // Avatar should update to a personalized disc with a name in its description.
-        // TODO(crbug.com/489655527): Also add a test for cases in which an account has no name.
         String expectedDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.accessibility_toolbar_btn_identity_disc_with_name,
                                 TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL.getFullName());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.avatar_button),
+                        isDisplayed(),
+                        withContentDescription(expectedDescription)));
+    }
+
+    @Test
+    @MediumTest
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
+    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    public void testSignIn_ShowsPersonalizedIdentityDiscNoName() {
+        // Initially shows sign-in text button.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_text_button),
+                        isDisplayed(),
+                        withText(R.string.signin_promo_sign_in)));
+
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
+        mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
+
+        // Avatar should update to a personalized disc with the fallback name in its description.
+        String expectedDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.accessibility_toolbar_btn_identity_disc_with_name,
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.default_google_account_username));
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.avatar_button),
