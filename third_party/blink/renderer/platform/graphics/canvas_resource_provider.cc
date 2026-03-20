@@ -801,8 +801,22 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
 
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    return UnacceleratedWritePixels(copy_rect_info, pixels.data(),
-                                    dest_row_bytes, /*x=*/0, /*y=*/0);
+
+    DCHECK(IsValid());
+    DCHECK(!recorder_->HasRecordedDrawOps());
+
+    EnsureSkiaCanvas();
+
+    bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
+        copy_rect_info, pixels.data(), dest_row_bytes, /*x=*/0, /*y=*/0);
+
+    if (wrote_pixels) {
+      // WritePixels content is not saved in recording. Calling WritePixels
+      // therefore invalidates `last_recording_` because it's now missing that
+      // information.
+      last_recording_ = std::nullopt;
+    }
+    return wrote_pixels;
   }
 
   TRACE_EVENT0("blink",
