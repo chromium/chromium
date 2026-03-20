@@ -321,6 +321,7 @@ try_.orchestrator_builder(
             "partial_code_coverage_instrumentation",
             "enable_dangling_raw_ptr_feature_flag",
             "enable_backup_ref_ptr_feature_flag",
+            "enable_rust_clippy",
         ],
     ),
     compilator = "linux-chromeos-rel-compilator",
