@@ -1462,6 +1462,11 @@ leveldb::Status RewriteDB(const leveldb_env::Options& options,
 }
 
 std::string_view MakeStringView(const leveldb::Slice& s) {
+  // Workaround for crbug.com/493304613. May be possible to remove this after
+  // LevelDB is patched.
+  if (s.data() == nullptr) {
+    return std::string_view();
+  }
   return std::string_view(s.data(), s.size());
 }
 
