@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ref.h"
@@ -101,10 +102,11 @@ class AwPrefetchManager {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     int sanitized_max_prefetches =
-      max_prefetches.value_or(kDefaultMaxPrefetches);
+        max_prefetches.value_or(kDefaultMaxPrefetches);
 
     CHECK_GT(sanitized_max_prefetches, 0);
-    max_prefetches_ = std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches);
+    max_prefetches_ =
+        std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches);
   }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
@@ -118,13 +120,13 @@ class AwPrefetchManager {
   // Returns the key associated with the prefetch handle inside of
   // `all_prefetches_map_`.
   int AddPrefetchHandle(
-      std::unique_ptr<content::PrefetchHandle> prefetch_handle) {
-    CHECK(prefetch_handle);
+      std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper) {
+    CHECK(prefetch_handle_wrapper);
     CHECK(max_prefetches_ > 0u);
     CHECK(all_prefetches_map_.size() < max_prefetches_);
 
     const int32_t new_prefetch_key = GetNextPrefetchKey();
-    all_prefetches_map_[new_prefetch_key] = std::move(prefetch_handle);
+    all_prefetches_map_[new_prefetch_key] = std::move(prefetch_handle_wrapper);
     UpdateLastPrefetchKey(new_prefetch_key);
     return new_prefetch_key;
   }
@@ -155,6 +157,10 @@ class AwPrefetchManager {
   static void SetOrClearExternalPrefetchExperiment(
       std::optional<int> variations_id);
 
+  bool IsPrefetchDuplicate(const GURL& url,
+                           const std::optional<net::HttpNoVarySearchData>&
+                               expected_no_vary_search) const;
+
   int32_t GetNextPrefetchKey() const { return last_prefetch_key_ + 1; }
 
   void UpdateLastPrefetchKey(int new_key) {
@@ -168,7 +174,7 @@ class AwPrefetchManager {
 
   size_t max_prefetches_ = kDefaultMaxPrefetches;
 
-  std::map<int32_t, std::unique_ptr<content::PrefetchHandle>>
+  std::map<int32_t, std::unique_ptr<AwPrefetchHandleWrapper>>
       all_prefetches_map_;
 
   // Java object reference.

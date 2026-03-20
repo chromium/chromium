@@ -48,6 +48,11 @@ class TestMetricsServiceClient : public AwMetricsServiceClient {
 class AwMetricsTestBase : public testing::Test {
  public:
   AwMetricsTestBase();
+
+  template <typename... TaskEnvironmentTraits>
+  explicit AwMetricsTestBase(TaskEnvironmentTraits&&... traits)
+      : task_environment_(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   ~AwMetricsTestBase() override;
 
  protected:

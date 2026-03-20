@@ -5,14 +5,25 @@
 #include "android_webview/browser/prefetch/aw_prefetch_manager.h"
 
 #include "android_webview/browser/metrics/aw_metrics_test_utils.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
 
 class AwPrefetchManagerTest : public AwMetricsTestBase {
+ public:
+  AwPrefetchManagerTest() = default;
+
+  template <typename... TaskEnvironmentTraits>
+  explicit AwPrefetchManagerTest(TaskEnvironmentTraits&&... traits)
+      : AwMetricsTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
  protected:
   void SetUp() override {
     AwMetricsTestBase::SetUp();
@@ -182,6 +193,108 @@ TEST_F(AwPrefetchManagerTest, PrefetchHandleKeysAlwaysIncrement) {
     EXPECT_EQ(prefetch_key, last_prefetch_key + 1);
     last_prefetch_key = prefetch_key;
   }
+}
+
+class AwPrefetchManagerNoNetworkServiceDedicatedThreadTest
+    : public AwPrefetchManagerTest {
+ public:
+  AwPrefetchManagerNoNetworkServiceDedicatedThreadTest()
+      : AwPrefetchManagerTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+    // A short-term workaround for new tests to mitigate the integration
+    // issue between the dedicated `NetworkService` thread and
+    // `BrowserTaskEnvironment` (see crbug.com/493322520). If disabled,
+    // `NetworkService` will use IO thread instead. This is valid for these
+    // tests because they do not depend on whether the network service is
+    // running on a dedicated thread or the IO thread.
+    scoped_feature_list_.InitAndDisableFeature(
+        content::kNetworkServiceDedicatedThread);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
+       DeduplicationWebViewPrefetchOffTheMainThreadDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebViewPrefetchOffTheMainThread);
+
+  const std::string prefetch_url = "https://example.com";
+  const int ttl_in_sec = 10;
+
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               ttl_in_sec);
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /*max_prefetches=*/5);
+
+  // 1. First request should succeed.
+  int key1 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key1, NO_PREFETCH_KEY);
+
+  // 2. Second request for same URL should fail due to deduplication in manager.
+  int key2 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_EQ(key2, NO_PREFETCH_KEY);
+
+  // 3. Forward the time after TTL.
+  task_environment_.FastForwardBy(base::Seconds(ttl_in_sec + 1));
+
+  // 4. Third request for same URL should succeed because prefetch is expired
+  // in `PrefetchService`.
+  int key3 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key3, NO_PREFETCH_KEY);
+}
+
+TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
+       DeduplicationWebViewPrefetchOffTheMainThreadEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebViewPrefetchOffTheMainThread);
+
+  const std::string prefetch_url = "https://example.com";
+  const int ttl_in_sec = 10;
+
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               ttl_in_sec);
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /*max_prefetches=*/5);
+
+  // 1. First request should succeed.
+  int key1 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key1, NO_PREFETCH_KEY);
+
+  // 2. Second request for same URL should fail due to deduplication in manager.
+  int key2 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_EQ(key2, NO_PREFETCH_KEY);
+
+  // 3. Forward the time after TTL.
+  task_environment_.FastForwardBy(base::Seconds(ttl_in_sec + 1));
+
+  // 4. Third request for same URL should still fail because `AwPrefetchManager`
+  // doesn't track staleness.
+  int key3 = prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), prefetch_url,
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_EQ(key3, NO_PREFETCH_KEY);
 }
 
 }  // namespace android_webview
