@@ -100,6 +100,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
   _test_timeout = DEFAULT_TEST_TIMEOUT
   _enable_dawn_backend_validation = False
+  _enable_default_webgpu_features = False
   _use_webgpu_adapter: str | None = None  # use the default
   _original_environ: Mapping | None = None
   _use_webgpu_power_preference: str | None = None
@@ -190,6 +191,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         action='store_true',
         default=False,
         help='Force use of the unrollConstEvalLoops setting in JavaScript.')
+    parser.add_argument(
+        '--enable-default-webgpu-features',
+        action='store_true',
+        help='Runs the browser without unsafe or experimental WebGPU features',
+    )
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -209,7 +215,9 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     """
     browser_args = super().GenerateBrowserArgs(additional_args)
 
-    enable_dawn_features = ['allow_unsafe_apis']
+    enable_dawn_features = []
+    if not cls._enable_default_webgpu_features:
+      enable_dawn_features.append('allow_unsafe_apis')
     disable_dawn_features = []
 
     if host_information.IsWindows():
@@ -226,8 +234,9 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       browser_args.append(
           f'--disable-dawn-features={",".join(disable_dawn_features)}')
 
-    browser_args.append('--enable-unsafe-webgpu')
-    browser_args.append('--enable-webgpu-developer-features')
+    if not cls._enable_default_webgpu_features:
+      browser_args.append('--enable-unsafe-webgpu')
+      browser_args.append('--enable-webgpu-developer-features')
 
     if cls._use_webgpu_adapter:
       browser_args.append(f'--use-webgpu-adapter={cls._use_webgpu_adapter}')
@@ -276,6 +285,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     if options.override_timeout:
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
+    cls._enable_default_webgpu_features = options.enable_default_webgpu_features
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
     cls._use_fxc = options.use_fxc
