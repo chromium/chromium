@@ -438,11 +438,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     return matches;
   }
 
-  // Deprecated. Use `getDropDownElement`.
-  getSuggestionsElement(): SearchboxDropdownElement {
-    return this.getDropdownElement();
-  }
-
   override getWrapperElement(): HTMLElement {
     return this.$.inputWrapper;
   }
