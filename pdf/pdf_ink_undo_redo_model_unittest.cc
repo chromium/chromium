@@ -161,6 +161,15 @@ TEST(PdfInkUndoRedoModelTest, BadActionRemoveTwice) {
   ASSERT_FALSE(undo_redo.Remove(InkModeledShapeId(0)));
 }
 
+TEST(PdfInkUndoRedoModelTest, BadActionStartAddRemove) {
+  PdfInkUndoRedoModel undo_redo;
+
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Add(InkStrokeId(0)));
+  // TODO(crbug.com/408976048): Remove should fail.
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(0)));
+}
+
 TEST(PdfInkUndoRedoModelTest, Empty) {
   PdfInkUndoRedoModel undo_redo;
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
@@ -489,6 +498,26 @@ TEST(PdfInkUndoRedoModelTest, AddRemoveAllTypesUndoRedo) {
   EXPECT_TRUE(commands.adds.empty());
   EXPECT_THAT(commands.removes,
               ElementsAre(InkStrokeId(5), InkModeledShapeId(5), InkTextId(6)));
+}
+
+TEST(PdfInkUndoRedoModelTest, EditTextUndoRedo) {
+  PdfInkUndoRedoModel undo_redo;
+
+  DoAddCommandsCycle(undo_redo, {InkTextId(0)});
+
+  // "Edit" the text by removing the initial text ID and adding a new text ID.
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(0)));
+  ASSERT_TRUE(undo_redo.Add(InkTextId(1)));
+  ASSERT_TRUE(undo_redo.Finish());
+
+  PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
+  EXPECT_THAT(commands.adds, ElementsAre(InkTextId(0)));
+  EXPECT_THAT(commands.removes, ElementsAre(InkTextId(1)));
+
+  commands = undo_redo.Redo();
+  EXPECT_THAT(commands.adds, ElementsAre(InkTextId(1)));
+  EXPECT_THAT(commands.removes, ElementsAre(InkTextId(0)));
 }
 
 TEST(PdfInkUndoRedoModelTest, Stress) {
