@@ -9,7 +9,7 @@
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
