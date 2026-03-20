@@ -127,6 +127,7 @@ public class FeedActionDelegateImpl
                 mSigninCoordinators.values()) {
             coordinator.destroy();
         }
+        mSigninCoordinators.clear();
     }
 
     @Override
