@@ -279,6 +279,7 @@ void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
                                                bool resolved,
                                                ScriptState* script_state,
                                                ScriptValue value) {
+  CHECK(tool);
   if (!tool->CurrentlyRunning()) {
     return;
   }
@@ -586,7 +587,8 @@ void HTMLFormElement::PrepareForSubmission(
 
     UseCounter::Count(GetDocument(), WebFeature::kFormSubmissionStarted);
     // Interactive validation must be done before dispatching the submit event.
-    const bool declarative_webmcp_call =
+    // We also re-perform this validation *after* dispatching the submit event.
+    bool declarative_webmcp_call =
         IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
     if (!skip_validation && !ValidateInteractively()) {
       should_submit = false;
@@ -612,6 +614,19 @@ void HTMLFormElement::PrepareForSubmission(
           event_type_names::kSubmit, submit_event_init);
       should_submit =
           DispatchEvent(*submit_event) == DispatchEventResult::kNotCanceled;
+      // `DispatchEvent()` above could have disconnected `this` from the DOM. In
+      // that case, the form would have been unregistered as a tool,
+      // `active_webmcp_tool_` will be null, and `IsValidWebMCPForm()` will be
+      // false; there's no need to react to the Promise held by
+      // `SubmitEvent::respondWith()`.
+      //
+      // If `active_webmcp_tool_` is non-null here, but the form gets
+      // unregistered as a tool asynchronously before `promise` fulfills, then
+      // `HandleWebMcpToolResponse()` will handle this appropriately.
+      //
+      // To handle all of this, update the boolean.
+      declarative_webmcp_call =
+          IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
       if (declarative_webmcp_call) {
         if (auto promise = submit_event->TakeRespondWithPromise()) {
           // Since we have a promise, respondWith() was called. That should only
@@ -620,6 +635,7 @@ void HTMLFormElement::PrepareForSubmission(
           CHECK(!should_submit);
           // Wait for the provided promise to resolve or reject, and then call
           // the active_webmcp_tool_'s callback with the result.
+          CHECK(active_webmcp_tool_.Get());
           std::move(*promise).Then(
               BindOnce(&HTMLFormElement::HandleWebMcpToolResponse,
                        WrapWeakPersistent(this),
