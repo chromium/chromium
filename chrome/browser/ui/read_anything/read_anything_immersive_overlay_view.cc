@@ -133,11 +133,6 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
   contents_web_view_->GetViewAccessibility().SetIsIgnored(true);
   contents_web_view_->GetViewAccessibility().SetIsLeaf(true);
   contents_web_view_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-
-  DUMP_WILL_BE_CHECK(immersive_web_view_);
-  if (immersive_web_view_) {
-    immersive_web_view_->RequestFocus();
-  }
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
