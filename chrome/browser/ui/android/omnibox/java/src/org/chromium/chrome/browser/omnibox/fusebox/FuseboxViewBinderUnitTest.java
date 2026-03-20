@@ -573,4 +573,21 @@ public class FuseboxViewBinderUnitTest {
                 res.getString(R.string.acc_send_button_search_or_navigate),
                 mViewHolder.navigateButton.getContentDescription());
     }
+
+    @Test
+    public void modelSelectionDrawables() {
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, false);
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_SELECTED, false);
+        assertNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, true);
+        assertNotNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED, false);
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_SELECTED, true);
+        assertNull(mPopup.mAutoButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(mPopup.mProButton.getCompoundDrawablesRelative()[2]);
+    }
 }

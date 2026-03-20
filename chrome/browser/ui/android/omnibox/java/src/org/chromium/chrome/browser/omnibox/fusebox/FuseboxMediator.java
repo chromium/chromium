@@ -882,6 +882,13 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 FuseboxProperties.POPUP_MODEL_PRO_ENABLED,
                 !inputState.disabledModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
 
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_SELECTED,
+                inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_SELECTED,
+                inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+
         boolean anyModels = autoVisible || proVisible;
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, anyModels);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, anyModels);
@@ -897,7 +904,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     private void onModelAutoClicked() {
-        setModelMode(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
+        setModelMode(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
     }
 
     private void onModelProClicked() {
@@ -910,6 +917,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
-        mComposeboxQueryControllerBridge.setActiveTool(modelMode);
+        mComposeboxQueryControllerBridge.setActiveModel(modelMode);
     }
 }
