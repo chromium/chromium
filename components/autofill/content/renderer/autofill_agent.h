@@ -318,14 +318,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // document is loaded.
   void Reset();
 
-  // Tries to show the given `passwords_request` for the given fields and update
-  // `is_popup_possibly_visible` accordingly. Returns true if the password agent
-  // handles the request.
-  bool TryShowPasswordSuggestions(
-      const blink::WebInputElement& input,
-      IsPasswordRequestManuallyTriggered manually_triggered_password_request,
-      base::optional_ref<const PasswordSuggestionRequest> password_request);
-
   // blink::WebAutofillClient:
   void TextFieldCleared(const blink::WebFormControlElement&) override;
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;

@@ -247,9 +247,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ADDRESS_IMPROVE_BUILDING_NUMBER_REGEX,
                 "Enables building number regex improvement."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_AND_PASSWORDS_IN_SAME_SURFACE,
-                "Changes how password requests are passed to the embedder. Ideally a noop."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_BETTER_LOCAL_HEURISTIC_PLACEHOLDER_SUPPORT,
                 "Treats placeholders as a separate signal for Autofill local heuristics"),
         Flag.baseFeature(

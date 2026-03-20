@@ -443,11 +443,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
                           const std::optional<PasswordSuggestionRequest>&
                               password_request) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field_id,
-             caret_bounds, trigger_source,
-             base::FeatureList::IsEnabled(
-                 features::kAutofillAndPasswordsInSameSurface)
-                 ? password_request
-                 : std::nullopt);
+             caret_bounds, trigger_source, password_request);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void SuppressAutomaticRefills(const FillId& fill_id) override {
@@ -822,63 +818,6 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
   }
 }
 
-bool AutofillAgent::TryShowPasswordSuggestions(
-    const WebInputElement& input,
-    IsPasswordRequestManuallyTriggered manually_triggered_password_request,
-    base::optional_ref<const PasswordSuggestionRequest> password_request) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAndPasswordsInSameSurface)) {
-    // No update to `is_popup_possibly_visible_` yet: it could still be open.
-    return false;
-  }
-
-  const bool is_field_empty_or_autofilled =
-      input.IsAutofilled() || input.Value().IsEmpty();
-  const bool is_password_field = input.FormControlTypeForAutofill() ==
-                                 blink::mojom::FormControlType::kInputPassword;
-
-  // Only show password suggestions on password-type fields if the field is
-  // either empty or autofilled. This will effectively close the popup on a
-  // password-type field once the user starts typing.
-  if (is_password_field && !is_field_empty_or_autofilled) {
-    HidePopup();
-    return false;
-  }
-
-  if (password_request) {
-    password_autofill_agent_->ShowSuggestions(password_request.value());
-    is_popup_possibly_visible_ = true;
-    return true;
-  }
-  // Beyond this point, the renderer won't be called. Earlier renderer calls may
-  // have shown/suppressed popups, so update visibility & success of this call.
-
-  // Treat the popup as (still) visible if
-  //  - a suggestion was accepted on another field, or if
-  //  - it was already open and no manual request force-closes the popup.
-  is_popup_possibly_visible_ =
-      password_autofill_agent_->HasAcceptedSuggestionOnOtherField(input) ||
-      (is_popup_possibly_visible_ && !manually_triggered_password_request);
-
-  // Call `FormControlType()` instead of `FormControlTypeForAutofill()` to
-  // determine whether the focsed field is *currently* a password field, not
-  // whether it has ever been a password field.
-  bool is_password_field_now = input.FormControlType() ==  // nocheck
-                               blink::mojom::FormControlType::kInputPassword;
-
-  // Return whether the password autofill agent has handled this request. Above,
-  // we already returned true if suggestions were shown. But there are several
-  // cases were the AutofillAgent should not show non-password Autofill:
-  //   a) when the user request password explicitly.
-  //   b) when the focused field is a password field (right now).
-  // Special condition for b: if the autofill agent handles all requests, don't
-  // defer to the password agent either.
-  // TODO: crbug.com/410753794 - Check if an early return works better here.
-  return manually_triggered_password_request        // --> case a.
-         || (is_password_field_now &&               // --> case b.
-             !config_.query_password_suggestions);  // --> case b without PWM.
-}
-
 void AutofillAgent::TextFieldCleared(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   CHECK(input_element || form_util::IsTextAreaElement(element));
@@ -978,14 +917,6 @@ void AutofillAgent::OnTextFieldValueChanged(
     std::optional<PasswordSuggestionRequest> password_request =
         password_autofill_agent_->CreateRequestForChangeInTextField(
             input_element, form_cache);
-    if (password_request &&
-        TryShowPasswordSuggestions(input_element,
-                                   IsPasswordRequestManuallyTriggered(false),
-                                   password_request.value())) {
-      last_queried_element_ = FieldRef(element);
-      return;
-    }
-
     ShowSuggestions(element,
                     AutofillSuggestionTriggerSource::kTextFieldValueChanged,
                     form_cache, password_request);
@@ -1620,12 +1551,6 @@ void AutofillAgent::ShowSuggestions(
               features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
         return;
       }
-    }
-    bool password_agent_handled_request = TryShowPasswordSuggestions(
-        input_element, IsPasswordsAutofillManuallyTriggered(trigger_source),
-        password_request);
-    if (password_agent_handled_request) {
-      return;
     }
   }
 

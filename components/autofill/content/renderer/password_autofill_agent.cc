@@ -1330,11 +1330,6 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
 #endif
 }
 
-void PasswordAutofillAgent::ShowSuggestions(
-    const PasswordSuggestionRequest& password_request) {
-  GetPasswordManagerDriver().ShowPasswordSuggestions(password_request);
-}
-
 bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
   // about:blank or about:srcdoc frames should not be allowed to use password
   // manager.  See https://crbug.com/756587.

@@ -1213,13 +1213,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               FormControlType::kInputPassword &&
           !autofill_field->value().empty() &&
           autofill_field->last_modifier() != FieldModifier::kAutofill) {
-        // Hiding the dialog is put behind this feature flag since the agent is
-        // also performing a hide.
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillAndPasswordsInSameSurface)) {
-          client().HideAutofillSuggestions(
-              SuggestionHidingReason::kFieldValueChanged);
-        }
+        client().HideAutofillSuggestions(
+            SuggestionHidingReason::kFieldValueChanged);
         return;
       }
 #if !BUILDFLAG(IS_ANDROID)

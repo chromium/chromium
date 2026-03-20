@@ -240,10 +240,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials);
 
-  // Returns the bounds from the provided field and transforms them if it hasn't
-  // already happened in the driver.
-  gfx::RectF GetBounds(const autofill::TriggeringField& field);
-
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   password_manager::PasswordSuggestionGenerator suggestion_generator_;

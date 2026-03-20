@@ -207,12 +207,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // This is useful to suppress a popups for already filled forms.
   bool HasAcceptedSuggestionOnOtherField(const blink::WebInputElement& element);
 
-  // Shows password suggestions for the given `password_request`.
-  // Returns true if any suggestions were shown, false otherwise. `form_cache`
-  // can be used to optimize form extractions occurring synchronously after this
-  // function call.
-  void ShowSuggestions(const PasswordSuggestionRequest& password_request);
-
   // Called when new form controls are inserted. `form_cache` can be used to
   // optimize form extractions occurring synchronously after this function call.
   void OnDynamicFormsSeen(const SynchronousFormCache& form_cache);

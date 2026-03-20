@@ -509,7 +509,7 @@ void PasswordAutofillManager::ShowSuggestions(
               password_client_->GetProfilePasswordStore(),
               password_client_->GetAccountPasswordStore()));
     }
-    manual_fallback_flow_->RunFlow(field.element_id, GetBounds(field),
+    manual_fallback_flow_->RunFlow(field.element_id, field.bounds,
                                    field.text_direction);
     return;
   }
@@ -590,7 +590,7 @@ void PasswordAutofillManager::OnPasskeysReady(
 void PasswordAutofillManager::ContinueShowingSuggestions(
     const autofill::TriggeringField& field) {
   bool autofill_available = ShowPopup(
-      GetBounds(field), field.text_direction,
+      field.bounds, field.text_direction,
       GetSuggestions(field.typed_username, OffersGeneration(false),
                      ShowPasswordSuggestions(true),
                      ShowWebAuthnCredentials(field.show_webauthn_credentials),
@@ -906,15 +906,6 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
       page_favicon_, username_filter, offers_generation,
       show_password_suggestions, show_webauthn_credentials,
       show_identity_credentials);
-}
-
-gfx::RectF PasswordAutofillManager::GetBounds(
-    const autofill::TriggeringField& field) {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillAndPasswordsInSameSurface)
-             ? field.bounds  // Already transformed in ContentAutofillDriver.
-             : password_manager_driver_->TransformToRootCoordinates(
-                   field.bounds);
 }
 
 }  //  namespace password_manager

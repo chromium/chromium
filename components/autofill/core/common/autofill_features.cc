@@ -332,12 +332,6 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
 BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/460645840): Remove this feature flag once it is no longer
-// needed. Guards the refactoring to allow showing Autofill and Password
-// suggestions in the same surface instead of being mutually exclusive.
-BASE_FEATURE(kAutofillAndPasswordsInSameSurface,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.
 // TODO(crbug.com/438125774): Remove when launched.
