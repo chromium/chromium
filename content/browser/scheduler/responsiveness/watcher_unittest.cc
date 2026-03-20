@@ -90,7 +90,8 @@ class FakeMetricSource : public MetricSource {
       MetricSource::RegisterMessageLoopObserverIO();
   }
 
-  std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
+  std::unique_ptr<BrowserUINativeEventObserver> CreateNativeEventObserver()
+      override {
     return nullptr;
   }
 

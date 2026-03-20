@@ -37,7 +37,8 @@ class TestMetricSource : public MetricSource {
   explicit TestMetricSource(Delegate* delegate) : MetricSource(delegate) {}
   ~TestMetricSource() override {}
 
-  std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
+  std::unique_ptr<BrowserUINativeEventObserver> CreateNativeEventObserver()
+      override {
     return nullptr;
   }
 };

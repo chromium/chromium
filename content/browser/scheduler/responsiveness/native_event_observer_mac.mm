@@ -10,23 +10,25 @@
 
 namespace content::responsiveness {
 
-void NativeEventObserver::RegisterObserver() {
+void BrowserUINativeEventObserver::RegisterObserver() {
   DCHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)]);
   id<NativeEventProcessor> processor =
       static_cast<id<NativeEventProcessor>>(NSApp);
   [processor addNativeEventProcessorObserver:this];
 }
-void NativeEventObserver::DeregisterObserver() {
+void BrowserUINativeEventObserver::UnregisterObserver() {
   DCHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)]);
   id<NativeEventProcessor> processor =
       static_cast<id<NativeEventProcessor>>(NSApp);
   [processor removeNativeEventProcessorObserver:this];
 }
 
-void NativeEventObserver::WillRunNativeEvent(const void* opaque_identifier) {
+void BrowserUINativeEventObserver::WillRunNativeEvent(
+    const void* opaque_identifier) {
   will_run_event_callback_.Run(opaque_identifier);
 }
-void NativeEventObserver::DidRunNativeEvent(const void* opaque_identifier) {
+void BrowserUINativeEventObserver::DidRunNativeEvent(
+    const void* opaque_identifier) {
   did_run_event_callback_.Run(opaque_identifier);
 }
 

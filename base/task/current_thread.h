@@ -282,8 +282,15 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  void AddMessagePumpObserver(MessagePumpForUI::Observer* observer);
-  void RemoveMessagePumpObserver(MessagePumpForUI::Observer* observer);
+  void RegisterNativeEventObserver(
+      MessagePumpForUI::NativeEventObserver* observer);
+  void UnregisterNativeEventObserver(
+      MessagePumpForUI::NativeEventObserver* observer);
+
+  // For testing only, allows overriding the current observer.
+  // Returns the previous observer.
+  MessagePumpForUI::NativeEventObserver* ResetNativeEventObserverForTesting(
+      MessagePumpForUI::NativeEventObserver* observer);
 #endif
 
  private:

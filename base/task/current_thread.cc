@@ -186,14 +186,20 @@ void CurrentUIThread::Abort() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-void CurrentUIThread::AddMessagePumpObserver(
-    MessagePumpForUI::Observer* observer) {
-  GetMessagePumpForUI()->AddObserver(observer);
+void CurrentUIThread::RegisterNativeEventObserver(
+    MessagePumpForUI::NativeEventObserver* observer) {
+  GetMessagePumpForUI()->RegisterNativeEventObserver(observer);
 }
 
-void CurrentUIThread::RemoveMessagePumpObserver(
-    MessagePumpForUI::Observer* observer) {
-  GetMessagePumpForUI()->RemoveObserver(observer);
+void CurrentUIThread::UnregisterNativeEventObserver(
+    MessagePumpForUI::NativeEventObserver* observer) {
+  GetMessagePumpForUI()->UnregisterNativeEventObserver(observer);
+}
+
+MessagePumpForUI::NativeEventObserver*
+CurrentUIThread::ResetNativeEventObserverForTesting(
+    MessagePumpForUI::NativeEventObserver* observer) {
+  return GetMessagePumpForUI()->ResetNativeEventObserverForTesting(observer);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

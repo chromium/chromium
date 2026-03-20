@@ -47,17 +47,18 @@ void MetricSource::Destroy(base::ScopedClosureRunner on_finish_destroy) {
                      std::move(on_finish_destroy)));
 }
 
-std::unique_ptr<NativeEventObserver> MetricSource::CreateNativeEventObserver() {
+std::unique_ptr<BrowserUINativeEventObserver>
+MetricSource::CreateNativeEventObserver() {
   // We can use base::Unretained(delegate_) since delegate_ is retained
   // in the constructor, and we won't release it when it is in use.
-  NativeEventObserver::WillRunEventCallback will_run_callback =
+  BrowserUINativeEventObserver::WillRunEventCallback will_run_callback =
       base::BindRepeating(&Delegate::WillRunEventOnUIThread,
                           base::Unretained(delegate_));
-  NativeEventObserver::DidRunEventCallback did_run_callback =
+  BrowserUINativeEventObserver::DidRunEventCallback did_run_callback =
       base::BindRepeating(&Delegate::DidRunEventOnUIThread,
                           base::Unretained(delegate_));
-  return std::make_unique<NativeEventObserver>(std::move(will_run_callback),
-                                               std::move(did_run_callback));
+  return std::make_unique<BrowserUINativeEventObserver>(
+      std::move(will_run_callback), std::move(did_run_callback));
 }
 
 MetricSource::~MetricSource() {

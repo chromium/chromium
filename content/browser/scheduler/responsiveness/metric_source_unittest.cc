@@ -77,7 +77,8 @@ class TestMetricSource : public MetricSource {
                    base::OnceClosure on_destroyed = base::DoNothing())
       : MetricSource(delegate), on_destroyed_(std::move(on_destroyed)) {}
 
-  std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
+  std::unique_ptr<BrowserUINativeEventObserver> CreateNativeEventObserver()
+      override {
     return nullptr;
   }
 

@@ -16,10 +16,10 @@ namespace content::responsiveness {
 
 namespace {
 
-class FakeNativeEventObserver : public NativeEventObserver {
+class FakeNativeEventObserver : public BrowserUINativeEventObserver {
  public:
   FakeNativeEventObserver()
-      : NativeEventObserver(base::DoNothing(), base::DoNothing()) {}
+      : BrowserUINativeEventObserver(base::DoNothing(), base::DoNothing()) {}
   ~FakeNativeEventObserver() override = default;
 
   void WillRunNativeEvent(const void* opaque_identifier) override {

@@ -184,14 +184,27 @@ bool MessagePumpForUI::HandleNestedNativeLoopWithApplicationTasks(
   return true;
 }
 
-void MessagePumpForUI::AddObserver(Observer* observer) {
+void MessagePumpForUI::RegisterNativeEventObserver(
+    NativeEventObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
-  observers_.AddObserver(observer);
+  CHECK(!native_event_observer_);
+  native_event_observer_ = observer;
 }
 
-void MessagePumpForUI::RemoveObserver(Observer* observer) {
+void MessagePumpForUI::UnregisterNativeEventObserver(
+    NativeEventObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
-  observers_.RemoveObserver(observer);
+  CHECK_EQ(native_event_observer_, observer);
+  native_event_observer_ = nullptr;
+}
+
+MessagePumpForUI::NativeEventObserver*
+MessagePumpForUI::ResetNativeEventObserverForTesting(
+    NativeEventObserver* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
+  NativeEventObserver* old_observer = native_event_observer_;
+  native_event_observer_ = observer;
+  return old_observer;
 }
 
 //-----------------------------------------------------------------------------
@@ -621,13 +634,13 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
                     ->set_message_id(msg.message);
               });
 
-  for (Observer& observer : observers_) {
-    observer.WillDispatchMSG(msg);
+  if (native_event_observer_) {
+    native_event_observer_->WillDispatchMSG(msg);
   }
   ::TranslateMessage(&msg);
   ::DispatchMessage(&msg);
-  for (Observer& observer : observers_) {
-    observer.DidDispatchMSG(msg);
+  if (native_event_observer_) {
+    native_event_observer_->DidDispatchMSG(msg);
   }
 
   return true;
