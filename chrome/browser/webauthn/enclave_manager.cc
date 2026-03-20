@@ -3766,14 +3766,13 @@ void EnclaveManager::SetWrappedPINDataForTesting(
 }
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
-    bool platform_has_biometrics) const {
+    PlatformUvSupport platform_uv_support) const {
   CHECK(IsReady());
 
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnCreatePinWhenSystemUvDisabled)) {
-    UVKeyOptions uv_key_options;
-    if (!GetUserVerifyingKeyProviderForSigning(std::move(uv_key_options))) {
-      // Cannot use any UV keys if the provider is not available.
+    if (platform_uv_support == PlatformUvSupport::kNoUvKey) {
+      // Cannot use any UV keys if there is no UV key support.
       return UvKeyState::kNone;
     }
   }
@@ -3787,7 +3786,7 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
     return UvKeyState::kNone;
   }
 #if BUILDFLAG(IS_MAC)
-  if (platform_has_biometrics) {
+  if (platform_uv_support == PlatformUvSupport::kUvKeyWithBiometrics) {
     // Chrome will display an LAAuthenticationView with a Touch ID prompt.
     return UvKeyState::kUsesChromeUI;
   }

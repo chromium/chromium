@@ -92,8 +92,15 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   webauthn::PasskeyModel& passkey_model();
   EnclaveManager& enclave_manager();
 
+  // This makes it so that a UV key provider is returned (i.e. non-null),
+  // simulating that the platform supports user-verifying keys. By default, UV
+  // key availability is true.
   void EnableUVKeySupport(bool fake_hardware_backing = false);
-  void DisableUVKeySupport();
+
+  // This lets clients override UV key availability after UV key support is
+  // enabled with `EnableUVKeySupport`. On some platforms (e.g. Windows), UV
+  // keys may be supported but not available.
+  void OverrideUVKeyAvailability(bool available);
   bool IsUVPAA();
   void SetBiometricsEnabled(bool enabled);
   void AddTestPasskeyToModel();
@@ -144,6 +151,8 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<WebAuthnScopedFakeUnexportableKeyProvider> fake_hw_provider_;
+  std::unique_ptr<crypto::ScopedUserVerifyingKeysSupportedOverride>
+      uvkey_override_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;
