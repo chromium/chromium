@@ -21,7 +21,7 @@ namespace policy {
 
 class PolicyTestAutomaticFullscreen : public PolicyTest {
  public:
-  content::EvalJsResult FullscreenWithoutGesture() {
+  ::testing::AssertionResult FullscreenWithoutGesture() {
     constexpr char kScript[] = R"(
       (async () => {
         if (navigator.userActivation.isActive)
@@ -30,7 +30,8 @@ class PolicyTestAutomaticFullscreen : public PolicyTest {
       })();
     )";
     auto* tab = chrome_test_utils::GetActiveWebContents(this);
-    return EvalJs(tab, kScript, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+    return content::ExecJs(tab, kScript,
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE);
   }
 
   ContentSetting GetDefaultContentSetting() {
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, Default) {
   // Fullscreen transient activation requirements are enforced by default.
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetDefaultContentSetting());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(url));
-  EXPECT_THAT(FullscreenWithoutGesture(), content::EvalJsResult::IsError());
+  EXPECT_FALSE(FullscreenWithoutGesture());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, AllowedForUrls) {
@@ -75,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, AllowedForUrls) {
   // Fullscreen transient activation requirements are waived for this origin.
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetDefaultContentSetting());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(url));
-  EXPECT_THAT(FullscreenWithoutGesture(), content::EvalJsResult::IsOk());
+  EXPECT_TRUE(FullscreenWithoutGesture());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, BlockedForUrls) {
@@ -91,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, BlockedForUrls) {
   ASSERT_TRUE(NavigateToUrl(url, this));
 
   // Fullscreen transient activation requirements are enforced for this origin.
-  EXPECT_THAT(FullscreenWithoutGesture(), content::EvalJsResult::IsError());
+  EXPECT_FALSE(FullscreenWithoutGesture());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetDefaultContentSetting());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(url));
 }

@@ -6125,7 +6125,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getInnerId();";
-  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsError());
+  EXPECT_FALSE(ExecJs(web_contents(), kScript));
 }
 
 // TODO(crbug.com/40236762): This test is flaky.

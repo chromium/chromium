@@ -88,11 +88,10 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchDenyPermission) {
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 }
 
 IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
@@ -177,12 +176,11 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   // LNA fetch fails due to mismatched targetAddressSpace. Result doesn't matter
   // here though, as we're just checking a use counter that doesn't depend on
   // fetch success.
-  EXPECT_THAT(content::EvalJs(web_contents(),
-                              content::JsReplace(
-                                  "fetch($1, {targetAddressSpace: "
-                                  "'private'}).then(response => response.ok)",
-                                  https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1, {targetAddressSpace: "
+                         "'private'}).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 
   CheckCounter(WebFeature::kLocalNetworkAccessPrivateAliasUse, 1);
 }
@@ -196,12 +194,11 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   // LNA fetch fails due to mismatched targetAddressSpace. Result doesn't matter
   // here though, as we're just checking a use counter that doesn't depend on
   // fetch success.
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1, {targetAddressSpace: "
-                                     "'local'}).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1, {targetAddressSpace: "
+                         "'local'}).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 
   CheckCounter(WebFeature::kLocalNetworkAccessPrivateAliasUse, 0);
 }

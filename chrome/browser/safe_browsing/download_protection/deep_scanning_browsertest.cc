@@ -2026,11 +2026,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   content::EvalJsResult result =
       content::EvalJs(web_contents, "window.fsaPromise");
 
-  ASSERT_THAT(result, content::EvalJsResult::IsError());
-
   // TODO(crbug.com/407065784): Improve error message for SB checks.
-  EXPECT_EQ(result.ExtractError(),
-            "a JavaScript error: \"AbortError: Blocked by Safe Browsing.\"\n");
+  ASSERT_THAT(
+      result,
+      content::EvalJsResult::ErrorIs(
+          "a JavaScript error: \"AbortError: Blocked by Safe Browsing.\"\n"));
 
   // File is created but remains empty due to block.
   base::ScopedAllowBlockingForTesting allow_blocking;

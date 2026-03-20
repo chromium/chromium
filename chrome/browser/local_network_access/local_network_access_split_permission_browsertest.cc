@@ -124,12 +124,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOffBrowserTest,
   ASSERT_EQ("prompt",
             content::EvalJs(web_contents(),
                             QueryPermissionScript("local-network-access")));
-  EXPECT_THAT(
-      content::EvalJs(web_contents(), QueryPermissionScript("local-network")),
-      content::EvalJsResult::IsError());
-  EXPECT_THAT(content::EvalJs(web_contents(),
-                              QueryPermissionScript("loopback-network")),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(
+      content::ExecJs(web_contents(), QueryPermissionScript("local-network")));
+  EXPECT_FALSE(content::ExecJs(web_contents(),
+                               QueryPermissionScript("loopback-network")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
@@ -158,11 +156,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 
   // It should be the loopback-network permission that is denied ...
   ASSERT_EQ("denied", content::EvalJs(web_contents(), QueryPermissionScript(
@@ -188,12 +185,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // LNA fetch should fail.
-  EXPECT_THAT(
-      content::EvalJs(
-          web_contents(),
-          content::JsReplace("fetch($1).then(response => response.ok)",
-                             https_local_server().GetURL("b.com", kLnaPath))),
-      content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_local_server().GetURL("b.com", kLnaPath))));
 
   // It should not be the loopback-network permission that is denied ...
   ASSERT_EQ("prompt", content::EvalJs(web_contents(), QueryPermissionScript(
@@ -291,11 +286,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // Loopback LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 
   // local-network permission should be granted.
   ASSERT_EQ("granted", content::EvalJs(web_contents(),
@@ -322,12 +316,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // Local LNA fetch should fail.
-  EXPECT_THAT(
-      content::EvalJs(
-          web_contents(),
-          content::JsReplace("fetch($1).then(response => response.ok)",
-                             https_local_server().GetURL("b.com", kLnaPath))),
-      content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_local_server().GetURL("b.com", kLnaPath))));
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
@@ -504,19 +496,16 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
   // LNA fetch should fail, both for loopback requests...
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
 
   // ... and for local requests.
-  EXPECT_THAT(
-      content::EvalJs(
-          web_contents(),
-          content::JsReplace("fetch($1).then(response => response.ok)",
-                             https_local_server().GetURL("b.com", kLnaPath))),
-      content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_local_server().GetURL("b.com", kLnaPath))));
 }
 
 // Tests for forwards compatibility of the "local-network-access" permissions

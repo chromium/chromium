@@ -117,9 +117,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPromptBrowserTest,
       web_contents());
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(web_contents(), FetchUrlJs(https_server().GetURL(
-                                                  kHostC, kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(), FetchUrlJs(https_server().GetURL(kHostC, kLnaPath))));
 
   // Permission prompt not shown, c.com doesn't resolve so no connection is
   // made, and c.com is not a host that is always local/loopback.
@@ -134,9 +133,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPromptBrowserTest,
       web_contents());
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(web_contents(), FetchUrlJs(GetUnconnectedURL(
-                                                  kHostLocal, kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(), FetchUrlJs(GetUnconnectedURL(kHostLocal, kLnaPath))));
 
   permission_request_observer.Wait();
   EXPECT_TRUE(permission_request_observer.request_shown());
@@ -149,9 +147,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPromptBrowserTest,
       web_contents());
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(web_contents(), FetchUrlJs(GetUnconnectedURL(
-                                                  "localhost", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(), FetchUrlJs(GetUnconnectedURL("localhost", kLnaPath))));
 
   permission_request_observer.Wait();
   EXPECT_TRUE(permission_request_observer.request_shown());
@@ -165,9 +162,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPromptBrowserTest,
       web_contents());
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(web_contents(), FetchUrlJs(GetUnconnectedURL(
-                                                  "127.0.0.1", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(), FetchUrlJs(GetUnconnectedURL("127.0.0.1", kLnaPath))));
 
   permission_request_observer.Wait();
   EXPECT_TRUE(permission_request_observer.request_shown());
@@ -181,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPromptBrowserTest,
       web_contents());
 
   // LNA fetch should fail.
-  EXPECT_THAT(content::EvalJs(web_contents(),
-                              FetchUrlJs(GetUnconnectedURL("[::1]", kLnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(), FetchUrlJs(GetUnconnectedURL("[::1]", kLnaPath))));
 
   permission_request_observer.Wait();
   EXPECT_TRUE(permission_request_observer.request_shown());

@@ -2111,7 +2111,7 @@ try {
 
     ASSERT_THAT(
         eval_result,
-        AnyOf(EvalJsResult::IsError(),
+        AnyOf(EvalJsResult::ErrorIs(testing::_),
               EvalJsResult::IsOkAndHolds(base::test::IsJson(base::Value()))))
         << "Expected string, but got " << eval_result;
     WaitForFencedFrameNavigation(expected_ad_url, *execution_target, observer);

@@ -6329,11 +6329,10 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWebViewTest, ClassificationInGuest) {
   // The webview "simple" page is a first navigation to a raw data url. It is
   // currently considered public (internally
   // `network::mojom::IPAddressSpace::kUnknown`).
-  EXPECT_THAT(content::EvalJs(
-                  guest_frame_host,
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     fetch_url)),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      guest_frame_host,
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         fetch_url)));
 }
 
 // Verify that navigating a <webview> subframe to a disallowed extension

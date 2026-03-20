@@ -313,11 +313,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                       https_server().GetURL(kPnaPath))));
   CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
                0);
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     http_server().GetURL("b.com", kPnaPath))),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         http_server().GetURL("b.com", kPnaPath))));
   CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
                0);
 

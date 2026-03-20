@@ -27,8 +27,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, GetScreensNoPermission) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreenDetails' in self"));
   // getScreenDetails() rejects its promise without permission.
-  EXPECT_THAT(EvalJs(shell(), "await getScreenDetails()"),
-              EvalJsResult::IsError());
+  EXPECT_FALSE(ExecJs(shell(), "await getScreenDetails()"));
 }
 
 // TODO(crbug.com/40145721): Test ScreenDetails API values with permission.

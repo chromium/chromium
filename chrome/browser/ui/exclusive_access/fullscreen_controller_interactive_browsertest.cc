@@ -792,9 +792,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // While bubble is showing, tab fullscreen cannot be entered.
-  EXPECT_THAT(content::EvalJs(web_contents,
-                              "document.documentElement.requestFullscreen()"),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(web_contents,
+                               "document.documentElement.requestFullscreen()"));
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Accept the permission request to close the bubble.
@@ -833,9 +832,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // While bubble is showing, tab fullscreen cannot be entered.
-  EXPECT_THAT(content::EvalJs(web_contents,
-                              "document.documentElement.requestFullscreen()"),
-              content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(web_contents,
+                               "document.documentElement.requestFullscreen()"));
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Close the chooser bubble.

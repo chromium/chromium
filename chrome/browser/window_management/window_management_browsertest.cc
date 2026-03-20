@@ -676,7 +676,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest,
 // See: https://chromestatus.com/feature/5137018030391296
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, WindowPlacementAliasFails) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_THAT(
-      EvalJs(tab, "navigator.permissions.query({name:'window-placement'})"),
-      content::EvalJsResult::IsError());
+  EXPECT_FALSE(content::ExecJs(
+      tab, "navigator.permissions.query({name:'window-placement'})"));
 }
