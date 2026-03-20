@@ -45,6 +45,14 @@ export interface SearchEnginesInfo {
   [key: string]: SearchEngine[];
 }
 
+export interface CategorizedTemplateUrls {
+  activeSiteShortcuts: SearchEngine[];
+  inactiveSiteShortcuts: SearchEngine[];
+  activeFeatureShortcuts: SearchEngine[];
+  inactiveFeatureShortcuts: SearchEngine[];
+  [key: string]: SearchEngine[];
+}
+
 /**
  * Contains all recorded interactions on the search engines settings page.
  *
@@ -101,6 +109,8 @@ export interface SearchEnginesBrowserProxy {
   searchEngineEditCompleted(
       searchEngine: string, keyword: string, queryUrl: string): void;
 
+  getCategorizedTemplateUrls(): Promise<CategorizedTemplateUrls>;
+
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
 
   getSaveGuestChoice(): Promise<boolean|null>;
@@ -151,6 +161,10 @@ export class SearchEnginesBrowserProxyImpl implements
       keyword,
       queryUrl,
     ]);
+  }
+
+  getCategorizedTemplateUrls() {
+    return sendWithPromise('getCategorizedTemplateUrls');
   }
 
   getSearchEnginesList() {

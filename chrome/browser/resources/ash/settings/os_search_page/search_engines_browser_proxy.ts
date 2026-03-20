@@ -40,7 +40,16 @@ export interface SearchEnginesInfo {
   extensions: SearchEngine[];
 }
 
+export interface CategorizedTemplateUrls {
+  activeSiteShortcuts: SearchEngine[];
+  inactiveSiteShortcuts: SearchEngine[];
+  activeFeatureShortcuts: SearchEngine[];
+  inactiveFeatureShortcuts: SearchEngine[];
+  [key: string]: SearchEngine[];
+}
+
 export interface SearchEnginesBrowserProxy {
+  getCategorizedTemplateUrls(): Promise<CategorizedTemplateUrls>;
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
   openBrowserSearchSettings(): void;
 }
@@ -55,6 +64,10 @@ export class SearchEnginesBrowserProxyImpl implements
 
   static setInstanceForTesting(obj: SearchEnginesBrowserProxy): void {
     instance = obj;
+  }
+
+  getCategorizedTemplateUrls(): Promise<CategorizedTemplateUrls> {
+    return sendWithPromise('getCategorizedTemplateUrls');
   }
 
   getSearchEnginesList(): Promise<SearchEnginesInfo> {

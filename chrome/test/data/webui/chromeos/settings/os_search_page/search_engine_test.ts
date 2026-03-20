@@ -14,7 +14,6 @@ import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy
 suite(`<${SettingsSearchEngineElement.is}>`, () => {
   let searchEngineElement: SettingsSearchEngineElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
-  let searchEngineInfo: SearchEnginesInfo;
 
   function createSampleSearchEngine(props: Partial<SearchEngine>):
       SearchEngine {
@@ -39,12 +38,12 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
     const searchEngines0 = createSampleSearchEngine({
       default: true,
       displayName: 'SearchEngine0',
-      id: 1,
+      id: 0,
       name: 'SearchEngine0',
     });
     const searchEngines1 = createSampleSearchEngine({
       displayName: 'SearchEngine1',
-      id: 2,
+      id: 1,
       name: 'SearchEngine1',
     });
 
@@ -61,8 +60,8 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
       isQuickAnswersSupported: false,
     });
 
-    searchEngineInfo = generateSearchEngineInfo();
-    browserProxy = new TestSearchEnginesBrowserProxy(searchEngineInfo);
+    browserProxy = new TestSearchEnginesBrowserProxy();
+    browserProxy.setSearchEnginesInfo(generateSearchEngineInfo());
     SearchEnginesBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     clearBody();

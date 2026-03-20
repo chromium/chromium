@@ -2,24 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SearchEnginesBrowserProxy, SearchEnginesInfo} from 'chrome://os-settings/os_settings.js';
+import type {CategorizedTemplateUrls, SearchEnginesBrowserProxy, SearchEnginesInfo} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     SearchEnginesBrowserProxy {
-  constructor(private searchEngineInfo: SearchEnginesInfo) {
+  private categorizedTemplateUrls_: CategorizedTemplateUrls = {
+    activeSiteShortcuts: [],
+    inactiveSiteShortcuts: [],
+    activeFeatureShortcuts: [],
+    inactiveFeatureShortcuts: [],
+  };
+
+  private searchEnginesInfo_: SearchEnginesInfo =
+      {defaults: [], actives: [], others: [], extensions: []};
+
+  constructor() {
     super([
+      'getCategorizedTemplateUrls',
       'getSearchEnginesList',
       'openBrowserSearchSettings',
     ]);
   }
 
+  getCategorizedTemplateUrls() {
+    this.methodCalled('getCategorizedTemplateUrls');
+    return Promise.resolve(this.categorizedTemplateUrls_);
+  }
+
   getSearchEnginesList(): Promise<SearchEnginesInfo> {
     this.methodCalled('getSearchEnginesList');
-    return Promise.resolve(this.searchEngineInfo);
+    return Promise.resolve(this.searchEnginesInfo_);
   }
 
   openBrowserSearchSettings(): void {
     this.methodCalled('openBrowserSearchSettings');
+  }
+
+  /**
+   * Sets the response to be returned by `getCategorizedTemplateUrls`.
+   */
+  setCategorizedTemplateUrls(categorizedTemplateUrls: CategorizedTemplateUrls) {
+    this.categorizedTemplateUrls_ = categorizedTemplateUrls;
+  }
+
+  /**
+   * Sets the response to be returned by `getSearchEnginesList`.
+   */
+  setSearchEnginesInfo(searchEnginesInfo: SearchEnginesInfo) {
+    this.searchEnginesInfo_ = searchEnginesInfo;
   }
 }

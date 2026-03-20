@@ -213,7 +213,7 @@ export type {OsResetBrowserProxy} from './os_reset_page/os_reset_browser_proxy.j
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';
 export {SettingsSearchEngineElement} from './os_search_page/search_engine.js';
-export type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
+export type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {SearchEnginesBrowserProxyImpl} from './os_search_page/search_engines_browser_proxy.js';
 export {ManagedFootnoteElement} from './os_settings_main/managed_footnote.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';

@@ -136,7 +136,7 @@ export type {SettingsRoutes} from './router.js';
 export {ScrollableMixin} from './scrollable_mixin.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
 export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_page/search_engines_browser_proxy.js';
-export type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
+export type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
 export {SettingsSearchPageIndexElement} from './search_page/search_page_index.js';
 export {getSearchManager, SearchRequest, setSearchManagerForTesting, showBubble} from './search_settings.js';

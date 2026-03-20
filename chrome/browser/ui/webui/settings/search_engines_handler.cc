@@ -39,6 +39,7 @@
 #include "components/search_engines/template_url_id.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/search_engines/ui_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -111,6 +112,11 @@ SearchEnginesHandler::~SearchEnginesHandler() {
 
 void SearchEnginesHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "getCategorizedTemplateUrls",
+      base::BindRepeating(
+          &SearchEnginesHandler::HandleGetCategorizedTemplateUrls,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
@@ -165,6 +171,39 @@ void SearchEnginesHandler::OnJavascriptAllowed() {
 void SearchEnginesHandler::OnJavascriptDisallowed() {
   list_controller_.table_model()->SetObserver(nullptr);
   pref_change_registrar_.RemoveAll();
+}
+
+base::DictValue SearchEnginesHandler::GetCategorizedTemplateUrls() {
+  base::DictValue search_engines_data;
+  Profile* profile = Profile::FromWebUI(web_ui());
+  CHECK(profile);
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  CHECK(template_url_service);
+
+  TemplateURLService::CategorizedTemplateUrls data =
+      template_url_service->GetCategorizedTemplateURLs(
+          internal::GetDisabledStarterPackIds(profile));
+
+  auto transform_urls =
+      [&](const TemplateURL::TemplateURLVector& template_urls) {
+        base::ListValue transformed_list;
+        for (const auto& template_url : template_urls) {
+          transformed_list.Append(CreateDictionaryForEngine(template_url));
+        }
+        return transformed_list;
+      };
+
+  search_engines_data.Set("activeSiteShortcuts",
+                          transform_urls(data.active_site_shortcuts));
+  search_engines_data.Set("inactiveSiteShortcuts",
+                          transform_urls(data.inactive_site_shortcuts));
+  search_engines_data.Set("activeFeatureShortcuts",
+                          transform_urls(data.active_feature_shortcuts));
+  search_engines_data.Set("inactiveFeatureShortcuts",
+                          transform_urls(data.inactive_feature_shortcuts));
+  return search_engines_data;
 }
 
 base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
@@ -226,6 +265,9 @@ base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
 
 void SearchEnginesHandler::OnModelChanged() {
   AllowJavascript();
+
+  // TODO(crbug.com/490315684): Fire `GetCategorizedTemplateUrls()` when
+  // `SearchSettingsUpdate` is enabled instead.
   FireWebUIListener("search-engines-changed", GetSearchEnginesList());
 }
 
@@ -327,6 +369,14 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
     }
   }
   return dict;
+}
+
+void SearchEnginesHandler::HandleGetCategorizedTemplateUrls(
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, GetCategorizedTemplateUrls());
 }
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(

@@ -54,6 +54,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   friend class SearchEnginesHandlerTest;
 
   // Retrieves all search engines and returns them to WebUI.
+  void HandleGetCategorizedTemplateUrls(const base::ListValue& args);
+
+  base::DictValue GetCategorizedTemplateUrls();
+
+  // Retrieves all search engines and returns them to WebUI.
   void HandleGetSearchEnginesList(const base::ListValue& args);
 
   base::DictValue GetSearchEnginesList();
