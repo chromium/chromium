@@ -41,10 +41,10 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开已关闭的无痕式标签页。}other{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{将网站取消静音}other{将网站取消静音}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
-<translation id="22623456902492423">{TABS_COUNT,plural, =1{为标签页取消分组}other{为标签页取消分组}}</translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{将标签页取消分组}other{将标签页取消分组}}</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2277224997687551299">修改组名称</translation>
-<translation id="2330212241471632770">{TABS_COUNT,plural, =1{为所选标签页添加书签}other{为所有所选标签页添加书签}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{为所选标签页添加书签}other{为所选标签页添加书签}}</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{收起包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}}</translation>

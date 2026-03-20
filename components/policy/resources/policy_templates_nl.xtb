@@ -6565,7 +6565,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
 <translation id="5365946944967967336">Homepage-knop in de werkbalk tonen</translation>
-<translation id="5366977351895725771">Als dit is ingesteld op False, kan deze gebruiker geen gebruikers onder toezicht maken. Bestaande gebruikers met beperkte rechten blijven beschikbaar.
+<translation id="5366977351895725771">Als dit is ingesteld op False, kan deze gebruiker geen gebruikers onder toezicht maken. Bestaande gebruikers onder toezicht blijven beschikbaar.
 
           Als dit is ingesteld op True of niet is ingesteld, kunnen gebruikers onder toezicht worden gemaakt en beheerd door deze gebruiker.</translation>
 <translation id="5367255280764736002">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstaat en je daarna <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> instelt, worden de parameters aangegeven tijdens afbeeldingszoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter (zoals {imageThumbnail}) is, wordt de waarde vervangen door echte thumbnailgegevens.

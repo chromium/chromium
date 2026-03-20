@@ -407,7 +407,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> n'est pas disponible pour le moment.</translation>
-<translation id="2751271371269891762">Pour accéder à vos favoris et plus sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
+<translation id="2751271371269891762">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -842,7 +842,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4543131175509360848">Aucune feuille de clés d'accès</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}}</translation>
 <translation id="4558311620361989323">Raccourcis de pages Web</translation>
-<translation id="4572422548854449519">Se connecter à un compte géré</translation>
+<translation id="4572422548854449519">Connexion à un compte géré</translation>
 <translation id="4577115723294378384">Trier de A à Z</translation>
 <translation id="4578289292431526768">C'est parti</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
@@ -1094,9 +1094,9 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5599455543593328020">Mode Navigation privée</translation>
 <translation id="5601180634394228718">Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
-<translation id="5601924940067278327">Accédez à vos onglets et plus sur tous vos appareils</translation>
+<translation id="5601924940067278327">Accédez à vos onglets et plus encore sur tous vos appareils</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
-<translation id="5613381935190035031">Pour accéder à vos onglets et plus sur tous vos appareils, connectez-vous à Chrome en tant que <ph name="EMAIL" /></translation>
+<translation id="5613381935190035031">Pour accéder à vos onglets et bien plus sur tous vos appareils, connectez-vous à Chrome en tant que <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="5619633276517849615">Votre organisation a activé la navigation sécurisée</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>

@@ -42,7 +42,7 @@
 <translation id="1133418583142946603">إضافة علامة التبويب الحالية</translation>
 <translation id="1136104150802877429">عرض مراجعات المنتجات</translation>
 <translation id="1142371195993008685">إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
-<translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
+<translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" /></translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150989369772528668">تقويم</translation>
 <translation id="1161663161838091892">مزامنة علامات التبويب والسجلّ لمواصلة التصفّح</translation>
@@ -210,7 +210,7 @@
 <translation id="1740650426894359238">التبديل إلى ملف شخصي آخر</translation>
 <translation id="1741219894094057085">ساعة ذكيّة</translation>
 <translation id="1743244221910283364">تجاهل التغييرات</translation>
-<translation id="1748975028205587434">‏اختيار الملف (Select your file)</translation>
+<translation id="1748975028205587434">اختيار الملف</translation>
 <translation id="1749733017156547309">كلمة المرور مطلوبة.</translation>
 <translation id="174998178145075354">{count,plural, =1{يتوفّر خيار واحد ({count}) للعنوان أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار للعنوان أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) للعنوان أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات للعنوان أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا للعنوان أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار للعنوان أعلى لوحة المفاتيح.}}</translation>
 <translation id="1750238553597293878">‏مواصلة استخدام كلمات المرور في حسابك على Google</translation>
@@ -1220,7 +1220,7 @@
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
 <translation id="5437480232219631455">‏يمكنك فتح Gemini هنا</translation>
-<translation id="5439618055789623719">تم تسجيل الدخول بحساب <ph name="USER_EMAIL" />.</translation>
+<translation id="5439618055789623719">تم تسجيل الدخول بحساب <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">استمتِع بتجربة تصفُّح تلقائي أفضل</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
 <translation id="5447973833955560753">كلمة مرور الاسترداد</translation>
