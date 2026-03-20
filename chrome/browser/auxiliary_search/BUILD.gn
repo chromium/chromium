@@ -19,6 +19,7 @@ source_set("auxiliary_search") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/ntp_tiles",

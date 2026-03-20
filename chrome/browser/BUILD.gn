@@ -639,14 +639,6 @@ static_library("browser") {
     "notifications/scheduler/notification_background_task_scheduler_impl.h",
     "notifications/scheduler/notification_schedule_service_factory.cc",
     "notifications/scheduler/notification_schedule_service_factory.h",
-    "ntp_tiles/chrome_custom_links_manager_factory.cc",
-    "ntp_tiles/chrome_custom_links_manager_factory.h",
-    "ntp_tiles/chrome_enterprise_shortcuts_manager_factory.cc",
-    "ntp_tiles/chrome_enterprise_shortcuts_manager_factory.h",
-    "ntp_tiles/chrome_most_visited_sites_factory.cc",
-    "ntp_tiles/chrome_most_visited_sites_factory.h",
-    "ntp_tiles/chrome_popular_sites_factory.cc",
-    "ntp_tiles/chrome_popular_sites_factory.h",
     "page_content_annotations/multi_source_page_context_fetcher.cc",
     "page_content_annotations/page_content_annotations_service_factory.cc",
     "page_content_annotations/page_content_extraction_service_factory.cc",
@@ -1220,6 +1212,7 @@ static_library("browser") {
   # Any circular includes must depend on the target
   # "browser_public_dependencies".
   allow_circular_includes_from = [
+    "//chrome/browser/ntp_tiles:impl",
     "//chrome/browser/memory:impl",
     "//chrome/browser/preloading/search_preload:search_preload",
     "//chrome/browser/ai:impl",
@@ -1464,6 +1457,7 @@ static_library("browser") {
     "//chrome/browser/headless",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/interstitials",
+    "//chrome/browser/ntp_tiles",
     "//chrome/browser/obsolete_system",
     "//chrome/browser/profiles",
     "//chrome/browser/tab_contents",
@@ -1639,6 +1633,7 @@ static_library("browser") {
     "//chrome/browser/notifications:system_notification_helper_impl",
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/ntp_tiles:impl",
     "//chrome/browser/obsolete_system:impl",
     "//chrome/browser/offline_items_collection",
     "//chrome/browser/omnibox",

@@ -4,13 +4,10 @@
 
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 
-#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 
 std::unique_ptr<ntp_tiles::PopularSites>

@@ -6,11 +6,6 @@
 
 #include <utility>
 
-#include "base/check_deref.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
@@ -23,14 +18,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -40,7 +33,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
 namespace {
@@ -74,11 +66,13 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
   }
 
   std::unique_ptr<data_decoder::DataDecoder> data_decoder;
+
 #if BUILDFLAG(IS_ANDROID)
   data_decoder = std::make_unique<data_decoder::DataDecoder>();
 #endif
 
   bool is_default_chrome_app_migrated;
+
 #if BUILDFLAG(IS_ANDROID)
   is_default_chrome_app_migrated = false;
 #else

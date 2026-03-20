@@ -15,6 +15,7 @@ source_set("search") {
   deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/common",
@@ -48,6 +49,7 @@ source_set("search") {
     ]
     public_deps += [
       "//base",
+      "//chrome/browser/ntp_tiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",
       "//chrome/common",

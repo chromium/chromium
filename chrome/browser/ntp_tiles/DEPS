@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "-chrome",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/favicon/favicon_service_factory.h",
+  "+chrome/browser/favicon/large_icon_service_factory.h",
+  "+chrome/browser/flags/android/chrome_feature_list.h",
+  "+chrome/browser/history/history_service_factory.h",
+  "+chrome/browser/history/top_sites_factory.h",
+  "+chrome/browser/image_fetcher/image_decoder_impl.h",
+  "+chrome/browser/ntp_tiles",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/search_engines/template_url_service_factory.h",
+  "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/supervised_user/supervised_user_service_factory.h",
+  "+chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h",
+]
+
+specific_include_rules = {
+  "ntp_tiles_browsertest\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/test/base/in_process_browser_test.h",
+    "+chrome/test/base/mixin_based_in_process_browser_test.h",
+    "+chrome/test/base/ui_test_utils.h",
+    "+chrome/test/supervised_user/supervision_mixin.h",
+  ],
+}
