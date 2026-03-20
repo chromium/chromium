@@ -1,0 +1,18 @@
+commit d724c28a0230411f9a7345a30aed96ae117eec1e
+Author: Robbie McElrath <rmcelrath@chromium.org>
+Date:   Fri Mar 20 21:00:27 2026 +0000
+
+    Add missing dependencies to audio/dsp/resampler_q.h
+
+diff --git a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h b/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h
+index f8007ff55531d..914cdbafcd17b 100644
+--- a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h
++++ b/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h
+@@ -205,6 +205,7 @@
+ #include "audio/dsp/eigen_types.h"
+ #include "audio/dsp/resampler.h"
+ #include "audio/dsp/types.h"
++#include "absl/log/absl_check.h"
+ #include "absl/meta/type_traits.h"
+ #include "third_party/eigen3/Eigen/Core"
+ 
