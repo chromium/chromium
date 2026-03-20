@@ -7,12 +7,15 @@
 
 #include "base/containers/flat_map.h"
 #include "base/token.h"
-#include "cc/trees/tracked_element_rects.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/tracked_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace cc {
+enum class TrackedElementFeature;
+}  // namespace cc
 
 namespace blink {
 
