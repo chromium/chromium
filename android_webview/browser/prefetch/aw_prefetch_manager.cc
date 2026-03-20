@@ -179,7 +179,18 @@ int AwPrefetchManager::StartPrefetchRequest(
     return NO_PREFETCH_KEY;
   }
 
-  // Make room for the new prefetch request by evicting the older ones.
+  // Make room for the new prefetch request by evicting the older ones to
+  // respect the `max_prefetches_` limit.
+  //
+  // We intentionally do this **before** starting prefetch instead of after.
+  // Due to current //content `PrefetchScheduler` restrictions of its
+  // sequential async scheduling, if an evicted prefetch is still running,
+  // canceling it before starting a next one reduces one PostTask, which is good
+  // from performance perspective. Please see
+  // https://docs.google.com/document/d/1OylSDdS_RTOkG_E_PXJ0aPI1QrygMjGkgSs5JcTrFlE/edit?tab=t.0#bookmark=id.rcr0rfweiz90
+  // for more information.
+  // TODO(crbug.com/426404355?): After parallel prefetching being enabled
+  // for WV.prefetch, perhaps we no longer need this. Revisit and verify.
   if (all_prefetches_map_.size() >= max_prefetches_) {
     int num_prefetches_to_evict =
         all_prefetches_map_.size() - max_prefetches_ + 1;
