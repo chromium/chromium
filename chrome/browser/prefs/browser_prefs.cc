@@ -575,10 +575,6 @@ inline constexpr char kUsedPolicyCertificates[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 02/2025.
-inline constexpr char kUserAgentClientHintsGREASEUpdateEnabled[] =
-    "policy.user_agent_client_hints_grease_update_enabled";
-
-// Deprecated 02/2025.
 inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
     "default_search_provider.keywords_use_extended_list";
 
@@ -609,24 +605,8 @@ constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
 constexpr char kSharedStorage[] = "shared_storage";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-// Deprecated 02/2025.
-inline constexpr char kRootSecretPrefName[] =
-    "webauthn.authenticator_root_secret";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 03/2025.
-inline constexpr char kShouldAutoEnroll[] = "ShouldAutoEnroll";
-inline constexpr char kShouldRetrieveDeviceState[] =
-    "ShouldRetrieveDeviceState";
-inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 03/2025.
-inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
-    "device_restriction_schedule_highest_seen_time";
 constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1035,27 +1015,6 @@ constexpr char kNtpContextMenuClickCount[] = "ntp.context_menu_click_count";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 02/2025.
-  registry->RegisterBooleanPref(kUserAgentClientHintsGREASEUpdateEnabled, true);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 02/2025.
-  registry->RegisterStringPref(kRootSecretPrefName, std::string());
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 03/2025.
-  registry->RegisterBooleanPref(kShouldRetrieveDeviceState, false);
-  registry->RegisterBooleanPref(kShouldAutoEnroll, false);
-  registry->RegisterIntegerPref(kAutoEnrollmentPowerLimit, -1);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 03/2025.
-  registry->RegisterTimePref(kDeviceRestrictionScheduleHighestSeenTime,
-                             base::Time());
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
   // Deprecated 04/2025.
   registry->RegisterListPref(
@@ -2330,29 +2289,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 02/2025.
-  local_state->ClearPref(kUserAgentClientHintsGREASEUpdateEnabled);
-
   // Added 02/2025
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   local_state->ClearPref(prefs::kDefaultBrowserPromptRefreshStudyGroup);
-#endif
-
-  // Added 02/2025
-#if BUILDFLAG(IS_ANDROID)
-  local_state->ClearPref(kRootSecretPrefName);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Added 03/2025.
-#if BUILDFLAG(IS_CHROMEOS)
-  local_state->ClearPref(kShouldRetrieveDeviceState);
-  local_state->ClearPref(kShouldAutoEnroll);
-  local_state->ClearPref(kAutoEnrollmentPowerLimit);
-#endif
-
-  // Added 03/2025.
-#if BUILDFLAG(IS_CHROMEOS)
-  local_state->ClearPref(kDeviceRestrictionScheduleHighestSeenTime);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
