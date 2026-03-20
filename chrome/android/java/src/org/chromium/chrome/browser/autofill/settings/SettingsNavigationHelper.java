@@ -31,6 +31,7 @@ public class SettingsNavigationHelper {
             return false;
         }
 
+        RecordUserAction.record("AutofillYourSavedInfoViewed");
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(context, HomeOfTransactionsFragment.class);
         return true;

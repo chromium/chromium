@@ -6894,6 +6894,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AutofillYourSavedInfoViewed">
+  <owner>josefraska@google.com</owner>
+  <owner>mikhe@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>
+    Recorded when user visits Autofill and passwords settings via
+    chrome://settings/autofill page.
+  </description>
+</action>
+
 <action name="AutomaticReset_WebUIBanner_BannerShown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
