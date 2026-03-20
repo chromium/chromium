@@ -139,6 +139,27 @@ enum class UploadIbanActionMetric {
   kMaxValue = kIgnored,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The event will be logged only once
+// per flow.
+enum class IbanFormEvent {
+  // The IBAN suggestion was shown to the user.
+  kSuggestionShown = 0,
+  // A local IBAN is filled for the IBAN form. For local IBANs, the `select`
+  // and `fill` events happen simultaneously, so only a single 'filled' status
+  // is recorded.
+  kLocalIbanFilled = 1,
+  // A server IBAN is selected for the form field.
+  kServerIbanSelected = 2,
+  // A server IBAN is filled for the IBAN form.
+  kServerIbanFilled = 3,
+  // The form was submitted after IBAN autofill finished.
+  kFormSubmitted = 4,
+  kMaxValue = kFormSubmitted,
+};
+
+void LogIbanFormEvent(IbanFormEvent event);
+
 // Logs various metrics about the local/server IBANs associated with a profile.
 // This should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.

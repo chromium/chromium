@@ -15,6 +15,10 @@
 
 namespace autofill::autofill_metrics {
 
+void LogIbanFormEvent(IbanFormEvent event) {
+  base::UmaHistogramEnumeration("Autofill.FormEvents.Iban", event);
+}
+
 void LogStoredIbanMetrics(
     const std::vector<std::unique_ptr<Iban>>& local_ibans,
     const std::vector<std::unique_ptr<Iban>>& server_ibans,

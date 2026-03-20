@@ -6575,6 +6575,49 @@ TEST_F(BrowserAutofillManagerTest,
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
+// Test that we record field log events correctly for the single field form
+// with the IBAN field.
+TEST_F(BrowserAutofillManagerTest,
+       DidSelectIbanSuggestionAndSubmit_LogIbanFieldMetrics) {
+  // Replace the MockSingleFieldFillRouter with the REAL SingleFieldFillRouter.
+  autofill_client().set_single_field_fill_router(
+      std::make_unique<SingleFieldFillRouter>(
+          autofill_client().GetAutocompleteHistoryManager(),
+          payments_autofill_client().GetIbanManager(),
+          payments_autofill_client().GetMerchantPromoCodeManager()));
+
+  FormData form = CreateTestIbanFormData();
+  FormsSeen({form});
+
+  base::HistogramTester histogram_tester;
+  // Trigger IBAN suggestion shown.
+  DidShowSuggestions(form, /*field_index=*/0, SuggestionType::kIbanEntry);
+  Suggestion iban_suggestion(u"TestValue", SuggestionType::kIbanEntry);
+
+  // Verify that the REAL SingleFieldFillRouter successfully routes the
+  // selection event, and forward the call to the real IbanManager method.
+  EXPECT_CALL(iban_manager(), OnSingleFieldSuggestionSelected(iban_suggestion))
+      .WillOnce([&](const Suggestion& suggestion) {
+        iban_manager().IbanManager::OnSingleFieldSuggestionSelected(suggestion);
+      });
+  autofill_manager().OnSingleFieldSuggestionSelected(
+      iban_suggestion, form.global_id(), test_api(form).field(0).global_id());
+
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form, form.fields().front(), u"CH93 0076 2011 6238 5295 7",
+      SuggestionType::kIbanEntry, IBAN_VALUE);
+
+  FormSubmitted(form);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Iban",
+      autofill_metrics::IbanFormEvent::kLocalIbanFilled, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Iban",
+      autofill_metrics::IbanFormEvent::kFormSubmitted, 1);
+}
+
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogIbanSuggestionsShownMetric) {
   FormData form = CreateTestIbanFormData();
@@ -6596,6 +6639,9 @@ TEST_F(BrowserAutofillManagerTest,
           base::Bucket(
               autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
               1)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.Iban",
+      autofill_metrics::IbanFormEvent::kSuggestionShown, 1);
 }
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {

@@ -3052,6 +3052,24 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       filling_payload);
 }
 
+void BrowserAutofillManager::OnDidFillOrPreviewField(
+    mojom::ActionPersistence action_persistence,
+    std::optional<FieldType> field_type_used) {
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
+    return;
+  }
+  CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+  if (field_type_used == IBAN_VALUE) {
+    // If the fill is triggered by the IBAN flow. We log form filling
+    // specifically for IBAN field as the it is single form field filling
+    // and not handled by FormEventLogger.
+    IbanManager* iban_manager =
+        client().GetPaymentsAutofillClient()->GetIbanManager();
+    CHECK(iban_manager);
+    iban_manager->LogIbanFormFilled();
+  }
+}
+
 void BrowserAutofillManager::LogAndRecordCreditCardFill(
     const FormStructure& form_structure,
     const AutofillField& trigger_field,

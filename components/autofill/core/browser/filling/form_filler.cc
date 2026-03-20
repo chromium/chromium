@@ -864,6 +864,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
   }
   manager_->driver().ApplyFieldAction(action_type, action_persistence,
                                       field.global_id(), value);
+  manager_->OnDidFillOrPreviewField(action_persistence, field_type_used);
 }
 
 void FormFiller::FillOrPreviewForm(

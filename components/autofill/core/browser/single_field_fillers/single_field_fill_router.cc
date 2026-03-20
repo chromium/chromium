@@ -50,6 +50,9 @@ void SingleFieldFillRouter::OnWillSubmitForm(
   }
   autocomplete_history_manager_->OnWillSubmitFormWithFields(
       autocomplete_fields, is_autocomplete_enabled);
+  if (iban_manager_) {
+    iban_manager_->OnWillSubmitFormWithFields();
+  }
 }
 
 void SingleFieldFillRouter::CancelPendingQueries() {

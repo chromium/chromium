@@ -4242,6 +4242,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="CardBenefitSource" variants="Autofill.CreditCardBenefitSource"/>
 </histogram>
 
+<histogram name="Autofill.FormEvents.Iban" enum="AutofillIbanFormEvent"
+    expires_after="2026-08-02">
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram logs form events related to IBAN suggestions being shown,
+    selected, filled, and submitted on IBAN forms. Note that logging is
+    happening to the initial occurrence per page load. Specifically, if a user
+    interacts with multiple IBAN forms or triggers multiple suggestions (e.g.,
+    switching from a local to a server-based IBAN), only the first sequence of
+    events is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.{AddressFormType}"
     enum="AutofillFormEvent" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>

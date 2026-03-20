@@ -274,6 +274,11 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason);
 
+  // Handles post-filling logic of `field_type_used`, like logging field
+  // metrics.
+  void OnDidFillOrPreviewField(mojom::ActionPersistence action_persistence,
+                               std::optional<FieldType> field_type_used);
+
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
   bool ShouldClearPreviewedForm() override;
