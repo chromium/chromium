@@ -759,13 +759,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
               blink::mojom::NavigationTypeForNavigationApi::kTraverse)));
 }
 
-// TODO(crbug.com/334416161): Re-enable this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NoSoftNavigation DISABLED_NoSoftNavigation
-#else
-#define MAYBE_NoSoftNavigation NoSoftNavigation
-#endif
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_NoSoftNavigation) {
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
