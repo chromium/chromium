@@ -52,19 +52,19 @@ namespace {
 
 // The set of traits that describes the behavior of MemoryCache.
 constexpr base::MemoryConsumerTraits kMemoryCacheTraits = {
-    .supports_memory_limit =
-        base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
-    .in_process = base::MemoryConsumerTraits::InProcess::kYes,
     .estimated_memory_usage =
         base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
     .release_memory_cost =
         base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
-    .recreate_memory_cost = base::MemoryConsumerTraits::RecreateMemoryCost::kNA,
     .information_retention =
         base::MemoryConsumerTraits::InformationRetention::kLossless,
+    .execution_type = base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    .supports_memory_limit =
+        base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    .in_process = base::MemoryConsumerTraits::InProcess::kYes,
+    .recreate_memory_cost = base::MemoryConsumerTraits::RecreateMemoryCost::kNA,
     .memory_release_behavior =
         base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
-    .execution_type = base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
     .release_gc_references =
         base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
     .garbage_collects_v8_heap =

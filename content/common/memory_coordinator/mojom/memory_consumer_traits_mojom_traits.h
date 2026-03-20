@@ -26,13 +26,6 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
     return true;
   }
 
-  static uint8_t supports_memory_limit(
-      const base::MemoryConsumerTraits& input) {
-    return std::to_underlying(input.supports_memory_limit);
-  }
-  static uint8_t in_process(const base::MemoryConsumerTraits& input) {
-    return std::to_underlying(input.in_process);
-  }
   static uint8_t estimated_memory_usage(
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.estimated_memory_usage);
@@ -40,19 +33,26 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
   static uint8_t release_memory_cost(const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.release_memory_cost);
   }
-  static uint8_t recreate_memory_cost(const base::MemoryConsumerTraits& input) {
-    return std::to_underlying(input.recreate_memory_cost);
-  }
   static uint8_t information_retention(
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.information_retention);
   }
+  static uint8_t execution_type(const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.execution_type);
+  }
+  static uint8_t supports_memory_limit(
+      const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.supports_memory_limit);
+  }
+  static uint8_t in_process(const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.in_process);
+  }
+  static uint8_t recreate_memory_cost(const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.recreate_memory_cost);
+  }
   static uint8_t memory_release_behavior(
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.memory_release_behavior);
-  }
-  static uint8_t execution_type(const base::MemoryConsumerTraits& input) {
-    return std::to_underlying(input.execution_type);
   }
   static uint8_t release_gc_references(
       const base::MemoryConsumerTraits& input) {
@@ -68,20 +68,20 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
 
   static bool Read(content::mojom::MemoryConsumerTraitsDataView input,
                    base::MemoryConsumerTraits* output) {
-    return ConvertToEnum(input.supports_memory_limit(),
-                         &output->supports_memory_limit) &&
-           ConvertToEnum(input.in_process(), &output->in_process) &&
-           ConvertToEnum(input.estimated_memory_usage(),
+    return ConvertToEnum(input.estimated_memory_usage(),
                          &output->estimated_memory_usage) &&
            ConvertToEnum(input.release_memory_cost(),
                          &output->release_memory_cost) &&
-           ConvertToEnum(input.recreate_memory_cost(),
-                         &output->recreate_memory_cost) &&
            ConvertToEnum(input.information_retention(),
                          &output->information_retention) &&
+           ConvertToEnum(input.execution_type(), &output->execution_type) &&
+           ConvertToEnum(input.supports_memory_limit(),
+                         &output->supports_memory_limit) &&
+           ConvertToEnum(input.in_process(), &output->in_process) &&
+           ConvertToEnum(input.recreate_memory_cost(),
+                         &output->recreate_memory_cost) &&
            ConvertToEnum(input.memory_release_behavior(),
                          &output->memory_release_behavior) &&
-           ConvertToEnum(input.execution_type(), &output->execution_type) &&
            ConvertToEnum(input.release_gc_references(),
                          &output->release_gc_references) &&
            ConvertToEnum(input.garbage_collects_v8_heap(),

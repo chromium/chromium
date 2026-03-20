@@ -31,14 +31,14 @@ interface ChildMemoryCoordinator {
 // is converted back and forth. See base/memory_coordinator/traits.h for a
 // description of each trait.
 struct MemoryConsumerTraits {
-  uint8 supports_memory_limit;
-  uint8 in_process;
   uint8 estimated_memory_usage;
   uint8 release_memory_cost;
-  uint8 recreate_memory_cost;
   uint8 information_retention;
-  uint8 memory_release_behavior;
   uint8 execution_type;
+  uint8 supports_memory_limit;
+  uint8 in_process;
+  uint8 recreate_memory_cost;
+  uint8 memory_release_behavior;
   uint8 release_gc_references;
   uint8 garbage_collects_v8_heap;
   uint8 is_stateful;

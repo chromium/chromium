@@ -188,20 +188,20 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
 
   static constexpr char kConsumerId[] = "NGShapeCache";
   static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits = {
-      .supports_memory_limit =
-          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
-      .in_process = base::MemoryConsumerTraits::InProcess::kYes,
       .estimated_memory_usage =
           base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
       .release_memory_cost =
           base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
-      .recreate_memory_cost =
-          base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
       .information_retention =
           base::MemoryConsumerTraits::InformationRetention::kLossless,
+      .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      .supports_memory_limit =
+          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+      .in_process = base::MemoryConsumerTraits::InProcess::kYes,
+      .recreate_memory_cost =
+          base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
       .memory_release_behavior =
           base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
-      .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       .release_gc_references =
           base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
       .garbage_collects_v8_heap =

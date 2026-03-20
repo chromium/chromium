@@ -15,14 +15,14 @@ namespace content {
 
 namespace {
 
-using SupportsMemoryLimit = base::MemoryConsumerTraits::SupportsMemoryLimit;
-using InProcess = base::MemoryConsumerTraits::InProcess;
 using EstimatedMemoryUsage = base::MemoryConsumerTraits::EstimatedMemoryUsage;
 using ReleaseMemoryCost = base::MemoryConsumerTraits::ReleaseMemoryCost;
-using RecreateMemoryCost = base::MemoryConsumerTraits::RecreateMemoryCost;
 using InformationRetention = base::MemoryConsumerTraits::InformationRetention;
-using MemoryReleaseBehavior = base::MemoryConsumerTraits::MemoryReleaseBehavior;
 using ExecutionType = base::MemoryConsumerTraits::ExecutionType;
+using SupportsMemoryLimit = base::MemoryConsumerTraits::SupportsMemoryLimit;
+using InProcess = base::MemoryConsumerTraits::InProcess;
+using RecreateMemoryCost = base::MemoryConsumerTraits::RecreateMemoryCost;
+using MemoryReleaseBehavior = base::MemoryConsumerTraits::MemoryReleaseBehavior;
 using ReleaseGCReferences = base::MemoryConsumerTraits::ReleaseGCReferences;
 using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
 using IsStateful = base::MemoryConsumerTraits::IsStateful;
@@ -56,27 +56,27 @@ class MemoryConsumerTraitsTest : public testing::Test,
 TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
   static constexpr base::MemoryConsumerTraits kTestCases[] = {
       {
-          .supports_memory_limit = SupportsMemoryLimit::kNo,
-          .in_process = InProcess::kNo,
           .estimated_memory_usage = EstimatedMemoryUsage::kSmall,
           .release_memory_cost = ReleaseMemoryCost::kFreesPagesWithoutTraversal,
-          .recreate_memory_cost = RecreateMemoryCost::kNA,
           .information_retention = InformationRetention::kLossy,
-          .memory_release_behavior = MemoryReleaseBehavior::kRepeatable,
           .execution_type = ExecutionType::kSynchronous,
+          .supports_memory_limit = SupportsMemoryLimit::kNo,
+          .in_process = InProcess::kNo,
+          .recreate_memory_cost = RecreateMemoryCost::kNA,
+          .memory_release_behavior = MemoryReleaseBehavior::kRepeatable,
           .release_gc_references = ReleaseGCReferences::kYes,
           .garbage_collects_v8_heap = GarbageCollectsV8Heap::kYes,
           .is_stateful = IsStateful::kNo,
       },
       {
-          .supports_memory_limit = SupportsMemoryLimit::kYes,
-          .in_process = InProcess::kYes,
           .estimated_memory_usage = EstimatedMemoryUsage::kMedium,
           .release_memory_cost = ReleaseMemoryCost::kRequiresTraversal,
-          .recreate_memory_cost = RecreateMemoryCost::kCheap,
           .information_retention = InformationRetention::kLossless,
-          .memory_release_behavior = MemoryReleaseBehavior::kIdempotent,
           .execution_type = ExecutionType::kAsynchronous,
+          .supports_memory_limit = SupportsMemoryLimit::kYes,
+          .in_process = InProcess::kYes,
+          .recreate_memory_cost = RecreateMemoryCost::kCheap,
+          .memory_release_behavior = MemoryReleaseBehavior::kIdempotent,
           .release_gc_references = ReleaseGCReferences::kNo,
           .garbage_collects_v8_heap = GarbageCollectsV8Heap::kNo,
           .is_stateful = IsStateful::kYes,
