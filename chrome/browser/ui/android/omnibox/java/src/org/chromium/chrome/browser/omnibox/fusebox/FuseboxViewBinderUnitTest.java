@@ -381,6 +381,137 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void canvasButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED, runnable);
+
+        mPopup.mCanvasButton.performClick();
+        verify(runnable).run();
+    }
+
+    @Test
+    public void deepSearchButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED, runnable);
+
+        mPopup.mDeepSearchButton.performClick();
+        verify(runnable).run();
+    }
+
+    @Test
+    public void autoButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED, runnable);
+
+        mPopup.mAutoButton.performClick();
+        verify(runnable).run();
+    }
+
+    @Test
+    public void proButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_CLICKED, runnable);
+
+        mPopup.mProButton.performClick();
+        verify(runnable).run();
+    }
+
+    @Test
+    public void canvasButtonVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mCanvasButton.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mCanvasButton.getVisibility());
+    }
+
+    @Test
+    public void deepSearchButtonVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mDeepSearchButton.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mDeepSearchButton.getVisibility());
+    }
+
+    @Test
+    public void autoButtonVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mAutoButton.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mAutoButton.getVisibility());
+    }
+
+    @Test
+    public void proButtonVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mProButton.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mProButton.getVisibility());
+    }
+
+    @Test
+    public void dividersAndHeadersVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mToolsDivider.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mToolsDivider.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mToolsHeader.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mToolsHeader.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mModelsDivider.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mModelsDivider.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mModelsHeader.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mModelsHeader.getVisibility());
+    }
+
+    @Test
+    public void canvasButtonEnabled_setsEnabled() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED, true);
+        assertTrue(mPopup.mCanvasButton.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED, false);
+        assertFalse(mPopup.mCanvasButton.isEnabled());
+    }
+
+    @Test
+    public void deepSearchButtonEnabled_setsEnabled() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED, true);
+        assertTrue(mPopup.mDeepSearchButton.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED, false);
+        assertFalse(mPopup.mDeepSearchButton.isEnabled());
+    }
+
+    @Test
+    public void autoButtonEnabled_setsEnabled() {
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED, true);
+        assertTrue(mPopup.mAutoButton.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED, false);
+        assertFalse(mPopup.mAutoButton.isEnabled());
+    }
+
+    @Test
+    public void proButtonEnabled_setsEnabled() {
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_ENABLED, true);
+        assertTrue(mPopup.mProButton.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_ENABLED, false);
+        assertFalse(mPopup.mProButton.isEnabled());
+    }
+
+    @Test
     public void sendButtonA11y_setsContentDescription() {
         var res = mActivityController.get().getResources();
 

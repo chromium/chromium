@@ -154,6 +154,33 @@ class FuseboxViewBinder {
                     model,
                     FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
                     view.popup.mTabButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_CLICKED) {
+            view.popup.mAutoButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_ENABLED) {
+            view.popup.mAutoButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE) {
+            updateButtonVisibility(
+                    model, FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, view.popup.mAutoButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE) {
+            view.popup.mModelsDivider.setVisibility(
+                    model.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE) {
+            view.popup.mModelsHeader.setVisibility(
+                    model.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_CLICKED) {
+            view.popup.mProButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_ENABLED) {
+            view.popup.mProButton.setEnabled(model.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_VISIBLE) {
+            updateButtonVisibility(
+                    model, FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, view.popup.mProButton);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run());
@@ -163,6 +190,15 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE, view.popup.mAiModeButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED) {
+            view.popup.mCanvasButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED) {
+            view.popup.mCanvasButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE) {
+            updateButtonVisibility(
+                    model, FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, view.popup.mCanvasButton);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED) {
             view.popup.mCreateImageButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run());
@@ -176,6 +212,27 @@ class FuseboxViewBinder {
                     model,
                     FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
                     view.popup.mCreateImageButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED) {
+            view.popup.mDeepSearchButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED) {
+            view.popup.mDeepSearchButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE) {
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE,
+                    view.popup.mDeepSearchButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE) {
+            view.popup.mToolsDivider.setVisibility(
+                    model.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE) {
+            view.popup.mToolsHeader.setVisibility(
+                    model.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateRequestTypeButton(model, view);
         }

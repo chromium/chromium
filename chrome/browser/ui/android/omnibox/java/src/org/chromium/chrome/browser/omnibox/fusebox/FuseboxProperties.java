@@ -135,6 +135,38 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_TAB_PICKER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Action to perform when the user clicks the auto model button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_MODEL_AUTO_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the auto model button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the auto model button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the models divider in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the models header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the pro model button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_MODEL_PRO_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the pro model button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the pro model button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the AI Mode button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -147,6 +179,18 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_TOOL_AI_MODE_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Action to perform when the user clicks the canvas tool button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_CANVAS_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the canvas tool button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_CANVAS_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the canvas tool button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_CANVAS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the 'Create Image' button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_CREATE_IMAGE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -157,6 +201,26 @@ class FuseboxProperties {
 
     /** Whether the create image button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_TOOL_CREATE_IMAGE_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the Deep Search tool button in the popup */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_DEEP_SEARCH_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the deep search tool button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_DEEP_SEARCH_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the deep search tool button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_DEEP_SEARCH_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the tools divider in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the tools header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
     /** Whether to show the dedicated AIMode button directly in the Fusebox. */
@@ -193,12 +257,28 @@ class FuseboxProperties {
         POPUP_ATTACH_TAB_PICKER_CLICKED,
         POPUP_ATTACH_TAB_PICKER_ENABLED,
         POPUP_ATTACH_TAB_PICKER_VISIBLE,
+        POPUP_MODEL_AUTO_CLICKED,
+        POPUP_MODEL_AUTO_ENABLED,
+        POPUP_MODEL_AUTO_VISIBLE,
+        POPUP_MODEL_DIVIDER_VISIBLE,
+        POPUP_MODEL_HEADER_VISIBLE,
+        POPUP_MODEL_PRO_CLICKED,
+        POPUP_MODEL_PRO_ENABLED,
+        POPUP_MODEL_PRO_VISIBLE,
         POPUP_TOOL_AI_MODE_CLICKED,
         POPUP_TOOL_AI_MODE_ENABLED,
         POPUP_TOOL_AI_MODE_VISIBLE,
+        POPUP_TOOL_CANVAS_CLICKED,
+        POPUP_TOOL_CANVAS_ENABLED,
+        POPUP_TOOL_CANVAS_VISIBLE,
         POPUP_TOOL_CREATE_IMAGE_CLICKED,
         POPUP_TOOL_CREATE_IMAGE_ENABLED,
         POPUP_TOOL_CREATE_IMAGE_VISIBLE,
+        POPUP_TOOL_DEEP_SEARCH_CLICKED,
+        POPUP_TOOL_DEEP_SEARCH_ENABLED,
+        POPUP_TOOL_DEEP_SEARCH_VISIBLE,
+        POPUP_TOOL_DIVIDER_VISIBLE,
+        POPUP_TOOL_HEADER_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
         // go/keep-sorted end
     };
