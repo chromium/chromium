@@ -8,13 +8,23 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
-@interface FullscreenMediator () <CRWWebStateObserver, WebStateListObserving>
+@interface FullscreenMediator () <CRWWebStateObserver,
+                                  CRWWebViewScrollViewProxyObserver,
+                                  WebStateListObserving,
+                                  WebViewProxyTabHelperObserving>
 
 // The active WebState.
 @property(nonatomic, assign) web::WebState* webState;
+
+// The scroll view proxy of the active WebState.
+@property(nonatomic, weak) CRWWebViewScrollViewProxy* scrollViewProxy;
 
 @end
 
@@ -23,6 +33,7 @@
   raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyObserver;
 }
 
 #pragma mark - Public
@@ -37,6 +48,8 @@
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    _webViewProxyObserver =
+        std::make_unique<WebViewProxyTabHelperObserverBridge>(self);
     self.webState = _webStateList->GetActiveWebState();
   }
   return self;
@@ -49,6 +62,7 @@
   _webStateList = nullptr;
   self.webState = nullptr;
   _webStateObserver = nullptr;
+  _webViewProxyObserver = nullptr;
 }
 
 #pragma mark - Properties
@@ -59,11 +73,28 @@
   }
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
+    WebViewProxyTabHelper::FromWebState(_webState)->RemoveObserver(
+        _webViewProxyObserver.get());
   }
   _webState = webState;
   if (_webState) {
     _webState->AddObserver(_webStateObserver.get());
+    WebViewProxyTabHelper* tabHelper =
+        WebViewProxyTabHelper::FromWebState(_webState);
+    tabHelper->AddObserver(_webViewProxyObserver.get());
+    self.scrollViewProxy = tabHelper->GetWebViewProxy().scrollViewProxy;
+  } else {
+    self.scrollViewProxy = nil;
   }
+}
+
+- (void)setScrollViewProxy:(CRWWebViewScrollViewProxy*)scrollViewProxy {
+  if (_scrollViewProxy == scrollViewProxy) {
+    return;
+  }
+  [_scrollViewProxy removeObserver:self];
+  _scrollViewProxy = scrollViewProxy;
+  [_scrollViewProxy addObserver:self];
 }
 
 #pragma mark - WebStateListObserving
@@ -81,6 +112,57 @@
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(self.webState, webState);
   self.webState = nullptr;
+}
+
+#pragma mark - WebViewProxyTabHelperObserving
+
+- (void)webViewProxyDidChange:(WebViewProxyTabHelper*)tabHelper {
+  self.scrollViewProxy = tabHelper->GetWebViewProxy().scrollViewProxy;
+}
+
+- (void)webViewProxyTabHelperWasDestroyed:(WebViewProxyTabHelper*)tabHelper {
+  self.scrollViewProxy = nil;
+}
+
+#pragma mark - CRWWebViewScrollViewProxyObserver
+
+- (void)webViewScrollViewDidScroll:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewWillBeginDragging:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewWillEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                            withVelocity:(CGPoint)velocity
+                     targetContentOffset:(inout CGPoint*)targetContentOffset {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewDidEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                         willDecelerate:(BOOL)decelerate {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewDidEndDecelerating:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewWillBeginZooming:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+}
+
+- (void)webViewScrollViewDidEndZooming:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                               atScale:(CGFloat)scale {
+  // TODO(crbug.com/491845727): Implement scroll tracking logic.
 }
 
 @end
