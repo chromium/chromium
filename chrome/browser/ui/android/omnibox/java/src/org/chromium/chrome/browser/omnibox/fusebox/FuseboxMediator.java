@@ -307,15 +307,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private void onRequestTypeButtonClicked() {
         if (!isInInputSession()) return;
 
-        switch (mInput.getRequestType()) {
-            case AutocompleteRequestType.AI_MODE:
-            case AutocompleteRequestType.IMAGE_GENERATION:
-                activateSearchMode();
-                break;
-
-            default:
-                activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-                break;
+        if (ToolModeUtils.isAimRequest(mInput.getRequestType())) {
+            activateSearchMode();
+        } else {
+            activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         }
     }
 
