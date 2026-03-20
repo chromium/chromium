@@ -83,9 +83,6 @@ BASE_FEATURE(kMahiPanelResizable, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the pompano feature.
-BASE_FEATURE(kPompano, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the summary of selected text feature.
 BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -360,10 +357,6 @@ bool IsMahiSendingUrl() {
 
 bool IsPlatformKeysChangesWave1Enabled() {
   return base::FeatureList::IsEnabled(kPlatformKeysChangesWave1);
-}
-
-bool IsPompanoEnabled() {
-  return base::FeatureList::IsEnabled(kPompano);
 }
 
 bool IsMahiSummarizeSelectedEnabled() {

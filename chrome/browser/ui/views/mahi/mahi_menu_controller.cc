@@ -122,44 +122,25 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
   const std::u16string selected_text_u16 = base::UTF8ToUTF16(selected_text);
   chromeos::MahiWebContentsManager::Get()->SetSelectedText(selected_text_u16);
 
-  // If Pompano feature flag is enabled, uses the new logic to show mahi widget.
-  if (features::IsPompanoEnabled()) {
-    // If the selected text passes the check, we will show the condensed Mahi
-    // view to avoid possible collision against the quick answer card.
-    if (ShouldShowMahiCondensedMenuView(selected_text_u16)) {
-      read_write_cards_ui_controller_->SetMahiUi(
-          std::make_unique<MahiCondensedMenuView>());
-      return;
-    }
-
-    menu_widget_ = MahiMenuView::CreateWidget(
-        &application_locale_storage_.get(), anchor_bounds,
-        {.summary_of_selection_eligibility =
-             SelectedTextStateForSummary(selected_text_u16),
-         .elucidation_eligiblity =
-             SelectedTextStateForElucidation(selected_text_u16)});
-    // This enables tooltip without having to activate the text field.
-    menu_widget_->SetNativeWindowProperty(
-        views::TooltipManager::kGroupingPropertyKey,
-        reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
-    menu_widget_->ShowInactive();
+  // If the selected text passes the check, we will show the condensed Mahi
+  // view to avoid possible collision against the quick answer card.
+  if (ShouldShowMahiCondensedMenuView(selected_text_u16)) {
+    read_write_cards_ui_controller_->SetMahiUi(
+        std::make_unique<MahiCondensedMenuView>());
     return;
   }
 
-  if (selected_text.empty()) {
-    // Sets elucidation_eligibility = kUnknown to hide the elucidation button.
-    menu_widget_ = MahiMenuView::CreateWidget(
-        &application_locale_storage_.get(), anchor_bounds,
-        {.summary_of_selection_eligibility = SelectedTextState::kEmpty,
-         .elucidation_eligiblity = SelectedTextState::kUnknown});
-    menu_widget_->ShowInactive();
-    return;
-  }
-
-  // If there is selected text, we will show the condensed Mahi view alongside
-  // quick answers.
-  read_write_cards_ui_controller_->SetMahiUi(
-      std::make_unique<MahiCondensedMenuView>());
+  menu_widget_ = MahiMenuView::CreateWidget(
+      &application_locale_storage_.get(), anchor_bounds,
+      {.summary_of_selection_eligibility =
+           SelectedTextStateForSummary(selected_text_u16),
+       .elucidation_eligiblity =
+           SelectedTextStateForElucidation(selected_text_u16)});
+  // This enables tooltip without having to activate the text field.
+  menu_widget_->SetNativeWindowProperty(
+      views::TooltipManager::kGroupingPropertyKey,
+      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
+  menu_widget_->ShowInactive();
 }
 
 void MahiMenuController::OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) {
@@ -188,19 +169,13 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
     return;
   }
 
-  // kUnknown means hiding the elucidation button.
-  SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
-  // kEmpty means the summary button is for the whole webpage / PDF file.
+  CHECK(chromeos::MahiMediaAppContentManager::Get());
+  const std::u16string selected_text = base::UTF8ToUTF16(
+      chromeos::MahiMediaAppContentManager::Get()->GetSelectedText());
+  SelectedTextState elucidation_eligiblity =
+      SelectedTextStateForElucidation(selected_text);
   SelectedTextState summary_of_selection_eligibility =
-      SelectedTextState::kEmpty;
-  if (features::IsPompanoEnabled()) {
-    CHECK(chromeos::MahiMediaAppContentManager::Get());
-    const std::u16string selected_text = base::UTF8ToUTF16(
-        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText());
-    elucidation_eligiblity = SelectedTextStateForElucidation(selected_text);
-    summary_of_selection_eligibility =
-        SelectedTextStateForSummary(selected_text);
-  }
+      SelectedTextStateForSummary(selected_text);
 
   menu_widget_ = MahiMenuView::CreateWidget(
       &application_locale_storage_.get(), anchor,

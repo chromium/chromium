@@ -7548,10 +7548,6 @@ inline constexpr char kPhoneHubCallNotificationName[] =
 inline constexpr char kPhoneHubCallNotificationDescription[] =
     "Enables the incoming/ongoing call feature in Phone Hub.";
 
-inline constexpr char kPompanoName[] = "Pompano feature";
-inline constexpr char kPompanoDescritpion[] =
-    "Enable Pompano feature on ChromeOS.";
-
 inline constexpr char kPrintingPpdChannelName[] = "Printing PPD channel";
 inline constexpr char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "

@@ -7826,14 +7826,6 @@
     "expiry_milestone": 148
   },
   {
-    "name": "pompano",
-    "owners": [
-      "alanlxl@chromium.org",
-      "chrome-knowledge-eng@google.com"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "popular-sites-us-refresh",
     "owners": [ "huangs@google.com" ],
     "expiry_milestone": 160
