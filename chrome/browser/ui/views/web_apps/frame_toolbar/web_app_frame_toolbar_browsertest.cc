@@ -2588,21 +2588,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 }
 
-// TODO(crbug.com/459532445): Flaky on Linux Wayland and mac.
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
-#define MAYBE_FullscreenAndRestoreWindowWithApi \
-  DISABLED_FullscreenAndRestoreWindowWithApi
-#else
-#define MAYBE_FullscreenAndRestoreWindowWithApi \
-  FullscreenAndRestoreWindowWithApi
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_FullscreenAndRestoreWindowWithApi) {
+    FullscreenAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
+  views::Widget* widget = helper()->browser_view()->GetWidget();
+  views::test::WaitForWidgetActive(widget, true);
 
   // Enter fullscreen
   EXPECT_EQ(EvalFullscreenRequest(web_contents),
