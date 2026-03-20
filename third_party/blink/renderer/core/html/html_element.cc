@@ -1664,40 +1664,50 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
 
   SetPopoverFocusOnShow();
 
+  // Focus/blur event handlers could have changed the popover, so we continue
+  // checking that `popoverOpen()` below before accessing popover things.
+
   // Store the element to focus when this popover closes.
-  if (should_restore_focus && IsPopover()) {
+  if (should_restore_focus && IsPopover() && popoverOpen()) {
     GetPopoverData()->setPreviouslyFocusedElement(originally_focused_element);
   }
 
   // Queue the "opening" toggle event.
   String old_state = "closed";
-  ToggleEvent* after_event;
-  if (GetPopoverData()->hasPendingToggleEventTask()) {
-    // There's already a queued 'toggle' event. Cancel it and fire a new one
-    // keeping the original value for old_state.
-    old_state =
-        GetPopoverData()->pendingToggleEventStartedClosed() ? "closed" : "open";
-    GetPopoverData()->cancelPendingToggleEventTask();
-  } else {
-    GetPopoverData()->setPendingToggleEventStartedClosed(true);
+  if (popoverOpen()) {
+    if (GetPopoverData()->hasPendingToggleEventTask()) {
+      // There's already a queued 'toggle' event. Cancel it and fire a new one
+      // keeping the original value for old_state.
+      old_state = GetPopoverData()->pendingToggleEventStartedClosed() ? "closed"
+                                                                      : "open";
+      GetPopoverData()->cancelPendingToggleEventTask();
+    } else {
+      GetPopoverData()->setPendingToggleEventStartedClosed(true);
+    }
   }
-  after_event = ToggleEvent::Create(event_type_names::kToggle,
-                                    Event::Cancelable::kNo, old_state,
-                                    /*new_state*/ "open", invoker);
+  ToggleEvent* after_event = ToggleEvent::Create(
+      event_type_names::kToggle, Event::Cancelable::kNo, old_state,
+      /*new_state*/ "open", invoker);
   CHECK_EQ(after_event->newState(), "open");
   CHECK_EQ(after_event->oldState(), old_state);
   CHECK(!after_event->bubbles());
   CHECK(!after_event->cancelable());
   after_event->SetTarget(this);
-  GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
-      *original_document.GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      BindOnce(
-          [](HTMLElement* element, ToggleEvent* event) {
-            CHECK(element);
-            CHECK(event);
-            element->DispatchEvent(*event);
-          },
-          WrapPersistent(this), WrapPersistent(after_event))));
+  auto task_runner =
+      original_document.GetTaskRunner(TaskType::kDOMManipulation);
+  auto callback = BindOnce(
+      [](HTMLElement* element, ToggleEvent* event) {
+        CHECK(element);
+        CHECK(event);
+        element->DispatchEvent(*event);
+      },
+      WrapPersistent(this), WrapPersistent(after_event));
+  if (popoverOpen()) {
+    GetPopoverData()->setPendingToggleEventTask(
+        PostCancellableTask(*task_runner, FROM_HERE, std::move(callback)));
+  } else {
+    task_runner->PostTask(FROM_HERE, std::move(callback));
+  }
 }
 
 void HTMLElement::SetPopoverInvoker(Element* invoker) {
