@@ -339,20 +339,7 @@ class EnclaveManager : public EnclaveManagerInterface {
     // biometrics.
     kUsesChromeUI,
   };
-  // PlatformUvSupport enumerates the kind of user verifying key support
-  // available on this device.
-  enum class PlatformUvSupport {
-    // User verifying keys are not supported.
-    kNoUvKey,
-
-    // User verifying keys are supported, but biometrics are not available.
-    kUvKeyButNoBiometrics,
-
-    // User verifying keys are supported with biometrics.
-    kUvKeyWithBiometrics,
-  };
-
-  UvKeyState uv_key_state(PlatformUvSupport platform_uv_support) const;
+  UvKeyState uv_key_state(bool platform_has_biometrics) const;
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
   CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;

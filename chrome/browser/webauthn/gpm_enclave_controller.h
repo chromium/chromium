@@ -225,6 +225,10 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // disk.
   void OnEnclaveLoaded();
 
+  // Starts downloading the state of the account from the security domain
+  // service.
+  void DownloadAccountState();
+
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
       GaiaId gaia_id,
@@ -357,9 +361,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   std::optional<bool> is_active_;
 
-  // The level of support for user verification on this system. Set shortly
-  // after construction.
-  std::optional<EnclaveManager::PlatformUvSupport> platform_uv_support_;
+  // Whether the system can make UV keys.
+  std::optional<bool> can_make_uv_keys_;
 
   // have_added_device_ is set to true if the local device was added to the
   // security domain during this transaction. In this case, the security domain
