@@ -126,11 +126,12 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_FormChanged) {
 // Test that for a form that was seen and filled, OnSelectFieldOptionsDidChange
 // triggers a refill, RefillTriggerReason metric gets reported.
 TEST_F(PerFillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
-  FormData form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL},
-                                    {.role = CREDIT_CARD_NUMBER},
-                                    {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                     .autocomplete_attribute = "cc-exp"}}});
+  FormData form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL},
+                  {.role = CREDIT_CARD_NUMBER},
+                  {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                   .autocomplete_attribute = "cc-exp",
+                   .form_control_type = FormControlType::kSelectOne}}});
   SeeForm({form});
 
   CreditCard credit_card = test::GetCreditCard();
