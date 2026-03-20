@@ -938,7 +938,7 @@ BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
       selection.is_backward ? ui::AXPositionAdjustmentBehavior::kMoveBackward
                             : ui::AXPositionAdjustmentBehavior::kMoveForward);
 
-  if (focus_position->IsNullPosition() || focus_position->IsNullPosition()) {
+  if (anchor_position->IsNullPosition() || focus_position->IsNullPosition()) {
     return std::nullopt;
   }
 
