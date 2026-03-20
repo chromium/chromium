@@ -272,6 +272,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
 
     histogram_tester = std::make_unique<GlicHistogramTester>();
     user_action_tester = std::make_unique<base::UserActionTester>();
+    browser()->GetWindow()->Activate();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
