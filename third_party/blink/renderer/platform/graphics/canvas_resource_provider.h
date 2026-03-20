@@ -692,9 +692,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y);
+                   size_t row_bytes);
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.

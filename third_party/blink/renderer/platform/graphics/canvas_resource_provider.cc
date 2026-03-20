@@ -765,12 +765,11 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
 bool CanvasNon2DResourceProviderSharedImage::WritePixels(
     const SkImageInfo& orig_info,
     const void* pixels,
-    size_t row_bytes,
-    int x,
-    int y) {
+    size_t row_bytes) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, /*x=*/0,
+                                    /*y=*/0);
   }
 
   TRACE_EVENT0("blink", "CanvasNon2DResourceProviderSharedImage::WritePixels");
@@ -789,15 +788,15 @@ bool CanvasNon2DResourceProviderSharedImage::WritePixels(
   must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetClientSharedImage();
-  RasterInterface()->WritePixels(client_si->mailbox(), x, y,
-                                 client_si->GetTextureTarget(),
-                                 SkPixmap(orig_info, pixels, row_bytes));
+  RasterInterface()->WritePixels(
+      client_si->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+      client_si->GetTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
   resource()->EndAccess(std::move(access));
 
   // If the overdraw optimization kicked in, we need to indicate that the
   // pixels do not need to be cleared, otherwise the subsequent
   // rasterizations will clobber canvas contents.
-  if (x <= 0 && y <= 0 && orig_info.width() >= Size().width() &&
+  if (orig_info.width() >= Size().width() &&
       orig_info.height() >= Size().height()) {
     is_cleared_ = true;
   }

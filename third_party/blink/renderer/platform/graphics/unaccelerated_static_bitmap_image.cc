@@ -155,8 +155,7 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
   }
 
   return resource_provider->WritePixels(copy_rect_info, pixels.data(),
-                                        dest_row_bytes,
-                                        /*x=*/0, /*y=*/0);
+                                        dest_row_bytes);
 }
 
 SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfo() const {
