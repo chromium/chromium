@@ -37,9 +37,7 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   using Callback =
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>;
 
-  ActorFillingObserver(AutofillClient& autofill_client,
-                       base::span<const FieldGlobalId> field_ids,
-                       Callback callback);
+  explicit ActorFillingObserver(AutofillClient& autofill_client);
   ~ActorFillingObserver() override;
 
   // The maximum amount of time to wait for a fill to happen if no credit card
@@ -48,6 +46,16 @@ class ActorFillingObserver final : public AutofillManager::Observer,
 
   // The maximum amount of time for which this filling observer should exist.
   static base::TimeDelta GetMaximumTimeout();
+
+  // Instructs the observer to observe an additional set of fields until they
+  // are autofilled.
+  void ObserveNewFilling(base::span<const FieldGlobalId> field_ids);
+
+  // Instructs the observer to call `callback` as soon as all the fields it is
+  // observing are autofilled. Also calls `callback` with an error result if
+  // `GetMaximumTimeout()` is reached and some observed fields have not yet been
+  // autofilled.
+  void Activate(Callback callback);
 
  private:
   // AutofillManager::Observer:
@@ -104,8 +112,9 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // The number of currently ongoing credit card fetches.
   size_t ongoing_credit_card_fetches_ = 0;
 
-  // A timer that resets `this` when triggered.
-  base::OneShotTimer timeout_timer_;
+  // Timers that reset `this` when triggered.
+  base::OneShotTimer maximum_timeout_timer_;
+  base::OneShotTimer filling_timeout_timer_;
 };
 
 }  // namespace autofill

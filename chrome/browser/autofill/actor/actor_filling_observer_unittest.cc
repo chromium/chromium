@@ -69,8 +69,9 @@ class ActorFillingObserverTest : public ::testing::Test,
 TEST_F(ActorFillingObserverTest, EmptyInput) {
   Future future;
 
-  ActorFillingObserver observer(autofill_client(), /*field_ids=*/{},
-                                future.GetCallback());
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(/*field_ids=*/{});
+  observer.Activate(future.GetCallback());
 
   EXPECT_THAT(future.Get(), HasValue());
 }
@@ -81,9 +82,9 @@ TEST_F(ActorFillingObserverTest, Destruction) {
   Future future;
   std::optional<ActorFillingObserver> observer;
 
-  observer.emplace(autofill_client(),
-                   /*field_ids=*/base::span_from_ref(MakeFieldGlobalId()),
-                   future.GetCallback());
+  observer.emplace(autofill_client());
+  observer->ObserveNewFilling(base::span_from_ref(MakeFieldGlobalId()));
+  observer->Activate(future.GetCallback());
   observer.reset();
 
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
@@ -95,8 +96,10 @@ TEST_F(ActorFillingObserverTest, SingleFieldFill) {
   std::vector<FieldGlobalId> field_ids = {MakeFieldGlobalId()};
   Future future;
 
-  ActorFillingObserver observer(autofill_client(), field_ids,
-                                future.GetCallback());
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(field_ids);
+  observer.Activate(future.GetCallback());
+
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       mojom::ActionPersistence::kFill, field_ids, AddProfile());
@@ -110,7 +113,10 @@ TEST_F(ActorFillingObserverTest, SingleFieldPreview) {
   Future future;
   std::optional<ActorFillingObserver> observer;
 
-  observer.emplace(autofill_client(), field_ids, future.GetCallback());
+  observer.emplace(autofill_client());
+  observer->ObserveNewFilling(field_ids);
+  observer->Activate(future.GetCallback());
+
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       mojom::ActionPersistence::kPreview, field_ids, AddProfile());
@@ -126,8 +132,10 @@ TEST_F(ActorFillingObserverTest, MultiFieldFill) {
                                           MakeFieldGlobalId()};
   Future future;
 
-  ActorFillingObserver observer(autofill_client(), field_ids,
-                                future.GetCallback());
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(field_ids);
+  observer.Activate(future.GetCallback());
+
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       mojom::ActionPersistence::kFill, std::vector({field_ids[0]}),
@@ -148,7 +156,10 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
   Future future;
   std::optional<ActorFillingObserver> observer;
 
-  observer.emplace(autofill_client(), field_ids, future.GetCallback());
+  observer.emplace(autofill_client());
+  observer->ObserveNewFilling(field_ids);
+  observer->Activate(future.GetCallback());
+
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       mojom::ActionPersistence::kFill, std::vector({field_ids[0]}),
@@ -163,10 +174,9 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
 TEST_F(ActorFillingObserverTest, FillingTimeout) {
   Future future;
 
-  ActorFillingObserver observer(
-      autofill_client(),
-      /*field_ids=*/base::span_from_ref(MakeFieldGlobalId()),
-      future.GetCallback());
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(base::span_from_ref(MakeFieldGlobalId()));
+  observer.Activate(future.GetCallback());
 
   ASSERT_GT(ActorFillingObserver::GetFillingTimeout(), base::Milliseconds(1));
   EXPECT_FALSE(future.IsReady());
@@ -188,10 +198,10 @@ TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
   using Observer = CreditCardAccessManager::Observer;
   Future future;
   CreditCard card;
-  ActorFillingObserver observer(
-      autofill_client(),
-      /*field_ids=*/base::span_from_ref(MakeFieldGlobalId()),
-      future.GetCallback());
+
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(base::span_from_ref(MakeFieldGlobalId()));
+  observer.Activate(future.GetCallback());
 
   ASSERT_GT(ActorFillingObserver::GetFillingTimeout(), base::Milliseconds(1));
   FastForwardBy(ActorFillingObserver::GetFillingTimeout() -

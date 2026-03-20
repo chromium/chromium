@@ -57,6 +57,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "actor_form_filling_service_impl_test_api.h",
     "mock_actor_form_filling_service.cc",
     "mock_actor_form_filling_service.h",
   ]
