@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
+import type {ComposeboxInputElement} from './composebox_input.js';
 import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 
@@ -38,6 +40,10 @@ export const ComposeboxEmbedderMixin =
         accessor inputPlaceholder: string =
             loadTimeData.getString('searchboxComposePlaceholder');
         accessor inputState: InputState|null = null;
+
+        getInputElement(): ComposeboxInputElement {
+          assertNotReached();
+        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -51,4 +57,6 @@ export interface ComposeboxEmbedderMixinInterface {
   input: string;
   inputPlaceholder: string;
   inputState: InputState|null;
+
+  getInputElement(): ComposeboxInputElement;
 }
