@@ -398,6 +398,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-vector-svg-subset.hh",
       "src/src/hb-vector-svg-utils.cc",
       "src/src/hb-vector-svg-utils.hh",
+      "src/src/hb-vector-svg.hh",
       "src/src/hb-vector.cc",
       "src/src/hb-wasm-api-blob.hh",
       "src/src/hb-wasm-api-buffer.hh",
