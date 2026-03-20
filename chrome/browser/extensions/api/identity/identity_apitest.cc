@@ -295,13 +295,15 @@ class TestOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
         break;
       }
       case MINT_TOKEN_FAILURE: {
-        GoogleServiceAuthError error(GoogleServiceAuthError::CONNECTION_FAILED);
+        GoogleServiceAuthError error =
+            GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
         delegate_->OnMintTokenFailure(error);
         break;
       }
       case MINT_TOKEN_BAD_CREDENTIALS: {
-        GoogleServiceAuthError error(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+        GoogleServiceAuthError error =
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
         delegate_->OnMintTokenFailure(error);
         break;
       }
@@ -439,8 +441,8 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
       GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
       if (!login_access_token_result_) {
         access_token = std::nullopt;
-        error = GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+        error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
       }
       OnGetAccessTokenComplete(access_token,
                                base::Time::Now() + base::Hours(1LL), error);
@@ -2521,15 +2523,13 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, ManuallyIssueTokenFailure) {
   RunFunctionAsync(func.get(), "[{}]");
   run_loop.Run();
 
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromServiceUnavailable("");
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      primary_account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      primary_account_id, error);
 
-  EXPECT_EQ(
-      std::string(errors::kAuthFailure) +
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE)
-              .ToString(),
-      WaitForError(func.get()));
+  EXPECT_EQ(std::string(errors::kAuthFailure) + error.ToString(),
+            WaitForError(func.get()));
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kGetAccessTokenAuthFailure, 1);
