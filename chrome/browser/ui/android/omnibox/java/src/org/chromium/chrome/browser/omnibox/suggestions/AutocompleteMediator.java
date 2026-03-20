@@ -229,6 +229,7 @@ class AutocompleteMediator
         mFuseboxCoordinator = fuseboxCoordinator;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mOmniboxActionDelegate = omniboxActionDelegate;
+        mOmniboxActionDelegate.setOnKeywordModeEnteredCb(this::onKeywordModeEntered);
         mWindowAndroid = windowAndroid;
         mEmbedder = embedder;
         mDropdownViewInfoListBuilder =
@@ -609,7 +610,6 @@ class AutocompleteMediator
             mUrlBarEditingTextProvider.setSiteSearchChip(null);
         }
         mAutocompleteInput = input;
-        mOmniboxActionDelegate.setAutocompleteInput(input);
         if (mAutocompleteInput != null) {
             mAutocompleteInput
                     .getRequestTypeSupplier()
@@ -751,6 +751,14 @@ class AutocompleteMediator
         }
     }
 
+    private String stripKeywordIfNecessary(String text) {
+        if (mAutocompleteInput == null || mAutocompleteInput.getSiteSearchData() == null) {
+            return text;
+        }
+        String keywordPrefix = mAutocompleteInput.getSiteSearchData().keyword + " ";
+        return text.startsWith(keywordPrefix) ? text.substring(keywordPrefix.length()) : text;
+    }
+
     /**
      * Triggered when the user selects to refine one of the omnibox suggestions.
      *
@@ -762,7 +770,7 @@ class AutocompleteMediator
         stopAutocomplete(false);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         boolean isZeroPrefix = mAutocompleteInput.isInZeroPrefixContext();
-        String refineText = suggestion.getFillIntoEdit();
+        String refineText = stripKeywordIfNecessary(suggestion.getFillIntoEdit());
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
@@ -941,7 +949,7 @@ class AutocompleteMediator
     public void setOmniboxEditingText(String text) {
         if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
-        mDelegate.setOmniboxEditingText(text);
+        mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
     }
 
     /**
@@ -1106,6 +1114,22 @@ class AutocompleteMediator
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (!isInInputSession()) return;
         onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
+    }
+
+    private void onKeywordModeEntered(@Nullable SiteSearchData siteSearchData) {
+        if (!isInInputSession()) return;
+
+        // mIgnoreOmniboxItemSelection doesn't need to be reset since it will be cleared
+        // in onTextChanged which is triggered by setOmniboxEditingText.
+        mIgnoreOmniboxItemSelection = true;
+        mDelegate.setOmniboxEditingText("");
+
+        // In keyword mode, the query string starts fresh/empty. The keyword is presented as a
+        // UI chip outside the URL bar text input field.
+        mAutocompleteInput.setUserText("");
+        mAutocompleteInput.setSiteSearchData(siteSearchData);
+
+        onTextChanged("", /* isOnFocusContext= */ false);
     }
 
     private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {

@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
-import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -48,7 +48,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @Nullable Runnable mOpenQuickDeleteCb;
     private final Supplier<@Nullable TabWindowManager> mTabWindowManagerSupplier;
     private final BringTabToFrontCallback mBringTabToFrontCallback;
-    private @Nullable AutocompleteInput mAutocompleteInput;
+    private @Nullable Consumer<@Nullable SiteSearchData> mOnKeywordModeEnteredCb;
 
     public OmniboxActionDelegateImpl(
             Context context,
@@ -136,12 +136,15 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
         return true;
     }
 
-    public void setAutocompleteInput(@Nullable AutocompleteInput input) {
-        mAutocompleteInput = input;
+    @Override
+    public void setSiteSearchData(@Nullable SiteSearchData siteSearchData) {
+        if (mOnKeywordModeEnteredCb != null) {
+            mOnKeywordModeEnteredCb.accept(siteSearchData);
+        }
     }
 
-    @Override
-    public @Nullable AutocompleteInput getAutocompleteInput() {
-        return mAutocompleteInput;
+    public void setOnKeywordModeEnteredCb(
+            @Nullable Consumer<@Nullable SiteSearchData> onKeywordModeEnteredCb) {
+        mOnKeywordModeEnteredCb = onKeywordModeEnteredCb;
     }
 }
