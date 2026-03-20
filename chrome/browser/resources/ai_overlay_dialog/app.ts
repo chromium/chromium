@@ -4,7 +4,7 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {SessionState} from './api_session.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -40,6 +40,7 @@ export class AppElement extends CrLitElement {
   private accessor onInjectPrecannedAudio_: (() => void)|undefined;
 
   private pageHandler: PageHandlerRemote;
+  private pageCallbackRouter: PageCallbackRouter;
   // If onStateClick_ happens before the API key mojo returns, this will turn
   // to true and invoke the state change after the key becomes available.
   private queueStateChange: boolean = false;
@@ -50,9 +51,12 @@ export class AppElement extends CrLitElement {
     super();
 
     // Setup Mojo connection
+    this.pageCallbackRouter = new PageCallbackRouter();
     this.pageHandler = new PageHandlerRemote();
     const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(this.pageHandler.$.bindNewPipeAndPassReceiver());
+    factory.createPageHandler(
+        this.pageHandler.$.bindNewPipeAndPassReceiver(),
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
 
     this.pageHandler.getApiKey().then(({apiKey}) => {
       this.conversation = new Conversation(apiKey, {
@@ -61,6 +65,7 @@ export class AppElement extends CrLitElement {
         createAudioCapturer: () => this.createAudioCapturer(),
         createAudioPlayer: () => this.createAudioPlayer(),
       });
+      this.conversation.bindMojoHandlers(this.pageCallbackRouter);
 
       if (this.queueStateChange) {
         this.onStateClick_();

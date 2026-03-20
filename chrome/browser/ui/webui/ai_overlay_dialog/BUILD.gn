@@ -17,15 +17,45 @@ source_set("ai_overlay_dialog") {
     "ai_overlay_dialog_page_handler.h",
     "ai_overlay_dialog_untrusted_ui.cc",
     "ai_overlay_dialog_untrusted_ui.h",
+    "markdown_builder.cc",
+    "markdown_builder.h",
+    "page_context_monitor.cc",
+    "page_context_monitor.h",
   ]
   public_deps = [ ":mojo_bindings" ]
   deps = [
     "//chrome/browser/glic",
+    "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ai_overlay_dialog:resources",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/content",
+    "//components/tabs:public",
     "//content/public/browser",
     "//ui/webui",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "markdown_builder_browsertest.cc" ]
+  deps = [
+    ":ai_overlay_dialog",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/test:browsertest_support",
+    "//testing/gtest",
+    "//url",
   ]
 }

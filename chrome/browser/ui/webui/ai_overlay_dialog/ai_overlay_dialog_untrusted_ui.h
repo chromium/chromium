@@ -16,6 +16,7 @@
 
 class AiOverlayDialogUntrustedUI;
 class AiOverlayDialogPageHandler;
+class PageContextMonitor;
 
 class AiOverlayDialogUntrustedUIConfig
     : public content::DefaultWebUIConfig<AiOverlayDialogUntrustedUI> {
@@ -41,13 +42,15 @@ class AiOverlayDialogUntrustedUI
 
   // ai_overlay_dialog::mojom::PageHandlerFactor interface
   void CreatePageHandler(
-      mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver)
-      override;
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
+      mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote) override;
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   std::unique_ptr<AiOverlayDialogPageHandler> page_handler_;
+
+  std::unique_ptr<PageContextMonitor> page_context_monitor_;
 
   mojo::Receiver<ai_overlay_dialog::mojom::PageHandlerFactory>
       page_handler_factory_receiver_{this};

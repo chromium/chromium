@@ -7,7 +7,8 @@ module ai_overlay_dialog.mojom;
 // Factory for creating a PageHandler.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
+  CreatePageHandler(pending_receiver<PageHandler> handler,
+                    pending_remote<Page> page);
 };
 
 // Implemented by browser C++ code. Called by WebUI.
@@ -22,4 +23,14 @@ interface PageHandler {
   // be read. This is used during development to test the component on devices
   // without a microphone.
   GetMockAudioData() => (array<uint8>? data);
+};
+
+// Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.
+interface Page {
+  // Called whenever the page context has become stale (e.g. a new tab has been
+  // focused, or the current page has navigated).
+  InvalidatePageContext();
+
+  // Passes context about the current page to the app.
+  UpdateCurrentPageContext(string url, string page_title, string page_content);
 };

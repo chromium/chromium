@@ -2843,6 +2843,7 @@ if (!is_android) {
       "//chrome/browser/ui/webauthn:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/ai_overlay_dialog:browser_tests",
       "//chrome/browser/ui/webui/app_service_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_and_password_manager_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_ml_internals:browser_tests",
