@@ -450,10 +450,75 @@ TEST(ValuesTest, ConstructDictWithIterators) {
   values.emplace_back("Int", 123);
 
   Value blank;
-  blank = Value(DictValue(std::make_move_iterator(values.begin()),
-                          std::make_move_iterator(values.end())));
+  blank = Value(DictValue(std::move_iterator(values.begin()),
+                          std::move_iterator(values.end())));
   EXPECT_EQ(Value::Type::DICT, blank.type());
   EXPECT_EQ(123, blank.GetDict().Find("Int")->GetInt());
+}
+
+TEST(ValuesTest, InvalidUtf8KeyDchecks) {
+  static constexpr std::string_view kInvalidUtf8 = "\xff";
+  static constexpr std::string_view kInvalidUtf8Path = "a.\xff.b";
+
+  // Constructors.
+  std::vector<std::pair<std::string, Value>> values;
+  values.emplace_back(kInvalidUtf8, 123);
+  EXPECT_DCHECK_DEATH(DictValue(std::move_iterator(values.begin()),
+                                std::move_iterator(values.end())));
+
+  // Setters.
+  DictValue dict;
+
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, Value()));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, true));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, 123));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, 1.23));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, "value"));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, u"value"));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, std::string("value")));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, BlobStorage()));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, DictValue()));
+  EXPECT_DCHECK_DEATH(dict.Set(kInvalidUtf8, ListValue()));
+
+  EXPECT_DCHECK_DEATH(dict.Set_HintAtEnd(kInvalidUtf8, Value()));
+
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, Value()));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, true));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, 123));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, 1.23));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, "value"));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, u"value"));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, std::string("value")));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, BlobStorage()));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, DictValue()));
+  EXPECT_DCHECK_DEATH(DictValue().Set(kInvalidUtf8, ListValue()));
+
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, Value()));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, true));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, 123));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, 1.23));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, "value"));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, u"value"));
+  EXPECT_DCHECK_DEATH(
+      dict.SetByDottedPath(kInvalidUtf8Path, std::string("value")));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, BlobStorage()));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, DictValue()));
+  EXPECT_DCHECK_DEATH(dict.SetByDottedPath(kInvalidUtf8Path, ListValue()));
+
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, Value()));
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, true));
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, 123));
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, 1.23));
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, "value"));
+  EXPECT_DCHECK_DEATH(DictValue().SetByDottedPath(kInvalidUtf8Path, u"value"));
+  EXPECT_DCHECK_DEATH(
+      DictValue().SetByDottedPath(kInvalidUtf8Path, std::string("value")));
+  EXPECT_DCHECK_DEATH(
+      DictValue().SetByDottedPath(kInvalidUtf8Path, BlobStorage()));
+  EXPECT_DCHECK_DEATH(
+      DictValue().SetByDottedPath(kInvalidUtf8Path, DictValue()));
+  EXPECT_DCHECK_DEATH(
+      DictValue().SetByDottedPath(kInvalidUtf8Path, ListValue()));
 }
 
 TEST(ValuesTest, MoveList) {

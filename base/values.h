@@ -1078,10 +1078,13 @@ bool ListValue::contains(const T& val,
   });
 }
 
-template <class IteratorType>
-DictValue::DictValue(std::move_iterator<IteratorType> first,
-                     std::move_iterator<IteratorType> last) {
-  // Need to move into a vector first, since `storage_` currently uses
+namespace detail {
+
+template <typename IteratorType>
+flat_map<std::string, std::unique_ptr<Value>> MakeDictStorageFromIterators(
+    std::move_iterator<IteratorType> first,
+    std::move_iterator<IteratorType> last) {
+  // Need to move into a vector first, since DictValue's storage currently uses
   // unique_ptrs.
   std::vector<std::pair<std::string, std::unique_ptr<Value>>> values;
   values.reserve(static_cast<size_t>(std::distance(first, last)));
@@ -1093,8 +1096,15 @@ DictValue::DictValue(std::move_iterator<IteratorType> first,
     values.emplace_back(std::move(value.first),
                         std::make_unique<Value>(std::move(value.second)));
   }
-  storage_ = flat_map<std::string, std::unique_ptr<Value>>(std::move(values));
+  return flat_map<std::string, std::unique_ptr<Value>>(std::move(values));
 }
+
+}  // namespace detail
+
+template <class IteratorType>
+DictValue::DictValue(std::move_iterator<IteratorType> first,
+                     std::move_iterator<IteratorType> last)
+    : DictValue(detail::MakeDictStorageFromIterators(first, last)) {}
 
 }  // namespace base
 

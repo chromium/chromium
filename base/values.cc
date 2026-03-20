@@ -356,8 +356,9 @@ DictValue::DictValue() = default;
 
 DictValue::DictValue(flat_map<std::string, std::unique_ptr<Value>> storage)
     : storage_(std::move(storage)) {
-  DCHECK(std::ranges::all_of(storage_,
-                             [](const auto& entry) { return !!entry.second; }));
+  DCHECK(std::ranges::all_of(storage_, [](const auto& entry) {
+    return !!entry.second && IsStringUTF8AllowingNoncharacters(entry.first);
+  }));
 }
 
 DictValue::DictValue(PassKey<internal::JSONParser>,
