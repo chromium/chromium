@@ -37,6 +37,15 @@ void RecordOnDeviceTranslationCallForLanguagePair(std::string_view action_name,
                                                   std::string_view source_lang,
                                                   std::string_view target_lang);
 
+// Translate.OnDeviceTranslation.{action_name}.IsSourceLanguageSupported
+void RecordOnDeviceTranslationSupportedSourceLanguage(
+    std::string_view action_name,
+    bool is_supported);
+// Translate.OnDeviceTranslation.{action_name}.IsTargetLanguageSupported
+void RecordOnDeviceTranslationSupportedTargetLanguage(
+    std::string_view action_name,
+    bool is_supported);
+
 // Record the character count UMA for:
 // Translate.OnDeviceTranslation.CharacterCount
 // Translate.OnDeviceTranslation.Source.${source_lang}.CharacterCount

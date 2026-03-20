@@ -328,6 +328,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Translate.OnDeviceTranslation.{LanguageRole}.{SupportedLanguage}.TranslationLength"
+    units="int" expires_after="2027-03-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs the text length given as input to on-device-translation Translator.
+  </summary>
+  <token key="LanguageRole" variants="LanguageRole"/>
+  <token key="SupportedLanguage" variants="SupportedLanguage"/>
+</histogram>
+
+<histogram
+    name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsSourceLanguageSupported"
+    units="int" expires_after="2027-03-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs if the source language given as input is supported or not.
+  </summary>
+  <token key="OnDeviceTranslationAction" variants="OnDeviceTranslationAction"/>
+</histogram>
+
+<histogram
+    name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsTargetLanguageSupported"
+    units="int" expires_after="2027-03-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs if the target language given as input is supported or not.
+  </summary>
+  <token key="OnDeviceTranslationAction" variants="OnDeviceTranslationAction"/>
+</histogram>
+
+<histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.LanguagePair"
     units="int" expires_after="2027-03-01">
   <owner>evliu@google.com</owner>
