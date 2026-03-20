@@ -7,7 +7,7 @@
 // tree, but only exposes the <em>semantic</em> structure of a page. It can be
 // used to programmatically interact with a page by examining names, roles, and
 // states, listening for events, and performing actions on nodes.
-[nocompile] namespace automation {
+namespace automation {
   // Keep the following enums in sync with 'ui/accessibility/ax_enums.mojom'.
   // They are kept here purely for extension docs generation.
 
@@ -69,10 +69,12 @@
     labeledByChanged,
     languageChanged,
     layoutComplete,
-    layoutInvalidated,  // fired when aria-busy goes false
+    // fired when aria-busy goes false
+    layoutInvalidated,
     liveRegionChanged,
     liveRegionCreated,
-    liveRegionNodeChanged,  // fired on a node within a live region.
+    // fired on a node within a live region.
+    liveRegionNodeChanged,
     liveRelevantChanged,
     liveStatusChanged,
     loadComplete,
@@ -133,7 +135,8 @@
     tooltipOpened,
     treeChanged,
     valueInTextFieldChanged,
-    valueChanged,  // Deprecated.
+    // Deprecated.
+    valueChanged,
     windowActivated,
     windowDeactivated,
     windowVisibilityChanged
@@ -265,7 +268,8 @@
     list,
     listBox,
     listBoxOption,
-    listGrid,  // Native
+    // Native
+    listGrid,
     listItem,
     listMarker,
     log,
@@ -444,36 +448,25 @@
   // nodeCreated means that this node was added to the tree and its parent is
   // new as well, so it's just one node in a new subtree that was added.
   enum TreeChangeType {
-    /**
-     * This node was added to the tree and its parent is new as well,
-     * so it's just one node in a new subtree that was added.
-     */
+    // This node was added to the tree and its parent is new as well,
+    // so it's just one node in a new subtree that was added.
     nodeCreated,
 
-    /**
-     * This node was added to the tree but its parent was already in the
-     * tree, so it's possibly the root of a new subtree - it does not mean
-     * that it necessarily has children.
-     */
+    // This node was added to the tree but its parent was already in the
+    // tree, so it's possibly the root of a new subtree - it does not mean
+    // that it necessarily has children.
     subtreeCreated,
 
-    /**
-     * This node changed.
-     */
+    // This node changed.
     nodeChanged,
 
-    /**
-     * This node's text (name) changed.
-     */
+    // This node's text (name) changed.
     textChanged,
 
-    /**
-     * This node was removed.
-     */
+    // This node was removed.
     nodeRemoved,
-    /**
-     * This subtree has finished an update.
-     */
+
+    // This subtree has finished an update.
     subtreeUpdateEnd
   };
 
@@ -556,128 +549,128 @@
     press,
     select,
     uncheck
-};
+  };
 
-  // Types of markers on text. See <code>AutomationNode.markerTypes</code>.
-enum MarkerType {
-  spelling,
-  grammar,
-  textMatch,
-  activeSuggestion,
-  suggestion,
-  highlight
-};
+    // Types of markers on text. See <code>AutomationNode.markerTypes</code>.
+  enum MarkerType {
+    spelling,
+    grammar,
+    textMatch,
+    activeSuggestion,
+    suggestion,
+    highlight
+  };
 
-// The following three enums are associated with an $(ref:automation.AutomationIntent).
+  // The following three enums are associated with an $(ref:automation.AutomationIntent).
 
-// A command associated with an $(ref:automation.AutomationIntent).
-enum IntentCommandType {
-  clearSelection,
-  delete,
-  dictate,
-  extendSelection,
-  format,
-  history,
-  insert,
-  marker,
-  moveSelection,
-  setSelection
-};
+  // A command associated with an $(ref:automation.AutomationIntent).
+  enum IntentCommandType {
+    clearSelection,
+    delete,
+    dictate,
+    extendSelection,
+    format,
+    history,
+    insert,
+    marker,
+    moveSelection,
+    setSelection
+  };
 
-// The type of an input event associated with an $(ref:automation.AutomationIntent). It describes an edit
-// command, e.g. IntentCommandType.insert, in more detail.
-enum IntentInputEventType {
-  // Insertion.
-  insertText,
-  insertLineBreak,
-  insertParagraph,
-  insertOrderedList,
-  insertUnorderedList,
-  insertHorizontalRule,
-  insertFromPaste,
-  insertFromDrop,
-  insertFromYank,
-  insertTranspose,
-  insertReplacementText,
-  insertCompositionText,
-  insertLink,
-  // Deletion.
-  deleteWordBackward,
-  deleteWordForward,
-  deleteSoftLineBackward,
-  deleteSoftLineForward,
-  deleteHardLineBackward,
-  deleteHardLineForward,
-  deleteContentBackward,
-  deleteContentForward,
-  deleteByCut,
-  deleteByDrag,
-  // History.
-  historyUndo,
-  historyRedo,
-  // Formatting.
-  formatBold,
-  formatItalic,
-  formatUnderline,
-  formatStrikeThrough,
-  formatSuperscript,
-  formatSubscript,
-  formatJustifyCenter,
-  formatJustifyFull,
-  formatJustifyRight,
-  formatJustifyLeft,
-  formatIndent,
-  formatOutdent,
-  formatRemove,
-  formatSetBlockTextDirection
-};
+  // The type of an input event associated with an $(ref:automation.AutomationIntent). It describes an edit
+  // command, e.g. IntentCommandType.insert, in more detail.
+  enum IntentInputEventType {
+    // Insertion.
+    insertText,
+    insertLineBreak,
+    insertParagraph,
+    insertOrderedList,
+    insertUnorderedList,
+    insertHorizontalRule,
+    insertFromPaste,
+    insertFromDrop,
+    insertFromYank,
+    insertTranspose,
+    insertReplacementText,
+    insertCompositionText,
+    insertLink,
+    // Deletion.
+    deleteWordBackward,
+    deleteWordForward,
+    deleteSoftLineBackward,
+    deleteSoftLineForward,
+    deleteHardLineBackward,
+    deleteHardLineForward,
+    deleteContentBackward,
+    deleteContentForward,
+    deleteByCut,
+    deleteByDrag,
+    // History.
+    historyUndo,
+    historyRedo,
+    // Formatting.
+    formatBold,
+    formatItalic,
+    formatUnderline,
+    formatStrikeThrough,
+    formatSuperscript,
+    formatSubscript,
+    formatJustifyCenter,
+    formatJustifyFull,
+    formatJustifyRight,
+    formatJustifyLeft,
+    formatIndent,
+    formatOutdent,
+    formatRemove,
+    formatSetBlockTextDirection
+  };
 
-// A text boundary associated with an $(ref:automation.AutomationIntent).
-enum IntentTextBoundaryType {
-  character,
-  formatEnd,
-  formatStart,
-  formatStartOrEnd,
-  lineEnd,
-  lineStart,
-  lineStartOrEnd,
-  object,
-  pageEnd,
-  pageStart,
-  pageStartOrEnd,
-  paragraphEnd,
-  paragraphStart,
-  paragraphStartSkippingEmptyParagraphs,
-  paragraphStartOrEnd,
-  sentenceEnd,
-  sentenceStart,
-  sentenceStartOrEnd,
-  webPage,
-  wordEnd,
-  wordStart,
-  wordStartOrEnd
-};
+  // A text boundary associated with an $(ref:automation.AutomationIntent).
+  enum IntentTextBoundaryType {
+    character,
+    formatEnd,
+    formatStart,
+    formatStartOrEnd,
+    lineEnd,
+    lineStart,
+    lineStartOrEnd,
+    object,
+    pageEnd,
+    pageStart,
+    pageStartOrEnd,
+    paragraphEnd,
+    paragraphStart,
+    paragraphStartSkippingEmptyParagraphs,
+    paragraphStartOrEnd,
+    sentenceEnd,
+    sentenceStart,
+    sentenceStartOrEnd,
+    webPage,
+    wordEnd,
+    wordStart,
+    wordStartOrEnd
+  };
 
-// A move direction associated with an $(ref:automation.AutomationIntent).
-enum IntentMoveDirectionType {
-  backward,
-  forward
-};
+  // A move direction associated with an $(ref:automation.AutomationIntent).
+  enum IntentMoveDirectionType {
+    backward,
+    forward
+  };
 
-// A sort applied to a table row or column header.
-enum SortDirectionType {
-  unsorted,
-  ascending,
-  descending,
-  other
-};
+  // A sort applied to a table row or column header.
+  enum SortDirectionType {
+    unsorted,
+    ascending,
+    descending,
+    other
+  };
 
-// A type of AutomationPosition.
-enum PositionType {
-  null,
-  text,
-  tree
-};
+  // A type of AutomationPosition.
+  enum PositionType {
+    null,
+    text,
+    tree
+  };
 
   dictionary Rect {
     long left;
