@@ -161,6 +161,9 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
     sync_networks[id] = proto;
   }
 
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
+
   // Iterate through local networks and add to sync where appropriate.
   for (sync_pb::WifiConfigurationSpecifics& proto : local_network_list) {
     NetworkIdentifier id = NetworkIdentifier::FromProto(proto);
@@ -178,12 +181,10 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
     // Upload the local network configuration to sync.  This could be a new
     // configuration or an update to an existing one.
     change_processor()->Put(storage_key, std::move(entity_data),
-                            metadata_change_list.get());
+                            batch->GetMetadataChangeList());
     entries_[storage_key] = proto;
   }
 
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
   // Iterate through synced networks and update local stack where appropriate.
   for (const auto& [id, proto] : sync_networks) {
     if (auto it = local_networks.find(id);
@@ -203,7 +204,6 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
   }
 
   // Mark the changes as processed.
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   RecordNetworkMetrics();
 }
@@ -213,7 +213,7 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   NET_LOG(EVENT) << "Applying  " << entity_changes.size()
                  << " pending changes.";
@@ -247,7 +247,6 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
     entries_[change->storage_key()] = std::move(specifics);
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   RecordNetworkMetrics();
 

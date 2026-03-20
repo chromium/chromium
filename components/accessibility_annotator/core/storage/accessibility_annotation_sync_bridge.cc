@@ -58,7 +58,7 @@ AccessibilityAnnotationSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      data_type_store_->CreateWriteBatch();
+      data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
@@ -80,7 +80,6 @@ AccessibilityAnnotationSyncBridge::ApplyIncrementalSyncChanges(
         break;
     }
   }
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   data_type_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit,

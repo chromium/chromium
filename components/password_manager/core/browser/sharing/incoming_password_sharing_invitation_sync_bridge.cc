@@ -77,7 +77,7 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   CHECK(password_receiver_service_);
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      sync_metadata_store_->CreateWriteBatch();
+      sync_metadata_store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
@@ -93,10 +93,9 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     // that no other client will process it.
     change_processor()->Delete(change->storage_key(),
                                syncer::DeletionOrigin::Unspecified(),
-                               metadata_change_list.get());
+                               batch->GetMetadataChangeList());
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitSyncMetadata(std::move(batch));
   return std::nullopt;
 }

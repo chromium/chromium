@@ -163,7 +163,7 @@ SharedTabGroupAccountDataSyncBridge::ApplyIncrementalSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change :
        entity_change_list) {
@@ -200,7 +200,6 @@ SharedTabGroupAccountDataSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(

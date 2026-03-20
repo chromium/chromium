@@ -47,6 +47,8 @@ class DataTypeStoreImpl : public DataTypeStore {
       PreprocessCallback preprocess_on_backend_sequence_callback,
       CallbackWithResult completion_on_frontend_sequence_callback) override;
   std::unique_ptr<WriteBatch> CreateWriteBatch() override;
+  std::unique_ptr<WriteBatch> CreateWriteBatch(
+      std::unique_ptr<MetadataChangeList> metadata_change_list) override;
   void CommitWriteBatch(std::unique_ptr<WriteBatch> write_batch,
                         CallbackWithResult callback) override;
   void DeleteAllDataAndMetadata(CallbackWithResult callback) override;

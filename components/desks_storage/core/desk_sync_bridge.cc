@@ -180,7 +180,8 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> added_or_updated;
   std::vector<base::Uuid> removed;
-  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const base::Uuid uuid =
@@ -224,8 +225,6 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
       }
     }
   }
-
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
 
   NotifyRemoteDeskTemplateAddedOrUpdated(added_or_updated);

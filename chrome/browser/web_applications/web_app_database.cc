@@ -118,12 +118,10 @@ void WebAppDatabase::Write(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(opened_);
 
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
-
   // |update_data| can be empty here but we should write |metadata_change_list|
   // anyway.
-  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_create) {
     auto proto = WebAppToProto(*web_app);

@@ -95,7 +95,16 @@ class DataTypeStore : public DataTypeStoreBase {
       CallbackWithResult completion_on_frontend_sequence_callback) = 0;
 
   // Creates write batch for write operations.
+  // Deprecated: use CreateWriteBatch with metadata changes instead where
+  // possible.
+  // TODO(crbug.com/469455164): remove this method once all callers are
+  // migrated.
   virtual std::unique_ptr<WriteBatch> CreateWriteBatch() = 0;
+
+  // Creates write batch for write operations with metadata changes. If
+  // `metadata_change_list` is null, an empty metadata change list is created.
+  virtual std::unique_ptr<WriteBatch> CreateWriteBatch(
+      std::unique_ptr<MetadataChangeList> metadata_change_list) = 0;
 
   // Commits write operations accumulated in write batch. If write operation
   // fails result is UNSPECIFIED_ERROR and write operations will not be

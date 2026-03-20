@@ -65,7 +65,7 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      data_type_store_->CreateWriteBatch();
+      data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
   std::vector<sync_pb::GeminiThreadSpecifics> added_or_updated;
   std::vector<base::Uuid> removed;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -91,7 +91,6 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   data_type_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&GeminiThreadSyncBridge::OnDataTypeStoreCommit,

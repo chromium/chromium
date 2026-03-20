@@ -600,8 +600,8 @@ void SyncableServiceBasedBridge::ProcessRemoteAddOrUpdate(
 SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
     std::unique_ptr<MetadataChangeList> initial_metadata_change_list,
     EntityChangeList input_entity_change_list) {
-  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
-  batch->TakeMetadataChangesFrom(std::move(initial_metadata_change_list));
+  std::unique_ptr<DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(initial_metadata_change_list));
 
   SyncChangeList output_sync_change_list;
   output_sync_change_list.reserve(input_entity_change_list.size());

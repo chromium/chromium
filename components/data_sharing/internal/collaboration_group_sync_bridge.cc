@@ -85,7 +85,7 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      data_type_store_->CreateWriteBatch();
+      data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
 
   std::vector<GroupId> added_ids;
   std::vector<GroupId> updated_ids;
@@ -127,7 +127,6 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   data_type_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&CollaborationGroupSyncBridge::OnDataTypeStoreCommit,

@@ -146,7 +146,7 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   std::vector<PasskeyModelChange> changes;
   for (const auto& entity_change : entity_changes) {
@@ -178,7 +178,6 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,

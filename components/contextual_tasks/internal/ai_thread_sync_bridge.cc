@@ -71,7 +71,7 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      data_type_store_->CreateWriteBatch();
+      data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
   std::vector<proto::AiThreadEntity> added_or_updated;
   std::vector<base::Uuid> removed;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -97,7 +97,6 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   data_type_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&AiThreadSyncBridge::OnDataTypeStoreCommit,

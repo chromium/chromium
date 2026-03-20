@@ -188,7 +188,7 @@ PersonalCollaborationDataSyncBridge::ApplyIncrementalSyncChanges(
   MaybeNotifyObserversInitialized();
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change :
        entity_change_list) {
@@ -219,7 +219,6 @@ PersonalCollaborationDataSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(

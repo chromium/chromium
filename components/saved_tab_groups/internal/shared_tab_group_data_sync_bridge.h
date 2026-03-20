@@ -189,9 +189,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // When `store_write_batch_on_destroy` is false, the write batch is not
   // committed to the store when destroyed, and the caller is responsible for
   // committing it when needed. `store_write_batch_on_destroy` has no impact if
-  // there is an ongoing write batch.
+  // there is an ongoing write batch. Data from the `metadata_change_list` is
+  // transferred to the ongoing write batch if provided.
   base::ScopedClosureRunner CreateWriteBatchWithDestroyClosure(
-      bool store_write_batch_on_destroy);
+      bool store_write_batch_on_destroy,
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
   // Destroys the ongoing write batch and commits it to the store if
   // `store_write_batch_on_destroy` is true.

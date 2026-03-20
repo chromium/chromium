@@ -187,7 +187,7 @@ ProfileAuthServersSyncBridge::MergeFullSyncData(
   std::set<std::string> unsynced_local_uris = servers_uris_;
   std::set<std::string> added_local_uris;
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     const sync_pb::PrintersAuthorizationServerSpecifics& specifics =
@@ -206,11 +206,10 @@ ProfileAuthServersSyncBridge::MergeFullSyncData(
   // Send unmatched local URIs to the server.
   for (const std::string& uri : unsynced_local_uris) {
     change_processor()->Put(uri, ToEntityDataPtr(uri),
-                            metadata_change_list.get());
+                            batch->GetMetadataChangeList());
   }
 
   // Save new local URIs to the local store.
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch), base::BindOnce(&ProfileAuthServersSyncBridge::OnCommit,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -227,7 +226,7 @@ ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
   std::set<std::string> deleted_local_uris;
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+      store_->CreateWriteBatch(std::move(metadata_change_list));
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& uri = change->storage_key();
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
@@ -244,7 +243,6 @@ ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
       }
     }
   }
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch), base::BindOnce(&ProfileAuthServersSyncBridge::OnCommit,
                                        weak_ptr_factory_.GetWeakPtr()));

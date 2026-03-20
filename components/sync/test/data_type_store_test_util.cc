@@ -58,6 +58,11 @@ class ForwardingDataTypeStore : public DataTypeStore {
     return other_->CreateWriteBatch();
   }
 
+  std::unique_ptr<WriteBatch> CreateWriteBatch(
+      std::unique_ptr<MetadataChangeList> metadata_change_list) override {
+    return other_->CreateWriteBatch(std::move(metadata_change_list));
+  }
+
   void CommitWriteBatch(std::unique_ptr<WriteBatch> write_batch,
                         CallbackWithResult callback) override {
     other_->CommitWriteBatch(std::move(write_batch), std::move(callback));

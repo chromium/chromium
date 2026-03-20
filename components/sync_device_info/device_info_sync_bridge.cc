@@ -449,7 +449,8 @@ std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
       local_device_name_info_.full_hardware_class,
       /*device_info_restored_from_store=*/nullptr);
 
-  std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
+  std::unique_ptr<WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
   for (const auto& change : entity_data) {
     const DeviceInfoSpecifics& specifics =
         change->data().specifics.device_info();
@@ -464,7 +465,6 @@ std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
     StoreSpecifics(specifics, batch.get());
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   // Complete batch with local data and commit.
   SendLocalDataWithBatch(std::move(batch));
   return std::nullopt;
@@ -475,7 +475,8 @@ std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!local_cache_guid_.empty());
-  std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
+  std::unique_ptr<WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
   bool has_changes = false;
   bool has_tombstone_for_local_device = false;
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
@@ -505,7 +506,6 @@ std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitAndNotify(std::move(batch), has_changes);
 
   if (!change_processor()->IsEntityUnsynced(local_cache_guid_)) {

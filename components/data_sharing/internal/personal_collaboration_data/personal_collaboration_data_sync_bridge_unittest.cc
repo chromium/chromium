@@ -643,19 +643,18 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
           });
 
   // Mock CreateWriteBatch to return a valid batch.
-  ON_CALL(*mock_store, CreateWriteBatch).WillByDefault([]() {
+  ON_CALL(*mock_store, CreateWriteBatch(_)).WillByDefault([]() {
     return std::make_unique<FakeWriteBatch>();
   });
 
   // Mock CommitWriteBatch to fail.
   EXPECT_CALL(*mock_store, CommitWriteBatch)
-      .WillOnce(
-          [](std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch,
-             syncer::DataTypeStore::CallbackWithResult callback) {
-            std::move(callback).Run(syncer::ModelError(
-                FROM_HERE,
-                syncer::ModelError::Type::kDataTypeStoreBackendDbWriteFailed));
-          });
+      .WillOnce([](std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch,
+                   syncer::DataTypeStore::CallbackWithResult callback) {
+        std::move(callback).Run(syncer::ModelError(
+            FROM_HERE,
+            syncer::ModelError::Type::kDataTypeStoreBackendDbWriteFailed));
+      });
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_processor(), ModelReadyToSync).WillOnce([&]() {

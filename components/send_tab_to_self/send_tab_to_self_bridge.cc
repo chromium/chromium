@@ -184,7 +184,8 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   // opened.
   std::vector<const SendTabToSelfEntry*> opened;
   std::vector<std::string> removed;
-  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& guid = change->storage_key();
@@ -241,7 +242,6 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
 
   NotifyRemoteSendTabToSelfEntryDeleted(removed);

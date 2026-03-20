@@ -228,9 +228,12 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // committed to the store when destroyed, and the caller is responsible for
   // committing it when needed by calling CommitOngoingWriteBatch().
   // `commit_write_batch_on_destroy` has no impact if there is an ongoing write
-  // batch (i.e. this method is called reentrantly).
+  // batch (i.e. this method is called reentrantly). Data from the
+  // `metadata_change_list` is transferred to the ongoing write batch if
+  // provided.
   base::ScopedClosureRunner MaybeCreateScopedWriteBatch(
-      bool commit_write_batch_on_destroy);
+      bool commit_write_batch_on_destroy,
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
   // Commits the ongoing write batch to the store. This method should only be
   // called after `MaybeCreateScopedWriteBatch()` and when the current scope is

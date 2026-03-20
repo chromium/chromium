@@ -233,6 +233,17 @@ DataTypeStoreImpl::CreateWriteBatch() {
   return BlockingDataTypeStoreImpl::CreateWriteBatch(data_type_, storage_type_);
 }
 
+std::unique_ptr<DataTypeStore::WriteBatch> DataTypeStoreImpl::CreateWriteBatch(
+    std::unique_ptr<MetadataChangeList> metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
+      BlockingDataTypeStoreImpl::CreateWriteBatch(data_type_, storage_type_);
+  if (metadata_change_list) {
+    write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  }
+  return write_batch;
+}
+
 void DataTypeStoreImpl::CommitWriteBatch(
     std::unique_ptr<WriteBatch> write_batch,
     CallbackWithResult callback) {
