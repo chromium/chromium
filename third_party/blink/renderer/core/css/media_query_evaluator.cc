@@ -88,6 +88,14 @@ bool TypesMatch(const CSSNumericLiteralValue& a,
          (a.IsTime() && b.IsTime()) || (a.IsResolution() && b.IsResolution());
 }
 
+KleeneValue ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
+  if (r == MediaQuery::RestrictorType::kNot && value != KleeneValue::kUnknown) {
+    return value == KleeneValue::kFalse ? KleeneValue::kTrue
+                                        : KleeneValue::kFalse;
+  }
+  return value;
+}
+
 }  // namespace
 
 using mojom::blink::DevicePostureType;
@@ -141,22 +149,20 @@ bool MediaQueryEvaluator::MediaTypeMatch(
          EqualIgnoringAsciiCase(media_type_to_match, MediaType());
 }
 
-static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
-  if (value == KleeneValue::kUnknown) {
-    return false;
-  }
-  if (r == MediaQuery::RestrictorType::kNot) {
-    return value == KleeneValue::kFalse;
-  }
-  return value == KleeneValue::kTrue;
+KleeneValue MediaQueryEvaluator::Eval(const MediaQuery& query) const {
+  return Eval(query, nullptr /* result_flags */, nullptr /* custom_medias */);
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
-  return Eval(query, nullptr /* result_flags */);
+KleeneValue MediaQueryEvaluator::Eval(
+    const MediaQuery& query,
+    MediaQueryResultFlags* result_flags) const {
+  return Eval(query, result_flags, nullptr /* custom_medias */);
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQuery& query,
-                               MediaQueryResultFlags* result_flags) const {
+KleeneValue MediaQueryEvaluator::Eval(
+    const MediaQuery& query,
+    MediaQueryResultFlags* result_flags,
+    const CustomMediaRulesMap* custom_medias) const {
   if (!MediaTypeMatch(query.MediaType())) {
     return ApplyRestrictor(query.Restrictor(), KleeneValue::kFalse);
   }
@@ -164,36 +170,40 @@ bool MediaQueryEvaluator::Eval(const MediaQuery& query,
     return ApplyRestrictor(query.Restrictor(), KleeneValue::kTrue);
   }
   return ApplyRestrictor(query.Restrictor(),
-                         Eval(*query.ExpNode(), result_flags));
+                         Eval(*query.ExpNode(), result_flags, custom_medias));
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
-  return Eval(query_set, nullptr /* result_flags */);
+  return Eval(query_set, nullptr /* result_flags */,
+              nullptr /* custom_medias */);
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
-                               MediaQueryResultFlags* result_flags) const {
+                               MediaQueryResultFlags* result_flags,
+                               const CustomMediaRulesMap* custom_medias) const {
   const HeapVector<Member<const MediaQuery>>& queries = query_set.QueryVector();
-  if (!queries.size()) {
-    return true;  // Empty query list evaluates to true.
+  if (queries.empty()) {
+    return true;  // An empty query list evaluates to true.
   }
 
   // Iterate over queries, stop if any of them eval to true (OR semantics).
-  bool result = false;
-  for (wtf_size_t i = 0; i < queries.size() && !result; ++i) {
-    result = Eval(*queries[i], result_flags);
+  KleeneValue result = KleeneValue::kFalse;
+  for (wtf_size_t i = 0; i < queries.size() && result != KleeneValue::kTrue;
+       ++i) {
+    result = Eval(*queries[i], result_flags, custom_medias);
   }
 
-  return result;
+  return result == KleeneValue::kTrue;
 }
 
 KleeneValue MediaQueryEvaluator::Eval(const ConditionalExpNode& node) const {
-  return Eval(node, nullptr /* result_flags */);
+  return Eval(node, nullptr /* result_flags */, nullptr /* custom_medias */);
 }
 
 KleeneValue MediaQueryEvaluator::Eval(
     const ConditionalExpNode& node,
-    MediaQueryResultFlags* result_flags) const {
+    MediaQueryResultFlags* result_flags,
+    const CustomMediaRulesMap* custom_medias) const {
   class Handler : public ConditionalExpNodeVisitor {
    public:
     using EvaluateMediaFunc =
@@ -212,7 +222,7 @@ KleeneValue MediaQueryEvaluator::Eval(
   };
 
   auto callback = [&](const MediaQueryFeatureExpNode& feature) {
-    return EvalFeature(feature, result_flags);
+    return EvalFeature(feature, result_flags, custom_medias);
   };
 
   Handler evaluation_context(callback);
@@ -1638,7 +1648,8 @@ void MediaQueryEvaluator::Init() {
 
 KleeneValue MediaQueryEvaluator::EvalFeature(
     const MediaQueryFeatureExpNode& feature,
-    MediaQueryResultFlags* result_flags) const {
+    MediaQueryResultFlags* result_flags,
+    const CustomMediaRulesMap* custom_medias) const {
   if (!media_values_ || !media_values_->HasValues()) {
     // media_values_ should only be nullptr when parsing UA stylesheets. The
     // only media queries we support in UA stylesheets are media type queries.
@@ -1664,8 +1675,15 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   if (RuntimeEnabledFeatures::CSSCustomMediaEnabled() &&
       feature.IsCustomMedia() &&
       CSSVariableParser::IsValidVariableName(feature.Name())) {
-    // TODO(crbug.com/40781325): Support evaluation of custom-media queries.
-    return KleeneValue::kUnknown;
+    if (!custom_medias) {
+      return KleeneValue::kUnknown;
+    }
+    auto it = custom_medias->find(AtomicString(feature.Name()));
+    if (it == custom_medias->end()) {
+      return KleeneValue::kUnknown;
+    } else {
+      return EvalCustomMedia(it->value, result_flags, custom_medias);
+    }
   }
 
   if (feature.HasStyleRange() ||
@@ -1707,6 +1725,32 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   }
 
   return result ? KleeneValue::kTrue : KleeneValue::kFalse;
+}
+
+KleeneValue MediaQueryEvaluator::EvalCustomMedia(
+    const StyleRuleCustomMedia* custom_media_rule,
+    MediaQueryResultFlags* result_flags,
+    const CustomMediaRulesMap* custom_medias) const {
+  if (custom_media_rule->IsBooleanValue()) {
+    return custom_media_rule->GetBooleanValue() ? KleeneValue::kTrue
+                                                : KleeneValue::kFalse;
+  }
+  CHECK(custom_media_rule->IsMediaQueryValue());
+  const MediaQuerySet* query_set = custom_media_rule->GetMediaQueryValue();
+
+  const HeapVector<Member<const MediaQuery>>& queries =
+      query_set->QueryVector();
+  if (queries.empty()) {
+    return KleeneValue::kTrue;  // An empty query list evaluates to true.
+  }
+
+  KleeneValue result = KleeneValue::kFalse;
+  for (wtf_size_t i = 0; i < queries.size() && result != KleeneValue::kTrue;
+       ++i) {
+    result = KleeneOr(result, Eval(*queries[i], result_flags, custom_medias));
+  }
+
+  return result;
 }
 
 namespace {

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -460,7 +461,8 @@ MediaQueryEvaluatorTestCase g_float_cast_overflow_cases[] = {
 };
 
 void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
-                     const MediaQueryEvaluator* media_query_evaluator) {
+                     const MediaQueryEvaluator* media_query_evaluator,
+                     const CustomMediaRulesMap* custom_medias) {
   MediaQuerySet* query_set = nullptr;
   for (const MediaQueryEvaluatorTestCase& test_case : test_cases) {
     if (String(test_case.input).empty()) {
@@ -470,9 +472,15 @@ void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
       CSSParserTokenStream stream(str);
       query_set = MediaQueryParser::ParseMediaQuerySet(stream, nullptr);
     }
-    EXPECT_EQ(test_case.output, media_query_evaluator->Eval(*query_set))
+    EXPECT_EQ(test_case.output,
+              media_query_evaluator->Eval(*query_set, nullptr, custom_medias))
         << "Query: " << test_case.input;
   }
+}
+
+void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
+                     const MediaQueryEvaluator* media_query_evaluator) {
+  TestMQEvaluator(test_cases, media_query_evaluator, {});
 }
 
 TEST(MediaQueryEvaluatorTest, Cached) {
@@ -1440,8 +1448,68 @@ TEST(MediaQueryEvaluatorTest, TestQueriesWithUndefinedCustomMedias) {
   MediaQueryEvaluatorTestCase test_cases[] = {
       {"(--undefined)", false},
   };
+  CustomMediaRulesMap custom_medias;
 
-  TestMQEvaluator(test_cases, media_query_evaluator);
+  TestMQEvaluator(test_cases, media_query_evaluator, &custom_medias);
+}
+
+struct CustomMediaQueryTestData {
+  const char* name;
+  std::variant<const char*, bool> value;
+};
+
+TEST(MediaQueryEvaluatorTest, TestEvalCustomMedias) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+  data.viewport_height = 500;
+  data.media_type = media_type_names::kScreen;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+
+  CustomMediaQueryTestData custom_medias_data[] = {
+      {"--true-val", true},
+      {"--false-val", false},
+      {"--true-query", "screen and (height: 500px)"},
+      {"--false-query", "print"},
+      {"--unknown-query", "(--undefined)"},
+      {"--nested-query", "(--true-val)"},
+      {"--cyclic", "--cyclic"}};
+
+  CustomMediaRulesMap custom_medias;
+  for (auto custom_media : custom_medias_data) {
+    StyleRuleCustomMedia* style_rule_custom_media = nullptr;
+    if (std::holds_alternative<const char*>(custom_media.value)) {
+      style_rule_custom_media = MakeGarbageCollected<StyleRuleCustomMedia>(
+          AtomicString(custom_media.name),
+          MediaQueryParser::ParseMediaQuerySet(
+              std::get<const char*>(custom_media.value), nullptr));
+    } else {
+      style_rule_custom_media = MakeGarbageCollected<StyleRuleCustomMedia>(
+          AtomicString(custom_media.name), std::get<bool>(custom_media.value));
+    }
+    custom_medias.insert(AtomicString(custom_media.name),
+                         style_rule_custom_media);
+  }
+
+  MediaQueryEvaluatorTestCase test_cases[] = {
+      {"(width: 500px) or (--false-val)", true},
+      {"(width: 5px) or (--true-val)", true},
+      {"(--true-val) and (height: 500px)", true},
+      {"(--true-val) and (--false-val)", false},
+      {"(--true-val) and (not (--false-val))", true},
+      {"(--true-val) and (--undefined)", false},
+      {"(--true-val) and (not (--undefined))", false},
+      {"(--true-val) and (--unknown-query)", false},
+      {"(--true-val) and (not (--unknown-query))", false},
+      {"(--true-val) and (--nested-query)", true},
+      {"(--true-val) and (not (--nested-query))", false},
+      // Should not evaluate the second part below due to short-circuiting.
+      {"(--true-val) or (--cyclic)", true},
+      {"(--false-val) and (--cyclic)", false},
+  };
+
+  TestMQEvaluator(test_cases, media_query_evaluator, &custom_medias);
 }
 
 }  // namespace blink
