@@ -172,12 +172,12 @@ class _CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations> {
 }  // namespace jni_zero_internal
 
 namespace org::jni_zero {
-using JSampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations>;
+using SampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations>;
 }
 
-#ifndef _JNI_ZERO_JSampleUniqueAnnotationsJni_DEFINED
-using org::jni_zero::JSampleUniqueAnnotationsJni;
-#define _JNI_ZERO_JSampleUniqueAnnotationsJni_DEFINED
+#ifndef _JNI_ZERO_SampleUniqueAnnotationsJni_DEFINED
+using org::jni_zero::SampleUniqueAnnotationsJni;
+#define _JNI_ZERO_SampleUniqueAnnotationsJni_DEFINED
 #endif
 
 

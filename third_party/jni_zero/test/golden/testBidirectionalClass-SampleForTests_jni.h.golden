@@ -1329,22 +1329,22 @@ class _CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructB> {
 }  // namespace jni_zero_internal
 
 namespace org::jni_zero {
-using JSampleForTestsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests>;
-using JSampleForTests_InnerStructAJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructA>;
-using JSampleForTests_InnerStructBJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructB>;
+using SampleForTestsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests>;
+using SampleForTests_InnerStructAJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructA>;
+using SampleForTests_InnerStructBJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForTests_InnerStructB>;
 }
 
-#ifndef _JNI_ZERO_JSampleForTestsJni_DEFINED
-using org::jni_zero::JSampleForTestsJni;
-#define _JNI_ZERO_JSampleForTestsJni_DEFINED
+#ifndef _JNI_ZERO_SampleForTestsJni_DEFINED
+using org::jni_zero::SampleForTestsJni;
+#define _JNI_ZERO_SampleForTestsJni_DEFINED
 #endif
-#ifndef _JNI_ZERO_JSampleForTests_InnerStructAJni_DEFINED
-using org::jni_zero::JSampleForTests_InnerStructAJni;
-#define _JNI_ZERO_JSampleForTests_InnerStructAJni_DEFINED
+#ifndef _JNI_ZERO_SampleForTests_InnerStructAJni_DEFINED
+using org::jni_zero::SampleForTests_InnerStructAJni;
+#define _JNI_ZERO_SampleForTests_InnerStructAJni_DEFINED
 #endif
-#ifndef _JNI_ZERO_JSampleForTests_InnerStructBJni_DEFINED
-using org::jni_zero::JSampleForTests_InnerStructBJni;
-#define _JNI_ZERO_JSampleForTests_InnerStructBJni_DEFINED
+#ifndef _JNI_ZERO_SampleForTests_InnerStructBJni_DEFINED
+using org::jni_zero::SampleForTests_InnerStructBJni;
+#define _JNI_ZERO_SampleForTests_InnerStructBJni_DEFINED
 #endif
 
 

@@ -29,7 +29,7 @@ ScopedJavaLocalRef<JParsed> CreateJavaParsed(JNIEnv* env,
                     (!is_signed && sizeof(int32_t) > offset_size),
                 "Java size offsets for Parsed Components must be large enough "
                 "to store the full C++ offset.");
-  return JParsedJni::New(
+  return ParsedJni::New(
       env, parsed.scheme.begin, parsed.scheme.len, parsed.username.begin,
       parsed.username.len, parsed.password.begin, parsed.password.len,
       parsed.host.begin, parsed.host.len, parsed.port.begin, parsed.port.len,

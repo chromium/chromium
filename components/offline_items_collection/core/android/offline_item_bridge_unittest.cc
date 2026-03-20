@@ -22,7 +22,7 @@ namespace {
 class OfflineItemBridgeUnitTest : public ::testing::Test {
  public:
   OfflineItemBridgeUnitTest()
-      : j_test_(JOfflineItemBridgeUnitTestJni::New(AttachCurrentThread())) {}
+      : j_test_(OfflineItemBridgeUnitTestJni::New(AttachCurrentThread())) {}
 
   const jni_zero::ScopedJavaGlobalRef<JOfflineItemBridgeUnitTest>& j_test() {
     return j_test_;

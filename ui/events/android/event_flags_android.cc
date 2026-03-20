@@ -60,25 +60,25 @@ int AndroidMetaStateFromEventFlags(EventFlags event_flags) {
 EventFlags EventFlagsFromAndroidButtonState(int button_state) {
   int flags = EF_NONE;
 
-  if ((button_state & JMotionEventJni::BUTTON_BACK) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_BACK) != 0) {
     flags |= EF_BACK_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_FORWARD) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_FORWARD) != 0) {
     flags |= EF_FORWARD_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_PRIMARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_PRIMARY) != 0) {
     flags |= EF_LEFT_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_SECONDARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_SECONDARY) != 0) {
     flags |= EF_RIGHT_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_TERTIARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_TERTIARY) != 0) {
     flags |= EF_MIDDLE_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_STYLUS_PRIMARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_STYLUS_PRIMARY) != 0) {
     flags |= EF_LEFT_MOUSE_BUTTON;
   }
-  if ((button_state & JMotionEventJni::BUTTON_STYLUS_SECONDARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_STYLUS_SECONDARY) != 0) {
     flags |= EF_RIGHT_MOUSE_BUTTON;
   }
 

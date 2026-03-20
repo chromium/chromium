@@ -20,7 +20,7 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
     DigitalIdentitySafetyInterstitialBridgeAndroid()
     : weak_ptr_factory_(this) {
   JNIEnv* env = AttachCurrentThread();
-  j_bridge_ = JDigitalIdentitySafetyInterstitialBridgeJni::create(
+  j_bridge_ = DigitalIdentitySafetyInterstitialBridgeJni::create(
       env, reinterpret_cast<intptr_t>(this));
 }
 

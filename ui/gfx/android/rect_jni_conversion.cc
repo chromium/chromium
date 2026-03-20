@@ -25,7 +25,7 @@ template <>
 base::android::ScopedJavaLocalRef<jobject> ToJniType<gfx::Rect>(
     JNIEnv* env,
     const gfx::Rect& rect) {
-  return JRectJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
+  return RectJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
 }
 
 template <>
@@ -41,7 +41,7 @@ template <>
 base::android::ScopedJavaLocalRef<jobject> ToJniType<gfx::RectF>(
     JNIEnv* env,
     const gfx::RectF& rect) {
-  return JRectFJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
+  return RectFJni::New(env, rect.x(), rect.y(), rect.right(), rect.bottom());
 }
 
 }  // namespace jni_zero

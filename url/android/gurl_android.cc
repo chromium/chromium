@@ -64,14 +64,14 @@ GURL GURLAndroid::ToNativeGURL(JNIEnv* env,
 // static
 ScopedJavaLocalRef<JGURL> GURLAndroid::FromNativeGURL(JNIEnv* env,
                                                       const GURL& gurl) {
-  ScopedJavaLocalRef<JGURL> j_gurl = JGURLJni::New(env);
+  ScopedJavaLocalRef<JGURL> j_gurl = GURLJni::New(env);
   InitFromGURL(env, gurl, j_gurl);
   return j_gurl;
 }
 
 // static
 ScopedJavaLocalRef<JGURL> GURLAndroid::EmptyGURL(JNIEnv* env) {
-  return JGURLJni::emptyGURL(env);
+  return GURLJni::emptyGURL(env);
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,

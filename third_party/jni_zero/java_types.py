@@ -95,6 +95,10 @@ class JavaClass:
     return self.name.replace('$', '.')
 
   @property
+  def name_with_underscores(self):
+    return self.name.replace('$', '_')
+
+  @property
   def nested_name(self):
     return self.name.rsplit('$', 1)[-1]
 

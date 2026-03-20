@@ -63,11 +63,11 @@ void ConvertTiltOrientationToTiltXY(float tilt_rad,
 
 #define ACTION_REVERSE_CASE(x)        \
   case MotionEventAndroid::Action::x: \
-    return JMotionEventJni::ACTION_##x
+    return MotionEventJni::ACTION_##x
 
 #define TOOL_TYPE_REVERSE_CASE(x)       \
   case MotionEventAndroid::ToolType::x: \
-    return JMotionEventJni::TOOL_TYPE_##x
+    return MotionEventJni::TOOL_TYPE_##x
 
 int ToAndroidAction(MotionEventAndroid::Action action) {
   switch (action) {
@@ -104,25 +104,25 @@ int ToAndroidToolType(MotionEventAndroid::ToolType tool_type) {
 
 int FromAndroidButtonState(int button_state) {
   int result = 0;
-  if ((button_state & JMotionEventJni::BUTTON_BACK) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_BACK) != 0) {
     result |= MotionEventAndroid::BUTTON_BACK;
   }
-  if ((button_state & JMotionEventJni::BUTTON_FORWARD) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_FORWARD) != 0) {
     result |= MotionEventAndroid::BUTTON_FORWARD;
   }
-  if ((button_state & JMotionEventJni::BUTTON_PRIMARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_PRIMARY) != 0) {
     result |= MotionEventAndroid::BUTTON_PRIMARY;
   }
-  if ((button_state & JMotionEventJni::BUTTON_SECONDARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_SECONDARY) != 0) {
     result |= MotionEventAndroid::BUTTON_SECONDARY;
   }
-  if ((button_state & JMotionEventJni::BUTTON_TERTIARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_TERTIARY) != 0) {
     result |= MotionEventAndroid::BUTTON_TERTIARY;
   }
-  if ((button_state & JMotionEventJni::BUTTON_STYLUS_PRIMARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_STYLUS_PRIMARY) != 0) {
     result |= MotionEventAndroid::BUTTON_STYLUS_PRIMARY;
   }
-  if ((button_state & JMotionEventJni::BUTTON_STYLUS_SECONDARY) != 0) {
+  if ((button_state & MotionEventJni::BUTTON_STYLUS_SECONDARY) != 0) {
     result |= MotionEventAndroid::BUTTON_STYLUS_SECONDARY;
   }
   return result;

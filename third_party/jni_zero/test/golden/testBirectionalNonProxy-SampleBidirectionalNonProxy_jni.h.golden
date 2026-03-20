@@ -358,12 +358,12 @@ class _CalledByNatives<::org::jni_zero::JSampleBidirectionalNonProxy> {
 }  // namespace jni_zero_internal
 
 namespace org::jni_zero {
-using JSampleBidirectionalNonProxyJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleBidirectionalNonProxy>;
+using SampleBidirectionalNonProxyJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleBidirectionalNonProxy>;
 }
 
-#ifndef _JNI_ZERO_JSampleBidirectionalNonProxyJni_DEFINED
-using org::jni_zero::JSampleBidirectionalNonProxyJni;
-#define _JNI_ZERO_JSampleBidirectionalNonProxyJni_DEFINED
+#ifndef _JNI_ZERO_SampleBidirectionalNonProxyJni_DEFINED
+using org::jni_zero::SampleBidirectionalNonProxyJni;
+#define _JNI_ZERO_SampleBidirectionalNonProxyJni_DEFINED
 #endif
 
 

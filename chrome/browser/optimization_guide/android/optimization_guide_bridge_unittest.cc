@@ -64,7 +64,7 @@ class OptimizationGuideBridgeTest : public testing::Test {
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
-    j_test_ = JOptimizationGuideBridgeNativeUnitTestJni::New(
+    j_test_ = OptimizationGuideBridgeNativeUnitTestJni::New(
         env_, optimization_guide_keyed_service_->GetJavaObject());
   }
 

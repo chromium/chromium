@@ -333,17 +333,18 @@ def called_by_natives_aliases(sb, java_classes):
   namespace = java_classes[0].mirror_namespace
   with sb.namespace(namespace, skip_newline=True):
     for java_class in java_classes:
+      name = f'{java_class.name_with_underscores}Jni'
       qualified = java_class.to_mirror_cpp()
-      sb(f'using {java_class.jobject_name}Jni = '
+      sb(f'using {name} = '
          f'::jni_zero_internal::_CalledByNatives<{qualified}>;\n')
   sb('\n')
 
   for java_class in java_classes:
-    jobject_name = java_class.jobject_name
-    macro_name = f'_JNI_ZERO_{jobject_name}Jni_DEFINED'
+    name = f'{java_class.name_with_underscores}Jni'
+    macro_name = f'_JNI_ZERO_{name}_DEFINED'
     sb(f"""\
 #ifndef {macro_name}
-using {java_class.mirror_namespace}::{jobject_name}Jni;
+using {java_class.mirror_namespace}::{name};
 #define {macro_name}
 #endif
 """)
