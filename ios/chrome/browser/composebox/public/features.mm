@@ -100,3 +100,22 @@ bool IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled() {
   return base::FeatureList::IsEnabled(
       kComposeboxFetchContextualSuggestionsForMultipleAttachments);
 }
+
+BASE_FEATURE(kComposeboxConditionalPlusButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kComposeboxConditionalPlusButtonParam[] =
+    "ComposeboxConditionalPlusButtonParam";
+
+ComposeboxConditionalPlusButtonVariant
+GetComposeboxConditionalPlusButtonVariant() {
+  return static_cast<ComposeboxConditionalPlusButtonVariant>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kComposeboxConditionalPlusButton,
+          kComposeboxConditionalPlusButtonParam,
+          static_cast<int>(ComposeboxConditionalPlusButtonVariant::kDefault)));
+}
+
+bool IsComposeboxConditionalPlusButtonEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxConditionalPlusButton);
+}

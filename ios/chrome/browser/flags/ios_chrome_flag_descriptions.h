@@ -202,6 +202,9 @@ extern const char kComposeboxCloseButtonTopAlignDescription[];
 extern const char kComposeboxCompactModeName[];
 extern const char kComposeboxCompactModeDescription[];
 
+extern const char kComposeboxConditionalPlusButtonName[];
+extern const char kComposeboxConditionalPlusButtonDescription[];
+
 extern const char kComposeboxDeepSearchName[];
 extern const char kComposeboxDeepSearchDescription[];
 

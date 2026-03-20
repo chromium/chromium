@@ -325,6 +325,11 @@ const char kComposeboxCompactModeDescription[] =
     "Enables the compact composebox, adding attachment or enabling AIM will "
     "expand it to the regular size.";
 
+const char kComposeboxConditionalPlusButtonName[] =
+    "Composebox Conditional Plus Button";
+const char kComposeboxConditionalPlusButtonDescription[] =
+    "When enabled, hides the plus button when typing a URL in compact mode.";
+
 const char kComposeboxDeepSearchName[] = "Enable Composebox Deep Search";
 extern const char kComposeboxDeepSearchDescription[] =
     "Enables the deep search advanced tool in Composebox";
