@@ -218,25 +218,25 @@ void UnzipUpdaterHistoryFilesImpl(
     UpdaterPageHandler::UnzipUpdaterHistoryFilesCallback callback) {
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
-    DPLOG(WARNING) << "Failed to create temporary directory";
-    std::move(callback).Run(base::unexpected(
-        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    std::move(callback).Run(
+        base::unexpected(updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
+            "Failed to create temporary directory")));
     return;
   }
 
   base::FilePath archive_path = temp_dir.GetPath().AppendASCII("input.zip");
   if (!base::WriteFile(archive_path, zip_data)) {
-    DPLOG(WARNING) << "Failed to write user-supplied zip data to storage";
-    std::move(callback).Run(base::unexpected(
-        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    std::move(callback).Run(
+        base::unexpected(updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
+            "Failed to write user-supplied zip data to storage")));
     return;
   }
 
   const base::FilePath output_path = temp_dir.GetPath().AppendASCII("output");
   if (!base::CreateDirectory(output_path)) {
-    DPLOG(WARNING) << "Failed to create output path in temporary directory";
-    std::move(callback).Run(base::unexpected(
-        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    std::move(callback).Run(
+        base::unexpected(updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
+            "Failed to create output path in temporary directory")));
     return;
   }
 
@@ -257,9 +257,9 @@ void UnzipUpdaterHistoryFilesImpl(
              UpdaterPageHandler::UnzipUpdaterHistoryFilesCallback callback,
              bool result) {
             if (!result) {
-              DLOG(WARNING) << "Failed to unzip user-supplied archive";
               std::move(callback).Run(base::unexpected(
-                  updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+                  updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
+                      "Failed to unzip user-supplied archive")));
               return;
             }
 
@@ -271,9 +271,10 @@ void UnzipUpdaterHistoryFilesImpl(
                  path = it.Next()) {
               std::string contents;
               if (!base::ReadFileToString(path, &contents)) {
-                DPLOG(WARNING) << "Failed to read " << path;
                 std::move(callback).Run(base::unexpected(
-                    updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+                    updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
+                        base::StrCat(
+                            {"Failed to read ", path.AsUTF8Unsafe()}))));
                 return;
               }
               response->history_file_contents.push_back(std::move(contents));
@@ -337,7 +338,8 @@ void UpdaterPageHandler::GetUpdaterStates(GetUpdaterStatesCallback callback) {
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            base::unexpected(updater_ui::mojom::GetUpdaterStatesError::New())));
+            base::unexpected(updater_ui::mojom::GetUpdaterStatesError::New(
+                "Failed to determine updater installation directories"))));
     return;
   }
 
@@ -438,7 +440,9 @@ void UpdaterPageHandler::GetEnterpriseCompanionState(
             std::optional<base::FilePath> install_dir =
                 delegate->GetEnterpriseCompanionInstallDirectory();
             if (!install_dir) {
-              return base::unexpected(GetEnterpriseCompanionStateError::New());
+              return base::unexpected(GetEnterpriseCompanionStateError::New(
+                  "Failed to determine Chrome Enterprise Companion App "
+                  "installation directory"));
             }
 
             return GetEnterpriseCompanionStateResponse::New(

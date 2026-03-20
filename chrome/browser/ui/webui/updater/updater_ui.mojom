@@ -45,7 +45,10 @@ struct GetUpdaterStatesResponse {
   UpdaterState? user;
 };
 
-struct GetUpdaterStatesError {};
+struct GetUpdaterStatesError {
+  // Non localized description of the error suitable for logging in JS.
+  string message;
+};
 
 // A snapshot of a Chrome Enterprise Companion App installation's state.
 struct EnterpriseCompanionState {
@@ -61,7 +64,10 @@ struct GetEnterpriseCompanionStateResponse {
   EnterpriseCompanionState? state;
 };
 
-struct GetEnterpriseCompanionStateError {};
+struct GetEnterpriseCompanionStateError {
+  // Non localized description of the error suitable for logging in JS.
+  string message;
+};
 
 struct AppState {
   // The ASCII AppId of the application this state refers to, in the format
@@ -82,7 +88,10 @@ struct GetAppStatesResponse {
   array<AppState> user_apps;
 };
 
-struct GetAppStatesError {};
+struct GetAppStatesError {
+  // Non localized description of the error suitable for logging in JS.
+  string message;
+};
 
 enum ShowDirectoryTarget {
   kSystemUpdater,
@@ -100,7 +109,10 @@ struct UnzipUpdaterHistoryFilesResponse {
   array<string> history_file_contents;
 };
 
-struct UnzipUpdaterHistoryFilesError {};
+struct UnzipUpdaterHistoryFilesError {
+  // Non localized description of the error suitable for logging in JS.
+  string message;
+};
 
 // Called from TS side of chrome://updater (Renderer -> Browser).
 interface PageHandler {

@@ -107,6 +107,7 @@ export class UpdaterAppElement extends CrLitElement {
       this.computeStateFromHistory(events);
       this.pageDataSource = PageDataSource.FILE;
     } catch (err) {
+      console.error('Failed to load history file(s)', err);
       this.historyLoadError = true;
     } finally {
       fileInput.value = '';
@@ -158,19 +159,22 @@ export class UpdaterAppElement extends CrLitElement {
           this.userUpdaterState = response.user;
           this.systemUpdaterState = response.system;
         })
-        .catch(() => {
+        .catch(err => {
           this.updaterStateError = true;
+          console.error('Failed to retrieve updater states', err);
         });
     this.getEnterpriseCompanionState()
         .then(response => {
           this.enterpriseCompanionState = response.state;
         })
-        .catch(() => {
+        .catch((err) => {
           this.updaterStateError = true;
+          console.error('Failed to retrieve enterprise companion state', err);
         });
-    this.getAppStates()
-        .then(apps => this.apps = apps)
-        .catch(() => this.appStateError = true);
+    this.getAppStates().then(apps => this.apps = apps).catch((err) => {
+      this.appStateError = true;
+      console.error('Failed to retrieve application states', err);
+    });
   }
 
   private computeStateFromHistory(rawMessages: Array<Record<string, unknown>>) {
