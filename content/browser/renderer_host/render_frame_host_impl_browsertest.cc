@@ -6149,7 +6149,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.readArray([6, 8, 2]);";
-  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsOk());
+  EXPECT_TRUE(ExecJs(web_contents(), kScript));
   EXPECT_EQ(
       3, injector.GetObjectHost().GetMockObject()->get_num_elements_received());
 }

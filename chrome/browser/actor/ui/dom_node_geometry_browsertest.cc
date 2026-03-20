@@ -174,7 +174,6 @@ class ActorUiDomNodeGeometryBrowserTest
     content::EvalJsResult result = content::EvalJs(
         web_contents(),
         absl::StrFormat("getElementTextAtPoint(%d, %d)", pt.x(), pt.y()));
-    EXPECT_THAT(result, content::EvalJsResult::IsOk());
     EXPECT_TRUE(result.is_string());
     return result.ExtractString();
   }

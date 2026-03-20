@@ -2403,7 +2403,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
     TestFrameNavigationObserver nav_observer(tab->GetPrimaryMainFrame());
     ScopedScreenshotCapturedObserverForTesting screenshot_observer(
         controller.GetLastCommittedEntryIndex());
-    EXPECT_THAT(EvalJs(tab, "history.back();"), EvalJsResult::IsOk());
+    EXPECT_TRUE(ExecJs(tab, "history.back();"));
 
     // Wait for screenshot to be pending.
     screenshot_observer.Wait();

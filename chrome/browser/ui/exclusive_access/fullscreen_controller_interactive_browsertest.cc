@@ -800,9 +800,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   permission_request_manager->Accept(/*prompt_options=*/std::monostate());
 
   // Now we should be able to enter tab fullscreen again.
-  EXPECT_THAT(content::EvalJs(web_contents,
-                              "document.documentElement.requestFullscreen()"),
-              content::EvalJsResult::IsOk());
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
   ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
 }
 
@@ -840,9 +839,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   std::move(close_chooser).Run();
 
   // Now we should be able to enter tab fullscreen again.
-  EXPECT_THAT(content::EvalJs(web_contents,
-                              "document.documentElement.requestFullscreen()"),
-              content::EvalJsResult::IsOk());
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
   EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
 }
 

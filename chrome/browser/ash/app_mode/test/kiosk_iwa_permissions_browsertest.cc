@@ -101,7 +101,7 @@ void ExpectUDPSocketOk(content::WebContents* web_contents) {
     })();
   )";
 
-  ASSERT_THAT(EvalJs(web_contents, kScriptUDP), content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, kScriptUDP));
 }
 
 void ExpectTCPSocketOk(content::WebContents* web_contents) {
@@ -115,7 +115,7 @@ void ExpectTCPSocketOk(content::WebContents* web_contents) {
     })();
   )";
 
-  ASSERT_THAT(EvalJs(web_contents, kScriptTCP), content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, kScriptTCP));
 }
 
 void WaitForPageLoad(content::WebContents* contents) {

@@ -320,7 +320,6 @@ std::vector<GURL> GetLaunchParamUrlsInContents(
       content::EvalJs(contents->GetPrimaryMainFrame(),
                       "'" + params_variable_name + "' in window ? " +
                           params_variable_name + " : []");
-  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
   const base::ListValue& launchParamsTargetUrls =
       launchParamsResults.ExtractList();
   if (!launchParamsTargetUrls.empty()) {

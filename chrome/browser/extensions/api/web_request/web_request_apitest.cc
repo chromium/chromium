@@ -1482,7 +1482,7 @@ class ExtensionWebRequestApiAuthRequiredTestVariousContext
     content::EvalJsResult result =
         EvalJs(GetActiveWebContents(),
                content::JsReplace(kAddIframeScript, frame_url));
-    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    ASSERT_TRUE(result.is_ok());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 };

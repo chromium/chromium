@@ -133,7 +133,7 @@ void FocusControlledFrame(content::RenderFrameHost* app_frame,
                           content::RenderFrameHost* controlled_frame,
                           bool must_wait_document_focus) {
   // Focus when the frame is loaded.
-  EXPECT_THAT(content::EvalJs(app_frame,
+  EXPECT_TRUE(content::ExecJs(app_frame,
                               R"(
       (function() {
         const frame = document.getElementsByTagName('controlledframe')[0];
@@ -145,8 +145,7 @@ void FocusControlledFrame(content::RenderFrameHost* app_frame,
         });
         return 'SUCCESS';
       })();
-    )"),
-              content::EvalJsResult::IsOk());
+    )"));
 
   WaitForHitTestData(controlled_frame);
 

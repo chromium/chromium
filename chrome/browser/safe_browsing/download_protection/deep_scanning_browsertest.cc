@@ -2071,8 +2071,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
-  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.fsaPromise"));
 
   // Checks that file is written successfully.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2185,8 +2184,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
 
   // For warn verdicts, we allow the write to happen as there is currently no
   // dialog that allows the user to bypass warnings.
-  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.fsaPromise"));
 
   // Checks that file is written successfully.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2228,8 +2226,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest,
   WaitForDeepScanRequest();
 
   // When scan fails, write should still succeed (fail-open behavior).
-  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.fsaPromise"));
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(GetTestFilePath()));

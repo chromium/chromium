@@ -334,12 +334,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
   WebAppTestInstallObserver observer(profile());
   observer.BeginListening({});
 
-  EXPECT_THAT(EvalJs(iwa_frame, R"(
+  EXPECT_TRUE(content::ExecJs(iwa_frame, R"(
     navigator.subApps.add({
       "/sub1/page.html": {"installURL": "/sub1/page.html"}
     })
-  )"),
-              content::EvalJsResult::IsOk());
+  )"));
 
   auto sub_app_id = observer.Wait();
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(

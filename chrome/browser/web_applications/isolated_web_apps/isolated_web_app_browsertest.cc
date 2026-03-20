@@ -665,10 +665,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
   histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
                                      blink::mojom::WebFeature::kPageVisits, 1);
 
-  EXPECT_THAT(
-      content::EvalJs(app_frame,
-                      "(new UDPSocket({ localAddress: '127.0.0.1' })).opened"),
-      content::EvalJsResult::IsOk());
+  EXPECT_TRUE(content::ExecJs(
+      app_frame, "(new UDPSocket({ localAddress: '127.0.0.1' })).opened"));
 
   // Wait for all the socket histograms to propagate.
   ASSERT_TRUE(base::test::RunUntil([&] {
@@ -1560,10 +1558,9 @@ class IsolatedWebAppLaunchHandlingBrowserTest
         });
       });
     )";
-    ASSERT_THAT(content::EvalJs(
-                    web_contents,
-                    base::StringPrintf(kLaunchQueueScriptWithURL, target_url)),
-                content::EvalJsResult::IsOk());
+    ASSERT_TRUE(content::ExecJs(
+        web_contents,
+        base::StringPrintf(kLaunchQueueScriptWithURL, target_url)));
   }
 };
 
@@ -1580,8 +1577,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
           OpenIsolatedWebApp(profile(), url_info.app_id()));
 
   ui_test_utils::UrlLoadObserver observer(url_info.origin().GetURL());
-  ASSERT_THAT(content::EvalJs(web_contents, "window.open('/')"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.open('/')"));
   observer.Wait();
   auto* new_browser = chrome::FindBrowserWithTab(observer.web_contents());
   EXPECT_NE(chrome::FindBrowserWithTab(web_contents), new_browser);
@@ -1603,8 +1599,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
   static constexpr std::string_view kWindowOpen = R"(
     window.open('/', '_blank', 'noopener');
   )";
-  ASSERT_THAT(content::EvalJs(web_contents, kWindowOpen),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, kWindowOpen));
   observer.Wait();
 
   auto* new_browser = chrome::FindBrowserWithTab(observer.web_contents());
@@ -1682,8 +1677,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest, ServiceWorker) {
     });
   )";
 
-  ASSERT_THAT(content::EvalJs(web_contents, kServiceWorkerRegister),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(web_contents, kServiceWorkerRegister));
 
   const GURL url = url_info.origin().GetURL().Resolve("/something/weird.html");
   auto dispatch_notification_click = [&] {

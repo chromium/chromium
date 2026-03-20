@@ -56,11 +56,10 @@ class ProtocolHandlerPickerUITest
 
   auto LaunchProtocolLink(bool in_new_tab) {
     return Do([&, in_new_tab] {
-      ASSERT_THAT(
-          content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      ASSERT_TRUE(
+          content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
                           base::StringPrintf("window.open('meow://link', '%s')",
-                                             in_new_tab ? "_blank" : "_self")),
-          content::EvalJsResult::IsOk());
+                                             in_new_tab ? "_blank" : "_self")));
     });
   }
 

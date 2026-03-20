@@ -340,10 +340,6 @@ auto ErrorIs(const auto& matcher) {
   return content::EvalJsResult::ErrorIs(matcher);
 }
 
-auto IsOk() {
-  return content::EvalJsResult::IsOk();
-}
-
 #endif
 
 class TestServer {
@@ -518,10 +514,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
                        base::DictValue().Set(
                            "tcp", base::DictValue().Set("connect", "*"))));
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame,
+                              content::JsReplace(kTcpReadWriteScript, kHostname,
+                                                 test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWriteFromWorker) {
@@ -534,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWriteFromWorker) {
           "tcp", base::DictValue().Set("connect", "*"))),
       worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -580,10 +575,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
           "udp", base::DictValue().Set("send", "*"))));
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, content::JsReplace(kUdpConnectedReadWriteScript, kHostname,
+                                    test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWriteFromWorker) {
@@ -597,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWriteFromWorker) {
           "udp", base::DictValue().Set("send", "*"))),
       worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -658,10 +652,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
           "udp", base::DictValue().Set("bind", "*").Set("send", "*"))));
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                    test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -682,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kUdpBoundPna));
 }
 
 using ChromeDirectSocketsTcpServerApiTest = ChromeAppApiTest;
@@ -728,7 +721,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
               .Set("tcpServer", base::DictValue().Set("listen", "*"))
               .Set("tcp", base::DictValue().Set("connect", "*"))));
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
+  ASSERT_TRUE(
+      content::ExecJs(app_frame, kTcpServerExchangePacketWithTcpScript));
 }
 
 #endif
@@ -923,10 +917,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame,
+                              content::JsReplace(kTcpReadWriteScript, kHostname,
+                                                 test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest,
@@ -939,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kSharedWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest,
@@ -953,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest,
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
           service_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kServiceWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
@@ -1026,10 +1019,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, content::JsReplace(kUdpConnectedReadWriteScript, kHostname,
+                                    test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
@@ -1042,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kSharedWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
@@ -1056,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
           service_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kServiceWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -1141,11 +1133,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
-  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
-                                    kMulticastJoinLeaveGroup,
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, content::JsReplace(kMulticastJoinLeaveGroup,
                                     net::IPAddress::IPv4AllZeros().ToString(),
-                                    kMulticastAddress)),
-              IsOk());
+                                    kMulticastAddress)));
 }
 
 // TODO(crbug.com/443716695): Fails on mac-rel bots.
@@ -1186,11 +1177,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
     })();
   )";
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(
-                            script, net::IPAddress::IPv4AllZeros().ToString(),
-                            kMulticastAddress)),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame,
+      content::JsReplace(script, net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress)));
 }
 
 // TODO(crbug.com/443716695): Fails on mac-rel bots.
@@ -1249,11 +1239,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
     })();
   )";
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(
-                            script, net::IPAddress::IPv4AllZeros().ToString(),
-                            kMulticastAddress)),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame,
+      content::JsReplace(script, net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress)));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -1262,10 +1251,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  ASSERT_THAT(
-      EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port())),
-      IsOk());
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                    test_server()->port())));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
@@ -1278,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kSharedWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
@@ -1292,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
           service_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kServiceWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
@@ -1306,7 +1294,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kSharedWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
@@ -1321,7 +1309,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
           service_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kServiceWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -1383,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortNumberHighEnough), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kUdpBoundPortNumberHighEnough));
 }
 
 using ChromeDirectSocketsTcpServerIsolatedWebAppTest = IsolatedWebAppApiTest;
@@ -1397,7 +1385,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
+  ASSERT_TRUE(
+      content::ExecJs(app_frame, kTcpServerExchangePacketWithTcpScript));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1409,7 +1398,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kSharedWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1422,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
           service_worker_script);
 
-  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kServiceWorkerConnect));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
@@ -1447,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough), IsOk());
+  ASSERT_TRUE(content::ExecJs(app_frame, kTcpServerPortNumberHighEnough));
 }
 
 class IsolatedWebAppDirectSocketsPermissionPrompt

@@ -270,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
     std::string same_document_script = R"(
       window.history.pushState({}, "", "form.html");
     )";
-    ASSERT_THAT(content::EvalJs(web_contents, same_document_script),
-                content::EvalJsResult::IsOk());
+    ASSERT_TRUE(content::ExecJs(web_contents, same_document_script));
     ASSERT_TRUE(future.Wait());
 
     histogram_tester.ExpectUniqueSample(

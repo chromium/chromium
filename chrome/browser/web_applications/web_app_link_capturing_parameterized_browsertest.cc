@@ -636,7 +636,6 @@ base::DictValue WebContentsToJson(const BrowserWindowInterface& browser,
   content::EvalJsResult launchParamsResults = content::EvalJs(
       web_contents.GetPrimaryMainFrame(),
       "'launchParamsTargetUrls' in window ? launchParamsTargetUrls : []");
-  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
   const base::ListValue& launchParamsTargetUrls =
       launchParamsResults.ExtractList();
   if (!launchParamsTargetUrls.empty()) {

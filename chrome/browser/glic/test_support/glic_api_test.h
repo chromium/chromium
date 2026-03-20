@@ -287,7 +287,7 @@ class GlicApiTestBase : public T {
       return;
     }
 
-    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    ASSERT_TRUE(result.is_ok());
     if (result.is_dict()) {
       const base::DictValue& dict = result.ExtractDict();
       auto* id = dict.Find("id");

@@ -94,10 +94,9 @@ class LocalNetworkAccessSplitPermissionOnBrowserTest
       child.allow = $2;
       document.body.appendChild(child);
     )";
-    EXPECT_THAT(content::EvalJs(web_contents(),
-                                content::JsReplace(script_template, iframe_url,
-                                                   permission_policy)),
-                content::EvalJsResult::IsOk());
+    EXPECT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace(script_template, iframe_url, permission_policy)));
     // Check that the child iframe was successfully fetched.
     ASSERT_TRUE(iframe_url_nav_manager.WaitForNavigationFinished());
     EXPECT_TRUE(iframe_url_nav_manager.was_successful());
@@ -562,9 +561,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
     child.allow = "local-network-access";
     document.body.appendChild(child);
   )";
-  EXPECT_THAT(content::EvalJs(web_contents(),
-                              content::JsReplace(script_template, iframe_url)),
-              content::EvalJsResult::IsOk());
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace(script_template, iframe_url)));
   // Check that the child iframe was successfully fetched.
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(nav_manager.was_successful());

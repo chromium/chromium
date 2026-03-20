@@ -869,10 +869,9 @@ class EvalJsResult {
 
   // Matchers for successful & unsuccessful runs.
   //
-  // Note: `IsError` is intentionally not provided. If you find yourself looking
-  // for `IsError`, use `EXPECT_FALSE(ExecJs(...))` or `EXPECT_THAT(EvalJs(...),
-  // ErrorIs(...))` instead.
-  static auto IsOk() { return testing::Property(&EvalJsResult::is_ok, true); }
+  // Note: `IsOk` and `IsError` are intentionally not provided. If you find
+  // yourself looking for `IsOk` or `IsError`, prefer to use `ExecJs(...)` with
+  // `EXPECT_TRUE` or `EXPECT_FALSE` instead.
   template <typename M>
   static auto IsOkAndHolds(M m) {
     return testing::Field("data_", &EvalJsResult::data_,

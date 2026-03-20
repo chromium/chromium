@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBasic) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_TRUE(SetUseMangledJs(app_frame));
 
-  ASSERT_THAT(EvalJs(app_frame, R"(
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
     new Promise((resolve, reject) => {
       const frame = document.savedCreateElement('controlledframe');
       frame.src = 'data:text/html,<body>Guest</body>';
@@ -591,8 +591,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBasic) {
       frame.savedAddEventListener('loadstop', resolve);
       document.body.savedAppendChild(frame);
     });
-  )"),
-              content::EvalJsResult::IsOk());
+  )"));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsSetOnEventProperty) {
@@ -601,12 +600,11 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsSetOnEventProperty) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_TRUE(SetUseMangledJs(app_frame));
 
-  ASSERT_THAT(EvalJs(app_frame, R"(
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
     const frame = document.savedCreateElement('controlledframe');
     frame.onloadstop = () => {};
     frame.onloadstop = () => {};
-  )"),
-              content::EvalJsResult::IsOk());
+  )"));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsGetSetAttributes) {
@@ -655,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBackForward) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_TRUE(SetUseMangledJs(app_frame));
 
-  ASSERT_THAT(EvalJs(app_frame, R"(
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
     new Promise((resolve, reject) => {
       const frame = new HTMLControlledFrameElement();
       // The back and forward methods are implemented in terms of go. Make sure
@@ -665,8 +663,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBackForward) {
       frame.forward();
       resolve();
     });
-  )"),
-              content::EvalJsResult::IsOk());
+  )"));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
@@ -675,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_TRUE(SetUseMangledJs(app_frame));
 
-  ASSERT_THAT(EvalJs(app_frame, R"(
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
     new Promise((resolve, reject) => {
       const frame = document.savedCreateElement('controlledframe');
       frame.src = 'data:text/html,<body>Guest</body>';
@@ -686,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
       });
       document.body.savedAppendChild(frame);
     });
-  )"),
-              content::EvalJsResult::IsOk());
+  )"));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsWebRequest) {
@@ -697,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsWebRequest) {
   ASSERT_TRUE(SetUseMangledJs(app_frame));
 
   GURL url = embedded_https_test_server().GetURL("/index.html");
-  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(R"(
+  ASSERT_TRUE(content::ExecJs(app_frame, content::JsReplace(R"(
     new Promise((resolve, reject) => {
       const frame = document.savedCreateElement('controlledframe');
       frame.src = $1;
@@ -714,8 +710,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsWebRequest) {
       document.body.savedAppendChild(frame);
     });
   )",
-                                                   url)),
-              content::EvalJsResult::IsOk());
+                                                            url)));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Partition) {

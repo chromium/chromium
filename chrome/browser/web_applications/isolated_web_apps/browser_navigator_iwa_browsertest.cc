@@ -241,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
           .TranslateUrl(GURL("meow://hru"));
 
   ui_test_utils::UrlLoadObserver observer(remapped_url);
-  ASSERT_THAT(content::EvalJs(rfh, "window.open('meow://hru')"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(rfh, "window.open('meow://hru')"));
   observer.Wait();
 
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
@@ -278,8 +277,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocolSelf) {
           .TranslateUrl(GURL("meow://hru"));
 
   ui_test_utils::UrlLoadObserver observer(remapped_url);
-  ASSERT_THAT(content::EvalJs(rfh, "window.open('meow://hru', '_self')"),
-              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(content::ExecJs(rfh, "window.open('meow://hru', '_self')"));
   observer.Wait();
 
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
