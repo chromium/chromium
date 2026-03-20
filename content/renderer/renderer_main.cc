@@ -207,7 +207,11 @@ int RendererMain(MainFunctionParams parameters) {
   // can install observers.
   performance_scenarios::ScopedScenarioObserverList scenario_observer_list;
 
-  blink::Platform::InitializeBlink();
+  // This scope is used to reduce the number of stack frames needed to be
+  // scanned during conservative stack scanning in cppgc. It allows us to skip
+  // scanning the caller frames of this function.
+  cppgc::StackStartMarker cppgc_stack_start_marker;
+  blink::Platform::InitializeBlink(std::move(cppgc_stack_start_marker));
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
           CreateMainThreadMessagePump());

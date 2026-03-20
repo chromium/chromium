@@ -135,13 +135,14 @@ WebThemeEngine* Platform::ThemeEngine() {
   return WebThemeEngineHelper::GetNativeThemeEngine();
 }
 
-void Platform::InitializeBlink() {
+void Platform::InitializeBlink(
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
   DCHECK(!did_initialize_blink_);
   Partitions::Initialize();
   InitializeWtf();
   Length::Initialize();
   ProcessHeap::Init();
-  ThreadState::AttachMainThread();
+  ThreadState::AttachMainThread(std::move(stack_start_marker));
   did_initialize_blink_ = true;
 }
 

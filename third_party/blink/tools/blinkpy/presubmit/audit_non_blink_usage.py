@@ -1444,6 +1444,9 @@ _CONFIG = [
             # In blink-internal code we use blink::PersistentLocation but
             # we don't expose that in the public API.
             'cppgc::SourceLocation',
+
+            # Needed to set the stack marker from outside Blink.
+            'cppgc::StackStartMarker',
         ],
     },
     {

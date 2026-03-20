@@ -24,6 +24,10 @@ class CppHeap;
 class EmbedderRootsHandler;
 }  // namespace v8
 
+namespace cppgc {
+class StackStartMarker;
+}
+
 namespace blink {
 
 class ActiveScriptWrappableManager;
@@ -47,7 +51,8 @@ class PLATFORM_EXPORT ThreadState final {
   }
 
   // Attaches a ThreadState to the main-thread.
-  static ThreadState* AttachMainThread();
+  static ThreadState* AttachMainThread(
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
   // Attaches a ThreadState to the currently running thread. Must not be the
   // main thread and must be called after AttachMainThread().
   static ThreadState* AttachCurrentThread();
@@ -138,7 +143,9 @@ class PLATFORM_EXPORT ThreadState final {
   static void GcPrologue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
   static void GcEpilogue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
 
-  explicit ThreadState(v8::Platform*);
+  explicit ThreadState(
+      v8::Platform*,
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
   ~ThreadState();
 
   void RecoverCppHeap(std::unique_ptr<v8::CppHeap>);

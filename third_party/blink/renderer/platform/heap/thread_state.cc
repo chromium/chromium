@@ -68,8 +68,10 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 }  // namespace
 
 // static
-ThreadState* ThreadState::AttachMainThread() {
-  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+ThreadState* ThreadState::AttachMainThread(
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
+  auto* thread_state =
+      new ThreadState(gin::V8Platform::Get(), stack_start_marker);
   ThreadStateStorage::AttachMainThread(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());
@@ -168,10 +170,22 @@ std::unique_ptr<v8::CppHeap> ThreadState::ReleaseCppHeap() {
   return std::move(owning_cpp_heap_);
 }
 
-ThreadState::ThreadState(v8::Platform* platform)
-    : owning_cpp_heap_(v8::CppHeap::Create(
-          platform,
-          v8::CppHeapCreateParams(CustomSpaces::CreateCustomSpaces()))),
+namespace {
+
+std::unique_ptr<v8::CppHeap> CreateCppHeap(
+    v8::Platform* platform,
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
+  v8::CppHeapCreateParams params(CustomSpaces::CreateCustomSpaces());
+  params.stack_start_marker = std::move(stack_start_marker);
+  return v8::CppHeap::Create(platform, params);
+}
+
+}  // namespace
+
+ThreadState::ThreadState(
+    v8::Platform* platform,
+    std::optional<cppgc::StackStartMarker> stack_start_marker)
+    : owning_cpp_heap_(CreateCppHeap(platform, std::move(stack_start_marker))),
       cpp_heap_(owning_cpp_heap_.get()),
       heap_handle_(cpp_heap_->GetHeapHandle()),
       thread_id_(CurrentThread()) {}

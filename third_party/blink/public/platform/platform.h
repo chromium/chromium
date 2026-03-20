@@ -117,6 +117,10 @@ namespace viz {
 class RasterContextProvider;
 }
 
+namespace cppgc {
+class StackStartMarker;
+}
+
 namespace blink {
 
 class BrowserInterfaceBrokerProxy;
@@ -154,7 +158,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   // you should use blink::Initialize. WebThreadScheduler must be owned by
   // the embedder. InitializeBlink must be called before WebThreadScheduler is
   // created and passed to InitializeMainThread.
-  static void InitializeBlink();
+  static void InitializeBlink(
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
   static void InitializeMainThread(
       Platform*,
       scheduler::WebThreadScheduler* main_thread_scheduler);
