@@ -12,6 +12,7 @@ source_set("onboarding") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/tabs:public",
     "//content/public/browser",

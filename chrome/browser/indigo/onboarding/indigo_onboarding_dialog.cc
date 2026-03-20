@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -37,6 +39,12 @@ class OnboardingWebView : public views::WebView {
  public:
   using WebView::WebView;
 
+  void SetBrowserWindowCallback(
+      base::RepeatingCallback<BrowserWindowInterface*()>
+          browser_window_callback) {
+    browser_window_callback_ = std::move(browser_window_callback);
+  }
+
   // WebContentsDelegate:
 
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
@@ -53,7 +61,38 @@ class OnboardingWebView : public views::WebView {
         event, GetFocusManager());
   }
 
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    if (BrowserWindowInterface* browser = GetBrowserWindow()) {
+      return browser->OpenURL(params, std::move(navigation_handle_callback));
+    }
+    return nullptr;
+  }
+
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
+    if (BrowserWindowInterface* browser = GetBrowserWindow()) {
+      return chrome::AddWebContents(browser, source, std::move(new_contents),
+                                    target_url, disposition, window_features);
+    }
+    return nullptr;
+  }
+
  private:
+  BrowserWindowInterface* GetBrowserWindow() {
+    return browser_window_callback_ ? browser_window_callback_.Run() : nullptr;
+  }
+
+  base::RepeatingCallback<BrowserWindowInterface*()> browser_window_callback_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
@@ -80,6 +119,11 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
   Profile* profile =
       Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
   auto web_view = std::make_unique<OnboardingWebView>(profile);
+  web_view->SetBrowserWindowCallback(base::BindRepeating(
+      [](const base::WeakPtr<tabs::TabInterface>& tab) {
+        return tab ? tab->GetBrowserWindowInterface() : nullptr;
+      },
+      tab.GetWeakPtr()));
   web_view->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(onboarding_url));
   web_view->SetPreferredSize(kMinSize);
