@@ -1933,11 +1933,8 @@ TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
@@ -1967,11 +1964,8 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
 
   FormData form = CreateTestAddressFormData();
@@ -2012,8 +2006,7 @@ TEST_F(BrowserAutofillManagerTest,
        WebauthnSignInWithAnotherDeviceSuggestion_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::
-                                kAutofillAndPasswordsInSameSurface},
+      /*enabled_features=*/{},
       /*disabled_features=*/{
           password_manager::features::
               kAutofillReintroduceHybridPasskeyDropdownItem});
@@ -2044,11 +2037,8 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
   FormData form = CreateTestHybridSignUpFormData();
   form.set_fields({CreateTestFormField(
@@ -2071,11 +2061,8 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
@@ -2095,11 +2082,8 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
@@ -2119,11 +2103,8 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {
-          autofill::features::kAutofillAndPasswordsInSameSurface,
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem,
-      },
+      {password_manager::features::
+           kAutofillReintroduceHybridPasskeyDropdownItem},
       /*disabled_features=*/{});
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
