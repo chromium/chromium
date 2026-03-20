@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/themes/ntp_background.pb.h"
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_seed_colors.h"
@@ -128,13 +129,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that a custom color can be set.
 - (void)testCustomizeColor {
-#if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/474141910): Re-enable when fixed.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPhone device.");
-  }
-#endif
-
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
@@ -157,10 +151,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    chosenColor.accessibilityNameId))]
       performAction:grey_tap()];
 
-  NewTabPageColorPalette* palette =
-      [NewTabPageAppInterface currentBackgroundColor];
-  SkColor paletteSeedColor = skia::UIColorToSkColor(palette.seedColor);
-  EXPECT_EQ(chosenColor.color, paletteSeedColor);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        NewTabPageColorPalette* palette =
+            [NewTabPageAppInterface currentBackgroundColor];
+        return skia::UIColorToSkColor(palette.seedColor) == chosenColor.color;
+      }));
 
   // Tapping Done should dismiss the entire menu and keep the background color.
   [[EarlGrey
@@ -173,9 +169,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                      kHomeCustomizationMainViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
 
-  palette = [NewTabPageAppInterface currentBackgroundColor];
-  paletteSeedColor = skia::UIColorToSkColor(palette.seedColor);
-  EXPECT_EQ(chosenColor.color, paletteSeedColor);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        NewTabPageColorPalette* palette =
+            [NewTabPageAppInterface currentBackgroundColor];
+        return skia::UIColorToSkColor(palette.seedColor) == chosenColor.color;
+      }));
 }
 
 // Tests that a custom gallery background can be set.
