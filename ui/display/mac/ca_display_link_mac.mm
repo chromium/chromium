@@ -77,7 +77,7 @@ struct ObjCState {
 };
 
 void CADisplayLinkMac::Step() {
-  TRACE_EVENT0("ui", "CADisplayLinkCallback");
+  TRACE_EVENT0("gpu", "CADisplayLinkCallback");
 
   if (@available(macos 14.0, *)) {
     if (!vsync_callback_) {

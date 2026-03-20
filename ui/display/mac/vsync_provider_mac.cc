@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 
 namespace ui {
 
@@ -109,6 +110,7 @@ void VSyncProviderMac::UnregisterCallback(VSyncCallbackMac::Callback callback,
 void VSyncProviderMac::OnVSync(const VSyncParamsMac& params,
                                int64_t display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
+  TRACE_EVENT0("gpu", "VSyncProviderMac::OnVSync");
 
   // DisplayLink entry might no longer exist.
   auto found = callback_lists_.find(display_id);

@@ -95,7 +95,7 @@ CVReturn CVDisplayLinkMac::CVDisplayLinkCallback(CVDisplayLinkRef display_link,
                                                  CVOptionFlags* flags_out,
                                                  void* context) {
   // This function is called on the system display link thread.
-  TRACE_EVENT0("ui", "DisplayLinkCallback");
+  TRACE_EVENT0("gpu", "CVDisplayLinkCallback");
 
   // Convert the time parameters to our VSync parameters.
   VSyncParamsMac params;
