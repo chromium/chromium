@@ -126,6 +126,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -2510,16 +2511,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 }
 
-// TODO(crbug.com/458526513): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MaximizeAndRestoreWindowWithApi \
-  DISABLED_MaximizeAndRestoreWindowWithApi
-#else
-#define MAYBE_MaximizeAndRestoreWindowWithApi MaximizeAndRestoreWindowWithApi
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_MaximizeAndRestoreWindowWithApi) {
+    MaximizeAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2528,6 +2522,8 @@ IN_PROC_BROWSER_TEST_F(
   helper()->browser_view()->SetCanMaximize(true);
   EXPECT_TRUE(helper()->browser_view()->CanMaximize());
   content::WaitForLoadStop(web_contents);
+  views::Widget* widget = helper()->browser_view()->GetWidget();
+  views::test::WaitForWidgetActive(widget, true);
 
   EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
             "window.maximize() succeeded.");
