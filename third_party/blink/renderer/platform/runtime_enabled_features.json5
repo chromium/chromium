@@ -5363,6 +5363,7 @@
       // https://chromestatus.com/feature/6185007701557248
       name: "SpellCheckCustomDictionaryAPI",
       status: "test",
+      public: true,
     },
     {
       name: "SplitTextNotCleanupDummySpans",

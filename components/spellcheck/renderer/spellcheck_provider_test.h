@@ -67,6 +67,8 @@ class FakeSpellCheck : public SpellCheck {
   // Returns the current number of spell check languages with enabled engines.
   size_t EnabledLanguageCount() override;
 
+  void InitializeSpellCheckWithLanguage();
+
  private:
   bool use_fake_counts_ = false;
   size_t language_count_ = 0;

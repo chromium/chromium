@@ -125,6 +125,10 @@ class SpellCheckProvider : public content::RenderFrameObserver,
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
 
+  void SpellCheckCustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed) override;
+
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   void OnRespondSpellingService(int identifier,
                                 const std::u16string& text,

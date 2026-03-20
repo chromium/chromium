@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "components/spellcheck/renderer/custom_dictionary_engine.h"
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
 
 namespace service_manager {
@@ -73,6 +74,9 @@ class SpellcheckLanguage {
       size_t* skip_or_misspelling_len,
       std::vector<std::u16string>* optional_suggestions);
 
+  void SpellCheckCustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed);
   // Initialize |spellcheck_| if that hasn't happened yet.
   bool InitializeIfNeeded();
 
@@ -107,6 +111,9 @@ class SpellcheckLanguage {
   // Pointer to a platform-specific spelling engine, if it is in use. This
   // should only be set if hunspell is not used. (I.e. on OSX, for now)
   std::unique_ptr<SpellingEngine> platform_spelling_engine_;
+
+  // Local dictionary spelling engine from renderer side
+  CustomDictionaryEngine local_dictionary_engine_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_LANGUAGE_H_

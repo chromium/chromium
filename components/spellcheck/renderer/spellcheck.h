@@ -152,6 +152,10 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
 
   bool IsSpellcheckEnabled();
 
+  void SpellCheckCustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed);
+
   // Add observer on dictionary update event.
   void AddDictionaryUpdateObserver(DictionaryUpdateObserver* observer);
   // Remove observer on dictionary update event.

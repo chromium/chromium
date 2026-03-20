@@ -12,6 +12,7 @@
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 #include "third_party/blink/public/web/web_text_decoration_type.h"
@@ -126,6 +127,28 @@ TEST_F(SpellCheckProviderCacheTest, ResetCacheOnCustomDictionaryUpdate) {
   provider_.SetLastResults(u"This is a test", last_results);
 
   UpdateCustomDictionary();
+
+  EXPECT_FALSE(provider_.SatisfyRequestFromCache(u"This is a", &completion));
+  EXPECT_EQ(result.completion_count_, 0U);
+}
+
+TEST_F(SpellCheckProviderCacheTest,
+       ResetCacheOnSpellCheckCustomDictionaryUpdate) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  FakeTextCheckingResult result;
+  FakeTextCheckingCompletion completion(&result);
+
+  std::vector<blink::WebTextCheckingResult> last_results;
+  provider_.SetLastResults(u"This is a test", last_results);
+
+  SpellCheck* spellcheck = provider_.spellcheck();
+  EXPECT_NE(spellcheck, nullptr);
+
+  provider_.spellcheck()->InitializeSpellCheckWithLanguage();
+  static_cast<blink::WebTextCheckClient*>(&provider_)
+      ->SpellCheckCustomDictionaryChanged({}, {});
 
   EXPECT_FALSE(provider_.SatisfyRequestFromCache(u"This is a", &completion));
   EXPECT_EQ(result.completion_count_, 0U);

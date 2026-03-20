@@ -33,6 +33,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
@@ -212,11 +213,24 @@ void SpellCheck::Initialize(
   content::RenderFrame::ForEach(&updater);
 }
 
+void SpellCheck::SpellCheckCustomDictionaryChanged(
+    const std::vector<std::string>& words_added,
+    const std::vector<std::string>& words_removed) {
+  if (blink::WebRuntimeFeatures::IsSpellCheckCustomDictionaryAPIEnabled()) {
+    const std::set<std::string> added(words_added.begin(), words_added.end());
+    NotifyDictionaryObservers(ConvertToWebStringFromUtf8(added));
+    // Add or remove the word in the spell checker custom dictionary
+    (*languages_.begin())
+        ->SpellCheckCustomDictionaryChanged(words_added, words_removed);
+  }
+}
+
 void SpellCheck::CustomDictionaryChanged(
     const std::vector<std::string>& words_added,
     const std::vector<std::string>& words_removed) {
   const std::set<std::string> added(words_added.begin(), words_added.end());
   NotifyDictionaryObservers(ConvertToWebStringFromUtf8(added));
+  // Add or remove the word in the browser's custom dictionary
   custom_dictionary_.OnCustomDictionaryChanged(
       added, std::set<std::string>(words_removed.begin(), words_removed.end()));
 }

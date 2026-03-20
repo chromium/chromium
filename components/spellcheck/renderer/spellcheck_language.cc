@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 
 SpellcheckLanguage::SpellcheckLanguage(
     service_manager::LocalInterfaceProvider* embedder_provider)
@@ -89,6 +90,12 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
       continue;
     }
 
+    if (blink::WebRuntimeFeatures::IsSpellCheckCustomDictionaryAPIEnabled() &&
+        local_dictionary_engine_.SpellCheckWord(word, word_start,
+                                                word_length)) {
+      continue;
+    }
+
     // If the given word is a concatenated word of two or more valid words
     // (e.g. "hello:hello"), we should treat it as a valid word.
     if (IsValidContraction(word, host)) {
@@ -148,6 +155,17 @@ bool SpellcheckLanguage::IsValidContraction(
 bool SpellcheckLanguage::IsEnabled() {
   DCHECK(platform_spelling_engine_);
   return platform_spelling_engine_->IsEnabled();
+}
+
+void SpellcheckLanguage::SpellCheckCustomDictionaryChanged(
+    const std::vector<std::string>& words_added,
+    const std::vector<std::string>& words_removed) {
+  if (blink::WebRuntimeFeatures::IsSpellCheckCustomDictionaryAPIEnabled()) {
+    const std::set<std::string> added(words_added.begin(), words_added.end());
+    local_dictionary_engine_.OnCustomDictionaryChanged(
+        added,
+        std::set<std::string>(words_removed.begin(), words_removed.end()));
+  }
 }
 
 bool SpellcheckLanguage::IsTextInSameScript(const std::u16string& text) const {

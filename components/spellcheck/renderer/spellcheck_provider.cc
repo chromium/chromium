@@ -339,6 +339,12 @@ void SpellCheckProvider::RequestCheckingOfText(
       base::saturated_cast<int>(text.length()));
 }
 
+void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
+    const std::vector<std::string>& words_added,
+    const std::vector<std::string>& words_removed) {
+  spellcheck_->SpellCheckCustomDictionaryChanged(words_added, words_removed);
+}
+
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void SpellCheckProvider::OnRespondSpellingService(
     int identifier,

@@ -95,6 +95,12 @@ void FakeSpellCheck::InitializeSpellCheckForLocale(const std::string& language,
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
+void FakeSpellCheck::InitializeSpellCheckWithLanguage() {
+  // Add the SpellcheckLanguage manually to the SpellCheck object.
+  SpellCheck::languages_.push_back(
+      std::make_unique<SpellcheckLanguage>(embedder_provider_));
+}
+
 size_t FakeSpellCheck::LanguageCount() {
   return use_fake_counts_ ? language_count_ : SpellCheck::LanguageCount();
 }
