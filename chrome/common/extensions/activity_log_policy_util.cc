@@ -107,13 +107,20 @@ TelemetrySignalType GetTelemetrySignalType(const std::string& api_name,
           attr_val = args_unsafe[2].GetString();
         }
       }
-    } else if (base::EqualsCaseInsensitiveASCII(tag, "input") ||
-               base::EqualsCaseInsensitiveASCII(tag, "button")) {
+    } else if (base::EqualsCaseInsensitiveASCII(tag, "input")) {
       // [tag, type, formaction]
       if (args_size >= 3) {
         attr_name = "formaction";
         if (args_unsafe[2].is_string()) {
           attr_val = args_unsafe[2].GetString();
+        }
+      }
+    } else if (base::EqualsCaseInsensitiveASCII(tag, "button")) {
+      // [tag, type, formmethod, formaction]
+      if (args_size >= 4) {
+        attr_name = "formaction";
+        if (args_unsafe[3].is_string()) {
+          attr_val = args_unsafe[3].GetString();
         }
       }
     }
@@ -205,10 +212,12 @@ std::vector<std::string> GetArgumentsList(const std::string& api_name,
     return arg_strings;
   }
 
-  // Generic Extraction: Copy all string-typed arguments.
+  // Generic Extraction: Copy all non-empty string-typed arguments.
   for (const auto& arg : args_unsafe) {
     if (arg.is_string()) {
-      arg_strings.push_back(arg.GetString());
+      if (const std::string& str = arg.GetString(); !str.empty()) {
+        arg_strings.push_back(str);
+      }
     }
   }
 

@@ -103,15 +103,15 @@ TEST(ActivityLogPolicyUtilNamespaceTest, GetTelemetrySignalType_FormHijacking) {
             GetTelemetrySignalType("blinkSetAttribute", form_action_args,
                                    DomActionType::METHOD));
 
-  // 3. Set formaction on button. [arg0=tag, arg1=attr_name, arg2=old_val,
-  // arg3=new_val]
+  // 3. Set formaction on button. [arg0=tag, arg1=type, arg2=formmethod,
+  // arg3=formaction]
   base::ListValue button_args;
   button_args.Append("button");
-  button_args.Append("formaction");
-  button_args.Append("");
+  button_args.Append("submit");
+  button_args.Append("");  // empty formmethod
   button_args.Append("https://phish.com/login");
   EXPECT_EQ(SignalType::kScriptInjection,
-            GetTelemetrySignalType("blinkSetAttribute", button_args,
+            GetTelemetrySignalType("blinkAddElement", button_args,
                                    DomActionType::METHOD));
 }
 
@@ -181,9 +181,10 @@ TEST(ActivityLogPolicyUtilNamespaceTest,
 }
 
 TEST(ActivityLogPolicyUtilNamespaceTest,
-     GetArgumentsList_GenericKeepsAllStrings) {
+     GetArgumentsList_GenericKeepsAllNonEmptyStrings) {
   base::ListValue args;
   args.Append("arg1");
+  args.Append("");   // Should be ignored (empty string)
   args.Append(123);  // Should be ignored (not a string)
   args.Append("arg2");
 
