@@ -616,7 +616,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       viz::SinglePlaneFormat::kRGBA_8888;
 
   Platform::WebGLContextInfo context_info_;
-  const bool low_latency_enabled_ = false;
+  bool can_use_low_latency_ = false;
   bool has_implicit_stencil_buffer_ = false;
 
   // The current state restorer, which is used to track state dirtying. It is an

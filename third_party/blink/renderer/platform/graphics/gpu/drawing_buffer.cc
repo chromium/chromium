@@ -282,7 +282,9 @@ DrawingBuffer::DrawingBuffer(
                                 : kOpaque_SkAlphaType),
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
       context_info_(context_info),
-      low_latency_enabled_(desynchronized),
+      can_use_low_latency_(desynchronized &&
+                           SharedGpuContext::LowLatencyUsageSupportedForWebGL(
+                               ContextProvider()->SharedImageInterface())),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),
@@ -929,10 +931,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   // We can't use anything other than explicit resolve for swap chain, as the
   // D3D11 texture backing the back buffer is single-sampled.
   supports_implicit_resolve =
-      supports_implicit_resolve &&
-      !(low_latency_enabled_ &&
-        SharedGpuContext::LowLatencyUsageSupportedForWebGL(
-            ContextProvider()->SharedImageInterface()));
+      supports_implicit_resolve && !can_use_low_latency_;
 #endif
 
   const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
@@ -2002,14 +2001,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // First see if creating a SharedImage that can be used as an overlay is
   // feasible.
 #if BUILDFLAG(IS_WIN)
-  if (low_latency_enabled_ &&
-      SharedGpuContext::LowLatencyUsageSupportedForWebGL(sii)) {
+  if (can_use_low_latency_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
 #else
   bool use_as_overlay = false;
-  bool low_latency_usage_supported = false;
 
   // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
   // this allows WebGL-rendered canvases to be composited by the OS rather
@@ -2024,12 +2021,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (SharedGpuContext::IsGpuCompositingEnabled() &&
       (!is_offscreen_canvas_ ||
        base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-    use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
-    low_latency_usage_supported =
-        low_latency_enabled_ &&
-        SharedGpuContext::LowLatencyUsageSupportedForWebGL(sii);
+    use_as_overlay =
+        SharedGpuContext::UseOverlaysForWebGL() || can_use_low_latency_;
   }
-  if (use_as_overlay || low_latency_usage_supported) {
+  if (use_as_overlay) {
 #if !BUILDFLAG(IS_ANDROID)
     // Android's SharedImage backing for ChromiumImage does not support BGRX.
 
@@ -2056,7 +2051,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     if (GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
             color_buffer_format_, caps)) {
       usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      if (low_latency_usage_supported) {
+      if (can_use_low_latency_) {
         usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
     }
