@@ -26,7 +26,7 @@ void AiOverlayDialogPageHandler::GetApiKey(GetApiKeyCallback callback) {
 
 void AiOverlayDialogPageHandler::GetMockAudioData(
     GetMockAudioDataCallback callback) {
-  std::string path_string = features::kAiOverlayDialogMockAudioPath.Get();
+  std::string path_string = features::kAiOverlayDialogMockJsonPath.Get();
   std::replace(path_string.begin(), path_string.end(), '+', '/');
   if (path_string.empty()) {
     std::move(callback).Run(std::nullopt);
@@ -36,14 +36,13 @@ void AiOverlayDialogPageHandler::GetMockAudioData(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          [](const std::string& path_string)
-              -> std::optional<std::vector<uint8_t>> {
+          [](const std::string& path_string) -> std::optional<std::string> {
             std::string data;
             if (!base::ReadFileToString(
                     base::FilePath::FromUTF8Unsafe(path_string), &data)) {
               return std::nullopt;
             }
-            return std::vector<uint8_t>(data.begin(), data.end());
+            return data;
           },
           path_string),
       std::move(callback));

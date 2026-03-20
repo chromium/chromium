@@ -18,11 +18,11 @@ interface PageHandler {
   // string.
   GetApiKey() => (string api_key);
 
-  // Returns the data for the pre-canned mock audio file specified on the
-  // command line. Returns null if no file was specified or the file couldn't
-  // be read. This is used during development to test the component on devices
-  // without a microphone.
-  GetMockAudioData() => (array<uint8>? data);
+  // Returns the JSON data for the mock audio files specified on the command
+  // line. Returns null if no file was specified or the file couldn't be read.
+  // This is used during development to provide precanned audio data that can
+  // be sent on devices without a microphone.
+  GetMockAudioData() => (string? json_data);
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.

@@ -13,6 +13,11 @@ import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation} from './conversation.js';
 
+interface MockAudioButton {
+  name: string;
+  wavdata: string;
+}
+
 export class AppElement extends CrLitElement {
   static get is() {
     return 'ai-overlay-dialog-app';
@@ -28,16 +33,15 @@ export class AppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      // If a mock microphone is being used, this property is set to a callback
-      // injects a pre-canned message usable for development on devices without
-      // a microphone.
-      onInjectPrecannedAudio_: {
-        type: Object,
+      // If a mock microphone is being used, this contains the list of buttons
+      // to inject pre-canned messages.
+      mockButtons_: {
+        type: Array,
       },
     };
   }
 
-  private accessor onInjectPrecannedAudio_: (() => void)|undefined;
+  protected accessor mockButtons_: MockAudioButton[] = [];
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
@@ -46,6 +50,7 @@ export class AppElement extends CrLitElement {
   private queueStateChange: boolean = false;
   private state: SessionState = SessionState.IDLE;
   private conversation: Conversation|null = null;
+  private blobCapturer_: BlobAudioCapturer|null = null;
 
   constructor() {
     super();
@@ -74,12 +79,24 @@ export class AppElement extends CrLitElement {
     });
   }
 
-  protected get hasMic(): boolean {
-    return !this.onInjectPrecannedAudio_;
-  }
+  protected onInjectAudioClick_(e: Event) {
+    if (!this.blobCapturer_) {
+      return;
+    }
 
-  protected onInjectAudioClick_() {
-    this.onInjectPrecannedAudio_?.();
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const button = this.mockButtons_[index];
+    if (!button) {
+      return;
+    }
+
+    const binaryString = atob(button.wavdata);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], {type: 'audio/wav'});
+    this.blobCapturer_.send(blob);
   }
 
   private createAudioPlayer(): AudioPlayer {
@@ -95,12 +112,12 @@ export class AppElement extends CrLitElement {
       console.warn('No Microphone Found', e);
 
       try {
-        const {data} = await this.pageHandler.getMockAudioData();
-        if (data) {
-          const blob = new Blob([new Uint8Array(data)], {type: 'audio/wav'});
-          const blobCapturer = new BlobAudioCapturer(blob);
-          this.onInjectPrecannedAudio_ = () => blobCapturer.send();
-          return blobCapturer;
+        const {jsonData} = await this.pageHandler.getMockAudioData();
+        if (jsonData) {
+          const config = JSON.parse(jsonData);
+          this.mockButtons_ = config.buttons || [];
+          this.blobCapturer_ = new BlobAudioCapturer();
+          return this.blobCapturer_;
         } else {
           console.warn('No mock audio data provided or found');
         }
@@ -136,7 +153,8 @@ export class AppElement extends CrLitElement {
     this.state = state;
 
     if (state === SessionState.IDLE) {
-      this.onInjectPrecannedAudio_ = undefined;
+      this.mockButtons_ = [];
+      this.blobCapturer_ = null;
     }
   }
 

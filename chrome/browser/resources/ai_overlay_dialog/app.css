@@ -33,9 +33,13 @@
   border-color: var(--color-sys-positive);
 }
 
-#inject-audio {
+.inject-audio {
   margin-top: 10px;
   padding: 8px 16px;
   cursor: pointer;
   pointer-events: auto;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

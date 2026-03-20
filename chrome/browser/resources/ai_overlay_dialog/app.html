@@ -8,10 +8,10 @@
     If there's no microphone present, show a button to inject a pre-canned audio
     message to make development easier.
   -->
-  ${!this.hasMic ? html`
-    <button id="inject-audio" type="button"
+  ${this.mockButtons_.map((button, index) => html`
+    <button class="inject-audio" type="button" data-index="${index}"
         @click="${this.onInjectAudioClick_}">
-      DEBUG: Send "Hello"
+      ${button.name}
     </button>
-  ` : ''}
+  `)}
 </div>

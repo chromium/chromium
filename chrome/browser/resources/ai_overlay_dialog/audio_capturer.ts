@@ -74,34 +74,24 @@ export class MicrophoneAudioCapturer implements AudioCapturer {
  */
 export class BlobAudioCapturer implements AudioCapturer {
   private static readonly SAMPLE_RATE = 16000;
-  private blob: Blob;
   private audioContext: AudioContext|null = null;
-  private audioBuffer: AudioBuffer|null = null;
   private onAudioCallback: ((data: string) => void)|null = null;
   private isStopped: boolean = false;
 
   private audioPlayer: AudioPlayer;
 
-  constructor(blob: Blob) {
-    this.blob = blob;
+  constructor() {
     this.audioPlayer = new AudioPlayer();
   }
 
-  /* Reads the audio data out of the blob but doesn't actually send it yet. */
-  async start(onAudioCallback: (data: string) => void): Promise<boolean> {
+  /* Sets up internal state but doesn't actually play the audio. */
+  start(onAudioCallback: (data: string) => void): Promise<boolean> {
     this.onAudioCallback = onAudioCallback;
     this.isStopped = false;
+    this.audioContext =
+        new AudioContext({sampleRate: BlobAudioCapturer.SAMPLE_RATE});
 
-    const arrayBuffer = await this.blob.arrayBuffer();
-    this.audioContext = new AudioContext({sampleRate: BlobAudioCapturer.SAMPLE_RATE});
-    try {
-      this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-    } catch (e) {
-      console.error('Failed to decode audio data', e);
-      return false;
-    }
-
-    return true;
+    return Promise.resolve(true);
   }
 
   stop() {
@@ -109,7 +99,6 @@ export class BlobAudioCapturer implements AudioCapturer {
     this.audioContext?.close();
     this.audioContext = null;
     this.onAudioCallback = null;
-    this.audioBuffer = null;
   }
 
   getSampleRate() {
@@ -117,17 +106,26 @@ export class BlobAudioCapturer implements AudioCapturer {
   }
 
   /* Sends the audio data to the callback. */
-  async send(): Promise<void> {
-    if (!this.onAudioCallback || !this.audioBuffer) {
+  async send(blob: Blob): Promise<void> {
+    if (!this.onAudioCallback || !this.audioContext) {
+      return;
+    }
+
+    const arrayBuffer = await blob.arrayBuffer();
+    let audioBuffer: AudioBuffer;
+    try {
+      audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.error('Failed to decode audio data', e);
       return;
     }
 
     console.info('Sending mock prompt');
 
     // Play back the audio so we can hear what's sent.
-    this.audioPlayer.playBuffer(this.audioBuffer);
+    this.audioPlayer.playBuffer(audioBuffer);
 
-    const float32Data = this.audioBuffer.getChannelData(0);
+    const float32Data = audioBuffer.getChannelData(0);
 
     // 100ms at sample rate
     const chunkSize = BlobAudioCapturer.SAMPLE_RATE * 0.1;
