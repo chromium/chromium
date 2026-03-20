@@ -9,6 +9,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -442,12 +443,64 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
     const contextual_search::InputState& state) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  std::vector<omnibox::InputType> max_instances_keys;
+  std::vector<int> max_instances_values;
+  for (const auto& [key, value] : state.max_instances) {
+    max_instances_keys.emplace_back(key);
+    max_instances_values.emplace_back(value);
+  }
+
+  std::vector<std::vector<uint8_t>> tool_configs;
+  for (const auto& config : state.tool_configs) {
+    std::string serialized;
+    config.SerializeToString(&serialized);
+    tool_configs.emplace_back(
+        std::vector<uint8_t>(serialized.begin(), serialized.end()));
+  }
+
+  std::vector<std::vector<uint8_t>> model_configs;
+  for (const auto& config : state.model_configs) {
+    std::string serialized;
+    config.SerializeToString(&serialized);
+    model_configs.emplace_back(
+        std::vector<uint8_t>(serialized.begin(), serialized.end()));
+  }
+
+  std::vector<std::vector<uint8_t>> input_type_configs;
+  for (const auto& config : state.input_type_configs) {
+    std::string serialized;
+    config.SerializeToString(&serialized);
+    input_type_configs.emplace_back(
+        std::vector<uint8_t>(serialized.begin(), serialized.end()));
+  }
+
+  std::vector<uint8_t> tools_section_config;
+  if (state.tools_section_config.has_value()) {
+    std::string serialized;
+    state.tools_section_config->SerializeToString(&serialized);
+    tools_section_config.assign(serialized.begin(), serialized.end());
+  }
+
+  std::vector<uint8_t> model_section_config;
+  if (state.model_section_config.has_value()) {
+    std::string serialized;
+    state.model_section_config->SerializeToString(&serialized);
+    model_section_config.assign(serialized.begin(), serialized.end());
+  }
+
   base::android::ScopedJavaLocalRef<jobject> j_input_state =
       contextual_search::Java_InputState_Constructor(
-          env, state.allowed_tools, state.allowed_models,
-          state.allowed_input_types, state.active_tool, state.active_model,
-          state.disabled_tools, state.disabled_models,
-          state.disabled_input_types);
+          env, state.hint_text, state.allowed_input_types,
+          state.disabled_input_types, state.max_total_inputs,
+          max_instances_keys, max_instances_values,
+          base::android::ToJavaArrayOfByteArray(env, input_type_configs),
+          state.active_tool, state.allowed_tools, state.disabled_tools,
+          state.image_gen_upload_active,
+          base::android::ToJavaArrayOfByteArray(env, tool_configs),
+          tools_section_config, state.active_model, state.GetDefaultModel(),
+          state.allowed_models, state.disabled_models,
+          base::android::ToJavaArrayOfByteArray(env, model_configs),
+          model_section_config);
 
   Java_ComposeboxQueryControllerBridge_onInputStateChanged(env, java_obj_,
                                                            j_input_state);
