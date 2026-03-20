@@ -18,11 +18,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
@@ -46,13 +49,29 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Supplier;
 
-/** Unit tests for {@link HistoryContentManager}. */
-@RunWith(BaseRobolectricTestRunner.class)
+/**
+ * Unit tests for {@link HistoryContentManager}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ */
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class HistoryContentManagerUnitTest {
+
+    @Rule(order = Rule.DEFAULT_ORDER - 1)
+    public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
@@ -77,11 +96,19 @@ public class HistoryContentManagerUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private UserPrefsJni mUserPrefsJni;
     @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
+    private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private HistoryContentManager mHistoryContentManager;
 
+    public HistoryContentManagerUnitTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+                mIsIdentityManagerSourceOfAccounts);
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         when(mIdentityServicesProviderJni.getSigninManager(any())).thenReturn(mSigninManager);

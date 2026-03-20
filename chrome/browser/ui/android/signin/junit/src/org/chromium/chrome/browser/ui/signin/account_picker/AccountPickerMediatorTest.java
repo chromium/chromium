@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,28 +16,40 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Tests the class {@link AccountPickerMediator}. */
-@RunWith(BaseRobolectricTestRunner.class)
+import java.util.Arrays;
+import java.util.Collection;
+
+/**
+ * Tests the class {@link AccountPickerMediator}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ */
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class AccountPickerMediatorTest {
-    /* Used to simulate a name change event for TestAccounts.ACCOUNT1. */
-    public static final AccountInfo ACCOUNT1_DIFFERENT_NAME =
-            new AccountInfo.Builder(
-                            TestAccounts.ACCOUNT1.getEmail(), TestAccounts.ACCOUNT1.getGaiaId())
-                    .fullName("Different Test1 Full")
-                    .givenName("Different Test1 Given")
-                    .build();
+    @Rule(order = Rule.DEFAULT_ORDER - 1)
+    public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -47,8 +60,20 @@ public class AccountPickerMediatorTest {
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private final MVCListAdapter.ModelList mModelList = new MVCListAdapter.ModelList();
+    private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private AccountPickerMediator mMediator;
+
+    public AccountPickerMediatorTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
+    @Before
+    public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+                mIsIdentityManagerSourceOfAccounts);
+    }
 
     @After
     public void tearDown() {
@@ -83,10 +108,15 @@ public class AccountPickerMediatorTest {
                         mModelList,
                         mListenerMock,
                         mAccountManagerTestRule.getIdentityManager());
-        mAccountManagerTestRule.addAccount(ACCOUNT1_DIFFERENT_NAME);
-        // ACCOUNT_DIFFERENT_NAME, ADD_ACCOUNT
+        var accountWithDifferentName =
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1)
+                        .fullName("Different Test1 Full")
+                        .givenName("Different Test1 Given")
+                        .build();
+        mAccountManagerTestRule.addAccount(accountWithDifferentName);
+        // accountWithDifferentName, ADD_ACCOUNT
         Assert.assertEquals(2, mModelList.size());
-        checkItemForExistingAccountRow(0, ACCOUNT1_DIFFERENT_NAME);
+        checkItemForExistingAccountRow(0, accountWithDifferentName);
         checkItemForAddAccountRow(1);
     }
 

@@ -138,9 +138,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** Can be used to block {@link #getAccounts()} ()} result. */
     private @Nullable Promise<List<AccountInfo>> mBlockedGetAccountsPromise;
 
-    private final Intent mAddAccountIntent =
-            new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
-
     /** The account that will be added by AddAccountActivityStub. */
     private @Nullable AccountInfo mAccountToAdd;
 
@@ -315,7 +312,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void createAddAccountIntent(
             @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
-        callback.onResult(mAddAccountIntent);
+        callback.onResult(
+                new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class));
     }
 
     @Override

@@ -16,10 +16,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -48,11 +51,18 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
-/** Unit tests for {@link HistoryPane}. */
-@RunWith(BaseRobolectricTestRunner.class)
+/**
+ * Unit tests for {@link HistoryPane}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ */
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
@@ -60,6 +70,14 @@ import java.util.function.Supplier;
     ChromeFeatureList.ANDROID_HISTORY_CLUSTERING
 })
 public class HistoryPaneUnitTest {
+    @Rule(order = Rule.DEFAULT_ORDER - 1)
+    public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
@@ -84,11 +102,19 @@ public class HistoryPaneUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarNatives;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsNatives;
+    private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private HistoryPane mHistoryPane;
 
+    public HistoryPaneUnitTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+                mIsIdentityManagerSourceOfAccounts);
         doReturn(mProfile).when(mProfileProvider).getOriginalProfile();
         mProfileProviderSupplier.set(mProfileProvider);
         BrowsingHistoryBridgeJni.setInstanceForTesting(mBrowsingHistoryBridgeNatives);

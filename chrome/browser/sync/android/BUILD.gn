@@ -63,6 +63,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:callback_java",
+    "//base:features_java",
     "//base:supplier_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
