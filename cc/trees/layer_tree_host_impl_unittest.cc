@@ -13123,14 +13123,14 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
 }
 
 // Fluent Overlay Scrollbars track opacity is scaled depending on the thickness
-// scale factor of the scrollbar's thumb. When the thumb's thickness is at it's
+// scale factor of the scrollbar's thumb. When the thumb's thickness is at its
 // minimum the track should be invisible
 // (`thickness_scale_factor_` == `kIdleThicknessScale`) => (`opacity_` == 0).
-// When the thumb's thickness is at it's maximum, the track should be fully
+// When the thumb's thickness is at its maximum, the track should be fully
 // visible.
 // (`thickness_scale_factor_` == 1) => (`opacity_` == 1).
 // For every thickness value in between `kIdleThicknessScale` and 1.f the
-// opacity should be scaled appropriately This test ensures the correlation
+// opacity should be scaled appropriately. This test ensures the correlation
 // between thickness of the thumb and opacity of the track.
 TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
        PaintedOverlayScrollbarTrackOpacityTest) {
@@ -13239,12 +13239,12 @@ TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
   EXPECT_FLOAT_EQ(CreateAndRegisterPaintedScrollbarLayer()->Opacity(), 0.f);
 }
 
-// Fluent Overlay Scrollbar should not be hit tested when it's opacity is zero.
+// Fluent Overlay Scrollbar should not be hit tested when its opacity is zero.
 TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
        DoesntGetHitTestedWhenInvisible) {
   EXPECT_FLOAT_EQ(CreateAndRegisterPaintedScrollbarLayer()->Opacity(), 0.f);
   // Per CreateAndRegisterPaintedScrollbarLayer the Scrollbar's rect is located
-  // at (345,0)x(15,600). A point of 352 clicks it in the middle of the the
+  // at (345,0)x(15,600). A point of 352 clicks it in the middle of the
   // track and would cause a scroll.
   InputHandlerPointerResult result =
       GetInputHandler().MouseMoveAt(gfx::Point(352, 300));
