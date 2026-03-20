@@ -1339,6 +1339,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "browser-launch-metadata-reporting",
+    "owners": [ "qiutanw@google.com", "cbe-eng@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "browser-report-include-all-profiles",
     "owners": ["nicolaso@chromium.org", "zmin@chromium.org"],
     "expiry_milestone": 150

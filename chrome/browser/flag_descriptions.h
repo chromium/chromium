@@ -1159,6 +1159,12 @@ inline constexpr char kBookmarkTabGroupConversionName[] =
 inline constexpr char kBookmarkTabGroupConversionDescription[] =
     "Enable conversion between bookmark and tab group";
 
+inline constexpr char kBrowserLaunchMetadataReportingName[] =
+    "Browser launch metadata reporting";
+inline constexpr char kBrowserLaunchMetadataReportingDescription[] =
+    "Enables the collection and reporting of browser launch-related metadata "
+    "for Chrome Enterprise, including CLI switches and launch timestamp";
+
 inline constexpr char kBorealisBigGlName[] = "Borealis Big GL";
 inline constexpr char kBorealisBigGlDescription[] =
     "Enable Big GL when running Borealis.";

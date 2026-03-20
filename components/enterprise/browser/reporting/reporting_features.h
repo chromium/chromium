@@ -12,6 +12,10 @@ namespace enterprise_reporting {
 // Controls whether SaaS usage reporting is enabled.
 BASE_DECLARE_FEATURE(kSaasUsageReporting);
 
+// Controls whether the browser should report launch-related metadata,
+// such as the exact command line switches used at startup.
+BASE_DECLARE_FEATURE(kBrowserLaunchMetadataReporting);
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_

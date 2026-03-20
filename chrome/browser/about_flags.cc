@@ -106,6 +106,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -9163,6 +9164,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          blink::features::kBrowserInitiatedAutomaticPictureInPicture)},
+
+    {"browser-launch-metadata-reporting",
+     flag_descriptions::kBrowserLaunchMetadataReportingName,
+     flag_descriptions::kBrowserLaunchMetadataReportingDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(enterprise_reporting::kBrowserLaunchMetadataReporting)},
 
     {"picture-in-picture-show-window-animation",
      flag_descriptions::kPictureInPictureShowWindowAnimationName,

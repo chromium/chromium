@@ -17042,6 +17042,7 @@ from previous Chrome versions.
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="861351290" label="FontManagerEarlyInit:enabled"/>
+  <int value="861596248" label="BrowserLaunchMetadataReporting:enabled"/>
   <int value="861968979" label="EnableEncryptedAV1:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
   <int value="863493664" label="LacrosMoveProfileMigration:disabled"/>
@@ -20741,6 +20742,7 @@ from previous Chrome versions.
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099676690" label="CastStreamingPerformanceOverlay:disabled"/>
+  <int value="2099837693" label="BrowserLaunchMetadataReporting:disabled"/>
   <int value="2099866799" label="TrackByDefaultOnMobile:disabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>
   <int value="2100299982"
