@@ -141,6 +141,12 @@ bool AccessibilityAnnotationSyncBridge::IsEntityDataValid(
   return !entity_data.specifics.accessibility_annotation().id().empty();
 }
 
+bool AccessibilityAnnotationSyncBridge::SupportsIncrementalUpdates() const {
+  // TODO(crbug.com/483214801): Re-enable incremental updates before the rollout
+  // starts.
+  return false;
+}
+
 std::optional<sync_pb::AccessibilityAnnotationSpecifics>
 AccessibilityAnnotationSyncBridge::GetAnnotation(std::string_view id) const {
   return base::OptionalFromPtr(base::FindOrNull(annotation_entries_, id));
