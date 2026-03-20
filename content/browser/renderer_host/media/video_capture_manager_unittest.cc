@@ -811,6 +811,34 @@ TEST_F(VideoCaptureManagerTest, OpenNotExisting) {
   vcm_->UnregisterListener(listener_.get());
 }
 
+// Try open a non-existing fake device that uses the
+// FakeVideoCaptureDeviceLauncher.
+TEST_F(VideoCaptureManagerTest, OpenNotExistingFakeDevice) {
+  // Use a device ID that we know won't be found by the fake device factory.
+  std::string invalid_device_id = "invalid_fake_device_id";
+
+  // Create a device descriptor for the invalid device.
+  blink::MediaStreamDevice dummy_device(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, invalid_device_id,
+      "Invalid Fake Device");
+
+  EXPECT_CALL(*frame_observer_, OnError(_, _));
+  EXPECT_CALL(*listener_, Opened(_, _));
+  EXPECT_CALL(*listener_, Closed(_, _));
+
+  // This should trigger the fix in FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync
+  // because the fake device factory will return an error when it can't find the ID.
+  base::UnguessableToken session_id = vcm_->Open(dummy_device);
+  VideoCaptureControllerID client_id = StartClient(session_id, true);
+  base::RunLoop().RunUntilIdle();
+
+  StopClient(client_id);
+  vcm_->Close(session_id);
+  base::RunLoop().RunUntilIdle();
+
+  vcm_->UnregisterListener(listener_.get());
+}
+
 // Start a device without calling Open, using a non-magic ID.
 TEST_F(VideoCaptureManagerTest, StartInvalidSession) {
   StartClient(base::UnguessableToken::Create(), false);

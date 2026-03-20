@@ -90,7 +90,15 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
-  auto device = system_->CreateDevice(device_id).ReleaseDevice();
+  media::VideoCaptureErrorOrDevice device_or_error =
+      system_->CreateDevice(device_id);
+  if (!device_or_error.ok()) {
+    callbacks->OnDeviceLaunchFailed(device_or_error.error());
+    std::move(done_cb).Run();
+    return;
+  }
+  std::unique_ptr<media::VideoCaptureDevice> device =
+      device_or_error.ReleaseDevice();
 #if BUILDFLAG(IS_WIN)
   auto buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
       params.buffer_type, 10,

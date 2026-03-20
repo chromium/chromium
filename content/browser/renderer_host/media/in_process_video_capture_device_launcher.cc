@@ -600,9 +600,15 @@ void InProcessVideoCaptureDeviceLauncher::OnFakeDevicesEnumerated(
     std::move(result_callback).Run(nullptr);
     return;
   }
-  auto video_capture_device =
-      fake_device_factory_->CreateDevice(devices_info.front().descriptor)
-          .ReleaseDevice();
+  media::VideoCaptureErrorOrDevice video_capture_device_or_error =
+      fake_device_factory_->CreateDevice(devices_info.front().descriptor);
+  if (!video_capture_device_or_error.ok()) {
+    LOG(ERROR) << "Failed to create fake device";
+    std::move(result_callback).Run(nullptr);
+    return;
+  }
+  std::unique_ptr<media::VideoCaptureDevice> video_capture_device =
+      video_capture_device_or_error.ReleaseDevice();
   video_capture_device->AllocateAndStart(params, std::move(device_client));
   std::move(result_callback).Run(std::move(video_capture_device));
 }
