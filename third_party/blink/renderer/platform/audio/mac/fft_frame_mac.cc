@@ -133,9 +133,8 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
   frame_.imagp = imag_data_.Data();
 
   // Copy/setup frame data
-  unsigned nbytes = sizeof(float) * fft_size_;
-  UNSAFE_TODO(memcpy(RealData().Data(), frame.frame_.realp, nbytes));
-  UNSAFE_TODO(memcpy(ImagData().Data(), frame.frame_.imagp, nbytes));
+  real_data_.as_span().copy_from(frame.real_data_.as_span());
+  imag_data_.as_span().copy_from(frame.imag_data_.as_span());
 }
 
 FFTFrame::~FFTFrame() {}
