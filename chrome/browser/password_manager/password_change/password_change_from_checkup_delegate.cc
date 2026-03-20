@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -43,22 +41,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-bool IsValidUrl(const GURL& url) {
-  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
-}
-
-bool IsSameOrigin(const std::u16string& credential_source_site_or_app,
-                  const GURL& credential_target_url) {
-  GURL source_url(credential_source_site_or_app);
-
-  if (!IsValidUrl(credential_target_url) || !IsValidUrl(source_url)) {
-    return false;
-  }
-
-  return url::Origin::Create(source_url)
-      .IsSameOriginWith(url::Origin::Create(credential_target_url));
-}
 
 std::string GetFallbackPromptToReachForm(std::string_view domain,
                                          std::string_view username) {
@@ -176,8 +158,8 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   originator_ = std::move(web_contents);
 
   // TODO(crbug.com/485620841): Handle non-web URLs for Android passwords.
-  credential_url_ = credential.GetURL();
-  std::string site_domain(credential_url_.host());
+  const GURL& credential_url = credential.GetURL();
+  std::string site_domain(credential_url.host());
   username_ = credential.username;
   current_password_ = credential.password;
 
@@ -186,43 +168,13 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       base::BindOnce(&GetReachChangeFormPrompt, std::move(site_domain),
                      base::UTF16ToUTF8(username_)),
       base::BindOnce(&PasswordChangeFromCheckupDelegate::OnPromptReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), credential_url));
 }
 
-void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
-    const std::vector<actor_login::Credential>& credentials,
-    actor::ToolDelegate::CredentialSelectedCallback callback) {
-  if (!actuation_web_contents_) {
-    std::move(callback).Run(
-        actor::webui::mojom::SelectCredentialDialogResponse::New());
-    return;
-  }
-
-  for (const auto& cred : credentials) {
-    // Discard credentials that are not passwords.
-    if (cred.type != actor_login::CredentialType::kPassword ||
-        cred.username != username_) {
-      continue;
-    }
-
-    if (IsSameOrigin(cred.source_site_or_app, credential_url_)) {
-      auto response =
-          actor::webui::mojom::SelectCredentialDialogResponse::New();
-      response->selected_credential_id = cred.id.value();
-      response->permission_duration =
-          actor::webui::mojom::UserGrantedPermissionDuration::kOneTime;
-      std::move(callback).Run(std::move(response));
-      return;
-    }
-  }
-
-  std::move(callback).Run(
-      actor::webui::mojom::SelectCredentialDialogResponse::New());
-}
-
-void PasswordChangeFromCheckupDelegate::OnPromptReady(std::string prompt) {
+void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
+                                                      std::string prompt) {
   if (prompt.empty()) {
-    std::string site_domain(credential_url_.host());
+    std::string site_domain(credential_url.host());
     prompt =
         GetFallbackPromptToReachForm(site_domain, base::UTF16ToUTF8(username_));
   }
@@ -243,7 +195,7 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(std::string prompt) {
   }
 
   content::OpenURLParams open_url_params(
-      credential_url_.GetWithEmptyPath(), content::Referrer(),
+      credential_url.GetWithEmptyPath(), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false);
@@ -301,7 +253,7 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     actor::TaskId task_id,
     actor::ActorTask::State new_state) {
-  if (!find_form_task_id_) {
+  if (!find_form_task_id_ && new_state == actor::ActorTask::State::kCreated) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
             actuation_web_contents_->GetBrowserContext()));
@@ -315,10 +267,7 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     }
 
     find_form_task_id_ = actor_task_for_actuation->id();
-    actor_task_for_actuation->GetExecutionEngine()
-        .PreHandleCredentialSelectionDialog(base::BindOnce(
-            &PasswordChangeFromCheckupDelegate::AutoSelectCredential,
-            weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   if (find_form_task_id_ && *find_form_task_id_ != task_id) {
