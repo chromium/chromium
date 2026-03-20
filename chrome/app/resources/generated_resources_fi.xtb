@@ -1096,7 +1096,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1709916727352927457">Avainkoodin poistaminen</translation>
 <translation id="1709972045049031556">Jakaminen ei onnistu</translation>
 <translation id="1712143791363119140">Käynnissä</translation>
-<translation id="1713120794167761305">Siirrä välilehdet sivuun</translation>
+<translation id="1713120794167761305">Siirrä välilehdet sivulle</translation>
 <translation id="1714265454085143857">Kiinnitetyt välilehdet</translation>
 <translation id="1714326320203665217">Pääsolmun merkintätiedostot ladattu</translation>
 <translation id="1714644264617423774">Laitteen käyttöä voi helpottaa esteettömyysominaisuuksien avulla. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -7225,7 +7225,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5888889603768021126">Kirjauduttu palvelulla</translation>
 <translation id="5889282057229379085">Keskitason varmenteiden myöntäjien enimmäismäärä: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Salaa synkronoidut tiedot oman <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseen<ph name="END_LINK" /> avulla. Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.</translation>
-<translation id="5890072287476934834">Siirrä välilehdet sivuun</translation>
+<translation id="5890072287476934834">Siirrä välilehdet sivulle</translation>
 <translation id="5891688036610113830">Ensisijaiset Wi-Fi-verkot</translation>
 <translation id="5894056653502215961">Poista kansion valinta: <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>

@@ -24,7 +24,7 @@
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
 <translation id="1094555143448724771">Teiste seadmete vahelehtede nägemiseks sünkroonige oma vahelehed ja ajalugu</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
-<translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
+<translation id="1100066534610197918">Ava grupis uuel vahelehel</translation>
 <translation id="1103142993930332957">Kas soovite aidata Chrome'i täiustada?</translation>
 <translation id="1105960400813249514">Kuva jäädvustamine</translation>
 <translation id="1108214977745280468">Kuva lehe statistika</translation>
@@ -78,7 +78,7 @@
 <translation id="129553762522093515">Viimati suletud</translation>
 <translation id="1298077576058087471">Säästke kuni 60% andmemahtu, lugege tänaseid uudiseid</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – saadetud seadmest <ph name="DEVICE_NAME" /></translation>
-<translation id="1310482092992808703">Vahelehtede grupeerimine</translation>
+<translation id="1310482092992808703">Grupeeri vahelehed</translation>
 <translation id="1318262688555255786">Jagage veebilehe <ph name="PAGE_TITLE" /> linki. Allikas: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Järjehoidja salvestamise voo kaustad on avatud täiskõrgusel</translation>
 <translation id="1327257854815634930">Navigeerimisajalugu on avatud</translation>

@@ -368,7 +368,7 @@
 <translation id="2271452184061378400">Välilehtiryhmäsi on tallennettu tänne</translation>
 <translation id="2273327106802955778">Lisäasetusvalikko</translation>
 <translation id="2287614783861766820">{count,plural, =1{Osoite poistetaan tältä laitteelta.}other{Nämä osoitteet poistetaan tältä laitteelta.}}</translation>
-<translation id="2295236662082735391">Muokkaa kuvaa Geminillä painamalla sitä pitkään verkossa</translation>
+<translation id="2295236662082735391">Muokkaa kuvaa verkossa Geminin avulla painamalla sitä pitkään</translation>
 <translation id="2297989278479054870">Kun olet kirjautunut ulos, Google-tilisi kirjanmerkit, salasanat ja muut tiedot poistetaan tältä laitteelta.</translation>
 <translation id="2299218006564889602">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="2306265833370324042">Näytä tiedot: <ph name="SEARCH_ENGINE_NAME" /></translation>

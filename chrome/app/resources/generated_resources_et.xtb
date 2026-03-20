@@ -357,7 +357,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1223853788495130632">Teie administraator soovitab seade jaoks kindlat väärtust.</translation>
 <translation id="1225177025209879837">Päringu töötlemine ...</translation>
 <translation id="1227107020813934021">Dokumendiskannerite otsimine</translation>
-<translation id="1227113644794103810">Inaktiivsed vahelehed</translation>
+<translation id="1227113644794103810">Mitteaktiivsed vahelehed</translation>
 <translation id="1227260640693522019">Loss</translation>
 <translation id="1227660082540388410">Pääsuvõtme muutmine</translation>
 <translation id="1227993798763400520">Ülekandmine ebaõnnestus. Proovige uuesti.</translation>
@@ -5767,7 +5767,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4871322859485617074">PIN-kood sisaldab sobimatuid tähemärke</translation>
 <translation id="4871370605780490696">Järjehoidja lisamine</translation>
 <translation id="4871568871368204250">Sünkroonimise väljalülitamine</translation>
-<translation id="4871719318659334896">Grupi sulgemine</translation>
+<translation id="4871719318659334896">Sulge grupp</translation>
 <translation id="4872192066608821120">Paroolide importimiseks valige CSV-fail</translation>
 <translation id="4872212987539553601">Seadistage seadmes krüpteerimine</translation>
 <translation id="4873312501243535625">Meediafaili kontrollija</translation>

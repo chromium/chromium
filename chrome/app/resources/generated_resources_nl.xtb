@@ -2451,7 +2451,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2635164452434513092">Waarschuwt je niet voor privésites, zoals het intranet van je bedrijf</translation>
 <translation id="2635276683026132559">Ondertekening</translation>
 <translation id="2636266464805306348">Venstertitels</translation>
-<translation id="2637313651144986786">Tabbladen doorzoeken...</translation>
+<translation id="2637313651144986786">Tabbladen zoeken...</translation>
 <translation id="2637400434494156704">Onjuiste pincode. Je hebt nog één poging over.</translation>
 <translation id="263796568413910992">Vraag het aan <ph name="SEARCH_ENGINE_NAME" /> of typ een URL</translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
@@ -2574,7 +2574,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2719936478972253983">De volgende cookies zijn geblokkeerd</translation>
 <translation id="2721037002783622288">Afbeelding &amp;zoeken in <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721695630904737430">Gebruikers met beperkte rechten zijn uitgezet door je beheerder.</translation>
+<translation id="2721695630904737430">Gebruikers onder toezicht zijn uitgezet door je beheerder.</translation>
 <translation id="2722540561488096675">Je apparaat wordt uitgezet over <ph name="TIME_LEFT" />. Verwijder het USB-apparaat voordat je het apparaat weer aanzet. Je kunt dan aan de slag gaan met <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Gastprofiel openen</translation>
@@ -3577,7 +3577,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3415580428903497523">Geïmporteerde lokale certificaten van je besturingssysteem gebruiken</translation>
 <translation id="341589277604221596">Live ondertiteling - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Altijd volledige URL's bekijken</translation>
-<translation id="3417835166382867856">Tabbladen doorzoeken</translation>
+<translation id="3417835166382867856">Tabbladen zoeken</translation>
 <translation id="3417836307470882032">Militaire tijd</translation>
 <translation id="3418798368381485936">Je kunt niet inloggen met dit account</translation>
 <translation id="3421387094817716717">Openbare sleutel voor elliptische kromme</translation>
@@ -7632,7 +7632,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6181431612547969857">Download geblokkeerd</translation>
 <translation id="6182100780603067202">App-audio ook delen (van alle vensters)</translation>
 <translation id="6183369864942961155">Automatisch licht/donker thema</translation>
-<translation id="6184099524311454384">Tabbladen doorzoeken</translation>
+<translation id="6184099524311454384">Tabbladen zoeken</translation>
 <translation id="6185132558746749656">Apparaatlocatie</translation>
 <translation id="6185151644843671709">Toegangssleutel opgeslagen en pincode gemaakt</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}other{{PASSWORD_COUNT} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}}</translation>
@@ -11583,7 +11583,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8864104359314908853">Je wachtwoord is opgeslagen</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> is verwijderd van dit apparaat</translation>
 <translation id="8865112428068029930">Gebruik je een gedeelde computer? Open een incognitovenster.</translation>
-<translation id="8867102760244540173">Tabbladen doorzoeken...</translation>
+<translation id="8867102760244540173">Tabbladen zoeken...</translation>
 <translation id="8867228703146808825">Details van build kopiëren naar klembord</translation>
 <translation id="8868333925931032127">Demomodus starten</translation>
 <translation id="8868626022555786497">In gebruik</translation>
