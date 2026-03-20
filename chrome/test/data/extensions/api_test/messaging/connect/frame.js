@@ -7,8 +7,8 @@ chrome.runtime.onConnect.addListener(function(port) {
     if (msg.testSendMessageToFrame) {
       // page.js created this frame with an unique digit starting at 0.
       // This number is used in test.js to identify messages from this frame.
-      var test_id = location.search.slice(-1);
-      port.postMessage('from_' + test_id);
+      const testId = location.search.slice(-1);
+      port.postMessage(`from_${testId}`);
     } else if (msg.testConnectChildFrameAndNavigate) {
       location.search = '?testConnectChildFrameAndNavigateDone';
     }

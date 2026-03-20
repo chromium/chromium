@@ -7,6 +7,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   sendResponse('Reply here');
 });
 
-var port = chrome.runtime.connect();
+const port = chrome.runtime.connect();
 port.postMessage('Hello from content script');
 port.disconnect();

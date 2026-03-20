@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testPort = chrome.runtime.connect({
+const testPort = chrome.runtime.connect({
   name: 'port from interstitial'
 });
 
-var currentTest;
+let currentTest;
 testPort.onMessage.addListener(function(msg) {
   console.assert(!currentTest, 'Should only run one test at a time');
   currentTest = msg;
@@ -18,7 +18,7 @@ testPort.onMessage.addListener(function(msg) {
   } else if (msg === 'testDisconnectByInterstitial') {
     testDisconnectByInterstitial();
   } else {
-    done('Unexpected test: ' + msg);
+    done(`Unexpected test: ${msg}`);
   }
 });
 
@@ -30,13 +30,13 @@ function done(test) {
 
 function testSendMessage() {
   chrome.runtime.sendMessage('First from interstitial', function(msg) {
-    chrome.runtime.sendMessage('interstitial received: ' + msg);
+    chrome.runtime.sendMessage(`interstitial received: ${msg}`);
     done('testSendMessage');
   });
 }
 
 function testDisconnectByBackground() {
-  var port = chrome.runtime.connect({
+  const port = chrome.runtime.connect({
     name: 'disconnect by background'
   });
   port.onDisconnect.addListener(function() {
@@ -45,7 +45,7 @@ function testDisconnectByBackground() {
 }
 
 function testDisconnectByInterstitial() {
-  var port = chrome.runtime.connect({
+  const port = chrome.runtime.connect({
     name: 'disconnect by interstitial'
   });
   port.disconnect();

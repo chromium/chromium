@@ -4,8 +4,8 @@
 
 // This port is opened by a content script in an interstitial. This is used by
 // the tests to drive the tests.
-var testPort;
-var testPortPromise = new Promise(function(resolve) {
+let testPort;
+const testPortPromise = new Promise(function(resolve) {
   chrome.test.listenOnce(chrome.runtime.onConnect, function(port) {
     testPort = port;
     resolve();
@@ -27,8 +27,8 @@ function assertIsPortFromInterstitial(port, expectedName) {
   chrome.test.assertTrue(port.sender.url.startsWith('data:'));
 }
 
-var httpsTabId;
-var httpsTabIdPromise = new Promise(function(resolve) {
+let httpsTabId;
+const httpsTabIdPromise = new Promise(function(resolve) {
   // The test runner will open a https page after loading the extension.
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
     if (tab.url.startsWith('https://')) {
@@ -64,9 +64,9 @@ chrome.test.runTests([
         function(msg, sender, sendResponse) {
           chrome.test.assertEq('First from interstitial', msg);
 
-          var kResponse = 'hello me!';
+          const kResponse = 'hello me!';
           chrome.test.listenOnce(chrome.runtime.onMessage, function(msg) {
-            chrome.test.assertEq('interstitial received: ' + kResponse, msg);
+            chrome.test.assertEq(`interstitial received: ${kResponse}`, msg);
           });
           sendResponse(kResponse);
         });

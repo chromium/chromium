@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var listenOnce = chrome.test.listenOnce;
-var listenForever = chrome.test.listenForever;
+const listenOnce = chrome.test.listenOnce;
+const listenForever = chrome.test.listenForever;
 
 // Keep track of the tab that we're running tests in, for simplicity.
-var testTab = null;
+let testTab = null;
 
 function compareSenders(expected, actual) {
   // The `tab` property on the sender is the full tabs.Tab definition of the
@@ -33,9 +33,9 @@ function createExpectedSenderWithOrigin(tab, frameId, url, origin, id) {
 }
 
 function createExpectedSender(tab, frameId, url, id) {
-  var originUrl = null;
+  let originUrl = null;
   if (tab.url) {
-    var tabUrl = new URL(tab.url);
+    const tabUrl = new URL(tab.url);
     originUrl = tabUrl.origin;
   }
   return createExpectedSenderWithOrigin(tab, frameId, url, originUrl, id);
@@ -46,7 +46,7 @@ chrome.test.getConfig(function(config) {
       `http://localhost:${config.testServer.port}/extensions/test_file.html`;
   chrome.test.runTests([
     async function setupTestTab() {
-      chrome.test.log("Creating tab...");
+      chrome.test.log('Creating tab...');
       const {openTab} =
           await import('/_test_resources/test_util/tabs_util.js');
       testTab = await openTab(url);
@@ -55,7 +55,7 @@ chrome.test.getConfig(function(config) {
 
     // Tests that postMessage to the tab and its response works.
     function postMessage() {
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testPostMessage: true});
       listenOnce(port.onMessage, function(msg) {
         port.disconnect();
@@ -64,8 +64,8 @@ chrome.test.getConfig(function(config) {
 
     // Tests that port name is sent & received correctly.
     function portName() {
-      var portName = "lemonjello";
-      var port = chrome.tabs.connect(testTab.id, {name: portName});
+      const portName = 'lemonjello';
+      const port = chrome.tabs.connect(testTab.id, {name: portName});
       chrome.test.assertEq(portName, port.name);
       port.postMessage({testPortName: true});
       listenOnce(port.onMessage, function(msg) {
@@ -85,13 +85,13 @@ chrome.test.getConfig(function(config) {
         listenOnce(port.onMessage, function(msg) {
           chrome.test.assertTrue(msg.testPostMessageFromTab);
           port.postMessage({success: true, portName: port.name});
-          chrome.test.log("postMessageFromTab: got message from tab");
+          chrome.test.log('postMessageFromTab: got message from tab');
         });
       });
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testPostMessageFromTab: true});
-      chrome.test.log("postMessageFromTab: sent first message to tab");
+      chrome.test.log('postMessageFromTab: sent first message to tab');
       listenOnce(port.onMessage, function(msg) {
         port.disconnect();
       });
@@ -99,7 +99,7 @@ chrome.test.getConfig(function(config) {
 
     // Tests receiving a request from a content script and responding.
     function sendMessageFromTab() {
-      var doneListening = listenForever(
+      const doneListening = listenForever(
         chrome.runtime.onMessage, function(request, sender, sendResponse) {
           expectedSender = createExpectedSender(
               testTab,
@@ -118,16 +118,16 @@ chrome.test.getConfig(function(config) {
           }
       });
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testSendMessageFromTab: true});
       port.disconnect();
-      chrome.test.log("sendMessageFromTab: sent first message to tab");
+      chrome.test.log('sendMessageFromTab: sent first message to tab');
     },
 
     // Tests that a message from a child frame is constructed properly.
     function sendMessageFromFrameInTab() {
       constructMessageSenderFromFrameInTab(false);
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testSendMessageFromFrame: true});
       port.disconnect();
       chrome.test.log('sendMessageFromFrameInTab: send 1st message to tab');
@@ -137,7 +137,7 @@ chrome.test.getConfig(function(config) {
     // constructed properly.
     function sendMessageFromSandboxFrameInTab() {
       constructMessageSenderFromFrameInTab(true);
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testSendMessageFromSandboxedFrame: true});
       port.disconnect();
       chrome.test.log(
@@ -167,7 +167,7 @@ chrome.test.getConfig(function(config) {
       chrome.webNavigation.getAllFrames({
         tabId: testTab.id
       }, function(details) {
-        var frames = details.filter(function(frame) {
+        const frames = details.filter(function(frame) {
           return /\?testSendMessageFromFrame1$/.test(frame.url);
         });
         chrome.test.assertEq(1, frames.length);
@@ -189,7 +189,7 @@ chrome.test.getConfig(function(config) {
       chrome.webNavigation.getAllFrames({
         tabId: testTab.id
       }, function(details) {
-        var frames = details.filter(function(frame) {
+        const frames = details.filter(function(frame) {
           return /\?testSendMessageFromFrame1$/.test(frame.url);
         });
         chrome.test.assertEq(1, frames.length);
@@ -203,7 +203,7 @@ chrome.test.getConfig(function(config) {
       chrome.webNavigation.getAllFrames({
         tabId: testTab.id
       }, function(details) {
-        var frames = details.filter(function(frame) {
+        const frames = details.filter(function(frame) {
           return /\?testSendMessageFromFrame1$/.test(frame.url);
         });
         chrome.test.assertEq(1, frames.length);
@@ -218,7 +218,7 @@ chrome.test.getConfig(function(config) {
       chrome.webNavigation.getAllFrames({
         tabId: testTab.id
       }, function(details) {
-        var frames = details.filter(function(frame) {
+        const frames = details.filter(function(frame) {
           return /\?testSendMessageFromFrame1$/.test(frame.url);
         });
         chrome.test.assertEq(1, frames.length);
@@ -250,10 +250,10 @@ chrome.test.getConfig(function(config) {
         }
       );
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testSendMessageFromTabError: true});
       port.disconnect();
-      chrome.test.log("testSendMessageFromTabError: send 1st message to tab");
+      chrome.test.log('testSendMessageFromTabError: send 1st message to tab');
     },
 
     // Tests error handling when connecting to an invalid extension from a
@@ -267,10 +267,10 @@ chrome.test.getConfig(function(config) {
         }
       );
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testConnectFromTabError: true});
       port.disconnect();
-      chrome.test.log("testConnectFromTabError: sent 1st message to tab");
+      chrome.test.log('testConnectFromTabError: sent 1st message to tab');
     },
 
     // Tests sending a request to a tab and receiving a response.
@@ -283,7 +283,7 @@ chrome.test.getConfig(function(config) {
 
     // Tests that we get the disconnect event when the tab disconnect.
     function disconnect() {
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testDisconnect: true});
       listenOnce(port.onDisconnect, function() {});
     },
@@ -310,7 +310,7 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq('testConnectChildFrameAndNavigateSetupDone', msg);
         // Now we have set up a frame and ensured that there is no onConnect
         // handler in the main frame. Run the actual test:
-        var port = chrome.tabs.connect(testTab.id);
+        const port = chrome.tabs.connect(testTab.id);
         listenOnce(port.onDisconnect, function() {});
         port.postMessage({testConnectChildFrameAndNavigate: true});
       });
@@ -320,7 +320,7 @@ chrome.test.getConfig(function(config) {
 
     // The previous test removed the onConnect listener. Add it back.
     function reloadTabForTest() {
-      var doneListening = listenForever(chrome.tabs.onUpdated,
+      const doneListening = listenForever(chrome.tabs.onUpdated,
         function(tabId, info) {
           if (tabId === testTab.id && info.status == 'complete') {
             doneListening();
@@ -345,7 +345,7 @@ chrome.test.getConfig(function(config) {
         portFromTab.postMessage('unloadTabContent');
       });
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       port.postMessage({ testDisconnectOnClose: true });
       listenOnce(port.onDisconnect, function () {
         testTab = null; // the tab is about:blank now.
@@ -354,9 +354,9 @@ chrome.test.getConfig(function(config) {
 
     // Tests that the sendRequest API is disabled.
     function sendRequest() {
-      var error;
+      let error;
       try {
-        chrome.extension.sendRequest("hi");
+        chrome.extension.sendRequest('hi');
       } catch(e) {
         error = e;
       }
@@ -378,7 +378,7 @@ chrome.test.getConfig(function(config) {
     // like localStorage changed listeners.
     // Regression test for http://crbug.com/479951.
     function sendMessageToCurrentContextFails() {
-      var stopFailing = failWhileListening(chrome.runtime.onMessage);
+      const stopFailing = failWhileListening(chrome.runtime.onMessage);
       chrome.runtime.sendMessage('ping', chrome.test.callbackFail(
           'Could not establish connection. Receiving end does not exist.',
           function() {
@@ -422,14 +422,14 @@ chrome.test.getConfig(function(config) {
 });
 
 function connectToTabWithOptions(options, expectedMessages) {
-  var port = chrome.tabs.connect(testTab.id, options);
-  var messages = [];
-  var isDone = false;
+  const port = chrome.tabs.connect(testTab.id, options);
+  const messages = [];
+  let isDone = false;
   port.onMessage.addListener(function(message) {
     if (isDone) { // Should not get any messages after completing the test.
       chrome.test.fail(
-          'Unexpected message from port to frame ' + JSON.stringify(options) +
-          ': ' + message);
+          `Unexpected message from port to frame ${JSON.stringify(options)}:` +
+          ` ${message}`);
       return;
     }
 
@@ -465,12 +465,12 @@ function connectToTabWithDocumentId(documentId, expectedMessages) {
 // Listens to |event| and returns a callback to run to stop listening. While
 // listening, if |event| is fired, calls chrome.test.fail().
 function failWhileListening(event, doneListening) {
-  var failListener = function() {
+  const failListener = function() {
     chrome.test.fail('Event listener ran, but it shouldn\'t have. ' +
                      'It\'s possible that may be triggered flakily, but this ' +
                      'really is a real failure, not flaky sadness. Promise!');
   };
-  var release = chrome.test.callbackAdded();
+  const release = chrome.test.callbackAdded();
   event.addListener(failListener);
   return function() {
     event.removeListener(failListener);
@@ -485,9 +485,9 @@ function constructMessageSenderFromFrameInTab(isSandbox) {
   // testSendMessageFromSandboxedFrame() adds 2 sandboxed frames that are given
   // frameIds in the order in which they were added. Make sure we are checking
   // the correct frames and excluding the main frame.
-  var minFrameId = isSandbox ? 2 : 0;
-  var actualSenders = [];
-  var doneListening = listenForever(
+  const minFrameId = isSandbox ? 2 : 0;
+  const actualSenders = [];
+  const doneListening = listenForever(
       chrome.runtime.onMessage, function(request, sender, sendResponse) {
         actualSenders.push(sender);
 
@@ -501,7 +501,7 @@ function constructMessageSenderFromFrameInTab(isSandbox) {
               function sortByFrameId(a, b) {
                 return a.frameId < b.frameId ? 1 : -1;
               }
-              var expectedSenders =
+              const expectedSenders =
                   details
                       .filter(function(frame) {
                         return frame.frameId > minFrameId;

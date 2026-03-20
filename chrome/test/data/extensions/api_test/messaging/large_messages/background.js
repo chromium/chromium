@@ -4,11 +4,11 @@
 
 try {
   // Passing super-large messages should be prevented by the renderer.
-  var tooLarge = 1024 * 1024 * 128;
+  const tooLarge = 1024 * 1024 * 128;
   chrome.runtime.sendMessage('a'.repeat(tooLarge));
   chrome.test.notifyFail();
 } catch (e) {
-  let expected = /Message exceeded maximum allowed size of 64MiB/;
+  const expected = /Message exceeded maximum allowed size of 64MiB/;
   chrome.test.assertTrue(expected.test(e.message), e.message);
   chrome.test.notifyPass();
 }

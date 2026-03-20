@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.runtime.onConnect.addListener(function(port) {
-  var succeed1 = chrome.test.callbackAdded();
-  var succeed2 = chrome.test.callbackAdded();
-  var succeed3 = chrome.test.callbackAdded();
+  const succeed1 = chrome.test.callbackAdded();
+  const succeed2 = chrome.test.callbackAdded();
+  const succeed3 = chrome.test.callbackAdded();
 
   port.onMessage.addListener(function(msg) {
     chrome.test.log('port.onMessage was triggered.');
@@ -26,7 +26,7 @@ chrome.runtime.onConnect.addListener(function(port) {
 });
 
 chrome.test.getConfig(function(config) {
-  var url = 'http://localhost:' + config.testServer.port +
+  const url = `http://localhost:${config.testServer.port}` +
       '/extensions/test_file.html?will_test_connect_and_sendMessage';
   // Content script will try to connect and trigger onConnect.
   chrome.tabs.create({

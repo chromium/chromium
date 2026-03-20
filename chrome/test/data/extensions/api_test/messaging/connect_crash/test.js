@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 chrome.runtime.onConnect.addListener(function(port) {
-  var is_ready_to_crash = false;
-  var succeed1 = chrome.test.callbackAdded();
-  var succeed2 = chrome.test.callbackAdded();
+  let isReadyToCrash = false;
+  const succeed1 = chrome.test.callbackAdded();
+  const succeed2 = chrome.test.callbackAdded();
 
   port.onMessage.addListener(function(msg) {
     chrome.test.assertEq('is_ready_to_crash', msg);
-    is_ready_to_crash = true;
+    isReadyToCrash = true;
     chrome.test.sendMessage('ready_to_crash');
     // Now the browser test should kill the tab, and the port should be closed.
   });
   port.onDisconnect.addListener(function() {
     chrome.test.log('port.onDisconnect was triggered.');
-    chrome.test.assertTrue(is_ready_to_crash);
+    chrome.test.assertTrue(isReadyToCrash);
     succeed1();
   });
 
