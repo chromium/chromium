@@ -663,9 +663,11 @@ class Desktop(abc.ABC):
     self.child_env["LD_LIBRARY_PATH"] = library_path
 
   def _setup_gnubby(self):
+    # LINT.IfChange(ssh_auth_sock_name)
     self.ssh_auth_sockname = os.path.join(
         xdg.BaseDirectory.get_runtime_dir(strict=False),
         "crd_ssh_auth_sock")
+    # LINT.ThenChange(//remoting/host/security_key/security_key_auth_handler_posix.cc:ssh_auth_sock_name)
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):

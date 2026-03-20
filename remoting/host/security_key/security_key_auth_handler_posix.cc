@@ -65,10 +65,12 @@ unsigned int GetCommandCode(const std::string& data) {
 // static
 base::FilePath SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName() {
 #if BUILDFLAG(IS_LINUX)
+  // LINT.IfChange(ssh_auth_sock_name)
   const char* xdg_runtime_dir = getenv("XDG_RUNTIME_DIR");
   if (xdg_runtime_dir) {
     return base::FilePath(xdg_runtime_dir).Append("crd_ssh_auth_sock");
   }
+  // LINT.ThenChange(//remoting/host/linux/linux_me2me_host.py:ssh_auth_sock_name)
   LOG(WARNING) << "Cannot find the XDG_RUNTIME_DIR environment variable.";
 #else
   NOTIMPLEMENTED();

@@ -5,5 +5,6 @@
 # found in the LICENSE file.
 
 # Test whether or not the current desktop is virtual Me2Me.
+# DEPRECATED: Prefer using remote-session-info directly.
 
-[ -n "$CHROME_REMOTE_DESKTOP_SESSION" ]
+exec "$(dirname "$0")/remote-session-info" --is-crd-session
