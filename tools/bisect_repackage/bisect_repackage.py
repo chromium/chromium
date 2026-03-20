@@ -60,8 +60,6 @@ CHROME_REQUIRED_FILES = {
         'resources/',
         'resources.pak',
         'v8_context_snapshot.bin',
-        'xdg-mime',
-        'xdg-settings'
     ],
     'win64': [
         'chrome.dll',

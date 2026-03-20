@@ -20,9 +20,7 @@
                 "product_logo_48.png",
                 "resources.pak",
                 "v8_context_snapshot.bin",
-                "vk_swiftshader_icd.json",
-                "xdg-mime",
-                "xdg-settings"
+                "vk_swiftshader_icd.json"
             ],
             "dirs": ["locales", "resources"],
             "rename_dirs": [

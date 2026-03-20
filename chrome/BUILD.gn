@@ -1821,11 +1821,7 @@ if (is_linux || is_chromeos) {
 
   # Copies some scripts and resources that are used for desktop integration.
   copy("linux_cros_extra_data") {
-    sources = [
-      "//chrome/tools/build/linux/chrome-wrapper",
-      "//third_party/xdg-utils/scripts/xdg-mime",
-      "//third_party/xdg-utils/scripts/xdg-settings",
-    ]
+    sources = [ "//chrome/tools/build/linux/chrome-wrapper" ]
     if (is_linux) {
       sources += [
         "//chrome/app/theme/$branding_path_component/linux/product_logo_48.png",

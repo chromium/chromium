@@ -3031,11 +3031,6 @@ deps = {
       'condition': 'checkout_linux',
   },
 
-  'src/third_party/xdg-utils': {
-      'url': Var('chromium_git') + '/chromium/deps/xdg-utils.git' + '@' + 'cb54d9db2e535ee4ef13cc91b65a1e2741a94a44',
-      'condition': 'checkout_linux',
-  },
-
   'src/third_party/xnnpack/src':
     Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '4334fa7cbdf8e276db976792cd21d8614910d569',
 

@@ -18,9 +18,7 @@
                 "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
                 "product_logo_48.png",
                 "resources.pak",
-                "snapshot_blob.bin",
-                "xdg-mime",
-                "xdg-settings"
+                "snapshot_blob.bin"
             ],
             "dirs": ["locales", "resources", "mojo_service_manager"],
             "rename_dirs": [

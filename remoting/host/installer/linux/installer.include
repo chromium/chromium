@@ -320,10 +320,6 @@ stage_install_common() {
       "${STAGEDIR}/${INSTALLDIR}"
   done
 
-  # desktop integration
-  install -m 755 "${OUTPUTDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"
-  install -m 755 "${OUTPUTDIR}/xdg-settings" "${STAGEDIR}${INSTALLDIR}/"
-
   process_template "${OUTPUTDIR}/installer/common/appdata.xml.template" \
     "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
   chmod 644 "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"

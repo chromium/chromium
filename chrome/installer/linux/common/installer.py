@@ -758,22 +758,6 @@ class InstallerConfig:
         else:
             self.uri_scheme = "x-scheme-handler/chromium;"
 
-        # xdg-mime and xdg-settings
-        artifacts.append(
-            Artifact(
-                "xdg-mime",
-                "xdg-mime",
-                ArtifactType.RESOURCE,
-                StandardPermissions.EXECUTABLE,
-            ))
-        artifacts.append(
-            Artifact(
-                "xdg-settings",
-                "xdg-settings",
-                ArtifactType.RESOURCE,
-                StandardPermissions.EXECUTABLE,
-            ))
-
         # appdata.xml
         artifacts.append(
             Artifact(

@@ -236,7 +236,6 @@ per-file third_party/widevine/scripts=*
 per-file third_party/widevine/test/license_server=*
 per-file third_party/wix=*
 per-file third_party/wuffs/src=*
-per-file third_party/xdg-utils=*
 per-file third_party/xnnpack/src=*
 per-file third_party/zstd/src=*
 per-file tools/page_cycler/acid3=*
