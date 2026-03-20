@@ -20,7 +20,8 @@ DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
     : DeviceAuthenticatorCommon(proxy,
                                 params.GetAuthenticationValidityPeriod(),
                                 params.GetAuthResultHistogram()),
-      authenticator_(std::move(authenticator)) {}
+      authenticator_(std::move(authenticator)),
+      source_(params.GetDeviceAuthSource()) {}
 
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
 
@@ -69,7 +70,7 @@ void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
   callback_ = std::move(callback);
 
   authenticator_->AuthenticateUser(
-      message,
+      message, source_,
       base::BindOnce(&DeviceAuthenticatorChromeOS::OnAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

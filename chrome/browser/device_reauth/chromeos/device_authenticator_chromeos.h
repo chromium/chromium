@@ -42,6 +42,11 @@ class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
 
+  // Indicates the feature requesting the authentication (e.g., Autofill,
+  // Password Manager). This is used to determine the correct context and UI for
+  // the Ash in-session auth dialog.
+  const device_reauth::DeviceAuthSource source_;
+
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<DeviceAuthenticatorChromeOS> weak_ptr_factory_{this};
 };

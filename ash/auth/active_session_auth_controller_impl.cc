@@ -254,7 +254,13 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   CHECK(!auth_request_);
   auth_request_ = std::move(auth_request);
 
-  title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
+  if (auth_request_->GetAuthReason() ==
+      AuthRequest::Reason::kPaymentsAutofill) {
+    title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CONFIRM_TITLE);
+  } else {
+    title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
+  }
+
   description_ = auth_request_->GetDescription();
   auth_factor_editor_ =
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
