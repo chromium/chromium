@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_ACCUMULATION_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_ACCUMULATION_BUFFER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -48,7 +49,7 @@ class ReverbAccumulationBuffer final {
   ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
 
   // This will read from, then clear-out numberOfFrames
-  void ReadAndClear(float* destination, uint32_t number_of_frames);
+  void ReadAndClear(base::span<float> destination);
 
   // Each ReverbConvolverStage will accumulate its output at the appropriate
   // delay from the read position.  We need to pass in and update readIndex
@@ -56,22 +57,17 @@ class ReverbAccumulationBuffer final {
   // than the realtime thread calling ReadAndClear() and maintaining
   // m_readIndex
   // Returns the writeIndex where the accumulation took place
-  uint32_t Accumulate(float* source,
-                      uint32_t number_of_frames,
+  uint32_t Accumulate(base::span<const float> source,
                       uint32_t* read_index,
                       size_t delay_frames);
 
-  uint32_t ReadIndex() const { return read_index_; }
   void UpdateReadIndex(uint32_t* read_index, uint32_t number_of_frames) const;
-
-  uint32_t ReadTimeFrame() const { return read_time_frame_; }
 
   void Reset();
 
  private:
   AudioFloatArray buffer_;
   uint32_t read_index_;
-  uint32_t read_time_frame_;  // for debugging (frame on continuous timeline)
 };
 
 }  // namespace blink

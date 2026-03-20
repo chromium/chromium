@@ -189,7 +189,7 @@ void ReverbConvolverStage::Process(base::span<const float> source) {
     }
 
     // Now accumulate into reverb's accumulation buffer.
-    accumulation_buffer_->Accumulate(temporary_buffer.data(), frames_to_process,
+    accumulation_buffer_->Accumulate(temporary_buffer.first(frames_to_process),
                                      &accumulation_read_index_,
                                      post_delay_length_);
   }

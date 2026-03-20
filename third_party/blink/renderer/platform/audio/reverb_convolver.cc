@@ -178,9 +178,7 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   DCHECK_GE(destination_channel->length(), frames_to_process);
 
   const float* source = source_channel->Data();
-  float* destination = destination_channel->MutableData();
   DCHECK(source);
-  DCHECK(destination);
 
   // Feed input buffer (read by all threads)
   input_buffer_.Write(source, frames_to_process);
@@ -191,7 +189,8 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   }
 
   // Finally read from accumulation buffer
-  accumulation_buffer_.ReadAndClear(destination, frames_to_process);
+  accumulation_buffer_.ReadAndClear(
+      destination_channel->MutableSpan().first(frames_to_process));
 
   // Now that we've buffered more input, post another task to the background
   // thread.
