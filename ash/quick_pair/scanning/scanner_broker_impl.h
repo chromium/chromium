@@ -44,6 +44,14 @@ class ScannerBrokerImpl : public ScannerBroker, public SessionObserver {
   void StopScanning(Protocol protocol) override;
   void OnDevicePaired(scoped_refptr<Device> device) override;
 
+  FastPairDiscoverableScanner* discoverable_scanner_for_test() {
+    return fast_pair_discoverable_scanner_.get();
+  }
+
+  FastPairNotDiscoverableScanner* not_discoverable_scanner_for_test() {
+    return fast_pair_not_discoverable_scanner_.get();
+  }
+
  private:
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void StartFastPairScanning();
