@@ -9763,6 +9763,10 @@ crbug.com/489297473 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conf
 crbug.com/489297473 [ Mac ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gemm.https.any.html?npu [ Failure Pass ]
 crbug.com/489297473 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure Pass ]
 
+# Temporary to allow crrev.com/c/7575525 to land in DevTools before roll and re-enable.
+crbug.com/351662727 http/tests/devtools/elements/navigate-styles-sidebar-with-arrow-keys.js [ Failure Pass ]
+crbug.com/351662727 http/tests/devtools/elements/styles-4/styles-grid-template.js [ Failure Pass ]
+
 # Gardener 2026-03-06
 
 crbug.com/488337157 external/wpt/css/css-pseudo/input-element-pseudo-open-click.optional.html [ Pass Timeout ]
