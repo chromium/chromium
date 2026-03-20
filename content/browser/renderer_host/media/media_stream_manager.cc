@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -2997,6 +2998,11 @@ bool MediaStreamManager::FindExistingRequestedDevice(
               device.id == hashed_source_id && device.type == new_device.type;
           if (base::FeatureList::IsEnabled(
                   kEnumerateDevicesUseNameInDeviceComparison)) {
+            if (is_same_device) {
+              base::UmaHistogramBoolean(
+                  "Media.MediaDevices.FindExistingRequestedDevice.NameMatched",
+                  device.name == new_device.name);
+            }
             is_same_device = is_same_device && device.name == new_device.name;
           }
           // If `audio_stream_selection_info` is `search_only_by_device_id`, the

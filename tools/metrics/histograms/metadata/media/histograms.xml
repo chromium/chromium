@@ -5095,6 +5095,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.FindExistingRequestedDevice.NameMatched"
+    enum="Boolean" expires_after="2026-07-17">
+  <owner>agpalak@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Records whether the device name matched when searching for an existing
+    opened device during the processing of getUserMedia request. The search is
+    done so that a device is opened only once per render frame. Logged for every
+    device that matches the requested ID and type. True means the names matched,
+    False means they differed.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetAllScreensMedia.Latency" units="ms"
     expires_after="2023-05-01">
   <owner>simonha@google.com</owner>
