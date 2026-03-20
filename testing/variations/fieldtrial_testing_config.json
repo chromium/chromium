@@ -10619,6 +10619,23 @@
             ]
         }
     ],
+    "GlicClientZoomControl": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicClientZoomControl"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicConfirmNavigationToNewOrigins": [
         {
             "platforms": [
