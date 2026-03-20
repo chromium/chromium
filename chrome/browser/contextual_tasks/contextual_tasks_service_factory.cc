@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -116,7 +117,9 @@ ContextualTasksServiceFactory::~ContextualTasksServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+  if (!base::FeatureList::IsEnabled(kContextualTasks) &&
+      !base::FeatureList::IsEnabled(syncer::kSyncAIThread) &&
+      !base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
     return nullptr;
   }
 

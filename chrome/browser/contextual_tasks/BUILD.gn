@@ -114,6 +114,7 @@ source_set("impl") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/sessions:session_id",
+    "//components/sync/base",
     "//components/sync/model",
     "//components/tabs:public",
     "//components/url_deduplication",
