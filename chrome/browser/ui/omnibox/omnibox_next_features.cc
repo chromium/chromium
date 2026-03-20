@@ -204,7 +204,8 @@ bool IsAimPopupEnabled(Profile* profile) {
   }
 
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_service && aim_service->IsFuseboxEligible();
+  return aim_service && aim_service->IsAimEligible() &&
+         aim_service->IsFuseboxEligible();
 }
 
 bool IsContentSharingEnabled(

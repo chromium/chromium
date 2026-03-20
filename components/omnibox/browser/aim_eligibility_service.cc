@@ -521,17 +521,17 @@ bool AimEligibilityService::IsCanvasEligible() const {
 bool AimEligibilityService::IsCobrowseEligible() const {
   if (!base::FeatureList::IsEnabled(
           omnibox::kAimCoBrowseEligibilityCheckEnabled)) {
-    return true;
+    return IsEligibleByServer(true);
   }
-  return IsAimEligible() && GetMostRecentResponse().is_cobrowse_eligible();
+  return IsEligibleByServer(GetMostRecentResponse().is_cobrowse_eligible());
 }
 
 bool AimEligibilityService::IsFuseboxEligible() const {
   if (!base::FeatureList::IsEnabled(
           omnibox::kAimFuseboxEligibilityCheckEnabled)) {
-    return IsAimEligible();
+    return IsEligibleByServer(true);
   }
-  return IsAimEligible() && GetMostRecentResponse().is_fusebox_eligible();
+  return IsEligibleByServer(GetMostRecentResponse().is_fusebox_eligible());
 }
 
 bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {

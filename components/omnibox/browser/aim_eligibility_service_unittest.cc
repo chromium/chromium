@@ -359,8 +359,9 @@ TEST_F(AimEligibilityServiceTest, FetchEligibility) {
 
 TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      omnibox::kAimCoBrowseEligibilityCheckEnabled);
+  feature_list.InitWithFeatures({},
+                                {omnibox::kAimCoBrowseEligibilityCheckEnabled,
+                                 omnibox::kAimServerEligibilityEnabled});
 
   omnibox::AimEligibilityResponse response;
   response.set_is_cobrowse_eligible(false);
@@ -497,5 +498,5 @@ TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureDisabled) {
   aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
 
   // Should be true regardless of response if feature is disabled.
-  EXPECT_EQ(true, aim_eligibility_service_->IsFuseboxEligible());
+  EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
 }
