@@ -13185,6 +13185,8 @@ from previous Chrome versions.
   <int value="-438495497" label="enable-unsafe-swiftshader"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
+  <int value="-438059967"
+      label="CertificateTransparencyIgnoreOcspScts:enabled"/>
   <int value="-437937965" label="AccessibilityShakeToLocate:disabled"/>
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
   <int value="-436799973" label="FederatedService:enabled"/>
@@ -16160,6 +16162,8 @@ from previous Chrome versions.
   <int value="576701073" label="WebPaymentsJustInTimePaymentApp:disabled"/>
   <int value="576730168" label="GetDisplayMediaSet:enabled"/>
   <int value="576878329" label="enable-background-blur"/>
+  <int value="577867979"
+      label="CertificateTransparencyIgnoreOcspScts:disabled"/>
   <int value="578633424" label="HistoryClustersHideVisits:disabled"/>
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
   <int value="578894559" label="IPH_Snooze:enabled"/>

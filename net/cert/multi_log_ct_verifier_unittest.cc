@@ -8,11 +8,14 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_serialization.h"
@@ -235,6 +238,75 @@ TEST_F(MultiLogCTVerifierTest, CountsSingleEmbeddedSCTInOriginsHistogram) {
   int old_embedded_count = NumEmbeddedSCTsInHistogram();
   ASSERT_TRUE(CheckPrecertificateVerification(embedded_sct_chain_));
   EXPECT_EQ(old_embedded_count + 1, NumEmbeddedSCTsInHistogram());
+}
+
+TEST_F(MultiLogCTVerifierTest, ExtractsSCTFromOCSPResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kCertificateTransparencyIgnoreOcspScts);
+
+  std::vector<std::string_view> certs;
+  std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
+  std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
+  certs.push_back(der_subject_cert);
+  certs.push_back(der_issuer_cert);
+  scoped_refptr<X509Certificate> subject_cert =
+      X509Certificate::CreateFromDERCertChain(certs);
+  ASSERT_TRUE(subject_cert);
+
+  std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();
+
+  SignedCertificateTimestampAndStatusList scts;
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+  NetLogWithSource net_log =
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::SSL_CONNECT_JOB);
+  verifier_->Verify(subject_cert.get(), ocsp_response, std::string_view(),
+                    base::Time::Now(), &scts, net_log);
+
+  // The fake OCSP response has an invalid SCT list ("test"), so it won't be
+  // in the verified 'scts' list, but it SHOULD be in the netlog event.
+  auto entries = net_log_observer.GetEntries();
+  size_t pos = ExpectLogContainsSomewhere(
+      entries, 0, NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED,
+      NetLogEventPhase::NONE);
+  auto ocsp_scts =
+      GetOptionalStringValueFromParams(entries[pos], "scts_from_ocsp_response");
+  ASSERT_TRUE(ocsp_scts);
+  EXPECT_EQ(*ocsp_scts, base::Base64Encode(ct::GetFakeOCSPExtensionValue()));
+}
+
+TEST_F(MultiLogCTVerifierTest, IgnoresSCTFromOCSPResponseWhenFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kCertificateTransparencyIgnoreOcspScts);
+
+  std::vector<std::string_view> certs;
+  std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
+  std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
+  certs.push_back(der_subject_cert);
+  certs.push_back(der_issuer_cert);
+  scoped_refptr<X509Certificate> subject_cert =
+      X509Certificate::CreateFromDERCertChain(certs);
+  ASSERT_TRUE(subject_cert);
+
+  std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();
+
+  SignedCertificateTimestampAndStatusList scts;
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+  NetLogWithSource net_log =
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::SSL_CONNECT_JOB);
+  verifier_->Verify(subject_cert.get(), ocsp_response, std::string_view(),
+                    base::Time::Now(), &scts, net_log);
+
+  // When flag is enabled, extraction is skipped, so it SHOULD NOT be in netlog.
+  auto entries = net_log_observer.GetEntries();
+  size_t pos = ExpectLogContainsSomewhere(
+      entries, 0, NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED,
+      NetLogEventPhase::NONE);
+  auto ocsp_scts =
+      GetOptionalStringValueFromParams(entries[pos], "scts_from_ocsp_response");
+  ASSERT_TRUE(ocsp_scts);
+  EXPECT_TRUE(ocsp_scts->empty());
 }
 
 }  // namespace

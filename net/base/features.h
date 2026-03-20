@@ -514,6 +514,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 // disabled, Chrome does not distinguish between SCTs based on log type.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnforceOneRfc6962CtPolicy);
 
+// If enabled, Signed Certificate Timestamps (SCTs) delivered via OCSP
+// responses are ignored.
+NET_EXPORT BASE_DECLARE_FEATURE(kCertificateTransparencyIgnoreOcspScts);
+
 // Finch experiment to select a disk cache backend.
 enum class DiskCacheBackend {
   kDefault,

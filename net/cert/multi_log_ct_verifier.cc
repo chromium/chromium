@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_objects_extractor.h"
@@ -95,7 +96,9 @@ void MultiLogCTVerifier::Verify(
   }
 
   std::string sct_list_from_ocsp;
-  if (!stapled_ocsp_response.empty() && !cert->intermediate_buffers().empty()) {
+  if (!stapled_ocsp_response.empty() && !cert->intermediate_buffers().empty() &&
+      !base::FeatureList::IsEnabled(
+          features::kCertificateTransparencyIgnoreOcspScts)) {
     ct::ExtractSCTListFromOCSPResponse(
         cert->intermediate_buffers().front().get(), cert->serial_number(),
         stapled_ocsp_response, &sct_list_from_ocsp);

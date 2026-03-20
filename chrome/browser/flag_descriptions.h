@@ -1726,6 +1726,12 @@ inline constexpr char kEnableTLS13EarlyDataDescription[] =
     "during the handshake when resuming a connection to a compatible TLS 1.3 "
     "server.";
 
+inline constexpr char kCertificateTransparencyIgnoreOcspSctsName[] =
+    "Ignore SCTs from OCSP";
+inline constexpr char kCertificateTransparencyIgnoreOcspSctsDescription[] =
+    "When enabled, SCTs delivered via OCSP responses are not used for "
+    "satisfying Chrome's CT policy.";
+
 inline constexpr char kAccessibilityAcceleratorName[] =
     "Experimental Accessibility accelerator";
 inline constexpr char kAccessibilityAcceleratorDescription[] =

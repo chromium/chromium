@@ -2095,6 +2095,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "ct-ignore-scts-from-ocsp",
+    "owners": [ "jdeblasio@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "thestig@chromium.org", "//printing/OWNERS" ],
     "expiry_milestone": 150
