@@ -40,5 +40,8 @@ schema:
 supported_on:
 - chrome.*:137-
 - chrome_os:137-
+future_on:
+- android
+- ios
 tags: []
 type: int-enum

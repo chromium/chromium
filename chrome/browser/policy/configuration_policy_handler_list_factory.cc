@@ -2350,9 +2350,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID)
-  { key::kAutofillPredictionSettings,
-    optimization_guide::prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-    base::Value::Type::INTEGER},
   { key::kHelpMeWriteSettings,
     optimization_guide::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
@@ -2362,9 +2359,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHistorySearchSettings,
     optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
-#endif
+#endif // !BUILDFLAG(IS_ANDROID)
   { key::kTabCompareSettings,
     optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
+  { key::kAutofillPredictionSettings,
+    optimization_guide::prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   { key::kChromeForTestingAllowed,
@@ -3456,10 +3456,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   gen_ai_default_policies.emplace_back(
-      key::kAutofillPredictionSettings,
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
       key::kHelpMeWriteSettings,
       optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(
@@ -3483,6 +3479,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           kAutomatedPasswordChangeEnterprisePolicyAllowed);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+  gen_ai_default_policies.emplace_back(
+      key::kAutofillPredictionSettings,
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed);
 #if BUILDFLAG(IS_CHROMEOS)
   gen_ai_default_policies.emplace_back(key::kGenAIWallpaperSettings,
                                        ash::prefs::kGenAIWallpaperSettings);
