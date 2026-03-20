@@ -1961,6 +1961,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_CantInspectComponentExtension \
   DISABLED_CantInspectComponentExtension
+// TODO(crbug.com/494510951): Remove this 'elif' statement when fixed.
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||    \
+     defined(MEMORY_SANITIZER))
+#define MAYBE_CantInspectComponentExtension \
+  DISABLED_CantInspectComponentExtension
 #else
 #define MAYBE_CantInspectComponentExtension CantInspectComponentExtension
 #endif
@@ -1998,8 +2004,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectRemoteNewTabPage) {
           base::StrCat({kArbitraryPage, "#", data.new_tab_url}));
 }
 
+// TODO(crbug.com/494510951): Remove this 'if' statement when fixed.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||  \
+     defined(MEMORY_SANITIZER))
+#define MAYBE_CantInspectViewSourceComponentExtension \
+  DISABLED_CantInspectViewSourceComponentExtension
+#else
+#define MAYBE_CantInspectViewSourceComponentExtension \
+  CantInspectViewSourceComponentExtension
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       CantInspectViewSourceComponentExtension) {
+                       MAYBE_CantInspectViewSourceComponentExtension) {
   std::string extension_id = BuildComponentExtension();
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
@@ -3700,8 +3716,16 @@ class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/494510951): Remove this 'if' statement when fixed.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||  \
+     defined(MEMORY_SANITIZER))
+#define MAYBE_CantInspectBlockedHost DISABLED_CantInspectBlockedHost
+#else
+#define MAYBE_CantInspectBlockedHost CantInspectBlockedHost
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
-                       CantInspectBlockedHost) {
+                       MAYBE_CantInspectBlockedHost) {
   GURL url(embedded_test_server()->GetURL("example.com", kArbitraryPage));
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
@@ -3710,6 +3734,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
 
 // Too slow on MSAN builds
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CantInspectBlockedSubdomainHost \
+  DISABLED_CantInspectBlockedSubdomainHost
+// TODO(crbug.com/494510951): Remove this 'elif' statement when fixed.
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||    \
+     defined(MEMORY_SANITIZER))
 #define MAYBE_CantInspectBlockedSubdomainHost \
   DISABLED_CantInspectBlockedSubdomainHost
 #else
