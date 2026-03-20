@@ -14,7 +14,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/process_map.h"
 #endif
 
@@ -37,7 +37,7 @@ TEST(ChromeMetricsExtensionsHelperTest, Basic) {
   // |host| is not an extensions host.
   EXPECT_FALSE(extensions_helper.IsExtensionProcess(host));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Tag |host| so that it's an extensions host.
   extensions::ProcessMap::Get(profile)->Insert("1", host->GetDeprecatedID());
   EXPECT_TRUE(extensions_helper.IsExtensionProcess(host));

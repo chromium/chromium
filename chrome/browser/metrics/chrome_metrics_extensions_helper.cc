@@ -7,7 +7,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/process_map.h"
 #endif
@@ -17,7 +17,7 @@ ChromeMetricsExtensionsHelper::~ChromeMetricsExtensionsHelper() = default;
 
 bool ChromeMetricsExtensionsHelper::IsExtensionProcess(
     content::RenderProcessHost* render_process_host) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(
               render_process_host->GetBrowserContext())) {
