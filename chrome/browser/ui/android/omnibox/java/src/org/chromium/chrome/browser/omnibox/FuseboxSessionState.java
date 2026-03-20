@@ -41,7 +41,7 @@ public class FuseboxSessionState implements UserData {
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for
      * example when the user switches tabs.
      */
-    private AutocompleteInput mAutocompleteInput = new AutocompleteInput();
+    private final AutocompleteInput mAutocompleteInput;
 
     private @Nullable Profile mProfile;
     private @Nullable ComposeboxQueryControllerBridge mComposeBoxQueryControllerBridge;
@@ -85,13 +85,11 @@ public class FuseboxSessionState implements UserData {
     }
 
     /** Constructs a new, empty FuseboxSessionState. */
-    private FuseboxSessionState() {}
+    private FuseboxSessionState() {
+        mAutocompleteInput = new AutocompleteInput();
+    }
 
-    /**
-     * Constructs a new FuseboxSessionState with a provided AutocompleteInput.
-     *
-     * @param input The initial AutocompleteInput for this session.
-     */
+    /** A test only constructor with initial values. */
     @VisibleForTesting
     public FuseboxSessionState(
             AutocompleteInput input,
@@ -236,9 +234,9 @@ public class FuseboxSessionState implements UserData {
         return mIsActive;
     }
 
-    /** Applies the new AutocompleteInput to the current Session object. */
-    public void setAutocompleteInput(AutocompleteInput newInput) {
-        mAutocompleteInput = newInput;
+    /** Modifies this session input to have the values of the given input. */
+    public void applyAutocompleteInput(AutocompleteInput input) {
+        mAutocompleteInput.copyFrom(input);
     }
 
     /**

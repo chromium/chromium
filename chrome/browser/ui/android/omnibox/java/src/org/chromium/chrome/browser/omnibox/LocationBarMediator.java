@@ -2008,7 +2008,7 @@ class LocationBarMediator
         // suggest and bail.
         if (state == null) return;
 
-        state.setAutocompleteInput(input);
+        state.applyAutocompleteInput(input);
 
         if (!mUrlHasFocus) {
             recordOmniboxFocusReason(input.getFocusReason());
