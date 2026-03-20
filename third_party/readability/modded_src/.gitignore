@@ -1,0 +1,10 @@
+# Ignore testing artifacts and node dependencies
+node_modules/
+package-lock.json
+package.json
+
+# Local debugging output
+*.log
+*.tmp
+output.html
+input.html
