@@ -1301,6 +1301,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
   VISIT_ENUM(color);
   VISIT(pinned_position);
   VISIT(bookmark_node_id);
+  VISIT(projects_position);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {
