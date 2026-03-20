@@ -91,7 +91,7 @@ ServiceWorkerHost::SetFactoryForTesting(FactoryCallback* factory) {
 
 // static
 void ServiceWorkerHost::BindReceiver(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* render_process_host =

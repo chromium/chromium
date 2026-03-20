@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
@@ -63,7 +64,7 @@ class ServiceWorkerHost :
 
   static ServiceWorkerHost* GetWorkerFor(const WorkerId& worker);
   static void BindReceiver(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver);
 
   // Returns all ServiceWorkerHosts associated with RenderProcessHost `rph`.
