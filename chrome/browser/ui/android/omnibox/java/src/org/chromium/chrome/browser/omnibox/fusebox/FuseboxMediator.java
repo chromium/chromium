@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
+import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -84,8 +85,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
+    private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
+
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable AutocompleteInput mInput;
     private @Nullable FuseboxAttachmentModelList mModelList;
@@ -164,8 +167,21 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     private void setController(@Nullable ComposeboxQueryControllerBridge controller) {
+        if (mComposeboxQueryControllerBridge != null
+                && OmniboxFeatures.sShowModelPicker.getValue()) {
+            mComposeboxQueryControllerBridge
+                    .getInputStateSupplier()
+                    .removeObserver(mOnInputStateChanged);
+        }
+
         mComposeboxQueryControllerBridge = controller;
         if (mComposeboxQueryControllerBridge == null) return;
+
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            mComposeboxQueryControllerBridge
+                    .getInputStateSupplier()
+                    .addSyncObserverAndCallIfNonNull(mOnInputStateChanged);
+        }
 
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
@@ -811,5 +827,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             return false;
         }
         return mTabModelSelectorSupplier.get().getCurrentTab() == tab;
+    }
+
+    private void onInputStateChange(InputState inputState) {
+        assert OmniboxFeatures.sShowModelPicker.getValue();
+        // TODO(https://crbug.com/480976526): Implement updates in response to input state.
     }
 }
