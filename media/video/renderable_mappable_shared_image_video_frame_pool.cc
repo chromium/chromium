@@ -117,7 +117,8 @@ class InternalRefCountedPool
   // Callback made when the VideoFrame is destroyed. This callback then either
   // returns |frame_resources| to |available_frame_resources_| or destroys it.
   void OnVideoFrameDestroyed(std::unique_ptr<FrameResources> frame_resources,
-                             const gpu::SyncToken& sync_token);
+                             const gpu::SyncToken& sync_token,
+                             bool lost_shared_image_resource);
 
   const VideoPixelFormat format_;
   const std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
@@ -345,8 +346,14 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
 
 void InternalRefCountedPool::OnVideoFrameDestroyed(
     std::unique_ptr<FrameResources> frame_resources,
-    const gpu::SyncToken& sync_token) {
+    const gpu::SyncToken& sync_token,
+    bool lost_shared_image_resource) {
   frame_resources->SetSharedImageReleaseSyncToken(sync_token);
+
+  // If the SharedImage within FrameResource is lost, we should not reuse it.
+  if (lost_shared_image_resource) {
+    return;
+  }
 
   if (shutting_down_) {
     return;

@@ -198,10 +198,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   void RecycleResource(uint32_t resource_id,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
-  void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
-                     const gpu::SyncToken& original_release_token,
-                     const gpu::SyncToken& new_release_token,
-                     bool lost_resource);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
