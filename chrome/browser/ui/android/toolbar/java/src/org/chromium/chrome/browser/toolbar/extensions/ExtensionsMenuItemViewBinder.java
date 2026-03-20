@@ -65,7 +65,26 @@ public class ExtensionsMenuItemViewBinder {
             getMenuItemToggle(view)
                     .setTooltipText(
                             model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP));
+        } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME) {
+            getMenuItemSitePermissionsButton(view)
+                    .setContentDescription(
+                            model.get(
+                                    ExtensionsMenuItemProperties
+                                            .SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
+        } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS) {
+            @Status
+            int status = model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS);
+            TextView button = getMenuItemSitePermissionsButton(view);
+            button.setVisibility(status == Status.HIDDEN ? View.GONE : View.VISIBLE);
+            button.setEnabled(status == Status.ENABLED);
+        } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT) {
+            getMenuItemSitePermissionsButton(view)
+                    .setText(model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT));
         }
+    }
+
+    private static TextView getMenuItemSitePermissionsButton(View view) {
+        return view.findViewById(R.id.extensions_menu_item_site_permissions_button);
     }
 
     private static MaterialSwitchWithText getMenuItemToggle(View view) {

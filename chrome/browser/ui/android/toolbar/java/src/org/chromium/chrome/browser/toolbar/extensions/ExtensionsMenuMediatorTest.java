@@ -632,9 +632,25 @@ public class ExtensionsMenuMediatorTest {
                         /* tooltipText= */ "",
                         /* isOn= */ true,
                         /* icon= */ null);
+        // Initialize the site permissions button with a random state. We won't update this state,
+        // even though it should also be affected when site access toggle changes, as
+        // this test focuses on the site access toggle.
+        ExtensionsMenuTypes.ControlState sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
         entries.add(
                 ExtensionTestUtils.createMenuEntry(
-                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState));
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
@@ -659,7 +675,12 @@ public class ExtensionsMenuMediatorTest {
                         /* icon= */ null);
         ExtensionsMenuTypes.MenuEntryState updatedEntry =
                 ExtensionTestUtils.createMenuEntry(
-                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState);
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -683,7 +704,12 @@ public class ExtensionsMenuMediatorTest {
                         /* icon= */ null);
         updatedEntry =
                 ExtensionTestUtils.createMenuEntry(
-                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState);
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -710,9 +736,22 @@ public class ExtensionsMenuMediatorTest {
                         /* tooltipText= */ "",
                         /* isOn= */ false,
                         /* icon= */ null);
+        ExtensionsMenuTypes.ControlState sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
         entries.add(
                 ExtensionTestUtils.createMenuEntry(
-                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false, toggleState));
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
@@ -730,6 +769,114 @@ public class ExtensionsMenuMediatorTest {
         // ID and value.
         verify(mExtensionsMenuBridgeJniMock)
                 .onExtensionToggleSelected(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", true);
+    }
+
+    /** Tests that the menu item's site permission button properties are correctly updated. */
+    @Test
+    public void testMenuItemSitePermissionsButton() {
+        // Initialize an action with hidden site permissions button.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        ExtensionsMenuTypes.ControlState sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "No access needed",
+                        /* accessibleName= */ "No access needed",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        // Initialize the site access toggle with a random state. We won't update this state,
+        // even though it should also be affected when site permission button changes, as
+        // this test focuses on the site permissions button..
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        entries.add(
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu.
+        mBridgeCaptor.getValue().onReady();
+
+        // Verify site permissions button is hidden for the menu item.
+        PropertyModel model = mActionModels.get(0).model;
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS));
+
+        // Update the menu item to have a visible site permissions button, with disabled state.
+        sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.DISABLED,
+                        /* text= */ "Always on all sites",
+                        /* accessibleName= */ "Always on all sites. Select to change site"
+                                + " permissions",
+                        /* tooltipText= */ "Change site permissions",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.MenuEntryState updatedEntry =
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify button is disabled and has correct text and accessible name.
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.DISABLED,
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS));
+        assertEquals(
+                "Always on all sites",
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT));
+        assertEquals(
+                "Always on all sites. Select to change site permissions",
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
+
+        // Update the item to have an enabled site permissions button.
+        sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "Ask on every visit",
+                        /* accessibleName= */ "Ask on every visit. Select to change site"
+                                + " permissions",
+                        /* tooltipText= */ "Change site permissions",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        updatedEntry =
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify button is enabled and has updated text and accessible name.
+        assertEquals(
+                ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS));
+        assertEquals(
+                "Ask on every visit",
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT));
+        assertEquals(
+                "Ask on every visit. Select to change site permissions",
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
     }
 
     /** Helper to assert that the item at the given index has the correct information. */

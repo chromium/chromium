@@ -44,6 +44,15 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<String> SITE_ACCESS_TOGGLE_TOOLTIP =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableIntPropertyKey SITE_PERMISSIONS_BUTTON_STATUS =
+            new WritableIntPropertyKey();
+
+    public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 EXTENSION_ID,
@@ -54,6 +63,9 @@ public class ExtensionsMenuItemProperties {
                 SITE_ACCESS_TOGGLE_CHECKED,
                 SITE_ACCESS_TOGGLE_ON_CLICK,
                 SITE_ACCESS_TOGGLE_STATUS,
-                SITE_ACCESS_TOGGLE_TOOLTIP
+                SITE_ACCESS_TOGGLE_TOOLTIP,
+                SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME,
+                SITE_PERMISSIONS_BUTTON_STATUS,
+                SITE_PERMISSIONS_BUTTON_TEXT
             };
 }

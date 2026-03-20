@@ -65,8 +65,8 @@ public class ExtensionsMenuTypes {
         public final ControlState actionButton;
         public final ControlState contextMenuButton;
         public final ControlState siteAccessToggle;
+        public final ControlState sitePermissionsButton;
 
-        // TODO(crbug.com/471016915): add site permissions button.
         // TODO(crbug.com/471016915): add is enterprise boolean.
 
         @CalledByNative("MenuEntryState")
@@ -74,11 +74,13 @@ public class ExtensionsMenuTypes {
                 @JniType("std::string") String id,
                 ControlState actionButton,
                 ControlState contextMenuButton,
-                ControlState siteAccessToggle) {
+                ControlState siteAccessToggle,
+                ControlState sitePermissionsButton) {
             this.id = id;
             this.actionButton = actionButton;
             this.contextMenuButton = contextMenuButton;
             this.siteAccessToggle = siteAccessToggle;
+            this.sitePermissionsButton = sitePermissionsButton;
         }
     }
 

@@ -5,62 +5,80 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="?android:attr/selectableItemBackground"
-    android:gravity="center_vertical"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
     android:clickable="true"
     android:focusable="true"
     tools:ignore="UnusedResources" >
 
-    <ImageView
-        android:id="@+id/extensions_menu_item_icon"
-        style="@style/ListMenuItemIconStyle.Start"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:importantForAccessibility="no" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp" >
+
+        <ImageView
+            android:id="@+id/extensions_menu_item_icon"
+            style="@style/ListMenuItemIconStyle.Start"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/extensions_menu_item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_toggle"
+            app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
+
+        <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+            android:id="@+id/extensions_menu_item_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/extensions_menu_item_context_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_vert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/extensions_menu_context_menu_tooltip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:menuVerticalOverlapAnchor="false"
+            app:menuMaxWidth="@dimen/extension_action_button_list_menu_width" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/extensions_menu_item_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_toggle"
-        app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
-        android:id="@+id/extensions_menu_item_toggle"
+        android:id="@+id/extensions_menu_item_site_permissions_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_marginStart="50dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
-    <org.chromium.ui.listmenu.ListMenuButton
-        android:id="@+id/extensions_menu_item_context_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/extensions_menu_context_menu_tooltip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menuVerticalOverlapAnchor="false"
-        app:menuMaxWidth="@dimen/extension_action_button_list_menu_width" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

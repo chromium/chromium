@@ -117,8 +117,8 @@ public class ExtensionTestUtils {
 
     /**
      * Helper to create a {@link ExtensionsMenuTypes.MenuEntryState} for a simple extension without
-     * host permissions. The entry will only have a disabled action button and a hidden site access
-     * toggle.
+     * host permissions. The entry will have a disabled action button, and hidden site access toggle
+     * and site permissions button.
      */
     public static ExtensionsMenuTypes.MenuEntryState createSimpleMenuEntry(
             String extensionId,
@@ -133,8 +133,21 @@ public class ExtensionTestUtils {
                         /* tooltipText= */ "",
                         /* isOn= */ false,
                         /* icon= */ null);
+        ExtensionsMenuTypes.ControlState sitePermissionsButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
         return createMenuEntry(
-                extensionId, extensionName, extensionIcon, isPinned, siteAccessToggle);
+                extensionId,
+                extensionName,
+                extensionIcon,
+                isPinned,
+                siteAccessToggle,
+                sitePermissionsButton);
     }
 
     /** Helper to create a {@link ExtensionsMenuTypes.MenuEntryState}. */
@@ -143,7 +156,8 @@ public class ExtensionTestUtils {
             String extensionName,
             @Nullable Bitmap extensionIcon,
             boolean isPinned,
-            ExtensionsMenuTypes.ControlState siteAccessToggle) {
+            ExtensionsMenuTypes.ControlState siteAccessToggle,
+            ExtensionsMenuTypes.ControlState sitePermissionsButton) {
         ExtensionsMenuTypes.ControlState actionButton =
                 new ExtensionsMenuTypes.ControlState(
                         ExtensionsMenuTypes.ControlState.Status.DISABLED,
@@ -161,7 +175,11 @@ public class ExtensionTestUtils {
                         /* isOn= */ isPinned,
                         /* icon= */ null);
         return new ExtensionsMenuTypes.MenuEntryState(
-                extensionId, actionButton, contextMenuButton, siteAccessToggle);
+                extensionId,
+                actionButton,
+                contextMenuButton,
+                siteAccessToggle,
+                sitePermissionsButton);
     }
 
     /** Helper to create a simple icon with the given color. */

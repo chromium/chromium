@@ -267,6 +267,15 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         itemModel.set(
                 ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_TOOLTIP,
                 itemState.siteAccessToggle.tooltipText);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME,
+                itemState.sitePermissionsButton.accessibleName);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS,
+                itemState.sitePermissionsButton.status);
+        itemModel.set(
+                ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT,
+                itemState.sitePermissionsButton.text);
     }
 
     /**
