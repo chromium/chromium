@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.settings;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.text.LineBreaker;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +20,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.LocalizationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Observes MultiColumnSettings events, and updates the SettingsActivity's title and its detailed
@@ -109,18 +119,23 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
      */
     private @Nullable MonotonicObservableSupplier<String> mCurrentPageTitle;
 
+    private final @Nullable List<SettingsIndexData.Entry> mInitialBreadcrumbPath;
+
     MultiColumnTitleUpdater(
             @Nullable Bundle savedInstanceState,
             MultiColumnSettings multiColumnSettings,
             Context context,
             LinearLayout container,
             Callback<String> mainTitleSetter,
-            Callback<@Nullable String> titleTapCallback) {
+            Callback<@Nullable String> titleTapCallback,
+            @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath) {
         mMultiColumnSettings = multiColumnSettings;
         mContext = context;
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
         mTitleTapCallback = titleTapCallback;
+        mInitialBreadcrumbPath = initialBreadcrumbPath;
+
         if (savedInstanceState != null) {
             mFirstVisibleTitleIndex = savedInstanceState.getInt(KEY_FIRST_VISIBLE_INDEX);
         }
@@ -233,13 +248,43 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
         mContainer.removeAllViews();
 
+        var titles = mMultiColumnSettings.getTitles();
+
+        if (mMultiColumnSettings.isTwoColumn()
+                && mFirstVisibleTitleIndex == 0
+                && titles.size() == 1
+                && mInitialBreadcrumbPath != null) {
+
+            Fragment currentFragment =
+                    mMultiColumnSettings
+                            .getChildFragmentManager()
+                            .findFragmentById(R.id.preferences_detail);
+            String targetClass =
+                    mInitialBreadcrumbPath.get(mInitialBreadcrumbPath.size() - 1).fragment;
+
+            if (currentFragment != null
+                    && TextUtils.equals(currentFragment.getClass().getName(), targetClass)) {
+
+                List<MultiColumnSettings.Title> syntheticTitles = new ArrayList<>();
+                for (SettingsIndexData.Entry entry : mInitialBreadcrumbPath) {
+                    SettableMonotonicObservableSupplier<String> titleSupplier =
+                            ObservableSuppliers.createMonotonic();
+                    assertNonNull(entry.title);
+                    titleSupplier.set(entry.title);
+
+                    syntheticTitles.add(
+                            new MultiColumnSettings.Title(entry.id, titleSupplier, -1, null));
+                }
+                titles = syntheticTitles;
+            }
+        }
+
         // Padding for the chevron separator.
         int paddingPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_detailed_title_padding);
 
         float scaleX = LocalizationUtils.isLayoutRtl() ? -1f : 1f;
-        var titles = mMultiColumnSettings.getTitles();
 
         for (int i = 0; i < titles.size(); ++i) {
             if (i < mFirstVisibleTitleIndex) continue;
@@ -269,18 +314,22 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                         // Note: The current getBackStackEntryCount and recorded backStackCount
                         // can be same, e.g., if the user tabs the last component of the
                         // detailed title.
-                        if (mMultiColumnSettings.getChildFragmentManager().getBackStackEntryCount()
-                                > backStackCount) {
-                            var entry =
-                                    mMultiColumnSettings
+                        if (backStackCount >= 0) {
+                            if (mMultiColumnSettings
                                             .getChildFragmentManager()
-                                            .getBackStackEntryAt(backStackCount);
-                            mMultiColumnSettings
-                                    .getChildFragmentManager()
-                                    .popBackStack(
-                                            entry.getId(),
-                                            FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            mTitleTapCallback.onResult(entry.getName());
+                                            .getBackStackEntryCount()
+                                    > backStackCount) {
+                                var entry =
+                                        mMultiColumnSettings
+                                                .getChildFragmentManager()
+                                                .getBackStackEntryAt(backStackCount);
+                                mMultiColumnSettings
+                                        .getChildFragmentManager()
+                                        .popBackStack(
+                                                entry.getId(),
+                                                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                mTitleTapCallback.onResult(entry.getName());
+                            }
                         }
                     });
             mContainer.addView(view);
@@ -295,6 +344,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     @Override
     public void onHeaderLayoutUpdated() {
         updateMainTitle();
+
+        updateDetailedPageTitle();
 
         if (!mMultiColumnSettings.isTwoColumn()) {
             // In the single pane mode, do not show the detailed title.

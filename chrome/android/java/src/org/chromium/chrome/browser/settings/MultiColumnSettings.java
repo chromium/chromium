@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,10 +27,14 @@ import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -93,6 +99,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     private final List<Observer> mObservers = new ArrayList<>();
 
     private final FragmentTracker mFragmentTracker = new FragmentTracker(mObservers);
+
+    private @Nullable Profile mProfile;
 
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
@@ -273,6 +281,34 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 });
         if (mOnCreateViewRunnable != null) view.post(mOnCreateViewRunnable);
         return view;
+    }
+
+    /** Sets the Profile required for generating the search index. Called by the host Activity. */
+    @EnsuresNonNull("mProfile")
+    public void setProfile(Profile profile) {
+        mProfile = profile;
+    }
+
+    /**
+     * Returns the breadcrumb path for the currently displayed detail fragment. This uses the
+     * Settings search index to find the shortest path from the root. If the index hasn't been built
+     * yet (e.g. user just opened the app via deep link), it will force-build the index
+     * synchronously.
+     */
+    public @Nullable List<SettingsIndexData.Entry> getBreadcrumbEntriesForCurrentFragment() {
+        assert mProfile != null;
+
+        assertNonNull(mProfile);
+
+        Fragment fragment = getChildFragmentManager().findFragmentById(R.id.preferences_detail);
+
+        assertNonNull(fragment);
+
+        SettingsIndexData indexData =
+                SettingsSearchCoordinator.ensureIndexBuilt(getActivity(), mProfile);
+
+        return indexData.getBreadcrumbEntries(
+                fragment.getClass().getName(), fragment.getArguments());
     }
 
     // Replaces the detailed pane added in super.onCreateView with a new one that displays
