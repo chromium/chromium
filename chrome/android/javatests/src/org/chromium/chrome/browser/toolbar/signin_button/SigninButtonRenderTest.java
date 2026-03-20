@@ -28,6 +28,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -39,6 +41,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -99,10 +102,50 @@ public class SigninButtonRenderTest {
             mFakeSyncServiceImpl = null;
             SyncServiceFactory.setInstanceForTesting(null);
         }
+        setSigninAllowed(true);
     }
 
-    // TODO(https://crbug.com/478828569): Add further render tests for signed out and signed in with
-    // no error states.
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninButton_SignedOut(boolean nightModeEnabled) throws IOException {
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.signin_button),
+                "signin_button_signed_out");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninButton_SignedOut_SigninDisabled(boolean nightModeEnabled)
+            throws IOException {
+        setSigninAllowed(false);
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.signin_button),
+                "signin_button_signed_out_signin_disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninButton_SignedIn_Avatar(boolean nightModeEnabled) throws IOException {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.signin_button),
+                "signin_button_signed_in_avatar");
+    }
+
     @Test
     @MediumTest
     @Feature("RenderTest")
@@ -128,5 +171,13 @@ public class SigninButtonRenderTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
                 "signin_button_identity_error_exist");
+    }
+
+    private void setSigninAllowed(boolean allowed) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.SIGNIN_ALLOWED, allowed);
+                });
     }
 }

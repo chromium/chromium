@@ -23,18 +23,21 @@ final class SigninButtonViewBinder {
         } else if (SigninButtonProperties.SHOW_BUTTON.equals(propertyKey)) {
             view.setVisibility(
                     model.get(SigninButtonProperties.SHOW_BUTTON) ? View.VISIBLE : View.GONE);
-        } else if (SigninButtonProperties.SHOW_AVATAR.equals(propertyKey)) {
-            ChromeImageButton avatarButton = view.getAvatarButton();
-            avatarButton.setVisibility(
-                    model.get(SigninButtonProperties.SHOW_AVATAR) ? View.VISIBLE : View.GONE);
+        } else if (SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON.equals(propertyKey)) {
+            boolean useSigninText = model.get(SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON);
+            view.getSigninTextButton().setVisibility(useSigninText ? View.VISIBLE : View.GONE);
+            view.getAvatarButton().setVisibility(useSigninText ? View.GONE : View.VISIBLE);
         } else if (SigninButtonProperties.AVATAR_TINT.equals(propertyKey)) {
             ImageViewCompat.setImageTintList(
                     view.getAvatarButton(), model.get(SigninButtonProperties.AVATAR_TINT));
         } else if (SigninButtonProperties.ON_CLICK.equals(propertyKey)) {
             view.getAvatarButton().setOnClickListener(model.get(SigninButtonProperties.ON_CLICK));
-        } else if (SigninButtonProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
+            view.getSigninTextButton()
+                    .setOnClickListener(model.get(SigninButtonProperties.ON_CLICK));
+        } else if (SigninButtonProperties.AVATAR_CONTENT_DESCRIPTION.equals(propertyKey)) {
             view.getAvatarButton()
-                    .setContentDescription(model.get(SigninButtonProperties.CONTENT_DESCRIPTION));
+                    .setContentDescription(
+                            model.get(SigninButtonProperties.AVATAR_CONTENT_DESCRIPTION));
         }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -19,6 +20,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 @NullMarked
 final class SigninButtonView extends FrameLayout {
     private ChromeImageButton mAvatarButton;
+    private ButtonCompat mSigninTextButton;
 
     public SigninButtonView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -28,9 +30,14 @@ final class SigninButtonView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mAvatarButton = findViewById(R.id.avatar_button);
+        mSigninTextButton = findViewById(R.id.signin_text_button);
     }
 
     ChromeImageButton getAvatarButton() {
         return mAvatarButton;
+    }
+
+    ButtonCompat getSigninTextButton() {
+        return mSigninTextButton;
     }
 }

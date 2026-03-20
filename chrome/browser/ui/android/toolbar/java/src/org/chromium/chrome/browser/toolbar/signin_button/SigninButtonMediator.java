@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -62,6 +63,7 @@ final class SigninButtonMediator
         implements ProfileDataCache.Observer,
                 IdentityManager.Observer,
                 SyncService.SyncStateChangedListener,
+                SigninManager.SignInStateObserver,
                 BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private final Context mContext;
     private final PropertyModel mModel;
@@ -75,6 +77,7 @@ final class SigninButtonMediator
     private final SnackbarManager mSnackbarManager;
     private @Nullable Profile mProfile;
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    private @Nullable SigninManager mSigninManager;
 
     // We observe IdentityManager to receive primary account state change notifications.
     private @Nullable IdentityManager mIdentityManager;
@@ -134,6 +137,15 @@ final class SigninButtonMediator
      */
     @Override
     public void syncStateChanged() {
+        updateButtonState();
+    }
+
+    /**
+     * {@link SigninManager.SignInStateObserver} implementation which updates the signin button when
+     * signin allowed state changes.
+     */
+    @Override
+    public void onSignInAllowedChanged() {
         updateButtonState();
     }
 
@@ -198,27 +210,32 @@ final class SigninButtonMediator
                 email == null
                         ? null
                         : assumeNonNull(mProfileDataCache).getProfileDataOrDefault(email);
-        mModel.set(
-                SigninButtonProperties.CONTENT_DESCRIPTION,
-                SigninUtils.getContentDescriptionForIdentityDisc(
-                        mContext, profileData, mIdentityError));
-        setAvatarImage(profileData);
+        setButton(profileData);
     }
 
-    private void setAvatarImage(@Nullable DisplayableProfileData profileData) {
-        if (profileData == null) {
+    private void setButton(@Nullable DisplayableProfileData profileData) {
+        boolean showSigninText =
+                profileData == null && assumeNonNull(mSigninManager).isSigninAllowed();
+
+        if (!showSigninText) {
             mModel.set(
                     SigninButtonProperties.BUTTON_AVATAR,
-                    AppCompatResources.getDrawable(mContext, R.drawable.account_circle));
+                    profileData != null
+                            ? profileData.getImage()
+                            : AppCompatResources.getDrawable(mContext, R.drawable.account_circle));
             mModel.set(
                     SigninButtonProperties.AVATAR_TINT,
-                    AppCompatResources.getColorStateList(
-                            mContext, R.color.default_icon_color_tint_list));
-        } else {
-            mModel.set(SigninButtonProperties.BUTTON_AVATAR, profileData.getImage());
-            mModel.set(SigninButtonProperties.AVATAR_TINT, null);
+                    profileData != null
+                            ? null
+                            : AppCompatResources.getColorStateList(
+                                    mContext, R.color.default_icon_color_tint_list));
+            mModel.set(
+                    SigninButtonProperties.AVATAR_CONTENT_DESCRIPTION,
+                    SigninUtils.getContentDescriptionForIdentityDisc(
+                            mContext, profileData, mIdentityError));
         }
-        mModel.set(SigninButtonProperties.SHOW_AVATAR, true);
+
+        mModel.set(SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON, showSigninText);
         mModel.set(SigninButtonProperties.ON_CLICK, this::onClick);
     }
 
@@ -233,6 +250,10 @@ final class SigninButtonMediator
             mIdentityManager.removeObserver(this);
             mIdentityManager = null;
         }
+        if (mSigninManager != null) {
+            mSigninManager.removeSignInStateObserver(this);
+            mSigninManager = null;
+        }
         if (mSyncService != null) {
             mSyncService.removeSyncStateChangedListener(this);
             mSyncService = null;
@@ -246,6 +267,9 @@ final class SigninButtonMediator
         }
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(mIdentityManager).addObserver(this);
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(mSigninManager).addSignInStateObserver(this);
+
         mProfileDataCache =
                 ProfileDataCache.createWithoutBadge(
                         mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
@@ -266,8 +290,7 @@ final class SigninButtonMediator
         }
 
         Profile originalProfile = mProfile.getOriginalProfile();
-        if (assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile))
-                .isSigninAllowed()) {
+        if (assumeNonNull(mSigninManager).isSigninAllowed()) {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     new AccountPickerBottomSheetStrings.Builder(
                                     mContext.getString(

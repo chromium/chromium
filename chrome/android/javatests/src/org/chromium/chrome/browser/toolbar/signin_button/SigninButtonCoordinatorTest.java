@@ -108,13 +108,35 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     public void testSigninButtonVisibleOnNtp() {
-        // Sign-in button should be visible on NTP with signed-out description.
+        // Sign-in button should be visible on NTP with sign-in promo description.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_text_button),
+                        isDisplayed(),
+                        withText(R.string.signin_promo_sign_in)));
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninButton_DisabledSignin_ShowsAvatar() {
+        setSigninAllowed(false);
+
+        // Should show signed-out avatar instead of text button.
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        setSigninAllowed(true);
+
+        // Should show sign-in text button.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_text_button),
+                        isDisplayed(),
+                        withText(R.string.signin_promo_sign_in)));
     }
 
     @Test
@@ -124,13 +146,12 @@ public class SigninButtonCoordinatorTest {
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSignIn_ShowsPersonalizedIdentityDisc() {
-        // Initially shows signed-out avatar.
+        // Initially shows sign-in text button.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.avatar_button),
+                        withId(R.id.signin_text_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withText(R.string.signin_promo_sign_in)));
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -149,13 +170,12 @@ public class SigninButtonCoordinatorTest {
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSignIn_ShowsPersonalizedIdentityDiscNonDisplayableEmail() {
-        // Initially shows signed-out avatar.
+        // Initially shows sign-in text button.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.avatar_button),
+                        withId(R.id.signin_text_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withText(R.string.signin_promo_sign_in)));
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
@@ -181,7 +201,7 @@ public class SigninButtonCoordinatorTest {
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
-    public void testSignOut_ShowsSignedOutIdentityDisc() {
+    public void testSignOut_ShowsSigninTextButton() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Initially shows the user's avatar with a personalized description.
@@ -193,13 +213,12 @@ public class SigninButtonCoordinatorTest {
 
         mSigninTestRule.signOut();
 
-        // Avatar should update back to the signed-out identity disc.
+        // Should update to the sign-in text button.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.avatar_button),
+                        withId(R.id.signin_text_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withText(R.string.signin_promo_sign_in)));
     }
 
     @Test
@@ -292,7 +311,7 @@ public class SigninButtonCoordinatorTest {
     public void testClickSigninButton_SignedOut() {
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
-        // Clicking the signed-out avatar should lead to the sign-in bottom sheet.
+        // Clicking the sign-in text button should lead to the sign-in bottom sheet.
         onView(withId(R.id.signin_button)).perform(click());
         ViewUtils.waitForVisibleView(withText(R.string.signin_account_picker_bottom_sheet_title));
     }
