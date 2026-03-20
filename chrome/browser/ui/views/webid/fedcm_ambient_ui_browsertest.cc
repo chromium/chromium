@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
@@ -487,6 +488,159 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
   EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+}
+
+// This test verifies the UMA metrics logged during the Ambient UI flow for a
+// returning (sign-in) user.
+//
+// Relevant UMAs for the end-to-end flow:
+// 1. PageActionController.ChipTypeShown: Logged with value 'kFederation'.
+// 2. Blink.FedCm.AccountsDialogShown: Should be 0 for this flow, as no modal
+//    dialog widget is shown (only the Page Action anchored message).
+// 3. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
+  base::HistogramTester histograms;
+
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                content::IdentityRequestAccount::LoginState::kSignIn);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Check Page Action shown metrics.
+  histograms.ExpectUniqueSample("PageActionController.ChipTypeShown",
+                                PageActionIconType::kFederation, 1);
+
+  // Simulate click on the omnibox chip.
+  // Note: We use the real PageActionView and simulate mouse events to ensure
+  // that the PageAction framework's metric recording logic is triggered.
+  // Simply calling view()->OnPageActionClicked() would bypass the PageAction
+  // framework's CTR logging.
+  // TODO(crbug.com/493584925): consider using the ui::test::EventGenerator or
+  // views::test::InteractionTestUtilSimulatorViews to simulate the events.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* page_action_view = browser_view->GetLocationBarView()
+                               ->page_action_container()
+                               ->GetPageActionView(kActionFederation);
+  ASSERT_TRUE(page_action_view);
+  ui::MouseEvent click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  page_action_view->OnEvent(&click_event);
+  ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  page_action_view->OnEvent(&release_event);
+
+  // Re-assert shown metrics after the chip was clicked.
+  // We expect these to be correctly recorded only once, even after the
+  // anchored message appears.
+  histograms.ExpectBucketCount("PageActionController.ChipTypeShown",
+                               PageActionIconType::kFederation, 1);
+
+  // For sign-in, the first click shows the anchored message, not the dialog.
+  // Blink.FedCm.AccountsDialogShown is currently associated with the widget
+  // (modal or bubble), which is *not* shown in this case (only the anchored
+  // message bubble is shown, which is part of the Page Action framework).
+  histograms.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 0);
+
+  // Verify anchored message is showing.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Simulate click on the anchored message's chip.
+  // The Page Action framework itself records the click because the click was
+  // on the AnchoredMessageBubbleView's chip.
+  auto* anchored_message = page_action_view->GetAnchoredMessageForTesting();
+  ASSERT_TRUE(anchored_message);
+  // The chip container is the 3rd child (index 2) of the anchored message.
+  views::View* anchored_message_chip = anchored_message->children()[2];
+  ASSERT_TRUE(anchored_message_chip);
+  ui::MouseEvent anchored_click(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  anchored_message_chip->OnEvent(&anchored_click);
+
+  // For sign-in, clicking the anchored message chip completes the flow.
+  // In a fully integrated browser test (without MockDelegate), we would
+  // expect the success status (Blink.FedCm.Status.RequestIdToken) to be
+  // recorded in the content layer here.
+}
+
+// This test verifies the UMA metrics logged during the Ambient UI flow for a
+// new (sign-up) user.
+//
+// Relevant UMAs for the end-to-end flow:
+// 1. Blink.FedCm.AccountsDialogShown: Logged when the modal dialog is shown
+//    (after the chip is clicked).
+// 2. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignUpMetrics) {
+  base::HistogramTester histograms;
+
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
+                content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // FedCM dialog shown metric should still be 0 as it's just the chip.
+  histograms.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 0);
+
+  // For sign-up, clicking on the chip should trigger the accounts displayed
+  // callback, which in turn records the FedCM dialog shown metric in the
+  // content layer.
+  EXPECT_CALL(*delegate_, OnAccountsDisplayed);
+
+  // Simulate click on the omnibox chip.
+  // Note: We use the real PageActionView and simulate mouse events to ensure
+  // that the PageAction framework's metric recording logic is triggered.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* page_action_view = browser_view->GetLocationBarView()
+                               ->page_action_container()
+                               ->GetPageActionView(kActionFederation);
+  ASSERT_TRUE(page_action_view);
+  ui::MouseEvent click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  page_action_view->OnEvent(&click_event);
+  ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  page_action_view->OnEvent(&release_event);
+
+  // For sign-up, the click shows the dialog widget immediately.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
+
+  // Note: We don't check Blink.FedCm.AccountsDialogShown here because it is
+  // recorded in the content layer by the real delegate, which is mocked in this
+  // test. The EXPECT_CALL(*delegate_, OnAccountsDisplayed) above confirms that
+  // the view is correctly triggering the callback that leads to the metric
+  // being recorded.
+
+  // Select the first account to complete the flow.
+  view()->OnAccountSelected(accounts_[0], release_event);
+
+  // In a fully integrated browser test (without MockDelegate), we would
+  // expect the success status (Blink.FedCm.Status.RequestIdToken) to be
+  // recorded in the content layer here.
 }
 
 }  // namespace webid
