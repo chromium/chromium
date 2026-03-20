@@ -563,6 +563,31 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
                  ExpectedColorScheme())));
 }
 
+// chrome-search:// is now recognized as WebUI by SecurityPrincipal::IsWebUI(),
+// so incognito pages with this scheme should follow the browser incognito mode
+// theme - always dark for incognito, not the OS theme(dark or light) or
+// browser theme.
+IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, ChromeSearchTheme) {
+  // Open an incognito browser and navigate to search scheme.
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, GURL("chrome-search://most-visited/title.html")));
+
+  auto* incognito_ntp_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  auto& security_principal = incognito_ntp_web_contents->GetPrimaryMainFrame()
+                                 ->GetSiteInstance()
+                                 ->GetSecurityPrincipal();
+
+  ASSERT_TRUE(security_principal.SchemeIs(chrome::kChromeSearchScheme));
+  ASSERT_TRUE(security_principal.IsWebUI());
+
+  EXPECT_EQ(
+      true,
+      EvalJs(incognito_ntp_web_contents,
+             "window.matchMedia('(prefers-color-scheme: dark)').matches"));
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
   std::string pdf_extension_url(extensions::kExtensionScheme);
