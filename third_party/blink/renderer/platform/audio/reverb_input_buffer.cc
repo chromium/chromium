@@ -35,15 +35,17 @@ namespace blink {
 ReverbInputBuffer::ReverbInputBuffer(size_t length)
     : buffer_(length), write_index_(0) {}
 
-void ReverbInputBuffer::Write(const float* source_p, size_t number_of_frames) {
+void ReverbInputBuffer::Write(base::span<const float> source,
+                              size_t number_of_frames) {
   size_t buffer_length = buffer_.size();
   size_t index = WriteIndex();
   size_t new_index = index + number_of_frames;
 
   CHECK_LE(new_index, buffer_length);
 
-  UNSAFE_TODO(memcpy(buffer_.Data() + index, source_p,
-                     sizeof(float) * number_of_frames));
+  buffer_.as_span()
+      .subspan(index, number_of_frames)
+      .copy_from(source.first(number_of_frames));
 
   if (new_index >= buffer_length) {
     new_index = 0;

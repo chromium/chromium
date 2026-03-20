@@ -51,7 +51,7 @@ class ReverbInputBuffer final {
   // The assumption is that the buffer's length is evenly divisible by
   // numberOfFrames (for nearly all cases this will be fine).
   // FIXME: remove numberOfFrames restriction...
-  void Write(const float* source_p, size_t number_of_frames);
+  void Write(base::span<const float> source, size_t number_of_frames);
 
   // Background threads can call this to check if there's anything to read...
   size_t WriteIndex() const {
