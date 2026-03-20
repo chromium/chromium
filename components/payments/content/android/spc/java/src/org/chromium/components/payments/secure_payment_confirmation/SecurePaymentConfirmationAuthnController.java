@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -28,12 +29,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.R;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -211,8 +212,8 @@ public class SecurePaymentConfirmationAuthnController {
             String rpId,
             boolean informOnly) {
         assert !informOnly
-                || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK);
+                || ContentFeatureMap.isEnabled(
+                        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH);
         mInformOnly = informOnly;
 
         if (mHider != null) return false;
@@ -245,8 +246,8 @@ public class SecurePaymentConfirmationAuthnController {
 
         SpannableString footnote = null;
         if (!mInformOnly
-                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+                && ContentFeatureMap.isEnabled(
+                        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
             footnote =
                     SpanApplier.applySpans(
                             context.getString(R.string.secure_payment_confirmation_footnote),
@@ -390,8 +391,7 @@ public class SecurePaymentConfirmationAuthnController {
     private void onCancel() {
         hide();
         assumeNonNull(mResponseCallback);
-        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+        if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
             mResponseCallback.onResult(SpcResponseStatus.CANCEL);
         } else {
             mResponseCallback.onResult(SpcResponseStatus.ANOTHER_WAY);

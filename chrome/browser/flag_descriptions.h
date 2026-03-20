@@ -3998,12 +3998,6 @@ inline constexpr char kSecurePaymentConfirmationBrowserBoundKeysDescription[] =
     "This flag enables an additional browser-bound signature in secure payment "
     "confirmation in PaymentRequest and for WebAuthn payment credentials.";
 
-inline constexpr char kSecurePaymentConfirmationFallbackName[] =
-    "Secure Payment Confirmation Fallback UX";
-inline constexpr char kSecurePaymentConfirmationFallbackDescription[] =
-    "Enable the fallback experience in Secure Payment Confirmation, where a "
-    "transaction dialog-like UX is shown even if no credentials match.";
-
 inline constexpr char kSecurePaymentConfirmationUxRefreshName[] =
     "Secure Payment Confirmation UX Refresh";
 inline constexpr char kSecurePaymentConfirmationUxRefreshDescription[] =

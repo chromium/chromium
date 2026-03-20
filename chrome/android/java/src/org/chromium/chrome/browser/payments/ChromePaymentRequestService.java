@@ -338,10 +338,7 @@ public class ChromePaymentRequestService
         // Either there are no apps, XOR the new fallback flow is enabled where there must be an SPC
         // app.
         assert !hasAvailableApps()
-                ^ (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
-                        || ContentFeatureMap.isEnabled(
-                                BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH));
+                ^ ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH);
 
         mJourneyLogger.setNoMatchingCredentialsShown();
 
@@ -430,86 +427,27 @@ public class ChromePaymentRequestService
             return mSpcController.show();
         }
 
-        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
-            assert mSpcAuthnUiController == null;
-            mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
+        mNoMatchingController =
+                SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
+        Runnable continueCallback =
+                () -> {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            SPC_FALLBACK_OUTCOME_HISTOGRAM,
+                            SpcResponseStatus.ANOTHER_WAY,
+                            SpcResponseStatus.COUNT);
+                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                    disconnectFromClientWithDebugMessage(
+                            ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                            PaymentErrorReason.NOT_ALLOWED_ERROR);
+                };
+        assert mNoMatchingController != null;
+        mNoMatchingController.show(
+                continueCallback,
+                optOutCallback,
+                spcMethodData.securePaymentConfirmation.showOptOut,
+                spcMethodData.securePaymentConfirmation.rpId);
 
-            Callback<Integer> responseCallback =
-                    (responseStatus) -> {
-                        RecordHistogram.recordEnumeratedHistogram(
-                                SPC_FALLBACK_OUTCOME_HISTOGRAM,
-                                responseStatus,
-                                SpcResponseStatus.COUNT);
-
-                        switch (responseStatus) {
-                            case SpcResponseStatus.ANOTHER_WAY:
-                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                                disconnectFromClientWithDebugMessage(
-                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
-                                break;
-                            case SpcResponseStatus.CANCEL:
-                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                                disconnectFromClientWithDebugMessage(
-                                        ErrorStrings.USER_CANCELLED,
-                                        PaymentErrorReason.USER_CANCEL);
-                                break;
-                            default:
-                                Log.e(TAG, "Unexpected SPC response status: %d", responseStatus);
-                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                                disconnectFromClientWithDebugMessage(
-                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
-                        }
-                        mSpcAuthnUiController = null;
-                    };
-
-            PaymentItem rawTotal = mSpec.getRawTotal();
-            assert rawTotal != null;
-            PaymentApp selectedPaymentApp = getSelectedPaymentApp();
-            assert selectedPaymentApp != null;
-            assert selectedPaymentApp.getDrawableIcon() != null;
-            assert selectedPaymentApp.getLabel() != null;
-            assumeNonNull(mSpcAuthnUiController);
-
-            boolean success =
-                    mSpcAuthnUiController.show(
-                            selectedPaymentApp.getDrawableIcon(),
-                            selectedPaymentApp.getLabel(),
-                            rawTotal,
-                            responseCallback,
-                            optOutCallback,
-                            spcMethodData.securePaymentConfirmation.payeeName,
-                            getPayeeOrigin(spcMethodData.securePaymentConfirmation),
-                            spcMethodData.securePaymentConfirmation.showOptOut,
-                            spcMethodData.securePaymentConfirmation.rpId,
-                            /* informOnly= */ true);
-
-            return success;
-        } else {
-            mNoMatchingController =
-                    SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
-            Runnable continueCallback =
-                    () -> {
-                        RecordHistogram.recordEnumeratedHistogram(
-                                SPC_FALLBACK_OUTCOME_HISTOGRAM,
-                                SpcResponseStatus.ANOTHER_WAY,
-                                SpcResponseStatus.COUNT);
-                        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                        disconnectFromClientWithDebugMessage(
-                                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                PaymentErrorReason.NOT_ALLOWED_ERROR);
-                    };
-            assert mNoMatchingController != null;
-            mNoMatchingController.show(
-                    continueCallback,
-                    optOutCallback,
-                    spcMethodData.securePaymentConfirmation.showOptOut,
-                    spcMethodData.securePaymentConfirmation.rpId);
-
-            return true;
-        }
+        return true;
     }
 
     // Implements BrowserPaymentRequest:

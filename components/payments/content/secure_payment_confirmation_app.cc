@@ -189,14 +189,12 @@ std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
 }
 
 bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
-  // If the fallback feature is disabled, the factory should only create this
+  // If the ux refresh feature is disabled, the factory should only create this
   // app if the authenticator and credentials were available. Therefore, this
-  // function can always return true with the fallback feature disabled.
+  // function can always return true with the ux refresh feature disabled.
   return (authenticator_ && !credential_id_.empty()) ||
-         !(PaymentsExperimentalFeatures::IsEnabled(
-               features::kSecurePaymentConfirmationFallback) ||
-           base::FeatureList::IsEnabled(
-               blink::features::kSecurePaymentConfirmationUxRefresh));
+         !base::FeatureList::IsEnabled(
+             blink::features::kSecurePaymentConfirmationUxRefresh);
 }
 
 bool SecurePaymentConfirmationApp::NeedsInstallation() const {
@@ -205,10 +203,8 @@ bool SecurePaymentConfirmationApp::NeedsInstallation() const {
 
 std::string SecurePaymentConfirmationApp::GetId() const {
   if (credential_id_.empty()) {
-    CHECK(PaymentsExperimentalFeatures::IsEnabled(
-              features::kSecurePaymentConfirmationFallback) ||
-          base::FeatureList::IsEnabled(
-              blink::features::kSecurePaymentConfirmationUxRefresh));
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kSecurePaymentConfirmationUxRefresh));
     // Since there is no credential_id_ in the fallback flow, we still must
     // return a non-empty app ID.
     return "spc";

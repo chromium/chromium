@@ -867,23 +867,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
-    @DisableFeatures({BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH})
-    public void
-            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackEnabled() {
-        PaymentRequestService service =
-                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
-
-        service.disconnectFromClientWithDebugMessage(
-                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
-
-        assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
-    }
-
-    @Test
-    @Feature({"Payments"})
-    @EnableFeatures({BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH})
-    @DisableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    @EnableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
     public void
             disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenUxRefreshEnabled() {
         PaymentRequestService service =
@@ -897,12 +881,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @DisableFeatures({
-        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH,
-        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK
-    })
+    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
     public void
-            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackAndUxRefreshDisabled() {
+            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenUxRefreshDisabled() {
         PaymentRequestService service =
                 defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
 

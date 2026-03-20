@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -54,7 +55,7 @@ import java.lang.ref.WeakReference;
 /** A test for SecurePaymentConfirmationAuthn. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+@EnableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
 @DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
 public class SecurePaymentConfirmationAuthnTest {
     private static final long IGNORED_INPUT_DELAY =
@@ -223,7 +224,7 @@ public class SecurePaymentConfirmationAuthnTest {
 
     @Test
     @Feature({"Payments"})
-    @DisableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
     public void testOnAuthnCancellationFeatureDisabled() {
         createAuthnController();
         show();
@@ -308,7 +309,7 @@ public class SecurePaymentConfirmationAuthnTest {
 
     @Test
     @Feature({"Payments"})
-    @DisableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
     public void testOnVerifyAnotherWayFeatureDisabled() {
         createAuthnController();
 
@@ -469,7 +470,7 @@ public class SecurePaymentConfirmationAuthnTest {
 
     @Test
     @Feature({"Payments"})
-    @DisableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
     public void testShowInformOnlyFeatureIsDisabled() {
         createAuthnController();
         Assert.assertThrows(AssertionError.class, this::showInformOnly);

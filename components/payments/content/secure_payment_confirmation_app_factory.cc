@@ -474,8 +474,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   skip_spc_app_creation =
       skip_spc_app_creation ||
       (!has_authenticator_and_credential &&
-       !PaymentsExperimentalFeatures::IsEnabled(
-           features::kSecurePaymentConfirmationFallback) &&
        !base::FeatureList::IsEnabled(
            blink::features::kSecurePaymentConfirmationUxRefresh));
   if (skip_spc_app_creation) {
@@ -502,10 +500,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   }
 
   if (!request->authenticator || !request->credential) {
-    CHECK(PaymentsExperimentalFeatures::IsEnabled(
-              features::kSecurePaymentConfirmationFallback) ||
-          base::FeatureList::IsEnabled(
-              blink::features::kSecurePaymentConfirmationUxRefresh));
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kSecurePaymentConfirmationUxRefresh));
     // In the case of no authenticator or credentials, we still create the
     // SecurePaymentConfirmationApp, which holds the information to be shown
     // in the fallback UX.

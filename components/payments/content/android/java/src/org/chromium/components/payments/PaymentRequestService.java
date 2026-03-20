@@ -687,10 +687,8 @@ public class PaymentRequestService
             // credentials to do that.
             if (obscureRealError
                     && reason == PaymentErrorReason.USER_CANCEL
-                    && (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                                    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
-                            || ContentFeatureMap.isEnabled(
-                                    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH))) {
+                    && ContentFeatureMap.isEnabled(
+                            BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
                 obscureRealError = false;
             }
 
@@ -981,10 +979,7 @@ public class PaymentRequestService
     }
 
     private boolean shouldShowSecurePaymentConfirmationFallback() {
-        if (!(PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
-                || ContentFeatureMap.isEnabled(
-                        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH))) {
+        if (!ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
             return false;
         }
         assert mSpec.isSecurePaymentConfirmationRequested();
