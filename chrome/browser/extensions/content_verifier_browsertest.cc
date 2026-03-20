@@ -116,7 +116,6 @@ void ExtensionUpdateComplete(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A helper override to force generation of hashes for all extensions, not just
 // those from the webstore.
 ChromeContentVerifierDelegate::VerifyInfo GetVerifyInfoAndForceHashes(
@@ -125,7 +124,6 @@ ChromeContentVerifierDelegate::VerifyInfo GetVerifyInfoAndForceHashes(
       ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT,
       extension.from_webstore(), /*should_repair=*/false);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -325,9 +323,6 @@ class ContentVerifierTest : public ExtensionBrowserTest {
   testing::NiceMock<MockUpdateService> update_service_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the tabs API is
-// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
   TestContentVerifyJobObserver job_observer;
   std::string id = "hoipipabpcoomfapcecilckodldhmpgl";
@@ -384,7 +379,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
 
   EXPECT_TRUE(job_observer.WaitForExpectedJobs());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Make sure that `VerifierObserver` doesn't crash on destruction.
 //
@@ -434,7 +428,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                              ScriptModificationAction::kMakeUnreadable);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A class that forces all installed extensions to generate hashes (normally,
 // we'd only generate hashes for policy-installed extensions with the
 // appropriate enterprise policy applied). This makes it easier to test the
@@ -453,8 +446,6 @@ class ContentVerifierTestWithForcedHashes : public ContentVerifierTest {
 };
 
 // Tests detection of corruption in an extension's service worker file.
-// TODO(crbug.com/371432155): Port to desktop Android when the tabs API is
-// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
                        TestServiceWorkerCorruption_DisableAndEnable) {
   static constexpr char kManifest[] =
@@ -548,8 +539,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
 }
 
 // Tests service worker corruption detection across browser starts.
-// TODO(crbug.com/371432155): Port to desktop Android when the tabs API is
-// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        PRE_TestServiceWorker_AcrossSession) {
   // Force-enable content verification for every extension.
@@ -610,8 +599,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   // is preserved by the PRE_ test.)
 }
 
-// TODO(crbug.com/371432155): Port to desktop Android when the tabs API is
-// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
   // Force-enable content verification for every extension.
   ChromeContentVerifierDelegate::GetVerifyInfoTestOverride verify_info_override(
@@ -707,7 +694,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
       "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
       kServiceWorkerScriptFileType, 1);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests the case of a corrupt extension that is force-installed by policy and
 // should not be allowed to be manually uninstalled/disabled by the user.
@@ -1283,8 +1269,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/394876083): Port these tests to desktop Android when more of
-// the policy/management stack is ported.
+// TODO(crbug.com/394876083): These tests crash on startup on desktop Android
+// because they trigger an OnUpdateCheck() call very early in setup, before the
+// Android test base classes are able to access the Profile.
 class ContentVerifierPolicyTest : public ContentVerifierTest {
  public:
   // We need to do this work here because the force-install policy values are
