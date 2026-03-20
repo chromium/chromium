@@ -74,24 +74,29 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler,
 
   ~AccessibilityUIMessageHandler() override;
 
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  void ToggleAccessibilityForWebContents(const base::ListValue& args);
-  void SetGlobalFlag(const base::ListValue& args);
-  void SetGlobalString(const base::ListValue& args);
+  void HandleInitialize(const base::ListValue& args);
+  void HandleToggleAccessibilityForWebContents(const base::ListValue& args);
+  void HandleSetGlobalFlag(const base::ListValue& args);
+  void HandleSetGlobalString(const base::ListValue& args);
 
   void GetRequestTypeAndFilters(const base::DictValue& data,
                                 std::string& request_type,
                                 std::string& allow,
                                 std::string& allow_empty,
                                 std::string& deny);
-  void RequestWebContentsTree(const base::ListValue& args);
-  void RequestNativeUITree(const base::ListValue& args);
-  void RequestWidgetsTree(const base::ListValue& args);
-  void RequestAccessibilityEvents(const base::ListValue& args);
+  void HandleRequestWebContentsTree(const base::ListValue& args);
+  void HandleRequestNativeUITree(const base::ListValue& args);
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  void HandleRequestWidgetsTree(const base::ListValue& args);
+#endif
+  void HandleRequestAccessibilityEvents(const base::ListValue& args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
 

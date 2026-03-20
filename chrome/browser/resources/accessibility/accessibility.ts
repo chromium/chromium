@@ -106,6 +106,10 @@ type GlobalStateName = 'native'|'web'|'html'|'text'|'metadata'|'pdfPrinting'|
     'extendedProperties'|'screenReader'|'labelImages'|'annotateMainNode';
 
 class BrowserProxy {
+  initialize() {
+    chrome.send('initialize');
+  }
+
   toggleAccessibility(
       processId: number, routingId: number, modeId: AxMode,
       shouldRequestTree: boolean) {
@@ -346,6 +350,7 @@ function initialize() {
       allowEmpty ? allowEmpty : '';
   getRequiredElement<HTMLInputElement>('filter-deny').value = deny ? deny : '';
 
+  browserProxy.initialize();
   addWebUiListener('copyTree', copyTree);
   addWebUiListener('showOrRefreshTree', showOrRefreshTree);
   addWebUiListener('startOrStopEvents', startOrStopEvents);
