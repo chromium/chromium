@@ -86,6 +86,12 @@ class WebAppFilter {
   // migration are not included here.
   static WebAppFilter IsAppSurfaceableToUser();
 
+  // Only consider web apps that can store pending migration metadata to
+  // identify if it should be migrated to a different app or not. This can
+  // usually include all apps installed with OS integration, just not
+  // isolated ones.
+  static WebAppFilter CanAppInstallTargetMigrationApp();
+
   // Only consider web apps that are valid sources to be migrated to a different
   // app. This mainly includes apps that have valid OS integration and are not
   // installed by policy.

@@ -82,9 +82,13 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
 
   bool source_installed = false;
   for (const auto& migrate_from : manifest_->migrate_from) {
+    // Allow all installed apps, even source apps installed by policy that is
+    // not allowed to migrate, to also install the destination app but keep it
+    // hidden from the user, so as to populate the pending migration metadata
+    // in the source app.
     if (lock_->registrar().AppMatches(
             GenerateAppIdFromManifestId(migrate_from->id),
-            WebAppFilter::IsAppValidMigrationSource())) {
+            WebAppFilter::CanAppInstallTargetMigrationApp())) {
       source_installed = true;
       break;
     }

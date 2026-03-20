@@ -272,7 +272,7 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
     if (manifest->migrate_to &&
         provider_->registrar_unsafe().AppMatches(
             GenerateAppIdFromManifest(*manifest),
-            WebAppFilter::IsAppValidMigrationSource())) {
+            WebAppFilter::CanAppInstallTargetMigrationApp())) {
       provider_->scheduler().ScheduleInstallMigrateToApp(
           manifest->id, manifest->migrate_to->id,
           manifest->migrate_to->install_url, base::DoNothing());

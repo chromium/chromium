@@ -125,6 +125,12 @@ WebAppFilter WebAppFilter::IsAppSurfaceableToUser() {
 }
 
 // static
+WebAppFilter WebAppFilter::CanAppInstallTargetMigrationApp() {
+  return InstallStateIs(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) &
+         !IsIsolatedApp();
+}
+
+// static
 WebAppFilter WebAppFilter::IsAppValidMigrationSource() {
   return InstallStateIs(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) &
          !HasSource(WebAppManagement::Type::kPolicy) & !IsIsolatedApp();

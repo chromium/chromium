@@ -170,6 +170,27 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
       WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 }
 
+// Regression test for crbug.com/494294070. The infobar blocking migration shows
+// up without a navigation to the destination app.
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       InfoBarShowsUpWithoutNavigationToDestApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for the destination app to also be installed.
+  test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
                        RemoveInfoBarWhenMigrationIsGone) {
   ASSERT_TRUE(embedded_test_server()->Start());
