@@ -10,7 +10,6 @@
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
@@ -18,11 +17,11 @@ namespace autofill {
 class AutofillClient;
 class PaymentsDataManager;
 
-// Per-profile IBAN Manager. This class handles IBAN-related functionality
+// Per-tab IBAN Manager. This class handles IBAN-related functionality
 // such as retrieving IBAN data from PersonalDataManager, managing IBAN
 // suggestions, filling IBAN fields, and handling form submission data when
 // there is an IBAN field present.
-class IbanManager : public KeyedService {
+class IbanManager {
  public:
   // Initializes the instance with the given parameters. `payments_data_manager`
   // is a profile-scope data manager used to retrieve IBAN data from the
@@ -32,7 +31,7 @@ class IbanManager : public KeyedService {
   IbanManager(const IbanManager&) = delete;
   IbanManager& operator=(const IbanManager&) = delete;
 
-  ~IbanManager() override;
+  virtual ~IbanManager() = default;
 
   // May generate IBAN suggestions for the given `autofill_field` in `form`.
   // If `OnGetSingleFieldSuggestions` decides to claim the opportunity to fill

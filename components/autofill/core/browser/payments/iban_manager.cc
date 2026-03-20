@@ -25,8 +25,6 @@ using autofill_metrics::IbanSuggestionsEvent;
 IbanManager::IbanManager(PaymentsDataManager* payments_data_manager)
     : payments_data_manager_(payments_data_manager) {}
 
-IbanManager::~IbanManager() = default;
-
 bool IbanManager::OnGetSingleFieldSuggestions(
     const FormStructure& form,
     const FormFieldData& field,

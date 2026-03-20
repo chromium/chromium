@@ -32,7 +32,6 @@
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
-#include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -744,7 +743,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   autofill::AutofillOfferManagerFactory::GetInstance();
   autofill::AutofillOptimizationGuideDeciderFactory::GetInstance();
-  autofill::IbanManagerFactory::GetInstance();
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   autofill::MlLogRouterFactory::GetInstance();

@@ -31,8 +31,6 @@ static_library("autofill") {
     "autofill_optimization_guide_decider_factory.h",
     "gmail_otp_backend_factory.cc",
     "gmail_otp_backend_factory.h",
-    "iban_manager_factory.cc",
-    "iban_manager_factory.h",
     "merchant_promo_code_manager_factory.cc",
     "merchant_promo_code_manager_factory.h",
     "one_time_token_service_factory.cc",

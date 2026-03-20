@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
-#include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -852,9 +851,11 @@ void ChromePaymentsAutofillClient::DisablePaymentsAutofill() {
 }
 
 IbanManager* ChromePaymentsAutofillClient::GetIbanManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return IbanManagerFactory::GetForProfile(profile);
+  if (!iban_manager_) {
+    iban_manager_ = std::make_unique<IbanManager>(
+        &client_->GetPersonalDataManager().payments_data_manager());
+  }
+  return iban_manager_.get();
 }
 
 IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
