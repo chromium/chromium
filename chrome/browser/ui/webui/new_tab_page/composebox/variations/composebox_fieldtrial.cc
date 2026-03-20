@@ -214,10 +214,6 @@ const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "NtpComposeboxShowContextMenu",
                                                 true);
-const base::FeatureParam<bool> kShowRecentTabChip(
-    &kNtpComposebox,
-    "NtpComposeboxShowRecentTabChip",
-    false);
 const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     &kNtpComposebox,
     "NtpComposeboxShowContextMenuTabPreviews",
@@ -245,10 +241,6 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     "NtpComposeboxContextMenuEnableMultiTabSelection",
     false);
 
-const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
-    &kNtpComposebox,
-    "NtpComposeboxAddTabUploadDelayOnRecentTabChipClick",
-    false);
 const base::FeatureParam<bool> kEnableThreadsRail(&kNtpComposebox,
                                                   "EnableThreadsRail",
                                                   true);

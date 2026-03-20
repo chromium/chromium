@@ -674,8 +674,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
   source->AddBoolean("composeboxShowLensSearchChip", false);
-  source->AddBoolean("composeboxShowRecentTabChip",
-                     ntp_composebox::kShowRecentTabChip.Get());
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      ntp_composebox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
@@ -714,9 +712,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                          composebox_config.is_pdf_upload_enabled();
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
 
-  source->AddBoolean(
-      "addTabUploadDelayOnRecentTabChipClick",
-      ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
   source->AddBoolean("enableThreadsRail",
                      ntp_composebox::kEnableThreadsRail.Get());
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);

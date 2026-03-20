@@ -70,6 +70,9 @@ suite('RecentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
     assertFalse(event.detail.delayUpload);
     assertEquals(TabUploadOrigin.RECENT_TAB_CHIP, event.detail.origin);
+    assertEquals(
+        1,
+        metrics.count('ContextualSearch.RecentTabChipClick.NewTabPage', 0));
   });
 
   test('delayUploads is true when flag is enabled', async () => {

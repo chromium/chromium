@@ -29,8 +29,6 @@ extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
 // Whether to show the + entrypoint and contextual input menu in the realbox and
 // composebox.
 extern const base::FeatureParam<bool> kShowContextMenu;
-// Whether to show the recent tab chip in the realbox and composebox.
-extern const base::FeatureParam<bool> kShowRecentTabChip;
 // Whether to show tab previews on hover for the composebox context menu.
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
 // The maximum number of tab suggestions to show in the composebox context menu.
@@ -50,8 +48,6 @@ extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 extern const base::FeatureParam<bool> kShowSmartCompose;
 // Whether to exit AI mode when the user clicks outside the composebox.
 extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
-// Whether to delay an upload if tab context is added from the recent tab chip.
-extern const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick;
 // Whether to show the AIM threads rail when composebox is open.
 extern const base::FeatureParam<bool> kEnableThreadsRail;
 // Whether to show the AIM threads rail Google logo.
