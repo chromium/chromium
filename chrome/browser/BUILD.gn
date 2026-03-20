@@ -4088,7 +4088,6 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_model_impl",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_impl",
-      "//chrome/browser/ui/tabs/organization:impl",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/tabs/saved_tab_groups:impl",
       "//chrome/browser/ui/tabs/tab_group_home",
@@ -4315,7 +4314,6 @@ static_library("browser") {
       # - c/b/resource_coordinator/time.h"
       # - c/b/enterprise/browser_management/management_service_factory.h"
       # - c/b/page_content_annotations/page_content_annotations_service_factory.h"
-      "//chrome/browser/ui/tabs/organization:impl",
 
       "//chrome/browser/ui/browser_window/internal",
 
