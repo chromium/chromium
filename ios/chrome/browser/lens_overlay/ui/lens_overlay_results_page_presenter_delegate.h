@@ -42,6 +42,11 @@
             (id<LensOverlayResultsPagePresenting>)presenter
         didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide;
 
+// Asks the delegate to recenter the image, with the given edge insets.
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+                shouldZoomImageToCenter:(UIEdgeInsets)edgeInsets;
+
 // Offers the dependent UI a chance to gracefully exit before the bottom sheet
 // dismisses completely.
 - (void)lensOverlayResultsPagePresenter:

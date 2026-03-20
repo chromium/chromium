@@ -23,10 +23,9 @@
 namespace {
 // Static image assets.
 NSString* const kLensImageName = @"mountain_webpage";
+NSString* const kFakeWebpageImageName = @"fake_webpage";
 NSString* const kHUDImageName = @"lens_overlay_hud";
 NSString* const kCirclingHandAnimationName = @"cursor+line";
-// Corner radius for the top two corners of the Lens view.
-const CGFloat kLensViewCornerRadius = 45.0;
 // Multiplier for the top padding for the Lens image.
 const CGFloat kLensImagePaddingMultiplier = 0.14;
 // Margins for the Lens view.
@@ -53,11 +52,6 @@ const CGFloat kHUDViewTopMargin = 20.0;
 @end
 
 @implementation InteractiveLensOverlayPromoViewController {
-  // The container view for the static background image that sits beind the Lens
-  // view.
-  UIView* _backgroundContainerView;
-  // The static background image view that sits inside _backgroundContainerView.
-  UIImageView* _backgroundImageView;
   // The heads-up display view that sits on top of the Lens view.
   UIImageView* _hudView;
   // Layout guide to handle the static positioning for the bubble view. The
@@ -75,6 +69,14 @@ const CGFloat kHUDViewTopMargin = 20.0;
   NSLayoutConstraint* _bubbleViewBottomInnerAnimationConstraint;
   // View controller for the interactive Lens instance.
   LensOverlayPromoContainerViewController* _lensViewController;
+  // Constraint to make sure the lens view intially shows the entire image.
+  NSLayoutConstraint* _lensViewHeightConstraint;
+  // Container view for the entire lens section. This allows placing a view
+  // containing the fake webpage content below the actual lens image view.
+  UIView* _lensContainerView;
+  // Container containing the fake webpage image. This is necessary because
+  // UIImageView doesn't support scaling + top aligning an image.
+  UIView* _fakeWebpageContainerView;
   // Scroll view containing the screen's title and subtitle.
   UIScrollView* _textScrollView;
   // Whether the bubble is currently being hidden.
@@ -137,7 +139,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
       [self lensImageTopPadding] * 0.7;
   if (!_lensSearchImage) {
     _lensSearchImage = [self createLensSearchImage];
-    _backgroundImageView.image = _lensSearchImage;
+    _lensViewHeightConstraint.constant = _lensSearchImage.size.height;
   }
 }
 
@@ -167,6 +169,10 @@ const CGFloat kHUDViewTopMargin = 20.0;
 - (void)lensInteractivePromoResultsPagePresenterWillPresentResults:
     (LensInteractivePromoResultsPagePresenter*)presenter {
   [self showHUDView];
+  // Shrink the fake webpage to 0 height and allow the lens view to grow.
+  [_fakeWebpageContainerView.heightAnchor constraintEqualToConstant:0].active =
+      YES;
+  _lensViewHeightConstraint.active = NO;
 }
 
 - (void)lensInteractivePromoResultsPagePresenterDidDismissResults:
@@ -186,6 +192,8 @@ const CGFloat kHUDViewTopMargin = 20.0;
 - (void)lensOverlayPromoContainerViewControllerDidEndInteraction:
     (LensOverlayPromoContainerViewController*)viewController {
   [self transformButtonToPrimaryAction];
+  // Further interactions with the lens view can be janky and are unnecessary.
+  _lensViewController.view.userInteractionEnabled = NO;
 }
 
 #pragma mark - Private
@@ -206,30 +214,18 @@ const CGFloat kHUDViewTopMargin = 20.0;
   _footerContainerView = [self footerContainerView];
   [self.view addSubview:_footerContainerView];
 
-  _backgroundContainerView = [[UIView alloc] init];
-  _backgroundContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _backgroundContainerView.clipsToBounds = YES;
-  _backgroundContainerView.layer.cornerRadius = kLensViewCornerRadius;
-  _backgroundContainerView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  [self.view addSubview:_backgroundContainerView];
+  _lensContainerView = [[UIView alloc] init];
+  _lensContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_lensContainerView];
 
-  _backgroundImageView = [[UIImageView alloc] init];
-  _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-  _backgroundImageView.layer.cornerRadius = kLensViewCornerRadius;
-  _backgroundImageView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  _backgroundImageView.layer.borderWidth = 0.5;
-  _backgroundImageView.layer.borderColor =
-      [UIColor colorNamed:kGrey300Color].CGColor;
-  [_backgroundContainerView addSubview:_backgroundImageView];
+  _fakeWebpageContainerView = [self fakeWebpageContainerView];
+  [_lensContainerView addSubview:_fakeWebpageContainerView];
 
   [_lensViewController willMoveToParentViewController:self];
   [self addChildViewController:_lensViewController];
   UIView* lensView = _lensViewController.view;
   lensView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:lensView];
+  [_lensContainerView addSubview:lensView];
   [_lensViewController didMoveToParentViewController:self];
 
   _bubbleContainerView = [[UIView alloc] init];
@@ -290,38 +286,51 @@ const CGFloat kHUDViewTopMargin = 20.0;
                                             constant:kButtonVerticalInsets],
   ]];
 
-  AddSameConstraintsToSides(
-      _backgroundImageView, _backgroundContainerView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
-
   UIView* lensView = _lensViewController.view;
-  AddSameConstraints(_backgroundContainerView, lensView);
 
-  NSLayoutConstraint* lensViewTopAnchor =
-      [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
-                                         constant:kLensViewTopMargin];
+  // The lens view is in the top portion of the container.
+  AddSameConstraintsToSides(
+      _lensContainerView, lensView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+  // The fake webpage view is in the bottom portion of the container.
+  AddSameConstraintsToSides(
+      _lensContainerView, _fakeWebpageContainerView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  // This will be filled with the actual image height when the image is loaded.
+  _lensViewHeightConstraint =
+      [lensView.heightAnchor constraintEqualToConstant:0];
+
+  [NSLayoutConstraint activateConstraints:@[
+    _lensViewHeightConstraint,
+    [lensView.bottomAnchor
+        constraintEqualToAnchor:_fakeWebpageContainerView.topAnchor],
+  ]];
+
+  NSLayoutConstraint* lensViewTopAnchor = [_lensContainerView.topAnchor
+      constraintEqualToAnchor:_textScrollView.bottomAnchor
+                     constant:kLensViewTopMargin];
   lensViewTopAnchor.priority = UILayoutPriorityDefaultLow - 1;
-  NSLayoutConstraint* maximizeLensViewHeight =
-      [lensView.heightAnchor constraintEqualToAnchor:view.heightAnchor];
+  NSLayoutConstraint* maximizeLensViewHeight = [_lensContainerView.heightAnchor
+      constraintEqualToAnchor:view.heightAnchor];
   maximizeLensViewHeight.priority = UILayoutPriorityDefaultHigh - 1;
   [NSLayoutConstraint activateConstraints:@[
     lensViewTopAnchor,
     maximizeLensViewHeight,
-    [lensView.heightAnchor
+    [_lensContainerView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:view.heightAnchor
                                   multiplier:kLensViewMinHeightMultiplier],
-    [lensView.heightAnchor
-        constraintLessThanOrEqualToAnchor:lensView.widthAnchor
+    [_lensContainerView.heightAnchor
+        constraintLessThanOrEqualToAnchor:_lensContainerView.widthAnchor
                                multiplier:kLensViewMaxHeightMultiplier],
-    [lensView.leadingAnchor
+    [_lensContainerView.leadingAnchor
         constraintEqualToAnchor:widthLayoutGuide.leadingAnchor
                        constant:kLensViewHorizontalMargin],
-    [lensView.trailingAnchor
+    [_lensContainerView.trailingAnchor
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor
                        constant:-kLensViewHorizontalMargin],
-    [lensView.bottomAnchor
+    [_lensContainerView.bottomAnchor
         constraintEqualToAnchor:_footerContainerView.topAnchor],
-    [lensView.topAnchor
+    [_lensContainerView.topAnchor
         constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
                                     constant:kLensViewTopMargin],
   ]];
@@ -329,7 +338,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
   CGSize bubbleViewPreferredHeight = [_bubbleView
       sizeThatFits:CGSizeMake(view.bounds.size.width, CGFLOAT_MAX)];
   _bubbleContainerViewBottomConstraint = [_bubbleContainerView.bottomAnchor
-      constraintEqualToAnchor:lensView.topAnchor];
+      constraintEqualToAnchor:_lensContainerView.topAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [_bubbleContainerView.centerXAnchor
         constraintEqualToAnchor:view.centerXAnchor],
@@ -357,7 +366,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
         constraintEqualToConstant:bubbleViewPreferredHeight.height],
   ]];
 
-  AddSameConstraints(lensView, _circlingHandAnimation.animationView);
+  AddSameConstraints(_lensContainerView, _circlingHandAnimation.animationView);
 }
 
 // Returns a new image with the Lens search image padded at the top with white
@@ -470,6 +479,39 @@ const CGFloat kHUDViewTopMargin = 20.0;
   bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
 
   return bubbleView;
+}
+
+// Creates and returns the container view holding the fake webpage image.
+- (UIView*)fakeWebpageContainerView {
+  UIView* containerView = [[UIView alloc] init];
+  containerView.translatesAutoresizingMaskIntoConstraints = NO;
+  containerView.clipsToBounds = YES;
+
+  UIImageView* fakeWebpageImageView = [[UIImageView alloc] init];
+  fakeWebpageImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  fakeWebpageImageView.contentMode = UIViewContentModeScaleAspectFill;
+  [containerView addSubview:fakeWebpageImageView];
+
+  UIImage* fakeWebpageImage = [UIImage imageNamed:kFakeWebpageImageName];
+  fakeWebpageImageView.image = fakeWebpageImage;
+
+  // The image should scale to fill the entire width, but also be top aligned,
+  // with any extra content on the bottom cropped. Unfortunately, UIKit does not
+  // have a content mode of "UIViewContentModeScaleAspectFill +
+  // UIViewContentModeTop." Instead, the image view has a constrained aspect
+  // ratio, so it can grow in height, and a content mode of ScaleAspectFill, so
+  // the image takes up the full space. And then, it's aligned to the top of the
+  // container, which clips the excess at the bottom.
+  AddSameConstraintsToSides(
+      containerView, fakeWebpageImageView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+  [fakeWebpageImageView.widthAnchor
+      constraintEqualToAnchor:fakeWebpageImageView.heightAnchor
+                   multiplier:fakeWebpageImage.size.width /
+                              fakeWebpageImage.size.height]
+      .active = YES;
+
+  return containerView;
 }
 
 // Starts the animation for the tip bubble view.

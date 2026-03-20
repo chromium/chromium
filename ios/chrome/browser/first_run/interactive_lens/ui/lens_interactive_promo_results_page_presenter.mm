@@ -287,6 +287,10 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   CGFloat offsetNeeded = sheetHeight + kSelectionOffsetPadding;
   [_delegate lensOverlayResultsPagePresenter:self
                updateVerticalOcclusionOffset:offsetNeeded];
+  // Recenter the image.
+  UIEdgeInsets edgeInsets = UIEdgeInsetsMake(-offsetNeeded, 0, 0, 0);
+  [_delegate lensOverlayResultsPagePresenter:self
+                     shouldZoomImageToCenter:edgeInsets];
 }
 
 // Performs setup tasks immediately before the results page is presented.

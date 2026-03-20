@@ -917,6 +917,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;
 }
 
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+                shouldZoomImageToCenter:(UIEdgeInsets)edgeInsets {
+  [_selectionViewController zoomImageToCenter:edgeInsets];
+}
+
 #pragma mark - LensOverlayMediatorDelegate
 
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator {
