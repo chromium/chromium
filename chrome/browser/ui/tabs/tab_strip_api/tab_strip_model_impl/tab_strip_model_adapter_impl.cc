@@ -72,7 +72,9 @@ const ui::ColorProvider& TabStripModelAdapterImpl::GetColorProvider() const {
 }
 
 void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
-  tab_strip_model_->CloseWebContentsAt(tab_index, TabCloseTypes::CLOSE_NONE);
+  tab_strip_model_->CloseWebContentsAt(
+      tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                     TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(

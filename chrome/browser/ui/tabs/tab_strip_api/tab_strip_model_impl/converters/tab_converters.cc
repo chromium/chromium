@@ -153,11 +153,6 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
   result->last_active_elapsed_text = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
       base::TimeTicks::Now() - result->last_active_time_ticks));
-
-  result->last_active_time_ticks =
-      std::max(contents->GetLastInteractionTimeTicks(),
-               contents->GetLastActiveTimeTicks());
-
   return result;
 }
 
