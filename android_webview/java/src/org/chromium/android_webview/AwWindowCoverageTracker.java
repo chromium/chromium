@@ -151,7 +151,7 @@ public class AwWindowCoverageTracker {
             for (AwContents content : mAwContentsList) {
                 Rect contentRect = content.getRectForWindowCoverage();
 
-                if (contentRect == null) continue;
+                if (contentRect == null || contentRect.isEmpty()) continue;
 
                 // If the intersect method returns true then it may have modified
                 // contentRect. A Rect with area 0 will not intersect with anything.
