@@ -111,6 +111,7 @@ source_set("proto_wrappers") {
   ]
 
   deps = [
+    ":metrics_constants",
     ":page_context_extractor_feature",
     ":page_context_metrics",
     ":utils",

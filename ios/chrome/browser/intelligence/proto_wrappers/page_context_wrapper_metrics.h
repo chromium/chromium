@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 // PageContextWrapperMetrics's different PageContext tasks which can be tracked.
+// LINT.IfChange(PageContextTaskVariants)
 enum class PageContextTask {
   // Overall PageContextWrapper execution.
   kOverall,
@@ -20,9 +23,11 @@ enum class PageContextTask {
   // innerText retrieval task execution.
   kInnerText,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:PageContextTaskVariants)
 
 // PageContextWrapperMetrics's different possible PageContext execution
 // completion statuses.
+// LINT.IfChange(PageContextStatusVariants)
 enum class PageContextCompletionStatus {
   // Successfully generated PageContext.
   kSuccess,
@@ -35,11 +40,18 @@ enum class PageContextCompletionStatus {
   // PageContext is not extractable (e.g. unsupported MIME type or scheme).
   kNotExtractable,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:PageContextStatusVariants)
 
 // PageContextWrapperMetrics keeps track of the execution time of different
 // PageContext tasks. It starts the timer of the `PageContextTask::kOverall`
 // task at creation time.
 @interface PageContextWrapperMetrics : NSObject
+
+// Designated initializer with the apcConfigVariant.
+- (instancetype)initWithAPCConfigVariant:(const std::string&)apcConfigVariant
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Execution started for `task`. Creates its associated timer with the current
 // time as start time. This should not be called with
@@ -50,6 +62,9 @@ enum class PageContextCompletionStatus {
 // time as end time.
 - (void)executionFinishedForTask:(PageContextTask)task
             withCompletionStatus:(PageContextCompletionStatus)completionStatus;
+
+// Logs the byte size of the AnnotatedPageContent proto extracted.
+- (void)logAnnotatedPageContentSize:(size_t)sizeInBytes;
 
 @end
 

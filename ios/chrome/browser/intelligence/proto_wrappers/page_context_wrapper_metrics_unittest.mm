@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -23,7 +24,9 @@ class PageContextWrapperMetricsTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    metrics_ = [[PageContextWrapperMetrics alloc] init];
+    PageContextWrapperConfig config = PageContextWrapperConfigBuilder().Build();
+    metrics_ = [[PageContextWrapperMetrics alloc]
+        initWithAPCConfigVariant:config.GetApcConfigVariant()];
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -87,7 +90,7 @@ TEST_F(PageContextWrapperMetricsTest, TestMultipleSubtasks) {
   histogram_tester()->ExpectTotalCount(
       "IOS.PageContext.Screenshot.Success.Latency", 1);
   histogram_tester()->ExpectTotalCount(
-      "IOS.PageContext.AnnotatedPageContent.Failure.Latency", 1);
+      "IOS.PageContext.AnnotatedPageContent.Failure.InnerTextOnly.Latency", 1);
   histogram_tester()->ExpectTotalCount("IOS.PageContext.PDF.Timeout.Latency",
                                        1);
   histogram_tester()->ExpectTotalCount(
@@ -119,8 +122,9 @@ TEST_F(PageContextWrapperMetricsTest, TestNotExtractableStatus) {
 
   histogram_tester()->ExpectTotalCount(
       "IOS.PageContext.Overall.NotExtractable.Latency", 1);
-  histogram_tester()->ExpectTotalCount(
-      "IOS.PageContext.AnnotatedPageContent.NotExtractable.Latency", 1);
+  histogram_tester()->ExpectTotalCount("IOS.PageContext.AnnotatedPageContent."
+                                       "NotExtractable.InnerTextOnly.Latency",
+                                       1);
 }
 
 // Tests that the logged latency metric is accurate.
@@ -148,6 +152,68 @@ TEST_F(PageContextWrapperMetricsTest, TestLatencyValue) {
   histogram_tester()->ExpectUniqueSample(
       "IOS.PageContext.Overall.Success.Latency",
       overall_latency.InMilliseconds(), 1);
+}
+
+// Tests that LogTaskExecutionLatency appends the correct config suffix for APC.
+TEST_F(PageContextWrapperMetricsTest, TestConfigVariants) {
+  // Rich Config.
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+    PageContextWrapperMetrics* rich_metrics = [[PageContextWrapperMetrics alloc]
+        initWithAPCConfigVariant:config.GetApcConfigVariant()];
+
+    [rich_metrics
+        executionStartedForTask:PageContextTask::kAnnotatedPageContent];
+    [rich_metrics
+        executionFinishedForTask:PageContextTask::kAnnotatedPageContent
+            withCompletionStatus:PageContextCompletionStatus::kSuccess];
+    [rich_metrics
+        executionFinishedForTask:PageContextTask::kOverall
+            withCompletionStatus:PageContextCompletionStatus::kSuccess];
+
+    histogram_tester()->ExpectTotalCount(
+        "IOS.PageContext.AnnotatedPageContent.Success.Rich.Latency", 1);
+  }
+
+  // RichActionable Config.
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder()
+            .SetUseRichExtractionWithActionable(true)
+            .Build();
+    PageContextWrapperMetrics* actionable_metrics =
+        [[PageContextWrapperMetrics alloc]
+            initWithAPCConfigVariant:config.GetApcConfigVariant()];
+
+    [actionable_metrics
+        executionStartedForTask:PageContextTask::kAnnotatedPageContent];
+    [actionable_metrics
+        executionFinishedForTask:PageContextTask::kAnnotatedPageContent
+            withCompletionStatus:PageContextCompletionStatus::kSuccess];
+    [actionable_metrics
+        executionFinishedForTask:PageContextTask::kOverall
+            withCompletionStatus:PageContextCompletionStatus::kSuccess];
+
+    histogram_tester()->ExpectTotalCount("IOS.PageContext.AnnotatedPageContent."
+                                         "Success.RichAndActionable.Latency",
+                                         1);
+  }
+}
+
+// Tests that LogAnnotatedPageContentMetricsWithSize sets the correct values.
+TEST_F(PageContextWrapperMetricsTest, TestSizeMetrics) {
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+  PageContextWrapperMetrics* metrics_with_config =
+      [[PageContextWrapperMetrics alloc]
+          initWithAPCConfigVariant:config.GetApcConfigVariant()];
+
+  size_t test_size = 12000;
+  [metrics_with_config logAnnotatedPageContentSize:test_size];
+
+  histogram_tester()->ExpectUniqueSample(
+      "IOS.PageContext.AnnotatedPageContent.Rich.ByteSize", test_size, 1);
 }
 
 using PageContextWrapperMetricsDeathTest = PageContextWrapperMetricsTest;

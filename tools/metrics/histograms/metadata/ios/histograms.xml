@@ -146,6 +146,39 @@ chromium-metrics-reviews@google.com.
                version number."/>
 </variants>
 
+<variants name="PageContextConfigVariants">
+  <variant name="InnerTextOnly" summary="innerText extraction"/>
+  <variant name="Rich" summary="Rich sparse DOM extraction"/>
+  <variant name="RichAndActionable"
+      summary="Rich sparse DOM extraction including actionable elements"/>
+</variants>
+
+<!-- LINT.IfChange(PageContextStatusVariants) -->
+
+<variants name="PageContextStatusVariants">
+  <variant name="Failure"/>
+  <variant name="NotExtractable"/>
+  <variant name="PageProtected"/>
+  <variant name="Success"/>
+  <variant name="Timeout"/>
+</variants>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_metrics.h:PageContextStatusVariants) -->
+
+<!-- LINT.IfChange(PageContextTaskVariants) -->
+
+<variants name="PageContextTaskVariants">
+  <variant name="AnnotatedPageContent"
+      summary="Deprecated as of M148. Moved to
+               IOS.PageContext.AnnotatedPageContent.{Status}.{Config}.Latency."/>
+  <variant name="InnerText"/>
+  <variant name="Overall"/>
+  <variant name="PDF"/>
+  <variant name="Screenshot"/>
+</variants>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_metrics.h:PageContextTaskVariants) -->
+
 <!-- LINT.IfChange(PictureInPictureFeature) -->
 
 <variants name="PictureInPictureFeature">
@@ -4880,8 +4913,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PageContext.AnnotatedPageContent.{Config}.ByteSize"
+    units="bytes" expires_after="2026-10-31">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The total size of the AnnotatedPageContent proto in bytes, broken down by
+    configuration extraction mode. Logged when extraction finishes successfully.
+  </summary>
+  <token key="Config" variants="PageContextConfigVariants"/>
+</histogram>
+
+<histogram
+    name="IOS.PageContext.AnnotatedPageContent.{Status}.{Config}.Latency"
+    units="ms" expires_after="2026-07-21">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The latency of extracting AnnotatedPageContent data in milliseconds, broken
+    down per completion status and configuration extraction mode. Logged when
+    overall PageContext execution is complete.
+  </summary>
+  <token key="Status" variants="PageContextStatusVariants"/>
+  <token key="Config" variants="PageContextConfigVariants"/>
+</histogram>
+
 <histogram name="IOS.PageContext.{Task}.{Status}.Latency" units="ms"
-    expires_after="2026-07-21">
+    expires_after="2026-10-31">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -4889,19 +4947,8 @@ chromium-metrics-reviews@google.com.
     task (or overall execution), and per completion status. Logged when overall
     execution is complete. Each task has its own completion status.
   </summary>
-  <token key="Task">
-    <variant name="AnnotatedPageContent"/>
-    <variant name="Overall"/>
-    <variant name="PDF"/>
-    <variant name="Screenshot"/>
-  </token>
-  <token key="Status">
-    <variant name="Failure"/>
-    <variant name="NotExtractable"/>
-    <variant name="PageProtected"/>
-    <variant name="Success"/>
-    <variant name="Timeout"/>
-  </token>
+  <token key="Task" variants="PageContextTaskVariants"/>
+  <token key="Status" variants="PageContextStatusVariants"/>
 </histogram>
 
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"

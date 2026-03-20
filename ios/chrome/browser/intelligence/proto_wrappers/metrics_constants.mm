@@ -4,18 +4,22 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/metrics_constants.h"
 
-const char kPageContextLatencyHistogramPrefix[] = "IOS.PageContext";
+const char kPageContextHistogramPrefix[] = "IOS.PageContext";
 const char kPageContextLatencyHistogramSuffix[] = ".Latency";
+const char kPageContextByteSizeHistogramSuffix[] = ".ByteSize";
 
-const char kPageContextLatencyHistogramOverallTask[] = ".Overall";
-const char kPageContextLatencyHistogramScreenshotTask[] = ".Screenshot";
-const char kPageContextLatencyHistogramAPCTask[] = ".AnnotatedPageContent";
-const char kPageContextLatencyHistogramPDFTask[] = ".PDF";
-const char kPageContextLatencyHistogramInnerTextTask[] = ".InnerText";
+const char kPageContextHistogramOverallTask[] = ".Overall";
+const char kPageContextHistogramScreenshotTask[] = ".Screenshot";
+const char kPageContextHistogramAPCTask[] = ".AnnotatedPageContent";
+const char kPageContextHistogramPDFTask[] = ".PDF";
+const char kPageContextHistogramInnerTextTask[] = ".InnerText";
 
-const char kPageContextLatencyHistogramSuccessStatus[] = ".Success";
-const char kPageContextLatencyHistogramFailureStatus[] = ".Failure";
-const char kPageContextLatencyHistogramTimeoutStatus[] = ".Timeout";
-const char kPageContextLatencyHistogramPageProtectedStatus[] = ".PageProtected";
-const char kPageContextLatencyHistogramNotExtractableStatus[] =
-    ".NotExtractable";
+const char kPageContextHistogramSuccessStatus[] = ".Success";
+const char kPageContextHistogramFailureStatus[] = ".Failure";
+const char kPageContextHistogramTimeoutStatus[] = ".Timeout";
+const char kPageContextHistogramPageProtectedStatus[] = ".PageProtected";
+const char kPageContextHistogramNotExtractableStatus[] = ".NotExtractable";
+
+const char kPageContextAPCConfigVariantInnerText[] = ".InnerTextOnly";
+const char kPageContextAPCConfigVariantRich[] = ".Rich";
+const char kPageContextAPCConfigVariantRichActionable[] = ".RichAndActionable";

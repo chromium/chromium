@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/metrics_constants.h"
 
 // TODO(crbug.com/463981051): Remove the use_refactored_extractor option when
 // we clean up the feature switch.
@@ -51,11 +52,22 @@ bool PageContextWrapperConfig::graft_cross_origin_frame_content() const {
 }
 
 bool PageContextWrapperConfig::use_rich_extraction() const {
-  return use_rich_extraction_;
+  return use_rich_extraction_ || use_rich_extraction_with_actionable_ ||
+         extract_paid_content_ || attempt_paid_content_json_fixing_;
 }
 
 bool PageContextWrapperConfig::use_rich_extraction_with_actionable() const {
   return use_rich_extraction_with_actionable_;
+}
+
+std::string PageContextWrapperConfig::GetApcConfigVariant() const {
+  if (use_rich_extraction_with_actionable()) {
+    return kPageContextAPCConfigVariantRichActionable;
+  }
+  if (use_rich_extraction()) {
+    return kPageContextAPCConfigVariantRich;
+  }
+  return kPageContextAPCConfigVariantInnerText;
 }
 
 bool PageContextWrapperConfig::extract_paid_content() const {

@@ -6,6 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/metrics_constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -81,5 +82,32 @@ TEST_F(PageContextWrapperConfigTest, GraftCrossOriginFrameContent) {
             .SetUseRichExtractionWithActionable(true)
             .Build();
     EXPECT_TRUE(config.graft_cross_origin_frame_content());
+  }
+}
+
+// Tests that GetApcConfigVariant returns the correct string based on config.
+TEST_F(PageContextWrapperConfigTest, GetApcConfigVariant) {
+  // Default (InnerTextOnly).
+  {
+    PageContextWrapperConfig config = PageContextWrapperConfigBuilder().Build();
+    EXPECT_EQ(config.GetApcConfigVariant(),
+              kPageContextAPCConfigVariantInnerText);
+  }
+
+  // Rich.
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+    EXPECT_EQ(config.GetApcConfigVariant(), kPageContextAPCConfigVariantRich);
+  }
+
+  // RichAndActionable.
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder()
+            .SetUseRichExtractionWithActionable(true)
+            .Build();
+    EXPECT_EQ(config.GetApcConfigVariant(),
+              kPageContextAPCConfigVariantRichActionable);
   }
 }

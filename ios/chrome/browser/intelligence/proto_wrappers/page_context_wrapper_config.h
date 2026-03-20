@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 // Configuration for the PageContextWrapper.
 class PageContextWrapperConfig {
  public:
@@ -28,13 +30,21 @@ class PageContextWrapperConfig {
   bool use_rich_extraction() const;
 
   // True to extract actionable information alongside rich extraction.
+  // This needs and will implicitly activate rich extraction.
   bool use_rich_extraction_with_actionable() const;
 
   // True to extract paid content from the page context.
+  // This needs and will implicitly activate rich extraction.
   bool extract_paid_content() const;
 
   // True to attempt to fix malformed paid content JSON.
+  // This needs and will implicitly activate rich extraction.
   bool attempt_paid_content_json_fixing() const;
+
+  // Returns the variant of the configuration to inject into the histograms.
+  // Does not include all config bits, only structure-defining ones
+  // ("InnerTextOnly", "Rich", and "RichAndActionable").
+  std::string GetApcConfigVariant() const;
 
  private:
   friend class PageContextWrapperConfigBuilder;
@@ -85,14 +95,17 @@ class PageContextWrapperConfigBuilder {
       bool use_rich_extraction);
 
   // Sets whether to extract actionable information alongside rich extraction.
+  // This needs and will implicitly activate rich extraction.
   PageContextWrapperConfigBuilder& SetUseRichExtractionWithActionable(
       bool use_rich_extraction_with_actionable);
 
   // Sets whether to extract paid content.
+  // This needs and will implicitly activate rich extraction.
   PageContextWrapperConfigBuilder& SetExtractPaidContent(
       bool extract_paid_content);
 
   // Sets whether to attempt to fix malformed paid content JSON.
+  // This needs and will implicitly activate rich extraction.
   PageContextWrapperConfigBuilder& SetAttemptPaidContentJsonFixing(
       bool attempt_paid_content_json_fixing);
 

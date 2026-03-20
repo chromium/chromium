@@ -407,7 +407,8 @@ result.links = linksArray;
 // calls.
 - (void)populateAsyncFields:(base::TimeDelta)timeout {
   CHECK_GE(_asyncTasksToComplete, 0);
-  _pageContextMetrics = [[PageContextWrapperMetrics alloc] init];
+  _pageContextMetrics = [[PageContextWrapperMetrics alloc]
+      initWithAPCConfigVariant:_config->GetApcConfigVariant()];
 
   if (!_webState || _asyncTasksToComplete == 0) {
     [self asyncWorkCompletedForPageContext];
@@ -1190,11 +1191,14 @@ result.links = linksArray;
   }
 
   if (_shouldGetAnnotatedPageContent) {
+    size_t sizeInBytes = _rootAPCNode->ByteSizeLong();
+
     _pageContext->set_allocated_annotated_page_content(_rootAPCNode.release());
 
     [_pageContextMetrics
         executionFinishedForTask:PageContextTask::kAnnotatedPageContent
             withCompletionStatus:PageContextCompletionStatus::kSuccess];
+    [_pageContextMetrics logAnnotatedPageContentSize:sizeInBytes];
   }
 }
 

@@ -5,20 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_METRICS_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_METRICS_CONSTANTS_H_
 
-// PageContext latency histogram constants.
-extern const char kPageContextLatencyHistogramPrefix[];
+// PageContext histogram constants.
+extern const char kPageContextHistogramPrefix[];
 extern const char kPageContextLatencyHistogramSuffix[];
+extern const char kPageContextByteSizeHistogramSuffix[];
 
-extern const char kPageContextLatencyHistogramOverallTask[];
-extern const char kPageContextLatencyHistogramScreenshotTask[];
-extern const char kPageContextLatencyHistogramAPCTask[];
-extern const char kPageContextLatencyHistogramPDFTask[];
-extern const char kPageContextLatencyHistogramInnerTextTask[];
+extern const char kPageContextHistogramOverallTask[];
+extern const char kPageContextHistogramScreenshotTask[];
+extern const char kPageContextHistogramAPCTask[];
+extern const char kPageContextHistogramPDFTask[];
+extern const char kPageContextHistogramInnerTextTask[];
 
-extern const char kPageContextLatencyHistogramSuccessStatus[];
-extern const char kPageContextLatencyHistogramFailureStatus[];
-extern const char kPageContextLatencyHistogramTimeoutStatus[];
-extern const char kPageContextLatencyHistogramPageProtectedStatus[];
-extern const char kPageContextLatencyHistogramNotExtractableStatus[];
+extern const char kPageContextHistogramSuccessStatus[];
+extern const char kPageContextHistogramFailureStatus[];
+extern const char kPageContextHistogramTimeoutStatus[];
+extern const char kPageContextHistogramPageProtectedStatus[];
+extern const char kPageContextHistogramNotExtractableStatus[];
+
+extern const char kPageContextAPCConfigVariantInnerText[];
+extern const char kPageContextAPCConfigVariantRich[];
+extern const char kPageContextAPCConfigVariantRichActionable[];
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_METRICS_CONSTANTS_H_
