@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="CriticalUserJourney.{JourneyName}.AbortedAtStep"
-    enum="CriticalUserJourneyTestJourneySteps" expires_after="2027-01-01">
+    units="Step ID" expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -48,8 +48,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CriticalUserJourney.{JourneyName}.StepReached"
-    enum="CriticalUserJourneyTestJourneySteps" expires_after="2027-01-01">
+<histogram name="CriticalUserJourney.{JourneyName}.StepReached" units="Step ID"
+    expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
