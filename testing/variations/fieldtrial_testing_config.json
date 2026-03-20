@@ -12985,8 +12985,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabGroupInOverflowMenu",
-                        "TabGroupInTabIconContextMenu",
                         "TabRecallNewTabGroupButton",
                         "TabSwitcherOverflowMenu"
                     ]
