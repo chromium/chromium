@@ -393,13 +393,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.setAimUrl.addListener(updateAimUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
-        const wasZeroState = this.isZeroState_;
         this.isZeroState_ = isZeroState;
         // If we just changed to zero state, that means
         // it is a new thread or new AIM page. Otherwise,
         // we are not in zero state anymore, or not in an AIM URL. In
         // both thread/AIM cases for zero state, we clear input.
-        if (isZeroState && !wasZeroState) {
+        if (isZeroState) {
           this.composebox_?.clearInputAndFocus();
           // Reset the forced composebox bounds since the zero state position
           // is controlled natively.
