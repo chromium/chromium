@@ -44,8 +44,14 @@ public class ExtensionsMenuItemViewBinder {
                     .setOnClickListener(
                             model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK));
         } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED) {
-            getMenuItemToggle(view)
-                    .setChecked(model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED));
+            MaterialSwitchWithText toggle = getMenuItemToggle(view);
+            // Null out the listener before calling setChecked() to avoid triggering programmatic
+            // changes during view binding (e.g. when views are recycled). The listener is restored
+            // immediately after to ensure only user-initiated changes trigger the callback.
+            toggle.setOnCheckedChangeListener(null);
+            toggle.setChecked(model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED));
+            toggle.setOnCheckedChangeListener(
+                    model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK));
         } else if (key == ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK) {
             getMenuItemToggle(view)
                     .setOnCheckedChangeListener(

@@ -268,7 +268,11 @@ void ExtensionsMenuDelegateAndroid::OnDismissExtensionClicked(
 void ExtensionsMenuDelegateAndroid::OnExtensionToggleSelected(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
-  // TODO(crbug.com/473213115)
+  if (is_on) {
+    menu_model_->GrantSiteAccess(extension_id);
+  } else {
+    menu_model_->RevokeSiteAccess(extension_id);
+  }
 }
 
 void ExtensionsMenuDelegateAndroid::OnShowRequestsTogglePressed(
