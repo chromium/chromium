@@ -1,0 +1,96 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/captive_portal/core/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_guest_view)
+
+source_set("guest_view") {
+  sources = []
+  if (enable_extensions_core) {
+    sources += [
+      "chrome_guest_view_manager_delegate.h",
+      "extension_options/chrome_extension_options_guest_delegate.h",
+      "web_view/chrome_web_view_guest_delegate.h",
+      "web_view/chrome_web_view_permission_helper_delegate.h",
+      "web_view/context_menu_content_type_web_view.h",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "mime_handler_view/chrome_mime_handler_view_guest_delegate.h" ]
+    if (!is_android) {
+      sources += [ "app_view/chrome_app_view_guest_delegate.h" ]
+    }
+  }
+
+  public_deps = [
+    "//chrome/common:buildflags",
+    "//chrome/common:mojo_bindings",
+    "//components/guest_view/browser",
+    "//components/renderer_context_menu",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = []
+
+  if (enable_extensions_core) {
+    sources += [
+      "chrome_guest_view_manager_delegate.cc",
+      "extension_options/chrome_extension_options_guest_delegate.cc",
+      "web_view/chrome_web_view_guest_delegate.cc",
+      "web_view/chrome_web_view_permission_helper_delegate.cc",
+      "web_view/context_menu_content_type_web_view.cc",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources +=
+        [ "mime_handler_view/chrome_mime_handler_view_guest_delegate.cc" ]
+    if (!is_android) {
+      sources += [ "app_view/chrome_app_view_guest_delegate.cc" ]
+    }
+  }
+
+  deps = [
+    ":guest_view",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/accessibility:utils",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui/tab_contents",
+    "//components/captive_portal/core:buildflags",
+    "//components/guest_view/browser",
+    "//components/pdf/common:constants",
+    "//components/pdf/common:util",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/controlled_frame" ]
+  }
+
+  if (enable_captive_portal_detection) {
+    deps += [
+      "//chrome/browser/captive_portal",
+      "//components/captive_portal/content",
+    ]
+  }
+
+  deps += [
+    "//chrome/browser/glic",
+    "//chrome/browser/task_manager",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/apps" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/app_mode" ]
+  }
+}

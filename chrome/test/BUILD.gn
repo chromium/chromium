@@ -3252,6 +3252,10 @@ if (!is_android) {
       "//v8",
     ]
 
+    if (enable_guest_view) {
+      deps += [ "//chrome/browser/guest_view" ]
+    }
+
     # TODO(crbug.com/428666921): Remove this dependency when
     # c/b/ui/views/performance_controls/*browsertest.cc get componentized.
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]

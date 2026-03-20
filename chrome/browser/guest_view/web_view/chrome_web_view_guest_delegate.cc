@@ -9,12 +9,10 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
+#include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/url_constants.h"

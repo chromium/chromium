@@ -5,10 +5,15 @@
 #include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
+#include "build/buildflag.h"
 #include "chrome/common/buildflags.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -33,18 +38,22 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
     content::WebContents* guest_web_contents) const {
   ExtensionsGuestViewManagerDelegate::OnGuestAdded(guest_web_contents);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Attaches the task-manager-specific tag for the GuestViews to its
   // `guest_web_contents` so that their corresponding tasks show up in the task
   // manager.
   task_manager::WebContentsTags::CreateForGuestContents(guest_web_contents);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Notifies Kiosk controller about the added guest.
   ash::KioskController::Get().OnGuestAdded(guest_web_contents);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
   // Check if guest belongs to glic and apply specific customizations if so.
   glic::OnGuestAdded(guest_web_contents);
+#endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   // Attach Captive Portal helper to the WebView.

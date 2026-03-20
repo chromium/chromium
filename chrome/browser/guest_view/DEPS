@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/accessibility/pdf_ocr_metrics.h",
+  "+chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h",
+  "+chrome/browser/ash/app_mode/kiosk_controller.h",
+  "+chrome/browser/ash/app_mode/kiosk_system_session.h",
+  "+chrome/browser/captive_portal/captive_portal_service_factory.h",
+  "+chrome/browser/content_settings/host_content_settings_map_factory.h",
+  "+chrome/browser/controlled_frame/controlled_frame_user_agent_util.h",
+  "+chrome/browser/glic/host/guest_util.h",
+  "+chrome/browser/guest_view",
+  "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
+  "+chrome/browser/plugins/chrome_plugin_service_filter.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/renderer_context_menu/render_view_context_menu.h",
+  "+chrome/browser/ssl/chrome_security_blocking_page_factory.h",
+  "+chrome/browser/task_manager/web_contents_tags.h",
+  "+chrome/browser/ui/apps/chrome_app_delegate.h",
+  "+chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h",
+]
+
+specific_include_rules = {
+  "chrome_mime_handler_view_browsertest.cc": [
+    "+chrome/browser/extensions/extension_apitest.h",
+    "+chrome/browser/printing/test_print_preview_observer.h",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/webui/print_preview/print_preview_ui.h",
+  ],
+  "chrome_mime_handler_view_interactive_uitest.cc": [
+    "+chrome/browser/extensions/extension_apitest.h",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/exclusive_access/exclusive_access_test.h",
+  ],
+}

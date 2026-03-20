@@ -694,6 +694,7 @@ source_set("extensions") {
 
   if (enable_guest_view) {
     deps += [
+      "//chrome/browser/guest_view",
       "//components/guest_view/browser",
       "//components/guest_view/common:mojom",
     ]

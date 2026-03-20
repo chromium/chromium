@@ -7321,18 +7321,14 @@ static_library("browser") {
 
   if (enable_extensions_core) {
     if (enable_guest_view) {
-      sources += [
-        "guest_view/chrome_guest_view_manager_delegate.cc",
-        "guest_view/chrome_guest_view_manager_delegate.h",
-        "guest_view/extension_options/chrome_extension_options_guest_delegate.cc",
-        "guest_view/extension_options/chrome_extension_options_guest_delegate.h",
-        "guest_view/web_view/chrome_web_view_guest_delegate.cc",
-        "guest_view/web_view/chrome_web_view_guest_delegate.h",
-        "guest_view/web_view/chrome_web_view_permission_helper_delegate.cc",
-        "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
-        "guest_view/web_view/context_menu_content_type_web_view.cc",
-        "guest_view/web_view/context_menu_content_type_web_view.h",
+      deps += [
+        "//chrome/browser/guest_view",
+        "//chrome/browser/guest_view:impl",
       ]
+
+      # Any circular includes must depend on the target
+      # "browser_public_dependencies".
+      allow_circular_includes_from += [ "//chrome/browser/guest_view:impl" ]
     }
     sources += [
       "download/download_crx_util.cc",
@@ -7403,10 +7399,6 @@ static_library("browser") {
       "accessibility/animation_policy_prefs.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
-      "guest_view/app_view/chrome_app_view_guest_delegate.cc",
-      "guest_view/app_view/chrome_app_view_guest_delegate.h",
-      "guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.cc",
-      "guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h",
       "media/extension_media_access_handler.cc",
       "media/extension_media_access_handler.h",
       "metrics/extensions_metrics_provider.cc",
