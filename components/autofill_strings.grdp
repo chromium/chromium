@@ -706,6 +706,28 @@
     Travel
   </message>
 
+  <!-- Autofill and passwords entry point summaries - mobile only -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY" desc="Summary for the Google Password Manager entry in the Autofill and passwords settings." formatter_data="android_java">
+      Passwords and passkeys
+    </message>
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY" desc="Summary for the Payments entry in the Autofill and passwords settings." formatter_data="android_java">
+      Credit &amp; debit cards · IBANs · Loyalty cards
+    </message>
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_CONTACT_INFO_SUMMARY" desc="Summary for the Contact info entry in the Autofill and passwords settings." formatter_data="android_java">
+      Addresses
+    </message>
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_IDENTITY_DOCS_SUMMARY" desc="Summary for the Identity docs entry in the Autofill and passwords settings." formatter_data="android_java">
+      Driver’s licenses · Identity cards · Passports
+    </message>
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY" desc="Summary for the Travel entry in the Autofill and passwords settings." formatter_data="android_java">
+      Travel info · Vehicles
+    </message>
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_SETTINGS_SUMMARY" desc="Summary for the Settings entry in the Autofill and passwords settings." formatter_data="android_java">
+      Change autofill provider and other settings
+    </message>
+  </if>
+
   <!-- Used on Desktop: -->
   <if expr="not is_android and not is_ios">
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">

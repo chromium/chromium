@@ -12,36 +12,42 @@ found in the LICENSE file.
         android:key="autofill_and_passwords_gpm"
         android:order="1"
         android:title="@string/password_manager_settings_title"
-        android:icon="@drawable/ic_password_manager_key"/>
+        android:icon="@drawable/ic_password_manager_key"
+        android:summary="@string/autofill_and_passwords_password_manager_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_payments"
         android:order="2"
         android:title="@string/autofill_payments_title"
-        android:icon="@drawable/credit_card"/>
+        android:icon="@drawable/credit_card"
+        android:summary="@string/autofill_and_passwords_payments_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_addresses"
         android:order="3"
         android:title="@string/autofill_contact_info_title"
-        android:icon="@drawable/ic_outline_email_24dp"/>
+        android:icon="@drawable/ic_outline_email_24dp"
+        android:summary="@string/autofill_and_passwords_contact_info_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_identity_docs"
         android:order="4"
         android:title="@string/autofill_identity_docs_title"
-        android:icon="@drawable/id_card"/>
+        android:icon="@drawable/id_card"
+        android:summary="@string/autofill_and_passwords_identity_docs_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_travel"
         android:order="5"
         android:title="@string/autofill_travel_title"
-        android:icon="@drawable/travel_trip"/>
+        android:icon="@drawable/travel_trip"
+        android:summary="@string/autofill_and_passwords_travel_summary"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_settings"
         android:order="6"
         android:title="@string/autofill_settings_title"
-        android:icon="@drawable/ic_settings_24dp"/>
+        android:icon="@drawable/ic_settings_24dp"
+        android:summary="@string/autofill_and_passwords_settings_summary"/>
 
 </PreferenceScreen>
