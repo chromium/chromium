@@ -264,13 +264,13 @@ BASE_EXPORT void UmaHistogramSparse(std::string_view name, int sample);
 //
 // Sample usages:
 //   void Function() {
-//     ScopedUmaHistogramTimer("Component.FunctionTime");
+//     ScopedUmaHistogramTimer timer("Component.FunctionTime");
 //     // useful stuff here
 //     ...
 //   }
 //
 //   void Function() {
-//     ScopedUmaHistogramTimer("Component.FunctionTime",
+//     ScopedUmaHistogramTimer timer("Component.FunctionTime",
 //       ScopedUmaHistogramTimer::kMicroSecondTimes);
 //     // useful stuff here
 //     ...
@@ -292,7 +292,7 @@ class BASE_EXPORT ScopedUmaHistogramTimer {
   };
 
   // Constructs the scoped timer with the given histogram name.
-  explicit ScopedUmaHistogramTimer(
+  [[nodiscard]] explicit ScopedUmaHistogramTimer(
       std::string_view name,
       ScopedHistogramTiming timing = ScopedHistogramTiming::kShortTimes);
 
