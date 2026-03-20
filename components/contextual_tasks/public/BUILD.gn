@@ -26,6 +26,8 @@ source_set("public") {
     "contextual_task_context.h",
     "contextual_tasks_service.cc",
     "contextual_tasks_service.h",
+    "gemini_thread_data_type_controller.cc",
+    "gemini_thread_data_type_controller.h",
     "prefs.cc",
     "prefs.h",
     "utils.cc",
@@ -80,10 +82,12 @@ source_set("unit_tests") {
     "contextual_task_context_unittest.cc",
     "contextual_task_unittest.cc",
     "features_unittest.cc",
+    "gemini_thread_data_type_controller_unittest.cc",
   ]
 
   deps = [
     ":public",
+    ":test_support",
     "//base/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/sessions:session_id",

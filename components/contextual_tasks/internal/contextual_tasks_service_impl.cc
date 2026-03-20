@@ -179,10 +179,12 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     bool supports_ephemeral_only,
-    base::RepeatingCallback<size_t()> get_active_task_count_callback)
+    base::RepeatingCallback<size_t()> get_active_task_count_callback,
+    base::RepeatingCallback<bool()> is_gemini_threads_enabled)
     : composite_context_decorator_(std::move(composite_context_decorator)),
       get_active_task_count_callback_(
           std::move(get_active_task_count_callback)),
+      is_gemini_threads_enabled_callback_(is_gemini_threads_enabled),
       aim_eligibility_service_(aim_eligibility_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
@@ -615,6 +617,11 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 ContextualTasksServiceImpl::GetGeminiThreadControllerDelegate() {
   return gemini_thread_sync_bridge_->change_processor()
       ->GetControllerDelegate();
+}
+
+bool ContextualTasksServiceImpl::IsGeminiThreadsEligible() {
+  return is_gemini_threads_enabled_callback_ &&
+         is_gemini_threads_enabled_callback_.Run();
 }
 
 void ContextualTasksServiceImpl::SetAiThreadSyncBridgeForTesting(

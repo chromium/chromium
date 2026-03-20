@@ -153,7 +153,14 @@ class ContextualTasksServiceImplTest : public testing::Test {
         pref_service_.registry());
     mock_aim_eligibility_service_ =
         std::make_unique<MockAimEligibilityService>(&pref_service_);
-    service_ = std::make_unique<ContextualTasksServiceImpl>(
+    service_ = BuildService(std::move(mock_decorator), true);
+  }
+
+  std::unique_ptr<ContextualTasksServiceImpl> BuildService(
+      std::unique_ptr<testing::NiceMock<MockCompositeContextDecorator>>
+          mock_decorator,
+      bool is_gemini_eligible) {
+    return std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         std::move(mock_decorator), mock_aim_eligibility_service_.get(),
@@ -161,7 +168,9 @@ class ContextualTasksServiceImplTest : public testing::Test {
         SupportsEphemeralOnly(),
         base::BindRepeating(
             &MockGetActiveTaskCountCallback::Run,
-            base::Unretained(&mock_get_active_task_count_callback_)));
+            base::Unretained(&mock_get_active_task_count_callback_)),
+        base::BindRepeating([](bool eligible) { return eligible; },
+                            is_gemini_eligible));
   }
 
   virtual bool SupportsEphemeralOnly() { return false; }
@@ -2052,6 +2061,17 @@ TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_NoTask) {
         ASSERT_TRUE(url.is_valid());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksServiceImplTest, GeminiThreadsEnabled) {
+  EXPECT_TRUE(service_->IsGeminiThreadsEligible());
+}
+
+TEST_F(ContextualTasksServiceImplTest, GeminiThreadsNotEnabled) {
+  auto service = BuildService(
+      std::make_unique<testing::NiceMock<MockCompositeContextDecorator>>(),
+      false);
+  EXPECT_FALSE(service->IsGeminiThreadsEligible());
 }
 
 }  // namespace contextual_tasks

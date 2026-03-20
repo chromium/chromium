@@ -11,6 +11,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -104,6 +106,7 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
   DependsOn(AimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
+  DependsOn(glic::GlicKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -150,7 +153,12 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
                                       std::move(additional_decorators)),
       aim_eligibility_service, identity_manager, profile->GetPrefs(),
       supports_ephemeral_only,
-      base::BindRepeating(&GetNumberOfActiveTasks, profile));
+      base::BindRepeating(&GetNumberOfActiveTasks, profile),
+      base::BindRepeating(
+          [](Profile* profile) -> bool {
+            return glic::GlicEnabling::IsEnabledForProfile(profile);
+          },
+          profile));
 }
 
 }  // namespace contextual_tasks

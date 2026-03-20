@@ -40,6 +40,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/contextual_tasks/public/ai_thread_data_type_controller.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/gemini_thread_data_type_controller.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
@@ -1165,8 +1166,8 @@ CommonControllerBuilder::CreateGeminiThreadDataTypeController() {
   if (!delegate) {
     return nullptr;
   }
-  return std::make_unique<DataTypeController>(
-      syncer::GEMINI_THREAD,
+  return std::make_unique<contextual_tasks::GeminiThreadDataTypeController>(
+      /*contextual_tasks_service=*/contextual_tasks_service_.value(),
       /*delegate_for_full_sync_mode= */
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode= */

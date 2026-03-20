@@ -173,6 +173,7 @@ class ContextualTasksService : public KeyedService {
   GetAiThreadControllerDelegate() = 0;
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetGeminiThreadControllerDelegate() = 0;
+  virtual bool IsGeminiThreadsEligible() = 0;
 };
 
 }  // namespace contextual_tasks
