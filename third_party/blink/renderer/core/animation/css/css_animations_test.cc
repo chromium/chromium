@@ -1853,6 +1853,42 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
                       auto_offset, auto_offset);
 }
 
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerAbsolutePositioned) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(2); }
+        to { transform: scaleX(5); }
+      }
+      .trigger {
+        position: absolute;
+        timeline-trigger: --trigger view();
+        height: 100px;
+        width: 100px;
+      }
+      .triggered {
+        height: 50px;
+        width: 50px;
+        animation: expand 1s;
+        animation-trigger: --trigger play-forwards play-backwards;
+      }
+    </style>
+      <div id="trigger" class="trigger"></div>
+      <div id="triggered" class="triggered"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("triggered"));
+  ASSERT_TRUE(target);
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+
+  EXPECT_EQ(animation->GetTriggers().size(), 1);
+  EXPECT_TRUE(animation->GetTriggers().begin()->Get()->IsTimelineTrigger());
+}
+
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewOnly) {
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -100,6 +100,7 @@ class CORE_EXPORT DocumentAnimations final
                             Member<const StyleTriggerAttachment>>>;
   static void FindRelevantTriggerAttachments(
       CSSAnimation& animation,
+      TriggerScopedNameMap& global_trigger_map,
       TriggerAttachmentMap& relevant_attachments_out);
   static void UpdateTriggerAttachments(
       CSSAnimation& animation,

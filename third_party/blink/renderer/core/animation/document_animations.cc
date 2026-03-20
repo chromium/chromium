@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -76,6 +77,7 @@ void UpdateAnimationTiming(
 // static
 void DocumentAnimations::FindRelevantTriggerAttachments(
     CSSAnimation& animation,
+    TriggerScopedNameMap& global_trigger_map,
     TriggerAttachmentMap& relevant_attachments_out) {
   const Member<const StyleTriggerAttachmentVector>&
       animation_trigger_attachments = animation.GetTriggerAttachments();
@@ -88,12 +90,6 @@ void DocumentAnimations::FindRelevantTriggerAttachments(
     return;
   }
 
-  // Map to accumulate all scoped triggers known to ancestors (who might be
-  // aware of triggers that are outside the owning_element's ancestry but in the
-  // same trigger-scope - such a trigger might come later in tree-order and
-  // therefore be the correct candidate).
-  TriggerScopedNameMap* global_trigger_map =
-      MakeGarbageCollected<TriggerScopedNameMap>();
   // Map to accumulate triggers defined on elements in the ancestry of the
   // owning element. These are to be checked first before looking at the global
   // list.
@@ -102,12 +98,6 @@ void DocumentAnimations::FindRelevantTriggerAttachments(
 
   const Element* element = owning_element;
   while (element) {
-    const LayoutBox* element_box = element->GetLayoutBox();
-    if (!element_box) {
-      element = element->parentElement();
-      continue;
-    }
-
     if (NamedAnimationTriggerMap* element_named_triggers =
             element->NamedTriggers()) {
       for (const auto& named_trigger : element_named_triggers->Keys()) {
@@ -119,17 +109,6 @@ void DocumentAnimations::FindRelevantTriggerAttachments(
         if (it == ancestor_trigger_map->end()) {
           ancestor_trigger_map->Set(trigger_scoped_name, element);
         }
-      }
-    }
-
-    for (const auto& fragment : element_box->PhysicalFragments()) {
-      const TriggerScopedNameMap* named_triggers = fragment.NamedTriggers();
-      if (!named_triggers) {
-        continue;
-      }
-
-      for (const auto& entry : *named_triggers) {
-        global_trigger_map->Set(entry.key, entry.value);
       }
     }
 
@@ -157,8 +136,8 @@ void DocumentAnimations::FindRelevantTriggerAttachments(
     }
 
     // If we didn't find a name in the ancestry, search the global map.
-    it = global_trigger_map->find(trigger_scoped_name);
-    if (it != global_trigger_map->end()) {
+    it = global_trigger_map.find(trigger_scoped_name);
+    if (it != global_trigger_map.end()) {
       add_relevant_trigger(it->value, trigger_scoped_name, attachment);
     }
   }
@@ -456,8 +435,23 @@ void DocumentAnimations::UpdateCompositorAnimationTriggers(
 }
 
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
+  if (!document_->GetLayoutView()) {
+    return;
+  }
+
   HeapHashSet<WeakMember<CSSAnimation>> triggered_animations;
   triggered_animations.swap(triggered_animations_);
+
+  TriggerScopedNameMap* global_trigger_map =
+      MakeGarbageCollected<TriggerScopedNameMap>();
+
+  for (const auto& fragment : document_->GetLayoutView()->PhysicalFragments()) {
+    if (const TriggerScopedNameMap* named_triggers = fragment.NamedTriggers()) {
+      for (const auto& entry : *named_triggers) {
+        global_trigger_map->Set(entry.key, entry.value);
+      }
+    }
+  }
 
   for (CSSAnimation* animation : triggered_animations) {
     const Member<const StyleTriggerAttachmentVector>&
@@ -465,8 +459,10 @@ void DocumentAnimations::UpdateAnimationTriggerAttachments() {
     TriggerAttachmentMap relevant_attachments;
     if (animation_trigger_attachments) {
       AddTriggeredAnimation(animation);
-      FindRelevantTriggerAttachments(*animation, relevant_attachments);
+      FindRelevantTriggerAttachments(*animation, *global_trigger_map,
+                                     relevant_attachments);
     }
+
     // Add new triggers, remove obsolete ones.
     UpdateTriggerAttachments(*animation, relevant_attachments);
   }
