@@ -3,15 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.ui.base;
 
-import android.Manifest;
 import android.content.ClipDescription;
-import android.os.Build;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -78,29 +75,6 @@ public class MimeTypeUtils {
         }
 
         return mimeType;
-    }
-
-    /**
-     * @param mimeType The mime type associated with an operation that needs a permission.
-     * @return The name of the Android permission to request. Returns null if no permission will
-     *     allow access to the file, for example on Android T+ where READ_EXTERNAL_STORAGE has been
-     *     replaced with a handful of READ_MEDIA_* permissions.
-     */
-    public @Nullable static String getPermissionNameForMimeType(@MimeTypeUtils.Type int mimeType) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return Manifest.permission.READ_EXTERNAL_STORAGE;
-        }
-
-        switch (mimeType) {
-            case MimeTypeUtils.Type.AUDIO:
-                return Manifest.permission.READ_MEDIA_AUDIO;
-            case MimeTypeUtils.Type.IMAGE:
-                return Manifest.permission.READ_MEDIA_IMAGES;
-            case MimeTypeUtils.Type.VIDEO:
-                return Manifest.permission.READ_MEDIA_VIDEO;
-            default:
-                return null;
-        }
     }
 
     public static boolean clipDescriptionHasBrowserContent(ClipDescription clipDescription) {

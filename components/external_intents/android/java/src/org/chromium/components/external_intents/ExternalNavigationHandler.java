@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Browser;
@@ -63,7 +65,6 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -945,17 +946,13 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /**
-     * If accessing a file URL, ensure that the user has granted the necessary file access
-     * to the app.
+     * If accessing a file URL, ensure that the user has granted the necessary file access to the
+     * app.
      */
     private boolean handleFileUrlPermissions(ExternalNavigationParams params) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return false;
         if (!params.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) return false;
-
-        @MimeTypeUtils.Type int mimeType = MimeTypeUtils.getMimeTypeForUrl(params.getUrl());
-        String permissionNeeded = MimeTypeUtils.getPermissionNameForMimeType(mimeType);
-
-        if (permissionNeeded == null) return false;
-
+        String permissionNeeded = Manifest.permission.READ_EXTERNAL_STORAGE;
         if (!shouldRequestFileAccess(params.getUrl(), permissionNeeded)) return false;
         requestFilePermissions(params, permissionNeeded);
         if (debug()) Log.i(TAG, "Requesting filesystem access");
