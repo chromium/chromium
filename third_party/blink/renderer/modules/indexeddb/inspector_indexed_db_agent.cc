@@ -680,7 +680,8 @@ class OpenCursorCallback final : public NativeEventListener {
   ~OpenCursorCallback() override = default;
 
   void Invoke(ExecutionContext*, Event* event) override {
-    if (!agent_) {
+    InspectorIndexedDBAgent* agent = agent_.Get();
+    if (!agent) {
       request_callback_->sendFailure(protocol::Response::ServerError(
           "DevTools session detached during operation."));
       return;
@@ -737,7 +738,7 @@ class OpenCursorCallback final : public NativeEventListener {
       return;
     }
 
-    v8_inspector::V8InspectorSession* v8_session = agent_->v8_session();
+    v8_inspector::V8InspectorSession* v8_session = agent->v8_session();
     ScriptState::Scope scope(script_state_);
     v8::Local<v8::Context> context = script_state_->GetContext();
     v8_inspector::StringView object_group =
@@ -794,7 +795,8 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
   ~DataLoader() override = default;
 
   void Execute(IDBDatabase* idb_database, ScriptState* script_state) override {
-    if (!agent_) {
+    InspectorIndexedDBAgent* agent = agent_.Get();
+    if (!agent) {
       request_callback_->sendFailure(protocol::Response::ServerError(
           "The DevTools session was detached before the operation could "
           "complete."));
@@ -832,7 +834,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
           script_state, idb_key_range_.Get(), mojom::IDBCursorDirection::Next);
     }
     OpenCursorCallback* open_cursor_callback = OpenCursorCallback::Create(
-        agent_.Get(), script_state, std::move(request_callback_), skip_count_,
+        agent, script_state, std::move(request_callback_), skip_count_,
         page_size_);
     idb_request->addEventListener(event_type_names::kSuccess,
                                   open_cursor_callback, false);
