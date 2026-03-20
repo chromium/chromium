@@ -148,6 +148,8 @@ class Responder final {
   }
   ~Responder() { Cancel(); }
 
+  const perfetto::Track& perfetto_id() { return perfetto_id_; }
+
   ChromeMLCancelFn* GetCancelFn() { return &cancel_; }
 
   // Converts tool calls from the ChromeML C API output to Mojo and posts
@@ -248,6 +250,8 @@ class Responder final {
       num_output_tokens_++;
       output_so_far_ += *text;
       if (first_token_time_ == base::TimeTicks()) {
+        // Ends the `TTFT` trace.
+        TRACE_EVENT_END("optimization_guide", perfetto_id());
         first_token_time_ = base::TimeTicks::Now();
       }
 
@@ -255,6 +259,9 @@ class Responder final {
       chunk->text = *text;
       responder_->OnResponse(std::move(chunk));
     } else if (session_) {
+      // Ends the `Decode` trace.
+      TRACE_EVENT_END("optimization_guide", perfetto_id());
+
       // Empty text means the output is finished. Delete the session immediately
       // to free up any resources.
       session_ = nullptr;
@@ -291,6 +298,7 @@ class Responder final {
     }
   }
 
+  perfetto::Track perfetto_id_{reinterpret_cast<uintptr_t>(this)};
   base::ElapsedTimer timer_;
   base::TimeTicks first_token_time_;
   int num_output_tokens_ = 0;
@@ -370,6 +378,8 @@ class ContextHolder final {
     }
   }
 
+  const perfetto::Track& perfetto_id() { return perfetto_id_; }
+
   ChromeMLCancelFn* GetCancelFn() { return &cancel_; }
 
   ChromeMLContextSavedFn CreateContextSavedFn() {
@@ -382,6 +392,8 @@ class ContextHolder final {
 
  private:
   void OnComplete(int tokens_processed) {
+    // Ends the `Prefill` trace.
+    TRACE_EVENT_END("optimization_guide", perfetto_id());
     TRACE_EVENT("optimization_guide", "ContextHolder::OnComplete");
     if (tokens_processed > 0) {
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Context",
@@ -407,6 +419,7 @@ class ContextHolder final {
     // this may be deleted.
   }
 
+  perfetto::Track perfetto_id_{reinterpret_cast<uintptr_t>(this)};
   base::ElapsedTimer timer_;
   mojo::Remote<on_device_model::mojom::ContextClient> client_;
   base::OnceCallback<void(ContextHolder*)> on_disconnect_;
@@ -525,10 +538,15 @@ void SessionImpl::Append(
   if (options->max_tokens == 0 || options->max_tokens > max_tokens_) {
     options->max_tokens = max_tokens_;
   }
+
   ChromeMLContextSavedFn context_saved_fn =
       context_holder->CreateContextSavedFn();
-  *context_holder->GetCancelFn() =
-      session_->Append(std::move(options), context_saved_fn);
+
+  TRACE_EVENT_BEGIN("optimization_guide", "Prefill",
+                    context_holder->perfetto_id());
+  *context_holder->GetCancelFn() = session_->Append(
+      context_holder->perfetto_id(), std::move(options), context_saved_fn);
+
   context_holders_.insert(std::move(context_holder));
 }
 
@@ -555,14 +573,18 @@ void SessionImpl::Generate(
     on_tool_calls_emitted = base::BindRepeating(
         [](bool* flag) { *flag = true; }, &awaiting_tool_responses_);
   }
+
   responder_ = std::make_unique<Responder>(
       std::move(response), std::move(on_complete), std::move(cloned),
       std::move(on_tool_calls_emitted));
+
+  TRACE_EVENT_BEGIN("optimization_guide", "Decode", responder_->perfetto_id());
+  TRACE_EVENT_BEGIN("optimization_guide", "TTFT", responder_->perfetto_id());
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
 
   *responder_->GetCancelFn() = cloned_raw->Generate(
-      std::move(options), executor_->GetConstraintFactory(),
-      model_response_prefix_, output_fn);
+      responder_->perfetto_id(), std::move(options),
+      executor_->GetConstraintFactory(), model_response_prefix_, output_fn);
 }
 
 DISABLE_CFI_DLSYM

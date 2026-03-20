@@ -132,20 +132,25 @@ SessionAccessor::Ptr SessionAccessor::Clone() {
 }
 
 ChromeMLCancelFn SessionAccessor::Append(
+    const perfetto::Track& perfetto_id,
     on_device_model::mojom::AppendOptionsPtr options,
     ChromeMLContextSavedFn context_saved_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Append");
   DCHECK(context_saved_fn);
   auto canceler =
       base::MakeRefCounted<Canceler>(chrome_ml_.get(), task_runner_);
+
+  TRACE_EVENT_BEGIN("optimization_guide", "Queued", perfetto_id);
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SessionAccessor::AppendInternal,
-                                base::Unretained(this), std::move(options),
-                                std::move(context_saved_fn), canceler));
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::AppendInternal, base::Unretained(this),
+                     perfetto_id, std::move(options),
+                     std::move(context_saved_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
 
 ChromeMLCancelFn SessionAccessor::Generate(
+    const perfetto::Track& perfetto_id,
     on_device_model::mojom::GenerateOptionsPtr options,
     ConstraintFactory* constraint_factory,
     const std::optional<std::string>& model_response_prefix,
@@ -154,12 +159,15 @@ ChromeMLCancelFn SessionAccessor::Generate(
   DCHECK(output_fn);
   auto canceler =
       base::MakeRefCounted<Canceler>(chrome_ml_.get(), task_runner_);
+
+  TRACE_EVENT_BEGIN("optimization_guide", "Queued", perfetto_id);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::GenerateInternal, base::Unretained(this),
+                     perfetto_id, std::move(options),
                      // Unretained safe since `constrained_factory` is deleted
                      // on the sequence.
-                     std::move(options), base::Unretained(constraint_factory),
+                     base::Unretained(constraint_factory),
                      model_response_prefix, std::move(output_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
@@ -265,9 +273,12 @@ void SessionAccessor::CreateInternal(
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::AppendInternal(
+    perfetto::Track perfetto_id,
     on_device_model::mojom::AppendOptionsPtr append_options,
     ChromeMLContextSavedFn context_saved_fn,
     scoped_refptr<Canceler> canceler) {
+  // Ends the `Queued` trace.
+  TRACE_EVENT_END("optimization_guide", perfetto_id);
   TRACE_EVENT("optimization_guide", "SessionAccessor::AppendInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -297,11 +308,14 @@ void SessionAccessor::AppendInternal(
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::GenerateInternal(
+    perfetto::Track perfetto_id,
     on_device_model::mojom::GenerateOptionsPtr generate_options,
     ConstraintFactory* constraint_factory,
     std::optional<std::string> model_response_prefix,
     ChromeMLExecutionOutputFn output_fn,
     scoped_refptr<Canceler> canceler) {
+  // Ends the `Queued` trace.
+  TRACE_EVENT_END("optimization_guide", perfetto_id);
   TRACE_EVENT("optimization_guide", "SessionAccessor::GenerateInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLConstraint constraint = 0;

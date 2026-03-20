@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/constraint_factory.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -37,9 +38,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   // These methods forward to the relevant ChromeMLSession methods on the task
   // runner.
   Ptr Clone();
-  ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
+  ChromeMLCancelFn Append(const perfetto::Track& perfetto_id,
+                          on_device_model::mojom::AppendOptionsPtr options,
                           ChromeMLContextSavedFn context_saved_fn);
   ChromeMLCancelFn Generate(
+      const perfetto::Track& perfetto_id,
       on_device_model::mojom::GenerateOptionsPtr options,
       ConstraintFactory* constraint_factory,
       const std::optional<std::string>& model_response_prefix,
@@ -65,10 +68,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       on_device_model::mojom::SessionParamsPtr params,
       on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
       std::optional<uint32_t> adaptation_id);
-  void AppendInternal(on_device_model::mojom::AppendOptionsPtr append_options,
+  void AppendInternal(perfetto::Track perfetto_id,
+                      on_device_model::mojom::AppendOptionsPtr append_options,
                       ChromeMLContextSavedFn context_saved_fn,
                       scoped_refptr<Canceler> canceler);
   void GenerateInternal(
+      perfetto::Track perfetto_id,
       on_device_model::mojom::GenerateOptionsPtr generate_options,
       ConstraintFactory* constraint_factory,
       std::optional<std::string> model_response_prefix,
