@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {HANDSHAKE_REQUEST_MESSAGE_BASE64, HANDSHAKE_RESPONSE_BYTES} from './test_utils.js';
 
-const HANDSHAKE_INTERVAL_MS = 500;
+const HANDSHAKE_INTERVAL_MS = 50;
 const TARGET_ORIGIN = 'https://local.test';
 
 // Shared helper functions
