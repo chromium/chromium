@@ -191,7 +191,8 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
       std::make_unique<optimization_guide::OptimizationGuideGlobalFeature>();
 
   if (media::IsAudioProcessMlModelUsageEnabled()) {
-    audio_process_ml_model_forwarder_ = AudioProcessMlModelForwarder::Create();
+    audio_process_ml_model_forwarder_ =
+        AudioProcessMlModelForwarder::Create(g_browser_process->local_state());
   }
 
   if (base::FeatureList::IsEnabled(

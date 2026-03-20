@@ -41,6 +41,11 @@ IN_PROC_BROWSER_TEST_F(AudioProcessMlModelForwarderBrowserTest,
     content::GetAudioService();
   }
 
+  // Trigger the observer state to be satisfied manually.
+  g_browser_process->GetFeatures()
+      ->audio_process_ml_model_forwarder()
+      ->OnAudioCaptureStarted();
+
   // Verify that the optimization guide receives a registration.
   optimization_guide::PredictionManager& prediction_manager =
       g_browser_process->GetFeatures()

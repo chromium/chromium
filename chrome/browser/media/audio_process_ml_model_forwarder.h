@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,15 +25,15 @@ namespace optimization_guide {
 class ModelInfo;
 }  // namespace optimization_guide
 
-class AudioProcessObserver;
+class PrefService;
 
 // Propagates ML models from the Optimization Guide to the audio process.
-// Currently only a single model, for residual echo estimatino, but may be
+// Currently only a single model, for residual echo estimation, but may be
 // extended to other optimization targets in the future.
 //
 // Does nothing until both an Optimization Guide model provider has been set and
-// the audio process is launched. Then, observes updates from the model provider
-// and forwards them to the audio process.
+// an audio input stream has been opened. Then, subscribes to models from the
+// Optimization Guide and forwards them to the audio process.
 //
 // NOTE: This class only forwards models to the audio process, i.e., not when
 // the audio service is running as a part of the browser process. Models are
@@ -45,13 +46,14 @@ class AudioProcessMlModelForwarder
   using WrappedFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
   // Default factory function. Monitors audio service process launches via
-  // global APIs.
-  static std::unique_ptr<AudioProcessMlModelForwarder> Create();
+  // global APIs. `pref_service` may be null.
+  static std::unique_ptr<AudioProcessMlModelForwarder> Create(
+      PrefService* pref_service);
 
   // Testing factory function. Expects audio service process launches to be
   // signaled by calls to OnAudioProcessLaunched().
   static std::unique_ptr<AudioProcessMlModelForwarder>
-  CreateWithoutAudioProcessObserverForTesting();
+  CreateWithoutAudioProcessObserverForTesting(PrefService* pref_service);
 
   ~AudioProcessMlModelForwarder() override;
 
@@ -72,7 +74,14 @@ class AudioProcessMlModelForwarder
   }
   bool HasModelForTesting() const { return !model_path_.empty(); }
 
+  // Signal that an audio capture stream has been opened. Media may not yet be
+  // flowing, but permission checks have concluded successfully.
+  void OnAudioCaptureStarted();
+
  private:
+  class AudioCaptureRequestObserver;
+  class AudioProcessObserver;
+
   // optimization_guide::OptimizationTargetModelObserver:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -81,8 +90,9 @@ class AudioProcessMlModelForwarder
 
   // If `audio_process_observer` is null, the forwarder does not handle audio
   // service process monitoring internally. See Create*() for details.
-  explicit AudioProcessMlModelForwarder(
-      std::unique_ptr<AudioProcessObserver> audio_process_observer);
+  AudioProcessMlModelForwarder(
+      std::unique_ptr<AudioProcessObserver> audio_process_observer,
+      PrefService* pref_service);
 
   // Stops any ongoing loading of models.
   void CancelModelLoadingTasks();
@@ -103,6 +113,10 @@ class AudioProcessMlModelForwarder
   // Signals when the audio process is ready to start receiving model updates.
   const std::unique_ptr<AudioProcessObserver> audio_process_observer_;
 
+  // Used for checking and updating the last observed input stream creation
+  // time, in order to preload models where they are likely to be needed.
+  raw_ptr<PrefService> pref_service_;
+
   // Task runner for loading model files.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
@@ -113,9 +127,17 @@ class AudioProcessMlModelForwarder
   // a nullopt model update has been received.
   base::FilePath model_path_;
 
-  // Handles registration / deregistration with the model delivery framework.
+  // Handles registration / deregistration with the Optimization Guide.
   std::optional<optimization_guide::OptimizationGuideModelProviderObservation>
       model_observation_;
+
+  // True if and only if an audio input stream was recently created. Used to
+  // gate registering `model_observation_` with the Optimization Guide.
+  bool audio_input_stream_creation_observed_ = false;
+
+  // Observes creation of audio capture streams in order to detect when models
+  // are likely to be needed.
+  std::unique_ptr<AudioCaptureRequestObserver> audio_capture_request_observer_;
 
   base::WeakPtrFactory<AudioProcessMlModelForwarder> weak_factory_{this};
 };

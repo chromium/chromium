@@ -34,7 +34,12 @@ source_set("audio_process_ml_model_forwarder") {
     "//mojo/public/cpp/bindings",
     "//services/audio/public/mojom",
   ]
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/browser/media/webrtc",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
 }
 
 source_set("unittests") {
@@ -44,9 +49,12 @@ source_set("unittests") {
     ":audio_process_ml_model_forwarder",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/media/webrtc",
+    "//chrome/common:constants",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/core/embedder",
@@ -54,6 +62,7 @@ source_set("unittests") {
     "//services/audio/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform",
   ]
 }
 

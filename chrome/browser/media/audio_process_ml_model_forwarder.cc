@@ -12,12 +12,18 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/common/pref_names.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
@@ -25,6 +31,20 @@
 #include "services/audio/public/mojom/audio_service.mojom.h"
 
 namespace {
+
+// The maximum duration since audio input stream creation before we stop
+// considering it a "recent" event.
+//
+// Used at initialization to check the last audio input stream creation time
+// stored in `pref_service_`. If the time is recent, then we assume ML models
+// for audio input stream processing are likely to be needed and
+// AudioProcessMlModelForwarder proactively registers for model updates with
+// the Optimization Guide.
+//
+// 30 days is chosen here to match:
+// 1. the Optimization Guide model expiration time, and
+// 2. similar retention heuristics in other features.
+constexpr base::TimeDelta kRecentAudioCaptureThreshold = base::Days(30);
 
 AudioProcessMlModelForwarder::WrappedFilePtr OpenFileAndReturn(
     base::FilePath path,
@@ -41,7 +61,8 @@ AudioProcessMlModelForwarder::WrappedFilePtr OpenFileAndReturn(
 
 // Used to monitor audio process launches and bind to the audio service
 // MlModelManager interface.
-class AudioProcessObserver : content::ServiceProcessHost::Observer {
+class AudioProcessMlModelForwarder::AudioProcessObserver
+    : content::ServiceProcessHost::Observer {
  public:
   using ServiceLaunchCallback =
       base::RepeatingCallback<void(mojo::Remote<audio::mojom::MlModelManager>)>;
@@ -85,25 +106,61 @@ class AudioProcessObserver : content::ServiceProcessHost::Observer {
   ServiceLaunchCallback launch_callback_;
 };
 
+// Used to monitor audio capture requests and notify the forwarder when device
+// audio capture streams are opened.
+class AudioProcessMlModelForwarder::AudioCaptureRequestObserver
+    : public MediaCaptureDevicesDispatcher::Observer {
+ public:
+  explicit AudioCaptureRequestObserver(AudioProcessMlModelForwarder& forwarder)
+      : forwarder_(forwarder) {
+    MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
+  }
+
+  ~AudioCaptureRequestObserver() override {
+    MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
+  }
+
+  // MediaCaptureDevicesDispatcher::Observer:
+  void OnRequestUpdate(int render_process_id,
+                       int render_frame_id,
+                       blink::mojom::MediaStreamType stream_type,
+                       const content::MediaRequestState state) override {
+    if (state != content::MEDIA_REQUEST_STATE_DONE) {
+      return;
+    }
+    // Only react to device audio capture, where echo cancellation may run in
+    // the audio process.
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      forwarder_->OnAudioCaptureStarted();
+    }
+  }
+
+ private:
+  const base::raw_ref<AudioProcessMlModelForwarder> forwarder_;
+};
+
 // static
 std::unique_ptr<AudioProcessMlModelForwarder>
-AudioProcessMlModelForwarder::Create() {
+AudioProcessMlModelForwarder::Create(PrefService* pref_service) {
   // Using `new` to access a non-public constructor.
   return base::WrapUnique(new AudioProcessMlModelForwarder(
-      std::make_unique<AudioProcessObserver>()));
+      std::make_unique<AudioProcessObserver>(), pref_service));
 }
 
 // static
 std::unique_ptr<AudioProcessMlModelForwarder>
-AudioProcessMlModelForwarder::CreateWithoutAudioProcessObserverForTesting() {
+AudioProcessMlModelForwarder::CreateWithoutAudioProcessObserverForTesting(
+    PrefService* pref_service) {
   // Using `new` to access a non-public constructor.
   return base::WrapUnique(new AudioProcessMlModelForwarder(
-      /*audio_process_observer=*/nullptr));
+      /*audio_process_observer=*/nullptr, pref_service));
 }
 
 AudioProcessMlModelForwarder::AudioProcessMlModelForwarder(
-    std::unique_ptr<AudioProcessObserver> audio_process_observer)
+    std::unique_ptr<AudioProcessObserver> audio_process_observer,
+    PrefService* pref_service)
     : audio_process_observer_(std::move(audio_process_observer)),
+      pref_service_(pref_service),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -125,6 +182,30 @@ void AudioProcessMlModelForwarder::Initialize(
   CHECK(!model_observation_);
   model_observation_.emplace(&model_provider, background_task_runner_,
                              /*observer=*/this);
+
+  if (pref_service_) {
+    base::Time last_audio_input_stream_creation_time =
+        pref_service_->GetTime(prefs::kAudioInputStreamLastTimeCreated);
+    if (!last_audio_input_stream_creation_time.is_null() &&
+        base::Time::Now() - last_audio_input_stream_creation_time <=
+            kRecentAudioCaptureThreshold) {
+      audio_input_stream_creation_observed_ = true;
+    }
+  }
+  audio_capture_request_observer_ =
+      std::make_unique<AudioCaptureRequestObserver>(*this);
+
+  MaybeRegisterModelObserver();
+}
+
+void AudioProcessMlModelForwarder::OnAudioCaptureStarted() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  audio_input_stream_creation_observed_ = true;
+  if (pref_service_) {
+    // Store the time of this event for checking at initialization.
+    pref_service_->SetTime(prefs::kAudioInputStreamLastTimeCreated,
+                           base::Time::Now());
+  }
   MaybeRegisterModelObserver();
 }
 
@@ -161,11 +242,9 @@ void AudioProcessMlModelForwarder::OnAudioProcessLaunched(
 
 void AudioProcessMlModelForwarder::MaybeRegisterModelObserver() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO: crbug.com/442444736 - Audio process presence is a stand in for an
-  // actual signal that the model is useful on this device. To launch widely,
-  // this feature requires a more narrow trigger to reduce unnecessary
-  // downloads.
-  if (!audio_process_model_manager_) {
+  // Avoid registering the model observer until we have an indication that a
+  // model is likely to be used. This reduces unnecessary model downloads.
+  if (!audio_input_stream_creation_observed_) {
     return;
   }
   if (model_observation_ && !model_observation_->IsRegistered()) {

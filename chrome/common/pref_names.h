@@ -1582,6 +1582,10 @@ inline constexpr char kStaticStorageQuotaEnabled[] =
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
+// A time pref storing the last time an audio input stream was created.
+inline constexpr char kAudioInputStreamLastTimeCreated[] =
+    "media.audio_input_stream_last_time_created";
+
 // Used to store the value of the SerialAllowAllPortsForUrls policy.
 inline constexpr char kManagedSerialAllowAllPortsForUrls[] =
     "managed.serial_allow_all_ports_for_urls";

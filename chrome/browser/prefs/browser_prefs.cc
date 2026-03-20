@@ -1543,6 +1543,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // Individual preferences. If you have multiple preferences that should
   // clearly be grouped together, please group them together into a helper
   // function called above. Please keep this list alphabetized.
+
+  registry->RegisterTimePref(prefs::kAudioInputStreamLastTimeCreated,
+                             base::Time(), PrefRegistry::LOSSY_PREF);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
