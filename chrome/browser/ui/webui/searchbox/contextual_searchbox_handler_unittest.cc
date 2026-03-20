@@ -1588,10 +1588,6 @@ TEST_F(ContextualSearchboxHandlerSignedInTestTabsTest,
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ContextualSearchboxHandler::kExhaustiveGetRecentTabs);
-
   // Add tabs with duplicate titles.
   AddTab(GURL("https://a1.com"));
   content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
@@ -1611,14 +1607,20 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
   AddTab(GURL("https://b2.com"));
   content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(5))
       ->SetTitle(u"Title B");
+  AddTab(GURL("https://b3.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(6))
+      ->SetTitle(u"Title B");
 
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>
       tab_info_future;
   handler().GetRecentTabs(tab_info_future.GetCallback());
   auto tabs = tab_info_future.Take();
 
+  // Even though there are more duplicates above, only three tabs are kept
+  // by `GetRecentTabs` with the default configuration, so there can only
+  // be one title with more than one instance in the list.
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.DuplicateTabTitlesShownCount.NewTabPage", 2, 1);
+      "ContextualSearch.DuplicateTabTitlesShownCount.NewTabPage", 1, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, ActiveTabsCountMetric) {

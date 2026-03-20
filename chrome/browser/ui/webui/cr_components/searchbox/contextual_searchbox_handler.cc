@@ -91,11 +91,6 @@ ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
                                   : std::nullopt;
 }
 
-// static
-BASE_FEATURE(ContextualSearchboxHandler::kExhaustiveGetRecentTabs,
-             "ExhaustiveGetRecentTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
   return ntp_composebox::kContextMenuMaxTabSuggestions.Get();
 }
@@ -108,151 +103,91 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kExhaustiveGetRecentTabs)) {
-    // Iterate through the tab strip model, getting the data for each tab
-    std::vector<searchbox::mojom::TabInfoPtr> tabs;
-    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-    for (tabs::TabInterface* tab : *tab_strip_model) {
-      content::WebContents* web_contents = tab->GetContents();
-      const auto& last_committed_url = web_contents->GetLastCommittedURL();
-      // Skip tabs that are still loading, and skip webui that are not the
-      // contextual tasks webui.
-      const bool is_invalid_url = !last_committed_url.is_valid();
-      const bool is_internal_page =
-          (last_committed_url.SchemeIs(content::kChromeUIScheme) ||
-           last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme)) &&
-          !last_committed_url.spec().starts_with(
-              chrome::kChromeUIContextualTasksURL);
-
-      if (is_invalid_url || is_internal_page) {
-        continue;
-      }
-
-      auto tab_data = searchbox::mojom::TabInfo::New();
-      tab_data->tab_id = tab->GetHandle().raw_value();
-      tab_data->title = base::UTF16ToUTF8(TabUIHelper::From(tab)->GetTitle());
-      tab_data->url = last_committed_url;
-      const bool show_in_current_tab_chip =
-          tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
-          last_committed_url;
-      tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
-
-      lens::TabContextualizationController* tab_context_controller =
-          tab->GetTabFeatures()->tab_contextualization_controller();
-      tab_data->show_in_previous_tab_chip =
-          !google_util::IsGoogleSearchUrl(last_committed_url) &&
-          tab_context_controller->GetInitialPageContextEligibility() &&
-          last_committed_url == chrome::kChromeUINewTabURL &&
-          !show_in_current_tab_chip;
-      tab_data->last_active =
-          std::max(web_contents->GetLastActiveTimeTicks(),
-                   web_contents->GetLastInteractionTimeTicks());
-      tabs.push_back(std::move(tab_data));
+  // Get tabs with recency only first, for the sort and cull step.
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  struct TabTime {
+    raw_ptr<tabs::TabInterface> tab;
+    base::TimeTicks time;
+  };
+  std::vector<TabTime> tab_times;
+  for (tabs::TabInterface* tab : *tab_strip_model) {
+    content::WebContents* web_contents = tab->GetContents();
+    const GURL& url = web_contents->GetLastCommittedURL();
+    // Skip tabs that are still loading, and skip webui (internal pages)
+    // except contextual tasks webui.
+    // Skip tabs that are still loading, and skip webui (internal pages).
+    if (url.is_valid() &&
+        ((!url.SchemeIs(content::kChromeUIScheme) &&
+          !url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
+         url.spec().starts_with(chrome::kChromeUIContextualTasksURL))) {
+      tab_times.push_back({
+          .tab = tab,
+          .time = std::max(web_contents->GetLastActiveTimeTicks(),
+                           web_contents->GetLastInteractionTimeTicks()),
+      });
     }
+  }
 
+  // Sort the tabs by last active time, and truncate to the maximum number of
+  // tabs to return.
+  int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
+                                     GetContextMenuMaxTabSuggestions());
+  std::partial_sort(tab_times.begin(), tab_times.begin() + max_tab_suggestions,
+                    tab_times.end(), [](const TabTime& a, const TabTime& b) {
+                      return a.time > b.time;
+                    });
+  tab_times.resize(max_tab_suggestions);
+
+  // Now that tabs have been culled, extract data for only this most recent
+  // selection, which is a small subset of all tabs.
+  std::vector<searchbox::mojom::TabInfoPtr> tabs;
+  for (const TabTime& tab_time : tab_times) {
+    content::WebContents* web_contents = tab_time.tab->GetContents();
+    const GURL& last_committed_url = web_contents->GetLastCommittedURL();
+
+    auto tab_data = searchbox::mojom::TabInfo::New();
+    tab_data->tab_id = tab_time.tab->GetHandle().raw_value();
+    tab_data->title =
+        base::UTF16ToUTF8(TabUIHelper::From(tab_time.tab)->GetTitle());
+    tab_data->url = last_committed_url;
+    const bool show_in_current_tab_chip =
+        tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
+        last_committed_url;
+    tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
+
+    lens::TabContextualizationController* tab_context_controller =
+        tab_time.tab->GetTabFeatures()->tab_contextualization_controller();
+    tab_data->show_in_previous_tab_chip =
+        !google_util::IsGoogleSearchUrl(last_committed_url) &&
+        tab_context_controller->GetInitialPageContextEligibility() &&
+        tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
+            chrome::kChromeUINewTabURL &&
+        !show_in_current_tab_chip;
+    tab_data->last_active = tab_time.time;
+    tabs.push_back(std::move(tab_data));
+  }
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Count duplicate tab titles to record in an UMA histogram.
-    // For example, If 2 tabs with title "Wikipedia" and 3 tabs with title
+    // For example, if 2 tabs with title "Wikipedia" and 3 tabs with title
     // "Weather" are open, this histogram will record 2.
+    // Note however that since the tab count is limited to 3 tabs in the
+    // default configuration, in practice this will not exceed 1 unless
+    // the max tab count is increased (4 tabs -> max 2 duplicates, etc.).
     std::map<std::string, int> title_counts;
     for (const auto& tab : tabs) {
       title_counts[tab->title]++;
     }
-    int duplicate_count = std::ranges::count_if(
+    const int duplicate_count = std::ranges::count_if(
         title_counts, [](const std::pair<const std::string, int>& pair) {
           return pair.second > 1;
         });
 
-    // Sort the tabs by last active time, and truncate to the maximum number of
-    // tabs to return.
-    int max_tab_suggestions = std::min(static_cast<int>(tabs.size()),
-                                       GetContextMenuMaxTabSuggestions());
-    std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
-                      tabs.end(),
-                      [](const searchbox::mojom::TabInfoPtr& a,
-                         const searchbox::mojom::TabInfoPtr& b) {
-                        return a->last_active > b->last_active;
-                      });
-    tabs.resize(max_tab_suggestions);
-
-    if (auto* metrics_recorder = GetMetricsRecorder()) {
-      metrics_recorder->RecordTabContextMenuMetrics(tab_strip_model->count(),
-                                                    duplicate_count);
-    }
-
-    // Invoke the callback with the results.
-    std::move(callback).Run(std::move(tabs));
-  } else {
-    // Get tabs with recency only first, for the sort and cull step.
-    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-    struct TabTime {
-      raw_ptr<tabs::TabInterface> tab;
-      base::TimeTicks time;
-    };
-    std::vector<TabTime> tab_times;
-    for (tabs::TabInterface* tab : *tab_strip_model) {
-      content::WebContents* web_contents = tab->GetContents();
-      const GURL& url = web_contents->GetLastCommittedURL();
-      // Skip tabs that are still loading, and skip webui (internal pages)
-      // except contextual tasks webui.
-      // Skip tabs that are still loading, and skip webui (internal pages).
-      if (url.is_valid() &&
-          ((!url.SchemeIs(content::kChromeUIScheme) &&
-            !url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
-           url.spec().starts_with(chrome::kChromeUIContextualTasksURL))) {
-        tab_times.push_back({
-            .tab = tab,
-            .time = std::max(web_contents->GetLastActiveTimeTicks(),
-                             web_contents->GetLastInteractionTimeTicks()),
-        });
-      }
-    }
-
-    // Sort the tabs by last active time, and truncate to the maximum number of
-    // tabs to return.
-    int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
-                                       GetContextMenuMaxTabSuggestions());
-    std::partial_sort(
-        tab_times.begin(), tab_times.begin() + max_tab_suggestions,
-        tab_times.end(),
-        [](const TabTime& a, const TabTime& b) { return a.time > b.time; });
-    tab_times.resize(max_tab_suggestions);
-
-    // Now that tabs have been culled, extract data for only this most recent
-    // selection, which is a small subset of all tabs.
-    std::vector<searchbox::mojom::TabInfoPtr> tabs;
-    for (const TabTime& tab_time : tab_times) {
-      content::WebContents* web_contents = tab_time.tab->GetContents();
-      const GURL& last_committed_url = web_contents->GetLastCommittedURL();
-
-      auto tab_data = searchbox::mojom::TabInfo::New();
-      tab_data->tab_id = tab_time.tab->GetHandle().raw_value();
-      tab_data->title =
-          base::UTF16ToUTF8(TabUIHelper::From(tab_time.tab)->GetTitle());
-      tab_data->url = last_committed_url;
-      const bool show_in_current_tab_chip =
-          tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
-          last_committed_url;
-      tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
-
-      lens::TabContextualizationController* tab_context_controller =
-          tab_time.tab->GetTabFeatures()->tab_contextualization_controller();
-      tab_data->show_in_previous_tab_chip =
-          !google_util::IsGoogleSearchUrl(last_committed_url) &&
-          tab_context_controller->GetInitialPageContextEligibility() &&
-          tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
-              chrome::kChromeUINewTabURL &&
-          !show_in_current_tab_chip;
-      tab_data->last_active = tab_time.time;
-      tabs.push_back(std::move(tab_data));
-    }
-
-    if (auto* metrics_recorder = GetMetricsRecorder()) {
-      metrics_recorder->RecordTabContextMenuMetrics(tab_strip_model->count(),
-                                                    -1);
-    }
-
-    std::move(callback).Run(std::move(tabs));
+    metrics_recorder->RecordTabContextMenuMetrics(tab_strip_model->count(),
+                                                  duplicate_count);
   }
+
+  std::move(callback).Run(std::move(tabs));
 }
 
 void ContextualSearchboxHandler::GetTabPreview(int32_t tab_id,
