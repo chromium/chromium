@@ -92,12 +92,13 @@ EntityDataManager::EntityDataManager(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAccessibilityAnnotator) &&
-      accessibility_annotator_service) {
+      accessibility_annotator_service &&
+      accessibility_annotator_service->GetEntityDataProvider()) {
     accessibility_annotator_observation_.Observe(
-        &accessibility_annotator_service->GetEntityDataProvider());
+        accessibility_annotator_service->GetEntityDataProvider());
 
     OnEntityDataChanged(
-        accessibility_annotator_service->GetEntityDataProvider(), [] {
+        *accessibility_annotator_service->GetEntityDataProvider(), [] {
           // TODO(crbug.com/40790263): Migrate Accessibility Annotator to
           // DenseSet.
           accessibility_annotator::EntityTypeEnumSet entity_types;

@@ -13,6 +13,7 @@ namespace accessibility_annotator {
 
 BASE_DECLARE_FEATURE(kContentAnnotator);
 BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
 
 BASE_DECLARE_FEATURE_PARAM(int, kContentAnnotatorMaxPendingUrls);
 BASE_DECLARE_FEATURE_PARAM(std::string,

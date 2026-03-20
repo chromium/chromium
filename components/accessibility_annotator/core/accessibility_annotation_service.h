@@ -22,7 +22,7 @@ class AccessibilityAnnotationService : public KeyedService {
       std::unique_ptr<EntityDataProvider> entity_data_provider);
   ~AccessibilityAnnotationService() override;
 
-  EntityDataProvider& GetEntityDataProvider();
+  EntityDataProvider* GetEntityDataProvider();
 
  private:
   std::unique_ptr<EntityDataProvider> entity_data_provider_;

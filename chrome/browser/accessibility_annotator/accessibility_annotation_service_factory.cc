@@ -57,8 +57,16 @@ AccessibilityAnnotationServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  std::unique_ptr<accessibility_annotator::EntityDataProvider> provider =
+      nullptr;
+  if (base::FeatureList::IsEnabled(
+          accessibility_annotator::kAccessibilityAnnotatorGetEntities)) {
+    provider =
+        std::make_unique<accessibility_annotator::DirectServerEntityProvider>(
+            *backend);
+  }
+
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotationService>(
-      std::make_unique<accessibility_annotator::DirectServerEntityProvider>(
-          *backend));
+      std::move(provider));
 }

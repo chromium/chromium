@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +48,30 @@ TEST_F(AccessibilityAnnotationServiceFactoryTest, ServiceDisabled) {
   TestingProfile profile;
   EXPECT_EQ(nullptr,
             AccessibilityAnnotationServiceFactory::GetForProfile(&profile));
+}
+
+TEST_F(AccessibilityAnnotationServiceFactoryTest,
+       EntityDataProviderCreatedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAccessibilityAnnotator, kAccessibilityAnnotatorGetEntities}, {});
+  TestingProfile profile;
+  AccessibilityAnnotationService* service =
+      AccessibilityAnnotationServiceFactory::GetForProfile(&profile);
+  ASSERT_NE(nullptr, service);
+  EXPECT_NE(nullptr, service->GetEntityDataProvider());
+}
+
+TEST_F(AccessibilityAnnotationServiceFactoryTest,
+       EntityDataProviderNullWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kAccessibilityAnnotator},
+                                {kAccessibilityAnnotatorGetEntities});
+  TestingProfile profile;
+  AccessibilityAnnotationService* service =
+      AccessibilityAnnotationServiceFactory::GetForProfile(&profile);
+  ASSERT_NE(nullptr, service);
+  EXPECT_EQ(nullptr, service->GetEntityDataProvider());
 }
 
 }  // namespace accessibility_annotator

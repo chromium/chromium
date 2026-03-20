@@ -8,6 +8,8 @@ namespace accessibility_annotator {
 
 BASE_FEATURE(kContentAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAccessibilityAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kContentAnnotatorMaxPendingUrls,

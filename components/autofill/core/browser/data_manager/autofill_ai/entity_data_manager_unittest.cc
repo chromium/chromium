@@ -566,7 +566,7 @@ class EntityDataManagerTest_AccessibilityAnnotator
 
   MockEntityDataProvider& entity_data_provider() {
     return static_cast<MockEntityDataProvider&>(
-        service_.GetEntityDataProvider());
+        *service_.GetEntityDataProvider());
   }
 
   // Test entity from Accessibility Annotator.
