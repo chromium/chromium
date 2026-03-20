@@ -1091,7 +1091,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"ai_mode", "true"},
-    {"autofill_address", "true"},
     {"bookmark_star", "true"},
     {"cookie_controls", "true"},
     {"collaboration_messaging", "true"},

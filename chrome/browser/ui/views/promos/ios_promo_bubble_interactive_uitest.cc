@@ -91,15 +91,15 @@ class IOSPromoBubbleBrowserTest
         case PromoType::kAddress:
           anchor = button_provider->GetBubbleAnchor(
               kActionShowAddressesBubbleOrPage);
-          highlighted_button = button_provider->GetPageActionIconView(
-              PageActionIconType::kAutofillAddress);
+          highlighted_button = button_provider->GetPageActionView(
+              kActionShowAddressesBubbleOrPage);
           highlighted_element = kAutofillAddressPageActionElementId;
           break;
         case PromoType::kPayment:
           anchor =
               button_provider->GetBubbleAnchor(kActionShowPaymentsBubbleOrPage);
-          highlighted_button = button_provider->GetPageActionIconView(
-              PageActionIconType::kSaveCard);
+          highlighted_button =
+              button_provider->GetPageActionView(kActionShowPaymentsBubbleOrPage);
           highlighted_element = kAutofillSavePaymentsPageActionElementId;
           break;
         case PromoType::kEnhancedBrowsing:
@@ -124,9 +124,7 @@ class IOSPromoBubbleBrowserTest
 
 IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode) {
   if (GetParam() == PromoType::kAddress) {
-    if (IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
-      GTEST_SKIP() << "This test is for the non-migrated state.";
-    }
+    GTEST_SKIP() << "kAutofillAddress is migrated, use ShowQRCode_NoPageAction instead.";
   }
 
   RunTestSequence(
@@ -140,10 +138,6 @@ IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode) {
 IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode_NoPageAction) {
   if (GetParam() != PromoType::kAddress) {
     GTEST_SKIP() << "Test is only for DesktopToIOSPromoType::kAddress.";
-  }
-
-  if (!IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
-    GTEST_SKIP() << "This test is for the migrated state.";
   }
 
   RunTestSequence(

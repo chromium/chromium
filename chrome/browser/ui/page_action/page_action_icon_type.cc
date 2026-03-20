@@ -22,8 +22,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationManagePasswords;
     case PageActionIconType::kCookieControls:
       return &features::kPageActionsMigrationCookieControls;
-    case PageActionIconType::kAutofillAddress:
-      return &features::kPageActionsMigrationAutofillAddress;
     case PageActionIconType::kCollaborationMessaging:
       return &features::kPageActionsMigrationCollaborationMessaging;
     case PageActionIconType::kMandatoryReauth:
@@ -66,6 +64,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kTranslate:
     case PageActionIconType::kFind:
     case PageActionIconType::kPwaInstall:
+    case PageActionIconType::kAutofillAddress:
     case PageActionIconType::kPaymentsOfferNotification:
     case PageActionIconType::kContextualSidePanel:
     case PageActionIconType::kJsOptimizations:
