@@ -18,6 +18,7 @@ namespace contextual_tasks {
 
 class ActiveTaskContextProvider;
 class ContextualTasksPanelController;
+class EntryPointEligibilityManager;
 
 // Native counterpart of ContextualTasksBridge.java.
 // Owned by the Java ContextualTasksBridge.
@@ -49,6 +50,11 @@ class ContextualTasksBridge {
 
   // The provider that tracks the task associated with the active tab.
   std::unique_ptr<ActiveTaskContextProvider> active_task_context_provider_;
+
+  // The manager that determines whether the entry points are eligible to be
+  // shown.
+  std::unique_ptr<contextual_tasks::EntryPointEligibilityManager>
+      entry_point_eligibility_manager_;
 
   // The interface to interact with the bottom sheet ContextualTasks panel.
   std::unique_ptr<ContextualTasksPanelController> controller_;

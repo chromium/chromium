@@ -63,6 +63,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -333,7 +334,6 @@
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
@@ -855,13 +855,11 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
+
   contextual_tasks::ContextualTasksContextServiceFactory::GetInstance();
-#endif
   contextual_tasks::ContextualTasksServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
   contextual_tasks::ContextualTasksUiServiceFactory::GetInstance();
-#endif
+
   ContentIndexProviderFactory::GetInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   contextual_cueing::ContextualCueingServiceFactory::GetInstance();
