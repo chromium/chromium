@@ -21,11 +21,11 @@ BASE_FEATURE(kAnnounceTextAdditionalAttributes,
 // stable.
 BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables clickjacking protection by blocking interaction with views that are
+// Enables input protection by blocking interaction with views that are
 // currently or were recently obscured by always-on-top windows, and prevents
 // unintended events on security-sensitive UI that appears and activates
 // unexpectedly."
-BASE_FEATURE(kEnableClickjackingProtection, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableInputProtection, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If mouse cursor is over different window Windows will not start a Drag
 // and drop. This feature moves the cursor to the location of a touch on

@@ -52,6 +52,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/native_view_focus_manager.h"
+#include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -610,6 +611,9 @@ void Widget::Init(InitParams params) {
     delegate->WidgetInitialized();
   }
 
+  OccludedWidgetInputProtector::GetInstance()->UpdateTracking(
+      base::PassKey<Widget>(), this);
+
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetInitialized(
       this);
 }
@@ -1098,6 +1102,9 @@ bool Widget::ShouldViewsStyleFollowWidgetActivation() const {
 void Widget::SetZOrderLevel(ui::ZOrderLevel order) {
   if (native_widget_) {
     native_widget_->SetZOrderLevel(order);
+
+    OccludedWidgetInputProtector::GetInstance()->UpdateTracking(
+        base::PassKey<Widget>(), this);
   }
 }
 

@@ -3075,11 +3075,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "enable-clickjacking-protection",
-    "owners": [ "bkeen@google.com", "media-dev@chromium.org"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "enable-client-certificate-provisioning-on-android",
     "owners": [ "eliashomsi@google.com", "cbe-cep-eng@google.com" ],
     "expiry_milestone": 145
@@ -3571,6 +3566,11 @@
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "enable-input-protection",
+    "owners": [ "bkeen@google.com", "media-dev@chromium.org"],
+    "expiry_milestone": 155
   },
   {
     "name": "enable-isolated-sandboxed-iframes",

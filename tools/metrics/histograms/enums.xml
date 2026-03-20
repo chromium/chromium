@@ -11744,7 +11744,6 @@ from previous Chrome versions.
   <int value="-929944930"
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-929290033" label="CrosSodaConchLanguages:disabled"/>
-  <int value="-928560908" label="EnableClickjackingProtection:enabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>
   <int value="-926780551" label="AndroidZoomIndicator:enabled"/>
   <int value="-926422468" label="disable-embedded-shared-worker"/>
@@ -14173,6 +14172,7 @@ from previous Chrome versions.
   <int value="-106039323" label="XplatSyncedSetup:disabled"/>
   <int value="-105400607" label="Glic:enabled"/>
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
+  <int value="-103592169" label="EnableInputProtection:enabled"/>
   <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
@@ -14381,6 +14381,7 @@ from previous Chrome versions.
   <int value="-34898620" label="RendererSideContentDecoding:disabled"/>
   <int value="-33771076" label="MemoryPurgeOnFreezeLimit:disabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
+  <int value="-33052443" label="EnableInputProtection:disabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-32583212" label="AlwaysDrawCompositedToolbarHairline:disabled"/>
   <int value="-31484570"
@@ -19280,7 +19281,6 @@ from previous Chrome versions.
   <int value="1616938915"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>
   <int value="1617187093" label="enable-improved-a2hs"/>
-  <int value="1618142151" label="EnableClickjackingProtection:disabled"/>
   <int value="1618337673" label="IdbSqliteBackingStore:disabled"/>
   <int value="1618538021" label="FallbackToSWIfGLES3NotSupported:disabled"/>
   <int value="1618633341" label="MashOopViz:enabled"/>
