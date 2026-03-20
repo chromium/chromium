@@ -19,7 +19,7 @@ class COMPONENT_EXPORT(URL) GURLAndroid {
                            const jni_zero::JavaRef<jobject>& j_gurl);
   static jni_zero::ScopedJavaLocalRef<JGURL> FromNativeGURL(JNIEnv* env,
                                                             const GURL& gurl);
-  static jni_zero::ScopedJavaLocalRef<jobject> EmptyGURL(JNIEnv* env);
+  static jni_zero::ScopedJavaLocalRef<JGURL> EmptyGURL(JNIEnv* env);
 };
 
 }  // namespace url

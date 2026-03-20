@@ -59,7 +59,7 @@ CollaborationServiceAndroid::CollaborationServiceAndroid(
     : collaboration_service_(collaboration_service) {
   DCHECK(collaboration_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, JCollaborationServiceImplClass::create(
+  java_obj_.Reset(env, JCollaborationServiceImplJni::create(
                            env, reinterpret_cast<int64_t>(this)));
 }
 
@@ -114,7 +114,7 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
     JNIEnv* env) {
   ServiceStatus status = collaboration_service_->GetServiceStatus();
 
-  return JServiceStatusClass::createServiceStatus(
+  return JServiceStatusJni::createServiceStatus(
       env, static_cast<int>(status.signin_status),
       static_cast<int>(status.sync_status),
       static_cast<int>(status.collaboration_status));
@@ -169,11 +169,11 @@ void CollaborationServiceAndroid::OnServiceStatusChanged(
     const ServiceStatusUpdate& update) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  auto j_old_status = JServiceStatusClass::createServiceStatus(
+  auto j_old_status = JServiceStatusJni::createServiceStatus(
       env, static_cast<int>(update.old_status.signin_status),
       static_cast<int>(update.old_status.sync_status),
       static_cast<int>(update.old_status.collaboration_status));
-  auto j_new_status = JServiceStatusClass::createServiceStatus(
+  auto j_new_status = JServiceStatusJni::createServiceStatus(
       env, static_cast<int>(update.new_status.signin_status),
       static_cast<int>(update.new_status.sync_status),
       static_cast<int>(update.new_status.collaboration_status));

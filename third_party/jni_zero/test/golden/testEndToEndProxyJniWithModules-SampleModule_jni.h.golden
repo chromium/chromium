@@ -68,7 +68,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcal
 // Lazy definition of C++ classes JMyClass:
 
 // Actual implementations of C++ classes JMyClass:
-namespace jni_zero::internal {
+namespace jni_zero_internal {
 
 template<>
 class _CalledByNatives<JSampleModule> {
@@ -76,7 +76,7 @@ class _CalledByNatives<JSampleModule> {
 };
 
 
-}  // namespace jni_zero::internal
+}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleModule_JNI

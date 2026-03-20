@@ -21,7 +21,7 @@ using JSampleBidirectionalNonProxy = _JSampleBidirectionalNonProxy*;
 #endif
 
 using JSampleBidirectionalNonProxy = ::org::jni_zero::JSampleBidirectionalNonProxy;
-using JSampleBidirectionalNonProxyClass = ::jni_zero::internal::_CalledByNatives<JSampleBidirectionalNonProxy>;
+using JSampleBidirectionalNonProxyJni = ::jni_zero_internal::_CalledByNatives<JSampleBidirectionalNonProxy>;
 
 
 

@@ -206,11 +206,8 @@ def _return_type_cpp_mirror_self(cbn):
   Return True if successful, and return False if unsuccessful.
   """
   java_class_name = cbn.java_class.nested_name
-  returned_mirrored_class = f'jni_zero::ScopedJavaLocalRef<J{java_class_name}>'
-  if cbn.is_constructor:
-    return returned_mirrored_class, True
-  elif cbn.return_type.enable_mirror(cbn.java_class):
-    return returned_mirrored_class, True
+  if cbn.return_type.enable_mirror(cbn.java_class):
+    return f'jni_zero::ScopedJavaLocalRef<J{java_class_name}>', True
   else:
     return _return_type_cpp_non_mirror(cbn.return_type), False
 
@@ -227,10 +224,8 @@ def _return_type_cpp_mirror_others(cbn):
   """
   java_class_name = cbn.java_class.nested_name
   returned_mirrored_class = f'jni_zero::ScopedJavaLocalRef<J{java_class_name}>'
-  if cbn.is_constructor:
-    return returned_mirrored_class, False
-  elif cbn.return_type.enable_mirror(cbn.java_class):
-    return returned_mirrored_class, False
+  if cbn.return_type.enable_mirror(cbn.java_class):
+    return returned_mirrored_class, True
   elif cbn.return_type.enable_mirror():
     java_class_name = cbn.return_type.java_class.nested_name
     cpp_class_namespace = cbn.return_type.java_class.package_with_colons
@@ -315,12 +310,9 @@ def method_definition(sb, cbn):
   java_class = cbn.java_class
   java_class_name = cbn.java_class.nested_name
   reciever_arg_is_class = cbn.static or cbn.is_constructor
-  if cbn.is_constructor:
-    return_type = cbn.java_class.as_type()
-  else:
-    return_type = cbn.return_type
+  return_type = cbn.return_type
   is_void = return_type.is_void()
-  return_type_cpp, returned_mirrored_class = _return_type_cpp_mirror_self(cbn)
+  return_type_cpp = _return_type_cpp_non_mirror(return_type)
 
   if cbn.is_system_class:
     sb('[[maybe_unused]] ')
@@ -383,11 +375,6 @@ def method_definition(sb, cbn):
         return_rvalue = '_ret2'
         sb(f'{jobject_type} _ret2 = static_cast<{jobject_type}>(_ret);\n')
 
-      if returned_mirrored_class:
-        sb(f'auto _ret3 = static_cast<J{java_class_name}>({return_rvalue});\n')
-        return_rvalue = '_ret3'
-        jobject_type = f'J{java_class_name}'
-
       with sb.statement():
         sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>::Adopt(env, '
            f'{return_rvalue})')
@@ -416,8 +403,8 @@ def mirrored_cpp_class_lazy_definition(sb,
     with sb.namespace(jni_namespace):
       sb(f'using J{java_class_name} = ')
       sb(f'::{cpp_class_namespace}::J{java_class_name};\n')
-      sb(f'using J{java_class_name}Class = ')
-      sb(f'::jni_zero::internal::_CalledByNatives<J{java_class_name}>;\n')
+      sb(f'using J{java_class_name}Jni = ')
+      sb(f'::jni_zero_internal::_CalledByNatives<J{java_class_name}>;\n')
     sb('\n')
 
 
@@ -452,7 +439,7 @@ def mirrored_cpp_method(sb, cbn):
   with sb.block():
     if not is_static:
       sb('auto this_obj = reinterpret_cast')
-      sb(f'<const JavaRef<J{java_class_name}>*>(this);\n')
+      sb(f'<const jni_zero::JavaRef<J{java_class_name}>*>(this);\n')
 
     with sb.statement():
       sb('return ')

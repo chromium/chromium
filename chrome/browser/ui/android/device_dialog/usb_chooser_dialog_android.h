@@ -27,7 +27,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
  public:
   // The callback type for creating the java dialog object.
   using CreateJavaDialogCallback =
-      base::OnceCallback<base::android::ScopedJavaLocalRef<JUsbChooserDialog>(
+      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
           JNIEnv*,
           const base::android::JavaRef<jobject>&,
           const std::u16string&,

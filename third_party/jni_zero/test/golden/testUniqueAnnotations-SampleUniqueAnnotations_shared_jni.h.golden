@@ -21,7 +21,7 @@ using JSampleUniqueAnnotations = _JSampleUniqueAnnotations*;
 #endif
 
 using JSampleUniqueAnnotations = ::org::jni_zero::JSampleUniqueAnnotations;
-using JSampleUniqueAnnotationsClass = ::jni_zero::internal::_CalledByNatives<JSampleUniqueAnnotations>;
+using JSampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNatives<JSampleUniqueAnnotations>;
 
 
 

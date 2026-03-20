@@ -166,7 +166,7 @@ using JInner = _JInner*;
 
 
 // Actual implementations of C++ classes JMyClass:
-namespace jni_zero::internal {
+namespace jni_zero_internal {
 
 template<>
 class _CalledByNatives<JSampleUniqueAnnotations> {
@@ -178,7 +178,7 @@ class _CalledByNatives<JSampleUniqueAnnotations> {
 };
 
 
-}  // namespace jni_zero::internal
+}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleUniqueAnnotations_JNI

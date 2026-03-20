@@ -21,7 +21,7 @@ using JTinySample = _JTinySample*;
 #endif
 
 using JTinySample = ::org::jni_zero::JTinySample;
-using JTinySampleClass = ::jni_zero::internal::_CalledByNatives<JTinySample>;
+using JTinySampleJni = ::jni_zero_internal::_CalledByNatives<JTinySample>;
 
 
 

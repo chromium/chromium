@@ -66,7 +66,7 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
 
   void SetUp() override {
     j_test_ =
-        JTabGroupSyncServiceAndroidUnitTestClass::New(AttachCurrentThread());
+        JTabGroupSyncServiceAndroidUnitTestJni::New(AttachCurrentThread());
     CreateBridge();
     SetUpJavaTestObserver();
   }

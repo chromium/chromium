@@ -28,10 +28,9 @@ Origin CreateOpaqueOriginForAndroid(const std::string& scheme,
 base::android::ScopedJavaLocalRef<JOrigin> Origin::ToJavaObject(
     JNIEnv* env) const {
   const base::UnguessableToken* token = GetNonceForSerialization();
-  return Java_Origin_Constructor(env, tuple_.scheme(), tuple_.host(),
-                                 tuple_.port(), opaque(),
-                                 token ? token->GetHighForSerialization() : 0,
-                                 token ? token->GetLowForSerialization() : 0);
+  return JOriginJni::New(env, tuple_.scheme(), tuple_.host(), tuple_.port(),
+                         opaque(), token ? token->GetHighForSerialization() : 0,
+                         token ? token->GetLowForSerialization() : 0);
 }
 
 // static
@@ -39,8 +38,8 @@ Origin Origin::FromJavaObject(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_origin) {
   Origin ret;
-  Java_Origin_assignNativeOrigin(env, java_origin,
-                                 reinterpret_cast<int64_t>(&ret));
+  java_origin.As<JOrigin>()->assignNativeOrigin(
+      env, reinterpret_cast<int64_t>(&ret));
   return ret;
 }
 

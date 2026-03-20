@@ -21,7 +21,7 @@ using JSampleProxyEdgeCases = _JSampleProxyEdgeCases*;
 #endif
 
 using JSampleProxyEdgeCases = ::org::jni_zero::JSampleProxyEdgeCases;
-using JSampleProxyEdgeCasesClass = ::jni_zero::internal::_CalledByNatives<JSampleProxyEdgeCases>;
+using JSampleProxyEdgeCasesJni = ::jni_zero_internal::_CalledByNatives<JSampleProxyEdgeCases>;
 
 
 

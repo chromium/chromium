@@ -19,9 +19,9 @@ namespace url {
 
 namespace {
 
-ScopedJavaLocalRef<jobject> CreateJavaParsed(JNIEnv* env,
+ScopedJavaLocalRef<JParsed> CreateJavaParsed(JNIEnv* env,
                                              const Parsed& parsed,
-                                             const JavaRef<jobject>& inner) {
+                                             const JavaRef<JParsed>& inner) {
   static constexpr bool is_signed =
       std::is_signed<decltype(parsed.scheme.begin)>::value;
   static constexpr size_t offset_size = sizeof(parsed.scheme.begin);
@@ -29,7 +29,7 @@ ScopedJavaLocalRef<jobject> CreateJavaParsed(JNIEnv* env,
                     (!is_signed && sizeof(int32_t) > offset_size),
                 "Java size offsets for Parsed Components must be large enough "
                 "to store the full C++ offset.");
-  return Java_Parsed_Constructor(
+  return JParsedJni::New(
       env, parsed.scheme.begin, parsed.scheme.len, parsed.username.begin,
       parsed.username.len, parsed.password.begin, parsed.password.len,
       parsed.host.begin, parsed.host.len, parsed.port.begin, parsed.port.len,
@@ -41,10 +41,10 @@ ScopedJavaLocalRef<jobject> CreateJavaParsed(JNIEnv* env,
 }  // namespace
 
 // static
-ScopedJavaLocalRef<jobject> ParsedAndroid::InitFromParsed(
+ScopedJavaLocalRef<JParsed> ParsedAndroid::InitFromParsed(
     JNIEnv* env,
     const Parsed& parsed) {
-  ScopedJavaLocalRef<jobject> inner;
+  ScopedJavaLocalRef<JParsed> inner;
   if (parsed.inner_parsed())
     inner = CreateJavaParsed(env, *parsed.inner_parsed(), nullptr);
   return CreateJavaParsed(env, parsed, inner);

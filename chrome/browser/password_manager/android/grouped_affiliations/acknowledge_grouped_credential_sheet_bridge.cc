@@ -31,7 +31,7 @@ class JniDelegateImpl : public JniDelegate {
 
   void Create(const gfx::NativeWindow window_android,
               AcknowledgeGroupedCredentialSheetBridge* bridge) override {
-    java_bridge_.Reset(JAcknowledgeGroupedCredentialSheetBridgeClass::New(
+    java_bridge_.Reset(JAcknowledgeGroupedCredentialSheetBridgeJni::New(
         base::android::AttachCurrentThread(),
         reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
   }

@@ -122,7 +122,7 @@ WindowAndroid::~WindowAndroid() {
 std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting>
 WindowAndroid::CreateForTesting() {
   JNIEnv* env = AttachCurrentThread();
-  long native_pointer = JWindowAndroidClass::createForTesting(env);
+  long native_pointer = JWindowAndroidJni::createForTesting(env);
   return std::make_unique<ScopedWindowAndroidForTesting>(
       reinterpret_cast<WindowAndroid*>(native_pointer));
 }

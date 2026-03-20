@@ -21,7 +21,7 @@ using JSampleNonProxy = _JSampleNonProxy*;
 #endif
 
 using JSampleNonProxy = ::org::jni_zero::JSampleNonProxy;
-using JSampleNonProxyClass = ::jni_zero::internal::_CalledByNatives<JSampleNonProxy>;
+using JSampleNonProxyJni = ::jni_zero_internal::_CalledByNatives<JSampleNonProxy>;
 
 
 

@@ -65,7 +65,7 @@ enum Java_JavapClass_constant_fields {
 
 
 // Native to Java functions
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<JJavapClass> Java_JavapClass_Constructor(
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(
     JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
@@ -78,11 +78,10 @@ enum Java_JavapClass_constant_fields {
       "()V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id());
-  auto _ret3 = static_cast<JJavapClass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<JJavapClass>::Adopt(env, _ret3);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<JJavapClass> Java_JavapClass_Constructor__boolean(
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
     JNIEnv* env,
     jboolean p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -96,11 +95,10 @@ enum Java_JavapClass_constant_fields {
       "(Z)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), p0);
-  auto _ret3 = static_cast<JJavapClass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<JJavapClass>::Adopt(env, _ret3);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<JJavapClass> Java_JavapClass_Constructor__int(
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(
     JNIEnv* env,
     JniIntWrapper p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -114,8 +112,7 @@ enum Java_JavapClass_constant_fields {
       "(I)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), as_jint(p0));
-  auto _ret3 = static_cast<JJavapClass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<JJavapClass>::Adopt(env, _ret3);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 [[maybe_unused]] static jint Java_JavapClass_intMethod(
@@ -317,7 +314,7 @@ using JArrayList = _JArrayList*;
 // Declare the namespace so that it can be used by "using namespace"
 namespace JNI_JavapClass {}
 
-namespace jni_zero::internal {
+namespace jni_zero_internal {
 
 using namespace JNI_JavapClass;
 
@@ -325,19 +322,22 @@ template<>
 class _CalledByNatives<JJavapClass> {
   public:
   static jni_zero::ScopedJavaLocalRef<JJavapClass> New(JNIEnv* env) {
-    return Java_JavapClass_Constructor(env);
+    return Java_JavapClass_Constructor(env)
+        .As<::org::jni_zero::JJavapClass>();
   }
 
   static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor__boolean(JNIEnv* env, jboolean p0) {
-    return Java_JavapClass_Constructor__boolean(env, p0);
+    return Java_JavapClass_Constructor__boolean(env, p0)
+        .As<::org::jni_zero::JJavapClass>();
   }
 
   static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor__int(JNIEnv* env, JniIntWrapper p0) {
-    return Java_JavapClass_Constructor__int(env, p0);
+    return Java_JavapClass_Constructor__int(env, p0)
+        .As<::org::jni_zero::JJavapClass>();
   }
 
   jint intMethod(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0) const {
-    auto this_obj = reinterpret_cast<const JavaRef<JJavapClass>*>(this);
+    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JJavapClass>*>(this);
     return Java_JavapClass_intMethod(env, *this_obj, p0);
   }
 
@@ -359,7 +359,7 @@ class _CalledByNatives<JJavapClass> {
       JNIEnv* env,
       const jni_zero::JavaRef<::java::lang::JObject>& p0,
       const jni_zero::JavaRef<jobjectArray>& p1) const {
-    auto this_obj = reinterpret_cast<const JavaRef<JJavapClass>*>(this);
+    auto this_obj = reinterpret_cast<const jni_zero::JavaRef<JJavapClass>*>(this);
     return Java_JavapClass_objTest(env, *this_obj, p0, p1);
   }
 
@@ -379,7 +379,7 @@ class _CalledByNatives<JJavapClass> {
 };
 
 
-}  // namespace jni_zero::internal
+}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_JavapClass_JNI

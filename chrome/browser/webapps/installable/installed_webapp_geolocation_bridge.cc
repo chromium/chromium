@@ -38,7 +38,7 @@ InstalledWebappGeolocationBridge::~InstalledWebappGeolocationBridge() {
 void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_ref_.is_null()) {
-    java_ref_.Reset(JInstalledWebappGeolocationBridgeClass::create(
+    java_ref_.Reset(JInstalledWebappGeolocationBridgeJni::create(
         env, reinterpret_cast<intptr_t>(this),
         url::GURLAndroid::FromNativeGURL(env, url_)));
   }

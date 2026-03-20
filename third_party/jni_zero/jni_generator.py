@@ -159,16 +159,17 @@ class CalledByNative:
     self.unchecked = parsed_called_by_native.unchecked or unchecked
     self.java_class = parsed_called_by_native.java_class
     self.is_system_class = is_system_class
+    self.is_constructor = self.name == '<init>'
 
     # Computed once we know if overloads exist.
     self.method_id_function_name = None
 
-  @property
-  def is_constructor(self):
-    return self.name == '<init>'
 
   @property
   def return_type(self):
+    # Set the return type of constructors to for simpler codegen logic.
+    if self.is_constructor:
+      return self.java_class.as_type()
     return self.signature.return_type
 
   @property
@@ -479,7 +480,7 @@ def _generate_headers(jni_mode,
                   '"using namespace"\n')
       unshared_sb(f'namespace {jni_obj.jni_namespace} {{}}\n')
       unshared_sb('\n')
-    with unshared_sb.namespace('jni_zero::internal'):
+    with unshared_sb.namespace('jni_zero_internal'):
       if jni_obj.jni_namespace:
         unshared_sb(f'using namespace {jni_obj.jni_namespace};\n')
         unshared_sb('\n')

@@ -23,7 +23,7 @@ using JJavapClass = _JJavapClass*;
 namespace JNI_JavapClass {
 
 using JJavapClass = ::org::jni_zero::JJavapClass;
-using JJavapClassClass = ::jni_zero::internal::_CalledByNatives<JJavapClass>;
+using JJavapClassJni = ::jni_zero_internal::_CalledByNatives<JJavapClass>;
 
 }  // namespace JNI_JavapClass
 

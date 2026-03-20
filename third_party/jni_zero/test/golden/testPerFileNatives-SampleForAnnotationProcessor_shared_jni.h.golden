@@ -21,7 +21,7 @@ using JSampleForAnnotationProcessor = _JSampleForAnnotationProcessor*;
 #endif
 
 using JSampleForAnnotationProcessor = ::org::jni_zero::JSampleForAnnotationProcessor;
-using JSampleForAnnotationProcessorClass = ::jni_zero::internal::_CalledByNatives<JSampleForAnnotationProcessor>;
+using JSampleForAnnotationProcessorJni = ::jni_zero_internal::_CalledByNatives<JSampleForAnnotationProcessor>;
 
 
 

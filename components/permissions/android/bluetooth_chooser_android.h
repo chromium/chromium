@@ -27,13 +27,13 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
  public:
   // The callback type for creating the java dialog object.
   using CreateJavaDialogCallback =
-      base::OnceCallback<base::android::ScopedJavaLocalRef<
-          JBluetoothChooserDialog>(JNIEnv*,
-                                   const base::android::JavaRef<jobject>&,
-                                   const std::u16string&,
-                                   JniIntWrapper,
-                                   const base::android::JavaRef<jobject>&,
-                                   int64_t)>;
+      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
+          JNIEnv*,
+          const base::android::JavaRef<jobject>&,
+          const std::u16string&,
+          JniIntWrapper,
+          const base::android::JavaRef<jobject>&,
+          int64_t)>;
 
   // Both frame and event_handler must outlive the BluetoothChooserAndroid.
   BluetoothChooserAndroid(

@@ -14,7 +14,7 @@
 std::string LocaleManager::GetYandexReferralID() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<JLocaleManager> jlocale_manager =
-      JLocaleManagerClass::getInstance(env);
+      JLocaleManagerJni::getInstance(env);
   if (jlocale_manager.is_null())
     return "";
   return jlocale_manager->getYandexReferralId(env);
@@ -24,7 +24,7 @@ std::string LocaleManager::GetYandexReferralID() {
 std::string LocaleManager::GetMailRUReferralID() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<JLocaleManager> jlocale_manager =
-      JLocaleManagerClass::getInstance(env);
+      JLocaleManagerJni::getInstance(env);
   if (jlocale_manager.is_null())
     return "";
   return jlocale_manager->getMailRUReferralId(env);

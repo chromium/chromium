@@ -21,7 +21,7 @@ using JSampleModule = _JSampleModule*;
 #endif
 
 using JSampleModule = ::org::jni_zero::JSampleModule;
-using JSampleModuleClass = ::jni_zero::internal::_CalledByNatives<JSampleModule>;
+using JSampleModuleJni = ::jni_zero_internal::_CalledByNatives<JSampleModule>;
 
 
 

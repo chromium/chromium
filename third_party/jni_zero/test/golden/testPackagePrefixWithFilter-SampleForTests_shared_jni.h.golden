@@ -23,7 +23,7 @@ using JSampleForTests = _JSampleForTests*;
 namespace jni_zero::tests {
 
 using JSampleForTests = ::this::is::a::package::prefix::org::jni_zero::JSampleForTests;
-using JSampleForTestsClass = ::jni_zero::internal::_CalledByNatives<JSampleForTests>;
+using JSampleForTestsJni = ::jni_zero_internal::_CalledByNatives<JSampleForTests>;
 
 }  // namespace jni_zero::tests
 
@@ -38,7 +38,7 @@ using JInnerStructA = _JInnerStructA*;
 namespace jni_zero::tests {
 
 using JInnerStructA = ::this::is::a::package::prefix::org::jni_zero::JInnerStructA;
-using JInnerStructAClass = ::jni_zero::internal::_CalledByNatives<JInnerStructA>;
+using JInnerStructAJni = ::jni_zero_internal::_CalledByNatives<JInnerStructA>;
 
 }  // namespace jni_zero::tests
 
@@ -53,7 +53,7 @@ using JInnerStructB = _JInnerStructB*;
 namespace jni_zero::tests {
 
 using JInnerStructB = ::this::is::a::package::prefix::org::jni_zero::JInnerStructB;
-using JInnerStructBClass = ::jni_zero::internal::_CalledByNatives<JInnerStructB>;
+using JInnerStructBJni = ::jni_zero_internal::_CalledByNatives<JInnerStructB>;
 
 }  // namespace jni_zero::tests
 

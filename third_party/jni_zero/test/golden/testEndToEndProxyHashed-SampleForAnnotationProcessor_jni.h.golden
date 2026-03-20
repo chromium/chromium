@@ -881,7 +881,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
 // Lazy definition of C++ classes JMyClass:
 
 // Actual implementations of C++ classes JMyClass:
-namespace jni_zero::internal {
+namespace jni_zero_internal {
 
 template<>
 class _CalledByNatives<JSampleForAnnotationProcessor> {
@@ -889,7 +889,7 @@ class _CalledByNatives<JSampleForAnnotationProcessor> {
 };
 
 
-}  // namespace jni_zero::internal
+}  // namespace jni_zero_internal
 
 
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

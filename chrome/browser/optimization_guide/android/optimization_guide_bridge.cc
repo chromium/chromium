@@ -206,7 +206,7 @@ ScopedJavaLocalRef<JOptimizationGuideBridge>
 OptimizationGuideBridge::GetJavaObject() {
   JNIEnv* env = AttachCurrentThread();
   if (!java_ref_) {
-    java_ref_.Reset(Java_OptimizationGuideBridge_Constructor(
+    java_ref_.Reset(JOptimizationGuideBridgeJni::New(
         env, reinterpret_cast<intptr_t>(this)));
   }
   return ScopedJavaLocalRef<JOptimizationGuideBridge>(java_ref_);

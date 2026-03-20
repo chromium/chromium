@@ -28,14 +28,14 @@ namespace {
 
 static void InitFromGURL(JNIEnv* env,
                          const GURL& gurl,
-                         const JavaRef<jobject>& target) {
+                         const JavaRef<JGURL>& target) {
   // Ensure that the spec only contains US-ASCII (single-byte characters) or the
   // parsed indices will be wrong as the indices are in bytes while Java Strings
   // are always 16-bit.
   DCHECK(base::IsStringASCII(gurl.possibly_invalid_spec()));
-  Java_GURL_init(env, target, gurl.possibly_invalid_spec(), gurl.is_valid(),
-                 ParsedAndroid::InitFromParsed(
-                     env, gurl.parsed_for_possibly_invalid_spec()));
+  target->init(env, gurl.possibly_invalid_spec(), gurl.is_valid(),
+               ParsedAndroid::InitFromParsed(
+                   env, gurl.parsed_for_possibly_invalid_spec()));
 }
 
 // As |GetArrayLength| makes no guarantees about the returned value (e.g., it
@@ -56,27 +56,27 @@ GURL GURLAndroid::ToNativeGURL(JNIEnv* env,
                                const base::android::JavaRef<jobject>& j_gurl) {
   GURL ret;
   Parsed parsed;
-  Java_GURL_toNativeGURL(env, j_gurl, reinterpret_cast<int64_t>(&ret),
-                         reinterpret_cast<int64_t>(&parsed));
+  j_gurl.As<JGURL>()->toNativeGURL(env, reinterpret_cast<int64_t>(&ret),
+                                   reinterpret_cast<int64_t>(&parsed));
   return ret;
 }
 
 // static
 ScopedJavaLocalRef<JGURL> GURLAndroid::FromNativeGURL(JNIEnv* env,
                                                       const GURL& gurl) {
-  ScopedJavaLocalRef<JGURL> j_gurl = Java_GURL_Constructor(env);
+  ScopedJavaLocalRef<JGURL> j_gurl = JGURLJni::New(env);
   InitFromGURL(env, gurl, j_gurl);
   return j_gurl;
 }
 
 // static
-ScopedJavaLocalRef<jobject> GURLAndroid::EmptyGURL(JNIEnv* env) {
-  return Java_GURL_emptyGURL(env);
+ScopedJavaLocalRef<JGURL> GURLAndroid::EmptyGURL(JNIEnv* env) {
+  return JGURLJni::emptyGURL(env);
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,
                                const GURL& gurl,
-                               const JavaRef<jobject>& target) {
+                               const JavaRef<JGURL>& target) {
   InitFromGURL(env, gurl.DeprecatedGetOriginAsURL(), target);
 }
 
@@ -94,7 +94,7 @@ static bool JNI_GURL_EqualsIgnoringRef(JNIEnv* env,
 
 static void JNI_GURL_Init(JNIEnv* env,
                           const std::string& spec,
-                          const base::android::JavaRef<jobject>& target) {
+                          const base::android::JavaRef<JGURL>& target) {
   auto gurl = GURL(spec);
   InitFromGURL(env, gurl, target);
 }
@@ -116,7 +116,7 @@ static void JNI_GURL_ReplaceComponents(
     bool clear_username,
     const JavaRef<jstring>& j_password_replacement,
     bool clear_password,
-    const JavaRef<jobject>& j_result) {
+    const JavaRef<JGURL>& j_result) {
   GURL::Replacements replacements;
 
   // Replacement strings must remain in scope for ReplaceComponents().

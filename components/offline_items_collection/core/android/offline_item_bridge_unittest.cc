@@ -19,10 +19,10 @@ namespace android {
 namespace {
 
 // Tests the JNI bridge that creates Java OfflineItem.
-class OfflineItemBridgeTest : public ::testing::Test {
+class OfflineItemBridgeUnitTest : public ::testing::Test {
  public:
-  OfflineItemBridgeTest()
-      : j_test_(JOfflineItemBridgeUnitTestClass::New(AttachCurrentThread())) {}
+  OfflineItemBridgeUnitTest()
+      : j_test_(JOfflineItemBridgeUnitTestJni::New(AttachCurrentThread())) {}
 
   const jni_zero::ScopedJavaGlobalRef<JOfflineItemBridgeUnitTest>& j_test() {
     return j_test_;
@@ -33,7 +33,7 @@ class OfflineItemBridgeTest : public ::testing::Test {
 };
 
 // Verfies a default offline item can be created in Java.
-TEST_F(OfflineItemBridgeTest, CreateOfflineItem) {
+TEST_F(OfflineItemBridgeUnitTest, CreateOfflineItem) {
   OfflineItem item;
   auto* env = AttachCurrentThread();
   auto j_offline_item =

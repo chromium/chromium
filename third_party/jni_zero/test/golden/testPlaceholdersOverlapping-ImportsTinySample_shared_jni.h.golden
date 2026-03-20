@@ -21,7 +21,7 @@ using JImportsTinySample = _JImportsTinySample*;
 #endif
 
 using JImportsTinySample = ::org::jni_zero::extrapackage::JImportsTinySample;
-using JImportsTinySampleClass = ::jni_zero::internal::_CalledByNatives<JImportsTinySample>;
+using JImportsTinySampleJni = ::jni_zero_internal::_CalledByNatives<JImportsTinySample>;
 
 
 
