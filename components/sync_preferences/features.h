@@ -9,6 +9,10 @@
 
 namespace sync_preferences::features {
 
+// If enabled, supports account-scoping of preferences. That is, the values of
+// the specially tagged preferences will be cleared upon sign out.
+BASE_DECLARE_FEATURE(kAccountScopedPrefs);
+
 // Enables the CrossDevicePrefTracker, a KeyedService for tracking select
 // non-syncing Prefs across a user's devices.
 BASE_DECLARE_FEATURE(kEnableCrossDevicePrefTracker);

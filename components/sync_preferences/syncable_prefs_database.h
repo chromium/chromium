@@ -49,17 +49,35 @@ enum class MergeBehavior {
   kCustom
 };
 
+// When preferences sync is enabled, this enum is used to determine whether a
+// pref update should be applied to the account value, or both the account value
+// and the local value.
+// NOTE: The default behavior is to write to both. Unless the pref values really
+// need to be account-scoped, prefer to use `kWriteToBoth`.
+enum class WriteBehavior {
+  // The pref is written to both - the local value as well as the account value.
+  kWriteToBoth,
+  // The pref is only written to the account value.
+  // NOTE: The pref is written the account store only, iff the user is
+  // signed-in. Else, the pref is not written at all.
+  kWriteToAccountOnly,
+};
+
 // This class represents the metadata corresponding to a syncable preference.
 class SyncablePrefMetadata {
  public:
-  constexpr SyncablePrefMetadata(int syncable_pref_id,
-                                 syncer::DataType data_type,
-                                 PrefSensitivity pref_sensitivity,
-                                 MergeBehavior merge_behavior)
+  constexpr SyncablePrefMetadata(
+      int syncable_pref_id,
+      syncer::DataType data_type,
+      PrefSensitivity pref_sensitivity,
+      MergeBehavior merge_behavior,
+      // TODO(crbug.com/441437179): Make this a required field.
+      WriteBehavior write_behavior = WriteBehavior::kWriteToBoth)
       : syncable_pref_id_(syncable_pref_id),
         data_type_(data_type),
         pref_sensitivity_(pref_sensitivity),
-        merge_behaviour_(merge_behavior) {
+        merge_behaviour_(merge_behavior),
+        write_behavior_(write_behavior) {
     CHECK(data_type_ == syncer::PREFERENCES ||
           data_type_ == syncer::PRIORITY_PREFERENCES
 #if BUILDFLAG(IS_CHROMEOS)
@@ -92,11 +110,14 @@ class SyncablePrefMetadata {
 
   MergeBehavior merge_behavior() const { return merge_behaviour_; }
 
+  WriteBehavior write_behavior() const;
+
  private:
   int syncable_pref_id_;
   syncer::DataType data_type_;
   PrefSensitivity pref_sensitivity_;
   MergeBehavior merge_behaviour_;
+  WriteBehavior write_behavior_;
 };
 
 // This class provides an interface to define the list of syncable

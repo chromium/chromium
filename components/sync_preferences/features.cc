@@ -6,6 +6,8 @@
 
 namespace sync_preferences::features {
 
+BASE_FEATURE(kAccountScopedPrefs, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableCrossDevicePrefTracker,
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
