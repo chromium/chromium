@@ -329,6 +329,13 @@ class IPCZ_ALIGN(8) Message {
   // Template helper which returns a view into a serialized array's contents,
   // given an array whose header begins at `offset` bytes from the beginning of
   // this message. If `offset` is zero, this returns an empty span.
+  //
+  // Note that this always returns a span of `num_elements`. If the array was
+  // allocated with:
+  //
+  //   uint32_t offset = message.AllocateArray<uint32_t>(8)
+  //
+  // `message.GetArrayView<uint8_t>(8)` will return a span of size 8, not 32.
   template <typename ElementType>
   absl::Span<ElementType> GetArrayView(size_t offset) {
     if (!offset) {
@@ -343,9 +350,12 @@ class IPCZ_ALIGN(8) Message {
 
     // The ArrayHeader itself must also have been validated already to ensure
     // that the span of array contents will not exceed the bounds of `data_`.
-    ABSL_ASSERT(CheckAdd(CheckMul(sizeof(ElementType),
-                                  static_cast<size_t>(header.num_elements)),
-                         sizeof(internal::ArrayHeader)) <= data_.size());
+    ABSL_ASSERT(
+        CheckAdd(CheckAdd(offset, sizeof(internal::ArrayHeader)),
+                 CheckMul(sizeof(ElementType), size_t{header.num_elements})) <=
+        data_.size());
+    ABSL_ASSERT(CheckMul(sizeof(ElementType), size_t{header.num_elements}) <=
+                header.num_bytes);
     return absl::MakeSpan(reinterpret_cast<ElementType*>(&header + 1),
                           header.num_elements);
   }
