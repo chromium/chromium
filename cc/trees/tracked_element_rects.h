@@ -21,12 +21,15 @@ using TrackedElementId = base::Token;
 
 // The feature that is tracking the element. The feature values are kept opaque
 // at this level. The actual values are maintained in the higher level browser
-// code. If any new features are added, TRACKED_ELEMENT_FEATURE_MAX should be
+// code. If any new features are added, `kTrackedElementFeatureMax` should be
 // updated. For the actual values, see
 // components/page_content_annotations/core/tracked_element_feature.h
-enum TrackedElementFeature : int32_t {
-  TRACKED_ELEMENT_FEATURE_MAX = 1,
+
+// LINT.IfChange(TrackedElementFeature)
+enum class TrackedElementFeature : int32_t {
+  kTrackedElementFeatureMax = 1,
 };
+// LINT.ThenChange(//components/page_content_annotations/core/tracked_element_feature.h:TrackedElementFeature)
 
 // New struct to hold the tracked element clipped/visible bounds and other data.
 struct CC_EXPORT TrackedElementRect {

@@ -18,11 +18,11 @@ namespace page_content_annotations {
 // For the cc TrackedElementRects definition, see
 // cc/trees/tracked_element_rects.h.
 
-// If any new features are added, TRACKED_ELEMENT_FEATURE_MAX in
+// If any new features are added, `kTrackedElementFeatureMax` in
 // cc/trees/tracked_element_rects.h should be updated.
 
 // LINT.IfChange(TrackedElementFeature)
-enum TrackedElementFeature : int32_t {
+enum class TrackedElementFeature : int32_t {
   kAIHighlight = 0,
   kIframeTracking = 1,
 };
