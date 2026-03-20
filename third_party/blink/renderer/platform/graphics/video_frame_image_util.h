@@ -35,6 +35,7 @@ class PaintFlags;
 }  // namespace cc
 
 namespace blink {
+class CanvasNon2DResourceProviderSharedImage;
 class StaticBitmapImage;
 
 // Converts a media orientation into a blink one or vice versa.

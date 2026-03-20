@@ -199,28 +199,6 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   return true;
 }
 
-bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasNon2DResourceProviderSharedImage* resource_provider,
-    uint32_t src_x,
-    uint32_t src_y) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(resource_provider);
-
-  scoped_refptr<gpu::ClientSharedImage> shared_image = GetSharedImage();
-  if (!shared_image) {
-    return false;
-  }
-
-  gpu::SyncToken completion_sync_token;
-  if (!resource_provider->CopyToBackingSharedImage(std::move(shared_image),
-                                                   src_x, src_y, GetSyncToken(),
-                                                   completion_sync_token)) {
-    return false;
-  }
-
-  UpdateSyncToken(completion_sync_token);
-  return true;
-}
 PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
   // TODO(ccameron): This function should not ignore |colorBehavior|.
   // https://crbug.com/672306

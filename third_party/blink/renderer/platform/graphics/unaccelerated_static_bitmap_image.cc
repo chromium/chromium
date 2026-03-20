@@ -105,30 +105,6 @@ void UnacceleratedStaticBitmapImage::Transfer() {
       ThreadScheduler::Current()->CleanupTaskRunner();
 }
 
-bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasNon2DResourceProviderSharedImage* resource_provider,
-    uint32_t src_x,
-    uint32_t src_y) {
-  DCHECK(resource_provider);
-
-  PaintImage paint_image = PaintImageForCurrentFrame();
-
-  // Extract content to SkPixmap. Pixels are CPU backed resource and this
-  // should be freed.
-  sk_sp<SkImage> image = paint_image.GetSwSkImage();
-  if (!image) {
-    return false;
-  }
-
-  SkPixmap pixmap;
-  if (!image->peekPixels(&pixmap)) {
-    return false;
-  }
-
-  return resource_provider->UploadToBackingSharedImage(
-      pixmap, paint_image.GetSkImageInfo(), src_x, src_y);
-}
-
 SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfo() const {
   return paint_image_.GetSkImageInfo().makeWH(paint_image_.width(),
                                               paint_image_.height());

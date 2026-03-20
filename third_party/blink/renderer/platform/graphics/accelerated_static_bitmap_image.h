@@ -21,7 +21,6 @@ struct ExportedSharedImage;
 }  // namespace gpu
 
 namespace blink {
-class CanvasNon2DResourceProviderSharedImage;
 class MailboxTextureBacking;
 class WebGraphicsContext3DProviderWrapper;
 
@@ -90,11 +89,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      GrSurfaceOrigin destination_origin,
                      const gfx::Point& dest_point,
                      const gfx::Rect& src_rect) override;
-
-  bool CopyToResourceProvider(
-      CanvasNon2DResourceProviderSharedImage* resource_provider,
-      uint32_t src_x,
-      uint32_t src_y) override;
 
   // To be called on sender thread before performing a transfer to a different
   // thread.

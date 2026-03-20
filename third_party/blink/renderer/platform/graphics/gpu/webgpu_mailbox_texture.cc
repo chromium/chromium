@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/paint/paint_image.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -15,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "xr_webgl_drawing_buffer.h"
 
 namespace blink {
@@ -89,8 +93,29 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   if (is_dummy_mailbox_texture) {
     resource_provider->PrepareForWebGPUDummyMailbox();
   } else {
-    if (!image->CopyToResourceProvider(resource_provider, image_sub_rect.x(),
-                                       image_sub_rect.y())) {
+    bool copy_success = false;
+    if (image->IsTextureBacked()) {
+      if (auto shared_image = image->GetSharedImage()) {
+        gpu::SyncToken completion_sync_token;
+        if (resource_provider->CopyToBackingSharedImage(
+                std::move(shared_image), image_sub_rect.x(), image_sub_rect.y(),
+                image->GetSyncToken(), completion_sync_token)) {
+          image->UpdateSyncToken(completion_sync_token);
+          copy_success = true;
+        }
+      }
+    } else {
+      PaintImage paint_image = image->PaintImageForCurrentFrame();
+      if (sk_sp<SkImage> skia_image = paint_image.GetSwSkImage()) {
+        SkPixmap pixmap;
+        if (skia_image->peekPixels(&pixmap)) {
+          copy_success = resource_provider->UploadToBackingSharedImage(
+              pixmap, paint_image.GetSkImageInfo(), image_sub_rect.x(),
+              image_sub_rect.y());
+        }
+      }
+    }
+    if (!copy_success) {
       return nullptr;
     }
   }
