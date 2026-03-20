@@ -9,12 +9,11 @@ const kChromeAppErrorSuffix = 'is deprecated on Window, Mac, and Linux. ' +
 
 chrome.management.onInstalled.addListener(function(extensionInfo) {
   if (!extensionInfo.isApp) {
-    console.log("Can't launch " + extensionInfo.name + " (" +
-                extensionInfo.id + "): Not an app.");
+    console.log(`Can't launch ${extensionInfo.name} (${
+        extensionInfo.id}): Not an app.`);
     return;
   }
-  console.log("Launch " + extensionInfo.name + " (" +
-              extensionInfo.id + ")");
+  console.log(`Launch ${extensionInfo.name} (${extensionInfo.id})`);
 
   chrome.management.launchApp(extensionInfo.id, function() {
     const lastError = chrome.runtime.lastError;
@@ -25,4 +24,4 @@ chrome.management.onInstalled.addListener(function(extensionInfo) {
   });
 });
 
-chrome.test.sendMessage("launcher loaded");
+chrome.test.sendMessage('launcher loaded');

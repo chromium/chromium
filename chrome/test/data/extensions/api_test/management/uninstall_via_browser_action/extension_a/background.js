@@ -8,7 +8,7 @@ chrome.action.onClicked.addListener(() => {
 
   // Uninstall the extension named 'ExtensionB'.
   chrome.management.getAll(chrome.test.callbackPass(items => {
-    var extension = items.find(item => {
+    const extension = items.find(item => {
       return item.name == 'ExtensionB';
     });
     chrome.test.assertNe(undefined, extension);

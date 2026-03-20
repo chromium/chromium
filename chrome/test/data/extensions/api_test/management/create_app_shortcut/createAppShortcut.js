@@ -11,49 +11,49 @@ function testCreateAppShortcut(id, error) {
   });
 }
 
-var enabled_app_id, disabled_app_id, enabled_extension_id, packaged_app_id;
-var isMac = /Mac/.test(navigator.platform);
-var ONLY_PACKAGED_APP_MAC =
-    "Shortcuts can only be created for new-style packaged apps on Mac.";
+let enabledAppId, disabledAppId, enabledExtensionId, packagedAppId;
+const isMac = /Mac/.test(navigator.platform);
+const ONLY_PACKAGED_APP_MAC =
+    'Shortcuts can only be created for new-style packaged apps on Mac.';
 
-var tests = [
+const tests = [
   function createEnabledAppShortcutWithoutUserGesture() {
-    chrome.management.createAppShortcut(enabled_app_id, callback(function() {},
-        "chrome.management.createAppShortcut requires a user gesture."));
+    chrome.management.createAppShortcut(
+        enabledAppId, callback(function() {
+        }, 'chrome.management.createAppShortcut requires a user gesture.'));
   },
 
   function createEnabledAppShortcut() {
-    testCreateAppShortcut(enabled_app_id, isMac? ONLY_PACKAGED_APP_MAC : null);
+    testCreateAppShortcut(enabledAppId, isMac ? ONLY_PACKAGED_APP_MAC : null);
   },
 
   function createDisabledAppShortcut() {
-    testCreateAppShortcut(disabled_app_id,
-        isMac? ONLY_PACKAGED_APP_MAC : null);
+    testCreateAppShortcut(disabledAppId, isMac ? ONLY_PACKAGED_APP_MAC : null);
   },
 
   function createPackagedAppShortcut() {
-    testCreateAppShortcut(packaged_app_id);
+    testCreateAppShortcut(packagedAppId);
   },
 
   function createExtensionShortcut() {
-    testCreateAppShortcut(enabled_extension_id,
-        "Extension " + enabled_extension_id + " is not an App.");
+    testCreateAppShortcut(
+        enabledExtensionId, `Extension ${enabledExtensionId} is not an App.`);
   },
 
   function createNotExistAppShortcut() {
-    testCreateAppShortcut("abcd", "Failed to find extension with id abcd.");
+    testCreateAppShortcut('abcd', 'Failed to find extension with id abcd.');
   }
 ];
 
 const scriptUrl = '_test_resources/api_test/management/common.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
   chrome.management.getAll(callback(function(items) {
-    enabled_app_id = getItemNamed(items, "enabled_app").id;
-    disabled_app_id = getItemNamed(items, "disabled_app").id;
-    enabled_extension_id = getItemNamed(items, "enabled_extension").id;
-    packaged_app_id = getItemNamed(items, "packaged_app").id;
+    enabledAppId = getItemNamed(items, 'enabled_app').id;
+    disabledAppId = getItemNamed(items, 'disabled_app').id;
+    enabledExtensionId = getItemNamed(items, 'enabled_extension').id;
+    packagedAppId = getItemNamed(items, 'packaged_app').id;
 
     chrome.test.runTests(tests);
   }));
