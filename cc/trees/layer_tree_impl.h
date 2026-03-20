@@ -549,13 +549,9 @@ class CC_EXPORT LayerTreeImpl {
 
   void AddLayerShouldPushProperties(LayerImpl* layer);
   void ClearLayersThatShouldPushProperties();
-  const base::flat_set<LayerImpl*>& LayersThatShouldPushProperties() const {
-    return layers_that_should_push_properties_;
+  auto LayersThatShouldPushProperties() const {
+    return layer_list_.LayersThatShouldPushProperties();
   }
-
-  // These should be called by LayerImpl's ctor/dtor.
-  void RegisterLayer(LayerImpl* layer);
-  void UnregisterLayer(LayerImpl* layer);
 
   // Reserve memory for the total number of layers that will be added
   // with AddLayer(). This is only for performance reasons, and has no
@@ -995,12 +991,7 @@ class CC_EXPORT LayerTreeImpl {
 
   OwnedLayerImplList layer_list_;
   // Maps from layer id to layer.
-  LayerImplMap layer_id_map_;
-
-  // Set of layers that need to push properties.
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION base::flat_set<LayerImpl*>
-      layers_that_should_push_properties_;
+  // LayerImplMap layer_id_map_;
 
   struct ScrollbarLayerIds {
     int horizontal = Layer::INVALID_ID;

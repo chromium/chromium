@@ -202,8 +202,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeFromEmpty) {
                                      host_->pending_tree());
 
   LayerImpl* root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(
-      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
+  EXPECT_TRUE(std::ranges::contains(
+      host_->pending_tree()->LayersThatShouldPushProperties(), root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(),
                           host_->pending_tree()->root_layer(),
@@ -229,8 +229,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   // layers are created on pending tree and they all need to push properties to
   // active tree.
   LayerImpl* root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(
-      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
+  EXPECT_TRUE(std::ranges::contains(
+      host_->pending_tree()->LayersThatShouldPushProperties(), root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(),
                           host_->pending_tree()->root_layer(),
@@ -247,8 +247,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
                                      host_->active_tree());
   TreeSynchronizer::PushLayerProperties(host_->pending_tree(),
                                         host_->active_tree());
-  EXPECT_FALSE(
-      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
+  EXPECT_FALSE(std::ranges::contains(
+      host_->pending_tree()->LayersThatShouldPushProperties(), root));
 
   // Set the main thread root layer needs push properties.
   layer_tree_root->SetNeedsPushProperties();
@@ -265,8 +265,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
                                         host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
-  EXPECT_TRUE(
-      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
+  EXPECT_TRUE(std::ranges::contains(
+      host_->pending_tree()->LayersThatShouldPushProperties(), root));
 }
 
 // Constructs a very simple tree and synchronizes it attempting to reuse some
@@ -287,7 +287,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
                                      host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   LayerImpl* layer_impl_tree_root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(host_->pending_tree()->LayersThatShouldPushProperties().contains(
+  EXPECT_TRUE(std::ranges::contains(
+      host_->pending_tree()->LayersThatShouldPushProperties(),
       layer_impl_tree_root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,

@@ -117,6 +117,7 @@ cc_component("cc") {
     "layers/heads_up_display_layer_impl.h",
     "layers/layer.cc",
     "layers/layer.h",
+    "layers/layer_collections.cc",
     "layers/layer_collections.h",
     "layers/layer_impl.cc",
     "layers/layer_impl.h",

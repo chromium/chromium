@@ -1503,7 +1503,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
                        /*needs_full_sync=*/true);
       }
     } else {
-      for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
+      for (auto* layer : tree.LayersThatShouldPushProperties()) {
+        DCHECK(layer);
         SerializeLayer(*layer, resource_provider, shared_image_interface,
                        *update,
                        /*needs_full_sync=*/false);

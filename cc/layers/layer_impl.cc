@@ -113,15 +113,11 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl, int id)
       scroll_tree_index_(kInvalidPropertyNodeId) {
   DCHECK_GT(layer_id_, 0);
   DCHECK_GT(stable_id_for_shared_quad_state_, 0);
-
   DCHECK(layer_tree_impl_);
-  layer_tree_impl_->RegisterLayer(this);
-
   SetNeedsPushProperties(LayerImpl::kChangedAllProperties);
 }
 
 LayerImpl::~LayerImpl() {
-  layer_tree_impl_->UnregisterLayer(this);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl", this);
 }

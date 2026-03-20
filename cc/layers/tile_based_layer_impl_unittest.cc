@@ -184,7 +184,7 @@ TEST_F(TileBasedLayerImplTest,
   const auto& layers =
       host_impl()->pending_tree()->LayersThatShouldPushProperties();
   ASSERT_EQ(layers.size(), 1u);
-  EXPECT_NE(layers.find(raw_layer), layers.end());
+  EXPECT_TRUE(std::ranges::contains(layers, raw_layer));
 }
 
 // Verifies that calling `SetIsBackdropFilterMask` with the same value as it

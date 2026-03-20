@@ -392,8 +392,11 @@ bool LayerTreeImpl::LayerListIsEmpty() const {
 
 void LayerTreeImpl::SetRootLayerForTesting(std::unique_ptr<LayerImpl> layer) {
   DetachLayers();
-  if (layer)
+  if (layer) {
+    auto* layer_ptr = layer.get();
     AddLayer(std::move(layer));
+    AddLayerShouldPushProperties(layer_ptr);
+  }
   host_impl_->OnCanDrawStateChangedForTree();
 }
 
@@ -616,6 +619,7 @@ gfx::PointF LayerTreeImpl::TotalMaxScrollOffset(ElementId element_id) const {
 }
 
 OwnedLayerImplList LayerTreeImpl::DetachLayers() {
+  ClearLayersThatShouldPushProperties();
   render_surface_list_.clear();
   set_needs_update_draw_properties();
   // Clear the HUD layer pointer since we're detaching all layers. If there is a
@@ -1934,8 +1938,8 @@ gfx::SizeF LayerTreeImpl::ScrollableSize() const {
 }
 
 LayerImpl* LayerTreeImpl::LayerById(int id) const {
-  auto iter = layer_id_map_.find(id);
-  return iter != layer_id_map_.end() ? iter->second : nullptr;
+  auto iter = layer_list_.find(id);
+  return iter != layer_list_.end() ? iter->get() : nullptr;
 }
 
 // TODO(masonf): If this shows up on profiles, this could use
@@ -1965,22 +1969,11 @@ void LayerTreeImpl::ClearSurfaceRanges() {
 }
 
 void LayerTreeImpl::AddLayerShouldPushProperties(LayerImpl* layer) {
-  layers_that_should_push_properties_.insert(layer);
+  layer_list_.SetShouldPushProperties(layer->id());
 }
 
 void LayerTreeImpl::ClearLayersThatShouldPushProperties() {
-  layers_that_should_push_properties_.clear();
-}
-
-void LayerTreeImpl::RegisterLayer(LayerImpl* layer) {
-  DCHECK(!LayerById(layer->id()));
-  layer_id_map_[layer->id()] = layer;
-}
-
-void LayerTreeImpl::UnregisterLayer(LayerImpl* layer) {
-  DCHECK(LayerById(layer->id()));
-  layers_that_should_push_properties_.erase(layer);
-  layer_id_map_.erase(layer->id());
+  layer_list_.ClearLayersShouldPushProperties();
 }
 
 void LayerTreeImpl::ReserveLayers(size_t count) {
@@ -1989,13 +1982,12 @@ void LayerTreeImpl::ReserveLayers(size_t count) {
 
 void LayerTreeImpl::AddLayer(std::unique_ptr<LayerImpl> layer) {
   DCHECK(layer);
-  DCHECK(!std::ranges::contains(layer_list_, layer));
   layer_list_.push_back(std::move(layer));
   set_needs_update_draw_properties();
 }
 
 size_t LayerTreeImpl::NumLayers() {
-  return layer_id_map_.size();
+  return layer_list_.size();
 }
 
 void LayerTreeImpl::DidBecomeActive() {
@@ -2445,10 +2437,16 @@ ScrollbarSet LayerTreeImpl::ScrollbarsFor(ElementId scroll_element_id) const {
   auto it = element_id_to_scrollbar_layer_ids_.find(scroll_element_id);
   if (it != element_id_to_scrollbar_layer_ids_.end()) {
     const ScrollbarLayerIds& layer_ids = it->second;
-    if (layer_ids.horizontal != Layer::INVALID_ID)
-      scrollbars.insert(ToScrollbarLayer(LayerById(layer_ids.horizontal)));
-    if (layer_ids.vertical != Layer::INVALID_ID)
-      scrollbars.insert(ToScrollbarLayer(LayerById(layer_ids.vertical)));
+    if (layer_ids.horizontal != Layer::INVALID_ID) {
+      if (auto* layer_impl = LayerById(layer_ids.horizontal)) {
+        scrollbars.insert(ToScrollbarLayer(layer_impl));
+      }
+    }
+    if (layer_ids.vertical != Layer::INVALID_ID) {
+      if (auto* layer_impl = LayerById(layer_ids.vertical)) {
+        scrollbars.insert(ToScrollbarLayer(layer_impl));
+      }
+    }
   }
   return scrollbars;
 }

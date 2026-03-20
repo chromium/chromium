@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/layers/surface_layer.h"
+
 #include <stdint.h>
 
 #include <iostream>
 #include <limits>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/location.h"
@@ -15,7 +18,6 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/solid_color_layer.h"
-#include "cc/layers/surface_layer.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host.h"
@@ -151,6 +153,8 @@ TEST_F(SurfaceLayerTest, PushProperties) {
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer->id());
+  SurfaceLayerImpl* layer_impl_ptr = layer_impl.get();
+  host_impl_.pending_tree()->AddLayer(std::move(layer_impl));
   SynchronizeTrees();
 
   // Verify that pending tree received the surface id and also has
@@ -163,11 +167,11 @@ TEST_F(SurfaceLayerTest, PushProperties) {
       layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
 
   // Verify that the primary and fallback SurfaceIds are pushed through.
-  EXPECT_EQ(primary_id, layer_impl->range().end());
-  EXPECT_EQ(primary_id, layer_impl->range().start());
-  EXPECT_EQ(SkColors::kBlue, layer_impl->background_color());
-  EXPECT_TRUE(layer_impl->stretch_content_to_fill_bounds());
-  EXPECT_EQ(2u, layer_impl->deadline_in_frames());
+  EXPECT_EQ(primary_id, layer_impl_ptr->range().end());
+  EXPECT_EQ(primary_id, layer_impl_ptr->range().start());
+  EXPECT_EQ(SkColors::kBlue, layer_impl_ptr->background_color());
+  EXPECT_TRUE(layer_impl_ptr->stretch_content_to_fill_bounds());
+  EXPECT_EQ(2u, layer_impl_ptr->deadline_in_frames());
 
   viz::SurfaceId fallback_id(
       kArbitraryFrameSinkId,
@@ -190,12 +194,12 @@ TEST_F(SurfaceLayerTest, PushProperties) {
 
   // Verify that the primary viz::SurfaceId stays the same and the new
   // fallback viz::SurfaceId is pushed through.
-  EXPECT_EQ(fallback_id, layer_impl->range().end());
-  EXPECT_EQ(fallback_id, layer_impl->range().start());
-  EXPECT_EQ(SkColors::kGreen, layer_impl->background_color());
+  EXPECT_EQ(fallback_id, layer_impl_ptr->range().end());
+  EXPECT_EQ(fallback_id, layer_impl_ptr->range().start());
+  EXPECT_EQ(SkColors::kGreen, layer_impl_ptr->background_color());
   // The deadline resets back to 0 (no deadline) after the first commit.
-  EXPECT_EQ(0u, layer_impl->deadline_in_frames());
-  EXPECT_FALSE(layer_impl->stretch_content_to_fill_bounds());
+  EXPECT_EQ(0u, layer_impl_ptr->deadline_in_frames());
+  EXPECT_FALSE(layer_impl_ptr->stretch_content_to_fill_bounds());
 }
 
 // This test verifies the list of surface ids is correct when there are cloned
@@ -222,8 +226,10 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl1 =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer1->id());
+  host_impl_.pending_tree()->AddLayer(std::move(layer_impl1));
   std::unique_ptr<SurfaceLayerImpl> layer_impl2 =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer2->id());
+  host_impl_.pending_tree()->AddLayer(std::move(layer_impl2));
 
   SynchronizeTrees();
 
@@ -287,6 +293,7 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl1 =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer1->id());
+  host_impl_.pending_tree()->AddLayer(std::move(layer_impl1));
   SynchronizeTrees();
 
   // After syncchronizing trees verify needs_surface_ranges_sync() is false.
@@ -308,6 +315,7 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl2 =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer2->id());
+  host_impl_.pending_tree()->AddLayer(std::move(layer_impl2));
   SynchronizeTrees();
 
   // Verify needs_surface_ranges_sync is still false after synchronizing

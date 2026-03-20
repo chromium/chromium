@@ -2329,16 +2329,16 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
 
   TRACE_EVENT0("cc", "LayerTreeHostImpl::NotifyTileStateChanged");
 
-  LayerImpl* layer_impl = nullptr;
-
-  // We must have a pending or active tree layer here, since the layer is
-  // guaranteed to outlive its tiles.
   const bool is_pending_tree =
       tile->tiling()->tree() == WhichTree::PENDING_TREE;
-  if (is_pending_tree) {
-    layer_impl = pending_tree_->FindPendingTreeLayerById(tile->layer_id());
-  } else {
-    layer_impl = active_tree_->FindActiveTreeLayerById(tile->layer_id());
+  LayerTreeImpl* tree = is_pending_tree ? pending_tree() : active_tree();
+  LayerImpl* layer_impl = tree ? tree->LayerById(tile->layer_id()) : nullptr;
+
+  // We may have got here after detaching or destructing a tree's layer list, in
+  // which case the LayerImpl is about to be destructed and there's nothing to
+  // do.
+  if (!layer_impl) {
+    return;
   }
 
   layer_impl->NotifyTileStateChanged(tile, update_damage);

@@ -69,18 +69,23 @@ TEST_F(MirrorLayerTest, PushProperties) {
   EXPECT_EQ(mirrored.get(), mirror->mirrored_layer());
 
   auto root_impl = LayerImpl::Create(host_impl_.pending_tree(), root->id());
+  host_impl_.pending_tree()->AddLayer(std::move(root_impl));
   auto mirrored_impl =
       LayerImpl::Create(host_impl_.pending_tree(), mirrored->id());
+  auto* mirrored_impl_ptr = mirrored_impl.get();
+  host_impl_.pending_tree()->AddLayer(std::move(mirrored_impl));
   auto mirror_impl =
       MirrorLayerImpl::Create(host_impl_.pending_tree(), mirror->id());
+  auto* mirror_impl_ptr = mirror_impl.get();
+  host_impl_.pending_tree()->AddLayer(std::move(mirror_impl));
 
   // Verify that impl layers have default property values.
-  EXPECT_EQ(0, mirror_impl->mirrored_layer_id());
+  EXPECT_EQ(0, mirror_impl_ptr->mirrored_layer_id());
 
   SynchronizeTrees();
 
   // Verify that property values are pushed to impl layers.
-  EXPECT_EQ(mirrored_impl->id(), mirror_impl->mirrored_layer_id());
+  EXPECT_EQ(mirrored_impl_ptr->id(), mirror_impl_ptr->mirrored_layer_id());
 }
 
 // This test verifies adding/removing mirror layers updates mirror count

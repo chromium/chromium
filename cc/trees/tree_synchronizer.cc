@@ -56,7 +56,7 @@ static bool LayerHasValidPropertyTreeIndices(const LayerImpl* layer) {
 
 static bool LayerWillPushProperties(const LayerTreeImpl* tree,
                                     const LayerImpl* layer) {
-  return tree->LayersThatShouldPushProperties().contains(layer) ||
+  return std::ranges::contains(tree->LayersThatShouldPushProperties(), layer) ||
          // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
          // properties.
          std::ranges::contains(tree->picture_layers(), layer);
@@ -68,17 +68,17 @@ using LayerIndexMap = base::flat_map<int, size_t>;
 template <typename LayerType>
 std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(
     OwnedLayerImplList& old_layers,
-    const LayerIndexMap& layer_indices,
     const LayerType* layer,
     LayerTreeImpl* tree_impl) {
   if (!layer)
     return nullptr;
 
   std::unique_ptr<LayerImpl> layer_impl;
-  auto it = layer_indices.find(layer->id());
+  auto it = old_layers.find(layer->id());
 
-  if (it != layer_indices.end()) {
-    layer_impl = std::move(old_layers[it->second]);
+  if (it != old_layers.end()) {
+    DCHECK(*it);
+    layer_impl = std::move(*it);
   }
 
   if (!layer_impl)
@@ -87,7 +87,6 @@ std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(
 }
 
 void PushLayerList(OwnedLayerImplList& old_layers,
-                   const LayerIndexMap& layer_indices,
                    const CommitState& commit_state,
                    const ThreadUnsafeCommitState& unsafe_state,
                    LayerTreeImpl* tree_impl) {
@@ -95,7 +94,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
   tree_impl->ReserveLayers(unsafe_state.num_layers);
   for (const auto* layer : unsafe_state) {
     std::unique_ptr<LayerImpl> layer_impl(
-        ReuseOrCreateLayerImpl(old_layers, layer_indices, layer, tree_impl));
+        ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
     // TODO(crbug.com/40778609): remove diagnostic CHECK
     CHECK(layer_impl);
 
@@ -114,7 +113,6 @@ void PushLayerList(OwnedLayerImplList& old_layers,
 }
 
 void PushLayerList(OwnedLayerImplList& old_layers,
-                   const LayerIndexMap& layer_indices,
                    LayerTreeImpl* host,
                    LayerTreeImpl* tree_impl,
                    const PropertyTrees& property_trees) {
@@ -122,7 +120,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
   tree_impl->ReserveLayers(host->NumLayers());
   for (const auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
-        ReuseOrCreateLayerImpl(old_layers, layer_indices, layer, tree_impl));
+        ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
     // TODO(crbug.com/40778609): remove diagnostic CHECK
     CHECK(layer_impl);
 
@@ -148,20 +146,7 @@ void SynchronizeTreesInternal(const CommitState& commit_state,
   TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
   OwnedLayerImplList old_layers = tree_impl->DetachLayers();
 
-  std::vector<std::pair<int, size_t>> layer_indices_vector;
-  layer_indices_vector.reserve(old_layers.size());
-  for (size_t i = 0; i < old_layers.size(); ++i) {
-    layer_indices_vector.emplace_back(old_layers[i]->id(), i);
-  }
-  // Layer ids should be unique here, so doing a std::sort and
-  // base::sorted_unique initializer is the most efficient, avoiding
-  // a std::stable_sort inside base::flat_map.
-  std::sort(layer_indices_vector.begin(), layer_indices_vector.end());
-  LayerIndexMap layer_indices(base::sorted_unique,
-                              std::move(layer_indices_vector));
-
-  PushLayerList(old_layers, layer_indices, commit_state, unsafe_state,
-                tree_impl);
+  PushLayerList(old_layers, commit_state, unsafe_state, tree_impl);
 }
 
 void SynchronizeTreesInternal(LayerTreeImpl* source_tree,
@@ -172,17 +157,7 @@ void SynchronizeTreesInternal(LayerTreeImpl* source_tree,
   TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
   OwnedLayerImplList old_layers = tree_impl->DetachLayers();
 
-  std::vector<std::pair<int, size_t>> layer_indices_vector;
-  layer_indices_vector.reserve(old_layers.size());
-  for (size_t i = 0; i < old_layers.size(); ++i) {
-    layer_indices_vector.emplace_back(old_layers[i]->id(), i);
-  }
-  std::sort(layer_indices_vector.begin(), layer_indices_vector.end());
-  LayerIndexMap layer_indices(base::sorted_unique,
-                              std::move(layer_indices_vector));
-
-  PushLayerList(old_layers, layer_indices, source_tree, tree_impl,
-                property_trees);
+  PushLayerList(old_layers, source_tree, tree_impl, property_trees);
 }
 
 }  // namespace
@@ -208,25 +183,19 @@ void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
   }
 }
 
-template <typename Iterator>
-static void PushLayerPropertiesInternal(Iterator source_layers_begin,
-                                        Iterator source_layers_end,
-                                        LayerTreeImpl* target_impl_tree) {
-  for (Iterator it = source_layers_begin; it != source_layers_end; ++it) {
-    auto& source_layer = *it;
-    LayerImpl* target_layer = target_impl_tree->LayerById(source_layer->id());
-    DCHECK(target_layer);
-    source_layer->PushPropertiesTo(target_layer);
-  }
-}
-
 void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
                                            LayerTreeImpl* active_tree) {
-  const auto& layers = pending_tree->LayersThatShouldPushProperties();
+  auto layers = pending_tree->LayersThatShouldPushProperties();
   const size_t push_count = layers.size();
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Impl",
                "layer_count", push_count);
-  PushLayerPropertiesInternal(layers.begin(), layers.end(), active_tree);
+
+  for (auto* source_layer : layers) {
+    LayerImpl* target_layer = active_tree->LayerById(source_layer->id());
+    DCHECK(target_layer);
+    source_layer->PushPropertiesTo(target_layer);
+  }
+
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 
