@@ -268,8 +268,7 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// TODO(crbug.com/444091898): Test is flaky.
-- (void)DISABLED_testDismissInputViaSwipe {
+- (void)testDismissInputViaSwipe {
   [self showAuthenticationSelection];
 
   // The initial access token has been used up, set another fake access token.
