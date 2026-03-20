@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
@@ -109,13 +111,22 @@ void LRURendererCache::StartNextPrelauncher(const GURL& page_url) {
 
 void LRURendererCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  // Memory pressure has changed, so the renderer limit may have been updated.
-  // Evict renderers to match the new limit.
-  EvictCache();
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    EvictCache();
+    return;
+  }
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    DLOG(INFO) << "Dropping prelauncher cache due to memory pressure.";
+    cache_.clear();
+  }
 }
 
 size_t LRURendererCache::GetCurrentMaxRenderers() const {
-  return max_renderers_ * GetMemoryLimitRatio();
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return max_renderers_ * GetMemoryLimitRatio();
+  }
+  return max_renderers_;
 }
 
 void LRURendererCache::SetFactoryForTesting(
