@@ -118,6 +118,9 @@ public class TabListEditorManager {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
+        if (mSnackbarManager != null) {
+            mSnackbarManager.destroy();
+        }
     }
 
     /** Initializes the tab list editor. */

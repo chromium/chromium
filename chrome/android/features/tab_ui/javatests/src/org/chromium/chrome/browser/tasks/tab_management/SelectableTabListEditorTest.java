@@ -256,7 +256,7 @@ public class SelectableTabListEditorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mSnackbarManager == null) return;
-                    mSnackbarManager.dismissAllSnackbars();
+                    mSnackbarManager.destroy();
                 });
         BookmarkModel.clearLastUsedParent();
     }

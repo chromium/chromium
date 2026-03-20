@@ -53,6 +53,7 @@ public class BadFlagsSnackbarManagerTest {
                 SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS,
                 snackbar.getDuration());
         snackbarManager.dismissSnackbars(null);
+        snackbarManager.destroy();
     }
 
     @Test

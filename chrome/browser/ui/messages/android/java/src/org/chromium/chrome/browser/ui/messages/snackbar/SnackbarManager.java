@@ -206,6 +206,16 @@ public class SnackbarManager
         mActivityInForeground = false;
     }
 
+    /** Destroys the SnackbarManager, unregistering any observers and dismissing all snackbars. */
+    public void destroy() {
+        dismissAllSnackbars();
+        ApplicationStatus.unregisterActivityStateListener(this);
+        if (mModalDialogManager != null) {
+            mModalDialogManager.removeObserver(this);
+        }
+        mUiThreadHandler.removeCallbacks(mHideRunnable);
+    }
+
     /**
      * @return True if a Snackbar can currently be shown by this SnackbarManager.
      */

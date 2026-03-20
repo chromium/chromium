@@ -286,6 +286,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     public void onDetach() {
         super.onDetach();
         LanguagesManager.recycle();
+        mAppLanguageDelegate.destroy();
         mPrefChangeRegistrar.destroy();
     }
 

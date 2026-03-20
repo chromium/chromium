@@ -1834,6 +1834,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
         if (snackbarManager != null) {
             SnackbarManagerProvider.detach(snackbarManager);
+            snackbarManager.destroy();
         }
 
         if (mBackPressManager != null) {

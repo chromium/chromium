@@ -49,6 +49,14 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSnackbarManager != null) {
+            mSnackbarManager.destroy();
+        }
+    }
+
+    @Override
     public void setContentView(int layoutResId) {
         super.setContentView(layoutResId);
         mSnackbarManager.pushParentViewToOverrideStack(getContentView());

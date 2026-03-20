@@ -941,6 +941,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     protected void onDestroy() {
         mScrimManager.destroy();
+        SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
+        if (snackbarManager != null) {
+            snackbarManager.destroy();
+        }
         if (mMultiColumnTitleUpdater != null) {
             assert mMultiColumnSettings != null;
             mMultiColumnSettings.removeObserver(mMultiColumnTitleUpdater);

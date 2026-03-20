@@ -492,6 +492,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         if (mTabLabeller != null) {
             mTabLabeller.destroy();
         }
+        if (mSnackbarManager != null) {
+            mSnackbarManager.destroy();
+        }
     }
 
     @Override

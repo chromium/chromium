@@ -101,7 +101,7 @@ public class SnackbarRenderTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSnackbarManager.dismissAllSnackbars();
+                    mSnackbarManager.destroy();
                 });
         CriteriaHelper.pollUiThread(
                 () -> !mSnackbarManager.isShowing(), "Snackbar should have been dismissed.");

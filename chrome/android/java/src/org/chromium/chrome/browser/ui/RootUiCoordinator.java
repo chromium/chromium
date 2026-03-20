@@ -813,6 +813,11 @@ public class RootUiCoordinator
         mCallbackController.destroy();
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
 
+        SnackbarManager bottomSheetSnackbarManager = mBottomSheetSnackbarManagerSupplier.get();
+        if (bottomSheetSnackbarManager != null) {
+            bottomSheetSnackbarManager.destroy();
+        }
+
         destroyUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.unregister(this);
 

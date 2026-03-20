@@ -667,6 +667,10 @@ public class SearchActivity extends AsyncInitializationActivity
         }
         mSearchBoxDataProvider.destroy();
         mHandler.removeCallbacksAndMessages(null);
+        if (mSnackbarManager != null) {
+            mSnackbarManager.destroy();
+            mSnackbarManager = null;
+        }
         super.onDestroy();
     }
 

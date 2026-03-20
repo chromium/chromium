@@ -82,6 +82,13 @@ public class AppLanguagePreferenceDelegate {
         mProfile = profile;
     }
 
+    /** Destroy the {@link SnackbarManager} managed by this delegate. */
+    public void destroy() {
+        if (mSnackbarManager != null) {
+            mSnackbarManager.destroy();
+        }
+    }
+
     /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {

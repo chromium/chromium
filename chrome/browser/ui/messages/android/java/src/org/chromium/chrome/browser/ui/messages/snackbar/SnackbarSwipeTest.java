@@ -71,7 +71,7 @@ public class SnackbarSwipeTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.dismissAllSnackbars();
+                    mManager.destroy();
                     SnackbarManager.resetDurationForTesting();
                 });
     }

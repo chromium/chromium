@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -130,6 +131,14 @@ public class SnackbarTest {
                                     (showing) -> mShowingHelper.notifyCalled());
                     mManager.dismissAllSnackbars();
                     AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+                });
+    }
+
+    @After
+    public void tearDownTest() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.destroy();
                 });
     }
 
