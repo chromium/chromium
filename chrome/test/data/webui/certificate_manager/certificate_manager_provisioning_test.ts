@@ -13,7 +13,6 @@ import type {CertificateProvisioningDetailsDialogElement} from 'chrome://certifi
 import type {CertificateProvisioningEntryElement} from 'chrome://certificate-manager/certificate_provisioning_entry.js';
 import type {CertificateProvisioningListElement} from 'chrome://certificate-manager/certificate_provisioning_list.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -59,7 +58,7 @@ suite('CertificateProvisioningEntryTests', function() {
     return eventToPromise(CertificateProvisioningViewDetailsActionEvent, entry);
   }
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestCertificateProvisioningBrowserProxy();
     CertificateProvisioningBrowserProxyImpl.setInstance(browserProxy);
     entry = document.createElement('certificate-provisioning-entry');
@@ -68,7 +67,7 @@ suite('CertificateProvisioningEntryTests', function() {
 
     // Bring up the popup menu for the following tests to use.
     entry.$.dots.click();
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -76,15 +75,14 @@ suite('CertificateProvisioningEntryTests', function() {
   });
 
   // Test case where 'Details' option is tapped.
-  test('MenuOptions_Details', function() {
+  test('MenuOptions_Details', async function() {
     const detailsButton =
         entry.shadowRoot.querySelector<HTMLElement>('#details');
     assertTrue(!!detailsButton);
     const waitForActionEvent = actionEventToPromise();
     detailsButton.click();
-    return waitForActionEvent.then(function(event) {
-      assertEquals(entry.model, event.detail.model);
-    });
+    const event = await waitForActionEvent;
+    assertEquals(entry.model, event.detail.model);
   });
 });
 
@@ -123,7 +121,7 @@ suite('CertificateManagerProvisioningTests', function() {
     assertEquals(1, getEntries(certProvisioningList).length);
   });
 
-  test('OpensDialog_ViewDetails', function() {
+  test('OpensDialog_ViewDetails', async function() {
     const dialogId = 'certificate-provisioning-details-dialog';
     const anchorForTest = document.createElement('a');
     document.body.appendChild(anchorForTest);
@@ -141,21 +139,15 @@ suite('CertificateManagerProvisioningTests', function() {
           },
         }));
 
-    return whenDialogOpen
-        .then(() => {
-          const dialog =
-              certProvisioningList.shadowRoot.querySelector(dialogId);
-          assertTrue(!!dialog);
-          const whenDialogClosed = eventToPromise('close', dialog);
-          dialog.$.dialog.shadowRoot.querySelector<HTMLElement>(
-                                        '#close')!.click();
-          return whenDialogClosed;
-        })
-        .then(() => {
-          const dialog =
-              certProvisioningList.shadowRoot.querySelector(dialogId);
-          assertFalse(!!dialog);
-        });
+    await whenDialogOpen;
+    const dialog = certProvisioningList.shadowRoot.querySelector(dialogId);
+    assertTrue(!!dialog);
+    const whenDialogClosed = eventToPromise('close', dialog);
+    dialog.$.dialog.shadowRoot.querySelector<HTMLElement>('#close')!.click();
+    await whenDialogClosed;
+    const dialogAfterClose =
+        certProvisioningList.shadowRoot.querySelector(dialogId);
+    assertFalse(!!dialogAfterClose);
   });
 
   test('OpensDialog_RefreshesData', async function() {
@@ -172,9 +164,7 @@ suite('CertificateManagerProvisioningTests', function() {
             anchor: anchorForTest,
           },
         }));
-    const whenRefreshCalled =
-        browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
-    await whenRefreshCalled;
+    await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
   });
 });
 
@@ -219,38 +209,38 @@ suite('DetailsDialogTests', function() {
 
   test('SeeDetails', function() {
     const certProfileName =
-        dialog.shadowRoot!.querySelector<HTMLElement>(
-                              '#certProfileName')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>(
+                             '#certProfileName')!.innerText;
     assertEquals(certProfileName, PROFILE_NAME);
 
     const certProfileId =
-        dialog.shadowRoot!.querySelector<HTMLElement>(
-                              '#certProfileId')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>(
+                             '#certProfileId')!.innerText;
     assertEquals(certProfileId, PROFILE_ID);
 
     const processId =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#processId')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>('#processId')!.innerText;
     assertEquals(processId, PROCESS_ID);
 
     const status =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#status')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>('#status')!.innerText;
     assertEquals(status, STATE_NAME_1);
 
     const timeSinceLastUpdate =
-        dialog.shadowRoot!.querySelector<HTMLElement>(
-                              '#timeSinceLastUpdate')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>(
+                             '#timeSinceLastUpdate')!.innerText;
     assertEquals(timeSinceLastUpdate, TIME_SINCE_LAST_UPDATE);
 
-    dialog.shadowRoot!.querySelector<HTMLElement>('#advancedInfo')!.click();
+    dialog.shadowRoot.querySelector<HTMLElement>('#advancedInfo')!.click();
 
     // Not entirely clear why the advanced info fields have extra formatting
     // around them, but that's how it already has been for years.
     const stateId =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#stateId')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>('#stateId')!.innerText;
     assertEquals(stateId, '\n          ' + STATE_ID + '\n        ');
 
     const publicKey =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#publicKey')!.innerText;
+        dialog.shadowRoot.querySelector<HTMLElement>('#publicKey')!.innerText;
     assertEquals(publicKey, '\n          ' + PUBLIC_KEY + '\n        ');
   });
 
@@ -292,7 +282,7 @@ suite('DetailsDialogTests', function() {
     await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
 
     webUIListenerCallback('certificate-provisioning-processes-changed', []);
-    flush();
+    await microtasksFinished();
     // Check that the dialog closes if the process no longer exists.
     assertFalse(dialog.$.dialog.open);
   });

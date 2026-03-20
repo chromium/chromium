@@ -4,20 +4,20 @@
 
 /**
  * @fileoverview 'certificate-provisioning-details-dialog' allows the user to
- * view the details of an in-progress certiifcate provisioning process.
+ * view the details of an in-progress certificate provisioning process.
  */
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import './certificate_shared.css.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 import {CertificateProvisioningBrowserProxyImpl} from './certificate_provisioning_browser_proxy.js';
-import {getTemplate} from './certificate_provisioning_details_dialog.html.js';
+import {getCss} from './certificate_provisioning_details_dialog.css.js';
+import {getHtml} from './certificate_provisioning_details_dialog.html.js';
 
 export interface CertificateProvisioningDetailsDialogElement {
   $: {
@@ -26,50 +26,59 @@ export interface CertificateProvisioningDetailsDialogElement {
   };
 }
 
-export class CertificateProvisioningDetailsDialogElement extends
-    PolymerElement {
+export class CertificateProvisioningDetailsDialogElement extends CrLitElement {
   static get is() {
     return 'certificate-provisioning-details-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      model: Object,
-      advancedExpanded_: Boolean,
+      model: {type: Object},
+      advancedExpanded_: {type: Boolean},
     };
   }
 
-  declare model: CertificateProvisioningProcess;
-  declare private advancedExpanded_: boolean;
+  accessor model: CertificateProvisioningProcess = {
+    processId: '',
+    certProfileId: '',
+    certProfileName: '',
+    isDeviceWide: false,
+    publicKey: '',
+    stateId: 0,
+    status: '',
+    timeSinceLastUpdate: '',
+    lastUnsuccessfulMessage: '',
+  };
+  protected accessor advancedExpanded_: boolean = false;
 
   close() {
     this.$.dialog.close();
   }
 
-  private onRefresh_() {
+  protected onRefreshClick_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()
         .triggerCertificateProvisioningProcessUpdate(this.model.certProfileId);
   }
 
-  private onReset_() {
+  protected onResetClick_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()
         .triggerCertificateProvisioningProcessReset(this.model.certProfileId);
   }
 
-  private shouldHideLastFailedStatus_(): boolean {
+  protected shouldHideLastFailedStatus_(): boolean {
     return this.model.lastUnsuccessfulMessage.length === 0;
   }
 
-  private arrowState_(opened: boolean): string {
-    return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
-
-  private boolToString_(bool: boolean): string {
-    return bool.toString();
+  protected onAdvancedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.advancedExpanded_ = e.detail.value;
   }
 }
 

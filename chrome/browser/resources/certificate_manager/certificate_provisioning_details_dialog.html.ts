@@ -1,28 +1,16 @@
-<style include="certificate-shared">
-  .button-box {
-    align-items: center;
-    min-height: 48px;
-  }
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-  .label {
-    color: var(--cr-secondary-text-color);
-    font-size: 85%;
-  }
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-  /* A row with two lines of text.
-   * Consistnt with chrome/browser/resources/settings/settings_shared_css.html
-   * (which can not be imported here).
-   */
-  .two-line {
-    min-height: var(--settings-row-two-line-min-height);
-  }
+import type {CertificateProvisioningDetailsDialogElement} from './certificate_provisioning_details_dialog.js';
 
-  .value {
-    color: var(--cr-primary-text-color);
-    word-wrap: break-word;
-  }
-</style>
-<cr-dialog id="dialog" show-on-attach show-close-button close-text="$i18n{close}">
+export function getHtml(this: CertificateProvisioningDetailsDialogElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
+<cr-dialog id="dialog" show-on-attach show-close-button
+    close-text="$i18n{close}">
   <div slot="title">
     $i18n{certificateProvisioningDetails}
   </div>
@@ -32,7 +20,7 @@
         $i18n{certificateProvisioningProfileName}
       </div>
       <div class="value" id="certProfileName" aria-hidden="true">
-        [[model.certProfileName]]
+        ${this.model.certProfileName}
       </div>
     </div>
     <div class="two-line">
@@ -40,7 +28,7 @@
         $i18n{certificateProvisioningProfileId}
       </div>
       <div class="value" id="certProfileId" aria-hidden="true">
-        [[model.certProfileId]]
+        ${this.model.certProfileId}
       </div>
     </div>
     <div class="two-line">
@@ -48,7 +36,7 @@
         $i18n{certificateProvisioningProcessId}
       </div>
       <div class="value" id="processId" aria-hidden="true">
-        [[model.processId]]
+        ${this.model.processId}
       </div>
     </div>
     <div class="button-box">
@@ -57,10 +45,10 @@
           $i18n{certificateProvisioningStatus}
         </div>
         <span class="value" id="status" aria-hidden="true">
-          [[model.status]]
+          ${this.model.status}
         </span>
       </div>
-      <cr-button id="refresh" role="button" on-click="onRefresh_">
+      <cr-button id="refresh" role="button" @click="${this.onRefreshClick_}">
         $i18n{certificateProvisioningRefresh}
       </cr-button>
     </div>
@@ -69,32 +57,33 @@
         $i18n{certificateProvisioningLastUpdate}
       </div>
       <div class="value" id="timeSinceLastUpdate" aria-hidden="true">
-        [[model.timeSinceLastUpdate]]
+        ${this.model.timeSinceLastUpdate}
       </div>
     </div>
-    <div class="two-line" hidden$="[[shouldHideLastFailedStatus_(model.lastUnsuccessfulMessage)]]">
+    <div class="two-line"
+        ?hidden="${this.shouldHideLastFailedStatus_()}">
       <div class="label" aria-describedby="lastFailedStatus">
         $i18n{certificateProvisioningLastUnsuccessfulStatus}
       </div>
       <div class="value" id="lastFailedStatus" aria-hidden="true">
-        [[model.lastUnsuccessfulMessage]]
+        ${this.model.lastUnsuccessfulMessage}
       </div>
     </div>
-    <cr-button id="reset" role="button" on-click="onReset_">
+    <cr-button id="reset" role="button" @click="${this.onResetClick_}">
       $i18n{certificateProvisioningReset}
     </cr-button>
-    <hr></hr>
-    <cr-expand-button expanded="{{advancedExpanded_}}"
-        aria-expanded$="[[boolToString_(advancedOpened)]]">
+    <hr>
+    <cr-expand-button .expanded="${this.advancedExpanded_}"
+        @expanded-changed="${this.onAdvancedExpandedChanged_}">
       <div>$i18n{certificateProvisioningAdvancedSectionTitle}</div>
     </cr-expand-button>
-    <cr-collapse id="advancedInfo" opened="[[advancedExpanded_]]">
+    <cr-collapse id="advancedInfo" ?opened="${this.advancedExpanded_}">
       <div class="two-line">
         <div class="label" aria-describedby="stateId">
           $i18n{certificateProvisioningStatusId}
         </div>
         <div class="value" id="stateId" aria-hidden="true">
-          [[model.stateId]]
+          ${this.model.stateId}
         </div>
       </div>
       <div class="two-line">
@@ -102,9 +91,12 @@
           $i18n{certificateProvisioningPublicKey}
         </div>
         <div class="value" id="publicKey" aria-hidden="true">
-          [[model.publicKey]]
+          ${this.model.publicKey}
         </div>
       </div>
     </cr-collapse>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
