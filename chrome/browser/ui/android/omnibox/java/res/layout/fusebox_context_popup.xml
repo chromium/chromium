@@ -120,18 +120,6 @@ found in the LICENSE file.
             android:paddingHorizontal="8dp"
             android:importantForAccessibility="no"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
-            android:id="@+id/fusebox_auto_button"
-            android:drawableStart="@drawable/autorenew_24dp"
-            android:text="@string/ntp_compose_auto_model"/>
-
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
-            android:id="@+id/fusebox_pro_button"
-            android:drawableStart="@drawable/ic_timer"
-            android:text="@string/fusebox_model_pro"/>
-
     </LinearLayout>
 
 </ScrollView>

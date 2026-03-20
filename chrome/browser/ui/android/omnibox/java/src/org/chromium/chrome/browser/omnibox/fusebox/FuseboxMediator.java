@@ -53,9 +53,10 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
@@ -153,20 +154,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED, this::activateImageGeneration);
         mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED, this::onToolDeepSearchClicked);
         mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED, this::onToolCanvasClicked);
-        mModel.set(
-                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
-                new PopupButtonData(
-                        this::onModelAutoClicked,
-                        /* visible= */ false,
-                        /* enabled= */ false,
-                        /* selected= */ false));
-        mModel.set(
-                FuseboxProperties.POPUP_MODEL_PRO_DATA,
-                new PopupButtonData(
-                        this::onModelProClicked,
-                        /* visible= */ false,
-                        /* enabled= */ false,
-                        /* selected= */ false));
+        mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of());
 
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
@@ -887,30 +875,27 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         boolean isAimRequest =
                 mInput != null && ToolModeUtils.isAimRequest(mInput.getRequestType());
 
-        boolean autoVisible =
-                inputState.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
-        boolean autoEnabled =
-                inputState.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
-        boolean autoSelected =
-                isAimRequest
-                        && inputState.activeModel
-                                == ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE;
+        List<PopupButtonData> modelButtonDataList = new ArrayList<>();
+        for (ModelConfig modelConfig : inputState.modelConfigs) {
+            int modelMode = modelConfig.getModelValue();
+            if (inputState.isModelVisible(modelMode)) {
+                boolean selected = isAimRequest && inputState.activeModel == modelMode;
+                int iconId =
+                        modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
+                                ? modelConfig.getIcon().getIconId().getNumber()
+                                : IconResourceIds.PLACE_WHITE_VALUE;
+                modelButtonDataList.add(
+                        new PopupButtonData(
+                                () -> setModelMode(modelMode),
+                                modelConfig.getMenuLabel(),
+                                iconId,
+                                inputState.isModelEnabled(modelMode),
+                                selected));
+            }
+        }
+        mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, modelButtonDataList);
 
-        boolean proVisible = inputState.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
-        boolean proEnabled = inputState.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
-        boolean proSelected =
-                isAimRequest && inputState.activeModel == ModelMode.MODEL_MODE_GEMINI_PRO_VALUE;
-
-        mModel.set(
-                FuseboxProperties.POPUP_MODEL_AUTO_DATA,
-                new PopupButtonData(
-                        this::onModelAutoClicked, autoVisible, autoEnabled, autoSelected));
-
-        mModel.set(
-                FuseboxProperties.POPUP_MODEL_PRO_DATA,
-                new PopupButtonData(this::onModelProClicked, proVisible, proEnabled, proSelected));
-
-        boolean anyModels = autoVisible || proVisible;
+        boolean anyModels = !modelButtonDataList.isEmpty();
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, anyModels);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, anyModels);
     }
@@ -922,14 +907,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
         mInput.setRequestType(requestType);
         return true;
-    }
-
-    private void onModelAutoClicked() {
-        setModelMode(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
-    }
-
-    private void onModelProClicked() {
-        setModelMode(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
     }
 
     private void setModelMode(int modelMode) {
