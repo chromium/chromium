@@ -61,11 +61,6 @@ bool DoesOriginSchemeRestrictMixedContent(const url::Origin& origin) {
          url::kHttpsScheme;
 }
 
-// This mirrors `blink::MixedContentChecker::IsMixedContent()`.
-bool IsMixedContent(const url::Origin& origin, const GURL& url) {
-  return !IsUrlPotentiallySecure(url) &&
-         DoesOriginSchemeRestrictMixedContent(origin);
-}
 
 // This mirrors `blink::MixedContentChecker::InWhichFrameIsContentMixed()` but
 // without reporting to renderer.
@@ -88,11 +83,13 @@ RenderFrameHostImpl* InWhichFrameIsContentMixedForFetchKeepAlive(
 
   // Check the main frame first.
   RenderFrameHostImpl* main_frame = initiator_frame->GetOutermostMainFrame();
-  if (IsMixedContent(main_frame->GetLastCommittedOrigin(), url)) {
+  if (MixedContentChecker::IsMixedContent(main_frame->GetLastCommittedOrigin(),
+                                          url)) {
     return main_frame;
   }
 
-  if (IsMixedContent(initiator_frame->GetLastCommittedOrigin(), url)) {
+  if (MixedContentChecker::IsMixedContent(
+          initiator_frame->GetLastCommittedOrigin(), url)) {
     return initiator_frame;
   }
 
@@ -180,6 +177,13 @@ void ReportBasicMixedContentFeatures(
 }
 
 }  // namespace
+
+// static
+bool MixedContentChecker::IsMixedContent(const url::Origin& security_origin,
+                                         const GURL& target_url) {
+  return !IsUrlPotentiallySecure(target_url) &&
+         DoesOriginSchemeRestrictMixedContent(security_origin);
+}
 
 MixedContentChecker::MixedContentChecker() = default;
 MixedContentChecker::~MixedContentChecker() = default;
@@ -302,9 +306,9 @@ bool MixedContentChecker::ShouldBlockInternal(
                     prefs.allow_running_insecure_content,
                     mixed_content_frame->GetLastCommittedOrigin(), url);
       if (allowed) {
-        const GURL& origin_url =
-            mixed_content_frame->GetLastCommittedOrigin().GetURL();
-        mixed_content_frame->OnDidRunInsecureContent(origin_url, url);
+        mixed_content_frame->OnDidRunInsecureContent(
+            url, blink::mojom::ContentSecurityNotifier::InsecureContentOrigin::
+                     kCurrentFrame);
         if (mixed_content_features) {
           mixed_content_features->insert(
               blink::mojom::WebFeature::kMixedContentBlockableAllowed);
@@ -401,7 +405,7 @@ RenderFrameHostImpl* MixedContentChecker::InWhichFrameIsContentMixed(
   }
 
   // Note: The code below should behave the same way as the two calls to
-  // `MeasureStricterVersionOfIsMixedContent()` from inside
+  // `MeasureStricterVersionOfMixedContentChecker::IsMixedContent()` from inside
   // `blink::MixedContentChecker::InWhichFrameIsContentMixed()`.
   if (mixed_content_frame) {
     // We're currently only checking for mixed content in `https://*` contexts.
@@ -456,7 +460,7 @@ bool MixedContentChecker::ShouldBlockFetchKeepAlive(
 bool MixedContentChecker::IsMixedContentForTesting(const GURL& origin_url,
                                                    const GURL& url) {
   const url::Origin origin = url::Origin::Create(origin_url);
-  return IsMixedContent(origin, url);
+  return MixedContentChecker::IsMixedContent(origin, url);
 }
 
 }  // namespace content

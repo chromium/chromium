@@ -43,6 +43,9 @@ class CONTENT_EXPORT MixedContentChecker {
   bool ShouldBlockNavigation(NavigationHandle& navigation_handle,
                              bool for_redirect);
 
+  // Returns whether `url` is mixed content with respect to `origin`.
+  static bool IsMixedContent(const url::Origin& origin, const GURL& url);
+
   // Checks if a fetch keepalive request that loads `url` should be blocked or
   // not due to mixed content, without reporting back to renderer.
   //

@@ -139,6 +139,7 @@
 #include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/mixed_content_checker.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
@@ -19222,18 +19223,33 @@ void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
   SetPolicyContainerHost(std::move(policy_container_host));
 }
 
-void RenderFrameHostImpl::OnDidRunInsecureContent(const GURL& security_origin,
-                                                  const GURL& target_url) {
+void RenderFrameHostImpl::OnDidRunInsecureContent(
+    const GURL& target_url,
+    blink::mojom::ContentSecurityNotifier::InsecureContentOrigin origin_type) {
+  url::Origin security_origin =
+      (origin_type ==
+       blink::mojom::ContentSecurityNotifier::InsecureContentOrigin::kTopFrame)
+          ? GetOutermostMainFrame()->GetLastCommittedOrigin()
+          : GetLastCommittedOrigin();
+
+  if (!MixedContentChecker::IsMixedContent(security_origin, target_url)) {
+    mojo::ReportBadMessage(
+        "NotifyInsecureContentRan called for non-mixed content.");
+    return;
+  }
+
+  const GURL& security_origin_url = security_origin.GetURL();
   OPTIONAL_TRACE_EVENT2("content", "RenderFrameHostImpl::DidRunInsecureContent",
-                        "security_origin", security_origin, "target_url",
+                        "security_origin", security_origin_url, "target_url",
                         target_url);
 
   RecordAction(base::UserMetricsAction("SSL.RanInsecureContent"));
-  if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
+  if (base::EndsWith(security_origin_url.spec(), kDotGoogleDotCom,
                      base::CompareCase::INSENSITIVE_ASCII)) {
     RecordAction(base::UserMetricsAction("SSL.RanInsecureContentGoogle"));
   }
-  frame_tree_->controller().ssl_manager()->DidRunMixedContent(security_origin);
+  frame_tree_->controller().ssl_manager()->DidRunMixedContent(
+      security_origin_url);
 }
 
 void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {

@@ -35,7 +35,9 @@ class MockContentSecurityNotifier
   MOCK_METHOD0(NotifyContentWithCertificateErrorsRan, void());
   MOCK_METHOD0(NotifyContentWithCertificateErrorsDisplayed, void());
   MOCK_METHOD2(NotifyInsecureContentRan,
-               void(const KURL& origin, const KURL& insecure_url));
+               void(const KURL& insecure_url,
+                    mojom::blink::ContentSecurityNotifier::InsecureContentOrigin
+                        origin_type));
 
  private:
   mojo::Receiver<mojom::blink::ContentSecurityNotifier> receiver_{this};

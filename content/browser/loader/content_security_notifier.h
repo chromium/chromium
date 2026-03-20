@@ -26,8 +26,10 @@ class ContentSecurityNotifier final
   // blink::mojom::ContentSecurityNotifier implementation.
   void NotifyContentWithCertificateErrorsRan() override;
   void NotifyContentWithCertificateErrorsDisplayed() override;
-  void NotifyInsecureContentRan(const GURL& origin,
-                                const GURL& insecure_url) override;
+  void NotifyInsecureContentRan(
+      const GURL& insecure_url,
+      blink::mojom::ContentSecurityNotifier::InsecureContentOrigin origin_type)
+      override;
 
  private:
   const GlobalRenderFrameHostId render_frame_host_id_;

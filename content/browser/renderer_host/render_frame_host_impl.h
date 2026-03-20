@@ -157,6 +157,7 @@
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
@@ -2891,8 +2892,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   network::mojom::ClientSecurityStatePtr BuildClientSecurityStateForWorkers()
       const;
 
-  void OnDidRunInsecureContent(const GURL& security_origin,
-                               const GURL& target_url);
+  void OnDidRunInsecureContent(
+      const GURL& target_url,
+      blink::mojom::ContentSecurityNotifier::InsecureContentOrigin origin_type);
   void OnDidDisplayContentWithCertificateErrors();
   void OnDidRunContentWithCertificateErrors();
 

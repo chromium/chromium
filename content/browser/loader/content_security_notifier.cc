@@ -27,11 +27,11 @@ void ContentSecurityNotifier::NotifyContentWithCertificateErrorsDisplayed() {
 }
 
 void ContentSecurityNotifier::NotifyInsecureContentRan(
-    const GURL& origin,
-    const GURL& insecure_url) {
+    const GURL& insecure_url,
+    blink::mojom::ContentSecurityNotifier::InsecureContentOrigin origin_type) {
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
   if (render_frame_host) {
-    render_frame_host->OnDidRunInsecureContent(origin, insecure_url);
+    render_frame_host->OnDidRunInsecureContent(insecure_url, origin_type);
   }
 }
 

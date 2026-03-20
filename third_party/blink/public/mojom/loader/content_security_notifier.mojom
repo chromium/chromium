@@ -21,10 +21,24 @@ interface ContentSecurityNotifier {
   // connection with certificate errors was displayed.
   NotifyContentWithCertificateErrorsDisplayed();
 
-  // Notifies that an embedded execution context with |origin| ran active
+  // Indicates which execution context's security rules triggered the mixed
+  // content violation. Note that in both cases, this IPC is emitted by the
+  // document or worker that actually loaded the insecure resource. This enum
+  // tells the browser which context's strictness caused the load to be flagged:
+  //
+  // - kTopFrame: The violation occurred because the top-level document is
+  //   secure, protecting the user's expectation of security (the URL bar
+  //   padlock).
+  // - kCurrentFrame: The violation occurred because the current document
+  //   (or worker) itself is a secure context protecting its own integrity,
+  //   even if it is embedded within an insecure top-level page.
+  enum InsecureContentOrigin {
+    kTopFrame,
+    kCurrentFrame,
+  };
+
+  // Notifies that an embedded execution context ran active
   // content (such as a script) from an insecure source.
-  // TODO(nhiroki): Stop passing the origin, and instead take it from the
-  // execution context host.
-  NotifyInsecureContentRan(url.mojom.Url origin,
-                           url.mojom.Url insecure_url);
+  NotifyInsecureContentRan(url.mojom.Url insecure_url,
+                           InsecureContentOrigin origin_type);
 };
