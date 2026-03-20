@@ -2379,7 +2379,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   // fallback.
   DispatchDelayedResponseTask();
 
-  // Dispatch the response for to the fallback request.
+  // Dispatch the response for the fallback request.
   DispatchDelayedResponseTask();
 
   content::WaitForLoadStop(GetWebContents());

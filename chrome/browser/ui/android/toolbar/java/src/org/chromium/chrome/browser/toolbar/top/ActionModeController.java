@@ -50,7 +50,7 @@ public class ActionModeController {
             };
 
     /**
-     * This is an interface for to let the controller animate the position of {@link Toolbar}, while
+     * This is an interface to let the controller animate the position of {@link Toolbar}, while
      * action mode is showing.
      */
     public interface ActionBarDelegate {

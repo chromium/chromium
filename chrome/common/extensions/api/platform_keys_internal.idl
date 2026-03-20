@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Internal API for to implement the platformKeys and enterprise.platformKeys
-// APIs.
+// Internal API to implement the platformKeys and enterprise.platformKeys APIs.
 [implemented_in = "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"]
 namespace platformKeysInternal {
   callback SelectCallback = void (platformKeys.Match[] certs);

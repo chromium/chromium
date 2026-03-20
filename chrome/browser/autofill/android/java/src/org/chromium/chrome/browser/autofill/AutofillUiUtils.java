@@ -97,7 +97,7 @@ public class AutofillUiUtils {
     }
 
     // 200ms is chosen small enough not to be detectable to human eye, but big
-    // enough for to avoid any race conditions on modern machines.
+    // enough to avoid any race conditions on modern machines.
     private static final int TOOLTIP_DEFERRED_PERIOD_MS = 200;
     public static final int EXPIRATION_FIELDS_LENGTH = 2;
 

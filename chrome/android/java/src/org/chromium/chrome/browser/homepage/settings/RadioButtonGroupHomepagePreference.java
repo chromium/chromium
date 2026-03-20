@@ -49,10 +49,10 @@ public final class RadioButtonGroupHomepagePreference extends ContainedRadioButt
         /** Whether the RadioButtonGroup is enabled. */
         private final boolean mIsEnabled;
 
-        /** Whether the option for to {@link HomepageOption#ENTRY_CHROME_NTP} is visible. */
+        /** Whether the option for {@link HomepageOption#ENTRY_CHROME_NTP} is visible. */
         private final boolean mIsNtpOptionVisible;
 
-        /** Whether the option for to {@link HomepageOption#ENTRY_CUSTOM_URI} is visible. */
+        /** Whether the option for {@link HomepageOption#ENTRY_CUSTOM_URI} is visible. */
         private final boolean mIsCustomizedOptionVisible;
 
         /**
@@ -63,9 +63,9 @@ public final class RadioButtonGroupHomepagePreference extends ContainedRadioButt
          *     RadioButtonGroupHomepagePreference}
          * @param customizedText The string that displayed on the edit text box.
          * @param isEnabled Whether the RadioButtonGroup is enabled.
-         * @param isNtpButtonVisible Whether the option for to {@link
-         *     HomepageOption#ENTRY_CHROME_NTP} is visible.
-         * @param isCustomizedOptionVisible Whether the option for to {@link
+         * @param isNtpButtonVisible Whether the option for {@link HomepageOption#ENTRY_CHROME_NTP}
+         *     is visible.
+         * @param isCustomizedOptionVisible Whether the option for {@link
          *     HomepageOption#ENTRY_CUSTOM_URI} is visible.
          */
         PreferenceValues(

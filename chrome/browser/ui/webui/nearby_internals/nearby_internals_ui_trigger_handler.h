@@ -17,7 +17,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-// WebUIMessageHandler for to trigger NearbySharingService UI events.
+// WebUIMessageHandler to trigger NearbySharingService UI events.
 class NearbyInternalsUiTriggerHandler : public content::WebUIMessageHandler,
                                         public TransferUpdateCallback,
                                         public ShareTargetDiscoveredCallback {

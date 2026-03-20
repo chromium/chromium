@@ -460,7 +460,7 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   document_name_ = document_name;
 
   const int32_t document_cookie = document_oop_->cookie();
-  PRINTER_LOG(DEBUG) << "Starting printing via service for to `" << device_name_
+  PRINTER_LOG(DEBUG) << "Starting printing via service for `" << device_name_
                      << "` for document " << document_cookie;
 
   PrintBackendServiceManager& service_mgr =

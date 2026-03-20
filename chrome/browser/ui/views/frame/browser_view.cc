@@ -2046,7 +2046,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       sad_tab_helper->ReinstallInWebView();
     }
 
-    // Temporarily disable fast resize for to ensure that the new active tab
+    // Temporarily disable fast resize to ensure that the new active tab
     // updates its layout.
     const bool original_fast_resize =
         multi_contents_view_->GetActiveContentsView()->GetFastResize();

@@ -50,7 +50,7 @@ public class RuntimePermissionTestUtils {
         ALREADY_GRANTED, // Also implies "ASSERT_NEVER_ASKED"
     }
 
-    /** Utility delegate for to provide the permissions to be requested and the runtime response. */
+    /** Utility delegate to provide the permissions to be requested and the runtime response. */
     public static class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {
         private RuntimePromptResponse mResponse;
         private final Set<String> mRequestablePermissions;
