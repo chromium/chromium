@@ -67,8 +67,8 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<FakeFastPairGattServiceClient, DanglingUntriaged>
-      fake_fast_pair_gatt_service_client_ = nullptr;
+  raw_ptr<FakeFastPairGattServiceClient> fake_fast_pair_gatt_service_client_ =
+      nullptr;
 };
 
 class FastPairFakeDataEncryptorImplFactory
@@ -95,8 +95,7 @@ class FastPairFakeDataEncryptorImplFactory
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
-      nullptr;
+  raw_ptr<FakeFastPairDataEncryptor> data_encryptor_ = nullptr;
   bool successful_retrieval_ = true;
 };
 
@@ -172,8 +171,11 @@ class FastPairHandshakeImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   scoped_refptr<Device> device_;
   FakeFastPairGattServiceClientImplFactory gatt_service_client_factory_;
-  FastPairFakeDataEncryptorImplFactory data_encryptor_factory_;
   std::unique_ptr<FastPairHandshake> handshake_;
+  // Must be destroyed before `handshake_`: `data_encryptor_factory_` has a raw
+  // pointer to the last-created `DataEncryptor`, which is owned by
+  // `handshake_`.
+  FastPairFakeDataEncryptorImplFactory data_encryptor_factory_;
   std::optional<PairFailure> failure_ = std::nullopt;
 };
 
