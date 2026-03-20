@@ -147,9 +147,8 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
   InitializeFFTSetupForSize(fft_size_);
 
   // Copy/setup frame data.
-  unsigned nbytes = sizeof(float) * (fft_size_ / 2);
-  UNSAFE_TODO(memcpy(RealData().Data(), frame.RealData().Data(), nbytes));
-  UNSAFE_TODO(memcpy(ImagData().Data(), frame.ImagData().Data(), nbytes));
+  real_data_.as_span().copy_from(frame.real_data_.as_span());
+  imag_data_.as_span().copy_from(frame.imag_data_.as_span());
 }
 
 unsigned FFTFrame::MinFFTSize() {
@@ -204,13 +203,10 @@ void FFTFrame::DoFFT(const float* data) {
   // Split FFT data into real and imaginary arrays.  PFFFT transform already
   // uses the desired format; we just need to split out the real and imaginary
   // parts.
-  const float* c = complex_data_.Data();
-  float* real = real_data_.Data();
-  float* imag = imag_data_.Data();
   for (unsigned k = 0; k < len; ++k) {
     int index = 2 * k;
-    UNSAFE_TODO(real[k]) = UNSAFE_TODO(c[index]);
-    UNSAFE_TODO(imag[k]) = UNSAFE_TODO(c[index + 1]);
+    real_data_[k] = complex_data_[index];
+    imag_data_[k] = complex_data_[index + 1];
   }
 }
 
@@ -221,19 +217,16 @@ void FFTFrame::DoInverseFFT(float* data) {
 
   // Pack the real and imaginary data into the complex array format.  PFFFT
   // already uses the desired format; we just need to pack the parts together.
-  float* fft_data = complex_data_.Data();
-  const float* real = real_data_.Data();
-  const float* imag = imag_data_.Data();
   for (unsigned k = 0; k < len; ++k) {
     int index = 2 * k;
-    UNSAFE_TODO(fft_data[index]) = UNSAFE_TODO(real[k]);
-    UNSAFE_TODO(fft_data[index + 1]) = UNSAFE_TODO(imag[k]);
+    complex_data_[index] = real_data_[k];
+    complex_data_[index + 1] = imag_data_[k];
   }
 
   PFFFT_Setup* setup = FFTSetupForSize(fft_size_);
   DCHECK(setup);
 
-  pffft_transform_ordered(setup, fft_data, data, pffft_work_.Data(),
+  pffft_transform_ordered(setup, complex_data_.Data(), data, pffft_work_.Data(),
                           PFFFT_BACKWARD);
 
   // The inverse transform needs to be scaled because PFFFT doesn't.
