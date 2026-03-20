@@ -1,0 +1,31 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles cros-color-overrides">
+
+</style>
+<oobe-adaptive-dialog role="dialog" for-step="success">
+  <!-- TODO: b/445628245 - Update translatable text and replace next button with
+    text button done -->
+  <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+  <h1 slot="title">
+    Sign-in method updated
+  </h1>
+  <div slot="subtitle">
+    For security reasons, your administrator disabled your device PIN or
+    password. From now on, use your [work or school account] password.
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="doneButton" inverse on-click="onDoneClicked"
+        class="focus-on-show" >
+    </oobe-next-button>
+  </div>
+
+</oobe-adaptive-dialog>
+
+<oobe-loading-dialog id="progress" role="dialog" for-step="progress"
+  title-key="gaiaLoading">
+<iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>

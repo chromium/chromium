@@ -157,6 +157,7 @@ build_webui("build") {
     "screens/osauth/osauth_error.ts",
     "screens/osauth/password_selection.ts",
     "screens/osauth/pin_setup.ts",
+    "screens/osauth/remove_local_auth_factors.ts",
 
     # Components
     "components/api_keys_notice.ts",

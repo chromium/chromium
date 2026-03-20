@@ -28,6 +28,8 @@ static_library("osauth") {
     "password_selection_screen.h",
     "recovery_eligibility_screen.cc",
     "recovery_eligibility_screen.h",
+    "remove_local_auth_factors_screen.cc",
+    "remove_local_auth_factors_screen.h",
   ]
 
   public_deps = [
@@ -79,6 +81,7 @@ source_set("browser_tests") {
     "local_password_setup_screen_browsertest.cc",
     "password_selection_screen_browsertest.cc",
     "recovery_eligibility_screen_browsertest.cc",
+    "remove_local_auth_factors_screen_browsertest.cc",
   ]
 
   deps = [

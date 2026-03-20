@@ -111,6 +111,7 @@
 #include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/remove_local_auth_factors_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
@@ -226,6 +227,7 @@
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -1094,6 +1096,14 @@ WizardController::CreateScreens() {
           base::BindRepeating(&WizardController::OnFjordImageDownloadScreenExit,
                               weak_factory_.GetWeakPtr())));
     }
+  }
+
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    append(std::make_unique<RemoveLocalAuthFactorsScreen>(
+        oobe_ui->GetView<RemoveLocalAuthFactorsScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(
+            &WizardController::OnRemoveLocalAuthFactorsScreenExit,
+            weak_factory_.GetWeakPtr())));
   }
 
   return result;
@@ -2820,6 +2830,19 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   }
 }
 
+void WizardController::OnRemoveLocalAuthFactorsScreenExit(
+    RemoveLocalAuthFactorsScreen::Result result) {
+  OnScreenExit(RemoveLocalAuthFactorsScreenView::kScreenId,
+               RemoveLocalAuthFactorsScreen::GetResultString(result));
+
+  switch (result) {
+    case RemoveLocalAuthFactorsScreen::Result::kSuccess:
+    case RemoveLocalAuthFactorsScreen::Result::kError:
+      // TODO: b/445628245 - Implement screen exit logic.
+      return;
+  }
+}
+
 void WizardController::ObtainContextAndFinalizeAuth() {
   CHECK(wizard_context_->extra_factors_token);
   auto token = std::move(wizard_context_->extra_factors_token);
@@ -3602,7 +3625,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == FjordTouchControllerScreenView::kScreenId ||
              screen_id == FjordImageSelectionScreenView::kScreenId ||
              screen_id == FjordImageDownloadScreenView::kScreenId ||
-             screen_id == FjordFwUpdateScreenView::kScreenId) {
+             screen_id == FjordFwUpdateScreenView::kScreenId ||
+             screen_id == RemoveLocalAuthFactorsScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Quick-start"/>
   <variant name="Recommend-apps"/>
   <variant name="Recovery-check"/>
+  <variant name="Remove-local-auth-factors"/>
   <variant name="Reset"/>
   <variant name="Saml-confirm-password"/>
   <variant name="Signin-fatal-error"/>
@@ -427,6 +428,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Recommend-apps.Selected"/>
   <variant name="Recommend-apps.Skipped"/>
   <variant name="Recovery-check.Proceed"/>
+  <variant name="Remove-local-auth-factors.Error"/>
+  <variant name="Remove-local-auth-factors.Success"/>
   <variant name="Reset.Cancel"/>
   <variant name="Saml-confirm-password.Cancel"/>
   <variant name="Saml-confirm-password.NotApplicable"/>

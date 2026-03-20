@@ -121,6 +121,7 @@
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -600,6 +601,10 @@ void OobeUI::ConfigureOobeDisplay() {
       AddScreenHandler(std::make_unique<FjordImageSelectionScreenHandler>());
       AddScreenHandler(std::make_unique<FjordImageDownloadScreenHandler>());
     }
+  }
+
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    AddScreenHandler(std::make_unique<RemoveLocalAuthFactorsScreenHandler>());
   }
 
   Profile* const profile = Profile::FromWebUI(web_ui());

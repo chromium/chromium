@@ -152,6 +152,8 @@ static_library("login") {
     "recovery_eligibility_screen_handler.h",
     "remote_activity_notification_screen_handler.cc",
     "remote_activity_notification_screen_handler.h",
+    "remove_local_auth_factors_screen_handler.cc",
+    "remove_local_auth_factors_screen_handler.h",
     "reset_screen_handler.cc",
     "reset_screen_handler.h",
     "saml_challenge_key_handler.cc",
