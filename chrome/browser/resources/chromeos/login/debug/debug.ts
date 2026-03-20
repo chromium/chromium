@@ -966,10 +966,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     kind: ScreenKind.NORMAL,
   },
   {
-    id: 'remove-local-auth-factors',
-    kind: ScreenKind.NORMAL,
-  },
-  {
     id: 'local-data-loss-warning',
     kind: ScreenKind.NORMAL,
     states: [

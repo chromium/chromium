@@ -61,7 +61,6 @@ import './screens/osauth/enter_old_password.js';
 import './screens/osauth/osauth_error.js';
 import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
-import './screens/osauth/remove_local_auth_factors.js';
 // AUTHENTICATION SCREENS USED DURING THE LOGIN FLOW
 import './screens/osauth/cryptohome_recovery.js';
 // SCREENS USED DURING THE LOGIN FLOW
@@ -216,7 +215,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     id: 'user-allowlist-check-screen',
   },
   {tag: 'wrong-hwid-element', id: 'wrong-hwid'},
-  {tag: 'remove-local-auth-factors-element', id: 'remove-local-auth-factors'}
 ];
 
 /**
