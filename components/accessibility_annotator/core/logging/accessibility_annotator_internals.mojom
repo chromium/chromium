@@ -4,6 +4,8 @@
 
 module accessibility_annotator_internals.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
+
 // TODO(crbug.com/488355081): Maybe add a stream here to get updates
 // directly from the service.
 // For now, get the annotations once when the page is loaded.
@@ -15,9 +17,9 @@ interface PageHandlerFactory {
 
 // Called from TS side of chrome://content-annotator-internals
 interface PageHandler {
-  // Requests annotations and returns the annotated content as a string, if
+  // Requests annotations and returns the annotated content as a base::Value, if
   // available.
-  GetAnnotatedContent() => (string? content);
+  GetAnnotatedContent() => (mojo_base.mojom.Value content);
 };
 
 // Called from C++ side of chrome://content-annotator-internals

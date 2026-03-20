@@ -7,6 +7,38 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#example-div {
-  color: blue;
+:host {
+  display: block;
+  margin: 2% 5%;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 10px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+/* Ensure the long annotations don't break the table layout */
+td:nth-child(3) {
+  word-break: break-all;
+  min-width: 200px;
 }

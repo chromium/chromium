@@ -31,10 +31,10 @@ void ContentAnnotatorInternalsPageHandler::GetAnnotatedContent(
   accessibility_annotator::AccessibilityAnnotatorBackend* backend =
       AccessibilityAnnotatorBackendFactory::GetForProfile(profile_);
   if (!backend) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::Value());
     return;
   }
-  std::move(callback).Run(backend->GetDebugUIFormattedCacheData());
+  std::move(callback).Run(backend->GetDebugUICacheData());
 }
 
 }  // namespace content_annotator_internals

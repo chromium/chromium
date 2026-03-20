@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/strings.m.js';
-
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+
+export interface AnnotationEntry {
+  url: string;
+  title: string;
+  annotations: any;
+}
 
 export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   static get is() {
@@ -27,13 +31,13 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      message_: {type: String},
-      logContent_: {type: String},
+      logContent_: {type: Array},
+      errorMessage_: {type: String},
     };
   }
 
-  protected accessor message_: string = loadTimeData.getString('message');
-  protected accessor logContent_: string = 'Loading log content...';
+  protected accessor logContent_: AnnotationEntry[] = [];
+  protected accessor errorMessage_: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -42,13 +46,48 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   }
 
   private async loadLogContent_() {
+    this.errorMessage_ = '';
     try {
-      const result = await this.browserProxy_.handler.getAnnotatedContent();
-      this.logContent_ =
-          result.content ?? 'Error retrieving annotated content.';
+      const {content} = await this.browserProxy_.handler.getAnnotatedContent();
+      this.logContent_ = this.flattenValue_(content) || [];
     } catch (e) {
-      this.logContent_ = `Error loading log: ${e}`;
+      this.errorMessage_ = 'Error: could not get content annotations.';
+      this.logContent_ = [];
     }
+  }
+
+  private flattenValue_(value: Value): any {
+    if (!value) {
+      return null;
+    }
+
+    if (value.boolValue !== undefined) {
+      return value.boolValue;
+    }
+    if (value.intValue !== undefined) {
+      return value.intValue;
+    }
+    if (value.doubleValue !== undefined) {
+      return value.doubleValue;
+    }
+    if (value.stringValue !== undefined) {
+      return value.stringValue;
+    }
+    if (value.listValue !== undefined) {
+      return value.listValue.storage.map(v => this.flattenValue_(v));
+    }
+    if (value.dictionaryValue !== undefined) {
+      const flattened: {[key: string]: any} = {};
+      for (const [k, v] of Object.entries(value.dictionaryValue.storage)) {
+        flattened[k] = this.flattenValue_(v);
+      }
+      return flattened;
+    }
+    return null;
+  }
+
+  protected formatAnnotations_(annotations: any): string {
+    return JSON.stringify(annotations, null, 2);
   }
 }
 

@@ -7,6 +7,7 @@
 #include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
@@ -92,7 +93,7 @@ void AccessibilityAnnotatorBackend::OnHistoryServiceLoaded(
   // TODO(crbug.com/489690454): Query the history service for historical data.
 }
 
-std::optional<std::string>
+std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
 AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
     const GURL& url) const {
   auto it = content_annotations_cache_.Peek(url);
@@ -104,16 +105,32 @@ AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
 
 void AccessibilityAnnotatorBackend::SetContentAnnotationsCacheData(
     const GURL& url,
+    std::string page_title,
     std::string annotations) {
   // This automatically handles eviction of the oldest entries if full.
-  content_annotations_cache_.Put(url, std::move(annotations));
+  content_annotations_cache_.Put(
+      url,
+      ContentAnnotationsData{std::move(page_title), std::move(annotations)});
 }
 
-std::string AccessibilityAnnotatorBackend::GetDebugUIFormattedCacheData()
-    const {
-  // TODO(b/488355081): Pull data from the cache here and format it for UI
-  // display.
-  return "Cache data not yet available for the debug UI.";
+base::Value AccessibilityAnnotatorBackend::GetDebugUICacheData() const {
+  base::ListValue result;
+  for (const std::pair<GURL, ContentAnnotationsData>& item :
+       content_annotations_cache_) {
+    base::DictValue entry;
+    entry.Set("url", item.first.spec());
+    entry.Set("title", item.second.page_title);
+
+    std::optional<base::Value> json =
+        base::JSONReader::Read(item.second.annotations, base::JSON_PARSE_RFC);
+    if (json) {
+      entry.Set("annotations", std::move(*json));
+    } else {
+      entry.Set("annotations", base::Value(item.second.annotations));
+    }
+    result.Append(std::move(entry));
+  }
+  return base::Value(std::move(result));
 }
 
 AccessibilityAnnotationSyncBridge*

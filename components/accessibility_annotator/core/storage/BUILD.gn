@@ -31,6 +31,7 @@ source_set("unit_tests") {
 
   sources = [
     "accessibility_annotation_sync_bridge_unittest.cc",
+    "accessibility_annotator_backend_unittest.cc",
     "accessibility_annotator_database_unittest.cc",
     "intent_table_unittest.cc",
   ]

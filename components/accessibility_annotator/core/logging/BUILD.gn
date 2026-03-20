@@ -9,4 +9,6 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [ "accessibility_annotator_internals.mojom" ]
   webui_module_path = "/"
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

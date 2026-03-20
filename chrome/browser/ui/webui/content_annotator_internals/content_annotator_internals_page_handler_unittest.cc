@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/content_annotator_internals/content_annotator_internals_page_handler.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -68,7 +67,10 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
         mock_page_.BindAndGetRemote(), &profile_);
   }
 
-  ContentAnnotatorInternalsPageHandler* GetHandler() { return handler_.get(); }
+  TestingProfile* profile() { return &profile_; }
+  ContentAnnotatorInternalsPageHandler* handler() { return handler_.get(); }
+  base::ScopedTempDir& temp_dir() { return temp_dir_; }
+  MockPage& mock_page() { return mock_page_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -78,12 +80,37 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
   std::unique_ptr<ContentAnnotatorInternalsPageHandler> handler_;
 };
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContent) {
+TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentEmpty) {
   base::RunLoop run_loop;
-  GetHandler()->GetAnnotatedContent(base::BindLambdaForTesting(
-      [&](const std::optional<std::string>& content) {
-        EXPECT_TRUE(content.has_value());
-        EXPECT_EQ(*content, "Cache data not yet available for the debug UI.");
+  handler()->GetAnnotatedContent(
+      base::BindLambdaForTesting([&](base::Value content) {
+        ASSERT_TRUE(content.is_list());
+        EXPECT_TRUE(content.GetList().empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
+  ASSERT_TRUE(backend);
+
+  backend->SetContentAnnotationsCacheData(GURL("https://example.com"), "Title",
+                                          "{\"key\": \"value\"}");
+
+  base::RunLoop run_loop;
+  handler()->GetAnnotatedContent(
+      base::BindLambdaForTesting([&](base::Value content) {
+        ASSERT_TRUE(content.is_list());
+        const base::ListValue& list = content.GetList();
+        ASSERT_EQ(list.size(), 1u);
+        const base::DictValue& entry = list[0].GetDict();
+        EXPECT_EQ(*entry.FindString("url"), "https://example.com/");
+        EXPECT_EQ(*entry.FindString("title"), "Title");
+        const base::DictValue* annotations = entry.FindDict("annotations");
+        ASSERT_TRUE(annotations);
+        EXPECT_EQ(*annotations->FindString("key"), "value");
         run_loop.Quit();
       }));
   run_loop.Run();

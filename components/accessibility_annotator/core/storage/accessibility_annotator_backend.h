@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
+#include "base/values.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,6 +43,11 @@ class AccessibilityAnnotatorBackend
       public AccessibilityAnnotationSyncBridge::Observer,
       public history::HistoryServiceObserver {
  public:
+  struct ContentAnnotationsData {
+    std::string page_title;
+    std::string annotations;
+  };
+
   AccessibilityAnnotatorBackend(
       version_info::Channel channel,
       history::HistoryService* history_service,
@@ -76,14 +82,16 @@ class AccessibilityAnnotatorBackend
       history::HistoryService* history_service) override;
 
   // Reads from Content Annotations cache.
-  std::optional<std::string> GetContentAnnotationsCacheData(
+  std::optional<ContentAnnotationsData> GetContentAnnotationsCacheData(
       const GURL& url) const;
 
   // Writes to Content Annotations cache.
-  void SetContentAnnotationsCacheData(const GURL& url, std::string annotations);
+  void SetContentAnnotationsCacheData(const GURL& url,
+                                      std::string page_title,
+                                      std::string annotations);
 
-  // Pulls cache data into a formatted string to use in the debug UI.
-  std::string GetDebugUIFormattedCacheData() const;
+  // Pulls cache data into a base::Value for use in the debug UI.
+  base::Value GetDebugUICacheData() const;
 
   // Returns `accessibility_annotation_sync_bridge_`.
   // TODO(crbug.com/489492084): This is currently used by
@@ -100,7 +108,7 @@ class AccessibilityAnnotatorBackend
   // Stores annotations keyed by the URL they are associated with. The cache
   // size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is full, the
   // least recently used entry is evicted.
-  base::LRUCache<GURL, std::string> content_annotations_cache_;
+  base::LRUCache<GURL, ContentAnnotationsData> content_annotations_cache_;
 
   base::ScopedObservation<AccessibilityAnnotationSyncBridge,
                           AccessibilityAnnotationSyncBridge::Observer>

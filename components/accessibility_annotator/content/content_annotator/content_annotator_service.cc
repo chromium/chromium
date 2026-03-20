@@ -236,6 +236,7 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     const GURL& url) {
+  std::string page_title = page_context.title();
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
 
@@ -244,11 +245,13 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr(), url));
+                     weak_ptr_factory_.GetWeakPtr(), url,
+                     std::move(page_title)));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
     const GURL& url,
+    std::string page_title,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (url.is_empty() || !url.is_valid()) {
@@ -256,7 +259,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
   }
 
   std::optional<std::string> extracted_data =
-      base::OptionalFromExpected(result.response)
+      base::OptionalFromExpected(std::move(result.response))
           .transform([](const optimization_guide::proto::Any& any) {
             auto metadata = optimization_guide::ParsedAnyMetadata<
                 optimization_guide::proto::ContentAnnotationResponse>(any);
@@ -265,7 +268,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
 
   if (extracted_data.has_value() && !extracted_data->empty()) {
     accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-        url, std::move(*extracted_data));
+        url, std::move(page_title), std::move(*extracted_data));
   }
 }
 

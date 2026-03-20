@@ -554,9 +554,12 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
                                    /*log_entry=*/nullptr));
 
   // 5. Verify that the data is cached in the backend.
-  std::optional<std::string> cached_data =
-      accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
-  EXPECT_THAT(cached_data, testing::Optional(data));
+  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+      cached_data =
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+  ASSERT_TRUE(cached_data.has_value());
+  EXPECT_EQ(cached_data->annotations, data);
+  EXPECT_EQ(cached_data->page_title, "Test Title");
 }
 
 TEST_F(ContentAnnotatorServiceTest,

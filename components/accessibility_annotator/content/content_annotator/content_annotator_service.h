@@ -126,6 +126,7 @@ class ContentAnnotatorService
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(
       const GURL& url,
+      std::string page_title,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
