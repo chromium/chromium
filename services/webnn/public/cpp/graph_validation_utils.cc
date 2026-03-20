@@ -733,6 +733,10 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
         "The groups must evenly divide the input channels to filter input "
         "channels."));
   }
+  if (output_channels % attributes.groups != 0) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The groups must evenly divide the output channels."));
+  }
 
   // Validate and calculate output sizes.
   ASSIGN_OR_RETURN(
