@@ -1990,7 +1990,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           auto& canvas_fragment = object_.Parent()->FirstFragment();
           state.canvas_child_state = {
               object_.GetNode()->GetDomNodeId(),
-              gfx::SizeF(DynamicTo<LayoutBox>(object_)->StitchedSize()),
+              gfx::SizeF(To<LayoutBox>(object_).StitchedSize()),
               object_.StyleRef().EffectiveZoom(),
               canvas_fragment.ContentsEffect(), canvas_fragment.ContentsClip()};
         }

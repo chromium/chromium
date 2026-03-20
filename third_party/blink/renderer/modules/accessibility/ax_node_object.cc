@@ -7471,16 +7471,15 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Per SVG AAM 1.0's modifications to 2D of this algorithm.
-  if (GetNode()->IsSVGElement()) {
+  if (auto* svg_element = DynamicTo<SVGElement>(*GetNode())) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
     if (name_sources) {
       name_sources->push_back(NameSource(*found_text_alternative));
       name_sources->back().type = name_from;
       name_sources->back().native_source = kAXTextFromNativeTitleElement;
     }
-    auto* container_node = To<ContainerNode>(GetNode());
     Element* title = ElementTraversal::FirstChild(
-        *container_node, HasTagName(svg_names::kTitleTag));
+        *svg_element, HasTagName(svg_names::kTitleTag));
 
     if (title) {
       // TODO(accessibility): In most cases <desc> and <title> can
@@ -7508,7 +7507,7 @@ String AXNodeObject::NativeTextAlternative(
     }
     // The SVG-AAM says that the xlink:title participates as a name source
     // for links.
-    if (IsA<SVGAElement>(GetNode())) {
+    if (IsA<SVGAElement>(*svg_element)) {
       name_from = ax::mojom::blink::NameFrom::kAttribute;
       if (name_sources) {
         name_sources->push_back(
@@ -7517,8 +7516,7 @@ String AXNodeObject::NativeTextAlternative(
       }
 
       const AtomicString& title_attr =
-          DynamicTo<Element>(GetNode())->FastGetAttribute(
-              xlink_names::kTitleAttr);
+          svg_element->FastGetAttribute(xlink_names::kTitleAttr);
       if (!title_attr.empty()) {
         text_alternative = title_attr;
         if (name_sources) {
@@ -8164,12 +8162,11 @@ String AXNodeObject::SVGDescription(
 
   // In the case of an SVG <a>, the last description source is the xlink:title
   // attribute, if it didn't serve as the name source.
-  if (IsA<SVGAElement>(GetNode()) &&
+  if (IsA<SVGAElement>(*element) &&
       name_from != ax::mojom::blink::NameFrom::kAttribute) {
     description_from = ax::mojom::blink::DescriptionFrom::kTitle;
     const AtomicString& title_attr =
-        DynamicTo<Element>(GetNode())->FastGetAttribute(
-            xlink_names::kTitleAttr);
+        element->FastGetAttribute(xlink_names::kTitleAttr);
     if (!title_attr.empty()) {
       description = title_attr;
       if (description_sources) {

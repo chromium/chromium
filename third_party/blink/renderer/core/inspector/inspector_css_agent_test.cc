@@ -101,7 +101,7 @@ class InspectorCSSAgentTest : public PageTestBase {
     StyleSheet* sheet = tree_scope->StyleSheets().item(0);
     CHECK(sheet->IsCSSStyleSheet());
     CSSRuleList* css_rules =
-        DynamicTo<CSSStyleSheet>(sheet)->cssRules(ASSERT_NO_EXCEPTION);
+        To<CSSStyleSheet>(*sheet).cssRules(ASSERT_NO_EXCEPTION);
     CHECK_EQ(css_rules->length(), 1);
     CSSRule* rule = css_rules->item(0);
     return DynamicTo<CSSStyleRule>(rule);

@@ -125,8 +125,8 @@ ScriptPromise<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
                   kBadgeSetWithoutNotificationPermissionInBrowserWindow
             : mojom::blink::WebFeature::
                   kBadgeSetWithoutNotificationPermissionInWorker;
-    if (context->IsWindow()) {
-      LocalFrame* frame = DynamicTo<LocalDOMWindow>(context)->GetFrame();
+    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+      LocalFrame* frame = window->GetFrame();
       if (frame && frame->GetSettings() &&
           !frame->GetSettings()->GetWebAppScope().empty()) {
         feature = mojom::blink::WebFeature::

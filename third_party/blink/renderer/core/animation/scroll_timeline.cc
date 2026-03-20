@@ -215,11 +215,11 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
     NOTREACHED();
   }
 
-  if (node->IsElementNode()) {
-    return DynamicTo<Element>(node);
+  if (auto* element = DynamicTo<Element>(*node)) {
+    return element;
   }
-  if (node->IsDocumentNode()) {
-    return DynamicTo<Document>(node)->ScrollingElementNoLayout();
+  if (auto* document = DynamicTo<Document>(*node)) {
+    return document->ScrollingElementNoLayout();
   }
 
   NOTREACHED();

@@ -26,9 +26,10 @@ FrameView::FrameView(const gfx::Rect& frame_rect)
     : EmbeddedContentView(frame_rect) {}
 
 Frame& FrameView::GetFrame() const {
-  if (const LocalFrameView* lfv = DynamicTo<LocalFrameView>(this))
+  if (const LocalFrameView* lfv = DynamicTo<LocalFrameView>(*this)) {
     return lfv->GetFrame();
-  return DynamicTo<RemoteFrameView>(this)->GetFrame();
+  }
+  return To<RemoteFrameView>(*this).GetFrame();
 }
 
 bool FrameView::CanThrottleRenderingForPropagation() const {

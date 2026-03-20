@@ -242,8 +242,7 @@ BasicShape* GetAnimatedShapeFromCSSValue(const CSSValue* computed_value,
 
   // TODO(pdr): Support <geometry-box> (alone, or with a shape).
   if (CanExtractShapeOrPath(computed_value)) {
-    return BasicShapeForValue(state,
-                              DynamicTo<CSSValueList>(computed_value)->First());
+    return BasicShapeForValue(state, To<CSSValueList>(*computed_value).First());
   } else {
     DCHECK(IsClipPathNone(computed_value));
     return nullptr;

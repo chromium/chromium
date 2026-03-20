@@ -256,8 +256,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
       CSSToLengthConversionData::AnchorData(),
       /*zoom=*/1.0f, ignored_flags, element);
 
-  return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(
-      length_conversion_data);
+  return To<CSSPrimitiveValue>(*value).ConvertToLength(length_conversion_data);
 }
 
 /* static */

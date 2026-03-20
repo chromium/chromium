@@ -1721,11 +1721,11 @@ void LocalFrame::SetZoomFactors(float layout_zoom_factor,
     // propagated here.
     for (Frame* child = Tree().FirstChild(); child;
          child = child->Tree().NextSibling()) {
-      if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
+      if (auto* child_local_frame = DynamicTo<LocalFrame>(*child)) {
         child_local_frame->SetZoomFactors(layout_zoom_factor_,
                                           text_zoom_factor_, css_zoom_factor_);
       } else {
-        DynamicTo<RemoteFrame>(child)->ZoomFactorChanged(layout_zoom_factor);
+        To<RemoteFrame>(*child).ZoomFactorChanged(layout_zoom_factor);
       }
     }
   }
@@ -3118,8 +3118,8 @@ bool LocalFrame::SwapIn() {
     CHECK(previous_local_main_frame->IsLocalFrame());
     CHECK_NE(previous_local_main_frame->GetPage(), GetPage());
     CHECK(provisional_owner_frame->IsRemoteFrame());
-    CHECK(!DynamicTo<RemoteFrame>(provisional_owner_frame)
-               ->IsRemoteFrameHostRemoteBound());
+    CHECK(!To<RemoteFrame>(*provisional_owner_frame)
+               .IsRemoteFrameHostRemoteBound());
     GetPage()->SetPreviousMainFrameForLocalSwap(nullptr);
     return client->SwapIn(WebFrame::FromCoreFrame(previous_local_main_frame));
   }

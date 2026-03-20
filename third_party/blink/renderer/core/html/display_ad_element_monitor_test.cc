@@ -357,7 +357,7 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   ad_evidence.set_created_by_ad_script(
       mojom::FrameCreationStackEvidence::kCreatedByAdScript);
   ad_evidence.set_is_complete();
-  DynamicTo<LocalFrame>(ad_element->ContentFrame())->SetAdEvidence(ad_evidence);
+  To<LocalFrame>(*ad_element->ContentFrame()).SetAdEvidence(ad_evidence);
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 

@@ -4321,11 +4321,9 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     // the final offset because the associated tree position. In some cases
     // platform accessibility code will instead incorrectly emit a caret moved
     // event for the AXPosition which follows the input.
-    if (IsA<HTMLInputElement>(owner) &&
-        (DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
-             FormControlType::kInputSearch ||
-         DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
-             FormControlType::kInputNumber)) {
+    if (auto* input = DynamicTo<HTMLInputElement>(owner);
+        input && (input->FormControlType() == FormControlType::kInputSearch ||
+                  input->FormControlType() == FormControlType::kInputNumber)) {
       return false;
     }
   }

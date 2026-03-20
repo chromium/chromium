@@ -2821,7 +2821,7 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     subject_ = document_->getElementById(AtomicString("subject"));
     animation_ = target_->GetElementAnimations()->Animations().begin()->key;
     trigger_ = *animation_->triggers_.begin();
-    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->Timeline();
+    timeline_ = To<TimelineTrigger>(*trigger_).Timeline();
 
     ThreadState::Current()->CollectAllGarbageForTesting();
 

@@ -616,8 +616,8 @@ bool ContainerNode::CheckParserAcceptChild(const Node& new_child) const {
 void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
   DCHECK(new_child);
   DCHECK(next_child.parentNode() == this ||
-         (DynamicTo<DocumentFragment>(this) &&
-          DynamicTo<DocumentFragment>(this)->IsTemplateContent()));
+         (IsA<DocumentFragment>(*this) &&
+          To<DocumentFragment>(*this).IsTemplateContent()));
   DCHECK(!new_child->IsDocumentFragment());
   DCHECK(!IsA<HTMLTemplateElement>(this));
 
@@ -1325,8 +1325,8 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
   // InvalidateNodeListCaches() would need to be called).
   DCHECK(!RareData() || !RareData()->NodeLists());
 
-  if (node.IsContainerNode()) {
-    DynamicTo<ContainerNode>(node)->ChildrenChanged(change);
+  if (auto* container_node = DynamicTo<ContainerNode>(node)) {
+    container_node->ChildrenChanged(change);
   }
 }
 
