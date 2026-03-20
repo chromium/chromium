@@ -96,11 +96,9 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
 
 void CriticalUserJourneySession::OnStepStarted(int metric_id) {
   last_reached_metric_id_ = metric_id;
-  // Use ExactLinear to treat this as an enumerated histogram in the dashboard.
-  // 100 is a reasonable maximum for the number of steps in a CUJ.
   base::UmaHistogramExactLinear(
       base::StrCat({"CriticalUserJourney.", journey_->name(), ".StepReached"}),
-      metric_id, MAX_JOURNEY_STEPS);
+      metric_id, MAX_JOURNEY_STEPS + 1);
 }
 
 void CriticalUserJourneySession::OnAborted(
