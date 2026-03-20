@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
+#include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,11 +26,11 @@ class MockAnnotationIndexClient : public AnnotationIndexClient {
 
   MOCK_METHOD(
       void,
-      GetUrlFilterSuggestions,
+      GetFilterSuggestionCandidates,
       (const GURL& url,
        base::span<const FilterAnnotation> filter_annotations,
-       base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
-           callback),
+       base::OnceCallback<void(
+           std::optional<std::vector<FilterSuggestionCandidate>>)> callback),
       (override));
 
   MOCK_METHOD(void,

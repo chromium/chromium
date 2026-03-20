@@ -12,9 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
-#include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
-#include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -27,13 +26,13 @@ std::unique_ptr<AnnotationIndexClient> AnnotationIndexClient::Create() {
 AnnotationIndexClientImpl::AnnotationIndexClientImpl() = default;
 AnnotationIndexClientImpl::~AnnotationIndexClientImpl() = default;
 
-void AnnotationIndexClientImpl::GetUrlFilterSuggestions(
+void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
     const GURL& url,
     base::span<const FilterAnnotation> filter_annotations,
-    base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
-        callback) {
+    base::OnceCallback<
+        void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback) {
   // TODO(crbug.com/483677417): Implement the logic to retrieve the
-  // `UrlFilterSuggestion`s for a given url and filter annotations.
+  // `FilterSuggestionCandidate`s for a given url and filter annotations.
   NOTIMPLEMENTED();
   std::move(callback).Run(std::nullopt);
 }

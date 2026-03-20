@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
+#include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,12 +25,13 @@ namespace multistep_filter {
 
 namespace {
 
+constexpr char kTestId[] = "0";
 constexpr char kTestUrl[] = "https://example.com";
 constexpr char kTestDomain[] = "example.com";
 constexpr char kShoppingTask[] = "SHOPPING";
 constexpr char kTestAttributeKey[] = "category";
 constexpr char kTestAttributeValue[] = "shoes";
-constexpr char kTestSuggestionTitle[] = "Shoes";
+constexpr char kTestSuggestionText[] = "Recall info from previous tabs?";
 constexpr char kTestSuggestionUrl[] = "https://example.com/shoes";
 
 using testing::_;
@@ -88,20 +90,25 @@ TEST_F(FilterSuggestionGeneratorTest,
   store()->StoreAnnotation(annotation, store_future.GetCallback());
   ASSERT_TRUE(store_future.Get());
 
-  UrlFilterSuggestion expected_suggestion(kTestSuggestionTitle,
+  FilterSuggestionCandidate expected_candidate(
+      kTestId, GURL(kTestSuggestionUrl),
+      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
+                                          kTestAttributeValue)});
+  UrlFilterSuggestion expected_suggestion(kTestSuggestionText,
                                           GURL(kTestSuggestionUrl));
 
-  EXPECT_CALL(mock_client(), GetUrlFilterSuggestions(url, _, _))
-      .WillOnce([expected_suggestion](
-                    const GURL& u,
-                    base::span<const FilterAnnotation> filter_annotations,
-                    base::OnceCallback<void(
-                        std::optional<std::vector<UrlFilterSuggestion>>)> cb) {
-        ASSERT_EQ(filter_annotations.size(), 1u);
-        EXPECT_EQ(filter_annotations[0].task_type, kShoppingTask);
-        std::move(cb).Run(
-            std::vector<UrlFilterSuggestion>{expected_suggestion});
-      });
+  EXPECT_CALL(mock_client(), GetFilterSuggestionCandidates(url, _, _))
+      .WillOnce(
+          [expected_candidate](
+              const GURL& u,
+              base::span<const FilterAnnotation> filter_annotations,
+              base::OnceCallback<void(
+                  std::optional<std::vector<FilterSuggestionCandidate>>)> cb) {
+            ASSERT_EQ(filter_annotations.size(), 1u);
+            EXPECT_EQ(filter_annotations[0].task_type, kShoppingTask);
+            std::move(cb).Run(
+                std::vector<FilterSuggestionCandidate>{expected_candidate});
+          });
 
   base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
   generator()->GenerateSuggestion(url, future.GetCallback());

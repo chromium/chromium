@@ -97,23 +97,24 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
                           all_annotations.end());
   }
 
-  annotation_index_client_->GetUrlFilterSuggestions(
+  annotation_index_client_->GetFilterSuggestionCandidates(
       url, all_annotations,
-      base::BindOnce(&FilterSuggestionGenerator::OnUrlFilterSuggestionsFetched,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FilterSuggestionGenerator::OnUrlFilterSuggestionsFetched(
+void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-    std::optional<std::vector<UrlFilterSuggestion>> suggestions) {
-  if (!suggestions || suggestions->empty()) {
+    std::optional<std::vector<FilterSuggestionCandidate>> candidates) {
+  if (!candidates || candidates->empty()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  // TODO(crbug.com/493511925): For the time being, the first suggestion is
+  // TODO(crbug.com/493511925): For the time being, the first candidate is
   // chosen by default. Implement the logic to select the best execution
-  // candidate from server suggestions.
-  std::move(callback).Run(std::move(suggestions->front()));
+  // candidate.
+  std::move(callback).Run(UrlFilterSuggestion(std::move(candidates->front())));
 }
 
 }  // namespace multistep_filter

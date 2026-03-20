@@ -17,7 +17,7 @@
 namespace multistep_filter {
 
 struct FilterAnnotation;
-class UrlFilterSuggestion;
+struct FilterSuggestionCandidate;
 
 // `AnnotationIndexClient` serves as the dedicated network and translation layer
 // between the `multistep_filter` component and the remote
@@ -42,23 +42,23 @@ class AnnotationIndexClient {
   virtual ~AnnotationIndexClient() = default;
 
   // Evaluates potential filter candidates and generates a list of
-  // `UrlFilterSuggestion`s. If no suggestions are found, returns an empty
-  // vector.
-  virtual void GetUrlFilterSuggestions(
+  // `FilterSuggestionCandidate`s. If no candidates were found, invokes
+  // `callback` with `std::nullopt`.
+  virtual void GetFilterSuggestionCandidates(
       const GURL& url,
       base::span<const FilterAnnotation> filter_annotations,
-      base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
-          callback) = 0;
+      base::OnceCallback<void(
+          std::optional<std::vector<FilterSuggestionCandidate>>)> callback) = 0;
 
   // Retrieves the supported task types for a specific domain. If the domain is
-  // not supported, returns `std::nullopt`.
+  // not supported, invokes `callback` with `std::nullopt`.
   virtual void GetSupportedTaskTypesForDomain(
       std::string_view domain,
       base::OnceCallback<void(std::optional<std::vector<std::string>>)>
           callback) = 0;
 
   // Parses a raw URL to identify and extract a `FilterAnnotation`. If no
-  // annotation is present, returns `std::nullopt`.
+  // annotation is present, invokes `callback` with `std::nullopt`.
   virtual void ExtractFilterAnnotation(
       const GURL& url,
       base::OnceCallback<void(std::optional<FilterAnnotation>)> callback) = 0;

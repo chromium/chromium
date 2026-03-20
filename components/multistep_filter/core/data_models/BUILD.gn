@@ -6,6 +6,9 @@ source_set("data_models") {
   sources = [
     "filter_annotation.cc",
     "filter_annotation.h",
+    "filter_suggestion_candidate.cc",
+    "filter_suggestion_candidate.h",
+    "url_filter_suggestion.cc",
     "url_filter_suggestion.h",
   ]
   deps = [
@@ -16,7 +19,10 @@ source_set("data_models") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "filter_annotation_unittest.cc" ]
+  sources = [
+    "filter_annotation_unittest.cc",
+    "url_filter_suggestion_unittest.cc",
+  ]
 
   deps = [
     ":data_models",

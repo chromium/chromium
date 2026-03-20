@@ -20,6 +20,7 @@ namespace multistep_filter {
 class AnnotationIndexClient;
 class FilterStore;
 struct FilterAnnotation;
+struct FilterSuggestionCandidate;
 
 // Responsible for orchestrating the suggestion generation process for a given
 // URL. This class is owned by the `MultistepFilterService` and shares its
@@ -46,7 +47,7 @@ class FilterSuggestionGenerator {
   // 3) On the store response (`OnAllAnnotationsFetched()`), query the server
   //    via the `AnnotationIndexClient` a second time to evaluate these
   //    candidates and generate concrete filter suggestions.
-  // 4) On the second server response (`OnUrlFilterSuggestionsFetched()`),
+  // 4) On the second server response (`OnFilterSuggestionCandidatesFetched()`),
   //    invoke the `callback` with the first suggestion if available, or
   //    std::nullopt otherwise.
   virtual void GenerateSuggestion(
@@ -63,9 +64,9 @@ class FilterSuggestionGenerator {
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       std::vector<std::vector<FilterAnnotation>> filter_annotations);
-  void OnUrlFilterSuggestionsFetched(
+  void OnFilterSuggestionCandidatesFetched(
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      std::optional<std::vector<UrlFilterSuggestion>> suggestions);
+      std::optional<std::vector<FilterSuggestionCandidate>> candidates);
 
   // The client used to fetch supported task types and URL filter suggestions.
   // This is a non-owning reference. The lifetime of the `AnnotationIndexClient`

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -14,8 +15,10 @@ namespace multistep_filter {
 // A class to hold the data for a URL based filter suggestion.
 class UrlFilterSuggestion {
  public:
-  explicit UrlFilterSuggestion(std::string text, GURL url)
-      : text_(std::move(text)), url_(std::move(url)) {}
+  explicit UrlFilterSuggestion(std::string text, GURL url);
+
+  explicit UrlFilterSuggestion(FilterSuggestionCandidate candidate);
+
   ~UrlFilterSuggestion() = default;
 
   const std::string& text() const { return text_; }
