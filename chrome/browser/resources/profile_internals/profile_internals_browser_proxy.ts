@@ -23,7 +23,6 @@ export interface ProfileState {
   isEphemeral: boolean;
   userAcceptedAccountManagement: boolean;
   keepAlives: KeepAlive[];
-  signedAccounts: string[];
   isLoaded: boolean;
   hasOffTheRecord: boolean;
   profileCountry: string;

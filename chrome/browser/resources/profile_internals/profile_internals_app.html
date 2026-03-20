@@ -73,16 +73,6 @@ ${this.profilesList_.map((item, index) => html`
         </td>
       </tr>
       <tr>
-        <td>Signed Accounts</td>
-        <td>
-          <ul>
-            ${item.profileState.signedAccounts.map(item => html`
-              <li>${item}</li>
-            `)}
-          </ul>
-        </td>
-      </tr>
-      <tr>
         <td>Loaded in Memory</td>
         <td>${item.profileState.isLoaded}</td>
       </tr>
