@@ -74,6 +74,7 @@ class PdfInkUndoRedoModel {
   // Records erasing an annotation identified by `id`.
   // Must be called between Start() and Finish().
   // `id` must not be in any `Commands::removes` on the commands stack.
+  // `id` must not be in `Commands::adds` of the currently active commands.
   // If `id` is for a stroke or text, it must be in a `Commands::adds` on the
   // commands stack.
   // If the caller passes in invalid values, `PdfInkUndoRedoModel` will
@@ -91,7 +92,7 @@ class PdfInkUndoRedoModel {
   Commands Redo();
 
  private:
-  bool HasIdInAddCommands(IdType id) const;
+  bool HasIdInPreviousAddCommands(IdType id) const;
   bool HasIdInRemoveCommands(IdType id) const;
 
   // Invariants:
@@ -100,8 +101,8 @@ class PdfInkUndoRedoModel {
   // (2) IDs in `Commands::adds` must not exist in any `Commands::removes`.
   // (3) IDs used in `Commands::removes` are unique among all
   //     `Commands::removes` elements.
-  // (4) IDs added to a `Commands::removes` must exist in some `Commands::adds`
-  //     element.
+  // (4) IDs added to a `Commands::removes` must exist in the `Commands::adds`
+  //     set of a different `Commands` in the stack.
   // (5) `Commands::adds` only contains `InkStrokeId` and `InkTextId` elements
   //     here. The reason `Commands::adds` can hold `InkModeledShapeId` is to
   //     undo an `InkModeledShapeId` removal, where the caller needs to know

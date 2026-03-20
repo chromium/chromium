@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "pdf/pdf_ink_ids.h"
 
@@ -110,7 +111,7 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
     return false;  // Failed invariant 3.
   }
 
-  if (IsAllowedInCommandsStack(id) && !HasIdInAddCommands(id)) {
+  if (IsAllowedInCommandsStack(id) && !HasIdInPreviousAddCommands(id)) {
     return false;  // Failed invariant 4.
   }
 
@@ -164,8 +165,15 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
   return commands_stack_[stack_position_++];
 }
 
-bool PdfInkUndoRedoModel::HasIdInAddCommands(IdType id) const {
-  for (const auto& commands : commands_stack_) {
+bool PdfInkUndoRedoModel::HasIdInPreviousAddCommands(IdType id) const {
+  if (commands_stack_.back().adds.contains(id)) {
+    // Fails invariant 4. The ID must exist in a different `Commands` in the
+    // stack, so it cannot be in the currently active one.
+    return false;
+  }
+
+  for (const auto& commands :
+       base::span(commands_stack_).first(commands_stack_.size() - 1)) {
     if (commands.adds.contains(id)) {
       return true;
     }

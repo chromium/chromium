@@ -166,8 +166,7 @@ TEST(PdfInkUndoRedoModelTest, BadActionStartAddRemove) {
 
   ASSERT_TRUE(undo_redo.Start().has_value());
   ASSERT_TRUE(undo_redo.Add(InkStrokeId(0)));
-  // TODO(crbug.com/408976048): Remove should fail.
-  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(0)));
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(0)));
 }
 
 TEST(PdfInkUndoRedoModelTest, Empty) {
