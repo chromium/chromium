@@ -351,7 +351,7 @@ bool HTMLFormControlElement::MatchesValidityPseudoClasses() const {
 }
 
 String HTMLFormControlElement::GetWebMCPParameterName() const {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+  CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
   String name = String(GetName()).StripWhiteSpace();
   // Eventually add more logic here to use the label, tool-param-name, etc.
   return name;

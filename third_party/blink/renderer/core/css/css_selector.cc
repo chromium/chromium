@@ -850,6 +850,13 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoToolFormActive ||
+       match->type == CSSSelector::kPseudoToolSubmitActive) &&
+      document &&
+      !RuntimeEnabledFeatures::WebMCPEnabled(document->GetExecutionContext())) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if (match->type == CSSSelector::kPseudoHasSlotted &&
       !RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -1121,13 +1128,9 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoWhere:
     case kPseudoWindowInactive:
     case kPseudoXrOverlay:
-      if (Match() != kPseudoClass) {
-        bits_.set<PseudoTypeField>(kPseudoUnknown);
-      }
-      break;
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
-      if (Match() != kPseudoClass || !RuntimeEnabledFeatures::WebMCPEnabled()) {
+      if (Match() != kPseudoClass) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
       break;

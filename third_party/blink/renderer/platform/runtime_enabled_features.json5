@@ -6407,12 +6407,17 @@
     },
     {
       name: "WebMCP",
-      implied_by: ["WebMCPTesting"],
+      origin_trial_feature_name: "WebMCP",
+      // Note that `depends_on` isn't supported by origin trials.
+      implied_by: [
+        "WebMCPDeclarativeFileInput",
+        "WebMCPFormAssociatedCustomElements",
+        "WebMCPTesting"
+      ],
       status: "experimental",
     },
     {
       name: "WebMCPDeclarativeFileInput",
-      depends_on: ["WebMCP"],
       status: "test",
     },
     {

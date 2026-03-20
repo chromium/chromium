@@ -44,7 +44,6 @@ PASS childWindow.navigator.doNotTrack is null
 PASS childWindow.navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
 PASS childWindow.navigator.language is window.navigator.language
 PASS childWindow.navigator.maxTouchPoints is 0
-PASS childWindow.navigator.modelContextTesting.ontoolchange is null
 PASS childWindow.navigator.onLine is window.navigator.onLine
 PASS childWindow.navigator.pdfViewerEnabled is false
 PASS childWindow.navigator.platform is window.navigator.platform

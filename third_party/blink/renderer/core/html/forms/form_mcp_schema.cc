@@ -89,7 +89,8 @@ bool ToBoolean(const JSONValue& value, bool& out) {
 }
 
 bool IsAccessibleFile(const JSONValue& value, HTMLFormElement& form) {
-  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+      form.GetExecutionContext()));
   ExecutionContext* execution_context =
       form.GetDocument().GetExecutionContext();
   if (!execution_context) {
@@ -252,7 +253,8 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
     return true;
   }
   if (IsFile(*controls_for_name)) {
-    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+        form_->GetExecutionContext()));
     return ValidateFileData(*controls_for_name, value);
   }
 
@@ -388,7 +390,8 @@ bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
 
 bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
                                      const JSONValue& value) {
-  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+      form_->GetExecutionContext()));
   if (controls_for_name.size() != 1u) {
     return false;
   }
@@ -441,7 +444,8 @@ void FormMCPSchema::FillParameterData(const String& name,
   } else if (IsCustomElement(*controls_for_name)) {
     FillCustomElementData(*controls_for_name, value);
   } else if (IsFile(*controls_for_name)) {
-    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+        form_->GetExecutionContext()));
     FillFileData(*controls_for_name, value);
   }
 }
@@ -497,7 +501,8 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
     return ComputeCustomElementParameterSchema(*controls_for_name, required);
   }
   if (IsFile(*controls_for_name)) {
-    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+        form_->GetExecutionContext()));
     return ComputeFileParameterSchema(*controls_for_name, required);
   }
 
@@ -861,7 +866,8 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCustomElementParameterSchema(
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeFileParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+      form_->GetExecutionContext()));
   HTMLInputElement& element =
       To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
   auto schema = std::make_unique<JSONObject>();
@@ -1016,7 +1022,8 @@ void FormMCPSchema::FillCustomElementData(
 void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
                                  const JSONValue& value) {
   // TODO(crbug.com/481211432): NEEDS PRIVACY REVIEW BEFORE SHIPPING
-  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+      form_->GetExecutionContext()));
   Vector<String> paths;
   auto& file_input =
       To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
@@ -1268,7 +1275,8 @@ bool FormMCPSchema::IsCustomElement(ListedElement& control) const {
 }
 
 bool FormMCPSchema::IsFile(ListedElement& control) const {
-  if (!RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled()) {
+  if (!RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+          form_->GetExecutionContext())) {
     return false;
   }
   auto* input = DynamicTo<HTMLInputElement>(control.ToHTMLElement());
@@ -1344,7 +1352,8 @@ bool FormMCPSchema::IsCustomElement(
 }
 
 bool FormMCPSchema::IsFile(const ControlVector& controls_for_name) const {
-  return RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled() &&
+  return RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+             form_->GetExecutionContext()) &&
          controls_for_name.size() == 1u && IsFile(*controls_for_name.front());
 }
 

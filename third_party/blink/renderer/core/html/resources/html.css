@@ -2541,17 +2541,17 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
   -internal-overscroll-position: auto;
 }
 
-@supports blink-feature(WebMCP) {
-  /* TODO(crbug.com/475971937): This is just placeholder style. */
-  form:tool-form-active {
-    outline: light-dark(blue, cyan) dashed 1px;
-    outline-offset: -1px;
-  }
+/* TODO(crbug.com/475971937): This is just placeholder style. */
+/* Note that this rule isn't flag-guarded, but the :tool-*-active
+   pseudo classes will not match if the flag is disabled. */
+form:tool-form-active {
+  outline: light-dark(blue, cyan) dashed 1px;
+  outline-offset: -1px;
+}
 
-  input:tool-submit-active {
-    outline: light-dark(red, pink) dashed 1px;
-    outline-offset: -1px;
-  }
+input:tool-submit-active {
+  outline: light-dark(red, pink) dashed 1px;
+  outline-offset: -1px;
 }
 
 @supports blink-feature(CustomizableCombobox) {

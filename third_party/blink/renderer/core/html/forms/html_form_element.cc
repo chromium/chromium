@@ -312,7 +312,7 @@ void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
 // when `toolname` or `tooldescription` attributes are added, removed, or
 // changed.
 void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
-  if (!RuntimeEnabledFeatures::WebMCPEnabled()) {
+  if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     return;
   }
   // The `<form>` must have *both* the `toolname` and `tooldescription`
@@ -607,7 +607,7 @@ void HTMLFormElement::PrepareForSubmission(
       submit_event_init->setSubmitter(
           submit_button ? &submit_button->ToHTMLElement() : nullptr);
       if (declarative_webmcp_call) {
-        CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+        CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
         submit_event_init->setAgentInvoked(true);
       }
       SubmitEvent* submit_event = MakeGarbageCollected<SubmitEvent>(
@@ -664,7 +664,7 @@ void HTMLFormElement::PrepareForSubmission(
       std::move(cancel_last_submission_).Run();
     ScheduleFormSubmission(event, submit_button);
     if (IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning()) {
-      CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+      CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
       // Return a null string to indicate that a navigation has been
       // triggered.
       active_webmcp_tool_->CallDoneCallback(base::ok(String()));

@@ -7965,7 +7965,7 @@ void Document::FinishedParsing() {
   SetParsingState(kInDOMContentLoaded);
   DocumentParserTiming::From(*this).MarkParserStop();
 
-  if (RuntimeEnabledFeatures::WebMCPEnabled()) {
+  if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     auto* navigator = domWindow() ? domWindow()->navigator() : nullptr;
     auto* model_context =
         navigator ? ModelContextSupplement::modelContext(*navigator) : nullptr;

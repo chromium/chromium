@@ -1959,13 +1959,26 @@ TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
 TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
   ScopedWebMCPForTest scoped_webmcp_feature(false);
   ScopedWebMCPTestingForTest scoped_webmcp_testing_feature(false);
+  ScopedWebMCPDeclarativeFileInputForTest scoped_webmcp_file_input_feature(
+      false);
+  ScopedWebMCPFormAssociatedCustomElementsForTest scoped_webmcp_face_feature(
+      false);
   test::TaskEnvironment task_environment;
 
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document& document = dummy_holder->GetDocument();
+  auto* context = MakeGarbageCollected<CSSParserContext>(document);
+
   // Test that these pseudo classes are not valid with the WebMCP flag disabled
-  HeapVector<CSSSelector> tool_form_active = ParseSelector(":tool-form-active");
+  HeapVector<CSSSelector> arena;
+  CSSParserTokenStream stream1(":tool-form-active");
+  base::span<CSSSelector> tool_form_active = CSSSelectorParser::ParseSelector(
+      stream1, context, CSSNestingType::kNone, nullptr, false, nullptr, arena);
   EXPECT_EQ(tool_form_active.size(), 0u);
-  HeapVector<CSSSelector> tool_submit_active =
-      ParseSelector(":tool-submit-active");
+
+  CSSParserTokenStream stream2(":tool-submit-active");
+  base::span<CSSSelector> tool_submit_active = CSSSelectorParser::ParseSelector(
+      stream2, context, CSSNestingType::kNone, nullptr, false, nullptr, arena);
   EXPECT_EQ(tool_submit_active.size(), 0u);
 }
 
