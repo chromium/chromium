@@ -204,10 +204,6 @@ static_library("ui") {
     "webui/version/version_handler.h",
     "webui/version/version_ui.cc",
     "webui/version/version_ui.h",
-    "webui/webnn_internals/webnn_internals_handler.cc",
-    "webui/webnn_internals/webnn_internals_handler.h",
-    "webui/webnn_internals/webnn_internals_ui.cc",
-    "webui/webnn_internals/webnn_internals_ui.h",
     "webui/webui_load_timer.cc",
     "webui/webui_load_timer.h",
   ]
@@ -1795,6 +1791,7 @@ static_library("ui") {
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site",
       "//chrome/browser/ui/webui/on_device_internals",
+      "//chrome/browser/ui/webui/webnn_internals",
       "//components/page_image_service/mojom:mojo_bindings",
     ]
     if (use_aura) {

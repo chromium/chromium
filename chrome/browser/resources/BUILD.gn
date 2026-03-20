@@ -307,7 +307,6 @@ group("dev_ui_resources") {
     "predictors:resources",
     "privacy_sandbox/internals:resources",
     "usb_internals:resources",
-    "webnn_internals:resources",
     "//components/commerce/core/internals/resources",
     "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",
@@ -345,6 +344,7 @@ group("dev_ui_resources") {
       "media_router/internals:resources",
       "on_device_internals:resources",
       "user_education_internals:resources",
+      "webnn_internals:resources",
       "webui_js_error:resources",
     ]
   }

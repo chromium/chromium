@@ -7,7 +7,7 @@ module webnn_internals.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 
 // Interface for the WebUI page to communicate with the browser.
-interface WebNNInternalsHandler {
+interface PageHandler {
   // Sets whether to enable recording of WebNN graphs.
   [EnableIf=webnn_enable_graph_dump]
   SetGraphRecordEnabled(bool enabled);
@@ -18,7 +18,7 @@ interface WebNNInternalsHandler {
 };
 
 // Interface for the browser to communicate with the WebUI page.
-interface WebNNInternalsPage {
+interface Page {
   // Called when a graph is recorded. `json_data` contains the serialized graph
   // information.
   [EnableIf=webnn_enable_graph_dump]
@@ -30,8 +30,8 @@ interface WebNNInternalsPage {
 };
 
 // Factory interface to create the handler.
-interface WebNNInternalsHandlerFactory {
+interface PageHandlerFactory {
   // Creates the handler and connects the page.
-  CreateWebNNInternalsHandler(pending_remote<WebNNInternalsPage> page,
-                              pending_receiver<WebNNInternalsHandler> handler);
+  CreatePageHandler(pending_remote<Page> page,
+                              pending_receiver<PageHandler> handler);
 };

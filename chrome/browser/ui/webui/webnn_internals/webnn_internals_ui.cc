@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_handler.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_page_handler_impl.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/webnn_internals_resources.h"
 #include "chrome/grit/webnn_internals_resources_map.h"
@@ -18,24 +18,24 @@ WebNNInternalsUI::WebNNInternalsUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUIWebNNInternalsHost);
 
   webui::SetupWebUIDataSource(source, kWebnnInternalsResources,
-                              IDR_WEBNN_INTERNALS_INDEX_HTML);
+                              IDR_WEBNN_INTERNALS_WEBNN_INTERNALS_HTML);
 }
 
 WebNNInternalsUI::~WebNNInternalsUI() = default;
 
-WEB_UI_CONTROLLER_TYPE_IMPL(WebNNInternalsUI)
-
 void WebNNInternalsUI::BindInterface(
-    mojo::PendingReceiver<webnn_internals::mojom::WebNNInternalsHandlerFactory>
+    mojo::PendingReceiver<webnn_internals::mojom::PageHandlerFactory>
         receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  webnn_internals_page_factory_receiver_.reset();
+  webnn_internals_page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void WebNNInternalsUI::CreateWebNNInternalsHandler(
-    mojo::PendingRemote<webnn_internals::mojom::WebNNInternalsPage> page,
-    mojo::PendingReceiver<webnn_internals::mojom::WebNNInternalsHandler>
-        handler) {
-  handler_ = std::make_unique<WebNNInternalsHandler>(std::move(handler),
-                                                     std::move(page));
+void WebNNInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<webnn_internals::mojom::Page> page,
+    mojo::PendingReceiver<webnn_internals::mojom::PageHandler> handler) {
+  webnn_internals_page_handler_ =
+      std::make_unique<WebNNInternalsPageHandlerImpl>(std::move(handler),
+                                                      std::move(page));
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(WebNNInternalsUI)

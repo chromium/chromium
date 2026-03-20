@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class WebNNInternalsHandler;
+class WebNNInternalsPageHandlerImpl;
 class WebNNInternalsUI;
 
 class WebNNInternalsUIConfig
@@ -25,9 +25,8 @@ class WebNNInternalsUIConfig
                            chrome::kChromeUIWebNNInternalsHost) {}
 };
 
-class WebNNInternalsUI
-    : public ui::MojoWebUIController,
-      public webnn_internals::mojom::WebNNInternalsHandlerFactory {
+class WebNNInternalsUI : public ui::MojoWebUIController,
+                         public webnn_internals::mojom::PageHandlerFactory {
  public:
   explicit WebNNInternalsUI(content::WebUI* web_ui);
   ~WebNNInternalsUI() override;
@@ -36,19 +35,19 @@ class WebNNInternalsUI
   WebNNInternalsUI& operator=(const WebNNInternalsUI&) = delete;
 
   void BindInterface(
-      mojo::PendingReceiver<
-          webnn_internals::mojom::WebNNInternalsHandlerFactory> receiver);
+      mojo::PendingReceiver<webnn_internals::mojom::PageHandlerFactory>
+          receiver);
 
  private:
-  // webnn_internals::mojom::WebNNInternalsHandlerFactory:
-  void CreateWebNNInternalsHandler(
-      mojo::PendingRemote<webnn_internals::mojom::WebNNInternalsPage> page,
-      mojo::PendingReceiver<webnn_internals::mojom::WebNNInternalsHandler>
-          handler) override;
+  // webnn_internals::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<webnn_internals::mojom::Page> page,
+      mojo::PendingReceiver<webnn_internals::mojom::PageHandler> handler)
+      override;
 
-  std::unique_ptr<WebNNInternalsHandler> handler_;
-  mojo::Receiver<webnn_internals::mojom::WebNNInternalsHandlerFactory>
-      receiver_{this};
+  std::unique_ptr<WebNNInternalsPageHandlerImpl> webnn_internals_page_handler_;
+  mojo::Receiver<webnn_internals::mojom::PageHandlerFactory>
+      webnn_internals_page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

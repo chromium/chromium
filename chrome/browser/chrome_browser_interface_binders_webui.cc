@@ -32,13 +32,13 @@
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
 #endif
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
-#include "chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom.h"
-#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
@@ -89,6 +89,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       omnibox_popup_aim::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       omnibox_popup::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      webnn_internals::mojom::PageHandlerFactory, WebNNInternalsUI>(map);
 #endif
   RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxPageHandler,
                                          OmniboxUI>(map);
@@ -139,10 +141,6 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
 
   RegisterWebUIControllerInterfaceBinder<
       actor_internals::mojom::PageHandlerFactory, ActorInternalsUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      webnn_internals::mojom::WebNNInternalsHandlerFactory, WebNNInternalsUI>(
-      map);
 
   if (base::FeatureList::IsEnabled(
           policy::features::kPolicyPageMojoMigration)) {

@@ -5,6 +5,8 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/webnn/public/webnn_features.gni")
 
+assert(!is_android)
+
 mojom("mojo_bindings") {
   sources = [ "webnn_internals.mojom" ]
   webui_module_path = "/"
@@ -14,4 +16,24 @@ mojom("mojo_bindings") {
   if (webnn_enable_graph_dump) {
     enabled_features += [ "webnn_enable_graph_dump" ]
   }
+}
+
+source_set("webnn_internals") {
+  public = [ "webnn_internals_ui.h" ]
+  sources = [
+    "webnn_internals_page_handler_impl.cc",
+    "webnn_internals_page_handler_impl.h",
+    "webnn_internals_ui.cc",
+  ]
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/webnn_internals:resources",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
 }

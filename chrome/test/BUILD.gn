@@ -4007,7 +4007,6 @@ if (!is_android) {
       "../browser/ui/webui/top_chrome/preload_context_browsertest.cc",
       "../browser/ui/webui/top_chrome/webui_contents_preload_manager_browsertest.cc",
       "../browser/ui/webui/web_dialog_web_contents_delegate_browsertest.cc",
-      "../browser/ui/webui/webnn_internals/webnn_internals_browsertest.cc",
       "../browser/ui/webui/webui_embedding_context_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
       "../browser/ui/webui/webui_url_hashes_browsertest.cc",
