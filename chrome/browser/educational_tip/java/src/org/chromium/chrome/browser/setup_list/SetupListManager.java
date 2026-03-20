@@ -408,22 +408,19 @@ public class SetupListManager
      */
     @Nullable
     public Integer getManualRank(@ModuleType int moduleType) {
-        if (!isSetupListActive()) {
+        if (!isSetupListModule(moduleType)) {
             return null;
         }
 
-        switch (mActiveLayout) {
-            case SetupListActiveLayout.CELEBRATION:
-                return moduleType == CELEBRATORY_PROMO_MODULE_TYPE ? SETUP_LIST_RANK_OFFSET : null;
-            case SetupListActiveLayout.TWO_CELL:
-                return moduleType == TWO_CELL_CONTAINER_MODULE_TYPE ? SETUP_LIST_RANK_OFFSET : null;
-            case SetupListActiveLayout.SINGLE_CELL:
-                Integer rank = mModuleRankMap.get(moduleType);
-                return rank != null ? rank + SETUP_LIST_RANK_OFFSET : null;
-            case SetupListActiveLayout.INACTIVE:
-            default:
-                return null;
+        if (moduleType == CELEBRATORY_PROMO_MODULE_TYPE
+                || moduleType == TWO_CELL_CONTAINER_MODULE_TYPE) {
+            return SETUP_LIST_RANK_OFFSET;
         }
+
+        Integer rank = mModuleRankMap.get(moduleType);
+        return rank != null
+                ? rank + SETUP_LIST_RANK_OFFSET
+                : SETUP_LIST_RANK_OFFSET + BASE_SETUP_LIST_ORDER.size();
     }
 
     /**

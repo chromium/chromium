@@ -111,6 +111,13 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
 
     @Override
     public InputContext createInputContext() {
+        // TODO(crbug.com/469425754): Setup list modules should be omitted from ranking
+        // When the setup list transitions to inactive, the modules are still registered
+        // in the existing session, but don't have a manual rank anymore. As a result they will
+        // be ranked by the segmentation platform, along with other education tip modules.
+        if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
+            return new InputContext();
+        }
         Profile profile = getRegularProfile(mActionDelegate.getProfileSupplier());
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         return EducationalTipCardProviderSignalHandler.createInputContext(

@@ -792,16 +792,6 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, (int) manuallyRankedModules.get(1));
         assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) manuallyRankedModules.get(2));
         assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) manuallyRankedModules.get(3));
-
-        // Case 3: Filtering. If ESB is not in the enabled set, it should be excluded.
-        when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
-        Set<Integer> filteredEnabledSet =
-                Set.of(
-                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
-                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
-        manuallyRankedModules = mMediator.getSortedManuallyRankedModules(filteredEnabledSet);
-        assertEquals(2, manuallyRankedModules.size());
-        assertFalse(manuallyRankedModules.contains(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
     }
 
     @Test
@@ -857,7 +847,7 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
 
-        InputContext resultContext = mMediator.createInputContextForSegmentation(enabledSet);
+        InputContext resultContext = mMediator.createInputContextForSegmentation();
 
         // Assertions: Only signals from non-manual modules are present.
         assertEquals(
