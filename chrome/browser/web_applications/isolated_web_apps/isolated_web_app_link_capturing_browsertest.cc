@@ -457,14 +457,22 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   GURL destination_url = GetCapturableUrlWithQuery();
   CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
 
-  apps::test::NavigationCommittedForUrlObserver load_observer(destination_url);
+  // Wait for hit-test data to be updated so the simulated click doesn't miss.
+  content::MainThreadFrameObserver(
+      existing_app_contents->GetPrimaryMainFrame()->GetRenderWidgetHost())
+      .Wait();
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   SimulateClickOnElement(existing_app_contents, "capture-link",
                          blink::WebInputEvent::kNoModifiers,
                          blink::WebMouseEvent::Button::kMiddle);
 
   // Verify browser tab is opened.
-  load_observer.Wait();
-  content::WebContents* new_tab = load_observer.web_contents();
+  content::WebContents* new_tab = tab_waiter.Wait();
+  content::WaitForLoadStop(new_tab);
+
+  // Check that the new tab navigated to the correct destination.
+  EXPECT_EQ(destination_url, new_tab->GetLastCommittedURL());
 
   ASSERT_EQ(initial_browser_tabs_count + 1,
             browser()->tab_strip_model()->count());
