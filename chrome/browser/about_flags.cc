@@ -5488,11 +5488,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationsIgnoreRequireInteractionDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNotificationsIgnoreRequireInteraction)},
-    {"sys-ui-holdback-task-management",
-     flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
-     flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackTaskManagement)},
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
     {"mojo-use-eventfd", flag_descriptions::kMojoUseEventFdName,

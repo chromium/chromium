@@ -9152,11 +9152,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "sys-ui-holdback-task-management",
-    "owners": ["newcomer@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow@chromium.org", "garykac@chromium.org", "jamiewalch@chromium.org" ],
     // This flag allows users to prevent the keyboard-lock API from capturing

@@ -1310,16 +1310,6 @@ BASE_FEATURE(kNotificationLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables a bugfix for devices with a null custom top row property.
 BASE_FEATURE(kNullTopRowFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature Management flag for the Sys UI holdback experiment, used to avoid
-// certain devices.
-BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables a holdback experiment for Task Management
-// Glanceables.
-BASE_FEATURE(kSysUiShouldHoldbackTaskManagement,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2799,14 +2789,6 @@ bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
 }
 
 bool IsGlanceablesTimeManagementTasksViewEnabled() {
-  const bool device_enrolled_in_holdback =
-      !base::FeatureList::IsEnabled(
-          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
-      base::FeatureList::IsEnabled(kSysUiShouldHoldbackTaskManagement);
-  if (device_enrolled_in_holdback) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
 }
 

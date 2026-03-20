@@ -7859,11 +7859,6 @@ inline constexpr char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-inline constexpr char kSysUiShouldHoldbackTaskManagementName[] =
-    "Holdback for Task Management on chromeOS";
-inline constexpr char kSysUiShouldHoldbackTaskManagementDescription[] =
-    "Enables holdback for Task Management.";
-
 inline constexpr char kTetheringExperimentalFunctionalityName[] =
     "Tethering Allow Experimental Functionality";
 inline constexpr char kTetheringExperimentalFunctionalityDescription[] =
