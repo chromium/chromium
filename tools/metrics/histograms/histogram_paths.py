@@ -40,8 +40,12 @@ PATH_TO_METADATA_DIR = path_util.GetInputFile(
 _ENUMS_XML_RELATIVE = ([
     'tools/metrics/histograms/enums.xml',
 ] + _FindXmlFiles(_ENUMS_XML_FILE_NAMES))
+_VARIANTS_XML_RELATIVE = [
+    'tools/metrics/histograms/variants.xml',
+]
 _HISTOGRAMS_XMLS_RELATIVE = _FindXmlFiles(_HISTOGRAM_XML_FILE_NAMES)
-ALL_XMLS_RELATIVE = _ENUMS_XML_RELATIVE + _HISTOGRAMS_XMLS_RELATIVE
+ALL_XMLS_RELATIVE = (_ENUMS_XML_RELATIVE + _VARIANTS_XML_RELATIVE +
+                     _HISTOGRAMS_XMLS_RELATIVE)
 
 HISTOGRAMS_PREFIX_LIST = [
     os.path.basename(os.path.dirname(f)) for f in _HISTOGRAMS_XMLS_RELATIVE

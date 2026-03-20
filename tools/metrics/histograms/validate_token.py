@@ -14,6 +14,19 @@ import setup_modules
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 
+def _LoadGlobalVariants() -> list[str]:
+  """Loads the global variants from `variants.xml`, if it exists."""
+  global_variants_list: list[str] = []
+  global_variants_path: str = os.path.join(
+      os.path.dirname(os.path.abspath(__file__)), 'variants.xml')
+  if os.path.exists(global_variants_path):
+    global_tree: xml.dom.minidom.Document = xml.dom.minidom.parse(
+        global_variants_path)
+    for node in xml_utils.IterElementsWithTag(global_tree, 'variants', 3):
+      global_variants_name: str = node.getAttribute('name')
+      global_variants_list.append(global_variants_name)
+  return global_variants_list
+
 def ValidateTokenInFile(xml_path: str) -> bool:
   """Validates that all <token> uses <variants> defined in the file.
 
@@ -22,7 +35,7 @@ def ValidateTokenInFile(xml_path: str) -> bool:
 
   Returns:
     A boolean that is True if at least a histogram uses a <variants> not
-        defined in the file, False otherwise.
+    defined in the file or in the global variants.xml file, False otherwise.
   """
   has_token_error: bool = False
   tree: xml.dom.minidom.Document = xml.dom.minidom.parse(xml_path)
@@ -32,12 +45,19 @@ def ValidateTokenInFile(xml_path: str) -> bool:
     variants_name: str = node.getAttribute('name')
     variants.append(variants_name)
 
+  # `global_variants` is loaded lazily when needed - if variant tokens are not
+  # found in the histogram file where they are being used.
+  global_variants: list[str] | None = None
   for histogram in xml_utils.IterElementsWithTag(tree, 'histogram', 3):
     erroneous_tokens: list[str] = []
     for node in xml_utils.IterElementsWithTag(histogram, 'token', 1):
       if node.hasAttribute('variants'):
-        if node.getAttribute('variants') not in variants:
-          erroneous_tokens.append(node.getAttribute('key'))
+        node_variant: str = node.getAttribute('variants')
+        if node_variant not in variants:
+          if global_variants is None:
+            global_variants = _LoadGlobalVariants()
+          if node_variant not in global_variants:
+            erroneous_tokens.append(node.getAttribute('key'))
     if erroneous_tokens:
       histogram_name: str = histogram.getAttribute('name')
       logging.error(

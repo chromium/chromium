@@ -333,4 +333,5 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/windows/histograms.xml",
   "//tools/metrics/histograms/metadata/xr/enums.xml",
   "//tools/metrics/histograms/metadata/xr/histograms.xml",
+  "//tools/metrics/histograms/variants.xml",
 ]

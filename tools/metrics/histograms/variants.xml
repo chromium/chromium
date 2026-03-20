@@ -1,0 +1,40 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<!-- LINT.IfChange(ProfileIndex) -->
+
+<variants name="ProfileIndex">
+  <variant name="" summary="Metric aggregated across all Profiles"/>
+  <variant name=".Profile0" summary="Metric recorded for Profile 0"/>
+  <variant name=".Profile1" summary="Metric recorded for Profile 1"/>
+  <variant name=".Profile2" summary="Metric recorded for Profile 2"/>
+  <variant name=".Profile3" summary="Metric recorded for Profile 3"/>
+  <variant name=".Profile4" summary="Metric recorded for Profile 4"/>
+  <variant name=".Profile5" summary="Metric recorded for Profile 5"/>
+  <variant name=".Profile6" summary="Metric recorded for Profile 6"/>
+  <variant name=".Profile7" summary="Metric recorded for Profile 7"/>
+  <variant name=".Profile8" summary="Metric recorded for Profile 8"/>
+  <variant name=".Profile9" summary="Metric recorded for Profile 9"/>
+  <variant name=".Profile10" summary="Metric recorded for Profile 10"/>
+  <variant name=".Profile11" summary="Metric recorded for Profile 11"/>
+  <variant name=".Profile12" summary="Metric recorded for Profile 12"/>
+  <variant name=".Profile13" summary="Metric recorded for Profile 13"/>
+  <variant name=".Profile14" summary="Metric recorded for Profile 14"/>
+  <variant name=".Profile15" summary="Metric recorded for Profile 15"/>
+  <variant name=".Profile16" summary="Metric recorded for Profile 16"/>
+  <variant name=".Profile17" summary="Metric recorded for Profile 17"/>
+  <variant name=".Profile18" summary="Metric recorded for Profile 18"/>
+  <variant name=".Profile19" summary="Metric recorded for Profile 19"/>
+  <variant name=".Profile20Plus"
+      summary="Combined metric recorded for all Profiles with an index above
+               20"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/metrics/profile_metrics_service.cc:histogram_suffix) -->
+
+</histogram-configuration>

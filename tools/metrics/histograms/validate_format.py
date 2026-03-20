@@ -69,29 +69,52 @@ def CheckNamespaces(xml_paths: List[str]):
   return has_errors
 
 
+def _IsGlobalVariantFile(path: str) -> bool:
+  return path.endswith(
+      os.path.join('tools', 'metrics', 'histograms', 'variants.xml'))
+
+
 def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
   """Checks that all tokens within histograms are registered.
 
-  All tokens within histograms should be registered as tokens in the same file
-  either inline (as a <token> node) or out of line (as a <variants> node).
+  Tokens within histograms should be registered as tokens either inline
+  (as a <token> node) or out of line (as a <variants> node) in the file where
+  it is used, or in the global `variants.xml` file.
 
   Args:
     xml_paths: A list of paths to the xml files to validate.
   """
   has_errors = False
+
+  global_variants = {}
   for path in xml_paths:
+    if _IsGlobalVariantFile(path):
+      tree = xml.dom.minidom.parse(path)
+      variants, variants_errors = extract_histograms.ExtractVariantsFromXmlTree(
+          tree)
+      has_errors = has_errors or bool(variants_errors)
+      global_variants.update(variants)
+      break
+
+  for path in xml_paths:
+    if _IsGlobalVariantFile(path):
+      continue
+
     tree = xml.dom.minidom.parse(path)
     variants, variants_errors = extract_histograms.ExtractVariantsFromXmlTree(
         tree)
     has_errors = has_errors or bool(variants_errors)
 
+    merged_variants = dict(variants)
+    merged_variants.update(global_variants)
+
     for histogram in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3):
       tokens, tokens_errors = extract_histograms.ExtractTokens(
-          histogram, variants)
+          histogram, merged_variants)
       has_errors = has_errors or bool(tokens_errors)
 
       token_keys = [token['key'] for token in tokens]
-      token_keys.extend(variants.keys())
+      token_keys.extend(merged_variants.keys())
 
       histogram_name = histogram.getAttribute('name')
 
