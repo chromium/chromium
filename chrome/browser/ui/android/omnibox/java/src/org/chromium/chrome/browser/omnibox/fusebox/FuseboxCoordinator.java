@@ -248,8 +248,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
 
         // TODO(crbug.com/474616308): move to FuseboxSessionState.
-        AutocompleteController.getForProfile(assumeNonNull(session.getProfile()))
-                .setComposeboxQueryControllerBridge(session.getComposeboxQueryControllerBridge());
+        var controller = AutocompleteController.getForProfile(assumeNonNull(session.getProfile()));
+        if (controller != null) {
+            controller.setComposeboxQueryControllerBridge(
+                    session.getComposeboxQueryControllerBridge());
+        }
 
         mInput = session.getAutocompleteInput();
         mMediator.beginInput(session);

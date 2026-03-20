@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
@@ -31,8 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,7 +42,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,6 +68,8 @@ import org.chromium.url.GURL;
  * Tests of the Most Visited Tiles. TODO(ender): add keyboard navigation for MV tiles once we can
  * use real AutocompleteController. The TestAutocompleteController is unable to properly classify
  * the synthetic OmniboxSuggestions and issuing KEYCODE_ENTER results in no action.
+ *
+ * <p>TODO: these should be unit tests. very little here requires actual integration testing.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -89,9 +87,7 @@ public class MostVisitedTilesTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteController mController;
-    private @Captor ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
 
     private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
@@ -110,8 +106,7 @@ public class MostVisitedTilesTest {
 
     @Before
     public void setUp() throws Exception {
-        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
-        doReturn(mController).when(mAutocompleteControllerJniMock).getForProfile(any());
+        AutocompleteController.setInstanceForTesting(mController);
 
         mPage = mActivityTestRule.startOnTestServerUrl(START_PAGE_LOCATION);
 
@@ -122,8 +117,6 @@ public class MostVisitedTilesTest {
         mTab = mPage.loadedTabElement.value();
         mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
-        verify(mController).addOnSuggestionsReceivedListener(mListener.capture());
-
         setUpSuggestionsToShow();
 
         mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
@@ -131,7 +124,7 @@ public class MostVisitedTilesTest {
 
     @After
     public void tearDown() {
-        AutocompleteControllerJni.setInstanceForTesting(null);
+        mOmnibox.clearFocus();
     }
 
     /**
@@ -195,10 +188,7 @@ public class MostVisitedTilesTest {
         doReturn(true).when(autocompleteResult).verifyCoherency(anyInt(), anyInt());
 
         mOmnibox.requestFocus();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mListener.getValue().onSuggestionsReceived(autocompleteResult, true);
-                });
+        mOmnibox.setSuggestions(autocompleteResult);
         mOmnibox.checkSuggestionsShown();
     }
 
@@ -306,7 +296,6 @@ public class MostVisitedTilesTest {
                 () -> {
                     return manager.getCurrentDialogForTest() == null;
                 });
-        verify(mAutocompleteControllerJniMock, never())
-                .deleteMatchElement(anyLong(), anyInt(), anyInt());
+        verify(mController, never()).deleteMatchElement(any(), anyInt());
     }
 }

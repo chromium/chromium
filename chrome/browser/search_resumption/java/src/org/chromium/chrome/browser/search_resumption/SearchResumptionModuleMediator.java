@@ -202,14 +202,16 @@ public class SearchResumptionModuleMediator
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
             mAutoComplete = AutocompleteController.getForProfile(profile);
-            mAutoComplete.addOnSuggestionsReceivedListener(this);
             int pageClassification = getPageClassification();
 
             var input = new AutocompleteInput();
             input.setPageUrl(mTabToTrackSuggestion.getUrl());
             input.setPageTitle(mTabToTrackSuggestion.getTitle());
             input.setPageClassification(pageClassification);
-            mAutoComplete.startZeroSuggest(input);
+            if (mAutoComplete != null) {
+                mAutoComplete.addOnSuggestionsReceivedListener(this);
+                mAutoComplete.startZeroSuggest(input);
+            }
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
             mSearchResumptionModuleBridge.fetchSuggestions(
