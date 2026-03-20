@@ -90,6 +90,83 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="prepareGetCredential request failed."/>
 </enum>
 
+<!-- LINT.IfChange(EnclaveManagerActionOutcome) -->
+
+<enum name="EnclaveManagerActionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Generic error"/>
+  <int value="2" label="State machine has been destroyed"/>
+  <int value="3" label="Action has been cancelled"/>
+  <int value="4" label="Error fetching of cert.xml or cert.sig.xml (or both)"/>
+  <int value="5" label="Failure of DoGeneratingKeys"/>
+  <int value="6" label="Trusted vault registration error"/>
+  <int value="7"
+      label="Secret wrapping malformed response in DoJoiningPINToDomain"/>
+  <int value="8"
+      label="Trusted vault registration error in DoJoiningPINToDomain"/>
+  <int value="9"
+      label="Trusted vault registration error in DoJoiningUpdatedPINToDomain"/>
+  <int value="10" label="Renewing PIN while user is not registered"/>
+  <int value="11" label="Setting or updating PIN while user is not registered"/>
+  <int value="12" label="Enclave registration resulted in error response"/>
+  <int value="13" label="Failure of DoRegisteringWithEnclave"/>
+  <int value="14"
+      label="Wrapped member key was invalid during enclave registration"/>
+  <int value="15"
+      label="Enclave reports that the cohort is not yet deprecated"/>
+  <int value="16" label="PIN renewal resulted in error response"/>
+  <int value="17" label="Failure of DoRenewingPIN"/>
+  <int value="18"
+      label="Parsing wrapped PIN from CBOR failed in DoRenewingPIN"/>
+  <int value="19"
+      label="Not renewing PIN because it would result in downgrading the
+             recovery store"/>
+  <int value="20"
+      label="Can not parse wrapped PIN from an enclave CBOR response in
+             DoSettingPIN"/>
+  <int value="21" label="Failure of DoSettingPIN"/>
+  <int value="22" label="PIN change resulted in error response"/>
+  <int value="23"
+      label="No system UV and no GPM PIN during out-of-context retrieval"/>
+  <int value="24"
+      label="Problem while parsing wrapped PIN during out-of-context
+             retrieval"/>
+  <int value="25" label="Already has pin in DoSyncingWithSecurityDomain"/>
+  <int value="26" label="The security domain has been reset"/>
+  <int value="27" label="Tried to change the PIN, but SDS reports no PIN"/>
+  <int value="28"
+      label="Downloading authentication factors registration state resulted
+             in error"/>
+  <int value="29" label="Unregister request resulted in error response"/>
+  <int value="30" label="Failure of DoUnregistering"/>
+  <int value="31"
+      label="Failed to get access token for enclave in
+             DoWaitingForEnclaveTokenForPINWrapping"/>
+  <int value="32"
+      label="Failed to get access token for enclave in
+             DoWaitingForEnclaveTokenForRegistration"/>
+  <int value="33"
+      label="Failed to get access token for enclave in
+             DoWaitingForEnclaveTokenForUnregister"/>
+  <int value="34"
+      label="Failed to get access token for enclave in
+             DoWaitingForEnclaveTokenForWrapping"/>
+  <int value="35" label="Failed to upload to recovery key store"/>
+  <int value="36" label="PIN wrapping resulted in error response"/>
+  <int value="37" label="Failure of DoWrappingPINAndSecret"/>
+  <int value="38"
+      label="Failed to translate response into an UpdateVaultProto"/>
+  <int value="39" label="Failed to store wrapped secrets"/>
+  <int value="40" label="Failed to wrap security domain secrets"/>
+  <int value="41" label="Secrets wrapping resulted in error response"/>
+  <int value="42" label="Enclave response was not a map"/>
+  <int value="43"
+      label="Can not parse a vault and security domain member keys from a
+             CBOR map"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:EnclaveManagerActionOutcome) -->
+
 <!-- LINT.IfChange(GmsCoreGetCredentialsResultEnum) -->
 
 <enum name="GmsCoreGetCredentialsResult">
@@ -440,7 +517,7 @@ chromium-metrics-reviews@google.com.
              because it is redundant)"/>
   <int value="5"
       label="Storing key from opportunistic key retrieval flow (key ignored
-             because no UV available)"/>
+             because no UV available). Deprecated."/>
   <int value="6"
       label="Storing key from opportunistic key retrieval flow (failed when
              adding device to account)"/>

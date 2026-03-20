@@ -312,6 +312,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.OpportunisticStoreKeysOutcome"
+    enum="EnclaveManagerActionOutcome" expires_after="2026-12-09">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records an outcome of storing a passkey secret from out-of-context and
+    opportunistic retrieval.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.RenewingPinTransactionResult"
     enum="WebAuthenticationEnclaveTransactionResult" expires_after="2026-12-09">
   <owner>nsatragno@chromium.org</owner>

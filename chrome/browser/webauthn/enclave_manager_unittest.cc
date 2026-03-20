@@ -2394,6 +2394,9 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerTest,
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
           kStoreKeysFromOpportunisticFlowSucceeded,
       1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 #endif
 
@@ -2846,6 +2849,46 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest, OpportunisticStoreKeys) {
       trusted_vault::TrustedVaultUserActionTriggerForUMA::
           kPasskeyUnlockProfileMenu,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
+}
+
+TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
+       OpportunisticStoreKeysFailedDueToTrustedVaultRegistrationError) {
+  security_domain_service_->pretend_there_are_members();
+  security_domain_service_->fail_all_requests();
+  ASSERT_FALSE(manager_.IsRegistered());
+  EXPECT_EQ(manager_.store_keys_count(), 0u);
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
+  manager_.StoreKeys(gaia_id_,
+                     {trusted_vault::TrustedVaultKeyAndVersion(std::move(key),
+                                                               kSecretVersion)},
+                     /*user_action_trigger=*/
+                     trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                         kPasskeyUnlockProfileMenu);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowFailed);
+
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowFailed,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      EnclaveManager::ActionOutcome::
+          kDoJoiningDomainFailedTrustedVaultRegistrationError,
+      1);
 }
 
 class NoOpportunisticKeyRetrievalEnclaveUVTest : public EnclaveUVTest {
@@ -2969,6 +3012,9 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
           kStoreKeysFromOpportunisticFlowSucceeded,
       1);
   EXPECT_TRUE(manager_.has_wrapped_pin());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
@@ -3006,6 +3052,11 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
   // called so the fake security domain service will CHECK since the version is
   // non-zero.
   EXPECT_FALSE(manager_.IsRegistered());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      EnclaveManager::ActionOutcome::
+          kDoStoringOpportunisticallyRetrievedKeyFailedNoSystemUvNoGpmPin,
+      1);
 }
 #endif
 

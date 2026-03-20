@@ -52,12 +52,6 @@ class EnclaveManagerInterface : public KeyedService {
     // The key has been ignored because the device has been already registered
     // with the enclave.
     kStoreKeysFromOpportunisticFlowIgnoredRedundant,
-    // The key has been ignored because neither system UV nor GPM PIN is
-    // available.
-    // TODO(crbug.com/488975473): Remove this bucket (because we will introduce
-    // a separate metric for reporting failures of out-of-context recovery
-    // flow).
-    kStoreKeysFromOpportunisticFlowIgnoredNoUV,
   };
 
   class Observer : public base::CheckedObserver {

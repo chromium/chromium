@@ -135,7 +135,7 @@ struct EnclaveManager::StoreKeysArgs {
 };
 
 struct EnclaveManager::PendingAction {
-  EnclaveManager::Callback callback;
+  base::OnceCallback<void(ActionOutcome)> callback;
   base::flat_set<GaiaId> gaia_ids_to_remove;
   bool want_registration = false;
   bool renew_pin = false;
@@ -154,6 +154,15 @@ struct EnclaveManager::PendingAction {
 #endif                      // BUILDFLAG(IS_MAC)
   bool unregister = false;  // whether to unregister from the enclave.
 };
+
+base::OnceCallback<void(EnclaveManager::ActionOutcome)>
+EnclaveManager::ToActionOutcomeCallback(EnclaveManager::Callback callback) {
+  return base::BindOnce(
+      [](EnclaveManager::Callback callback, ActionOutcome outcome) {
+        std::move(callback).Run(outcome == ActionOutcome::kSuccess);
+      },
+      std::move(callback));
+}
 
 EnclaveManager::StoreKeysLock::StoreKeysLock(
     base::WeakPtr<EnclaveManager> manager)
@@ -1140,10 +1149,6 @@ ToWebAuthenticationGPMRecoveryEvent(
       return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
           kStoreKeysFromOpportunisticFlowSucceeded;
     case EnclaveManager::OutOfContextRecoveryOutcome::
-        kStoreKeysFromOpportunisticFlowIgnoredNoUV:
-      return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-          kStoreKeysFromOpportunisticFlowIgnoredNoUV;
-    case EnclaveManager::OutOfContextRecoveryOutcome::
         kStoreKeysFromOpportunisticFlowIgnoredRedundant:
       return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
           kStoreKeysFromOpportunisticFlowIgnoredRedundant;
@@ -1207,7 +1212,126 @@ class EnclaveManager::StateMachine {
 
   ~StateMachine() {
     if (action_->callback) {
-      std::move(action_->callback).Run(false);
+      std::move(action_->callback)
+          .Run(ActionOutcome::kStateMachineHasBeenDestroyed);
+      FIDO_LOG(EVENT) << "Action outcome: "
+                      << ToString(ActionOutcome::kStateMachineHasBeenDestroyed);
+    }
+  }
+
+  static std::string ToString(ActionOutcome outcome) {
+    switch (outcome) {
+      case ActionOutcome::kSuccess:
+        return "Success";
+      case ActionOutcome::kGenericError:
+        return "GenericError";
+      case ActionOutcome::kStateMachineHasBeenDestroyed:
+        return "StateMachineHasBeenDestroyed";
+      case ActionOutcome::kActionCancelled:
+        return "ActionCancelled";
+      case ActionOutcome::
+          kDoDownloadingRecoveryKeyStoreKeysFailedFetchingCertXmlOrSigXml:
+        return "DoDownloadingRecoveryKeyStoreKeysFailedFetchingCertXmlOrSigXml";
+      case ActionOutcome::kDoGeneratingKeysFailedEventFailure:
+        return "DoGeneratingKeysFailedEventFailure";
+      case ActionOutcome::kDoJoiningDomainFailedTrustedVaultRegistrationError:
+        return "DoJoiningDomainFailedTrustedVaultRegistrationError";
+      case ActionOutcome::
+          kDoJoiningPINToDomainFailedSecretWrappingMalformedResponse:
+        return "DoJoiningPINToDomainFailedSecretWrappingMalformedResponse";
+      case ActionOutcome::
+          kDoJoiningPINToDomainFailedTrustedVaultRegistrationStatusFailure:
+        return "DoJoiningPINToDomainFailedTrustedVaultRegistrationStatusFailur"
+               "e";
+      case ActionOutcome::
+          kDoJoiningUpdatedPINToDomainFailedTrustedVaultRegistrationStatusError:
+        return "DoJoiningUpdatedPINToDomainFailedTrustedVaultRegistrationStatus"
+               "Error";
+      case ActionOutcome::kDoNextActionFailedRenewPinWhileUserNotRegistered:
+        return "DoNextActionFailedRenewPinWhileUserNotRegistered";
+      case ActionOutcome::
+          kDoNextActionFailedSetOrUpdatePinWhileUserNotRegistered:
+        return "DoNextActionFailedSetOrUpdatePinWhileUserNotRegistered";
+      case ActionOutcome::
+          kDoRegisteringWithEnclaveFailedEnclaveRegistrationError:
+        return "DoRegisteringWithEnclaveFailedEnclaveRegistrationError";
+      case ActionOutcome::kDoRegisteringWithEnclaveFailedEventFailure:
+        return "DoRegisteringWithEnclaveFailedEventFailure";
+      case ActionOutcome::kDoRegisteringWithEnclaveFailedWrappedKeyWasInvalid:
+        return "DoRegisteringWithEnclaveFailedWrappedKeyWasInvalid";
+      case ActionOutcome::kDoRenewingPINFailedCohortNotYetDeprecated:
+        return "DoRenewingPINFailedCohortNotYetDeprecated";
+      case ActionOutcome::kDoRenewingPINFailedErrorResponse:
+        return "DoRenewingPINFailedErrorResponse";
+      case ActionOutcome::kDoRenewingPINFailedEventFailure:
+        return "DoRenewingPINFailedEventFailure";
+      case ActionOutcome::kDoRenewingPINFailedParseWrappedPinFromCborFailure:
+        return "DoRenewingPINFailedParseWrappedPinFromCborFailure";
+      case ActionOutcome::kDoRenewingPINFailedRecoveryStoreDowngrade:
+        return "DoRenewingPINFailedRecoveryStoreDowngrade";
+      case ActionOutcome::kDoSettingPINFailedCanNotParseWrappedPinFromCbor:
+        return "DoSettingPINFailedCanNotParseWrappedPinFromCbor";
+      case ActionOutcome::kDoSettingPINFailedEventFailure:
+        return "DoSettingPINFailedEventFailure";
+      case ActionOutcome::kDoSettingPINFailedPinChangeResultedInErrorResponse:
+        return "DoSettingPINFailedPinChangeResultedInErrorResponse";
+      case ActionOutcome::
+          kDoStoringOpportunisticallyRetrievedKeyFailedNoSystemUvNoGpmPin:
+        return "DoStoringOpportunisticallyRetrievedKeyFailedNoSystemUvNoGpmPin";
+      case ActionOutcome::
+          kDoStoringOpportunisticallyRetrievedKeyFailedWrappedPinParsingProblem:
+        return "DoStoringOpportunisticallyRetrievedKeyFailedWrappedPinParsingPr"
+               "oblem";
+      case ActionOutcome::kDoSyncingWithSecurityDomainFailedAlreadyHasPin:
+        return "DoSyncingWithSecurityDomainFailedAlreadyHasPin";
+      case ActionOutcome::
+          kDoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset:
+        return "DoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset";
+      case ActionOutcome::
+          kDoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsNoPin:
+        return "DoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsN"
+               "oPin";
+      case ActionOutcome::
+          kDoSyncingWithSecurityDomainFailedTrustedVaultErrorResponse:
+        return "DoSyncingWithSecurityDomainFailedTrustedVaultErrorResponse";
+      case ActionOutcome::kDoUnregisteringFailedEnclaveResponseError:
+        return "DoUnregisteringFailedEnclaveResponseError";
+      case ActionOutcome::kDoUnregisteringFailedEventFailure:
+        return "DoUnregisteringFailedEventFailure";
+      case ActionOutcome::
+          kDoWaitingForEnclaveTokenForPINWrappingFailedEventFailure:
+        return "DoWaitingForEnclaveTokenForPINWrappingFailedEventFailure";
+      case ActionOutcome::
+          kDoWaitingForEnclaveTokenForRegistrationFailedEventFailure:
+        return "DoWaitingForEnclaveTokenForRegistrationFailedEventFailure";
+      case ActionOutcome::
+          kDoWaitingForEnclaveTokenForUnregisterFailedEventFailure:
+        return "DoWaitingForEnclaveTokenForUnregisterFailedEventFailure";
+      case ActionOutcome::
+          kDoWaitingForEnclaveTokenForWrappingFailedToGetAccessToken:
+        return "DoWaitingForEnclaveTokenForWrappingFailedToGetAccessToken";
+      case ActionOutcome::
+          kDoWaitingForRecoveryKeyStoreFailedToUploadToRecoveryKeyStore:
+        return "DoWaitingForRecoveryKeyStoreFailedToUploadToRecoveryKeyStore";
+      case ActionOutcome::kDoWrappingPINAndSecretFailedErrorResponse:
+        return "DoWrappingPINAndSecretFailedErrorResponse";
+      case ActionOutcome::kDoWrappingPINAndSecretFailedEventFailure:
+        return "DoWrappingPINAndSecretFailedEventFailure";
+      case ActionOutcome::
+          kDoWrappingPINAndSecretFailedToTranslateResponseToProto:
+        return "DoWrappingPINAndSecretFailedToTranslateResponseToProto";
+      case ActionOutcome::kDoWrappingSecretsFailedToStoreWrappedSecrets:
+        return "DoWrappingSecretsFailedToStoreWrappedSecrets";
+      case ActionOutcome::kDoWrappingSecretsFailedToWrapSecurityDomainSecrets:
+        return "DoWrappingSecretsFailedToWrapSecurityDomainSecrets";
+      case ActionOutcome::kDoWrappingSecretsFailedWrappingResultedInError:
+        return "DoWrappingSecretsFailedWrappingResultedInError";
+      case ActionOutcome::
+          kUploadVaultAndMemberFromResponseFailedResponseWasNotMap:
+        return "UploadVaultAndMemberFromResponseFailedResponseWasNotMap";
+      case ActionOutcome::
+          kUploadVaultAndMemberFromResponseFailedToParseResponse:
+        return "UploadVaultAndMemberFromResponseFailedToParseResponse";
     }
   }
 
@@ -1399,8 +1523,7 @@ class EnclaveManager::StateMachine {
                     << ToString(state_);
 
     if (state_ == State::kStop) {
-      std::move(action_->callback).Run(success_);
-      manager_->Stopped();
+      HandleStoppedState();
       // `this` has been deleted now.
       return;
     }
@@ -1417,13 +1540,24 @@ class EnclaveManager::StateMachine {
     FIDO_LOG(EVENT) << ToString(prior_state) << " --> " << ToString(state_);
 
     if (state_ == State::kStop) {
-      std::move(action_->callback).Run(success_);
-      manager_->Stopped();
+      HandleStoppedState();
       // `this` has been deleted now.
       return;
     }
 
     processing_ = false;
+  }
+
+  void Stop(ActionOutcome outcome) {
+    state_ = State::kStop;
+    outcome_ = outcome;
+  }
+
+  void HandleStoppedState() {
+    std::move(action_->callback).Run(outcome_);
+    FIDO_LOG(EVENT) << "Action outcome: " << ToString(outcome_);
+    manager_->Stopped();
+    // `this` has been deleted now.
   }
 
   static std::string ToString(State state) {
@@ -1600,8 +1734,7 @@ class EnclaveManager::StateMachine {
         local_state_.mutable_users()->erase(gaia_id.ToString());
       }
       manager_->WriteState(&local_state_);
-      success_ = true;
-      state_ = State::kStop;
+      Stop(ActionOutcome::kSuccess);
       return;
     }
 
@@ -1672,7 +1805,8 @@ class EnclaveManager::StateMachine {
 
     if (!action_->set_pin.empty() || !action_->updated_pin.empty()) {
       if (!user_->registered()) {
-        state_ = State::kStop;
+        Stop(ActionOutcome::
+                 kDoNextActionFailedSetOrUpdatePinWhileUserNotRegistered);
         return;
       }
 
@@ -1686,7 +1820,7 @@ class EnclaveManager::StateMachine {
 
     if (action_->renew_pin) {
       if (!user_->registered()) {
-        state_ = State::kStop;
+        Stop(ActionOutcome::kDoNextActionFailedRenewPinWhileUserNotRegistered);
         return;
       }
 
@@ -1697,8 +1831,7 @@ class EnclaveManager::StateMachine {
 
     if (action_->unregister) {
       if (!user_->registered()) {
-        success_ = true;
-        state_ = State::kStop;
+        Stop(ActionOutcome::kSuccess);
         return;
       }
 
@@ -1712,8 +1845,7 @@ class EnclaveManager::StateMachine {
       manager_->WriteState(&local_state_);
     }
 
-    success_ = true;
-    state_ = State::kStop;
+    Stop(ActionOutcome::kSuccess);
   }
 
   void FetchComplete(FetchedFile file, std::optional<std::string> contents) {
@@ -1842,7 +1974,7 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (std::holds_alternative<Failure>(event)) {
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoGeneratingKeysFailedEventFailure);
       return;
     }
     CHECK(std::holds_alternative<KeyReady>(event)) << ToString(event);
@@ -1914,7 +2046,8 @@ class EnclaveManager::StateMachine {
     access_token_fetcher_.reset();
     if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWaitingForEnclaveTokenForRegistrationFailedEventFailure);
       return;
     }
     CHECK(std::holds_alternative<AccessToken>(event)) << ToString(event);
@@ -1937,7 +2070,7 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (std::holds_alternative<Failure>(event)) {
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoRegisteringWithEnclaveFailedEventFailure);
       return;
     }
 
@@ -1946,7 +2079,8 @@ class EnclaveManager::StateMachine {
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "Registration resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoRegisteringWithEnclaveFailedEnclaveRegistrationError);
       return;
     }
 
@@ -1957,7 +2091,7 @@ class EnclaveManager::StateMachine {
                        ->second)) {
       FIDO_LOG(ERROR) << "Wrapped member key was invalid: "
                       << cbor::DiagnosticWriter::Write(response);
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoRegisteringWithEnclaveFailedWrappedKeyWasInvalid);
       return;
     }
 
@@ -1972,7 +2106,8 @@ class EnclaveManager::StateMachine {
     access_token_fetcher_.reset();
     if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWaitingForEnclaveTokenForWrappingFailedToGetAccessToken);
       return;
     }
 
@@ -2009,7 +2144,7 @@ class EnclaveManager::StateMachine {
 
     if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to wrap security domain secrets";
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoWrappingSecretsFailedToWrapSecurityDomainSecrets);
       return;
     }
 
@@ -2018,14 +2153,14 @@ class EnclaveManager::StateMachine {
     if (!IsAllOk(response, new_security_domain_secrets.size())) {
       FIDO_LOG(ERROR) << "Wrapping resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoWrappingSecretsFailedWrappingResultedInError);
       return;
     }
 
     if (!StoreWrappedSecrets(user_, new_security_domain_secrets,
                              response.GetArray())) {
       FIDO_LOG(ERROR) << "Failed to store wrapped secrets";
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoWrappingSecretsFailedToStoreWrappedSecrets);
       return;
     }
 
@@ -2064,9 +2199,8 @@ class EnclaveManager::StateMachine {
         break;
       default:
         manager_->ClearRegistration();
-        state_ = State::kStop;
-        // If the state machine performs storing of opportunistically retrieved
-        // key - the key will be discarded.
+        Stop(
+            ActionOutcome::kDoJoiningDomainFailedTrustedVaultRegistrationError);
         break;
     }
   }
@@ -2102,7 +2236,8 @@ class EnclaveManager::StateMachine {
     if (result.state ==
         trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
             State::kError) {
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoSyncingWithSecurityDomainFailedTrustedVaultErrorResponse);
       return;
     }
 
@@ -2111,7 +2246,8 @@ class EnclaveManager::StateMachine {
       // out.
       manager_->ClearRegistration();
       FIDO_LOG(ERROR) << "The security domain has been reset.";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset);
       if (is_pin_renewal_) {
         base::UmaHistogramEnumeration(
             kPinRenewalFailureHistogram,
@@ -2131,7 +2267,9 @@ class EnclaveManager::StateMachine {
             kPinRenewalFailureHistogram,
             PinRenewalFailureCause::kSecurityDomainReportsNoPin);
       }
-      state_ = State::kStop;
+      Stop(
+          ActionOutcome::
+              kDoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsNoPin);
       return;
     }
     if (result.gpm_pin_metadata) {
@@ -2161,7 +2299,7 @@ class EnclaveManager::StateMachine {
 
     if (is_set_pin_ && result.gpm_pin_metadata) {
       // There is already a PIN.
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoSyncingWithSecurityDomainFailedAlreadyHasPin);
       return;
     }
 
@@ -2212,7 +2350,8 @@ class EnclaveManager::StateMachine {
 
     if (!cert_xml_ || !sig_xml_) {
       // One (or both) fetches failed.
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoDownloadingRecoveryKeyStoreKeysFailedFetchingCertXmlOrSigXml);
       if (is_pin_renewal_) {
         base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
                                       PinRenewalFailureCause::kDuringDownload);
@@ -2235,7 +2374,8 @@ class EnclaveManager::StateMachine {
             kPinRenewalFailureHistogram,
             PinRenewalFailureCause::kGettingAccessToken);
       }
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWaitingForEnclaveTokenForPINWrappingFailedEventFailure);
       return;
     }
     CHECK(std::holds_alternative<AccessToken>(event)) << ToString(event);
@@ -2301,7 +2441,7 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (std::holds_alternative<Failure>(event)) {
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoWrappingPINAndSecretFailedEventFailure);
       return;
     }
 
@@ -2310,7 +2450,7 @@ class EnclaveManager::StateMachine {
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "PIN wrapping resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
-      state_ = State::kStop;
+      Stop(ActionOutcome::kDoWrappingPINAndSecretFailedErrorResponse);
       return;
     }
 
@@ -2325,7 +2465,8 @@ class EnclaveManager::StateMachine {
     if (!recovery_key_store_wrap_response_) {
       FIDO_LOG(ERROR)
           << "Failed to translate response into an UpdateVaultProto";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWrappingPINAndSecretFailedToTranslateResponseToProto);
       return;
     }
 
@@ -2361,7 +2502,8 @@ class EnclaveManager::StateMachine {
                                       PinRenewalFailureCause::kRKSUpload);
       }
       FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWaitingForRecoveryKeyStoreFailedToUploadToRecoveryKeyStore);
       return;
     }
 
@@ -2427,14 +2569,15 @@ class EnclaveManager::StateMachine {
     const int key_version = join_status.second;
 
     if (status != trusted_vault::TrustedVaultRegistrationStatus::kSuccess) {
-      state_ = State::kStop;
+      Stop(
+          ActionOutcome::
+              kDoJoiningPINToDomainFailedTrustedVaultRegistrationStatusFailure);
       return;
     }
 
     if (is_set_pin_) {
       // If adding a PIN to an existing account, then we're done.
-      success_ = true;
-      state_ = State::kStop;
+      Stop(ActionOutcome::kSuccess);
       return;
     }
 
@@ -2445,7 +2588,8 @@ class EnclaveManager::StateMachine {
             base::span_from_ref(wrapping_response_->GetArray()[1]))) {
       FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed response: "
                       << cbor::DiagnosticWriter::Write(*wrapping_response_);
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoJoiningPINToDomainFailedSecretWrappingMalformedResponse);
       return;
     }
 
@@ -2464,14 +2608,16 @@ class EnclaveManager::StateMachine {
     const trusted_vault::TrustedVaultRegistrationStatus status =
         join_status.first;
 
-    state_ = State::kStop;
-    success_ =
-        status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess;
-    if (!success_) {
+    if (status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess) {
+      Stop(ActionOutcome::kSuccess);
+    } else {
       if (is_pin_renewal_) {
         base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
                                       PinRenewalFailureCause::kJoiningToDomain);
       }
+      Stop(
+          ActionOutcome::
+              kDoJoiningUpdatedPINToDomainFailedTrustedVaultRegistrationStatusError);
       return;
     }
 
@@ -2495,8 +2641,8 @@ class EnclaveManager::StateMachine {
   void DoSettingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    state_ = State::kStop;
     if (std::holds_alternative<Failure>(event)) {
+      Stop(ActionOutcome::kDoSettingPINFailedEventFailure);
       return;
     }
 
@@ -2505,11 +2651,13 @@ class EnclaveManager::StateMachine {
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "PIN change resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
+      Stop(ActionOutcome::kDoSettingPINFailedPinChangeResultedInErrorResponse);
       return;
     }
 
     std::optional<std::string> wrapped_pin = ParseWrappedPinFromCbor(response);
     if (!wrapped_pin) {
+      Stop(ActionOutcome::kDoSettingPINFailedCanNotParseWrappedPinFromCbor);
       return;
     }
     wrapped_pin_proto_->set_wrapped_pin(std::move(*wrapped_pin));
@@ -2521,10 +2669,10 @@ class EnclaveManager::StateMachine {
   void DoRenewingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    state_ = State::kStop;
     if (std::holds_alternative<Failure>(event)) {
       base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
                                     PinRenewalFailureCause::kEnclaveRequest1);
+      Stop(ActionOutcome::kDoRenewingPINFailedEventFailure);
       return;
     }
 
@@ -2544,6 +2692,7 @@ class EnclaveManager::StateMachine {
           user_->set_last_refreshed_pin_epoch_secs(
               base::Time::Now().InSecondsFSinceUnixEpoch());
           manager_->WriteState(&local_state_);
+          Stop(ActionOutcome::kDoRenewingPINFailedCohortNotYetDeprecated);
           return;
         case device::enclave::RequestError::kRecoveryKeyStoreDowngrade:
           base::UmaHistogramEnumeration(
@@ -2551,6 +2700,7 @@ class EnclaveManager::StateMachine {
               PinRenewalFailureCause::kRecoveryKeyStoreDowngrade);
           FIDO_LOG(ERROR) << "Not renewing PIN because it would result in "
                              "downgrading the recovery store";
+          Stop(ActionOutcome::kDoRenewingPINFailedRecoveryStoreDowngrade);
           return;
         default:
           // `IsAllOk` below catches other errors the enclave may return that
@@ -2563,6 +2713,7 @@ class EnclaveManager::StateMachine {
                                     PinRenewalFailureCause::kEnclaveRequest2);
       FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
+      Stop(ActionOutcome::kDoRenewingPINFailedErrorResponse);
       return;
     }
 
@@ -2573,6 +2724,7 @@ class EnclaveManager::StateMachine {
     // to update that.
     std::optional<std::string> wrapped_pin = ParseWrappedPinFromCbor(response);
     if (!wrapped_pin) {
+      Stop(ActionOutcome::kDoRenewingPINFailedParseWrappedPinFromCborFailure);
       return;
     }
     wrapped_pin_proto_->set_wrapped_pin(std::move(*wrapped_pin));
@@ -2587,7 +2739,8 @@ class EnclaveManager::StateMachine {
     access_token_fetcher_.reset();
     if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoWaitingForEnclaveTokenForUnregisterFailedEventFailure);
       return;
     }
 
@@ -2603,8 +2756,8 @@ class EnclaveManager::StateMachine {
   }
 
   void DoUnregistering(Event event) {
-    state_ = State::kStop;
     if (std::holds_alternative<Failure>(event)) {
+      Stop(ActionOutcome::kDoUnregisteringFailedEventFailure);
       return;
     }
 
@@ -2613,10 +2766,11 @@ class EnclaveManager::StateMachine {
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "Unregister request resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
+      Stop(ActionOutcome::kDoUnregisteringFailedEnclaveResponseError);
       return;
     }
 
-    success_ = true;
+    Stop(ActionOutcome::kSuccess);
   }
 
   // Start the process of uploading a Vault, and inserting it into the security
@@ -2625,7 +2779,7 @@ class EnclaveManager::StateMachine {
   // It's assumed that `IsAllOk` has been checked and that the response is not
   // an error. The `vault_` and `member_keys_source_` fields will be updated on
   // success.
-  bool UploadVaultAndMemberFromResponse(const PinMetadata& pin_metadata,
+  void UploadVaultAndMemberFromResponse(const PinMetadata& pin_metadata,
                                         const cbor::Value& response) {
     const cbor::Value& response_value =
         response.GetMap()
@@ -2638,7 +2792,9 @@ class EnclaveManager::StateMachine {
             PinRenewalFailureCause::kEnclaveResponse1);
       }
       FIDO_LOG(ERROR) << "response was not a map";
-      return false;
+      Stop(ActionOutcome::
+               kUploadVaultAndMemberFromResponseFailedResponseWasNotMap);
+      return;
     }
     const int32_t key_version = GetCurrentWrappedSecretForUser(user_).first;
     std::optional<std::pair<EnclaveRecoveryKeyStoreWrapResponse,
@@ -2651,7 +2807,9 @@ class EnclaveManager::StateMachine {
             kPinRenewalFailureHistogram,
             PinRenewalFailureCause::kEnclaveResponse2);
       }
-      return false;
+      Stop(ActionOutcome::
+               kUploadVaultAndMemberFromResponseFailedToParseResponse);
+      return;
     }
     std::tie(recovery_key_store_wrap_response_, member_keys_source_) =
         std::move(*result);
@@ -2669,7 +2827,6 @@ class EnclaveManager::StateMachine {
                   machine->Process(status);
                 },
                 weak_ptr_factory_.GetWeakPtr()));
-    return true;
   }
 
   void JoinSecurityDomain() {
@@ -2820,7 +2977,8 @@ class EnclaveManager::StateMachine {
                     << ", has PIN: " << has_pin << ".";
     if (system_uv == SystemUv::kNotSupported && !has_pin) {
       // We shouldn't store keys if there is no system UV and no GPM PIN.
-      state_ = State::kStop;
+      Stop(ActionOutcome::
+               kDoStoringOpportunisticallyRetrievedKeyFailedNoSystemUvNoGpmPin);
       return;
     }
 
@@ -2832,7 +2990,9 @@ class EnclaveManager::StateMachine {
               account_state.gpm_pin_metadata->usable_pin_metadata
                   ->wrapped_pin) ||
           CheckPINInvariants(*wrapped_pin).has_value()) {
-        state_ = State::kStop;
+        Stop(
+            ActionOutcome::
+                kDoStoringOpportunisticallyRetrievedKeyFailedWrappedPinParsingProblem);
         return;
       }
     }
@@ -2916,7 +3076,7 @@ class EnclaveManager::StateMachine {
   const raw_ptr<EnclaveLocalState::User> user_;
   const std::unique_ptr<CoreAccountInfo> primary_account_info_;
 
-  bool success_ = false;
+  ActionOutcome outcome_ = ActionOutcome::kGenericError;
   State state_ = State::kNextAction;
   bool processing_ = false;
 
@@ -3113,7 +3273,7 @@ void EnclaveManager::RegisterIfNeeded(EnclaveManager::Callback callback) {
   }
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->want_registration = true;
   pending_actions_.emplace_back(std::move(action));
   Act();
@@ -3124,7 +3284,7 @@ void EnclaveManager::SetupWithPIN(std::string pin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->pin = std::move(pin);
   action->setup_account = true;
   pending_actions_.emplace_back(std::move(action));
@@ -3154,7 +3314,7 @@ bool EnclaveManager::AddDeviceToAccount(
   }
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->store_keys_args = std::move(pending_keys_);
   action->wrapped_pin = std::move(wrapped_pin);
   if (pin_metadata) {
@@ -3174,7 +3334,7 @@ void EnclaveManager::AddDeviceAndPINToAccount(
 
   auto action = std::make_unique<PendingAction>();
   action->pin_public_key = std::move(previous_pin_public_key);
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->store_keys_args = std::move(pending_keys_);
   action->pin = std::move(pin);
   pending_actions_.emplace_back(std::move(action));
@@ -3188,7 +3348,7 @@ void EnclaveManager::SetPIN(std::string pin,
   CHECK(user_->registered());
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->set_pin = std::move(pin);
   action->rapt = std::move(rapt);
   pending_actions_.emplace_back(std::move(action));
@@ -3202,7 +3362,7 @@ void EnclaveManager::ChangePIN(std::string updated_pin,
   CHECK(user_->registered());
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->updated_pin = std::move(updated_pin);
   action->rapt = std::move(rapt);
   pending_actions_.emplace_back(std::move(action));
@@ -3215,7 +3375,7 @@ void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
   CHECK(user_->has_wrapped_pin());
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->renew_pin = true;
   pending_actions_.emplace_back(std::move(action));
   Act();
@@ -3231,7 +3391,7 @@ void EnclaveManager::AddICloudRecoveryKey(
       << "AddICloudRecoveryKey must be called immediately after registration "
          "and before discarding the security domain secret";
   auto action = std::make_unique<PendingAction>();
-  action->callback = std::move(callback);
+  action->callback = ToActionOutcomeCallback(std::move(callback));
   action->icloud_recovery_key = std::move(icloud_recovery_key);
   pending_actions_.emplace_back(std::move(action));
   Act();
@@ -3242,14 +3402,16 @@ void EnclaveManager::Unenroll(EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action = std::make_unique<PendingAction>();
-  action->callback =
+  action->callback = ToActionOutcomeCallback(
       base::BindOnce(&EnclaveManager::UnregisterComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
   action->unregister = true;
 
   if (!user_ || !IsRegistered()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(action->callback), true));
+        FROM_HERE,
+        base::BindOnce(std::move(action->callback), ActionOutcome::kSuccess));
     return;
   }
 
@@ -3285,7 +3447,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
            user_->wrapped_pin().wrapped_pin() != wrapped_pin->wrapped_pin())) {
         std::unique_ptr<PendingAction> action =
             std::make_unique<PendingAction>();
-        action->callback = std::move(callback);
+        action->callback = ToActionOutcomeCallback(std::move(callback));
         action->update_wrapped_pin = true;
         action->wrapped_pin = std::move(wrapped_pin);
         action->pin_public_key = *metadata.public_key;
@@ -4013,8 +4175,6 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
                      weak_ptr_factory_.GetWeakPtr());
   action->opportunistic_store_keys_args = std::move(pending_keys);
   pending_actions_.emplace_back(std::move(action));
-  // TODO(crbug.com/488975473): Publish metrics for different possible failures
-  // of storing opportunistically retrieved keys.
   Act();
 }
 
@@ -4423,7 +4583,8 @@ void EnclaveManager::CancelAllActions() {
 
   for (const auto& action : actions) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(action->callback), false));
+        FROM_HERE, base::BindOnce(std::move(action->callback),
+                                  ActionOutcome::kActionCancelled));
   }
 }
 
@@ -4646,8 +4807,14 @@ void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   Act();
 }
 
-void EnclaveManager::OpportunisticStoreKeysAddComplete(bool success) {
-  FIDO_LOG(EVENT) << "Opportunistic keys device add result: " << success;
+void EnclaveManager::OpportunisticStoreKeysAddComplete(
+    ActionOutcome action_outcome) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Enclave.OpportunisticStoreKeysOutcome",
+      action_outcome);
+  bool success = action_outcome == ActionOutcome::kSuccess;
+  FIDO_LOG(EVENT) << "Opportunistic keys device add result: "
+                  << EnclaveManager::StateMachine::ToString(action_outcome);
   auto outcome =
       success
           ? OutOfContextRecoveryOutcome::

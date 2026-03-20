@@ -159,6 +159,64 @@ class EnclaveManager : public EnclaveManagerInterface {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationPinRenewalFailureCause)
 
+  // LINT.IfChange(EnclaveManagerActionOutcome)
+  enum class ActionOutcome {
+    // This outcome indicates successful completion of the action executed by
+    // Enclave Manager's state machine:
+    kSuccess = 0,
+    // All remaining outcomes correspond to different failures.
+    // These outcomes indicate that the state machine has been either cancelled,
+    // or destroyed, or did not execute any steps:
+    kGenericError = 1,
+    kStateMachineHasBeenDestroyed = 2,
+    kActionCancelled = 3,
+    // These outcomes indicate failures of different steps of the Enclave
+    // Manager's state machine. The names of these enum entries obey the format
+    // `k<StepName>Failed<FailureReason>`.
+    kDoDownloadingRecoveryKeyStoreKeysFailedFetchingCertXmlOrSigXml = 4,
+    kDoGeneratingKeysFailedEventFailure = 5,
+    kDoJoiningDomainFailedTrustedVaultRegistrationError = 6,
+    kDoJoiningPINToDomainFailedSecretWrappingMalformedResponse = 7,
+    kDoJoiningPINToDomainFailedTrustedVaultRegistrationStatusFailure = 8,
+    kDoJoiningUpdatedPINToDomainFailedTrustedVaultRegistrationStatusError = 9,
+    kDoNextActionFailedRenewPinWhileUserNotRegistered = 10,
+    kDoNextActionFailedSetOrUpdatePinWhileUserNotRegistered = 11,
+    kDoRegisteringWithEnclaveFailedEnclaveRegistrationError = 12,
+    kDoRegisteringWithEnclaveFailedEventFailure = 13,
+    kDoRegisteringWithEnclaveFailedWrappedKeyWasInvalid = 14,
+    kDoRenewingPINFailedCohortNotYetDeprecated = 15,
+    kDoRenewingPINFailedErrorResponse = 16,
+    kDoRenewingPINFailedEventFailure = 17,
+    kDoRenewingPINFailedParseWrappedPinFromCborFailure = 18,
+    kDoRenewingPINFailedRecoveryStoreDowngrade = 19,
+    kDoSettingPINFailedCanNotParseWrappedPinFromCbor = 20,
+    kDoSettingPINFailedEventFailure = 21,
+    kDoSettingPINFailedPinChangeResultedInErrorResponse = 22,
+    kDoStoringOpportunisticallyRetrievedKeyFailedNoSystemUvNoGpmPin = 23,
+    kDoStoringOpportunisticallyRetrievedKeyFailedWrappedPinParsingProblem = 24,
+    kDoSyncingWithSecurityDomainFailedAlreadyHasPin = 25,
+    kDoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset = 26,
+    kDoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsNoPin = 27,
+    kDoSyncingWithSecurityDomainFailedTrustedVaultErrorResponse = 28,
+    kDoUnregisteringFailedEnclaveResponseError = 29,
+    kDoUnregisteringFailedEventFailure = 30,
+    kDoWaitingForEnclaveTokenForPINWrappingFailedEventFailure = 31,
+    kDoWaitingForEnclaveTokenForRegistrationFailedEventFailure = 32,
+    kDoWaitingForEnclaveTokenForUnregisterFailedEventFailure = 33,
+    kDoWaitingForEnclaveTokenForWrappingFailedToGetAccessToken = 34,
+    kDoWaitingForRecoveryKeyStoreFailedToUploadToRecoveryKeyStore = 35,
+    kDoWrappingPINAndSecretFailedErrorResponse = 36,
+    kDoWrappingPINAndSecretFailedEventFailure = 37,
+    kDoWrappingPINAndSecretFailedToTranslateResponseToProto = 38,
+    kDoWrappingSecretsFailedToStoreWrappedSecrets = 39,
+    kDoWrappingSecretsFailedToWrapSecurityDomainSecrets = 40,
+    kDoWrappingSecretsFailedWrappingResultedInError = 41,
+    kUploadVaultAndMemberFromResponseFailedResponseWasNotMap = 42,
+    kUploadVaultAndMemberFromResponseFailedToParseResponse = 43,
+    kMaxValue = kUploadVaultAndMemberFromResponseFailedToParseResponse,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:EnclaveManagerActionOutcome)
+
   class UvKeyCreationLock {
    public:
     virtual ~UvKeyCreationLock() = default;
@@ -528,7 +586,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   void StoreKeysFromOutOfContextRetrieval(
       const GaiaId& gaia_id,
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
-  void OpportunisticStoreKeysAddComplete(bool success);
+  void OpportunisticStoreKeysAddComplete(ActionOutcome action_outcome);
   void NotifyObserversAboutOutOfContextRecoveryOutcome(
       OutOfContextRecoveryOutcome outcome);
   void TemporarilyCachePendingOpportunisticKeys(
@@ -536,6 +594,9 @@ class EnclaveManager : public EnclaveManagerInterface {
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
 
   void RemoveGaiaIdsFromLocalState(base::flat_set<GaiaId> gaia_ids_to_remove);
+
+  base::OnceCallback<void(EnclaveManager::ActionOutcome)>
+  ToActionOutcomeCallback(EnclaveManager::Callback callback);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

@@ -50,7 +50,6 @@ enum class WebAuthenticationGPMRecoveryEvent {
   kStoreKeysFromOpportunisticFlowStarted = 2,
   kStoreKeysFromOpportunisticFlowSucceeded = 3,
   kStoreKeysFromOpportunisticFlowIgnoredRedundant = 4,
-  kStoreKeysFromOpportunisticFlowIgnoredNoUV = 5,
   kStoreKeysFromOpportunisticFlowFailed = 6,
   kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch = 7,
   kMaxValue =
