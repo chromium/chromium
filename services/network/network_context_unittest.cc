@@ -9688,11 +9688,11 @@ TEST_F(NetworkContextTest,
   {
     base::RunLoop run_loop;
     const std::string test_origin = test_server.GetOrigin("a.test").Serialize();
-    const std::string key_commitment =
-        base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
-          "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+    const std::string key_commitment = base::ReplaceStringPlaceholders(
+        R"( {"$1": { "PrivateStateTokenV1VOPRF": {
+          "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1,
           "batchsize": 5 } } } )",
-                                        {test_origin}, /*offsets=*/nullptr);
+        {test_origin}, /*offsets=*/nullptr);
     network_service_->SetTrustTokenKeyCommitments(
         key_commitment,
         base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
@@ -9764,11 +9764,11 @@ TEST_F(NetworkContextTest,
   {
     base::RunLoop run_loop;
     const std::string test_origin = test_server.GetOrigin("a.test").Serialize();
-    const std::string key_commitment =
-        base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
-          "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+    const std::string key_commitment = base::ReplaceStringPlaceholders(
+        R"( {"$1": { "PrivateStateTokenV1VOPRF": {
+          "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1,
           "batchsize": 5 } } } )",
-                                        {test_origin}, /*offsets=*/nullptr);
+        {test_origin}, /*offsets=*/nullptr);
     network_service_->SetTrustTokenKeyCommitments(
         key_commitment,
         base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));

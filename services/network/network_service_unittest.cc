@@ -1634,14 +1634,14 @@ TEST_F(NetworkServiceTestWithService, SetsTrustTokenKeyCommitments) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf;
   expectation->id = 1;
   expectation->batch_size = 5;
 
   base::RunLoop run_loop;
   network_service_->SetTrustTokenKeyCommitments(
-      R"( { "https://issuer.example": { "PrivateStateTokenV3PMB": {
-        "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"( { "https://issuer.example": { "PrivateStateTokenV1VOPRF": {
+        "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1,
         "batchsize": 5 } } } )",
       run_loop.QuitClosure());
   run_loop.Run();
