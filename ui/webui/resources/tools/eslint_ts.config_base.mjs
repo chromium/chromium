@@ -107,3 +107,10 @@ export const noChromeSendConfig = {
     ],
   },
 };
+
+export const noUnnecessaryTypeConversionConfig = {
+  files: ['**/*.ts'],
+  rules: {
+    '@typescript-eslint/no-unnecessary-type-conversion': 'error',
+  },
+};

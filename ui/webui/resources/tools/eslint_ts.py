@@ -48,6 +48,8 @@ def _generate_config_file(args):
       extra_configs.append('webComponentMissingDepsConfig')
     if args.enable_no_chrome_send:
       extra_configs.append('noChromeSendConfig')
+    if args.enable_no_unnecessary_type_conversion:
+      extra_configs.append('noUnnecessaryTypeConversionConfig')
 
     f.write(
         _ESLINT_CONFIG_TEMPLATE % {
@@ -71,6 +73,8 @@ def main(argv):
   parser.add_argument(
       '--enable_web_component_missing_deps', action='store_true')
   parser.add_argument('--enable_no_chrome_send', action='store_true')
+  parser.add_argument(
+      '--enable_no_unnecessary_type_conversion', action='store_true')
   parser.add_argument('--in_files', nargs='*', required=True)
 
   args = parser.parse_args(argv)

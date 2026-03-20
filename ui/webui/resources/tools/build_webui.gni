@@ -542,8 +542,10 @@ template("build_webui") {
       }
 
       # Enable by default on non-Ash WebUIs.
+      enable_no_unnecessary_type_conversion = true
       enable_web_component_missing_deps = true
       if (is_ash_webui) {
+        enable_no_unnecessary_type_conversion = false
         enable_web_component_missing_deps = false
       }
       if (defined(invoker.eslint_enable_web_component_missing_deps)) {
