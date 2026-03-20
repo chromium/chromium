@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/components/enterprise/analysis/features.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_client.h"
@@ -179,6 +180,11 @@ bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile) {
                               GetApplicationContext()
                                   ->GetBrowserPolicyConnector()
                                   ->GetDeviceAffiliationIds());
+}
+
+bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service) {
+  return base::FeatureList::IsEnabled(kEnableFileDownloadConnectorIOS) &&
+         service->IsConnectorEnabled(AnalysisConnector::FILE_DOWNLOADED);
 }
 
 }  // namespace enterprise_connectors

@@ -9,6 +9,7 @@
 #import "base/values.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/common/proto/upload_request_response.pb.h"
+#import "components/enterprise/connectors/core/connectors_service_base.h"
 #import "components/enterprise/connectors/core/reporting_constants.h"
 
 class ProfileIOS;
@@ -49,6 +50,10 @@ bool IsEnterpriseUrlFilteringEnabled(EnterpriseRealTimeUrlCheckMode mode);
 
 // Returns whether device info should be reported for the profile.
 bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile);
+
+// Returns whether the download connector feature flag is turned on and the
+// connector is enabled.
+bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service);
 
 }  // namespace enterprise_connectors
 

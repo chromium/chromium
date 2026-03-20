@@ -10,10 +10,14 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/data_sharing/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -22,6 +26,7 @@
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -31,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/components/enterprise/analysis/features.h"
 #import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -350,6 +356,11 @@ void RelaunchApp() {
 
   if ([self isRunningTest:@selector(testShowFullURLInWebContextMenu)]) {
     config.features_disabled.push_back(kIOSWebContextMenuNewTitle);
+  }
+
+  if ([self isRunningTest:@selector(testSaveImageBlockByDownloadProtection)]) {
+    config.features_enabled.push_back(
+        enterprise_connectors::kEnableFileDownloadConnectorIOS);
   }
 
   return config;
@@ -1378,5 +1389,130 @@ void RelaunchApp() {
     GREYFail([error description]);
   }
 }
+
+// Tests that save image to native photo album is blocked if Download Protection
+// Rule is set to do so.
+- (void)testSaveImageBlockByDownloadProtection {
+  [AnalysisConnectorsAppInterface setBlockDownloadRule];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  // The title for the context menu item of saving image to native iOS photo
+  // album if blocked.
+  NSString* disabledTitle = [NSString
+      stringWithFormat:@"%@, %@",
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE),
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+
+  // Using matcher to ensure the button is not enabled.
+  id<GREYMatcher> disabledMenuItemMatcher =
+      grey_allOf(grey_accessibilityLabel(disabledTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
+
+  // Tests that the menu item is indeed presented with the "blocked by your
+  // organization" subtitle.
+  [[EarlGrey selectElementWithMatcher:disabledMenuItemMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  // Tests that the menu item is indeed disabled and tapping it would not have
+  // any actions and does not dismissed the context menu.
+  [[EarlGrey selectElementWithMatcher:disabledMenuItemMatcher]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:disabledMenuItemMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [AnalysisConnectorsAppInterface clearDownloadProtectionRules];
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+// Only builds with Chrome Branding have multiple options for saving images,
+// skip this test in other builds.
+//
+// Tests that all options to save image to different locations are blocked if
+// Download Protection Rule is set to do so for official build.
+- (void)testSaveImageToAlbumOptionsBlockByDownloadProtection {
+  // Relaunch the app with the Download Connector enabled.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_enabled.push_back(
+      enterprise_connectors::kEnableFileDownloadConnectorIOS);
+  config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [AnalysisConnectorsAppInterface setBlockDownloadRule];
+  // Sign in so that the "Save image in..." sub menu is available.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                          IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)]
+      performAction:grey_tap()];
+
+  // The title of the context menu item for saving image to native iOS photos
+  // album if blocked.
+  NSString* nativeSaveDisabledTitle = [NSString
+      stringWithFormat:@"%@, %@",
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE),
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+
+  // Using matcher to ensure the save to native photos button is not enabled.
+  id<GREYMatcher> nativeDisabledMenuItemMatcher =
+      grey_allOf(grey_accessibilityLabel(nativeSaveDisabledTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
+
+  // Tests that the menu item is indeed presented with the "blocked by your
+  // organization" subtitle.
+  [[EarlGrey selectElementWithMatcher:nativeDisabledMenuItemMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  // Tests that the menu item is indeed disabled and tapping it would not have
+  // any actions and does not dismissed the context menu.
+  [[EarlGrey selectElementWithMatcher:nativeDisabledMenuItemMatcher]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:nativeDisabledMenuItemMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The title for the context menu item of saving image to google photos if
+  // blocked.
+  NSString* photosSaveDisabledTitle = [NSString
+      stringWithFormat:@"%@, %@",
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_IOS_TOOLS_MENU_SAVE_IMAGE_TO_PHOTOS),
+                       l10n_util::GetNSStringWithFixup(
+                           IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+
+  // Using matcher to ensure the save to Google phtos button is not enabled.
+  id<GREYMatcher> photosDisabledMenuItemMatcher =
+      grey_allOf(grey_accessibilityLabel(photosSaveDisabledTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
+
+  // Tests that the menu item is indeed presented with the "blocked by your
+  // organization" subtitle.
+  [[EarlGrey selectElementWithMatcher:photosDisabledMenuItemMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  // Tests that the menu item is indeed disabled and tapping it would not have
+  // any actions and does not dismissed the context menu.
+  [[EarlGrey selectElementWithMatcher:photosDisabledMenuItemMatcher]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:photosDisabledMenuItemMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [AnalysisConnectorsAppInterface clearDownloadProtectionRules];
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
 @end

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors::test {
 
@@ -59,6 +60,17 @@ AnalysisSettings* NormalDlpAndMalwareSettings();
 AnalysisSettings* NormalSettingsWithCustomMessage();
 AnalysisSettings* NormalSettingsDlpRequiresBypassJustification();
 AnalysisSettings* NoSettings();
+
+// Set the Download Protection prefs for testing and block all download.
+//
+// - machine_scope: The scope of a policy flag whether it is meant to be applied
+//                  to the machine(true) or the current user(false).
+void SetDownloadConnectorsBlock(PrefService* prefs,
+                                std::vector<std::string> rules,
+                                bool machine_scope = true);
+
+// Clears all download protection rules.
+void ClearDownloadProtectionRules(PrefService* prefs);
 
 }  // namespace enterprise_connectors::test
 

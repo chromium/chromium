@@ -2,5 +2,6 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/signin/model",
+  "+ios/components/enterprise/analysis",
   # keep-sorted end
 ]

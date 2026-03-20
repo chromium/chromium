@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -838,11 +840,17 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
             : SaveToPhotosContextMenuActions::kUnavailableDidSaveImageLocally);
   }];
 
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  bool downloadConnectorEnabled =
+      enterprise_connectors::IsDownloadConnectorEnabled(service);
   policy::DownloadRestriction download_restriction =
       static_cast<policy::DownloadRestriction>(
           self.browser->GetProfile()->GetPrefs()->GetInteger(
               policy::policy_prefs::kDownloadRestrictions));
-  if (download_restriction == policy::DownloadRestriction::ALL_FILES) {
+  if (download_restriction == policy::DownloadRestriction::ALL_FILES ||
+      downloadConnectorEnabled) {
     saveImage.subtitle =
         l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
     saveImage.attributes = UIMenuElementAttributesDisabled;
@@ -867,6 +875,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                        SaveToPhotosContextMenuActions::
                                            kAvailableDidSaveImageToGooglePhotos);
                                  }];
+
+  if (downloadConnectorEnabled) {
+    saveImageToPhotosAction.subtitle =
+        l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
+    saveImageToPhotosAction.attributes = UIMenuElementAttributesDisabled;
+  }
   [imageSavingElements addObject:saveImageToPhotosAction];
 
   // Save Image Menu.

@@ -158,6 +158,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/download/model:eg_app_support+eg2",
     "//ios/chrome/browser/download/ui:constants",
     "//ios/chrome/browser/drive_file_picker/test:eg_app_support+eg2",
+    "//ios/chrome/browser/enterprise/connectors/analysis/test:eg_app_support+eg2",
     "//ios/chrome/browser/enterprise/data_controls/test:eg_app_support+eg2",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/find_in_page/model",

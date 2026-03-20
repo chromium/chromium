@@ -1,6 +1,8 @@
 include_rules = [
   # keep-sorted start
   "+components/data_sharing/public/features.h",
+  "+ios/chrome/browser/enterprise/connectors/connectors_service_factory.h",
+  "+ios/chrome/browser/enterprise/connectors/connectors_util.h",
   "+ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
@@ -21,6 +23,7 @@ include_rules = [
   "+ios/chrome/browser/text_selection/model/text_classifier_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model",
+  "+ios/components/enterprise/analysis",
   "+ios/components/enterprise/data_controls",
   # keep-sorted end
 ]
