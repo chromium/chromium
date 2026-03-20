@@ -64,7 +64,7 @@ ChromeBackgroundTracingMetricsProvider::ChromeBackgroundTracingMetricsProvider(
       std::make_unique<AccessibilityStateProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::DriveMetricsProvider>(
-          chrome::FILE_LOCAL_STATE));
+          chrome::FILE_LOCAL_STATE, g_browser_process->local_state()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::NetworkMetricsProvider>(
           content::CreateNetworkConnectionTrackerAsyncGetter(),

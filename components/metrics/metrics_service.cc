@@ -152,6 +152,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_features.h"
@@ -321,6 +322,7 @@ void RecordUserLogStoreState(UserLogStoreState state) {
 void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   MetricsStateManager::RegisterPrefs(registry);
   MetricsLog::RegisterPrefs(registry);
+  DriveMetricsProvider::RegisterPrefs(registry);
   StabilityMetricsProvider::RegisterPrefs(registry);
   MetricsReportingService::RegisterPrefs(registry);
 

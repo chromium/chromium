@@ -155,6 +155,12 @@ inline constexpr char kMetricsLastSeenPrefix[] =
 inline constexpr char kMetricsFileMetricsMetadata[] =
     "user_experience_metrics.file_metrics_metadata";
 
+// Drive metrics for SSD/HDD status reporting as fallbacks.
+inline constexpr char kMetricsAppDriveHasSeekPenalty[] =
+    "user_experience_metrics.app_drive_has_seek_penalty";
+inline constexpr char kMetricsUserDataDriveHasSeekPenalty[] =
+    "user_experience_metrics.user_data_drive_has_seek_penalty";
+
 // Preferences for cloned installs.
 
 // The number of times the client has been reset due to cloned install.

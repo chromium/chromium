@@ -160,6 +160,8 @@ class AwMetricsServiceClient
   // was given).
   metrics::MetricsService* GetMetricsServiceIfStarted();
 
+  // This should only be called after Initialize().
+  PrefService* GetPrefService() const;
   // MetricsServiceClient:
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;

@@ -840,8 +840,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       metrics_state_manager_->IsMetricsReportingEnabled()));
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::DriveMetricsProvider>(
-          chrome::FILE_LOCAL_STATE));
+      std::make_unique<metrics::DriveMetricsProvider>(chrome::FILE_LOCAL_STATE,
+                                                      local_state));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CallStackProfileMetricsProvider>());

@@ -39,9 +39,10 @@ void AwBackgroundTracingMetricsProvider::Init() {
       tracing::kStartupFieldTracing.Get());
   SetupFieldTracingFromFieldTrial();
 
+  android_webview::AwMetricsServiceClient* aw_metrics_service_client =
+      android_webview::AwMetricsServiceClient::GetInstance();
   metrics::MetricsService* metrics =
-      android_webview::AwMetricsServiceClient::GetInstance()
-          ->GetMetricsService();
+      aw_metrics_service_client->GetMetricsService();
   DCHECK(metrics);
 
   system_profile_providers_.emplace_back(
@@ -49,7 +50,8 @@ void AwBackgroundTracingMetricsProvider::Init() {
           metrics->GetSyntheticTrialRegistry(), std::string_view()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::DriveMetricsProvider>(
-          base::DIR_ANDROID_APP_DATA));
+          base::DIR_ANDROID_APP_DATA,
+          aw_metrics_service_client->GetPrefService()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::NetworkMetricsProvider>(
           content::CreateNetworkConnectionTrackerAsyncGetter()));

@@ -362,6 +362,11 @@ void AwMetricsServiceClient::MaybeStartMetrics() {
   }
 }
 
+PrefService* AwMetricsServiceClient::GetPrefService() const {
+  CHECK(init_finished_);
+  return pref_service_;
+}
+
 void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   CHECK(metrics::SubprocessMetricsProvider::GetInstance());
 
@@ -385,7 +390,7 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
       std::make_unique<metrics::AndroidMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::DriveMetricsProvider>(
-          base::DIR_ANDROID_APP_DATA));
+          base::DIR_ANDROID_APP_DATA, pref_service_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(

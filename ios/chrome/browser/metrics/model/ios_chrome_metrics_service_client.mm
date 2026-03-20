@@ -386,7 +386,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::DriveMetricsProvider>(ios::FILE_LOCAL_STATE));
+      std::make_unique<metrics::DriveMetricsProvider>(ios::FILE_LOCAL_STATE,
+                                                      local_state));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CallStackProfileMetricsProvider>());

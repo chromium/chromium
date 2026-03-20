@@ -6,10 +6,15 @@
 #define COMPONENTS_METRICS_DRIVE_METRICS_PROVIDER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace metrics {
 
@@ -17,7 +22,7 @@ namespace metrics {
 // checks to see if they incur a seek-time penalty (e.g. if they're SSDs).
 class DriveMetricsProvider : public metrics::MetricsProvider {
  public:
-  explicit DriveMetricsProvider(int local_state_path_key);
+  DriveMetricsProvider(int local_state_path_key, PrefService* local_state);
 
   DriveMetricsProvider(const DriveMetricsProvider&) = delete;
   DriveMetricsProvider& operator=(const DriveMetricsProvider&) = delete;
@@ -29,14 +34,8 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class OptionalBoolRecord {
-    kUnknown = 0,
-    kFalse = 1,
-    kTrue = 2,
-    kMaxValue = kTrue,
-  };
+  // Registers local state prefs used by this class.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
   // A response to querying a drive as to whether it incurs a seek penalty.
@@ -69,18 +68,28 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
                        const DriveMetrics& metrics);
 
   // Fills |drive| with information from successful |response|s.
+  // |pref_name| is used to cache/retrieve the information in/from
+  // |local_state_|.
   void FillDriveMetrics(const SeekPenaltyResponse& response,
-                        metrics::SystemProfileProto::Hardware::Drive* drive);
+                        metrics::SystemProfileProto::Hardware::Drive* drive,
+                        const char* pref_name);
 
   // The key to give to base::PathService to obtain the path to local state
   // (supplied by the embedder).
   int local_state_path_key_;
+
+  raw_ptr<PrefService> local_state_;
 
   // Information gathered about various important drives.
   DriveMetrics metrics_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveMetricsProvider> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(DriveMetricsProviderTest,
+                           HasSeekPenalty_FallbackToLocalState);
+  FRIEND_TEST_ALL_PREFIXES(DriveMetricsProviderTest,
+                           HasSeekPenalty_WritesToLocalState);
 };
 
 }  // namespace metrics
