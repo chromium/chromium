@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig_base.json",
+  "extends": "../../tsconfig_base.json",
   "compilerOptions": {
     "types": ["chai", "mocha", "trusted-types", "w3c-image-capture"]
   }

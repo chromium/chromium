@@ -11,10 +11,9 @@ import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/chromeos/test_util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 

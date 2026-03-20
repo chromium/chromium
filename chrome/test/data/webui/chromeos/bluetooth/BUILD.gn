@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  ts_composite = true
+  cc_test_files = [ "../cr_components_chromeos_v3_browsertest.js" ]
+  files = [
+    "bluetooth_base_page_test.ts",
+    "bluetooth_battery_icon_percentage_test.ts",
+    "bluetooth_device_battery_info_test.ts",
+    "bluetooth_icon_test.ts",
+    "bluetooth_pairing_confirm_code_page_test.ts",
+    "bluetooth_pairing_device_item_test.ts",
+    "bluetooth_pairing_device_selection_page_test.ts",
+    "bluetooth_pairing_enter_code_page_test.ts",
+    "bluetooth_pairing_request_code_page_test.ts",
+    "bluetooth_pairing_ui_test.ts",
+    "bluetooth_spinner_page_test.ts",
+    "fake_bluetooth_config.ts",
+    "fake_bluetooth_discovery_delegate.ts",
+    "fake_device_pairing_handler.ts",
+    "fake_hid_preserving_bluetooth_state_controller.ts",
+  ]
+
+  ts_path_mappings = [
+    "chrome://bluetooth-pairing/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}

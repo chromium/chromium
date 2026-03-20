@@ -13,9 +13,8 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';

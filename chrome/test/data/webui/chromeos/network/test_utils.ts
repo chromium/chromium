@@ -7,8 +7,7 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {ConfigProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import type {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import type {FakeNetworkConfig} from '../fake_network_config_mojom.js';
+import type {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 
 export function clearBody(): void {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;

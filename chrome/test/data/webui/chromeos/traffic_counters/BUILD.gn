@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  cc_test_files = [ "../cr_components_chromeos_v3_browsertest.js" ]
+  files = [ "traffic_counters_test.ts" ]
+
+  ts_path_mappings = [
+    "chrome://network/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}

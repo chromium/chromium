@@ -4,8 +4,7 @@
 
 import type {HidPreservingBluetoothStateControllerInterface} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import type {CrosBluetoothConfigInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-
-import {assertTrue} from '../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 /**
  * @fileoverview Fake implementation of HidPreservingBluetoothStateController

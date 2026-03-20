@@ -4,8 +4,7 @@
 
 import type {BluetoothDeviceProperties, BluetoothDeviceStatusObserverInterface, BluetoothDiscoveryDelegateInterface, BluetoothSystemProperties, CrosBluetoothConfigInterface, DiscoverySessionStatusObserverInterface, PairedBluetoothDeviceProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {AudioOutputCapability, BluetoothModificationState, BluetoothSystemState, DeviceConnectionState, DevicePairingHandlerReceiver, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-
-import {assertFalse, assertNotReached, assertTrue} from '../chai_assert.js';
+import {assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FakeDevicePairingHandler} from './fake_device_pairing_handler.js';
 

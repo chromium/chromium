@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  cc_test_files = [ "all_tests.js" ]
+  files = [
+    "all_tests.js",
+    "api_test.js",
+    "line_chart/data_series_test.js",
+    "line_chart/line_chart_test.js",
+    "line_chart/menu_test.js",
+    "line_chart/scrollbar_test.js",
+    "line_chart/sub_chart_test.js",
+    "line_chart/unit_label_test.js",
+    "page_drawer_test.js",
+    "page_infopage_test.js",
+    "page_switch_test.js",
+    "page_unit_test.js",
+    "test_util.js",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir) ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}

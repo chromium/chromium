@@ -7,8 +7,7 @@ import 'chrome://resources/ash/common/bluetooth/bluetooth_spinner_page.js';
 
 import type {SettingsBluetoothSpinnerPageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_spinner_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertTrue} from '../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('CrComponentsBluetoothSpinnerPageTest', function() {
   let bluetoothSpinnerPage: SettingsBluetoothSpinnerPageElement;

@@ -18,10 +18,9 @@ import type {ApnProperties} from 'chrome://resources/mojo/chromeos/services/netw
 import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 const TEST_APN_EVENT_DATA_GUID = 'test_guid';
 

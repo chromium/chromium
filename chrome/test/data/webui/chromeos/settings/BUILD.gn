@@ -373,7 +373,10 @@ build_webui_tests("build") {
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
+    "//chrome/test/data/webui/chromeos/bluetooth:build_ts",
+    "//chrome/test/data/webui/chromeos/cellular_setup:build_ts",
     "//chrome/test/data/webui/chromeos/nearby_share:build_ts",
+    "//chrome/test/data/webui/chromeos/network:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -392,9 +395,20 @@ build_webui_tests("build") {
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
                     target_gen_dir),
+    "chrome://webui-test/chromeos/bluetooth/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/chromeos/bluetooth/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/chromeos/cellular_setup/*|" + rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/chromeos/cellular_setup/tsc/*",
+            target_gen_dir),
     "chrome://webui-test/chromeos/nearby_share/*|" +
         rebase_path(
             "$root_gen_dir/chrome/test/data/webui/chromeos/nearby_share/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/chromeos/network/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/chromeos/network/tsc/*",
             target_gen_dir),
   ]
 
