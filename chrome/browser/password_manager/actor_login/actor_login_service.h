@@ -28,6 +28,7 @@ class ActorLoginService {
   // `Credential`s or an `ActorLoginError`.
   virtual void GetCredentials(
       tabs::TabInterface* tab,
+      bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) = 0;
 

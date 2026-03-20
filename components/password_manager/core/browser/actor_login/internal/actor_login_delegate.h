@@ -22,6 +22,7 @@ class ActorLoginDelegate {
 
   // Asynchronously retrieves credentials.
   virtual void GetCredentials(
+      bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) = 0;
 

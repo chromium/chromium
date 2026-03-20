@@ -23,7 +23,8 @@ class MockActorLoginDelegate : public ActorLoginDelegate {
 
   MOCK_METHOD(void,
               GetCredentials,
-              (base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+              (bool has_sign_in_with_google_button,
+               base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
                CredentialsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,

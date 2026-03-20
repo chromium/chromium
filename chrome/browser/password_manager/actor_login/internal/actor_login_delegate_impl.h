@@ -52,6 +52,7 @@ class ActorLoginDelegateImpl
 
   // `ActorLoginDelegate` implementation:
   void GetCredentials(
+      bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) override;
   void AttemptLogin(const Credential& credential,

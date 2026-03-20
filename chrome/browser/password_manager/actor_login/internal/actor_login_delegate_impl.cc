@@ -98,6 +98,7 @@ ActorLoginDelegateImpl::~ActorLoginDelegateImpl() = default;
 
 // TODO(crbug.com/434156135): move to components/ as much as possible.
 void ActorLoginDelegateImpl::GetCredentials(
+    bool has_sign_in_with_google_button,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     CredentialsOrErrorReply callback) {
   CHECK(callback);
@@ -135,28 +136,30 @@ void ActorLoginDelegateImpl::GetCredentials(
   fetchers.push_back(std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       request_origin, client_, driver->GetPasswordManager(), mqls_logger));
 
-  ActorLoginPermissionService* permission_service =
-      ActorLoginPermissionServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
-  // This can be nullptr for incognito and guest profiles but these profiles
-  // cannot use actor login.
-  CHECK(permission_service);
-  auto federated_fetcher =
-      std::make_unique<ActorLoginFederatedCredentialsFetcher>(
-          request_origin,
-          base::BindRepeating(
-              [](base::WeakPtr<content::WebContents> web_contents)
-                  -> content::webid::IdentityCredentialSource* {
-                if (!web_contents) {
-                  return nullptr;
-                }
-                return content::webid::IdentityCredentialSource::FromPage(
-                    web_contents->GetPrimaryPage());
-              },
-              GetWebContents().GetWeakPtr()),
-          *permission_service);
-  federated_fetcher->SetMetricsHelper(metrics_helper_.get());
-  fetchers.push_back(std::move(federated_fetcher));
+  if (has_sign_in_with_google_button) {
+    ActorLoginPermissionService* permission_service =
+        ActorLoginPermissionServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+    // This can be nullptr for incognito and guest profiles but these profiles
+    // cannot use actor login.
+    CHECK(permission_service);
+    auto federated_fetcher =
+        std::make_unique<ActorLoginFederatedCredentialsFetcher>(
+            request_origin,
+            base::BindRepeating(
+                [](base::WeakPtr<content::WebContents> web_contents)
+                    -> content::webid::IdentityCredentialSource* {
+                  if (!web_contents) {
+                    return nullptr;
+                  }
+                  return content::webid::IdentityCredentialSource::FromPage(
+                      web_contents->GetPrimaryPage());
+                },
+                GetWebContents().GetWeakPtr()),
+            *permission_service);
+    federated_fetcher->SetMetricsHelper(metrics_helper_.get());
+    fetchers.push_back(std::move(federated_fetcher));
+  }
 
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
       std::move(fetchers), metrics_helper_.get(),

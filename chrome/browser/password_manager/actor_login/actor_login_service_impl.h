@@ -27,6 +27,7 @@ class ActorLoginServiceImpl : public ActorLoginService {
   // `ActorLoginService` implementation:
   void GetCredentials(
       tabs::TabInterface* tab,
+      bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) override;
   void AttemptLogin(tabs::TabInterface* tab,

@@ -190,7 +190,7 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
   }
 
   GetActorLoginService().GetCredentials(
-      tab, quality_logger_.AsWeakPtr(),
+      tab, sign_in_with_google_button_.has_value(), quality_logger_.AsWeakPtr(),
       base::BindOnce(&AttemptLoginTool::OnGetCredentials,
                      weak_ptr_factory_.GetWeakPtr()));
 }

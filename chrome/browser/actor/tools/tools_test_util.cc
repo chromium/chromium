@@ -82,6 +82,7 @@ MockActorLoginService::~MockActorLoginService() = default;
 
 void MockActorLoginService::GetCredentials(
     tabs::TabInterface* tab,
+    bool has_sign_in_with_google_button,
     base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
     actor_login::CredentialsOrErrorReply callback) {
   std::move(callback).Run(credentials_);

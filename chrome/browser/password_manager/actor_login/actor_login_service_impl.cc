@@ -46,6 +46,7 @@ ActorLoginServiceImpl::~ActorLoginServiceImpl() = default;
 
 void ActorLoginServiceImpl::GetCredentials(
     tabs::TabInterface* tab,
+    bool has_sign_in_with_google_button,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     CredentialsOrErrorReply callback) {
   CHECK(tab);
@@ -64,8 +65,9 @@ void ActorLoginServiceImpl::GetCredentials(
       actor_login_delegate_factory_.Run(web_contents);
 
   // Delegate the call to the `WebContents`-scoped delegate.
-  delegate->GetCredentials(mqls_logger, base::BindOnce(&OnGetCredentialsResult,
-                                                       std::move(callback)));
+  delegate->GetCredentials(
+      has_sign_in_with_google_button, mqls_logger,
+      base::BindOnce(&OnGetCredentialsResult, std::move(callback)));
 }
 
 void ActorLoginServiceImpl::AttemptLogin(
