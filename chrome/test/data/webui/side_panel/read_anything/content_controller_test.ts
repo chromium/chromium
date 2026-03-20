@@ -1146,6 +1146,48 @@ suite('ContentController', () => {
 
       assertTrue(receivedContentChange);
     });
+
+    test('updates read aloud state when images are updated', async () => {
+      const containerElement = document.createElement('div');
+      containerElement.id = 'container';
+      shadowRoot.appendChild(containerElement);
+
+      const imageElement = document.createElement('img');
+      const captionElement = document.createElement('figcaption');
+      captionElement.textContent = 'Image caption';
+      figure.appendChild(imageElement);
+      figure.appendChild(captionElement);
+      containerElement.appendChild(figure);
+
+      chrome.readingMode.imagesFeatureEnabled = true;
+      chrome.readingMode.imagesEnabled = true;
+      contentController.setState(ContentType.HAS_CONTENT);
+
+      let savedReadAloudState = false;
+      let resetForNewContent = false;
+      let updateReadAloudStateCalled = false;
+      let containerPassedToUpdateReadAloudState = false;
+
+      speechController.hasSpeechBeenTriggered = () => true;
+      speechController.saveReadAloudState = () => {
+        savedReadAloudState = true;
+      };
+      speechController.resetForNewContent = () => {
+        resetForNewContent = true;
+      };
+      contentController.updateReadAloudState = (node: Node) => {
+        updateReadAloudStateCalled = true;
+        containerPassedToUpdateReadAloudState = (node === containerElement);
+      };
+
+      contentController.updateImages(shadowRoot);
+      await microtasksFinished();
+
+      assertTrue(savedReadAloudState);
+      assertTrue(resetForNewContent);
+      assertTrue(updateReadAloudStateCalled);
+      assertTrue(containerPassedToUpdateReadAloudState);
+    });
   });
 
   suite('updateAnchorsForReadability', () => {
