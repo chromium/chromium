@@ -697,3 +697,16 @@ bool IsGeminiBinaryMigrationEnabled() {
   }
   return base::FeatureList::IsEnabled(kGeminiBinaryMigration);
 }
+
+BASE_FEATURE(kPersistTabContextRichExtraction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPersistTabContextRichExtractionEnabled() {
+  return base::FeatureList::IsEnabled(kPersistTabContextRichExtraction);
+}
+
+BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextIPCOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextIPCOptimization);
+}

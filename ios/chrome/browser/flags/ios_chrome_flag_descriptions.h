@@ -793,6 +793,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 
+extern const char kPageContextIPCOptimizationName[];
+extern const char kPageContextIPCOptimizationDescription[];
+
 extern const char kPageToolsFeatureUnavailabilityName[];
 extern const char kPageToolsFeatureUnavailabilityDescription[];
 
@@ -807,6 +810,9 @@ extern const char kPasswordSharingDescription[];
 
 extern const char kPersistTabContextName[];
 extern const char kPersistTabContextDescription[];
+
+extern const char kPersistTabContextRichExtractionName[];
+extern const char kPersistTabContextRichExtractionDescription[];
 
 extern const char kPersistentDefaultBrowserPromoName[];
 extern const char kPersistentDefaultBrowserPromoDescription[];

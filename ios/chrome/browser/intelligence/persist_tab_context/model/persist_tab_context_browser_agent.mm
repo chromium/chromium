@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -579,8 +580,17 @@ void PersistTabContextBrowserAgent::ExtractAndStoreContext(
     page_context_wrapper_ = nil;
   }
 
+  bool is_rich_extraction = IsPersistTabContextRichExtractionEnabled();
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetGraftCrossOriginFrameContent(is_rich_extraction)
+          .SetUseRichExtraction(is_rich_extraction)
+          .SetExtractPaidContent(is_rich_extraction)
+          .Build();
+
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state
+                  config:config
       completionCallback:
           base::BindOnce(&PersistTabContextBrowserAgent::OnPageContextExtracted,
                          weak_factory_.GetWeakPtr(), web_state->GetWeakPtr())];

@@ -1287,6 +1287,10 @@ const char kPageContentAnnotationsRemotePageMetadataName[] =
 const char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
 
+const char kPageContextIPCOptimizationName[] = "PageContextIPCOptimization";
+const char kPageContextIPCOptimizationDescription[] =
+    "Enables the PageContextIPCOptimization feature.";
+
 const char kPageToolsFeatureUnavailabilityName[] =
     "PageToolsFeatureUnavailability";
 const char kPageToolsFeatureUnavailabilityDescription[] =
@@ -1313,6 +1317,11 @@ const char kPersistTabContextName[] = "Persist Tab APC and Inner Text";
 const char kPersistTabContextDescription[] =
     "Enables persisting tab APC and inner text in storage for fast access to "
     "multi-tab context.";
+
+const char kPersistTabContextRichExtractionName[] =
+    "PersistTabContextRichExtraction";
+const char kPersistTabContextRichExtractionDescription[] =
+    "Enables the PersistTabContextRichExtraction feature.";
 
 const char kPersistentDefaultBrowserPromoName[] =
     "Persist default browser promo through app backgrounding";

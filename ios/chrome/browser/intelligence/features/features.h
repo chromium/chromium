@@ -365,4 +365,16 @@ BASE_DECLARE_FEATURE(kGeminiBinaryMigration);
 // Returns true if the GeminiBinaryMigration feature is enabled.
 bool IsGeminiBinaryMigrationEnabled();
 
+// Enables the PersistTabContextRichExtraction feature.
+BASE_DECLARE_FEATURE(kPersistTabContextRichExtraction);
+
+// Returns true if the PersistTabContextRichExtraction feature is enabled.
+bool IsPersistTabContextRichExtractionEnabled();
+
+// Enables the PageContextIPCOptimization feature.
+BASE_DECLARE_FEATURE(kPageContextIPCOptimization);
+
+// Returns true if the PageContextIPCOptimization feature is enabled.
+bool IsPageContextIPCOptimizationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

@@ -7562,6 +7562,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "page-context-ipc-optimization",
+    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "page-info-certificate-information",
     "owners": [ "xiaoweigao@microsoft.com" , "fsenra@google.com"],
     "expiry_milestone": 155
@@ -7777,6 +7782,11 @@
     "name": "persist-tab-context",
     "owners": [ "cloutierc@google.com", "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "persist-tab-context-rich-extraction",
+    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 153
   },
   {
     "name": "persistent-default-browser-promo",

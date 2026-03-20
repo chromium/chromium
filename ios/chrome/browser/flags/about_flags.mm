@@ -2707,6 +2707,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPageToolsFeatureUnavailabilityName,
      flag_descriptions::kPageToolsFeatureUnavailabilityDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPageToolsFeatureUnavailability)},
+    {"persist-tab-context-rich-extraction",
+     flag_descriptions::kPersistTabContextRichExtractionName,
+     flag_descriptions::kPersistTabContextRichExtractionDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPersistTabContextRichExtraction)},
+    {"page-context-ipc-optimization",
+     flag_descriptions::kPageContextIPCOptimizationName,
+     flag_descriptions::kPageContextIPCOptimizationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPageContextIPCOptimization)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
