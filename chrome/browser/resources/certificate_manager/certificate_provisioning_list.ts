@@ -6,22 +6,21 @@
  * @fileoverview 'certificate-provisioning-list' is an element that displays a
  * list of certificate provisioning processes.
  */
-import '//resources/cr_elements/cr_shared_style.css.js';
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
-import './certificate_shared.css.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 import {CertificateProvisioningBrowserProxyImpl} from './certificate_provisioning_browser_proxy.js';
-import {getTemplate} from './certificate_provisioning_list.html.js';
+import {getCss} from './certificate_provisioning_list.css.js';
+import {getHtml} from './certificate_provisioning_list.html.js';
 
 const CertificateProvisioningListElementBase =
-    WebUiListenerMixin(PolymerElement);
+    WebUiListenerMixinLit(CrLitElement);
 
 export class CertificateProvisioningListElement extends
     CertificateProvisioningListElementBase {
@@ -29,52 +28,44 @@ export class CertificateProvisioningListElement extends
     return 'certificate-provisioning-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       removeHeaderPadding: {
         type: Boolean,
-        value: false,
+        reflect: true,
       },
-
-      provisioningProcesses_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      provisioningProcesses_: {type: Array},
 
       /**
        * The model to be passed to certificate provisioning details dialog.
        */
-      provisioningDetailsDialogModel_: Object,
+      provisioningDetailsDialogModel_: {type: Object},
 
-      showProvisioningDetailsDialog_: Boolean,
+      showProvisioningDetailsDialog_: {type: Boolean},
     };
   }
 
-  declare removeHeaderPadding: boolean;
-  declare private provisioningProcesses_: CertificateProvisioningProcess[];
-  declare private provisioningDetailsDialogModel_:
-      CertificateProvisioningProcess|null;
-  declare private showProvisioningDetailsDialog_: boolean;
+  accessor removeHeaderPadding: boolean = false;
+  protected accessor provisioningProcesses_: CertificateProvisioningProcess[] =
+      [];
+  protected accessor provisioningDetailsDialogModel_:
+      CertificateProvisioningProcess|null = null;
+  protected accessor showProvisioningDetailsDialog_: boolean = false;
   private previousAnchor_: HTMLElement|null = null;
 
-  private headerClassList_(removeHeaderPadding: boolean): string {
-    return removeHeaderPadding ? 'header-box' : 'header-box padding';
-  }
-
   /**
-   * @param provisioningProcesses The list of certificate provisioning
-   *     processes.
-   * @return Whether |provisioningProcesses| contains at least one entry.
+   * @return Whether |provisioningProcesses_| contains at least one entry.
    */
-  private hasCertificateProvisioningEntries_(
-      provisioningProcesses: CertificateProvisioningProcess[]): boolean {
-    return provisioningProcesses.length !== 0;
+  protected hasCertificateProvisioningEntries_(): boolean {
+    return this.provisioningProcesses_.length !== 0;
   }
 
   /**
@@ -100,8 +91,8 @@ export class CertificateProvisioningListElement extends
     } else {
       // Close cert provisioning process details dialog if the process is no
       // longer in the list eg. when process completed successfully.
-      this.shadowRoot!.querySelector(
-                          'certificate-provisioning-details-dialog')!.close();
+      this.shadowRoot.querySelector(
+                         'certificate-provisioning-details-dialog')!.close();
     }
   }
 
@@ -109,13 +100,14 @@ export class CertificateProvisioningListElement extends
     super.connectedCallback();
     this.addWebUiListener(
         'certificate-provisioning-processes-changed',
-        this.onCertificateProvisioningProcessesChanged_.bind(this));
+        (certProvisioningProcesses: CertificateProvisioningProcess[]) =>
+            this.onCertificateProvisioningProcessesChanged_(
+                certProvisioningProcesses));
     CertificateProvisioningBrowserProxyImpl.getInstance()
         .refreshCertificateProvisioningProcesses();
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener(
         CertificateProvisioningViewDetailsActionEvent, event => {
           const detail = event.detail;
@@ -128,7 +120,7 @@ export class CertificateProvisioningListElement extends
         });
   }
 
-  private onDialogClose_() {
+  protected onDialogClose_() {
     this.showProvisioningDetailsDialog_ = false;
     focusWithoutInk(this.previousAnchor_!);
     this.previousAnchor_ = null;

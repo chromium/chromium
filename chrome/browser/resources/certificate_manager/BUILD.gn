@@ -57,12 +57,10 @@ build_webui("build") {
   ]
 
   if (is_chromeos) {
-    web_component_files += [
-      "certificate_provisioning_details_dialog.ts",
-      "certificate_provisioning_list.ts",
-    ]
+    web_component_files += [ "certificate_provisioning_details_dialog.ts" ]
     css_files += [
       "certificate_provisioning_entry.css",
+      "certificate_provisioning_list.css",
       "certificate_shared.css",
       "certificate_shared_lit.css",
     ]
@@ -71,6 +69,8 @@ build_webui("build") {
       "certificate_provisioning_browser_proxy.ts",
       "certificate_provisioning_entry.html.ts",
       "certificate_provisioning_entry.ts",
+      "certificate_provisioning_list.html.ts",
+      "certificate_provisioning_list.ts",
     ]
   }
 

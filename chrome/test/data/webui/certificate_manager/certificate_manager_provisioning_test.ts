@@ -15,7 +15,7 @@ import type {CertificateProvisioningListElement} from 'chrome://certificate-mana
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateProvisioningBrowserProxy} from './test_certificate_provisioning_browser_proxy.js';
 
@@ -46,7 +46,7 @@ function createSampleCertificateProvisioningProcess(isUpdated: boolean):
 
 function getEntries(certProvisioningList: CertificateProvisioningListElement):
     NodeListOf<CertificateProvisioningEntryElement> {
-  return certProvisioningList.shadowRoot!.querySelectorAll(
+  return certProvisioningList.shadowRoot.querySelectorAll(
       'certificate-provisioning-entry');
 }
 
@@ -109,20 +109,18 @@ suite('CertificateManagerProvisioningTests', function() {
    * provisioning processesfrom the browser on startup and that it gets
    * populated accordingly.
    */
-  test('Initialization', function() {
+  test('Initialization', async function() {
     assertEquals(0, getEntries(certProvisioningList).length);
 
-    return browserProxy.whenCalled('refreshCertificateProvisioningProcesses')
-        .then(function() {
-          browserProxy.resetResolver('refreshCertificateProvisioningProcesses');
-          webUIListenerCallback(
-              'certificate-provisioning-processes-changed',
-              [createSampleCertificateProvisioningProcess(false)]);
+    await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
+    browserProxy.resetResolver('refreshCertificateProvisioningProcesses');
+    webUIListenerCallback(
+        'certificate-provisioning-processes-changed',
+        [createSampleCertificateProvisioningProcess(false)]);
 
-          flush();
+    await microtasksFinished();
 
-          assertEquals(1, getEntries(certProvisioningList).length);
-        });
+    assertEquals(1, getEntries(certProvisioningList).length);
   });
 
   test('OpensDialog_ViewDetails', function() {
@@ -130,7 +128,7 @@ suite('CertificateManagerProvisioningTests', function() {
     const anchorForTest = document.createElement('a');
     document.body.appendChild(anchorForTest);
 
-    assertFalse(!!certProvisioningList.shadowRoot!.querySelector(dialogId));
+    assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
     const whenDialogOpen =
         eventToPromise('cr-dialog-open', certProvisioningList);
     certProvisioningList.dispatchEvent(
@@ -146,7 +144,7 @@ suite('CertificateManagerProvisioningTests', function() {
     return whenDialogOpen
         .then(() => {
           const dialog =
-              certProvisioningList.shadowRoot!.querySelector(dialogId);
+              certProvisioningList.shadowRoot.querySelector(dialogId);
           assertTrue(!!dialog);
           const whenDialogClosed = eventToPromise('close', dialog);
           dialog.$.dialog.shadowRoot.querySelector<HTMLElement>(
@@ -155,7 +153,7 @@ suite('CertificateManagerProvisioningTests', function() {
         })
         .then(() => {
           const dialog =
-              certProvisioningList.shadowRoot!.querySelector(dialogId);
+              certProvisioningList.shadowRoot.querySelector(dialogId);
           assertFalse(!!dialog);
         });
   });
@@ -164,7 +162,7 @@ suite('CertificateManagerProvisioningTests', function() {
     const dialogId = 'certificate-provisioning-details-dialog';
     const anchorForTest = document.createElement('a');
     document.body.appendChild(anchorForTest);
-    assertFalse(!!certProvisioningList.shadowRoot!.querySelector(dialogId));
+    assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
     certProvisioningList.dispatchEvent(
         new CustomEvent(CertificateProvisioningViewDetailsActionEvent, {
           bubbles: true,
@@ -200,7 +198,7 @@ suite('DetailsDialogTests', function() {
 
     // Open the details dialog for testing.
     const dialogId = 'certificate-provisioning-details-dialog';
-    assertFalse(!!certProvisioningList.shadowRoot!.querySelector(dialogId));
+    assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
     const whenDialogOpen =
         eventToPromise('cr-dialog-open', certProvisioningList);
     certProvisioningList.dispatchEvent(
@@ -213,7 +211,7 @@ suite('DetailsDialogTests', function() {
           },
         }));
     await whenDialogOpen;
-    dialog = certProvisioningList.shadowRoot!.querySelector(dialogId)!;
+    dialog = certProvisioningList.shadowRoot.querySelector(dialogId)!;
     // Check if the dialog is initialized and opened.
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
@@ -281,7 +279,7 @@ suite('DetailsDialogTests', function() {
     webUIListenerCallback(
         'certificate-provisioning-processes-changed',
         [createSampleCertificateProvisioningProcess(true)]);
-    flush();
+    await microtasksFinished();
     // Check if the status of dialog.model is updated accordingly.
     assertEquals(dialog.model.status, STATE_NAME_2);
   });
