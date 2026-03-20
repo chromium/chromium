@@ -2,3 +2,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++ProgressBar stateDescription:"75% complete" supplementalDescription:"File upload" actions:[AX_FOCUS] bundle:[chromeRole="progressIndicator"]
 ++ProgressBar RangeInfo:[current=75.0, min=0.0, max=100.0] actions:[AX_FOCUS] bundle:[chromeRole="progressIndicator"]
 ++ProgressBar stateDescription:"75% complete" actions:[AX_FOCUS] bundle:[chromeRole="progressIndicator"]
+++ProgressBar stateDescription:"indeterminate" actions:[AX_FOCUS] bundle:[chromeRole="progressIndicator"]

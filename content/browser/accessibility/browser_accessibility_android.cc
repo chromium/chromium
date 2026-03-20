@@ -1161,9 +1161,11 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidStateDescription() const {
   if (GetData().IsRangeValueSupported()) {
     std::u16string value =
         GetString16Attribute(ax::mojom::StringAttribute::kValue);
+    if (value.empty() && GetRole() == ax::mojom::Role::kProgressIndicator &&
+        !HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
+      state_descs.push_back(GetLocalizedString(IDS_AX_INDETERMINATE_VALUE));
+    }
     if (!value.empty()) {
-      // TODO(crbug.com/493645196): Restore indeterminate tag for empty progress
-      // indicator.
       state_descs.push_back(value);
     }
   }
