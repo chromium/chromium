@@ -12,7 +12,7 @@ import {PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('UpdaterAppElement', () => {
   let element: UpdaterAppElement;
@@ -161,8 +161,9 @@ suite('UpdaterAppElement', () => {
           assertEquals(PageDataSource.INSTALL, element.pageDataSource);
 
           await setInputFile('history.jsonl', events);
+          await whenCheck(
+              element, () => element.pageDataSource === PageDataSource.FILE);
 
-          assertEquals(PageDataSource.FILE, element.pageDataSource);
           assertFalse(element.historyLoadError);
           assertEquals(3, element.messages.length);
           assertEquals(1, element.apps.length);
@@ -188,8 +189,9 @@ suite('UpdaterAppElement', () => {
           });
 
           await setInputFile('history.zip', 'zip content');
+          await whenCheck(
+              element, () => element.pageDataSource === PageDataSource.FILE);
 
-          assertEquals(PageDataSource.FILE, element.pageDataSource);
           assertFalse(element.historyLoadError);
           assertEquals(3, element.messages.length);
           assertEquals(1, element.apps.length);
@@ -210,28 +212,28 @@ suite('UpdaterAppElement', () => {
       handler.setPromiseRejectFor('unzipUpdaterHistoryFiles');
 
       await setInputFile('history.zip', 'zip content');
+      await whenCheck(element, () => element.historyLoadError);
 
       assertEquals(1, handler.getCallCount('unzipUpdaterHistoryFiles'));
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-      assertTrue(element.historyLoadError);
     });
 
     test('handles invalid file extension', async () => {
       await initApp();
 
       await setInputFile('invalid.txt', 'some data');
+      await whenCheck(element, () => element.historyLoadError);
 
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-      assertTrue(element.historyLoadError);
     });
 
     test('handles invalid JSON', async () => {
       await initApp();
 
       await setInputFile('invalid.jsonl', 'not json');
+      await whenCheck(element, () => element.historyLoadError);
 
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-      assertTrue(element.historyLoadError);
     });
   });
 });
