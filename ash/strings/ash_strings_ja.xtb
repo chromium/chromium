@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">現在のバッテリー残量 <ph name="BATTERY_PERCENTAGE" />%、残り時間 <ph name="TIME" /></translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1179776263021875437">タスクの選択を解除</translation>
+<translation id="1180117276105724040">前回のセッションからウィンドウを復元しています...</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1182225749592316782">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">オーディオ ソースを切り替えますか？</translation>
 <translation id="1505542291183484463">タイル表示のウィンドウを下方向にサイズ変更</translation>
 <translation id="1510238584712386396">ランチャー</translation>
+<translation id="1519090060276706457">ウィンドウの復元に通常より時間がかかっています</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1523032696246003">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 充電完了まで <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">ピクチャー イン ピクチャー ウィンドウの最大サイズと現在のサイズを切り替えます</translation>
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
+<translation id="1799852120691957794">前回のセッションからウィンドウを復元できません</translation>
 <translation id="1805407494113167797">フォーカス モード用のサウンドを再生できませんでした</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1815039896005206046">低く評価すると、この提案グループが気に入らなかったというフィードバックが送信されます</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2598725286293895280">サポートされていないアプリがデスクにあります</translation>
 <translation id="2607678425161541573">オンライン ログインが必要です</translation>
+<translation id="2611702650078660078">エラーが発生しました</translation>
 <translation id="2612072250312279703">アクティビティ モニター</translation>
 <translation id="261210853165551493">書式設定付きでコピー</translation>
 <translation id="2612614436418177118">アプリグリッド内でアプリアイコンを移動します</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">全画面のスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2850207700020959936">アプリはカメラにアクセスできます</translation>
+<translation id="2852045827873867442">インターネット接続が必要です。</translation>
 <translation id="2860184359326882502">ベストマッチ</translation>
 <translation id="2865888419503095837">ネットワーク情報</translation>
 <translation id="2869095047958348710">前の <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
 <translation id="4777825441726637019">Play ストア</translation>
 <translation id="4778095205580009397">Google アシスタントは、デモセッションではご利用いただけません。</translation>
+<translation id="4781633367688946589">新しいセッションに進む</translation>
 <translation id="4785412405516449976">Google アカウントを利用している連絡先のみ</translation>
 <translation id="4789348252524569426">音声ファイルをインストールできません。デバイスを更新する必要があります。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="478959186716341421">キャスト中</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
+<translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="596035801491797438">フェイスナビをオフにする</translation>
 <translation id="5960410286721553511">スマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
@@ -2253,6 +2260,7 @@
 <translation id="7945357288295809525">ユーザー補助設定を表示します。「<ph name="ENABLED_FEATURES" />」が有効になっています。</translation>
 <translation id="7946681191253332687">セキュリティ アップデートを延長可能</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> が <ph name="DEVICE_NAME" /> の使用をリクエストしています</translation>
+<translation id="7948239795436419268">ウィンドウを復元しない</translation>
 <translation id="7951630946012935453">キーボードを暗くする</translation>
 <translation id="7953176344218790168">大文字</translation>
 <translation id="7953994493035617347">新しい解像度を確定しますか？</translation>

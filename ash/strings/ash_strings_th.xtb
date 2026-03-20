@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">ระดับแบตเตอรี่ปัจจุบัน <ph name="BATTERY_PERCENTAGE" />% ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1179776263021875437">หยุดการโฟกัสงาน</translation>
+<translation id="1180117276105724040">กำลังคืนค่าหน้าต่างจากเซสชันก่อนหน้า...</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1182225749592316782">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">เปลี่ยนแหล่งที่มาของเสียงไหม</translation>
 <translation id="1505542291183484463">ปรับขนาดหน้าต่างแบบเรียงต่อกันลงด้านล่าง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="1519090060276706457">การคืนค่าหน้าต่างใช้เวลานานกว่าที่คาดไว้</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
 <translation id="1521655867290435174">Google ชีต</translation>
 <translation id="1523032696246003">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">สลับระหว่างขนาดสูงสุดหรือขนาดปัจจุบันของหน้าต่างการแสดงภาพซ้อนภาพ</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
+<translation id="1799852120691957794">กู้คืนหน้าต่างจากเซสชันก่อนหน้าไม่ได้</translation>
 <translation id="1805407494113167797">เล่นเสียงโหมดโฟกัสไม่ได้</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1815039896005206046">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบกลุ่มที่แนะนำนี้</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2598725286293895280">แอปที่ไม่รองรับในเดสก์</translation>
 <translation id="2607678425161541573">ต้องลงชื่อเข้าใช้ออนไลน์</translation>
+<translation id="2611702650078660078">เกิดข้อผิดพลาด</translation>
 <translation id="2612072250312279703">เครื่องมือตรวจสอบกิจกรรม</translation>
 <translation id="261210853165551493">คัดลอกพร้อมการจัดรูปแบบ</translation>
 <translation id="2612614436418177118">ย้ายไอคอนแอปภายในตารางกริดสำหรับแอป</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">กด Enter เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="2849936225196189499">สำคัญ</translation>
 <translation id="2850207700020959936">แอปเข้าถึงกล้องได้</translation>
+<translation id="2852045827873867442">ต้องมีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" />ที่ผ่านมานี้</translation>
@@ -1210,6 +1215,7 @@
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธิต</translation>
+<translation id="4781633367688946589">ดำเนินการต่อไปยังเซสชันใหม่</translation>
 <translation id="4785412405516449976">เฉพาะรายชื่อติดต่อที่มีบัญชี Google</translation>
 <translation id="4789348252524569426">ติดตั้งไฟล์คำพูดไม่ได้ คุณต้องอัปเดตอุปกรณ์ รีสตาร์ทอุปกรณ์และลองอีกครั้ง</translation>
 <translation id="478959186716341421">กำลังแคสต์</translation>
@@ -1598,6 +1604,7 @@
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
 <translation id="5955304353782037793">แอป</translation>
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การควบคุมดูแล</translation>
+<translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="596035801491797438">ปิดการควบคุมด้วยใบหน้า</translation>
 <translation id="5960410286721553511">ดูรูปภาพและสื่อล่าสุดของโทรศัพท์</translation>
 <translation id="5965524703725988602">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
@@ -2247,6 +2254,7 @@
 <translation id="7945357288295809525">แสดงการตั้งค่าการช่วยเหลือพิเศษที่เปิดใช้ "<ph name="ENABLED_FEATURES" />"</translation>
 <translation id="7946681191253332687">มีการอัปเดตความปลอดภัยเพิ่มเติม</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">ไม่คืนค่าหน้าต่าง</translation>
 <translation id="7951630946012935453">หรี่แสงแป้นพิมพ์</translation>
 <translation id="7953176344218790168">ตัวพิมพ์ใหญ่</translation>
 <translation id="7953994493035617347">ยืนยันความละเอียดใหม่ไหม</translation>

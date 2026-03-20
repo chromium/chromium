@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Current battery level <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> left</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1179776263021875437">Stop focusing on task</translation>
+<translation id="1180117276105724040">Restoring windows from your previous session…</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1182225749592316782">This allows access for all apps and websites with the camera and microphone permissions</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Switch audio source?</translation>
 <translation id="1505542291183484463">Tiled resize window downwards</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1519090060276706457">Restoring windows is taking longer than expected</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> until full</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Switch between the maximum or current size of the picture-in-picture window</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
+<translation id="1799852120691957794">Can't restore windows from your previous session</translation>
 <translation id="1805407494113167797">Couldn't play Focus sounds</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1815039896005206046">Thumbs down would submit the feedback that you dislike this suggested group</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2598725286293895280">Unsupported apps in desk</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
+<translation id="2611702650078660078">An error occurred</translation>
 <translation id="2612072250312279703">activity monitor</translation>
 <translation id="261210853165551493">Copy with formatting</translation>
 <translation id="2612614436418177118">Move an app icon within app grid</translation>
@@ -575,6 +579,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2848120746144143659">Press enter to capture full-screen screenshot</translation>
 <translation id="2849936225196189499">Critical</translation>
 <translation id="2850207700020959936">Apps can access camera</translation>
+<translation id="2852045827873867442">Internet connection is required.</translation>
 <translation id="2860184359326882502">Best match</translation>
 <translation id="2865888419503095837">Network info</translation>
 <translation id="2869095047958348710">This past <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ One device connected.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
+<translation id="4781633367688946589">Continue to new session</translation>
 <translation id="4785412405516449976">Only your contacts with a Google Account</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="478959186716341421">Casting</translation>
@@ -1603,6 +1609,7 @@ No devices connected.</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Supervised user</translation>
+<translation id="5959471481388474538">Network not available</translation>
 <translation id="596035801491797438">Turn off face control</translation>
 <translation id="5960410286721553511">View your phone's recent photos and media</translation>
 <translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7945357288295809525">Show accessibility settings, '<ph name="ENABLED_FEATURES" />' enabled.</translation>
 <translation id="7946681191253332687">Extended security updates available</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wants to use your <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Don't restore windows</translation>
 <translation id="7951630946012935453">Dim keyboard</translation>
 <translation id="7953176344218790168">UPPER CASE</translation>
 <translation id="7953994493035617347">Confirm the new resolution?</translation>

@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Aktuální stav baterie: <ph name="BATTERY_PERCENTAGE" /> %, zbývá: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1179776263021875437">Přestat se soustředit na úkol</translation>
+<translation id="1180117276105724040">Obnovování oken z předchozí relace…</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1182225749592316782">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon.</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Přepnout zdroj zvuku?</translation>
 <translation id="1505542291183484463">Roztáhnout dlaždicové okno dolů</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
+<translation id="1519090060276706457">Obnovení oken trvá neočekávaně dlouho</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1523032696246003">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabití</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Přepnout mezi maximální a aktuální velikostí okna obrazu v obraze</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
+<translation id="1799852120691957794">Okna z předchozí relace nelze obnovit</translation>
 <translation id="1805407494113167797">Zvuky k soustředění nelze přehrát</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
 <translation id="1815039896005206046">Palec dolů odešle zpětnou vazbu, že se vám tato navrhovaná skupina nelíbí</translation>
@@ -491,6 +494,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2598725286293895280">Na ploše jsou nepodporované aplikace</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
+<translation id="2611702650078660078">Došlo k chybě</translation>
 <translation id="2612072250312279703">sledování aktivity</translation>
 <translation id="261210853165551493">Zkopírovat s formátováním</translation>
 <translation id="2612614436418177118">Přesunout ikonu aplikace v mřížce aplikace</translation>
@@ -575,6 +579,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="2848120746144143659">Stisknutím klávesy Enter zachytíte snímek celé obrazovky</translation>
 <translation id="2849936225196189499">Kritické</translation>
 <translation id="2850207700020959936">Aplikace mají přístup k fotoaparátu</translation>
+<translation id="2852045827873867442">Je vyžadováno připojení k internetu.</translation>
 <translation id="2860184359326882502">Nejlepší shoda</translation>
 <translation id="2865888419503095837">Informace o síti</translation>
 <translation id="2869095047958348710">Poslední <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4778095205580009397">Asistent Google není v ukázkové relaci k dispozici.</translation>
+<translation id="4781633367688946589">Pokračovat k nové relaci</translation>
 <translation id="4785412405516449976">Pouze vaše kontakty s účtem Google</translation>
 <translation id="4789348252524569426">Řečové soubory nelze nainstalovat. Zařízení je třeba aktualizovat. Restartujte zařízení a zkuste to znovu.</translation>
 <translation id="478959186716341421">Odesílání</translation>
@@ -1603,6 +1609,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>
 <translation id="5955304353782037793">aplik</translation>
 <translation id="5958529069007801266">Dozorovaný uživatel</translation>
+<translation id="5959471481388474538">Síť není k dispozici</translation>
 <translation id="596035801491797438">Vypnout ovládání obličejem</translation>
 <translation id="5960410286721553511">Zobrazovat nejnovější fotky a média z telefonu</translation>
 <translation id="5965524703725988602">Přepnout tmavý motiv. <ph name="STATE_TEXT" />.</translation>
@@ -2251,6 +2258,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7945357288295809525">Zobrazit nastavení přístupnosti. Zapnuté funkce: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7946681191253332687">K dispozici jsou rozšířené aktualizace zabezpečení</translation>
 <translation id="7947798320695032612">Aplikace <ph name="APP_NAME" /> chce použít tuto hardwarovou komponentu: <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Neobnovovat okna</translation>
 <translation id="7951630946012935453">Ztlumit klávesnici</translation>
 <translation id="7953176344218790168">VELKÁ PÍSMENA</translation>
 <translation id="7953994493035617347">Potvrdit nové rozlišení?</translation>

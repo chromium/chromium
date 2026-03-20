@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %, il reste <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1179776263021875437">Arrêter de se concentrer sur la tâche</translation>
+<translation id="1180117276105724040">Restauration des fenêtres de votre session précédente en cours…</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1182225749592316782">Cela autorise l'accès à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="1182876754474670069">début</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Changer la source audio?</translation>
 <translation id="1505542291183484463">Fenêtre de redimensionnement en tuile vers le bas</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1519090060276706457">La restauration des fenêtres prend plus de temps que prévu</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1521655867290435174">Google Feuilles de calcul</translation>
 <translation id="1523032696246003">Pile à <ph name="BATTERY_PERCENTAGE" /> % | Recharge complète dans <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Basculer entre la taille maximale et la taille actuelle de la fenêtre d'incrustation d'image</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web comprenant les pages que vous avez visitées et les pages ouvertes</translation>
+<translation id="1799852120691957794">Impossible de restaurer les fenêtres de votre session précédente</translation>
 <translation id="1805407494113167797">Impossible de faire jouer les sons Sans distractions</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1815039896005206046">La mention Je n'aime pas indique que vous n'aimez pas le groupe suggéré.</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2598725286293895280">Applications non compatibles dans le bureau</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
+<translation id="2611702650078660078">Une erreur s'est produite</translation>
 <translation id="2612072250312279703">moniteur d'activité</translation>
 <translation id="261210853165551493">Copier avec le formatage</translation>
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
@@ -575,6 +579,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2848120746144143659">Appuyez sur Entrée pour effectuer une capture plein écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2850207700020959936">Les applis peuvent accéder à l'appareil photo</translation>
+<translation id="2852045827873867442">Une connexion Internet est requise.</translation>
 <translation id="2860184359326882502">Meilleures correspondances</translation>
 <translation id="2865888419503095837">Information réseau</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> dernier</translation>
@@ -1214,6 +1219,7 @@ Un appareil connecté.</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
+<translation id="4781633367688946589">Continuer vers une nouvelle session</translation>
 <translation id="4785412405516449976">Seulement vos contacts qui ont un compte Google</translation>
 <translation id="4789348252524569426">Impossible d'installer les fichiers vocaux. Votre appareil doit être mis à jour. Redémarrez votre appareil et réessayez.</translation>
 <translation id="478959186716341421">Diffusion en cours…</translation>
@@ -1602,6 +1608,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="5959471481388474538">Le réseau n'est pas accessible</translation>
 <translation id="596035801491797438">Désactiver la commande par le visage</translation>
 <translation id="5960410286721553511">Affichez les photos et les fichiers multimédias récents de votre téléphone</translation>
 <translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
@@ -2251,6 +2258,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, « <ph name="ENABLED_FEATURES" /> » activé.</translation>
 <translation id="7946681191253332687">Mises à jour de sécurité étendues accessibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Ne pas restaurer les fenêtres</translation>
 <translation id="7951630946012935453">Assombrir le clavier</translation>
 <translation id="7953176344218790168">MAJUSCULES</translation>
 <translation id="7953994493035617347">Confirmer la nouvelle résolution?</translation>

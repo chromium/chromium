@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">현재 배터리 잔량 <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> 남음</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1179776263021875437">할 일 집중 모드 중지</translation>
+<translation id="1180117276105724040">이전 세션의 창을 복원 중…</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1182225749592316782">카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">오디오 소스를 전환할까요?</translation>
 <translation id="1505542291183484463">아래쪽으로 창 크기 조절</translation>
 <translation id="1510238584712386396">런처</translation>
+<translation id="1519090060276706457">창 복원이 예상보다 오래 걸림</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">배터리 <ph name="BATTERY_PERCENTAGE" />% | 충전 완료까지 <ph name="TIME" /> 남음</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">PIP 모드 창의 최대 크기 또는 현재 크기 간에 전환</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
+<translation id="1799852120691957794">이전 세션의 창을 복원할 수 없음</translation>
 <translation id="1805407494113167797">집중 모드 사운드를 재생할 수 없음</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1815039896005206046">싫어요를 누르면 이 추천 그룹이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2598725286293895280">데스크에 지원되지 않는 앱 있음</translation>
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
+<translation id="2611702650078660078">오류가 발생했습니다</translation>
 <translation id="2612072250312279703">활동 모니터링</translation>
 <translation id="261210853165551493">서식을 포함하여 복사</translation>
 <translation id="2612614436418177118">앱 그리드 내에서 앱 아이콘 이동</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">전체 화면 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="2849936225196189499">중요</translation>
 <translation id="2850207700020959936">앱이 카메라에 액세스할 수 있음</translation>
+<translation id="2852045827873867442">인터넷 연결이 필요합니다</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2869095047958348710">지난 <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
 <translation id="4778095205580009397">데모 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
+<translation id="4781633367688946589">새 세션으로 계속</translation>
 <translation id="4785412405516449976">내 주소록에 있는 Google 계정 사용자만</translation>
 <translation id="4789348252524569426">음성 파일을 설치할 수 없습니다. 기기를 업데이트해야 합니다. 기기를 재시작한 후 다시 시도해 보세요.</translation>
 <translation id="478959186716341421">전송</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
+<translation id="5959471481388474538">네트워크에 연결할 수 없음</translation>
 <translation id="596035801491797438">페이스 컨트롤 사용 중지</translation>
 <translation id="5960410286721553511">휴대전화의 최신 사진 및 미디어를 봅니다.</translation>
 <translation id="5965524703725988602">어두운 테마를 전환합니다. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">접근성 설정 표시, "<ph name="ENABLED_FEATURES" />" 사용 설정됨</translation>
 <translation id="7946681191253332687">보안 업데이트 연장 사용 가능</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 사용할 권한 요청함</translation>
+<translation id="7948239795436419268">창 복원 안함</translation>
 <translation id="7951630946012935453">키보드 어둡게</translation>
 <translation id="7953176344218790168">대문자</translation>
 <translation id="7953994493035617347">새 해상도를 확인하시겠습니까?</translation>

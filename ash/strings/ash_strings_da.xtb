@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Aktuelt batteriniveau <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> tilbage</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1179776263021875437">Stop med at fokusere på opgaven</translation>
+<translation id="1180117276105724040">Gendanner vinduer fra din tidligere session…</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1182225749592316782">Dette giver alle apps og websites, der har kamera- og mikrofontilladelserne, adgang</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Vil du skifte lydkilde?</translation>
 <translation id="1505542291183484463">Tilpas vinduesfelt nedad</translation>
 <translation id="1510238584712386396">Appliste</translation>
+<translation id="1519090060276706457">Det tager længere tid end forventet at gendanne vinduer</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis indstillinger for notifikationer. Notifikationer er slået fra for en app}one{Vis indstillinger for notifikationer. Notifikationer er slået fra for # app}other{Vis indstillinger for notifikationer. Notifikationer er slået fra for # apps}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> indtil fuldt opladet</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Skift mellem den maksimale eller aktuelle størrelse på vinduet med integreret billede</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1796561540704213354">Websites, der omfatter sider, du har besøgt, og åbne sider</translation>
+<translation id="1799852120691957794">Vinduerne fra din forrige session kan ikke gendannes</translation>
 <translation id="1805407494113167797">Fokuslydene kunne ikke afspilles</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="1815039896005206046">Hvis du giver et dislike, indsendes der feedback om, at du ikke kan lide denne foreslåede gruppe</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Tag screenshot af vinduet</translation>
 <translation id="2598725286293895280">Der er ikke-understøttede apps på skrivebordet</translation>
 <translation id="2607678425161541573">Onlinelogin er påkrævet</translation>
+<translation id="2611702650078660078">Der opstod en fejl</translation>
 <translation id="2612072250312279703">aktivitetsovervågning</translation>
 <translation id="261210853165551493">Kopiér med formatering</translation>
 <translation id="2612614436418177118">Flyt et appikon inden for appgitteret</translation>
@@ -575,6 +579,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="2848120746144143659">Tryk på Enter for at tage et screenshot i fuld skærm</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2850207700020959936">Apps har adgang til kameraet</translation>
+<translation id="2852045827873867442">Dette kræver internetforbindelse.</translation>
 <translation id="2860184359326882502">Bedste match</translation>
 <translation id="2865888419503095837">Netværksoplysninger</translation>
 <translation id="2869095047958348710">Sidste <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4776917500594043016">Adgangskode for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butik</translation>
 <translation id="4778095205580009397">Google Assistent er ikke tilgængelig i en demosession.</translation>
+<translation id="4781633367688946589">Fortsæt til ny session</translation>
 <translation id="4785412405516449976">Kun kontakter med en Google-konto</translation>
 <translation id="4789348252524569426">Talefilerne kan ikke installeres Din enhed skal opdateres. Genstart din enhed, og prøv igen.</translation>
 <translation id="478959186716341421">Caster</translation>
@@ -1603,6 +1609,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
+<translation id="5959471481388474538">Netværket er ikke tilgængeligt</translation>
 <translation id="596035801491797438">Deaktiver ansigtsstyring</translation>
 <translation id="5960410286721553511">Se de seneste billeder og mediefiler fra din telefon</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7945357288295809525">Vis indstillinger for hjælpefunktioner, "<ph name="ENABLED_FEATURES" />" er aktiveret.</translation>
 <translation id="7946681191253332687">Udvidede sikkerhedsopdateringer er tilgængelige</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruge <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Gendan ikke vinduer</translation>
 <translation id="7951630946012935453">Dæmp tastaturets lys</translation>
 <translation id="7953176344218790168">STORE BOGSTAVER</translation>
 <translation id="7953994493035617347">Vil du bekræfte den nye opløsning?</translation>

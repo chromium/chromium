@@ -61,7 +61,7 @@
 <translation id="1218730690561976633">Täiustatud automaattäite kasutaja kinnitamise sisselülitamine</translation>
 <translation id="1219674500290482172">Internetiga ei saa ühendust.</translation>
 <translation id="1223498995510244364">Kokkuvõte</translation>
-<translation id="1227113644794103810">Inaktiivsed vahelehed</translation>
+<translation id="1227113644794103810">Mitteaktiivsed vahelehed</translation>
 <translation id="1231733316453485619">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="1238794841176717085">Jaga seda lehte</translation>
 <translation id="1253032109800629289">Peida valik „Hankige hinnajälgimise märguanded”</translation>
@@ -393,7 +393,7 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360196772093551345">Taotle mobiilisaiti</translation>
 <translation id="2362083820973145409">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avab seaded.</translation>
-<translation id="2371084566192454134">Vaheleht</translation>
+<translation id="2371084566192454134">Vahelehed ja vahelehegrupid</translation>
 <translation id="2371303771137626249">Uus</translation>
 <translation id="2381405137052800939">Põhiteave</translation>
 <translation id="2384692388811649784">Peida inkognito vahelehed</translation>

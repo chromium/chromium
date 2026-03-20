@@ -285,7 +285,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="117916940443676133">Sua chave de segurança não está protegida com um PIN. Para gerenciar dados de login, crie um PIN primeiro.</translation>
 <translation id="1179400851034021914">O IBAN é inválido</translation>
 <translation id="1179902906564467236">Siga as instruções no smartphone ou use o app de câmera</translation>
-<translation id="1180117276105724040">Restaurando as janelas da sessão anterior…</translation>
 <translation id="118057123461613219">Imensa economia</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1182876754474670069">início</translation>
@@ -764,7 +763,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="151501797353681931">Importados do Safari</translation>
 <translation id="1515163294334130951">Iniciar</translation>
 <translation id="1517467582299994451">Para transmitir com um código, ative as configurações de sincronização do navegador Chrome</translation>
-<translation id="1519090060276706457">A restauração das janelas está demorando mais do que o esperado</translation>
 <translation id="1521442365706402292">Gerenciar certificados</translation>
 <translation id="1521655867290435174">Google Planilhas</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
@@ -1185,7 +1183,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1796460466266263589">Para continuar usando o Gemini, confirme sua identidade</translation>
 <translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1798726622311813209">Cartões de débito e de crédito</translation>
-<translation id="1799852120691957794">Não foi possível restaurar as janelas da sessão anterior</translation>
 <translation id="180203835522132923">Pesquisa + O e depois W</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
@@ -2382,7 +2379,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2610374175948698697">Podem acessar arquivos ou pastas no seu dispositivo</translation>
 <translation id="2610780100389066815">Assinatura da lista de confiabilidade da Microsoft</translation>
 <translation id="261114180663074524">Faça login na sua conta da Microsoft e tente de novo</translation>
-<translation id="2611702650078660078">Ocorreu um erro</translation>
 <translation id="2611776654555141051">Ferramenta de retângulo</translation>
 <translation id="2611885296070244383">Microfone (interno)</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
@@ -2745,7 +2741,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="285033512555869047">Fechado</translation>
 <translation id="2850541429955027218">Adicionar tema</translation>
 <translation id="2851291081585704741">Você está off-line</translation>
-<translation id="2852045827873867442">É necessário ter uma conexão de Internet.</translation>
 <translation id="285237063405807022">(carregando)</translation>
 <translation id="2853121255651601031">Senha salva</translation>
 <translation id="2854453262159518435">Substituir o grupo de guias atual</translation>
@@ -5502,7 +5497,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4779766576531456629">Renomear rede celular do eSIM</translation>
 <translation id="4780321648949301421">Salvar página como...</translation>
 <translation id="4780558987886269159">Para o trabalho</translation>
-<translation id="4781633367688946589">Continuar para a nova sessão</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4785719467058219317">Você está usando uma chave de segurança que não está registrada neste site</translation>
 <translation id="4785914069240823137">Cancelar corte</translation>
@@ -7479,7 +7473,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6180550893222597997">Qual senha de acesso você quer usar no app <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Às vezes, os apps atualizam a marca. Revise todas as mudanças para garantir que você concorda com elas antes de atualizar.</translation>
 <translation id="6181431612547969857">Download bloqueado</translation>
-<translation id="6182100780603067202">Compartilhar também o áudio do aplicativo (de todas as janelas)</translation>
 <translation id="6183369864942961155">Tema claro/escuro automático</translation>
 <translation id="6183773856988300112">O Gemini no Chrome usa a navegação automática para acessar suas guias e realizar as tarefas que você pedir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">Pesquisar guias</translation>
@@ -8274,7 +8267,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6754359471209693699">Começar nova pesquisa</translation>
 <translation id="6754918760968695779">Inserção multimídia</translation>
 <translation id="6755702685749429945">Adicionar dicionário</translation>
-<translation id="6756157672127672536">O aplicativo Arquivos fornece acesso rápido a arquivos que foram salvos no Google Drive, em armazenamento externo ou no seu dispositivo ChromeOS.</translation>
 <translation id="6756643207511618722">Mecanismos de fala</translation>
 <translation id="6757431299485455321">Ajude outros dispositivos a encontrarem esse ponto de acesso.</translation>
 <translation id="6758056191028427665">Diga como estamos nos saindo.</translation>
@@ -10014,7 +10006,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="794676567536738329">Confirmar permissões</translation>
 <translation id="7947962633355574091">C&amp;opiar endereço do vídeo</translation>
 <translation id="7947964080535614577">Os sites geralmente mostram anúncios para oferecer conteúdo ou serviços sem custo financeiro. No entanto, alguns sites têm anúncios invasivos ou enganosos.</translation>
-<translation id="7948239795436419268">Não restaurar janelas</translation>
 <translation id="7948407723851303488">Todas as páginas de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Motivo: o LBS tem suporte apenas a URLs http://, https:// e file://.</translation>
 <translation id="7950814699499457511">Ativada • A extensão não publicou práticas de privacidade, como a forma de coleta e uso dos dados</translation>
@@ -11203,7 +11194,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8751034568832412184">Escola</translation>
 <translation id="8751329102746373229">Do seu administrador</translation>
 <translation id="8752451679755290210">Navegar pelos itens automaticamente</translation>
-<translation id="8753948258138515839">O app Arquivos fornece acesso rápido a arquivos que foram salvos no Google Drive, em armazenamento externo ou no seu dispositivo ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt; Durante a execução do <ph name="PRODUCT_NAME" /> em um ambiente de computador compatível, serão utilizadas as configurações de proxy do sistema. No entanto, seu sistema não é suportado ou ocorreu um problema ao iniciar a configuração do sistema.&lt;/p&gt;
 
         &lt;p&gt;Porém, você ainda pode configurar por meio da linha de comando. Consulte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para ver mais informações sobre variáveis de sinalizadores e ambiente.&lt;/p&gt;</translation>

@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">កម្រិតថ្ម​បច្ចុប្បន្ន <ph name="BATTERY_PERCENTAGE" />%, អាចប្រើបាន <ph name="TIME" />ទៀត</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1179776263021875437">ឈប់ផ្ដោតអារម្មណ៍លើកិច្ចការ</translation>
+<translation id="1180117276105724040">កំពុងស្ដារ​វិនដូពី​វគ្គមុន​របស់អ្នក...</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1182225749592316782">ការ​ធ្វើបែបនេះ​​ផ្ដល់​សិទ្ធិ​ចូលប្រើប្រាស់ដល់​គ្រប់​កម្មវិធី និង​គេហទំព័រ​​​ដែលមាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ប្ដូរ​ប្រភព​សំឡេង​ឬ?</translation>
 <translation id="1505542291183484463">ប្ដូរ​ទំហំវិនដូជាប្រអប់ចុះក្រោម</translation>
 <translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
+<translation id="1519090060276706457">ការស្ដារ​វិនដូ​កំពុង​ចំណាយពេល​យូរជាង​ការរំពឹងទុក</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ​សម្រាប់​កម្មវិធីមួយ}other{បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ​សម្រាប់​កម្មវិធី #}}</translation>
 <translation id="1521655867290435174">Google បញ្ជី</translation>
 <translation id="1523032696246003">ថ្ម <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />ទៀត​ទើបពេញ</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">ប្ដូររវាងទំហំអតិបរមា ឬទំហំបច្ចុប្បន្ននៃវិនដូរូបក្នុងរូប</translation>
 <translation id="1787955149152357925">បិទ</translation>
 <translation id="1796561540704213354">គេហទំព័រ រួមទាំងទំព័រដែលអ្នកបានចូលមើល និងទំព័រដែលបើក</translation>
+<translation id="1799852120691957794">មិនអាច​ស្ដារ​វិនដូពី​វគ្គមុន​របស់អ្នក​បានទេ</translation>
 <translation id="1805407494113167797">មិនអាច​ចាក់​សំឡេង​មុខងារ​ផ្ដោតអារម្មណ៍​បានទេ</translation>
 <translation id="181103072419391116">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1815039896005206046">ការឱ្យ​មេដៃចុះ​នឹងដាក់បញ្ជូន​មតិកែលម្អ​ដែលប្រាប់ថា អ្នកមិនចូលចិត្ត​ក្រុម​ដែលបានណែនាំ​នេះទេ</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ថត​រូបថត​អេក្រង់​វិនដូ</translation>
 <translation id="2598725286293895280">កម្មវិធី​ដែល​មិន​អាច​ប្រើ​នៅក្នុង​តុ</translation>
 <translation id="2607678425161541573">តម្រូវឱ្យ​ចូលគណនី​លើអ៊ីនធឺណិត</translation>
+<translation id="2611702650078660078">មានបញ្ហា​បានកើត​ឡើង</translation>
 <translation id="2612072250312279703">កម្មវិធីតាមដានសកម្មភាព</translation>
 <translation id="261210853165551493">ចម្លងអក្សរ​ដែលមាន​ការកំណត់​ទម្រង់</translation>
 <translation id="2612614436418177118">ផ្លាស់ទី​រូបកម្មវិធី​នៅក្នុង​ក្រឡាកម្មវិធី</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">ចុច enter ដើម្បីថតរូប​អេក្រង់​ពេញ​អេក្រង់</translation>
 <translation id="2849936225196189499">សំខាន់</translation>
 <translation id="2850207700020959936">កម្មវិធីអាចចូលប្រើកាមេរ៉ាបាន</translation>
+<translation id="2852045827873867442">តម្រូវ​ឱ្យមាន​ការតភ្ជាប់អ៊ីនធឺណិត។</translation>
 <translation id="2860184359326882502">ត្រូវគ្នាបំផុត</translation>
 <translation id="2865888419503095837">ព័ត៌មាន​បណ្តាញ</translation>
 <translation id="2869095047958348710">កាលពីថ្ងៃ<ph name="DAY_OF_WEEK" />កន្លងទៅនេះ</translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016">ពាក្យសម្ងាត់សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google ជំនួយការ​មិន​អាចប្រើ​នៅក្នុងរយៈពេល​ចូលប្រើសាកល្បងបានទេ។</translation>
+<translation id="4781633367688946589">បន្តទៅ​វគ្គថ្មី</translation>
 <translation id="4785412405516449976">មានតែទំនាក់ទំនងរបស់អ្នកដែលប្រើគណនី Google ប៉ុណ្ណោះ</translation>
 <translation id="4789348252524569426">មិនអាចដំឡើងឯកសារនៃការនិយាយបានទេ។ ឧបករណ៍​របស់អ្នក​ត្រូវការធ្វើបច្ចុប្បន្នភាព។ សូម​ចាប់ផ្ដើម​ឧបករណ៍​របស់អ្នក​ឡើងវិញ រួច​ព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="478959186716341421">កំពុងខាស</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">ការតាមដានប្រតិបត្តិការបានបើកដំណើរការ</translation>
 <translation id="5955304353782037793">កម្មវិធី</translation>
 <translation id="5958529069007801266">អ្នកប្រើដែលបានចាត់</translation>
+<translation id="5959471481388474538">បណ្តាញមិនមានទេ</translation>
 <translation id="596035801491797438">បិទ​ការគ្រប់គ្រងដោយប្រើមុខ</translation>
 <translation id="5960410286721553511">មើលរូបថត និងមេឌៀថ្មីៗរបស់ទូរសព្ទអ្នក</translation>
 <translation id="5965524703725988602">បិទ/បើក​ទម្រង់រចនាងងឹត។ <ph name="STATE_TEXT" />។</translation>
@@ -2251,6 +2258,7 @@
 <translation id="7945357288295809525">បង្ហាញ​ការកំណត់​ភាពងាយស្រួល, បាន​បើក "<ph name="ENABLED_FEATURES" />"។</translation>
 <translation id="7946681191253332687">មានការធ្វើ​បច្ចុប្បន្នភាព​ផ្នែក​សុវត្ថិភាពបន្ថែម</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ចង់​ប្រើ<ph name="DEVICE_NAME" />របស់​អ្នក</translation>
+<translation id="7948239795436419268">កុំស្ដារ​វិនដូ</translation>
 <translation id="7951630946012935453">បន្ថយ​ពន្លឺ​ក្ដារចុច</translation>
 <translation id="7953176344218790168">អក្សរធំ</translation>
 <translation id="7953994493035617347">បញ្ជាក់​កម្រិតគុណភាព​ថ្មីឬ?</translation>

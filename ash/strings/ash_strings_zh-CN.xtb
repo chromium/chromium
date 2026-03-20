@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%，还可使用 <ph name="TIME" /></translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1179776263021875437">停止专注于此任务</translation>
+<translation id="1180117276105724040">正在恢复上一次会话中的窗口…</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182225749592316782">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
 <translation id="1182876754474670069">光标移至行首</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">要切换音频源吗？</translation>
 <translation id="1505542291183484463">将平铺窗口向下调整大小</translation>
 <translation id="1510238584712386396">启动器</translation>
+<translation id="1519090060276706457">恢复窗口所用时间超出预期</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1521655867290435174">Google 表格</translation>
 <translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">将画中画窗口最大化或还原为当前大小</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
+<translation id="1799852120691957794">无法恢复上一次会话中的窗口</translation>
 <translation id="1805407494113167797">无法播放专注模式音乐</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1815039896005206046">选择“不喜欢”将提交您不喜欢这条分组建议的反馈</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2598725286293895280">该桌面中含有不受支持的应用</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
+<translation id="2611702650078660078">发生了错误</translation>
 <translation id="2612072250312279703">活动监视器</translation>
 <translation id="261210853165551493">复制带格式的文本</translation>
 <translation id="2612614436418177118">在应用网格内移动某个应用图标</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">按 Enter 键即可截取整个屏幕</translation>
 <translation id="2849936225196189499">关键</translation>
 <translation id="2850207700020959936">应用可以使用摄像头</translation>
+<translation id="2852045827873867442">需要联网。</translation>
 <translation id="2860184359326882502">最匹配</translation>
 <translation id="2865888419503095837">网络信息</translation>
 <translation id="2869095047958348710">上个<ph name="DAY_OF_WEEK" /></translation>
@@ -1214,6 +1219,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">无法在演示会话中使用 Google 助理。</translation>
+<translation id="4781633367688946589">继续新会话</translation>
 <translation id="4785412405516449976">仅限有 Google 账号的联系人</translation>
 <translation id="4789348252524569426">无法安装语音文件。您的设备需要更新。请重启设备，然后重试。</translation>
 <translation id="478959186716341421">正在投放</translation>
@@ -1601,6 +1607,7 @@
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
+<translation id="5959471481388474538">网络不可用</translation>
 <translation id="596035801491797438">关闭人脸操控</translation>
 <translation id="5960410286721553511">查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
@@ -2250,6 +2257,7 @@
 <translation id="7945357288295809525">显示无障碍设置，“<ph name="ENABLED_FEATURES" />”已启用。</translation>
 <translation id="7946681191253332687">有可用的延长安全更新</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />想使用您的<ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">不恢复窗口</translation>
 <translation id="7951630946012935453">调暗键盘</translation>
 <translation id="7953176344218790168">大写</translation>
 <translation id="7953994493035617347">确认使用新分辨率？</translation>

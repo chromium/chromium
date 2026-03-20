@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">બૅટરીનું વર્તમાન લેવલ <ph name="BATTERY_PERCENTAGE" />%, ચાર્જ થવામાં <ph name="TIME" /> બાકી</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1179776263021875437">કાર્ય પર ફોકસ કરવાનું રોકો</translation>
+<translation id="1180117276105724040">તમારા અગાઉના સત્રમાંથી વિન્ડો રિસ્ટોર કરી રહ્યાં છીએ...</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1182225749592316782">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1182876754474670069">હોમ</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ઑડિયો સૉર્સ સ્વિચ કરીએ?</translation>
 <translation id="1505542291183484463">windowના કદમાં વધઘટ કરીને નીચેની તરફ ટાઇલ કરી</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
+<translation id="1519090060276706457">વિન્ડો રિસ્ટોર કરવામાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{નોટિફિકેશનની સેટિંગ બતાવો. ઍપ માટે નોટિફિકેશન બંધ છે}one{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}other{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવા માટે <ph name="TIME" /> બાકી</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">ચિત્ર-માં-ચિત્ર વિન્ડોના મહત્તમ અથવા વર્તમાન કદ વચ્ચે સ્વિચ કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
+<translation id="1799852120691957794">તમારા અગાઉના સત્રમાંની વિન્ડો રિસ્ટોર કરી શકતા નથી</translation>
 <translation id="1805407494113167797">ફોકસના સાઉન્ડ ચલાવી શક્યાં નથી</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1815039896005206046">તમે આ સૂચવેલું ગ્રૂપ નાપસંદ કરો છો, થમ્બ્સ ડાઉન પસંદ કરવાથી આ પ્રતિસાદ સબમિટ થશે</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2598725286293895280">ડેસ્કમાં અનસપોર્ટેડ ઍપ</translation>
 <translation id="2607678425161541573">ઑનલાઇન સાઇન-ઇન કરવું આવશ્યક છે</translation>
+<translation id="2611702650078660078">ભૂલ આવી છે</translation>
 <translation id="2612072250312279703">ઍક્ટિવિટી મૉનિટર</translation>
 <translation id="261210853165551493">ફૉર્મેટિંગ સાથે કૉપિ કરો</translation>
 <translation id="2612614436418177118">ઍપ ગ્રિડની અંદર ઍપનું આઇકન ખસેડો</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ કૅપ્ચર કરવા માટે Enter કી દબાવો</translation>
 <translation id="2849936225196189499">ટીકાત્મક</translation>
 <translation id="2850207700020959936">ઍપ કૅમેરાને ઍક્સેસ કરી શકે છે</translation>
+<translation id="2852045827873867442">ઇન્ટરનેટ કનેક્શન આવશ્યક છે.</translation>
 <translation id="2860184359326882502">શ્રેષ્ઠ મેળ</translation>
 <translation id="2865888419503095837">નેટવર્ક માહિતી</translation>
 <translation id="2869095047958348710">આ ગત <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ડેમો સત્રમાં Google Assistant ઉપલબ્ધ નથી.</translation>
+<translation id="4781633367688946589">નવા સત્રમાં આગળ વધો</translation>
 <translation id="4785412405516449976">માત્ર Google એકાઉન્ટમાંના તમારા સંપર્કો</translation>
 <translation id="4789348252524569426">સ્પીચ માટેની ફાઇલો ઇન્સ્ટૉલ કરી શકતા નથી. તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે. તમારું ડિવાઇસ ફરી શરૂ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="478959186716341421">કાસ્ટ કરી રહ્યાં છે</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">ભજવણી ટ્રેસિંગ સક્ષમ</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">નિરીક્ષણ કરેલ વપરાશકર્તા</translation>
+<translation id="5959471481388474538">નેટવર્ક ઉપલબ્ધ નથી</translation>
 <translation id="596035801491797438">ફેસ કન્ટ્રોલ બંધ કરો</translation>
 <translation id="5960410286721553511">તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જુઓ</translation>
 <translation id="5965524703725988602">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">ઍક્સેસિબિલિટી સેટિંગ બતાવો, "<ph name="ENABLED_FEATURES" />" ચાલુ કર્યું.</translation>
 <translation id="7946681191253332687">વધારેલી સુરક્ષા અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> તમારા <ph name="DEVICE_NAME" />નો ઉપયોગ કરવા માગે છે</translation>
+<translation id="7948239795436419268">વિન્ડો રિસ્ટોર કરશો નહીં</translation>
 <translation id="7951630946012935453">ડિમ કીબોર્ડ</translation>
 <translation id="7953176344218790168">અપરકેસ</translation>
 <translation id="7953994493035617347">નવું રિઝોલ્યુશન કન્ફર્મ કરીએ?</translation>

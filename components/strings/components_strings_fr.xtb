@@ -4570,6 +4570,7 @@ Informations supplémentaires :
 <translation id="8175796834047840627">Chrome propose d'enregistrer vos cartes dans votre compte Google, car vous êtes connecté. Vous pouvez modifier ce comportement dans les paramètres.</translation>
 <translation id="8176440868214972690">L'administrateur de cet appareil a envoyé des infos, comme des paramètres ou des règles, aux sites Web suivants.</translation>
 <translation id="817820454357658398">Articles d'hygiène féminine</translation>
+<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Le contenu de la page de paiement est partagé avec Google pour proposer ces options.<ph name="END_BOLD" /> Les forfaits sont soumis à des critères d'éligibilité. Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres de paiement<ph name="END_LINK" />.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> a été bloqué en raison de son contenu}one{<ph name="FILE_COUNT" /> fichier a été bloqué en raison de son contenu}other{<ph name="FILE_COUNT" /> fichiers ont été bloqués en raison de leur contenu}}</translation>
 <translation id="8183800802493617952">Jeux et activités pour la famille</translation>
 <translation id="8184538546369750125">Utiliser le paramètre global par défaut ("Autoriser")</translation>

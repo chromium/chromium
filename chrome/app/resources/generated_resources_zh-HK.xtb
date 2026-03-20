@@ -285,7 +285,6 @@
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
 <translation id="1179902906564467236">按照手機的指示操作，或使用相機應用程式</translation>
-<translation id="1180117276105724040">正在還原上一個工作階段的視窗…</translation>
 <translation id="118057123461613219">節省極大量記憶體</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182876754474670069">Home 鍵</translation>
@@ -763,7 +762,6 @@
 <translation id="151501797353681931">由 Safari 匯入</translation>
 <translation id="1515163294334130951">啟動</translation>
 <translation id="1517467582299994451">如要透過存取碼投放，請開啟 Chrome 瀏覽器同步設定</translation>
-<translation id="1519090060276706457">還原視窗的時間比預期長</translation>
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1521774566618522728">今天已使用</translation>
@@ -1183,7 +1181,6 @@
 <translation id="1796460466266263589">驗證身分以繼續使用 Gemini</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1798726622311813209">信用卡和扣帳卡</translation>
-<translation id="1799852120691957794">無法從上一個工作階段還原視窗</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
@@ -2381,7 +2378,6 @@
 <translation id="2610374175948698697">可查看裝置上的檔案或資料夾</translation>
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
-<translation id="2611702650078660078">發生錯誤</translation>
 <translation id="2611776654555141051">長方形工具</translation>
 <translation id="2611885296070244383">麥克風 (內部)</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
@@ -2744,7 +2740,6 @@
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2850541429955027218">新增主題</translation>
 <translation id="2851291081585704741">您已離線</translation>
-<translation id="2852045827873867442">需要互聯網連線。</translation>
 <translation id="285237063405807022">(正在載入)</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2854453262159518435">取代現有分頁群組</translation>
@@ -5498,7 +5493,6 @@
 <translation id="4779766576531456629">重新命名 eSIM 卡的流動網絡</translation>
 <translation id="4780321648949301421">另存網頁…</translation>
 <translation id="4780558987886269159">工作時</translation>
-<translation id="4781633367688946589">繼續新工作階段</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用你電子錢包中的個人資料。</translation>
 <translation id="4785719467058219317">您目前使用的安全密鑰並未在此網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
@@ -7469,7 +7463,6 @@
 <translation id="6180550893222597997">您要在 <ph name="APP_NAME" /> 上使用哪一個密鑰？</translation>
 <translation id="6181218116951226898">應用程式有時會更新品牌身分。請先查看所有變更，確保沒有問題再更新。</translation>
 <translation id="6181431612547969857">下載被封鎖</translation>
-<translation id="6182100780603067202">同時分享應用程式音訊 (來自其所有視窗)</translation>
 <translation id="6183369864942961155">自動切換淺色/深色主題</translation>
 <translation id="6183773856988300112">Chrome 版 Gemini 會使用自動瀏覽功能在分頁中運作，完成你指派的任務。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
@@ -8262,7 +8255,6 @@
 <translation id="6754359471209693699">開始新搜尋</translation>
 <translation id="6754918760968695779">快速插入</translation>
 <translation id="6755702685749429945">新增字典</translation>
-<translation id="6756157672127672536">「檔案」應用程式可讓您快速存取存放在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>
 <translation id="6756643207511618722">語音引擎</translation>
 <translation id="6757431299485455321">協助其他裝置尋找此熱點。</translation>
 <translation id="6758056191028427665">請讓我們瞭解您的滿意度。</translation>
@@ -9999,7 +9991,6 @@
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
 <translation id="7947964080535614577">網站通常要顯示廣告，才能免費提供內容或服務。不過，部分網站會顯示滋擾性或誤導廣告。</translation>
-<translation id="7948239795436419268">不要還原視窗</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料</translation>
@@ -11188,7 +11179,6 @@
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自管理員的憑證</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
-<translation id="8753948258138515839">「檔案」應用程式可供快速存取您存放在 Google 雲端硬碟」、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行 <ph name="PRODUCT_NAME" /> 時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
 
         &lt;p&gt;然而，您仍然可以透過命令列設定。如需標幟及環境變數的詳細資料，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>

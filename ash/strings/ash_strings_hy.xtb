@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Մարտկոցի լիցքի ներկայիս մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%, մնացել է <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1179776263021875437">Դադարեցնել առաջադրանքի վրա կենտրոնացումը</translation>
+<translation id="1180117276105724040">Պատուհանները վերականգնվում են ձեր նախորդ աշխատաշրջանից…</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1182225749592316782">Սա օգտագործման թույլտվություն է տրամադրում բոլոր հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Փոխե՞լ աուդիո աղբյուրը</translation>
 <translation id="1505542291183484463">Սալիկապատված չափափոխման պատուհանը դեպի ներքև</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
+<translation id="1519090060276706457">Պատուհանների վերականգնումը սովորականից երկար է տևում</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են մեկ հավելվածի համար:}one{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}other{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}}</translation>
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
 <translation id="1523032696246003">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Լրիվ լիցքավորմանը մնացել է <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Օգտագործեք «Նկար նկարի մեջ» պատուհանը առավելագույն կամ ընթացիկ չափսով</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
+<translation id="1799852120691957794">Հնարավոր չէ վերականգնել նախորդ աշխատաշրջանի պատուհանները</translation>
 <translation id="1805407494113167797">Չհաջողվեց նվագարկել Focus ռեժիմի ձայները</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1815039896005206046">«Վատն է» կոճակի սեղմումը բացասական կարծիք կուղարկի այս առաջարկվող խմբի մասին</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2598725286293895280">Չաջակցվող հավելվածներ աշխատասեղանում</translation>
 <translation id="2607678425161541573">Անհրաժեշտ է առցանց մուտք գործել</translation>
+<translation id="2611702650078660078">Սխալ առաջացավ</translation>
 <translation id="2612072250312279703">գործողությունների մոնիտոր</translation>
 <translation id="261210853165551493">Պատճենել ձևաչափումով</translation>
 <translation id="2612614436418177118">Տեղաշարժել հավելվածի պատկերակը հավելվածների ցանցում</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">Սեղմեք Enter՝ ամբողջ էկրանի սքրինշոթ անելու համար</translation>
 <translation id="2849936225196189499">Վճռական</translation>
 <translation id="2850207700020959936">Տեսախցիկը հասանելի է հավելվածներին</translation>
+<translation id="2852045827873867442">Ինտերնետ կապ է պահանջվում։</translation>
 <translation id="2860184359326882502">Լավագույն համընկնումը</translation>
 <translation id="2865888419503095837">Տեղեկություններ ցանցի մասին</translation>
 <translation id="2869095047958348710">Անցած <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="4777825441726637019">Play Խանութ</translation>
 <translation id="4778095205580009397">Google Օգնականը հասանելի չէ դեմո աշխատաշրջանում։</translation>
+<translation id="4781633367688946589">Սկսել նոր աշխատաշրջան</translation>
 <translation id="4785412405516449976">Միայն Google հաշիվ ունեցող ձեր կոնտակտները</translation>
 <translation id="4789348252524569426">Չհաջողվեց տեղադրել խոսքի ֆայլերը։ Ձեր սարքը թարմացման կարիք ունի։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
 <translation id="478959186716341421">Հեռարձակվում է</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">Կատարողականության հետագծումը միացված է</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Վերահսկվող պրոֆիլ</translation>
+<translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
 <translation id="596035801491797438">Անջատել դեմքով կառավարումը</translation>
 <translation id="5960410286721553511">Դիտեք վերջերս ձեր հեռախոսում ավելացված լուսանկարները և մեդիա ֆայլերը</translation>
 <translation id="5965524703725988602">Միացնել/անջատել մուգ թեման։ <ph name="STATE_TEXT" />։</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">Ցույց տալ հատուկ գործառույթների կարգավորումները, միացված գործառույթներ՝ «<ph name="ENABLED_FEATURES" />»։</translation>
 <translation id="7946681191253332687">Անվտանգության ընդլայնված թարմացումները հասանելի են</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>
+<translation id="7948239795436419268">Չվերականգնել պատուհանները</translation>
 <translation id="7951630946012935453">Նվազեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
 <translation id="7953176344218790168">ՄԵԾԱՏԱՌ</translation>
 <translation id="7953994493035617347">Հաստատե՞լ նոր լուծաչափը</translation>

@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">目前電池電量：<ph name="BATTERY_PERCENTAGE" />%；剩餘可用時間：<ph name="TIME" /></translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1179776263021875437">停止專心處理這項工作</translation>
+<translation id="1180117276105724040">正在還原上一個工作階段中的視窗...</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182225749592316782">這將允許具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
 <translation id="1182876754474670069">home 鍵</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">要切換音訊來源嗎？</translation>
 <translation id="1505542291183484463">向下調整並排視窗的大小</translation>
 <translation id="1510238584712386396">啟動器</translation>
+<translation id="1519090060276706457">還原視窗的時間過長</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1523032696246003">電池電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後充飽</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">將子母畫面視窗最大化或還原目前大小</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
+<translation id="1799852120691957794">無法還原上一個工作階段中的視窗</translation>
 <translation id="1805407494113167797">無法播放專注模式音效</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1815039896005206046">按倒讚可給予這個建議群組負面評價</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2598725286293895280">桌面不支援的應用程式</translation>
 <translation id="2607678425161541573">需要線上登入</translation>
+<translation id="2611702650078660078">發生錯誤</translation>
 <translation id="2612072250312279703">活動監測工具</translation>
 <translation id="261210853165551493">一併複製格式</translation>
 <translation id="2612614436418177118">在應用程式排列顯示畫面中移動應用程式圖示</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">按下 Enter 鍵以擷取全螢幕截圖</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2850207700020959936">應用程式可存取相機</translation>
+<translation id="2852045827873867442">必須連上網際網路。</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2869095047958348710">剛過去的<ph name="DAY_OF_WEEK" /></translation>
@@ -1212,6 +1217,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">Google 助理不適用於示範工作階段。</translation>
+<translation id="4781633367688946589">繼續進入新工作階段</translation>
 <translation id="4785412405516449976">僅限擁有 Google 帳戶的聯絡人</translation>
 <translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
 <translation id="478959186716341421">投放中</translation>
@@ -1600,6 +1606,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受監管的使用者</translation>
+<translation id="5959471481388474538">網路無法使用</translation>
 <translation id="596035801491797438">關閉人臉操控功能</translation>
 <translation id="5960410286721553511">查看手機上最近的相片和媒體</translation>
 <translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
@@ -2248,6 +2255,7 @@
 <translation id="7945357288295809525">顯示無障礙設定，<ph name="ENABLED_FEATURES" />功能已啟用。</translation>
 <translation id="7946681191253332687">有可用的延長安全性更新</translation>
 <translation id="7947798320695032612">「<ph name="APP_NAME" />」想要使用「<ph name="DEVICE_NAME" />」</translation>
+<translation id="7948239795436419268">不要還原視窗</translation>
 <translation id="7951630946012935453">調暗鍵盤</translation>
 <translation id="7953176344218790168">大寫</translation>
 <translation id="7953994493035617347">要確認新的解析度嗎？</translation>

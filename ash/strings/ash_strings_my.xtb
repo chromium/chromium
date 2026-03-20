@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">လက်ရှိဘက်ထရီအဆင့် <ph name="BATTERY_PERCENTAGE" />%၊ <ph name="TIME" /> လို</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1179776263021875437">လုပ်ဆောင်စရာတွင် ပြနေခြင်းကို ရပ်ရန်</translation>
+<translation id="1180117276105724040">သင်၏ ယခင်စက်ရှင်မှ ဝင်းဒိုးများ ပြန်ယူနေသည်…</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1182225749592316782">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">အသံရင်းမြစ်ကို ပြောင်းမလား။</translation>
 <translation id="1505542291183484463">လေးထောင့်ကွက်ဝင်းဒိုး၏ အောက်ဘက်တွင် အရွယ်ပြင်ရန်</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1519090060276706457">ဝင်းဒိုးများ ပြန်ယူခြင်းသည် မျှော်မှန်းထားသည်ထက် ပိုကြာနေသည်</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ်တစ်ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}other{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ် # ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> အကြာတွင် အားပြည့်မည်</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">နှစ်ခုထပ်၍ ကြည့်သည့် ဝင်းဒိုး၏ အကြီးဆုံး (သို့) လက်ရှိ အရွယ်အစားကြား ပြောင်းရန်</translation>
 <translation id="1787955149152357925">ပိတ်</translation>
 <translation id="1796561540704213354">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများနှင့် ဖွင့်ထားသော စာမျက်နှာများ ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
+<translation id="1799852120691957794">ယခင်စက်ရှင်မှ ဝင်းဒိုးများကို ပြန်ယူ၍မရပါ</translation>
 <translation id="1805407494113167797">‘အာရုံစိုက်ခြင်း အသံ’ ဖွင့်၍မရလိုက်ပါ</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1815039896005206046">လက်မအောက်စိုက်ခြင်းဖြင့် ဤအကြံပြုထားသည့်အုပ်စုကို သင်မကြိုက်ကြောင်း ပို့မည်</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ဝင်းဒိုး မျက်နှာပြင်ပုံ ရိုက်ရန်</translation>
 <translation id="2598725286293895280">မျက်နှာပြင်ရှိ ပံ့ပိုးမထားသော အက်ပ်များ</translation>
 <translation id="2607678425161541573">အွန်လိုင်း လက်မှတ်ထိုးဝင်ခြင်း လိုအပ်သည်</translation>
+<translation id="2611702650078660078">အမှားဖြစ်သွားသည်</translation>
 <translation id="2612072250312279703">လုပ်ဆောင်ချက် စောင့်ကြည့်စစ်ဆေးမှု</translation>
 <translation id="261210853165551493">ဖော်မက်လုပ်ခြင်းဖြင့် မိတ္တူကူးရန်</translation>
 <translation id="2612614436418177118">အက်ပ်သင်္ကေတတစ်ခုကို အက်ပ်ဇယားအတွင်းရွှေ့ရန်</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">စခရင်အပြည့် ဖန်သားပြင်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="2850207700020959936">အက်ပ်များက ကင်မရာသုံးနိုင်သည်</translation>
+<translation id="2852045827873867442">အင်တာနက်ချိတ်ဆက်မှု လိုအပ်သည်။</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
 <translation id="2865888419503095837">ကွန်ရက် အချက်အလက်</translation>
 <translation id="2869095047958348710">ပြီးခဲ့သည့် <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />အတွက် စကားဝှက်</translation>
 <translation id="4777825441726637019">Play စတိုး</translation>
 <translation id="4778095205580009397">သရုပ်ပြစက်ရှင်တွင် Google Assistant မရနိုင်ပါ။</translation>
+<translation id="4781633367688946589">စက်ရှင်အသစ်သို့ ဆက်သွားရန်</translation>
 <translation id="4785412405516449976">Google Account ရှိသော သင့်အဆက်အသွယ်များသာ</translation>
 <translation id="4789348252524569426">စကားပြောဖိုင်များ ထည့်သွင်း၍မရပါ။ သင့်စက်ကို အပ်ဒိတ်လုပ်ရမည်။ သင့်စက်ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="478959186716341421">ကာစ်တ်လုပ်ခြင်း</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">ဆောင်ရွက်ချက်များကို ခြေရာခံနေသည်။</translation>
 <translation id="5955304353782037793">အက်ပ်</translation>
 <translation id="5958529069007801266">ကြီးကြပ်မှုခံ အသုံးပြုသူ</translation>
+<translation id="5959471481388474538">ကွန်ရက်ကို ရှာမရ</translation>
 <translation id="596035801491797438">အမူအရာဖြင့် ထိန်းချုပ်ခြင်းကို ပိတ်ရန်</translation>
 <translation id="5960410286721553511">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများကို ကြည့်နိုင်သည်</translation>
 <translation id="5965524703725988602">အမှောင်နောက်ခံ ပြောင်းရန်။ <ph name="STATE_TEXT" />။</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">သုံးနိုင်မှု ဆက်တင်များ ပြရန်၊ “<ph name="ENABLED_FEATURES" />” ဖွင့်ထားသည်။</translation>
 <translation id="7946681191253332687">ထပ်တိုးထားသော လုံခြုံရေးအပ်ဒိတ်များ ရပါပြီ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> က သင့် <ph name="DEVICE_NAME" /> ကို သုံးလိုပါသည်</translation>
+<translation id="7948239795436419268">ဝင်းဒိုးများ ပြန်မယူပါနှင့်</translation>
 <translation id="7951630946012935453">keyboard အလင်းမှိန်ရန်</translation>
 <translation id="7953176344218790168">စာလုံးကြီး</translation>
 <translation id="7953994493035617347">ပုံရိပ်ပြတ်သားကိန်းအသစ် အတည်ပြုမလား။</translation>

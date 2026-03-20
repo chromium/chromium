@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Одоогийн батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> үлдлээ</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1179776263021875437">Ажилд төвлөрөхөө болих</translation>
+<translation id="1180117276105724040">Таны өмнөх харилцан үйлдлээс цонхнуудыг сэргээж байна...</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1182225749592316782">Энэ нь камер ба микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад хандалтыг зөвшөөрнө</translation>
 <translation id="1182876754474670069">үндсэн нүүр</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Аудио эх сурвалжийг сэлгэх үү?</translation>
 <translation id="1505542291183484463">Хавтан болгосон цонхны хэмжээг доош татаж өөрчлөх</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1519090060276706457">Цонхыг сэргээхэд тооцоолсноос удаж байна</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Мэдэгдлийн тохиргоог харуулна уу. Аппын мэдэгдлийг унтраасан байна}other{Мэдэгдлийн тохиргоог харуулна уу. # аппын мэдэгдлийг унтраасан байна}}</translation>
 <translation id="1521655867290435174">Google Хүснэгт</translation>
 <translation id="1523032696246003">Батарей <ph name="BATTERY_PERCENTAGE" />% | Бүрэн цэнэглэх хүртэл <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Дэлгэц доторх дэлгэц цонхны дээд эсвэл одоогийн хэмжээний хооронд сэлгэх</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
+<translation id="1799852120691957794">Таны өмнөх харилцан үйлдлээс цонх сэргээх боломжгүй</translation>
 <translation id="1805407494113167797">Төвлөрөх дуу чимээг тоглуулж чадсангүй</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1815039896005206046">Муу тэмдэглэгээ нь танд энэ санал болгосон бүлэг таалагдаагүй гэсэн санал хүсэлтийг илгээнэ</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2598725286293895280">Дэлгэц дээрх дэмжигдээгүй аппууд</translation>
 <translation id="2607678425161541573">Онлайнаар нэвтрэх шаардлагатай</translation>
+<translation id="2611702650078660078">Алдаа гарлаа</translation>
 <translation id="2612072250312279703">үйл ажиллагааны монитор</translation>
 <translation id="261210853165551493">Форматтайгаар хуулах</translation>
 <translation id="2612614436418177118">Аппын дүрс тэмдгийг аппын хүснэгт дотор зөөх</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">Бүтэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="2849936225196189499">Аюултай</translation>
 <translation id="2850207700020959936">Аппууд камерт хандах боломжтой</translation>
+<translation id="2852045827873867442">Интернэтэд холбогдох шаардлагатай.</translation>
 <translation id="2860184359326882502">Хамгийн сайн тохирол</translation>
 <translation id="2865888419503095837">Сүлжээний мэдээлэл</translation>
 <translation id="2869095047958348710">Энэ өнгөрсөн <ph name="DAY_OF_WEEK" /></translation>
@@ -1216,6 +1221,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Туслах туршилтын харилцан үйлдэлд боломжгүй байна.</translation>
+<translation id="4781633367688946589">Шинэ харилцан үйлдэл рүү үргэлжлүүлэх</translation>
 <translation id="4785412405516449976">Зөвхөн таны Google Бүртгэлтэй харилцагчид</translation>
 <translation id="4789348252524569426">Ярианы файлуудыг суулгах боломжгүй. Та төхөөрөмжөө шинэчлэх шаардлагатай. Төхөөрөмжөө дахин эхлүүлээд, дахин оролдоно уу.</translation>
 <translation id="478959186716341421">Каст хийх</translation>
@@ -1604,6 +1610,7 @@
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
 <translation id="5955304353782037793">аппликейшн</translation>
 <translation id="5958529069007801266">Хяналттай хэрэглэгч</translation>
+<translation id="5959471481388474538">Сүлжээг ажиллахгүй байна.</translation>
 <translation id="596035801491797438">Царайн хяналтыг унтраах</translation>
 <translation id="5960410286721553511">Утасныхаа саяхны зураг болон медиаг харна уу</translation>
 <translation id="5965524703725988602">Бараан загварыг асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@
 <translation id="7945357288295809525">Хүртээмжтэй тохиргоог харуулах, "<ph name="ENABLED_FEATURES" />" идэвхжүүлсэн.</translation>
 <translation id="7946681191253332687">Аюулгүй байдлын өргөтгөсөн шинэчлэлт боломжтой</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> таны <ph name="DEVICE_NAME" />-г ашиглах хүсэлтэй байна</translation>
+<translation id="7948239795436419268">Цонхыг бүү сэргээ</translation>
 <translation id="7951630946012935453">Гарын гэрлийг бүдгэрүүлэх</translation>
 <translation id="7953176344218790168">ТОМ ҮСГЭЭР</translation>
 <translation id="7953994493035617347">Шинэ нягтралыг баталгаажуулах уу?</translation>

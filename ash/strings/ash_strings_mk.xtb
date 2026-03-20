@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Тековно ниво на батеријата: <ph name="BATTERY_PERCENTAGE" /> %, преостанато време: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1179776263021875437">Сопрете го концентрирањето на задача</translation>
+<translation id="1180117276105724040">Се враќаат прозорците од претходната сесија…</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1182225749592316782">Ова дозволува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Да се смени изворот на аудио?</translation>
 <translation id="1505542291183484463">Прозорец за променување големина со плочки надолу</translation>
 <translation id="1510238584712386396">Стартер</translation>
+<translation id="1519090060276706457">Враќањето на прозорците трае подолго од очекуваното</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прикажи ги поставките за известувања. Известувањата се исклучени за една апликација}one{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликација}other{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликации}}</translation>
 <translation id="1521655867290435174">Табели на Google</translation>
 <translation id="1523032696246003">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полна батерија</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Менувај меѓу максималната и тековната големина на прозорецот за „Слика во слика“</translation>
 <translation id="1787955149152357925">Исклучено</translation>
 <translation id="1796561540704213354">Веб-сајтовите, заедно со страниците што сте ги посетиле, како и отворените страници</translation>
+<translation id="1799852120691957794">Не може да се вратат прозорците од претходната сесија</translation>
 <translation id="1805407494113167797">Не можеше да ги пушти звуците за „Режим за концентрација“</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1815039896005206046">„Не ми се допаѓа“ ќе ги испрати повратните информации дека не ви се допаѓа предложенава група</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Прави слика од екранот</translation>
 <translation id="2598725286293895280">Неподдржани апликации во работната површина</translation>
 <translation id="2607678425161541573">Задолжително е најавување онлајн</translation>
+<translation id="2611702650078660078">Се јави грешка</translation>
 <translation id="2612072250312279703">следач на активност</translation>
 <translation id="261210853165551493">Копирај со форматирање</translation>
 <translation id="2612614436418177118">Преместувајте икона за апликација во мрежа со апликации</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">Притиснете Enter за да снимите слика од целиот екран</translation>
 <translation id="2849936225196189499">Критична</translation>
 <translation id="2850207700020959936">Апликациите може да пристапуваат до камерата</translation>
+<translation id="2852045827873867442">Интернет‑врската е задолжителна.</translation>
 <translation id="2860184359326882502">Најдобро совпаѓање</translation>
 <translation id="2865888419503095837">Информации за мрежа</translation>
 <translation id="2869095047958348710">Минатиов/ва <ph name="DAY_OF_WEEK" /></translation>
@@ -1216,6 +1221,7 @@
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">„Помошникот на Google“ не е достапен во сесија за демонстрација.</translation>
+<translation id="4781633367688946589">Продолжи во нова сесија</translation>
 <translation id="4785412405516449976">Само вашите контакти со сметка на Google</translation>
 <translation id="4789348252524569426">Не може да се инсталираат датотеки за говор. Треба да го ажурирате уредот. Рестартирајте го уредот и обидете се повторно.</translation>
 <translation id="478959186716341421">Се емитува</translation>
@@ -1604,6 +1610,7 @@
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5955304353782037793">апликација</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
+<translation id="5959471481388474538">Мрежата не е достапна</translation>
 <translation id="596035801491797438">Исклучи „Контрола со лик“</translation>
 <translation id="5960410286721553511">Прегледувајте ги неодамнешните фотографии и аудиовизуелните содржини од телефонот</translation>
 <translation id="5965524703725988602">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@
 <translation id="7945357288295809525">Прикажи ги поставките за пристапност, овозможено: „<ph name="ENABLED_FEATURES" />“.</translation>
 <translation id="7946681191253332687">Достапни се проширени безбедносни ажурирања</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Не враќај ги прозорците</translation>
 <translation id="7951630946012935453">Затемнување тастатура</translation>
 <translation id="7953176344218790168">ГОЛЕМИ БУКВИ</translation>
 <translation id="7953994493035617347">Да се потврди новата резолуција?</translation>

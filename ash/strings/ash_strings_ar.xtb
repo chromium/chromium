@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">مستوى شحن البطارية الحالي %<ph name="BATTERY_PERCENTAGE" />، ويتبقّى <ph name="TIME" />.</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1179776263021875437">إيقاف التركيز على المهمة</translation>
+<translation id="1180117276105724040">جارٍ استعادة النوافذ من الجلسة السابقة…</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1182225749592316782">يتيح هذا الإجراء السماح لجميع التطبيقات والمواقع الإلكترونية بالوصول إلى الكاميرا والميكروفون.</translation>
 <translation id="1182876754474670069">‏مفتاح Home</translation>
@@ -167,6 +168,7 @@
 <translation id="1501946871587957338">هل تريد تبديل مصدر الصوت؟</translation>
 <translation id="1505542291183484463">تغيير حجم النافذة المنقسمة بسحب حافتها للأسفل</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
+<translation id="1519090060276706457">تستغرق عملية استعادة النوافذ وقتًا أطول من المتوقع</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1523032696246003">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على اكتمال الشحن: <ph name="TIME" /></translation>
@@ -261,6 +263,7 @@
 <translation id="1786487376942610288">التبديل بين الحد الأقصى أو الحجم الحالي للنافذة المفتوحة بميزة "نافذة ضمن النافذة"</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
+<translation id="1799852120691957794">تتعذّر استعادة النوافذ من الجلسة السابقة</translation>
 <translation id="1805407494113167797">تعذَّر تشغيل المقاطع الصوتية التي تساعد على التركيز</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="1815039896005206046">يؤدي النقر على رمز عدم الإعجاب إلى إرسال ملاحظات بأنّ هذه المجموعة المقترَحة لا تعجبك</translation>
@@ -492,6 +495,7 @@
 <translation id="2596078834055697711">أخذ لقطة شاشة للنافذة</translation>
 <translation id="2598725286293895280">يتضمّن سطح المكتب تطبيقات غير متوافقة</translation>
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
+<translation id="2611702650078660078">حدث خطأ</translation>
 <translation id="2612072250312279703">أداة رصد النشاط</translation>
 <translation id="261210853165551493">نسخ مع الحفاظ على التنسيق</translation>
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
@@ -574,6 +578,7 @@
 <translation id="2848120746144143659">‏اضغط على المفتاح Enter لالتقاط صورة للشاشة بأكملها</translation>
 <translation id="2849936225196189499">مهمة</translation>
 <translation id="2850207700020959936">يمكن للتطبيقات الوصول إلى الكاميرا</translation>
+<translation id="2852045827873867442">يجب توفُّر اتصال بالإنترنت.</translation>
 <translation id="2860184359326882502">أفضل نتيجة مطابقة</translation>
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2869095047958348710">يوم <ph name="DAY_OF_WEEK" /> الماضي</translation>
@@ -1213,6 +1218,7 @@
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">‏متجر Play</translation>
 <translation id="4778095205580009397">‏لا يتوفَّر "مساعد Google" في جلسة تجريبية.</translation>
+<translation id="4781633367688946589">المتابعة إلى جلسة جديدة</translation>
 <translation id="4785412405516449976">‏جهات الاتصال التي لديها حساب على Google فقط</translation>
 <translation id="4789348252524569426">يتعذّر تثبيت ملفات التعرّف على الكلام. يجب تحديث جهازك. أعِد تشغيل الجهاز وحاوِل مجددًا.</translation>
 <translation id="478959186716341421">إرسال</translation>
@@ -1601,6 +1607,7 @@
 <translation id="595202126637698455">تم تفعيل تتبع مستوى الأداء</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">مستخدم يخضع للإدارة</translation>
+<translation id="5959471481388474538">الشبكة غير متاحة</translation>
 <translation id="596035801491797438">إيقاف ميزة "التحكّم بالوجه"</translation>
 <translation id="5960410286721553511">عرض الصور والوسائط الحديثة على هاتفك</translation>
 <translation id="5965524703725988602">إيقاف/تفعيل المظهر الداكن: <ph name="STATE_TEXT" /></translation>
@@ -2251,6 +2258,7 @@
 <translation id="7945357288295809525">عرض إعدادات تسهيل الاستخدام، الميزة المفعَّلة حاليًا: <ph name="ENABLED_FEATURES" /></translation>
 <translation id="7946681191253332687">تتوفّر تحديثات أمان ممتدة</translation>
 <translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
+<translation id="7948239795436419268">عدم استعادة النوافذ</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7953176344218790168">استخدام أحرف كبيرة</translation>
 <translation id="7953994493035617347">هل تريد تأكيد درجة الدقة الجديدة؟</translation>

@@ -7475,9 +7475,6 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
 <translation id="5882345429632338713">Hoãn lại trước khi chạy trình duyệt thay thế (mili giây)</translation>
 <translation id="5883015257301027298">Cài đặt cookie mặc định</translation>
 <translation id="5883631290631802010">Bật tính năng Dịch trực tiếp</translation>
-<translation id="5883754873839596178">Nếu bạn đặt chính sách này, số lượng tối đa lượt kết nối đồng thời đến máy chủ proxy sẽ được chỉ định. Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn. Bạn nên đặt giá trị cao hơn 6 và thấp hơn 100. Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở. Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định.
-
-      Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.</translation>
 <translation id="5886280631293123880">Chính sách này cho phép chọn tham gia lại tạm thời đối với một nhóm sự kiện nền tảng không được dùng nữa và đã bị loại bỏ, được gọi là Sự kiện đột biến.
 Khi bạn đặt chính sách này thành Bật, các sự kiện đột biến sẽ tiếp tục được kích hoạt ngay cả khi đã bị tắt theo mặc định đối với người dùng web thông thường. Khi bạn đặt chính sách này thành Tắt hoặc không đặt, hệ thống sẽ không thể kích hoạt các sự kiện này.
 Chính sách này chỉ là giải pháp tạm thời và sẽ không còn hoạt động trong phiên bản M137.</translation>

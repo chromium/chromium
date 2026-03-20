@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1652197001188145583">Når dette er på, kan nettsteder be om å få bruke NFC-enheter. Når dette er av, kan ikke nettsteder bruke NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillat nettsteder å spille av lyd (anbefales)</translation>
+<translation id="1676590040242013349">«Bruk alltid sikre tilkoblinger» er på.</translation>
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Nettsteder kan be om å få bruke NFC-enheter</translation>
 <translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokkér nettsteder fra å få tilgang til tekst og bilder fra utklippstavlen</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6950072572526089586">Nettsteder du besøker, kan lagre informasjon om hva du gjør, slik at nettstedene fungerer som forventet – for eksempel for å holde deg pålogget eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
+<translation id="6964291282260073066">«WebGPU» er deaktivert.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Rose tema</translation>
 <translation id="6980861169612950611">Vil du slette nettstedsdata? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Når dette er på, kan nettsteder be om å få bruke virtuell virkelighet-enheter. Når dette er av, kan ikke nettsteder bruke virtuell virkelighet-enheter.</translation>
 <translation id="7282197670900591579">Sitron tema</translation>
 <translation id="728412880473384942">Nettsteder er raskere, men mindre sikre</translation>
+<translation id="7352902948037373520">Administrer i <ph name="BEGIN_LINK1" />Android-innstillingene<ph name="END_LINK1" />
+
+Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="7366415735885268578">Legg til et nettsted</translation>
 <translation id="7368695150573390554">Alle data som er lagret for bruk uten nett, blir slettet</translation>
 <translation id="7369678931043226462">Feltet nederst for tilpasning av Ny fane-siden er åpnet i halv høyde</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» er utdatert. Installer appen på nytt.</translation>
 <translation id="847433688444405067">Bla gjennom enheter</translation>
+<translation id="8484556725636319115">«JavaScript-optimalisering» er av. <ph name="BEGIN_LINK2" />Administrer nettstedsunntak<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="848952951823693243">Be alltid om mobilnettstedet</translation>
 <translation id="8492822722330266509">Nettsteder kan sende forgrunnsvinduer og bruke viderekoblinger</translation>

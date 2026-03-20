@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">നിലവിലെ ബാറ്ററി നില <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1179776263021875437">ടാസ്‌ക്കിൽ ഫോക്കസ് ചെയ്യുന്നത് നിർത്തുക</translation>
+<translation id="1180117276105724040">നിങ്ങളുടെ മുമ്പത്തെ സെഷനിൽ നിന്ന് വിൻഡോകൾ പുനഃസ്ഥാപിക്കുന്നു...</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1182225749592316782">ക്യാമറ, മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1182876754474670069">വീട്</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ഓഡിയോ ഉറവിടം മാറണോ?</translation>
 <translation id="1505542291183484463">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ താഴേക്ക് നീക്കുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
+<translation id="1519090060276706457">വിൻഡോകൾ പുനഃസ്ഥാപിക്കുന്നതിന് പ്രതീക്ഷിച്ചതിലും കൂടുതൽ സമയമെടുക്കുന്നു</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി | ഫുൾ ആവാൻ <ph name="TIME" /> എടുക്കും</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">'ചിത്രത്തിനുള്ളിൽ ചിത്രം' വിൻഡോയുടെ പരമാവധി വലുപ്പം അല്ലെങ്കിൽ നിലവിലെ വലുപ്പം എന്നിവയ്ക്കിടയിൽ മാറുക</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
 <translation id="1796561540704213354">നിങ്ങൾ സന്ദർശിച്ച പേജുകളും തുറന്ന പേജുകളും ഉൾപ്പെടെയുള്ള വെബ്‌സൈറ്റുകൾ</translation>
+<translation id="1799852120691957794">നിങ്ങളുടെ മുമ്പത്തെ സെഷനിൽ നിന്ന് വിൻഡോകൾ പുനഃസ്ഥാപിക്കാൻ കഴിയുന്നില്ല</translation>
 <translation id="1805407494113167797">ഫോക്കസ് ശബ്ദങ്ങൾ പ്ലേ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1815039896005206046">തംബ്‌സ് ഡൗൺ, നിർദ്ദേശിച്ച ഈ ഗ്രൂപ്പ് നിങ്ങൾ ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കും</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2598725286293895280">ഡെസ്‌കിൽ പിന്തുണയില്ലാത്ത ആപ്പുകളുണ്ട്</translation>
 <translation id="2607678425161541573">ഓൺലൈനായി സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
+<translation id="2611702650078660078">പിശക് സംഭവിച്ചു</translation>
 <translation id="2612072250312279703">ആക്‌റ്റിവിറ്റി മോണിറ്റർ</translation>
 <translation id="261210853165551493">ഫോർമാറ്റിംഗ് ഉപയോഗിച്ച് പകർത്തുക</translation>
 <translation id="2612614436418177118">ആപ്പ് ഗ്രിഡിനുള്ളിൽ ഒരു ആപ്പ് ഐക്കൺ നീക്കുക</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">പൂർണ്ണ സ്ക്രീൻ സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2849936225196189499">ഗുരുതരം</translation>
 <translation id="2850207700020959936">ആപ്പുകൾക്ക് ക്യാമറ ആക്സസ് ചെയ്യാം</translation>
+<translation id="2852045827873867442">ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമാണ്.</translation>
 <translation id="2860184359326882502">മികച്ച പൊരുത്തം</translation>
 <translation id="2865888419503095837">നെറ്റ്‌വർക്ക് വിവരം</translation>
 <translation id="2869095047958348710">ഇക്കഴിഞ്ഞ <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനായുള്ള പാസ്‌വേഡ്</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ഡെമോ സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
+<translation id="4781633367688946589">പുതിയ സെഷനിലേക്ക് തുടരുക</translation>
 <translation id="4785412405516449976">Google Account ഉള്ള നിങ്ങളുടെ കോൺടാക്റ്റുകൾക്ക് മാത്രം</translation>
 <translation id="4789348252524569426">സംഭാഷണ ഫയലുകൾ ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="478959186716341421">കാസ്റ്റുചെയ്യുന്നു</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">പ്രകടനം പിന്തുടരൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5955304353782037793">ആപ്പ്</translation>
 <translation id="5958529069007801266">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവ്</translation>
+<translation id="5959471481388474538">നെറ്റ്‌വർക്ക് ലഭ്യമല്ല</translation>
 <translation id="596035801491797438">ഫെയ്‌സ് കൺട്രോൾ ഓഫാക്കുക</translation>
 <translation id="5960410286721553511">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും കാണുക</translation>
 <translation id="5965524703725988602">ഡാർക്ക് തീം മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@
 <translation id="7945357288295809525">ഉപയോഗസഹായി ക്രമീകരണം കാണിക്കുക, "<ph name="ENABLED_FEATURES" />" പ്രവർത്തനക്ഷമമാക്കി.</translation>
 <translation id="7946681191253332687">വിപുലീകരിച്ച സുരക്ഷാ അപ്ഡേറ്റുകൾ ലഭ്യമാണ്</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> നിങ്ങളുടെ <ph name="DEVICE_NAME" /> ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
+<translation id="7948239795436419268">വിൻഡോകൾ പുനഃസ്ഥാപിക്കരുത്</translation>
 <translation id="7951630946012935453">കീബോർഡ് മങ്ങിക്കുക</translation>
 <translation id="7953176344218790168">വലിയക്ഷരം</translation>
 <translation id="7953994493035617347">പുതിയ റെസല്യൂഷൻ സ്ഥിരീകരിക്കണോ?</translation>

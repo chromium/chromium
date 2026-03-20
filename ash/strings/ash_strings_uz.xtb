@@ -57,6 +57,7 @@
 <translation id="1175944128323889279">Joriy batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> qoldi</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1179776263021875437">Fokus maqsadini toʻxtatish</translation>
+<translation id="1180117276105724040">Avvalgi seans oynalari tiklanmoqda...</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1182225749592316782">Kamera va mikrofon ruxsatiga ega barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="1182876754474670069">home</translation>
@@ -171,6 +172,7 @@
 <translation id="1501946871587957338">Audio manasi almashtirilsinmi?</translation>
 <translation id="1505542291183484463">Oyna oʻlchamini pastga oʻzgartiradigan katakcha</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
+<translation id="1519090060276706457">Oynalarni tiklash kutilganidan ortiq vaqt olmoqda</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirishnoma sozlamalarini ochish. Ilova uchun bildirishnomalar yoqilmagan}other{Bildirishnoma sozlamalarini ochish. # ta ilova uchun bildirishnomalar yoqilmagan}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Batareya: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> da toʻladi</translation>
@@ -265,6 +267,7 @@
 <translation id="1786487376942610288">Tasvir ustida tasvir oynasining joriy va maksimal oʻlchamini almashtirish</translation>
 <translation id="1787955149152357925">Oʻchiq</translation>
 <translation id="1796561540704213354">Saytlar, jumladan siz tashrif buyurgan va ochilgan sahifalar</translation>
+<translation id="1799852120691957794">Avvalgi seans oynalarini tiklash imkonsiz</translation>
 <translation id="1805407494113167797">Fokus tovushlari ijro etilmadi</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="1815039896005206046">Salbiy baho – bu taklif etilgan guruh yoqmaganini anglatadi</translation>
@@ -496,6 +499,7 @@
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
 <translation id="2598725286293895280">Ish stolida mos kelmaydigan ilovalar bor</translation>
 <translation id="2607678425161541573">Onlayn kirish zarur</translation>
+<translation id="2611702650078660078">Xatolik yuz berdi</translation>
 <translation id="2612072250312279703">tizim monitoringi</translation>
 <translation id="261210853165551493">Formati bilan nusxalash</translation>
 <translation id="2612614436418177118">Ilova ikonkasini ilovalar jadvaliga joylash</translation>
@@ -580,6 +584,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2848120746144143659">Butun ekranni rasmga olish uchun Enter tugmasini bosing</translation>
 <translation id="2849936225196189499">Jiddiy</translation>
 <translation id="2850207700020959936">Ilovalar kameradan foydalanishi mumkin</translation>
+<translation id="2852045827873867442">Internet aloqasi zarur.</translation>
 <translation id="2860184359326882502">Eng mosi</translation>
 <translation id="2865888419503095837">Tarmoq ma’lumoti</translation>
 <translation id="2869095047958348710">Oʻtgan <ph name="DAY_OF_WEEK" /></translation>
@@ -1227,6 +1232,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> e-pochtasi paroli</translation>
 <translation id="4777825441726637019">Play Market</translation>
 <translation id="4778095205580009397">Google Assistenti demo seansda ishlamaydi</translation>
+<translation id="4781633367688946589">Yangi seansda davom ettirish</translation>
 <translation id="4785412405516449976">Faqat Google hisobi bor kontaktlarga</translation>
 <translation id="4789348252524569426">Nutq fayllari oʻrnatilmadi. Qurilma yangilanishi lozim. Qurilmani qayta ishga tushirib, yana urining.</translation>
 <translation id="478959186716341421">Translatsiya qilinmoqda</translation>
@@ -1623,6 +1629,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="595202126637698455">Unumdorlik kuzatuvi yoniq</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Boshqariladigan profil</translation>
+<translation id="5959471481388474538">Tarmoq ish faoliyatida emas</translation>
 <translation id="596035801491797438">Yuz bilan boshqaruvni oʻchirish</translation>
 <translation id="5960410286721553511">Telefoningizdagi oxirgi mediafayl va suratlarni oching</translation>
 <translation id="5965524703725988602">Tungi mavzuni yoqish/oʻchirish <ph name="STATE_TEXT" />.</translation>
@@ -2278,6 +2285,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7945357288295809525">Maxsus imkoniyatlar sozlamalarini koʻrsatish, “<ph name="ENABLED_FEATURES" />” yoqildi.</translation>
 <translation id="7946681191253332687">Kengaytirilgan xavfsizlik yangilanishi chiqdi</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ilovasi <ph name="DEVICE_NAME" /> ishlatmoqchi</translation>
+<translation id="7948239795436419268">Oynalar tiklanmasin</translation>
 <translation id="7951630946012935453">Klaviaturani xiralashtirish</translation>
 <translation id="7953176344218790168">KATTA HARFLAR</translation>
 <translation id="7953994493035617347">Ekran aniqlik darajasi oʻzgardi</translation>

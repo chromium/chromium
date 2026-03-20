@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Nivell de bateria actual: <ph name="BATTERY_PERCENTAGE" />%; temps restant: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1179776263021875437">Vull deixar de concentrar-me en la tasca</translation>
+<translation id="1180117276105724040">S'estan restaurant les finestres de la sessió anterior...</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1182225749592316782">Permet l'accés a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="1182876754474670069">Inici</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Vols canviar la font d'àudio?</translation>
 <translation id="1505542291183484463">Finestra redimensionada en mosaic cap avall</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
+<translation id="1519090060276706457">La restauració de les finestres està tardant més del previst</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a una aplicació.}other{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a # aplicacions.}}</translation>
 <translation id="1521655867290435174">Fulls de càlcul de Google</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> per completar la càrrega</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Canvia entre la mida màxima o l'actual de la finestra d'imatge sobre imatge</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1796561540704213354">Llocs web que inclouen les pàgines que has visitat i les pàgines obertes</translation>
+<translation id="1799852120691957794">No es poden restaurar les finestres de la sessió anterior</translation>
 <translation id="1805407494113167797">No s'han pogut reproduir els sons de Concentració</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1815039896005206046">El botó No m'agrada indica que aquest grup suggerit no t'agrada</translation>
@@ -491,6 +494,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2598725286293895280">Hi ha aplicacions no admeses a l'escriptori</translation>
 <translation id="2607678425161541573">Cal iniciar la sessió en línia</translation>
+<translation id="2611702650078660078">S'ha produït un error</translation>
 <translation id="2612072250312279703">monitor d'activitat</translation>
 <translation id="261210853165551493">Copia amb format</translation>
 <translation id="2612614436418177118">Mou la icona d'una aplicació a la quadrícula d'aplicacions</translation>
@@ -575,6 +579,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2848120746144143659">Prem Retorn per fer una captura de pantalla completa</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2850207700020959936">Les aplicacions poden accedir a la càmera</translation>
+<translation id="2852045827873867442">Cal tenir connexió a Internet.</translation>
 <translation id="2860184359326882502">Millor coincidència</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
 <translation id="2869095047958348710">El <ph name="DAY_OF_WEEK" /> passat</translation>
@@ -1215,6 +1220,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
+<translation id="4781633367688946589">Continua a la sessió nova</translation>
 <translation id="4785412405516449976">Només els teus contactes amb un Compte de Google</translation>
 <translation id="4789348252524569426">No es poden instal·lar els fitxers de parla. Cal actualitzar el dispositiu. Reinicia'l i torna-ho a provar.</translation>
 <translation id="478959186716341421">S'està emetent</translation>
@@ -1603,6 +1609,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="5959471481388474538">Xarxa no disponible</translation>
 <translation id="596035801491797438">Desactiva el control amb gestos facials</translation>
 <translation id="5960410286721553511">Consulta els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7945357288295809525">Mostra la configuració d'accessibilitat, "<ph name="ENABLED_FEATURES" />" activada.</translation>
 <translation id="7946681191253332687">Actualitzacions de seguretat ampliades disponibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">No restauris les finestres</translation>
 <translation id="7951630946012935453">Atenua el teclat</translation>
 <translation id="7953176344218790168">MAJÚSCULES</translation>
 <translation id="7953994493035617347">Vols confirmar la nova resolució?</translation>

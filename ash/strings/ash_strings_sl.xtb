@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Trenutna raven napolnjenosti baterije je <ph name="BATTERY_PERCENTAGE" /> %, še <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1179776263021875437">Prekinite osredotočanje na opravilo</translation>
+<translation id="1180117276105724040">Obnavljanje oken iz prejšnje seje …</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1182225749592316782">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon.</translation>
 <translation id="1182876754474670069">tipka home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Želite preklopiti vir zvoka?</translation>
 <translation id="1505542291183484463">Razpostavljeno okno za spreminjanje velikosti okna navzdol</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
+<translation id="1519090060276706457">Obnovitev oken traja dlje, kot je pričakovano</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
 <translation id="1521655867290435174">Google Preglednice</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" /> % baterije | <ph name="TIME" /> do napolnjenosti</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Preklop med največjo ali trenutno velikostjo okna slike v sliki</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1796561540704213354">Spletna mesta, vključno s stranmi, ki ste jih obiskali, in odprtimi stranmi</translation>
+<translation id="1799852120691957794">Oken iz prejšnje seje ni mogoče obnoviti</translation>
 <translation id="1805407494113167797">Zvokov načina Osredotočenosti ni bilo mogoče predvajati</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1815039896005206046">S palcem dol pošljete povratne informacije, da vam ta predlagana skupina ni všeč</translation>
@@ -491,6 +494,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2598725286293895280">Nepodprte aplikacije na namizju</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
+<translation id="2611702650078660078">Prišlo je do napake</translation>
 <translation id="2612072250312279703">nadzornik dejavnosti</translation>
 <translation id="261210853165551493">Kopiraj z oblikovanjem</translation>
 <translation id="2612614436418177118">Premikanje ikone aplikacije znotraj mreže aplikacij</translation>
@@ -575,6 +579,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2848120746144143659">Pritisnite Enter, če želite zajeti posnetek zaslona v celozaslonskem načinu</translation>
 <translation id="2849936225196189499">Kritično</translation>
 <translation id="2850207700020959936">Aplikacije imajo dostop do kamere</translation>
+<translation id="2852045827873867442">Potrebna je internetna povezava.</translation>
 <translation id="2860184359326882502">Najboljše ujemanje</translation>
 <translation id="2865888419503095837">Podatki o omrežju</translation>
 <translation id="2869095047958348710">Pretekli/-a <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4776917500594043016">Geslo za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
 <translation id="4778095205580009397">Pomočnik Google ni na voljo v predstavitveni seji.</translation>
+<translation id="4781633367688946589">Nadaljuj v novi seji</translation>
 <translation id="4785412405516449976">Samo stiki z računom Google</translation>
 <translation id="4789348252524569426">Datotek za govor ni mogoče namestiti. Napravo je treba posodobiti. Znova zaženite napravo in poskusite znova.</translation>
 <translation id="478959186716341421">Predvajanje</translation>
@@ -1603,6 +1609,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="595202126637698455">Sledenje učinkovitosti delovanja je omogočeno</translation>
 <translation id="5955304353782037793">prog</translation>
 <translation id="5958529069007801266">Nadzorovani uporabnik</translation>
+<translation id="5959471481388474538">Omrežje ni na voljo</translation>
 <translation id="596035801491797438">Izklopi upravljanje z obrazom</translation>
 <translation id="5960410286721553511">Oglejte si nedavne fotografije in predstavnost telefona.</translation>
 <translation id="5965524703725988602">Preklop temne teme. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Nova namestitev</translation>
 <translation id="7945357288295809525">Prikaz nastavitev dostopnosti, funkcija »<ph name="ENABLED_FEATURES" />« je omogočena.</translation>
 <translation id="7946681191253332687">Na voljo so razširjene varnostne posodobitve</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />.</translation>
+<translation id="7948239795436419268">Ne obnovi oken</translation>
 <translation id="7951630946012935453">Zatemnitev tipkovnice</translation>
 <translation id="7953176344218790168">VELIKE ČRKE</translation>
 <translation id="7953994493035617347">Želite potrditi novo ločljivost?</translation>

@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Nivelul actual al bateriei: <ph name="BATTERY_PERCENTAGE" /> %, timp rămas: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1179776263021875437">Nu te mai concentra asupra activității</translation>
+<translation id="1180117276105724040">Se restabilesc ferestrele din sesiunea anterioară...</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1182225749592316782">Astfel, se permite accesul pentru toate aplicațiile și site-urile cu permisiuni pentru camera foto și microfon</translation>
 <translation id="1182876754474670069">acasă</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Schimbi sursa audio?</translation>
 <translation id="1505542291183484463">Redimensionează ferestrele sub formă de dale în jos</translation>
 <translation id="1510238584712386396">Lansator</translation>
+<translation id="1519090060276706457">Restabilirea ferestrelor durează mai mult decât s-a estimat</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1521655867290435174">Foi de calcul Google</translation>
 <translation id="1523032696246003">Baterie <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> până la încărcare completă</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Comută între dimensiunea maximă și cea actuală a ferestrei picture-in-picture</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1796561540704213354">Site-urile, inclusiv paginile pe care le-ai accesat și paginile deschise</translation>
+<translation id="1799852120691957794">Nu se pot restabili ferestrele din sesiunea anterioară</translation>
 <translation id="1805407494113167797">Nu se pot reda sunetele pentru Focus</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1815039896005206046">Dacă alegi Nu îmi place, trimiți ca feedback faptul că nu îți place acest grup sugerat</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2598725286293895280">Aplicații neacceptate pe desktop</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
+<translation id="2611702650078660078">A apărut o eroare</translation>
 <translation id="2612072250312279703">instrument de monitorizare a activităților</translation>
 <translation id="261210853165551493">Copiază cu formatare</translation>
 <translation id="2612614436418177118">Mută o pictogramă de aplicație în grila de aplicații</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">Apasă pe Enter pentru a realiza o captură de ecran completă</translation>
 <translation id="2849936225196189499">Critic</translation>
 <translation id="2850207700020959936">Aplicațiile pot accesa camera</translation>
+<translation id="2852045827873867442">Este necesară o conexiune la internet.</translation>
 <translation id="2860184359326882502">Cea mai bună potrivire</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> trecută</translation>
@@ -1215,6 +1220,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Magazin Play</translation>
 <translation id="4778095205580009397">Asistentul Google nu este disponibil într-o sesiune demonstrativă.</translation>
+<translation id="4781633367688946589">Continuă cu noua sesiune</translation>
 <translation id="4785412405516449976">Doar persoanele de contact cu Cont Google</translation>
 <translation id="4789348252524569426">Nu se pot instala fișierele pentru recunoaștere vocală. Dispozitivul trebuie actualizat. Repornește dispozitivul și încearcă din nou.</translation>
 <translation id="478959186716341421">Se proiectează</translation>
@@ -1603,6 +1609,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
 <translation id="5955304353782037793">aplicație</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
+<translation id="5959471481388474538">Rețea indisponibilă</translation>
 <translation id="596035801491797438">Dezactivează comenzile faciale</translation>
 <translation id="5960410286721553511">Vezi fotografiile și elementele media recente ale telefonului</translation>
 <translation id="5965524703725988602">Activează / dezactivează Tema întunecată. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7945357288295809525">Afișează setările de accesibilitate, <ph name="ENABLED_FEATURES" /> este activată.</translation>
 <translation id="7946681191253332687">Sunt disponibile actualizări de securitate extinse</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Nu restabili ferestrele</translation>
 <translation id="7951630946012935453">Redu luminozitatea tastaturii</translation>
 <translation id="7953176344218790168">MAJUSCULE</translation>
 <translation id="7953994493035617347">Confirmi noua rezoluție?</translation>

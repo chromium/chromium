@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Nível atual da bateria: <ph name="BATTERY_PERCENTAGE" />%. Tempo restante: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1179776263021875437">Parar de focar na tarefa</translation>
+<translation id="1180117276105724040">Restaurando as janelas da sessão anterior…</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1182225749592316782">Esta ação libera o acesso para todos os apps e sites com essas permissões</translation>
 <translation id="1182876754474670069">início</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Trocar a fonte de áudio?</translation>
 <translation id="1505542291183484463">Redimensionar janela em mosaico para baixo</translation>
 <translation id="1510238584712386396">Iniciador</translation>
+<translation id="1519090060276706457">A restauração das janelas está demorando mais do que o esperado</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>
 <translation id="1521655867290435174">Google Planilhas</translation>
 <translation id="1523032696246003">Bateria em <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até a carga completa</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Alternar entre o tamanho máximo e o atual da janela picture-in-picture</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
+<translation id="1799852120691957794">Não foi possível restaurar as janelas da sessão anterior</translation>
 <translation id="1805407494113167797">Não foi possível tocar os sons de foco</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1815039896005206046">O botão "Não gostei" envia feedback informando que você não gostou do grupo sugerido</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2598725286293895280">Apps sem suporte no espaço de trabalho</translation>
 <translation id="2607678425161541573">É necessário fazer login on-line</translation>
+<translation id="2611702650078660078">Ocorreu um erro</translation>
 <translation id="2612072250312279703">monitor de atividade</translation>
 <translation id="261210853165551493">Copiar com formatação</translation>
 <translation id="2612614436418177118">Mover um ícone de app na grade de apps</translation>
@@ -575,6 +579,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="2848120746144143659">Pressione "Enter" para fazer uma captura de tela cheia</translation>
 <translation id="2849936225196189499">Crítico</translation>
 <translation id="2850207700020959936">Os apps podem acessar a câmera</translation>
+<translation id="2852045827873867442">É necessário ter uma conexão de Internet.</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> anterior</translation>
@@ -1215,6 +1220,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">O Google Assistente não está disponível para uma sessão de demonstração.</translation>
+<translation id="4781633367688946589">Continuar para a nova sessão</translation>
 <translation id="4785412405516449976">Apenas seus contatos com uma Conta do Google</translation>
 <translation id="4789348252524569426">Não foi possível instalar arquivos de fala. Seu dispositivo precisa ser atualizado. Reinicie o dispositivo e tente novamente.</translation>
 <translation id="478959186716341421">Transmitindo</translation>
@@ -1603,6 +1609,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
+<translation id="5959471481388474538">Rede não disponível</translation>
 <translation id="596035801491797438">Desativar o controle facial</translation>
 <translation id="5960410286721553511">Ver as fotos e mídias recentes do smartphone</translation>
 <translation id="5965524703725988602">Alternar tema escuro. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7945357288295809525">Mostrar configurações de acessibilidade: recurso "<ph name="ENABLED_FEATURES" />" ativado.</translation>
 <translation id="7946681191253332687">Atualizações de segurança estendidas disponíveis</translation>
 <translation id="7947798320695032612">O app <ph name="APP_NAME" /> quer usar seu dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Não restaurar janelas</translation>
 <translation id="7951630946012935453">Escurecer o teclado</translation>
 <translation id="7953176344218790168">LETRAS MAIÚSCULAS</translation>
 <translation id="7953994493035617347">Confirmar nova resolução?</translation>

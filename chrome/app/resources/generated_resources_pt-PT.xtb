@@ -225,6 +225,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="114715166554490743">Ponteiro de cabeça</translation>
 <translation id="114721135501989771">Inteligên. Google no Chrome</translation>
 <translation id="1147322039136785890">Agora é a vez de <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1147867844630510586">Inicie sessão com <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Permitir scripts do utilizador</translation>
 <translation id="1148624853678088576">Está tudo pronto!</translation>
 <translation id="1148669835763563782">Está a receber a mais recente atualização de software para obter uma segurança otimizada e as funcionalidades mais recentes do Chromebook. Esta atualização inclui uma experiência de configuração melhorada para ajudar a começar sem problemas no seu Chromebook.</translation>
@@ -285,7 +286,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="117916940443676133">A sua chave de segurança não está protegida com um PIN. Para gerir os dados de início de sessão, crie primeiro um PIN.</translation>
 <translation id="1179400851034021914">O IBAN é inválido</translation>
 <translation id="1179902906564467236">Siga as instruções no telemóvel ou use a app da câmara</translation>
-<translation id="1180117276105724040">A restaurar as janelas da sua sessão anterior…</translation>
 <translation id="118057123461613219">Enormes poupanças</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1182876754474670069">início</translation>
@@ -762,7 +762,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="151501797353681931">Importado do Safari</translation>
 <translation id="1515163294334130951">Iniciar</translation>
 <translation id="1517467582299994451">Para transmitir com um código, ative as definições de sincronização do navegador Chrome</translation>
-<translation id="1519090060276706457">A restauração de janelas está a demorar mais do que o esperado</translation>
 <translation id="1521442365706402292">Gerir certificados</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
@@ -1006,6 +1005,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1674073353928166410">Abrir todos (<ph name="URL_COUNT" />) numa janela de navegação anónima</translation>
 <translation id="1674142805528405174">O Gestor de Palavras-passe da Google pode atualizar a sua conta com uma palavra-passe forte que está guardada para si na sua conta <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Desativar automaticamente os otimizadores do JavaScript em sites desconhecidos</translation>
+<translation id="1675964862374196038">Inscreva-se com <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1678849866171627536">Falha ao analisar. Este ficheiro pode ser um vírus ou software malicioso.</translation>
@@ -1175,7 +1175,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1796460466266263589">Para continuar a usar o Gemini, valide a sua identidade</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1798726622311813209">Cartões de crédito e débito</translation>
-<translation id="1799852120691957794">Não é possível restaurar as janelas da sua sessão anterior</translation>
 <translation id="180203835522132923">Pesquisa + O e, em seguida, W</translation>
 <translation id="1802624026913571222">Suspender quando a tampa for fechada</translation>
 <translation id="1802687198411089702">A página não responde. Pode esperar pela resposta ou sair.</translation>
@@ -2368,7 +2367,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2610374175948698697">Pode ver ficheiros ou pastas no seu dispositivo</translation>
 <translation id="2610780100389066815">Assinatura de lista fidedigna da Microsoft</translation>
 <translation id="261114180663074524">Inicie sessão na sua conta Microsoft e tente novamente</translation>
-<translation id="2611702650078660078">Ocorreu um erro</translation>
 <translation id="2611776654555141051">Ferramenta de retângulo</translation>
 <translation id="2611885296070244383">Microfone (interno)</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
@@ -2732,7 +2730,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="285033512555869047">Fechado</translation>
 <translation id="2850541429955027218">Adicionar tema</translation>
 <translation id="2851291081585704741">Está offline</translation>
-<translation id="2852045827873867442">É necessária ligação à Internet.</translation>
 <translation id="285237063405807022">(a carregar)</translation>
 <translation id="2853121255651601031">Palavra-passe guardada</translation>
 <translation id="2854453262159518435">Substituir grupo de separadores existente</translation>
@@ -5489,7 +5486,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4779766576531456629">Mudar o nome da rede móvel do eSIM</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4780558987886269159">Para trabalho</translation>
-<translation id="4781633367688946589">Continuar para nova sessão</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="4785914069240823137">Cancele o recorte</translation>
@@ -7466,7 +7462,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6180550893222597997">Que token de acesso quer usar para a app <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Por vezes, as apps atualizam o respetivo branding. Reveja todas as alterações para se certificar de que concorda com estas antes de atualizar.</translation>
 <translation id="6181431612547969857">Transferência bloqueada</translation>
-<translation id="6182100780603067202">Partilhar também o áudio da aplicação (de todas as respetivas janelas)</translation>
 <translation id="6183369864942961155">Tema claro/escuro automático</translation>
 <translation id="6183773856988300112">O Gemini no Chrome usa a procura automática para trabalhar nos seus separadores e concluir as tarefas que lhe atribuir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">Pesquisar separadores</translation>
@@ -8259,7 +8254,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6754359471209693699">Iniciar nova pesquisa</translation>
 <translation id="6754918760968695779">Inserção rápida</translation>
 <translation id="6755702685749429945">Adicionar dicionário</translation>
-<translation id="6756157672127672536">A app Files proporciona um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS.</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ajude outros dispositivos a encontrar esta zona Wi-Fi.</translation>
 <translation id="6758056191028427665">Dê-nos a sua opinião acerca do nosso desempenho.</translation>
@@ -9999,7 +9993,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="794676567536738329">Confirmar Permissões</translation>
 <translation id="7947962633355574091">C&amp;opiar Endereço do vídeo</translation>
 <translation id="7947964080535614577">Normalmente, os sites mostram anúncios para poderem fornecer conteúdos ou serviços sem custo financeiro. No entanto, alguns sites são conhecidos por mostrarem anúncios intrusivos ou enganadores.</translation>
-<translation id="7948239795436419268">Não restaurar janelas</translation>
 <translation id="7948407723851303488">Todas as páginas de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Motivo: a LBS (Compatibilidade com o navegador antigo) apenas suporta URLs http://, https:// e file://.</translation>
 <translation id="7950814699499457511">Ativada • Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados</translation>
@@ -11188,7 +11181,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8751034568832412184">Escola</translation>
 <translation id="8751329102746373229">Do seu administrador</translation>
 <translation id="8752451679755290210">Mova-se entre os itens automaticamente</translation>
-<translation id="8753948258138515839">A app Files fornece um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Ao executar o <ph name="PRODUCT_NAME" /> num ambiente de trabalho suportado, são utilizadas as definições de proxy do sistema. No entanto, o seu sistema não é suportado ou ocorreu um problema no início da configuração do sistema.&lt;/p&gt;
 
         &lt;p&gt;Porém, pode ainda configurar através da linha de comandos. Consulte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter mais informações acerca de sinalizadores e variáveis do ambiente.&lt;/p&gt;</translation>

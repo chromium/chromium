@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Aktualny poziom naładowania baterii: <ph name="BATTERY_PERCENTAGE" />%, pozostało: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1179776263021875437">Przestań skupiać się na zadaniu</translation>
+<translation id="1180117276105724040">Przywracam okna z poprzedniej sesji…</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1182225749592316782">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu.</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Przełączyć źródło dźwięku?</translation>
 <translation id="1505542291183484463">Zmień rozmiar okna kafelkowego w dół</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
+<translation id="1519090060276706457">Przywracanie okien trwa dłużej niż zwykle</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1521655867290435174">Arkusze Google</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do pełnego naładowania</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Przełączanie między maksymalnym a bieżącym rozmiarem okna obrazu w obrazie</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
+<translation id="1799852120691957794">Nie można przywrócić okien z poprzedniej sesji</translation>
 <translation id="1805407494113167797">Nie udało się odtworzyć dźwięków trybu pełnej koncentracji</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1815039896005206046">Opcja Nie lubię spowoduje przesłanie opinii, że ta sugerowana grupa Ci się nie podoba</translation>
@@ -491,6 +494,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2598725286293895280">Nieobsługiwane aplikacje w biurku</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
+<translation id="2611702650078660078">Wystąpił błąd</translation>
 <translation id="2612072250312279703">monitor aktywności</translation>
 <translation id="261210853165551493">Kopiuj z formatowaniem</translation>
 <translation id="2612614436418177118">Przenieś ikonę aplikacji w siatce aplikacji</translation>
@@ -575,6 +579,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2848120746144143659">Aby zrobić zrzut całego ekranu, naciśnij Enter</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
 <translation id="2850207700020959936">Aplikacje mają dostęp do kamery</translation>
+<translation id="2852045827873867442">Wymagane jest połączenie z internetem.</translation>
 <translation id="2860184359326882502">Najlepsze dopasowanie</translation>
 <translation id="2865888419503095837">Informacje o sieci</translation>
 <translation id="2869095047958348710">Ostatni(a) <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Sklep Play</translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
+<translation id="4781633367688946589">Przejdź do nowej sesji</translation>
 <translation id="4785412405516449976">Tylko Twoje kontakty z kontem Google</translation>
 <translation id="4789348252524569426">Nie udało się zainstalować plików z mową. Urządzenie wymaga aktualizacji. Uruchom je ponownie i spróbuj jeszcze raz.</translation>
 <translation id="478959186716341421">Przesyłanie</translation>
@@ -1603,6 +1609,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5958529069007801266">Użytkownik nadzorowany</translation>
+<translation id="5959471481388474538">Sieć niedostępna</translation>
 <translation id="596035801491797438">Wyłącz sterowanie za pomocą twarzy</translation>
 <translation id="5960410286721553511">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="5965524703725988602">Przełącz ciemny motyw. <ph name="STATE_TEXT" />.</translation>
@@ -2251,6 +2258,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7945357288295809525">Pokaż ustawienia ułatwień dostępu, włączono „<ph name="ENABLED_FEATURES" />”.</translation>
 <translation id="7946681191253332687">Dostępne są rozszerzone aktualizacje zabezpieczeń</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Nie przywracaj okien</translation>
 <translation id="7951630946012935453">Przyciemnij klawiaturę</translation>
 <translation id="7953176344218790168">WIELKIE LITERY</translation>
 <translation id="7953994493035617347">Potwierdzić nową rozdzielczość?</translation>

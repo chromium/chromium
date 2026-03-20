@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Lefel batri bresennol <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> ar ôl</translation>
 <translation id="1178581264944972037">Seibio</translation>
 <translation id="1179776263021875437">Stopio ffocysu ar dasg</translation>
+<translation id="1180117276105724040">Wrthi'n adfer ffenestri o'ch sesiwn flaenorol...</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1182225749592316782">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan gyda chaniatadau camera a meicroffon.</translation>
 <translation id="1182876754474670069">cartref</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Newid ffynhonnell sain?</translation>
 <translation id="1505542291183484463">Ffenestr teilsen newid maint i lawr</translation>
 <translation id="1510238584712386396">Lansiwr</translation>
+<translation id="1519090060276706457">Mae'n cymryd mwy o amser na'r disgwyl i adfer ffenestri</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer ap}zero{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}two{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}few{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}many{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}other{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Batri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> nes yn llawn</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Newid rhwng maint mwyaf neu faint presennol y ffenestr llun-mewn-llun</translation>
 <translation id="1787955149152357925">Diffodd</translation>
 <translation id="1796561540704213354">Gwefannau gan gynnwys tudalennau rydych wedi ymweld â nhw a thudalennau agored</translation>
+<translation id="1799852120691957794">Methu adfer ffenestri o'ch sesiwn flaenorol</translation>
 <translation id="1805407494113167797">Methu â chwarae synau Canolbwyntio</translation>
 <translation id="181103072419391116">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="1815039896005206046">Byddai bodiau i lawr yn cyflwyno'r adborth nad ydych yn hoffi'r grŵp hwn a awgrymir</translation>
@@ -491,6 +494,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2596078834055697711">Tynnu sgrinlun o'r ffenestr</translation>
 <translation id="2598725286293895280">Mae apiau sydd heb eu cefnogi yn y ddesg</translation>
 <translation id="2607678425161541573">Mae angen fewngofnodi ar-lein</translation>
+<translation id="2611702650078660078">Bu gwall</translation>
 <translation id="2612072250312279703">monitor gweithgarwch</translation>
 <translation id="261210853165551493">Copi gyda fformatio</translation>
 <translation id="2612614436418177118">Symud eicon ap o fewn y grid apiau</translation>
@@ -575,6 +579,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2848120746144143659">Pwyswch Enter i dynnu sgrinlun sgrîn lawn</translation>
 <translation id="2849936225196189499">Critigol</translation>
 <translation id="2850207700020959936">Gall apiau gael mynediad at gamera</translation>
+<translation id="2852045827873867442">Mae angen cysylltiad rhyngrwyd.</translation>
 <translation id="2860184359326882502">Y Canlyniad Mwyaf Perthnasol</translation>
 <translation id="2865888419503095837">Gwybodaeth am y rhwydwaith</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> diwethaf yma</translation>
@@ -1215,6 +1220,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4776917500594043016">Cyfrinair ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Nid yw Google Assistant ar gael mewn sesiwn ddemo.</translation>
+<translation id="4781633367688946589">Parhau i sesiwn newydd</translation>
 <translation id="4785412405516449976">Dim ond eich cysylltiadau sydd â Chyfrif Google</translation>
 <translation id="4789348252524569426">Methu â gosod ffeiliau llais. Mae angen diweddaru eich dyfais. Ailgychwynnwch eich dyfais a rhowch gynnig arall arni.</translation>
 <translation id="478959186716341421">Castio</translation>
@@ -1603,6 +1609,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>
 <translation id="5955304353782037793">ap</translation>
 <translation id="5958529069007801266">Defnyddiwr dan oruchwyliaeth</translation>
+<translation id="5959471481388474538">Nid yw'r rhwydwaith ar gael</translation>
 <translation id="596035801491797438">Diffodd Rheoli ag wyneb</translation>
 <translation id="5960410286721553511">Gweld lluniau a chyfryngau diweddar eich ffôn</translation>
 <translation id="5965524703725988602">Toglo'r Thema dywyll <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7945357288295809525">Dangos gosodiadau hygyrchedd, '<ph name="ENABLED_FEATURES" />' wedi'i alluogi.</translation>
 <translation id="7946681191253332687">Mae diweddariadau diogelwch estynedig ar gael</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Peidio ag adfer ffenestri</translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
 <translation id="7953176344218790168">PRIF LYTHRENNAU</translation>
 <translation id="7953994493035617347">Cadarnhau'r eglurdeb newydd?</translation>

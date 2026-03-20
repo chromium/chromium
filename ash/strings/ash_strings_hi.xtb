@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">बैटरी का मौजूदा लेवल <ph name="BATTERY_PERCENTAGE" />% है, बैटरी पूरी चार्ज होने में <ph name="TIME" /> बचे हैं</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1179776263021875437">टास्क पर फ़ोकस करना बंद करें</translation>
+<translation id="1180117276105724040">आपके पिछले सेशन की विंडो वापस लाई जा रही हैं...</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1182225749592316782">इससे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा और माइक्रोफ़ोन को इस्तेमाल करने का ऐक्सेस मिलता है</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">क्या आपको ऑडियो सोर्स बदलना है?</translation>
 <translation id="1505542291183484463">नीचे की ओर से विंडो की टाइल का साइज़ बदलें</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1519090060276706457">विंडो को वापस लाने में उम्मीद से ज़्यादा समय लग रहा है</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग दिखाएं. किसी एक ऐप्लिकेशन के लिए सूचनाएं बंद हैं}one{सूचना सेटिंग दिखाएं. # ऐप्लिकेशन के लिए सूचनाएं बंद हैं}other{सूचना सेटिंग दिखाएं. # ऐप्लिकेशन के लिए सूचनाएं बंद हैं}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% चार्ज है | पूरी तरह चार्ज होने में <ph name="TIME" /> लगेंगे</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">पिक्चर में पिक्चर विंडो को, इसके ज़्यादा से ज़्यादा साइज़ या मौजूदा साइज़ में इस्तेमाल करें</translation>
 <translation id="1787955149152357925">बंद करें</translation>
 <translation id="1796561540704213354">वेबसाइटों की कैटगरी में वे पेज दिखाए जाते हैं जिन्हें आपने देखा या खोला होता है</translation>
+<translation id="1799852120691957794">आपके पिछले सेशन वाली विंडो वापस नहीं लाई जा सकतीं</translation>
 <translation id="1805407494113167797">फ़ोकस मोड के लिए उपलब्ध साउंड नहीं चलाए जा सके</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="1815039896005206046">'नापसंद करें' आइकॉन को चुनने का मतलब है कि आपको सुझाया गया यह टैब ग्रुप पसंद नहीं आया</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2598725286293895280">डेस्क में ऐसे ऐप्लिकेशन मौजूद हैं जो काम नहीं करते</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
+<translation id="2611702650078660078">कोई गड़बड़ी हुई</translation>
 <translation id="2612072250312279703">एक्टिविटी मॉनिटर</translation>
 <translation id="261210853165551493">फ़ॉर्मैटिंग के साथ कॉपी करें</translation>
 <translation id="2612614436418177118">किसी ऐप्लिकेशन आइकॉन को ऐप्लिकेशन ग्रिड में ले जाने के लिए</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">पूरी स्क्रीन का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="2849936225196189499">महत्वपूर्ण</translation>
 <translation id="2850207700020959936">ऐप्लिकेशन, कैमरे का इस्तेमाल कर सकते हैं</translation>
+<translation id="2852045827873867442">इंटरनेट कनेक्शन होना ज़रूरी है.</translation>
 <translation id="2860184359326882502">सबसे ज़्यादा मिलते-जुलते नतीजे</translation>
 <translation id="2865888419503095837">नेटवर्क जानकारी</translation>
 <translation id="2869095047958348710">पिछला <ph name="DAY_OF_WEEK" /></translation>
@@ -1216,6 +1221,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">डेमो सत्र में Google Assistant मौजूद नहीं है.</translation>
+<translation id="4781633367688946589">नए सेशन में जारी रखें</translation>
 <translation id="4785412405516449976">सिर्फ़ Google खाते में सेव किए गए संपर्क</translation>
 <translation id="4789348252524569426">बोली पहचानने वाली फ़ाइलों को इंस्टॉल नहीं किया जा सका. इसके लिए, आपको अपने डिवाइस को अपडेट करना होगा. डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
 <translation id="478959186716341421">कास्ट किया जा रहा है</translation>
@@ -1604,6 +1610,7 @@
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
 <translation id="5955304353782037793">ऐप्लिकेशन</translation>
 <translation id="5958529069007801266">निगरानी में रखा गया उपयोगकर्ता</translation>
+<translation id="5959471481388474538">नेटवर्क उपलब्ध नहीं</translation>
 <translation id="596035801491797438">फ़ेस कंट्रोल की सुविधा बंद करें</translation>
 <translation id="5960410286721553511">फ़ोन में मौजूद हाल ही की फ़ोटो और मीडिया देखें</translation>
 <translation id="5965524703725988602">गहरे रंग वाली थीम को टॉगल करें. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@
 <translation id="7945357288295809525">सुलभता सेटिंग में दिखाएं कि "<ph name="ENABLED_FEATURES" />" चालू है.</translation>
 <translation id="7946681191253332687">ज़्यादा समय तक मिलने वाले सुरक्षा से जुड़े अपडेट उपलब्ध हैं</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> को आपका <ph name="DEVICE_NAME" /> इस्तेमाल करना है</translation>
+<translation id="7948239795436419268">विंडो को वापस न लाएं</translation>
 <translation id="7951630946012935453">कीबोर्ड की बैकलाइट कम करें</translation>
 <translation id="7953176344218790168">अपरकेस</translation>
 <translation id="7953994493035617347">क्या आपको नया रिज़ॉल्यूशन इस्तेमाल करना है?</translation>

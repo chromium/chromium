@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Niveli aktual i baterisë <ph name="BATTERY_PERCENTAGE" />%, koha e mbetur <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1179776263021875437">Ndalo fokusimin në një detyrë</translation>
+<translation id="1180117276105724040">Po restaurohen dritaret nga seanca jote e mëparshme...</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1182225749592316782">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="1182876754474670069">tasti Home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Të ndryshohet burimi i audios?</translation>
 <translation id="1505542291183484463">Ndrysho përmasat e dritares me pllakëza në drejtimin poshtë</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1519090060276706457">Restaurimi i dritareve po zgjat më shumë nga sa pritej</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
 <translation id="1521655867290435174">Fletët e Google</translation>
 <translation id="1523032696246003">Bateria <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> deri në karikimin e plotë</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Ndërro mes madhësisë maksimale ose aktuale të dritares në modalitetin "figurë brenda figurës"</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1796561540704213354">Uebsajtet duke përfshirë faqet që ke vizituar dhe faqet e hapura</translation>
+<translation id="1799852120691957794">Dritaret nga seanca jote e mëparshme nuk mund të restaurohen</translation>
 <translation id="1805407494113167797">Tingujt e "Fokusit" nuk mund të luheshin</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1815039896005206046">Opsioni i gishtave poshtë do të tregojë se nuk të pëlqen ky grup i sugjeruar</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2598725286293895280">Aplikacione të pambështetura në tavolinën e punës</translation>
 <translation id="2607678425161541573">Kërkohet identifikim online</translation>
+<translation id="2611702650078660078">Ndodhi një gabim</translation>
 <translation id="2612072250312279703">monitori i aktivitetit</translation>
 <translation id="261210853165551493">Kopjo me formatimin</translation>
 <translation id="2612614436418177118">Zhvendos një ikonë aplikacioni në rrjetën e aplikacioneve</translation>
@@ -575,6 +579,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2848120746144143659">Shtyp "Enter" për të nxjerrë pamjen e ekranit në ekran të plotë</translation>
 <translation id="2849936225196189499">Vendimtar</translation>
 <translation id="2850207700020959936">Aplikacionet nuk mund të qasen te kamera</translation>
+<translation id="2852045827873867442">Kërkohet lidhja e internetit.</translation>
 <translation id="2860184359326882502">Përputhja më e mirë</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
 <translation id="2869095047958348710">Ditën <ph name="DAY_OF_WEEK" /> të kaluar</translation>
@@ -1215,6 +1220,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Dyqani i Play</translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
+<translation id="4781633367688946589">Vazhdo te seanca e re</translation>
 <translation id="4785412405516449976">Vetëm kontaktet e tua me një "Llogari të Google"</translation>
 <translation id="4789348252524569426">Skedarët e ligjërimit nuk mund të instalohen. Pajisja jote ka nevojë që të përditësohet. Rinise pajisjen dhe provo përsëri.</translation>
 <translation id="478959186716341421">Po transmeton</translation>
@@ -1603,6 +1609,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
+<translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
 <translation id="596035801491797438">Çaktivizo "Kontrollin me anë të fytyrës"</translation>
 <translation id="5960410286721553511">Shiko fotografitë dhe mediat më të fundit të telefonit tënd</translation>
 <translation id="5965524703725988602">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7945357288295809525">Shfaq cilësimet e qasshmërisë, "<ph name="ENABLED_FEATURES" />" u aktivizua.</translation>
 <translation id="7946681191253332687">Ofrohen përditësime të sigurisë për një periudhë të zgjatur</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> dëshiron të përdorë <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Mos i restauro dritaret</translation>
 <translation id="7951630946012935453">Errëso tastierën</translation>
 <translation id="7953176344218790168">SHKRONJA KAPITALE</translation>
 <translation id="7953994493035617347">Të konfirmohet rezolucioni i ri?</translation>

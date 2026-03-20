@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Paras kuasa bateri semasa <ph name="BATTERY_PERCENTAGE" />%, tinggal <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1179776263021875437">Berhenti memfokuskan pada tugasan</translation>
+<translation id="1180117276105724040">Memulihkan tetingkap daripada sesi anda sebelum ini...</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1182225749592316782">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Tukar sumber audio?</translation>
 <translation id="1505542291183484463">Tetingkap ubah saiz berjubin ke bawah</translation>
 <translation id="1510238584712386396">Pelancar</translation>
+<translation id="1519090060276706457">Pemulihan tetingkap mengambil masa lebih lama daripada jangkaan</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk satu apl}other{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk # apl}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Bateri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Beralih antara saiz tetingkap gambar dalam gambar maksimum atau semasa</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
+<translation id="1799852120691957794">Tidak dapat memulihkan tetingkap daripada sesi anda sebelum ini</translation>
 <translation id="1805407494113167797">Tidak dapat memainkan Bunyi fokus</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="1815039896005206046">Isyarat tidak menyukai akan menghantar maklum balas yang menunjukkan bahawa anda tidak menyukai kumpulan yang dicadangkan ini</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Ambil tangkapan skrin tetingkap</translation>
 <translation id="2598725286293895280">Apl tidak disokong dalam meja</translation>
 <translation id="2607678425161541573">Log masuk dalam talian diperlukan</translation>
+<translation id="2611702650078660078">Ralat telah berlaku</translation>
 <translation id="2612072250312279703">pemantau aktiviti</translation>
 <translation id="261210853165551493">Salin dengan pemformatan</translation>
 <translation id="2612614436418177118">Alihkan apl ikon dalam grid apl</translation>
@@ -575,6 +579,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2848120746144143659">Tekan kekunci enter untuk menangkap tangkapan skrin bagi skrin penuh</translation>
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="2850207700020959936">Apl dapat mengakses kamera</translation>
+<translation id="2852045827873867442">Sambungan Internet diperlukan.</translation>
 <translation id="2860184359326882502">Padanan Terbaik</translation>
 <translation id="2865888419503095837">Maklumat rangkaian</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
@@ -1215,6 +1220,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4776917500594043016">Kata laluan untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant tidak tersedia dalam sesi tunjuk cara.</translation>
+<translation id="4781633367688946589">Teruskan kepada sesi baharu</translation>
 <translation id="4785412405516449976">Hanya kenalan anda yang mempunyai Google Account</translation>
 <translation id="4789348252524569426">Tidak boleh memasang fail pertuturan. Peranti anda perlu dikemas kini. Mulakan semula peranti anda dan cuba lagi.</translation>
 <translation id="478959186716341421">Menghantar</translation>
@@ -1603,6 +1609,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Pengguna diselia</translation>
+<translation id="5959471481388474538">Rangkaian tak tersedia</translation>
 <translation id="596035801491797438">Matikan Kawalan wajah</translation>
 <translation id="5960410286721553511">Lihat foto dan media baru-baru ini pada telefon anda</translation>
 <translation id="5965524703725988602">Togol tema Gelap. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7945357288295809525">Memaparkan tetapan kebolehaksesan, "<ph name="ENABLED_FEATURES" />" didayakan.</translation>
 <translation id="7946681191253332687">Kemaskinian keselamatan lanjutan tersedia</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
+<translation id="7948239795436419268">Jangan pulihkan tetingkap</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
 <translation id="7953176344218790168">HURUF BESAR</translation>
 <translation id="7953994493035617347">Sahkan peleraian baharu?</translation>

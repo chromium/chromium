@@ -91,7 +91,7 @@
 <translation id="1336996151357442890">اشتراک «<ph name="SITE_NAME" />» لغو شد. در بازدید بعدی دوباره از شما سؤال خواهد شد.</translation>
 <translation id="1340839264183302272">ترک گروه</translation>
 <translation id="1342886103232377846">‏برای بررسی گذرواژه‌های لورفته، به «مدیر گذرواژه Google» بروید</translation>
-<translation id="1343830902827845050">‏ورود به سیستم Chrome</translation>
+<translation id="1343830902827845050">‏وارد سیستم Chrome شوید</translation>
 <translation id="1344653310988386453">اضافه کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="1355088659320425659">سابقه و زبانه‌ها</translation>
 <translation id="1360432990279830238">از سیستم خارج و همگام‌سازی خاموش شود؟</translation>
@@ -838,7 +838,7 @@
 <translation id="4543131175509360848">برگ گذرکلیدی وجود ندارد</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> زبانه}one{<ph name="TAB_COUNT_MANY" /> زبانه، <ph name="TAB_COUNT_INCOGNITO" /> زبانه ناشناس}other{<ph name="TAB_COUNT_MANY" /> زبانه، <ph name="TAB_COUNT_INCOGNITO" /> زبانه ناشناس}}</translation>
 <translation id="4558311620361989323">میان‌برهای صفحه وب</translation>
-<translation id="4572422548854449519">به حساب مدیریت‌شده وارد شوید</translation>
+<translation id="4572422548854449519">وارد سیستم حساب مدیریت‌شده شوید</translation>
 <translation id="4577115723294378384">ترتیب براساس الف تا ی</translation>
 <translation id="4578289292431526768">بیایید شروع کنیم</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>

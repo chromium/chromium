@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1740650426894359238">Bytt til en annen profil</translation>
 <translation id="1741219894094057085">Smart Watch</translation>
+<translation id="1742773766788162541">Skann kortet og fyll ut automatisk</translation>
 <translation id="1743244221910283364">Forkast endringene</translation>
 <translation id="1748975028205587434">Velg den aktuelle filen</translation>
 <translation id="1749733017156547309">Et passord kreves</translation>
@@ -708,6 +709,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, administreres av organisasjonen din.</translation>
 <translation id="3580448612293054698">Vil du oppdatere <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
+<translation id="3583726884554296148">Lagre kortet i Google-kontoen din for å autofylle det for dette kjøpet og fremtidige kjøp i Chrome</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Organisasjonen din begrenser hva du kan lagre i Google-kontoen din.</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
@@ -1554,6 +1556,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6532106788206463496">Lagre endringene</translation>
 <translation id="6536759809440150308">Åpne <ph name="GROUP_TITLE" />, gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">eteksempel.no</translation>
+<translation id="6543899060872618437">Betal raskere med autofyll på alle enhetene dine</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="6550891580932862748">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Safe Browsing-innstillingene i andre Google-produkter påvirkes ikke.</translation>
 <translation id="6556501700899673703">Lexend</translation>

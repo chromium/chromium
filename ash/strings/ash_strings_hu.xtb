@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Jelenlegi akkumulátorszint: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> van hátra</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1179776263021875437">A feladatra való összpontosítás leállítása</translation>
+<translation id="1180117276105724040">Ablakok visszaállítása az előző munkamenetből…</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1182225749592316782">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára.</translation>
 <translation id="1182876754474670069">home</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Hangforrást szeretne váltani?</translation>
 <translation id="1505542291183484463">Ablak mozaikszerű átméretezése lefelé</translation>
 <translation id="1510238584712386396">Indító</translation>
+<translation id="1519090060276706457">Az ablakok visszaállítása a vártnál tovább tart</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Értesítési beállítások megjelenítése. Az értesítések egyetlen alkalmazásnál vannak kikapcsolva}other{Értesítési beállítások megjelenítése. Az értesítések # alkalmazásnál ki vannak kapcsolva}}</translation>
 <translation id="1521655867290435174">Google Táblázatok</translation>
 <translation id="1523032696246003">Akkumulátor <ph name="BATTERY_PERCENTAGE" />%-on | <ph name="TIME" /> a teljes feltöltésig</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Váltás a „kép a képben” ablak maximális és aktuális mérete között</translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
+<translation id="1799852120691957794">Nem lehet visszaállítani ablakokat az előző munkamenetből</translation>
 <translation id="1805407494113167797">Nem sikerült lejátszani az összpontosítást segítő hangokat</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1815039896005206046">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy nem tetszik Önnek ez a javasolt csoport</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2598725286293895280">Nem támogatott alkalmazások vannak az asztalon</translation>
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
+<translation id="2611702650078660078">Hiba történt</translation>
 <translation id="2612072250312279703">tevékenységfigyelő</translation>
 <translation id="261210853165551493">Másolás a formázás megtartásával</translation>
 <translation id="2612614436418177118">Egy alkalmazásikon áthelyezése az alkalmazásrácson belül</translation>
@@ -575,6 +579,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2848120746144143659">Nyomja le az Entert, ha a teljes képernyő tartalmáról szeretne képernyőképet készíteni</translation>
 <translation id="2849936225196189499">Fontos</translation>
 <translation id="2850207700020959936">Az alkalmazások hozzáférhetnek a kamerához</translation>
+<translation id="2852045827873867442">Internetkapcsolat szükséges.</translation>
 <translation id="2860184359326882502">Legjobb találat</translation>
 <translation id="2865888419503095837">Hálózatinformáció</translation>
 <translation id="2869095047958348710">Az előző <ph name="DAY_OF_WEEK" /></translation>
@@ -1216,6 +1221,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4776917500594043016">A(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz tartozó jelszó</translation>
 <translation id="4777825441726637019">Play Áruház</translation>
 <translation id="4778095205580009397">A Google Segéd nem áll rendelkezésre bemutató munkamenetben.</translation>
+<translation id="4781633367688946589">Folytatás új munkamenetben</translation>
 <translation id="4785412405516449976">Csak az Ön Google-fiókkal rendelkező ismerősei</translation>
 <translation id="4789348252524569426">Nem sikerült telepíteni a beszédfájlokat. Szükség van az eszköz frissítésére. Indítsa újra az eszközt, és próbálkozzon újra.</translation>
 <translation id="478959186716341421">Átküldés folyamatban</translation>
@@ -1604,6 +1610,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="595202126637698455">Teljesítménykövetés engedélyezve</translation>
 <translation id="5955304353782037793">alk</translation>
 <translation id="5958529069007801266">Felügyelt felhasználó</translation>
+<translation id="5959471481388474538">A hálózat nem érhető el</translation>
 <translation id="596035801491797438">Arcalapú vezérlés kikapcsolása</translation>
 <translation id="5960410286721553511">A telefonon található friss fotók és médiatartalmak megtekintése</translation>
 <translation id="5965524703725988602">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7945357288295809525">Kisegítő beállítások megjelenítése, „<ph name="ENABLED_FEATURES" />” engedélyezve.</translation>
 <translation id="7946681191253332687">Kiterjesztett biztonsági frissítések állnak rendelkezésre</translation>
 <translation id="7947798320695032612">A(z) <ph name="APP_NAME" /> használni szeretné a következőt: <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Ne legyenek visszaállítva az ablakok</translation>
 <translation id="7951630946012935453">A billentyűzet fényerejének csökkentése</translation>
 <translation id="7953176344218790168">NAGYBETŰS</translation>
 <translation id="7953994493035617347">Megerősíti az új felbontást?</translation>

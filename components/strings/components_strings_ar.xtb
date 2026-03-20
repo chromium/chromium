@@ -4569,6 +4569,7 @@
 <translation id="8175796834047840627">‏يتيح لك Chrome حفظ بطاقاتك في حسابك على Google لأنك سجَّلت الدخول. يمكنك تغيير هذا السلوك في الإعدادات.</translation>
 <translation id="8176440868214972690">أرسل مشرف هذا الجهاز بعض المعلومات، مثل الإعدادات أو السياسات، إلى المواقع الإلكترونية التالية.</translation>
 <translation id="817820454357658398">منتجات نظافة نسائية</translation>
+<translation id="8182470873445638343">‏<ph name="BEGIN_BOLD" />تتم مشاركة محتوى صفحة الدفع مع Google لتقديم هذه الخيارات.<ph name="END_BOLD" /> تخضع خطط الدفع لمتطلبات الأهلية. لإخفاء خيارات "الدفع لاحقًا"، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />إعدادات الدفع<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{تم حظر <ph name="FILE_NAME" /> بسبب المحتوى.}zero{تم حظر <ph name="FILE_COUNT" /> ملف بسبب المحتوى.}two{تم حظر ملفَين (<ph name="FILE_COUNT" />) بسبب المحتوى.}few{تم حظر <ph name="FILE_COUNT" /> ملفات بسبب المحتوى.}many{تم حظر <ph name="FILE_COUNT" /> ملفًا بسبب المحتوى.}other{تم حظر <ph name="FILE_COUNT" /> ملف بسبب المحتوى.}}</translation>
 <translation id="8183800802493617952">ألعاب وأنشطة موجهة نحو الأسرة</translation>
 <translation id="8184538546369750125">استخدام الإعداد التلقائي العمومي (سماح)</translation>

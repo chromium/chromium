@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Nivel actual da batería: <ph name="BATTERY_PERCENTAGE" /> %. Tempo restante: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1179776263021875437">Deixar de concentrarse na tarefa</translation>
+<translation id="1180117276105724040">Restaurando ventás da sesión anterior...</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1182225749592316782">Desta forma, terán acceso todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="1182876754474670069">inicio</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Queres cambiar a fonte de audio?</translation>
 <translation id="1505542291183484463">Colocar ventá de cambio de tamaño de mosaico cara abaixo</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
+<translation id="1519090060276706457">A restauración das ventás está tardando máis do esperado</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar a carga</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Cambiar entre o tamaño máximo e o actual da ventá da pantalla superposta</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
+<translation id="1799852120691957794">Non se poden restaurar as ventás da sesión anterior</translation>
 <translation id="1805407494113167797">Non se puideron reproducir os sons do modo Sen distraccións</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1815039896005206046">Co botón Non me gusta indicas que non che gusta este grupo suxerido</translation>
@@ -491,6 +494,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2598725286293895280">O escritorio contén aplicacións non compatibles</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
+<translation id="2611702650078660078">Produciuse un erro</translation>
 <translation id="2612072250312279703">monitor de actividade</translation>
 <translation id="261210853165551493">Copiar con formato</translation>
 <translation id="2612614436418177118">Move a icona dunha aplicación dentro da grade de aplicacións</translation>
@@ -575,6 +579,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2848120746144143659">Premer Introducir para facer captura de pantalla completa</translation>
 <translation id="2849936225196189499">Esencial</translation>
 <translation id="2850207700020959936">As aplicacións poden acceder á cámara</translation>
+<translation id="2852045827873867442">Cómpre ter conexión a Internet.</translation>
 <translation id="2860184359326882502">Do mellor resultado ao peor</translation>
 <translation id="2865888419503095837">Información da rede</translation>
 <translation id="2869095047958348710">O <ph name="DAY_OF_WEEK" /> pasado</translation>
@@ -1216,6 +1221,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>
+<translation id="4781633367688946589">Continuar na nova sesión</translation>
 <translation id="4785412405516449976">Só os contactos que teñan unha Conta de Google</translation>
 <translation id="4789348252524569426">Non se puideron instalar os ficheiros de voz. Cómpre actualizar o teu dispositivo. Reinicia o dispositivo e téntao de novo.</translation>
 <translation id="478959186716341421">Emitindo</translation>
@@ -1604,6 +1610,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
 <translation id="5955304353782037793">aplicación</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
+<translation id="5959471481388474538">Rede non dispoñible</translation>
 <translation id="596035801491797438">Desactivar control facial</translation>
 <translation id="5960410286721553511">Accede ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="5965524703725988602">Activar/desactivar o tema escuro. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7945357288295809525">Mostrar a configuración de accesibilidade. Funcións activadas: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7946681191253332687">Hai actualizacións de seguranza ampliadas dispoñibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quere usar o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Non restaurar ventás</translation>
 <translation id="7951630946012935453">Atenuar luz do teclado</translation>
 <translation id="7953176344218790168">MAIÚSCULAS</translation>
 <translation id="7953994493035617347">Queres confirmar a nova resolución?</translation>

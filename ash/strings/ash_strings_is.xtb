@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Núverandi rafhleðsla: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> eftir</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1179776263021875437">Hætta að einbeita mér að verkefni</translation>
+<translation id="1180117276105724040">Endurheimtir glugga úr fyrri lotu...</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1182225749592316782">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang</translation>
 <translation id="1182876754474670069">heim</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Skipta um hljóðgjafa?</translation>
 <translation id="1505542291183484463">Stærð gluggaramma breytt niður</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
+<translation id="1519090060276706457">Það tekur lengri tíma en búist var við að endurheimta glugga</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
 <translation id="1521655867290435174">Google töflureiknar</translation>
 <translation id="1523032696246003">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> að fullri hleðslu</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Skiptu á milli hámarksstærð eða núverandi stærðar af mynd í mynd-glugganum</translation>
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
+<translation id="1799852120691957794">Ekki tókst að endurheimta glugga úr fyrri lotu</translation>
 <translation id="1805407494113167797">Ekki tókst að spila einbeitingarhljóð</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, stjórnað af kerfisstjóra</translation>
 <translation id="1815039896005206046">„Þumall niður“ myndi senda inn þau viðbrögð að þér líki ekki við hópinn sem stungið er upp á</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2598725286293895280">Óstudd forrit í skrifborði</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
+<translation id="2611702650078660078">Villa kom upp</translation>
 <translation id="2612072250312279703">virknieftirlit</translation>
 <translation id="261210853165551493">Afrita með sniði</translation>
 <translation id="2612614436418177118">Færa forritatákn innan forritatöflu</translation>
@@ -575,6 +579,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="2848120746144143659">Ýttu á Enter til að taka skjámynd af öllum skjánum</translation>
 <translation id="2849936225196189499">Hætta</translation>
 <translation id="2850207700020959936">Forrit hafa aðgang að myndavél</translation>
+<translation id="2852045827873867442">Nettengingar er krafist.</translation>
 <translation id="2860184359326882502">Besta samsvörun</translation>
 <translation id="2865888419503095837">Upplýsingar um net</translation>
 <translation id="2869095047958348710">Síðasti <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4776917500594043016">Aðgangsorð fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google-hjálparinn er ekki í boði í prufuútgáfu.</translation>
+<translation id="4781633367688946589">Halda áfram í næstu lotu</translation>
 <translation id="4785412405516449976">Aðeins tengiliðir þínir með Google-reikning</translation>
 <translation id="4789348252524569426">Ekki er hægt að setja upp raddskrár. Þú þarft að uppfæra tækið. Endurræstu tækið og reyndu aftur.</translation>
 <translation id="478959186716341421">Sendir út</translation>
@@ -1603,6 +1609,7 @@ Engin tæki eru tengd.</translation>
 <translation id="595202126637698455">Kveikt á afkastarakningu</translation>
 <translation id="5955304353782037793">forrit</translation>
 <translation id="5958529069007801266">Stýrður notandi</translation>
+<translation id="5959471481388474538">Netið er ekki tiltækt</translation>
 <translation id="596035801491797438">Slökkva á andlitsstýringu</translation>
 <translation id="5960410286721553511">Skoðaðu nýlegar myndir og margmiðlunarefni símans</translation>
 <translation id="5965524703725988602">Kveikja/slökkva á dökku þema. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7945357288295809525">Sýna aðgengisstillingar, kveikt er á „<ph name="ENABLED_FEATURES" />“.</translation>
 <translation id="7946681191253332687">Framlengdar öryggisuppfærslur í boði</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill nota <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Ekki endurheimta glugga</translation>
 <translation id="7951630946012935453">Myrkva lyklaborð</translation>
 <translation id="7953176344218790168">HÁSTAFIR</translation>
 <translation id="7953994493035617347">Staðfesta nýja upplausn?</translation>

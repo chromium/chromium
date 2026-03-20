@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">अहिलेको ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />% छ भने ब्याट्री फुल चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1179776263021875437">कार्यमा फोकस गर्न छाड्नुहोस्</translation>
+<translation id="1180117276105724040">तपाईंको पछिल्लो सत्रबाट विन्डोहरू रिस्टोर गरिँदै छ...</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1182225749592316782">तपाईंले यसो गर्नुभयो भने क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="1182876754474670069">होम की</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">अडियोको स्रोत बदल्ने हो?</translation>
 <translation id="1505542291183484463">विन्डोको टाइलको आकार तलतिरबाट बदल्नुहोस्</translation>
 <translation id="1510238584712386396">लन्चर</translation>
+<translation id="1519090060276706457">विन्डोहरू रिस्टोर गर्न अपेक्षा गरिएभन्दा बढी समय लागिरहेको छ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1521655867290435174">Google पाना</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Picture-in-picture विन्डोको अधिकतम वा हालको आकारका बिचमा अदलबदल गर्नुहोस्</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
+<translation id="1799852120691957794">तपाईंको पछिल्लो सत्रका विन्डोहरू रिस्टोर गर्न सकिएन</translation>
 <translation id="1805407494113167797">फोकस साउन्डहरू प्ले गर्न सकिएन</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1815039896005206046">तपाईंले थम्ज डाउन बटनमा क्लिक गर्नुभयो भने तपाईंलाई सुझाइएको यो समूह मन परेन भन्ने अर्थ लाग्छ</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">विन्डोको स्क्रिनसट लिनुहोस्‌</translation>
 <translation id="2598725286293895280">यो डेस्कमा प्रयोग गर्न नमिल्ने एपहरू छन्</translation>
 <translation id="2607678425161541573">अनलाइन मार्फत साइन इन गर्नु पर्ने हुन्छ</translation>
+<translation id="2611702650078660078">कुनै त्रुटि भयो</translation>
 <translation id="2612072250312279703">एक्टिभिटी मनिटर</translation>
 <translation id="261210853165551493">फर्म्याटिङसहित कपी गर्नुहोस्</translation>
 <translation id="2612614436418177118">एप ग्रिडभित्र कुनै एपको आइकन सार्नुहोस्</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">पूरै स्क्रिनको स्क्रिनसट खिच्न इन्टर थिच्नुहोस्</translation>
 <translation id="2849936225196189499">नाजुक</translation>
 <translation id="2850207700020959936">एपहरूले क्यामेरा एक्सेस गर्न सक्छन्</translation>
+<translation id="2852045827873867442">इन्टरनेट कनेक्सन चाहिन्छ।</translation>
 <translation id="2860184359326882502">सबैभन्दा मिल्दोजुल्दो</translation>
 <translation id="2865888419503095837">नेटवर्क सम्बन्धी जानकारी</translation>
 <translation id="2869095047958348710">गएको <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोर</translation>
 <translation id="4778095205580009397">Google सहायक डेमो सत्रमा उपलब्ध छैन।</translation>
+<translation id="4781633367688946589">नयाँ सत्रमा जारी राख्नुहोस्</translation>
 <translation id="4785412405516449976">Google खाता भएका तपाईंका कन्ट्याक्टहरू मात्र</translation>
 <translation id="4789348252524569426">वाक् पहिचानसम्बन्धी फाइलहरू इन्स्टल गर्न सकिएन। तपाईंको डिभाइस अपडेट गर्नु पर्ने हुन्छ। आफ्नो डिभाइस रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="478959186716341421">Cast गर्दै</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
 <translation id="5955304353782037793">एप</translation>
 <translation id="5958529069007801266">सुपरिवेक्षित प्रयोगकर्ता</translation>
+<translation id="5959471481388474538">नेटवर्क उपलब्ध छैन</translation>
 <translation id="596035801491797438">फेस कन्ट्रोल अफ गर्नुहोस्</translation>
 <translation id="5960410286721553511">आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्</translation>
 <translation id="5965524703725988602">अँध्यारो थिम टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">एक्सेसिबिलिटी सेटिङ देखाउनुहोस्, "<ph name="ENABLED_FEATURES" />" अन गरिएको छ।</translation>
 <translation id="7946681191253332687">"सुरक्षासम्बन्धी विस्तारित अपडेट" उपलब्ध छ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ</translation>
+<translation id="7948239795436419268">विन्डोहरू रिस्टोर नगर्नुहोस्</translation>
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
 <translation id="7953176344218790168">अपरकेस</translation>
 <translation id="7953994493035617347">नयाँ रिजोल्युसन पुष्टि गर्ने हो?</translation>

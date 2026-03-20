@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Akun varaustaso <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> jäljellä</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1179776263021875437">Lopeta tehtävään keskittyminen</translation>
+<translation id="1180117276105724040">Palautetaan edellisen istunnon ikkunoita…</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1182225749592316782">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa</translation>
 <translation id="1182876754474670069">koti</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Vaihdetaanko audiolähdettä?</translation>
 <translation id="1505542291183484463">Laattamuotoisen ikkunan koon siirtäminen alaspäin</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
+<translation id="1519090060276706457">Ikkunoiden palauttaminen kestää odotettua kauemmin</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Näytä ilmoitusasetukset. Ilmoitukset on poistettu 1 sovelluksen käytöstä.}other{Näytä ilmoitusasetukset. Ilmoitukset on poistettu # sovelluksen käytöstä.}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Akku <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> täyteen lataukseen</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Vaihda pikkuruutu-ikkunan maksimikoon tai tämänhetkisen koon välillä</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1796561540704213354">Verkkosivustot, esimerkiksi aiemmin avaamasi sivut ja avoinna olevat sivut</translation>
+<translation id="1799852120691957794">Edellisen istunnon ikkunoita ei voi palauttaa</translation>
 <translation id="1805407494113167797">Keskittymisääniä ei voitu toistaa</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="1815039896005206046">En tykkää ‑painike kertoo, ettet pidä tästä ehdotetusta ryhmästä</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2598725286293895280">Työpöydällä on ei-tuettuja sovelluksia</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
+<translation id="2611702650078660078">Tapahtui virhe</translation>
 <translation id="2612072250312279703">toimintojen seuranta</translation>
 <translation id="261210853165551493">Kopioi muotoilulla</translation>
 <translation id="2612614436418177118">Siirrä sovelluksen kuvaketta sovellusruudukossa</translation>
@@ -575,6 +579,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2848120746144143659">Ota koko näytön kuvakaappaus painamalla Enter</translation>
 <translation id="2849936225196189499">Kriittinen</translation>
 <translation id="2850207700020959936">Sovelluksilla on pääsy kameraan</translation>
+<translation id="2852045827873867442">Edellyttää internetyhteyttä.</translation>
 <translation id="2860184359326882502">Paras osuma</translation>
 <translation id="2865888419503095837">Verkon tiedot</translation>
 <translation id="2869095047958348710">Viime <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
 <translation id="4777825441726637019">Play Kauppa</translation>
 <translation id="4778095205580009397">Google Assistantia ei voi käyttää demo-käyttökerralla.</translation>
+<translation id="4781633367688946589">Jatka uuteen istuntoon</translation>
 <translation id="4785412405516449976">Vain kontaktisi, joilla on Google-tili</translation>
 <translation id="4789348252524569426">Puhetiedostojen asentaminen ei onnistu. Laite on päivitettävä. Käynnistä laite uudelleen ja yritä sitten.</translation>
 <translation id="478959186716341421">Suoratoistetaan</translation>
@@ -1603,6 +1609,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="595202126637698455">Tehokkuuden seuranta on käytössä</translation>
 <translation id="5955304353782037793">sov.</translation>
 <translation id="5958529069007801266">Valvottu käyttäjä</translation>
+<translation id="5959471481388474538">Verkko ei käytettävissä</translation>
 <translation id="596035801491797438">Laita kasvo-ohjaus pois päältä</translation>
 <translation id="5960410286721553511">Katsele puhelimesi viimeisimpiä kuvia ja mediaa</translation>
 <translation id="5965524703725988602">Tumma teema päälle/pois. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7945357288295809525">Näytä saavutettavuusasetukset, <ph name="ENABLED_FEATURES" /> käytössä.</translation>
 <translation id="7946681191253332687">Laajempia tietoturvapäivityksiä saatavilla</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> haluaa käyttää tätä: <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Älä palauta ikkunoita</translation>
 <translation id="7951630946012935453">Himmennä näppäimistö</translation>
 <translation id="7953176344218790168">ISOT KIRJAIMET</translation>
 <translation id="7953994493035617347">Vahvistetaanko uusi resoluutio?</translation>

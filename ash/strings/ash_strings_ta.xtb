@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">தற்போதைய பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> இல் காலியாகிவிடும்</translation>
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1179776263021875437">பணியில் கவனம் செலுத்துவதை நிறுத்தும்</translation>
+<translation id="1180117276105724040">உங்களின் முந்தைய அமர்வில் இருந்து சாளரங்களை மீட்டெடுக்கிறது...</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1182225749592316782">கேமரா, மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் அணுகலை இது வழங்கும்</translation>
 <translation id="1182876754474670069">முகப்பு</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ஆடியோ சாதனத்தை மாற்றவா?</translation>
 <translation id="1505542291183484463">கட்டக் காட்சிச் சாளரத்தைக் கீழ்ப்புறம் இழுக்க</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
+<translation id="1519090060276706457">சாளரங்களை மீட்டெடுக்க எதிர்பார்த்ததைவிட அதிக நேரம் எடுக்கிறது</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். ஒரு ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}other{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். # ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">பேட்டரி <ph name="BATTERY_PERCENTAGE" />% | முழுமையாகச் சார்ஜ் ஆக <ph name="TIME" /> ஆகும்</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">பிக்ச்சர்-இன்-பிக்ச்சர் சாளரத்தின் அதிகபட்ச அளவுக்கும் தற்போதைய அளவுக்கும் இடையே மாறலாம்</translation>
 <translation id="1787955149152357925">முடக்கு</translation>
 <translation id="1796561540704213354">நீங்கள் பார்வையிட்ட பக்கங்கள் மற்றும் திறந்துள்ள பக்கங்களை உள்ளடக்கிய இணையதளங்கள்</translation>
+<translation id="1799852120691957794">உங்களின் முந்தைய அமர்வில் இருந்து சாளரங்களை மீட்டெடுக்க முடியவில்லை</translation>
 <translation id="1805407494113167797">ஃபோகஸ் பயன்முறைக்கான ஒலிகளைப் பிளே முடியவில்லை</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="1815039896005206046">தம்ஸ்-டவுன் வழங்குவதால் இந்தக் குழுப் பரிந்துரையை நீங்கள் விரும்பவில்லை என்று கருத்து தெரிவிக்கப்படும்</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2598725286293895280">டெஸ்க்கில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
+<translation id="2611702650078660078">பிழை ஏற்பட்டது</translation>
 <translation id="2612072250312279703">செயல்பாட்டுக் கண்காணிப்பு</translation>
 <translation id="261210853165551493">வடிவமைப்புடன் நகலெடு</translation>
 <translation id="2612614436418177118">ஆப்ஸ் கட்டக் காட்சியில் ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">முழுத்திரையை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2850207700020959936">ஆப்ஸால் கேமராவை அணுக முடியும்</translation>
+<translation id="2852045827873867442">இணைய இணைப்பு தேவை.</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2869095047958348710">கடந்த <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> க்கான கடவுச்சொல்</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">டெமோ அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த முடியாது.</translation>
+<translation id="4781633367688946589">புதிய அமர்விற்குச் செல்லுங்கள்</translation>
 <translation id="4785412405516449976">Google கணக்கு வைத்திருக்கும் உங்கள் தொடர்புகளுக்கு மட்டும்</translation>
 <translation id="4789348252524569426">பேச்சு அறிதல் ஃபைல்களை நிறுவ முடியவில்லை. உங்கள் சாதனத்தைப் புதுப்பிக்க வேண்டும். சாதனத்தை மீண்டும் தொடங்கி மறுபடியும் முயலவும்.</translation>
 <translation id="478959186716341421">அனுப்புகிறது</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5958529069007801266">மேற்பார்வையிடப்படும் பயனர்</translation>
+<translation id="5959471481388474538">நெட்வொர்க் கிடைக்கவில்லை</translation>
 <translation id="596035801491797438">முகக் கட்டுப்பாட்டை முடக்கு</translation>
 <translation id="5960410286721553511">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் பார்க்கலாம்</translation>
 <translation id="5965524703725988602">டார்க் தீமினை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">அணுகல்தன்மை அமைப்புகளைக் காட்டும், "<ph name="ENABLED_FEATURES" />" இயக்கப்பட்டுள்ளது.</translation>
 <translation id="7946681191253332687">நீட்டிக்கப்பட்ட பாதுகாப்புப் புதுப்பிப்புகள் உள்ளன</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது</translation>
+<translation id="7948239795436419268">சாளரங்களை மீட்டெடுக்க வேண்டாம்</translation>
 <translation id="7951630946012935453">கீபோர்டு வெளிச்சத்தைக் குறை</translation>
 <translation id="7953176344218790168">பேரெழுத்து</translation>
 <translation id="7953994493035617347">புதிய தெளிவுத்திறனை உறுதிப்படுத்தவா?</translation>

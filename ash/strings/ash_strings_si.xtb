@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">වත්මන් බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> ක් ඉතුරුයි</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1179776263021875437">කාර්යය මත අවධානය යොමු කිරීම නවත්වන්න</translation>
+<translation id="1180117276105724040">ඔබගේ පෙර සැසියෙන් කවුළු ප්‍රතිසාධනය කරමින්...</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1182225749592316782">මෙය කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="1182876754474670069">නිවස</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ශ්‍රව්‍ය මූලාශ්‍රය මාරු කරන්න ද?</translation>
 <translation id="1505542291183484463">පහළට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="1510238584712386396">දියත්කරණය</translation>
+<translation id="1519090060276706457">කවුළු ප්‍රතිසාධනය කිරීමට බලාපොරොත්තු වූවාට වඩා වැඩි කාලයක් ගතවේ.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුමක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}one{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුම් # ක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}other{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුම් # ක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}}</translation>
 <translation id="1521655867290435174">Google පත්‍ර</translation>
 <translation id="1523032696246003">බැටරිය <ph name="BATTERY_PERCENTAGE" />% | සම්පූර්ණ වන තෙක් <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">පින්තූරය-තුළ-පින්තූර කවුළුවේ උපරිම හෝ වත්මන් තරම අතර මාරු වන්න</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="1796561540704213354">ඔබ පිවිසි පිටු සහ විවෘත පිටු ඇතුළු වෙබ් අඩවි</translation>
+<translation id="1799852120691957794">ඔබේ පෙර සැසියෙන් කවුළු ප්‍රතිස්ථාපනය කළ නොහැක</translation>
 <translation id="1805407494113167797">නාභිගත ශබ්ද වාදනය කළ නොහැකි විය</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="1815039896005206046">මෙම යෝජිත සමූහයට ඔබ අකමැති බවට ප්‍රතිපෝෂණය, මහපටැඟිල්ල පහළට යොමු කරනු ඇත</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
 <translation id="2598725286293895280">මේසය තුළ සහාය නොදක්වන යෙදුම්</translation>
 <translation id="2607678425161541573">සබැඳි පිරීම අවශ්‍යයි</translation>
+<translation id="2611702650078660078">දෝෂයක් ඇති විය</translation>
 <translation id="2612072250312279703">ක්‍රියාකාරකම් මොනිටරය</translation>
 <translation id="261210853165551493">හැඩතල ගැන්වීම සමග පිටපත් කරන්න</translation>
 <translation id="2612614436418177118">යෙදුම් ජාලකය තුළ යෙදුම් නිරූපකය ගෙන යන්න</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">පූර්ණ තිර රුවක් ලබා ගැනීමට Enter ඔබන්න</translation>
 <translation id="2849936225196189499">තීරණාත්මක</translation>
 <translation id="2850207700020959936">යෙදුම්වලට කැමරාවට ප්‍රවේශ විය හැක</translation>
+<translation id="2852045827873867442">අන්තර්ජාල සම්බන්ධතාවය අවශ්‍යයි.</translation>
 <translation id="2860184359326882502">හොඳම ගැළපීම</translation>
 <translation id="2865888419503095837">ජාල තොරතුරු</translation>
 <translation id="2869095047958348710">මෙම පසු වූ <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ආදර්ශන සැසියකදී Google සහකරු නොලැබේ.</translation>
+<translation id="4781633367688946589">නව සැසියට ඉදිරියට යන්න</translation>
 <translation id="4785412405516449976">Google ගිණුමක් සහිත ඔබේ සම්බන්ධතා පමණි</translation>
 <translation id="4789348252524569426">කථන ගොනු ස්ථාපනය කළ නොහැක. ඔබේ උපාංගය යාවත්කාලීන කිරීමට අවශ්‍යයි. ඔබේ උපාංගය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="478959186716341421">විකාශය කරමින්</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
 <translation id="5955304353782037793">යෙදුම</translation>
 <translation id="5958529069007801266">අධීක්ෂණය කරන ලද භාවිතකරු</translation>
+<translation id="5959471481388474538">ජාලය ලද නොහැක</translation>
 <translation id="596035801491797438">මුහුණු පාලනය ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5960410286721553511">ඔබගේ දුරකථනයේ මෑත ඡායාරූප සහ මාධ්‍ය බලන්න</translation>
 <translation id="5965524703725988602">අඳුරු තේමාව ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">ප්‍රවේශ්‍යතා සැකසීම් පෙන්වන්න, "<ph name="ENABLED_FEATURES" />" සබල කර ඇත.</translation>
 <translation id="7946681191253332687">දීර්ඝ කළ ආරක්‍ෂක යාවත්කාලීන ලැබේ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> හට ඔබේ <ph name="DEVICE_NAME" /> භාවිතා කිරීමට අවශ්‍යයි</translation>
+<translation id="7948239795436419268">කවුළු ප්‍රතිසාධනය නොකරන්න</translation>
 <translation id="7951630946012935453">යතුරු පුවරුව අඳුරු කරන්න</translation>
 <translation id="7953176344218790168">සියල්ල කැපිටල් අකුරු</translation>
 <translation id="7953994493035617347">නව විභේදනය තහවුරු කරන්න ද?</translation>

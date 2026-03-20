@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">बॅटरीची सद्य पातळी <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> शिल्लक आहे</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1179776263021875437">टास्कवर फोकस करणे थांबवा</translation>
+<translation id="1180117276105724040">तुमच्या मागील सेशनमधून विंडो रिस्टोअर करत आहे...</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1182225749592316782">हे कॅमेरा आणि मायक्रोफोन परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते</translation>
 <translation id="1182876754474670069">होम</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ऑडिओ स्रोत स्विच करायचा आहे का?</translation>
 <translation id="1505542291183484463">विंडोच्या टाइलचा आकार खालच्या दिशेने बदला</translation>
 <translation id="1510238584712386396">लाँचर</translation>
+<translation id="1519090060276706457">विंडो रिस्टोअर करण्यासाठी अपेक्षेहून अधिक वेळ लागत आहे</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">चित्रात-चित्र विंडोच्या कमाल किंवा सध्याच्या आकारादरम्यान स्विच करा</translation>
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="1796561540704213354">तुम्ही भेट दिलेल्या आणि उघडलेल्या पेजसह वेबसाइट</translation>
+<translation id="1799852120691957794">तुमच्या खाजगी सेशनमधील विंडो रिस्टोअर करू शकत नाही</translation>
 <translation id="1805407494113167797">फोकस मोडसंबंधित आवाज प्ले करता आले नाहीत</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="1815039896005206046">थंब्स डाउन हे तुम्हाला हा सुचवलेला गट आवडला नाही असा फीडबॅक सबमिट करेल</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2598725286293895280">डेस्‍कमधील सपोर्ट नसलेली अ‍ॅप्स</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
+<translation id="2611702650078660078">एरर आली:</translation>
 <translation id="2612072250312279703">अ‍ॅक्टिव्हिटी मॉनिटर</translation>
 <translation id="261210853165551493">फॉरमॅटिंगसह कॉपी करा</translation>
 <translation id="2612614436418177118">अ‍ॅप आयकन हा अ‍ॅप ग्रिडमध्ये हलवा</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">फुल स्क्रीन स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2849936225196189499">गंभीर</translation>
 <translation id="2850207700020959936">ॲप्स कॅमेरा ॲक्सेस करू शकतात</translation>
+<translation id="2852045827873867442">इंटरनेट कनेक्शन आवश्यक आहे.</translation>
 <translation id="2860184359326882502">सर्वोत्तम जुळणी</translation>
 <translation id="2865888419503095837">नेटवर्क माहिती</translation>
 <translation id="2869095047958348710">मागील <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> साठी पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
 <translation id="4778095205580009397">डेमो सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
+<translation id="4781633367688946589">नवीन सेशनमध्ये पुढे सुरू ठेवा</translation>
 <translation id="4785412405516449976">फक्त Google खाते असलेले तुमचे संपर्क</translation>
 <translation id="4789348252524569426">स्पीच फाइल इंस्टॉल करू शकत नाही. तुमचे डिव्हाइस अपडेट करणे आवश्यक आहे. तुमचे डिव्हाइस रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="478959186716341421">कास्ट करीत आहे</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="5959471481388474538">नेटवर्क उपलब्ध नाही</translation>
 <translation id="596035801491797438">चेहरा नियंत्रण बंद करा</translation>
 <translation id="5960410286721553511">तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">अ‍ॅक्सेसिबिलिटी सेटिंग्ज दाखवा, "<ph name="ENABLED_FEATURES" />" सुरू केले आहे.</translation>
 <translation id="7946681191253332687">विस्तारित सुरक्षा अपडेट उपलब्ध आहेत</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ला तुमचे <ph name="DEVICE_NAME" /> वापरायचे आहे</translation>
+<translation id="7948239795436419268">विंडो रिस्टोअर करू नका</translation>
 <translation id="7951630946012935453">कीबोर्ड डिम करा</translation>
 <translation id="7953176344218790168">अप्परकेस</translation>
 <translation id="7953994493035617347">नवीन रेझोल्यूशन कन्फर्म करायचे आहे का?</translation>

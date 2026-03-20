@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">বৰ্তমানৰ বেটাৰীৰ স্তৰ <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> বাকী</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1179776263021875437">কাৰ্যত ফ’কাছ কৰাটো বন্ধ কৰক</translation>
+<translation id="1180117276105724040">আপোনাৰ পূৰ্বৱৰ্তী ছেশ্বন পৰা ৱিণ্ড’ পুনঃস্থাপন কৰি থকা হৈছে...</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1182225749592316782">এইটোৱে কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে</translation>
 <translation id="1182876754474670069">হ’ম</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">অডিঅ’ৰ উৎস সলনি কৰিবনে?</translation>
 <translation id="1505542291183484463">টাইল কৰা ৱিণ্ড’ৰ আকাৰ তলৰ ফালে সলনি কৰা</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
+<translation id="1519090060276706457">ৱিণ্ড’ পুনঃস্থাপন কৰাটোৱে আশা কৰাতকৈ অধিক সময় লৈছে</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{জাননীৰ ছেটিংসমূহ দেখুৱাওক। কোনো এপৰ বাবে জাননী বন্ধ কৰা আছে}one{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}other{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">বেটাৰী <ph name="BATTERY_PERCENTAGE" />% | সম্পূৰ্ণ হ'বলৈ <ph name="TIME" /> সময় বাকী আছে</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">picture-in-picture ৱিণ্ডৰ সর্বাধিক বা বর্তমানৰ আকাৰৰ মাজত সালসলনি কৰক</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
+<translation id="1799852120691957794">আপোনাৰ পূৰ্বৱৰ্তী ছেশ্বনৰ পৰা ৱিণ্ড’ পুনঃস্থাপন কৰিব নোৱাৰি</translation>
 <translation id="1805407494113167797">Focus ধ্বনি প্লে’ কৰিব পৰা নগ’ল</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1815039896005206046">থাম্বছ ডাউন চিহ্নটোৱে আপুনি ই পৰামৰ্শিত গোটটো পচন্দ নাই কৰা বুলি দাখিল কৰিব</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ৱিণ্ড’ৰ স্ক্রীণশ্বট লওক</translation>
 <translation id="2598725286293895280">ডেস্কত সমৰ্থন নকৰা এপ্‌ আছে</translation>
 <translation id="2607678425161541573">অনলাইন ছাইন ইনৰ আৱশ্যক</translation>
+<translation id="2611702650078660078">কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2612072250312279703">কাৰ্যকলাপ পৰ্যবেক্ষক</translation>
 <translation id="261210853165551493">ফৰ্মেটিঙৰ জৰিয়তে প্ৰতিলিপি কৰক</translation>
 <translation id="2612614436418177118">এপৰ গ্ৰিডৰ ভিতৰত এটা এপৰ চিহ্ন স্থানান্তৰ কৰক</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">সম্পূৰ্ণ স্ক্ৰীনৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="2850207700020959936">এপ্‌সমূহে কেমেৰা এক্সেছ কৰিব পাৰে</translation>
+<translation id="2852045827873867442">ইণ্টাৰনেট সংযোগৰ প্ৰয়োজন।</translation>
 <translation id="2860184359326882502">আটাইতকৈ ভালদৰে মিলা</translation>
 <translation id="2865888419503095837">নেটৱৰ্কৰ তথ্য</translation>
 <translation id="2869095047958348710">যোৱা <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ৰ পাছৱর্ড</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ডেম’ ছেশ্বনত উপলব্ধ নহয়।</translation>
+<translation id="4781633367688946589">নতুন ছেশ্বনলৈ অব্যাহত ৰাখক</translation>
 <translation id="4785412405516449976">কেৱল Google একাউণ্ট থকা আপোনাৰ সম্পৰ্ক</translation>
 <translation id="4789348252524569426">কথনৰ ফাইল ইনষ্টল কৰিব নোৱাৰি। আপোনাৰ ডিভাইচটো আপডে’ট কৰাৰ প্ৰয়োজন। আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="478959186716341421">কাষ্টিং</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ষম কৰা হৈছে</translation>
 <translation id="5955304353782037793">এপ্</translation>
 <translation id="5958529069007801266">নিৰীক্ষণত থকা ব্যৱহাৰকাৰী</translation>
+<translation id="5959471481388474538">নেটৱৰ্ক উপলব্ধ নহয়</translation>
 <translation id="596035801491797438">মুখাৱয়বৰ নিয়ন্ত্ৰণ অফ কৰক</translation>
 <translation id="5960410286721553511">আপোনাৰ ফ’নটোৰ শেহতীয়া ফট’ আৰু মিডিয়া চাওক</translation>
 <translation id="5965524703725988602">গাঢ় ৰঙৰ থীম ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">সাধ্য সুবিধাৰ ছেটিং দেখুৱাওক, "<ph name="ENABLED_FEATURES" />" সক্ষম কৰা হৈছে।</translation>
 <translation id="7946681191253332687">সুৰক্ষা সম্পৰ্কীয় বৰ্ধিত আপডে’ট উপলব্ধ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />এ আপোনাৰ <ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰিব বিচাৰে</translation>
+<translation id="7948239795436419268">ৱিণ্ড’ পুনঃস্থাপন নকৰিব</translation>
 <translation id="7951630946012935453">কীব’ৰ্ডৰ পোহৰ কমাওক</translation>
 <translation id="7953176344218790168">বৰফলা</translation>
 <translation id="7953994493035617347">নতুন ৰিজ’লিউছন নিশ্চিত কৰিবনে?</translation>

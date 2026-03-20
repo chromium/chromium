@@ -162,6 +162,7 @@
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1104098698795583187">이 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="1105934302947321130">Google Beam with Zoom</translation>
 <translation id="1106270460549661906">Gemini와 공유 해제</translation>
 <translation id="1106350001632362876">기준 높이기</translation>
 <translation id="110850812463801904">수동으로 OneDrive에 연결</translation>
@@ -284,7 +285,6 @@
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
 <translation id="1179400851034021914">IBAN이 잘못되었습니다.</translation>
 <translation id="1179902906564467236">휴대전화의 안내를 따르거나 카메라 앱을 사용하세요.</translation>
-<translation id="1180117276105724040">이전 세션의 창을 복원 중…</translation>
 <translation id="118057123461613219">메모리 최대 절약</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -762,7 +762,6 @@
 <translation id="151501797353681931">Safari에서 가져온 북마크</translation>
 <translation id="1515163294334130951">실행</translation>
 <translation id="1517467582299994451">코드로 전송하려면 Chrome 브라우저 동기화 설정을 사용 설정하세요.</translation>
-<translation id="1519090060276706457">창 복원이 예상보다 오래 걸림</translation>
 <translation id="1521442365706402292">인증서 관리</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
@@ -1111,6 +1110,7 @@
 <translation id="1745732479023874451">연락처 관리</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{이 웹 앱에서 # 파일을 열고 수정하시겠습니까?}}</translation>
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
+<translation id="1749645492410897998">소프트웨어 설치 중</translation>
 <translation id="1749733017156547309">비밀번호를 입력해야 합니다.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
 <translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
@@ -1182,7 +1182,6 @@
 <translation id="1796460466266263589">계속 Gemini를 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1798726622311813209">신용카드 및 체크카드</translation>
-<translation id="1799852120691957794">이전 세션의 창을 복원할 수 없음</translation>
 <translation id="180203835522132923">검색 + O를 누른 후 W</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
@@ -2381,7 +2380,6 @@
 <translation id="2610374175948698697">기기에 있는 파일 또는 폴더를 볼 수 있음</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft 계정에 로그인한 후 다시 시도해 보세요</translation>
-<translation id="2611702650078660078">오류가 발생했습니다</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
 <translation id="2611885296070244383">마이크(내부)</translation>
 <translation id="2612676031748830579">카드 번호</translation>
@@ -2745,7 +2743,6 @@
 <translation id="285033512555869047">닫힘</translation>
 <translation id="2850541429955027218">테마 추가</translation>
 <translation id="2851291081585704741">오프라인 상태입니다</translation>
-<translation id="2852045827873867442">인터넷 연결이 필요합니다</translation>
 <translation id="285237063405807022">(로드 중)</translation>
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
 <translation id="2854453262159518435">기존 탭 그룹 바꾸기</translation>
@@ -3612,6 +3609,7 @@
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
+<translation id="3474330892505468100">Google Beam with Meet</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3477772589943384839">메모리를 적당히 절약할 수 있습니다. 좀 더 긴 시간이 지나면 탭이 비활성화됩니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
@@ -5498,7 +5496,6 @@
 <translation id="4779766576531456629">eSIM 셀룰러 네트워크 이름 바꾸기</translation>
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
 <translation id="4780558987886269159">업무용</translation>
-<translation id="4781633367688946589">새 세션으로 계속</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
@@ -6287,6 +6284,7 @@
 <translation id="5337926771328966926">현재 기기 이름: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">시크릿 창을 사용하면 비공개로 탐색할 수 있습니다.</translation>
 <translation id="5338503421962489998">로컬 저장소</translation>
+<translation id="5340620183031438925">페이지를 나가지 않고 탭에 관해 AI 모드에게 물어보려면 본인 인증을 진행하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="5340787663756381836">찾기 및 수정하기(&amp;F)</translation>
 <translation id="5340900621595888432">진단 및 사용 데이터 전송</translation>
 <translation id="5341793073192892252">다음 쿠키가 차단됨(타사 쿠키는 예외 없이 차단됨)</translation>
@@ -7473,7 +7471,6 @@
 <translation id="6180550893222597997"><ph name="APP_NAME" />에 어떤 패스키를 사용하시겠습니까?</translation>
 <translation id="6181218116951226898">앱에서 브랜딩을 업데이트하는 경우가 있습니다. 업데이트 전에 모든 변경사항을 검토해 변경사항이 적용되어도 괜찮은지 확인하세요.</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
-<translation id="6182100780603067202">모든 창에서 애플리케이션 오디오도 공유</translation>
 <translation id="6183369864942961155">밝은 테마/어두운 테마 자동 전환</translation>
 <translation id="6183773856988300112">Chrome의 Gemini는 자동 탐색을 사용하여 탭에서 작동하고 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">탭 검색</translation>
@@ -8266,7 +8263,6 @@
 <translation id="6754359471209693699">새 검색 시작</translation>
 <translation id="6754918760968695779">빠른 입력</translation>
 <translation id="6755702685749429945">사전 추가</translation>
-<translation id="6756157672127672536">파일 앱을 사용하면 Google Drive, 외부 저장소, ChromeOS 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="6756643207511618722">음성 엔진</translation>
 <translation id="6757431299485455321">다른 기기가 이 핫스팟을 찾도록 돕습니다.</translation>
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
@@ -9213,6 +9209,7 @@
 <translation id="7406912950279255498">색상 반전 모드</translation>
 <translation id="7407430846095439694">가져오기 및 연결</translation>
 <translation id="7407504355934009739">대부분의 사용자가 이 사이트의 알림을 차단합니다.</translation>
+<translation id="7407578029724074226"><ph name="FILE_NAME" />에 민감한 정보가 있습니다. 조직에서 클라우드 스토리지에 저장하거나 삭제하도록 허용합니다.</translation>
 <translation id="7408080603962564527">다른 사용자에게 표시됩니다.</translation>
 <translation id="740810853557944681">인쇄 서버 추가</translation>
 <translation id="7409549334477097887">아주 크게</translation>
@@ -9265,6 +9262,7 @@
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
+<translation id="743982235360757672">탐색할 때 AI 모드에 언제나 손쉽게 액세스하세요</translation>
 <translation id="7441736532026945583">'그룹 숨기기'를 선택하여 탭 표시줄에서 그룹을 삭제합니다.</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>
@@ -10003,7 +10001,6 @@
 <translation id="794676567536738329">권한 확인</translation>
 <translation id="7947962633355574091">동영상 주소 복사(&amp;O)</translation>
 <translation id="7947964080535614577">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
-<translation id="7948239795436419268">창 복원 안함</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />의 모든 페이지</translation>
 <translation id="7950629216186736592">이유: LBS는 http://, https:// 및 file:// URL만 지원합니다.</translation>
 <translation id="7950814699499457511">사용 • 이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다.</translation>
@@ -11192,7 +11189,6 @@
 <translation id="8751034568832412184">학교</translation>
 <translation id="8751329102746373229">관리자 제공 인증서</translation>
 <translation id="8752451679755290210">항목 간 자동 이동</translation>
-<translation id="8753948258138515839">파일 앱을 사용하면 Google 드라이브, 외부 저장소, ChromeOS Flex 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="8754200782896249056">&lt;p&gt;지원되는 데스크톱 환경에서 <ph name="PRODUCT_NAME" />을(를) 실행하는 경우 시스템 프록시 설정이 사용됩니다.  하지만 시스템이 지원되지 않거나 시스템 설정을 실행하는 데 문제가 있었습니다.&lt;/p&gt;
 
         &lt;p&gt;이 경우 명령줄을 사용하여 설정할 수 있습니다.  플래그와 환경 변수에 대한 자세한 내용은 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;을(를) 참조하세요.&lt;/p&gt;</translation>
@@ -11985,6 +11981,7 @@
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
 <translation id="994087375490600917">측면 패널</translation>
 <translation id="994289308992179865">연속 재생(&amp;L)</translation>
+<translation id="995420352808264005">기기 등록 유형 선택</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
 <translation id="996250603853062861">안전한 연결 설정 중...</translation>
 <translation id="997143476478634194">사이트를 방문할 때 사이트에서 자동으로 이 설정을 따릅니다. 사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>

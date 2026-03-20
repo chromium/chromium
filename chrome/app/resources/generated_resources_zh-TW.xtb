@@ -162,6 +162,7 @@
 <translation id="1102759278139578486">無法下載主節點註解檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即失去這個分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
+<translation id="1105934302947321130">Google Beam with Zoom</translation>
 <translation id="1106270460549661906">取消與 Gemini 分享</translation>
 <translation id="1106350001632362876">提高門檻</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -284,7 +285,6 @@
 <translation id="117916940443676133">你的安全金鑰未受 PIN 碼保護。如要管理登入資料，請先建立 PIN 碼。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
 <translation id="1179902906564467236">按照手機上的指示操作或使用相機應用程式</translation>
-<translation id="1180117276105724040">正在還原上一個工作階段中的視窗...</translation>
 <translation id="118057123461613219">節省量：極大</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182876754474670069">home 鍵</translation>
@@ -761,7 +761,6 @@
 <translation id="151501797353681931">由 Safari 匯入</translation>
 <translation id="1515163294334130951">啟動</translation>
 <translation id="1517467582299994451">如要使用代碼建立投放連線，請開啟 Chrome 瀏覽器同步處理設定</translation>
-<translation id="1519090060276706457">還原視窗的時間過長</translation>
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
@@ -1102,6 +1101,7 @@
 <translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在這個網頁應用程式中開啟並編輯 # 個檔案嗎？}}</translation>
 <translation id="1748563609363301860">你可以將這組密碼儲存在 Google 帳戶中，也可以只儲存在這部裝置上</translation>
+<translation id="1749645492410897998">正在安裝軟體</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">你的安全金鑰無法儲存指紋</translation>
 <translation id="1750238553597293878">請繼續使用 Google 帳戶中的密碼</translation>
@@ -1173,7 +1173,6 @@
 <translation id="1796460466266263589">如要繼續使用 Gemini，請驗證身分</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1798726622311813209">信用卡和簽帳金融卡</translation>
-<translation id="1799852120691957794">無法還原上一個工作階段中的視窗</translation>
 <translation id="180203835522132923">搜尋鍵 + O 鍵，然後按下 W 鍵</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
@@ -2366,7 +2365,6 @@
 <translation id="2610374175948698697">可檢視裝置上的檔案或資料夾</translation>
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
-<translation id="2611702650078660078">發生錯誤</translation>
 <translation id="2611776654555141051">矩形工具</translation>
 <translation id="2611885296070244383">麥克風 (內部)</translation>
 <translation id="2612676031748830579">卡號</translation>
@@ -2730,7 +2728,6 @@
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2850541429955027218">新增主題</translation>
 <translation id="2851291081585704741">你已離線</translation>
-<translation id="2852045827873867442">必須連上網際網路。</translation>
 <translation id="285237063405807022">(載入中)</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2854453262159518435">取代現有分頁群組</translation>
@@ -3594,6 +3591,7 @@
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">畫面放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母以內</translation>
+<translation id="3474330892505468100">Google Beam with Meet</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3477772589943384839">取得中等記憶體節省量。分頁會在較長時段過後進入閒置狀態。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取你的攝影機和麥克風</translation>
@@ -5478,7 +5476,6 @@
 <translation id="4779766576531456629">重新命名 eSIM 的行動網路</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4780558987886269159">工作</translation>
-<translation id="4781633367688946589">繼續進入新工作階段</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想要使用你在數位錢包中的個人資訊。</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
@@ -6265,6 +6262,7 @@
 <translation id="5337926771328966926">目前的裝置名稱為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="5338338064218053691">使用無痕視窗，安心進行私密瀏覽</translation>
 <translation id="5338503421962489998">本機儲存空間</translation>
+<translation id="5340620183031438925">完成身分驗證後，不必離開頁面就能用 AI 模式查詢分頁，並在所有裝置上同步密碼與其他資料。</translation>
 <translation id="5340787663756381836">尋找並編輯(&amp;F)</translation>
 <translation id="5340900621595888432">傳送診斷和使用資料</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會遭到封鎖)</translation>
@@ -7447,7 +7445,6 @@
 <translation id="6180550893222597997">你要在「<ph name="APP_NAME" />」上使用哪一個密碼金鑰？</translation>
 <translation id="6181218116951226898">應用程式有時會更新品牌識別。請先查看所有異動，確認沒問題再更新。</translation>
 <translation id="6181431612547969857">下載遭封鎖</translation>
-<translation id="6182100780603067202">一併分享應用程式所有視窗的音訊</translation>
 <translation id="6183369864942961155">自動切換淺色/深色主題</translation>
 <translation id="6183773856988300112">Chrome 內建 Gemini 使用自動瀏覽功能，能在分頁中完成你交辦的工作。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
@@ -8240,7 +8237,6 @@
 <translation id="6754359471209693699">開始新的搜尋</translation>
 <translation id="6754918760968695779">快速插入</translation>
 <translation id="6755702685749429945">新增字典</translation>
-<translation id="6756157672127672536">「檔案」應用程式可讓你快速存取儲存在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>
 <translation id="6756643207511618722">語音引擎</translation>
 <translation id="6757431299485455321">協助其他裝置找到這個無線基地台。</translation>
 <translation id="6758056191028427665">請讓我們瞭解你的滿意度。</translation>
@@ -9186,6 +9182,7 @@
 <translation id="7406912950279255498">色彩反轉模式</translation>
 <translation id="7407430846095439694">匯入和繫結</translation>
 <translation id="7407504355934009739">大多數使用者封鎖了這個網站傳送的通知</translation>
+<translation id="7407578029724074226">「<ph name="FILE_NAME" />」含有機密資料。根據貴機構政策，你只能儲存到雲端空間或捨棄檔案</translation>
 <translation id="7408080603962564527">其他人將可看到這個名稱</translation>
 <translation id="740810853557944681">新增印表機伺服器</translation>
 <translation id="7409549334477097887">特大</translation>
@@ -9239,6 +9236,7 @@
 <translation id="7434969625063495310">無法新增印表機伺服器。請檢查伺服器設定，然後再試一次。</translation>
 <translation id="7436921188514130341">糟糕！重新命名過程中發生錯誤。</translation>
 <translation id="7439519621174723623">新增裝置名稱即可繼續</translation>
+<translation id="743982235360757672">AI 模式陪你瀏覽</translation>
 <translation id="7441736532026945583">選取「隱藏群組」即可從分頁列中移除群組</translation>
 <translation id="7441736921018636843">如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />以移除同步處理通關密語</translation>
 <translation id="7441830548568730290">其他使用者</translation>
@@ -9977,7 +9975,6 @@
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
 <translation id="7947964080535614577">為了提供免付費的內容或服務，網站通常會放送廣告。不過，某些網站會放送干擾性或誤導性的廣告。</translation>
-<translation id="7948239795436419268">不要還原視窗</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 這項擴充功能尚未發布隱私權實務規範，例如擴充功能如何收集和使用資料</translation>
@@ -11166,7 +11163,6 @@
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自系統管理員的憑證</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
-<translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
 
         &lt;p&gt;無論如何，您仍然可以透過命令列進行設定。如需標記及環境變數的詳細資訊，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
@@ -11959,6 +11955,7 @@
 <translation id="992778845837390402">目前正在執行 Linux 備份作業</translation>
 <translation id="994087375490600917">側邊面板</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
+<translation id="995420352808264005">選擇裝置註冊類型</translation>
 <translation id="995755448277384931">新增 IBAN</translation>
 <translation id="996250603853062861">正在建立安全連線...</translation>
 <translation id="997143476478634194">這項設定可以調整造訪網站時的通知行為。網站通知經常用來告知重大消息，或是發送即時通訊訊息。</translation>

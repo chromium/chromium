@@ -162,6 +162,7 @@
 <translation id="1102759278139578486">メインノードのアノテーション ファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1104098698795583187">このタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
+<translation id="1105934302947321130">Google Beam（Zoom と連携）</translation>
 <translation id="1106270460549661906">Gemini との共有を解除</translation>
 <translation id="1106350001632362876">しきい値を引き上げ</translation>
 <translation id="110850812463801904">OneDrive に手動で接続</translation>
@@ -284,7 +285,6 @@
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
 <translation id="1179400851034021914">IBAN が無効です</translation>
 <translation id="1179902906564467236">スマートフォンに表示される手順に沿って操作するか、カメラアプリを使用してください</translation>
-<translation id="1180117276105724040">前回のセッションからウィンドウを復元しています...</translation>
 <translation id="118057123461613219">非常に大量の節約</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -761,7 +761,6 @@
 <translation id="151501797353681931">Safari からのインポート</translation>
 <translation id="1515163294334130951">起動</translation>
 <translation id="1517467582299994451">コードを使ってキャストするには、Chrome ブラウザの同期設定を有効にしてください</translation>
-<translation id="1519090060276706457">ウィンドウの復元に通常より時間がかかっています</translation>
 <translation id="1521442365706402292">証明書の管理</translation>
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1521774566618522728">最終同期: 今日</translation>
@@ -1101,6 +1100,7 @@
 <translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748563609363301860">このパスワードは、Google アカウントまたはこのデバイスのみに保存できます。</translation>
+<translation id="1749645492410897998">ソフトウェアのインストール中</translation>
 <translation id="1749733017156547309">パスワードを入力してください</translation>
 <translation id="1750172676754093297">セキュリティ キーにフィンガープリントを保存できません</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
@@ -1172,7 +1172,6 @@
 <translation id="1796460466266263589">Gemini を引き続き使用するには、本人確認を行ってください</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1798726622311813209">クレジット カードとデビットカード</translation>
-<translation id="1799852120691957794">前回のセッションからウィンドウを復元できません</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
@@ -2360,7 +2359,6 @@
 <translation id="2610374175948698697">デバイスのファイルやフォルダを表示できる</translation>
 <translation id="2610780100389066815">Microsoft 信頼リストの署名</translation>
 <translation id="261114180663074524">Microsoft アカウントにログインして、もう一度お試しください</translation>
-<translation id="2611702650078660078">エラーが発生しました</translation>
 <translation id="2611776654555141051">長方形ツール</translation>
 <translation id="2611885296070244383">マイク（内蔵）</translation>
 <translation id="2612676031748830579">カード番号</translation>
@@ -2724,7 +2722,6 @@
 <translation id="285033512555869047">閉じています</translation>
 <translation id="2850541429955027218">テーマを追加</translation>
 <translation id="2851291081585704741">オフラインです</translation>
-<translation id="2852045827873867442">インターネット接続が必要です。</translation>
 <translation id="285237063405807022">（読み込んでいます）</translation>
 <translation id="2853121255651601031">パスワードが保存されました</translation>
 <translation id="2854453262159518435">既存のタブグループを置き換える</translation>
@@ -3589,6 +3586,7 @@
 <translation id="3473241910002674503">タブレット モードで、ボタンを使用してホームに移動したり、戻ったり、アプリを切り替えたりできます。</translation>
 <translation id="3473479545200714844">画面拡大鏡</translation>
 <translation id="3474218480460386727">新しい語句は 99 文字以内で指定してください</translation>
+<translation id="3474330892505468100">Google Beam（Meet と連携）</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3477772589943384839">メモリを適度に節約します。タブは長時間経過してから非アクティブになります。</translation>
 <translation id="347785443197175480"><ph name="HOST" /> によるカメラとマイクへのアクセスを引き続き許可する</translation>
@@ -5474,7 +5472,6 @@
 <translation id="4779766576531456629">eSIM モバイル ネットワークの名前変更</translation>
 <translation id="4780321648949301421">ページを別名で保存...</translation>
 <translation id="4780558987886269159">仕事向け</translation>
-<translation id="4781633367688946589">新しいセッションに進む</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4785914069240823137">切り抜きをキャンセル</translation>
@@ -6259,6 +6256,7 @@
 <translation id="5337926771328966926">現在のデバイス名は <ph name="DEVICE_NAME" /> です</translation>
 <translation id="5338338064218053691">シークレット ウィンドウを使って、シークレット モードで閲覧できます</translation>
 <translation id="5338503421962489998">ローカル ストレージ</translation>
+<translation id="5340620183031438925">ページを離れることなく、タブについて AI モードに質問するには、本人確認を行ってください。これにより、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
 <translation id="5340787663756381836">検索と編集(&amp;F)</translation>
 <translation id="5340900621595888432">診断データと使用状況データを送信する</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
@@ -7444,7 +7442,6 @@
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
 <translation id="6181218116951226898">アプリでブランディングが更新されることがあります。更新の前に、すべての変更内容に問題がないことを確認してください。</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
-<translation id="6182100780603067202">（すべてのウィンドウの）アプリケーションの音声も共有する</translation>
 <translation id="6183369864942961155">ライトモード / ダークモード自動設定</translation>
 <translation id="6183773856988300112">Gemini in Chrome が自動でブラウジングして、タブ上の作業や指定されたタスクを行います。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">タブを検索</translation>
@@ -8227,7 +8224,7 @@
 <translation id="6745592621698551453">今すぐ更新</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> のパスワードを表示する</translation>
-<translation id="6746834324024491643">すべてのデバイスで同じパスワードやその他の設定を利用するには、<ph name="EMAIL" /> としてログインしてください</translation>
+<translation id="6746834324024491643">すべてのデバイスでパスワードやその他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
 <translation id="6749473226660745022">写真</translation>
@@ -8236,7 +8233,6 @@
 <translation id="6754359471209693699">新しい検索を開始</translation>
 <translation id="6754918760968695779">クイック インサート</translation>
 <translation id="6755702685749429945">辞書を追加</translation>
-<translation id="6756157672127672536">ファイルアプリを使用すると、Google ドライブ、外部ストレージ、ChromeOS デバイスに保存したファイルにすばやくアクセスできます。</translation>
 <translation id="6756643207511618722">読み上げエンジン</translation>
 <translation id="6757431299485455321">このアクセス ポイントを他のデバイスで検出できるようにします。</translation>
 <translation id="6758056191028427665">アンケートにご協力ください。</translation>
@@ -9182,6 +9178,7 @@
 <translation id="7406912950279255498">色反転モード</translation>
 <translation id="7407430846095439694">インポートしてバインド</translation>
 <translation id="7407504355934009739">ほとんどのユーザーがこのサイトの通知をブロックしています</translation>
+<translation id="7407578029724074226"><ph name="FILE_NAME" /> にはセンシティブ データが含まれています。組織の設定では、このデータをクラウド ストレージに保存するか破棄することができます。</translation>
 <translation id="7408080603962564527">他のユーザーに表示されます</translation>
 <translation id="740810853557944681">プリント サーバーを追加</translation>
 <translation id="7409549334477097887">特大</translation>
@@ -9235,6 +9232,7 @@
 <translation id="7434969625063495310">プリント サーバーを追加できませんでした。サーバーの設定を確認してから、もう一度お試しください。</translation>
 <translation id="7436921188514130341">名前の変更中にエラーが発生しました。</translation>
 <translation id="7439519621174723623">続行するにはデバイス名を追加してください</translation>
+<translation id="743982235360757672">ブラウジング中に AI モードを手軽に使用</translation>
 <translation id="7441736532026945583">タブバーからグループを削除するには、[グループを非表示] を選択します</translation>
 <translation id="7441736921018636843">この設定を変更するには、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />して同期パスフレーズを削除します</translation>
 <translation id="7441830548568730290">他のユーザー</translation>
@@ -9972,7 +9970,6 @@
 <translation id="794676567536738329">許可の確認</translation>
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7947964080535614577">多くのサイトは、コンテンツやサービスを料金なしで提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
-<translation id="7948239795436419268">ウィンドウを復元しない</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
 <translation id="7950629216186736592">理由: LBS では http://、https://、file:// の URL のみサポートされています。</translation>
 <translation id="7950814699499457511">オン • この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません</translation>
@@ -11161,7 +11158,6 @@
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">管理者が追加</translation>
 <translation id="8752451679755290210">アイテム間を自動的に移動する</translation>
-<translation id="8753948258138515839">ファイルアプリを使えば、Google ドライブ、外部ストレージ、ChromeOS Flex デバイスに保存したファイルにすぐにアクセスできます。</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;
 
           &lt;p&gt;コマンドラインからの設定は可能です。フラグや環境変数について詳しくは、&lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; を実行してご確認ください。&lt;/p&gt;</translation>
@@ -11954,6 +11950,7 @@
 <translation id="992778845837390402">現在、Linux のバックアップが進行中です</translation>
 <translation id="994087375490600917">サイドパネル</translation>
 <translation id="994289308992179865">ループ(&amp;L)</translation>
+<translation id="995420352808264005">デバイスの登録タイプを選択してください</translation>
 <translation id="995755448277384931">IBAN の追加</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
 <translation id="997143476478634194">サイトにアクセスしたときにこの設定の動作を自動的に行います。多くのサイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信します。</translation>

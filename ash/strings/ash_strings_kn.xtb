@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">ಪ್ರಸ್ತುತ ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟಿದೆ, <ph name="TIME" /> ಉಳಿದಿದೆ</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1179776263021875437">ಕಾರ್ಯದ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="1180117276105724040">ನಿಮ್ಮ ಹಿಂದಿನ ಸೇಶನ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1182225749592316782">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡುತ್ತದೆ</translation>
 <translation id="1182876754474670069">ಹೋಮ್</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">ಆಡಿಯೋ ಮೂಲವನ್ನು ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="1505542291183484463">ಟೈಲ್ಡ್‌ ವಿಂಡೋವನ್ನು ಕೆಳಕ್ಕೆ ಮರುಗಾತ್ರಗೊಳಿಸಿ</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
+<translation id="1519090060276706457">ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸುವುದು ನಿರೀಕ್ಷೆಗಿಂತ ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಒಂದು ಆ್ಯಪ್‌ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}one{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}other{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="BATTERY_PERCENTAGE" />% | ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್‌ ಪೂರ್ಣಗೊಳ್ಳುವುದಕ್ಕೆ ಬೇಕಾದ ಸಮಯ <ph name="TIME" /></translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">ಪಿಕ್ಚರ್‌-ಇನ್-ಪಿಕ್ಚರ್‌ ವಿಂಡೋದ ಗರಿಷ್ಠ ಅಥವಾ ಪ್ರಸ್ತುತ ಗಾತ್ರದ ನಡುವೆ ಬದಲಿಸಿ</translation>
 <translation id="1787955149152357925">ಆಫ್</translation>
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1799852120691957794">ನಿಮ್ಮ ಹಿಂದಿನ ಸೆಶನ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1805407494113167797">ಫೋಕಸ್ ಸೌಂಡ್‌ಗಳನ್ನು ಪ್ಲೇ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1815039896005206046">ಈ ಸೂಚಿಸಲಾದ ಗುಂಪು ನಿಮಗೆ ಇಷ್ಟವಾಗಿಲ್ಲ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಥಂಬ್ಸ್ ಡೌನ್ ಸಲ್ಲಿಸುತ್ತದೆ</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="2598725286293895280">ಡೆಸ್ಕ್‌ನಲ್ಲಿ ಬೆಂಬಲವಿಲ್ಲದ ಆ್ಯಪ್‌ಗಳಿವೆ</translation>
 <translation id="2607678425161541573">ಆನ್‌ಲೈನ್ ಸೈನ್ ಇನ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="2611702650078660078">ದೋಷ ಸಂಭವಿಸಿದೆ</translation>
 <translation id="2612072250312279703">ಚಟುವಟಿಕೆ ಮಾನಿಟರ್</translation>
 <translation id="261210853165551493">ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಮೂಲಕ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="2612614436418177118">ಆ್ಯಪ್ ಗ್ರಿಡ್‌ನಲ್ಲಿ ಆ್ಯಪ್ ಐಕಾನ್ ಅನ್ನು ಸರಿಸಿ</translation>
@@ -575,6 +579,7 @@
 <translation id="2848120746144143659">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಸೆರೆಹಿಡಿಯಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="2849936225196189499">ಗಂಭೀರ</translation>
 <translation id="2850207700020959936">ಆ್ಯಪ್‌ಗಳು ಕ್ಯಾಮರಾವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು</translation>
+<translation id="2852045827873867442">ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="2860184359326882502">ಅತ್ಯುತ್ತಮ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="2865888419503095837">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ</translation>
 <translation id="2869095047958348710">ಕಳೆದ <ph name="DAY_OF_WEEK" /></translation>
@@ -1215,6 +1220,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ಡೆಮೊ ಸೆಶನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
+<translation id="4781633367688946589">ಹೊಸ ಸೆಶನ್‌ಗೆ ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="4785412405516449976">Google ಖಾತೆಯನ್ನು ಹೊಂದಿರುವ ನಿಮ್ಮ ಸಂಪರ್ಕಗಳು ಮಾತ್ರ</translation>
 <translation id="4789348252524569426">ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬೇಕಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="478959186716341421">ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -1603,6 +1609,7 @@
 <translation id="595202126637698455">ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="5955304353782037793">ಅಪ್ಲಿಕೇಶನ್‌</translation>
 <translation id="5958529069007801266">ಮೇಲ್ವಿಚಾರಣೆಗೊಳಪಟ್ಟ ಬಳಕೆದಾರರು</translation>
+<translation id="5959471481388474538">ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="596035801491797438">ಫೇಸ್ ಕಂಟ್ರೋಲ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5960410286721553511">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಮೀಡಿಯಾವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="5965524703725988602">ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
@@ -2252,6 +2259,7 @@
 <translation id="7945357288295809525">ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ, "<ph name="ENABLED_FEATURES" />" ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7946681191253332687">ವಿಸ್ತೃತ ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿವೆ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />, ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಬಳಸಲು ಬಯಸುತ್ತಿದೆ</translation>
+<translation id="7948239795436419268">ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಬೇಡಿ</translation>
 <translation id="7951630946012935453">ಕೀಬೋರ್ಡ್ ಡಿಮ್ ಮಾಡಿ</translation>
 <translation id="7953176344218790168">ದೊಡ್ಡ ಅಕ್ಷರ</translation>
 <translation id="7953994493035617347">ಹೊಸ ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು ಖಚಿತಪಡಿಸಬೇಕೆ?</translation>

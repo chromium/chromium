@@ -52,6 +52,7 @@
 <translation id="1175944128323889279">Praegune aku laetuse tase <ph name="BATTERY_PERCENTAGE" />%, jäänud <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1179776263021875437">Lõpeta ülesandele keskendumine</translation>
+<translation id="1180117276105724040">Akende taastamine teie eelmisest seansist…</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1182225749592316782">Sisselülitamisel antakse juurdepääsuluba kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele</translation>
 <translation id="1182876754474670069">avaekraan</translation>
@@ -166,6 +167,7 @@
 <translation id="1501946871587957338">Kas vahetada heliallikat?</translation>
 <translation id="1505542291183484463">Paanidega muudetava suurusega aken allapoole</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
+<translation id="1519090060276706457">Akende taastamine võtab oodatust kauem aega</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
 <translation id="1521655867290435174">Google'i arvutustabelid</translation>
 <translation id="1523032696246003">Aku laetuse tase: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> kuni aku saab täis</translation>
@@ -260,6 +262,7 @@
 <translation id="1786487376942610288">Vaheta pilt pildis aknas maksimumsuuruse ja praeguse suuruse vahel</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
+<translation id="1799852120691957794">Eelmise seansi aknaid ei saa taastada</translation>
 <translation id="1805407494113167797">Ei saanud keskendumise funktsiooni helisid esitada</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1815039896005206046">Nupu Ei meeldi vajutamisel esitatakse tagasiside, et see soovitatud grupp ei meeldi teile</translation>
@@ -491,6 +494,7 @@
 <translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2598725286293895280">Töölaual on toetamata rakendused</translation>
 <translation id="2607678425161541573">Veebis sisselogimine on nõutav</translation>
+<translation id="2611702650078660078">Ilmnes viga</translation>
 <translation id="2612072250312279703">tegevuse jälgimine</translation>
 <translation id="261210853165551493">Kopeeri koos vormindusega</translation>
 <translation id="2612614436418177118">Rakenduste ruudustikus rakenduse ikooni teisaldamine</translation>
@@ -575,6 +579,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="2848120746144143659">Vajutage täisekraani jäädvustamiseks sisestusklahvi</translation>
 <translation id="2849936225196189499">Kriitiline</translation>
 <translation id="2850207700020959936">Rakendused pääsevad kaamerale juurde</translation>
+<translation id="2852045827873867442">Vaja on internetiühendust.</translation>
 <translation id="2860184359326882502">Parim vaste</translation>
 <translation id="2865888419503095837">Võrguteave</translation>
 <translation id="2869095047958348710">Eelmine <ph name="DAY_OF_WEEK" /></translation>
@@ -1216,6 +1221,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4776917500594043016">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> parool</translation>
 <translation id="4777825441726637019">Play pood</translation>
 <translation id="4778095205580009397">Google'i assistent ei ole demoseansi puhul saadaval.</translation>
+<translation id="4781633367688946589">Jätka uues seansis</translation>
 <translation id="4785412405516449976">Ainult teie kontaktid, kellel on Google'i konto</translation>
 <translation id="4789348252524569426">Kõnefaile ei saa installida. Teie seadet on vaja värskendada. Taaskäivitage seade ja proovige uuesti.</translation>
 <translation id="478959186716341421">Ülekandmine</translation>
@@ -1604,6 +1610,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
 <translation id="5955304353782037793">rak</translation>
 <translation id="5958529069007801266">Järelevalvega kasutaja</translation>
+<translation id="5959471481388474538">Võrk ei ole saadaval</translation>
 <translation id="596035801491797438">Lülita näoga juhtimine välja</translation>
 <translation id="5960410286721553511">Vaadake oma telefoni hiljutisi fotosid ja meediat</translation>
 <translation id="5965524703725988602">Tumeda teema oleku sisse-/väljalülitamine. <ph name="STATE_TEXT" />.</translation>
@@ -2253,6 +2260,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7945357288295809525">Kuvatakse juurdepääsetavuse seaded, „<ph name="ENABLED_FEATURES" />“ on lubatud.</translation>
 <translation id="7946681191253332687">Pikendatud turvavärskendused on saadaval</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> soovib kasutada teie seadet <ph name="DEVICE_NAME" /></translation>
+<translation id="7948239795436419268">Ära taasta aknaid</translation>
 <translation id="7951630946012935453">Hämarda klaviatuur</translation>
 <translation id="7953176344218790168">SUURTÄHED</translation>
 <translation id="7953994493035617347">Kas kinnitada uus eraldusvõime?</translation>
