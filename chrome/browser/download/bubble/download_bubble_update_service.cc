@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/content/public/all_download_item_notifier.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -165,6 +166,11 @@ void UpdateInfoForModel(const DownloadUIModel& model,
   if (model.GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
       model.GetState() != download::DownloadItem::CANCELLED) {
     info.has_deep_scanning = true;
+  }
+  if (model.GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT &&
+      model.GetState() != download::DownloadItem::CANCELLED) {
+    info.has_content_check = true;
   }
   if (!model.WasActionedOn()) {
     info.has_unactioned = true;

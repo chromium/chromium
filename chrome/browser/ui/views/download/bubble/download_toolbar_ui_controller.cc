@@ -664,7 +664,8 @@ void DownloadToolbarUIController::UpdateIcon() {
       is_icon_active ? kColorDownloadToolbarButtonActive
                      : kColorDownloadToolbarButtonInactive);
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
-  if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning) {
+  if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning ||
+      state_ == IconState::kContentCheckPending) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
                              : &kDownloadInProgressChromeRefreshIcon;
   } else {
@@ -1106,9 +1107,9 @@ void DownloadToolbarUIController::CloseAutofillPopup() {
 }
 
 bool DownloadToolbarUIController::ShouldShowScanningAnimation() const {
-  bool should_show = !is_dormant_ && (state_ == IconState::kDeepScanning ||
-                                      !progress_info_.progress_certain);
-  return should_show;
+  return !is_dormant_ && (state_ == IconState::kDeepScanning ||
+                          state_ == IconState::kContentCheckPending ||
+                          !progress_info_.progress_certain);
 }
 
 void DownloadToolbarUIController::UpdateIconDormant() {

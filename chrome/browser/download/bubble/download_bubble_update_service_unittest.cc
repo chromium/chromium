@@ -948,6 +948,7 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_InProgress) {
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);
+  EXPECT_FALSE(info.has_content_check);
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest,
@@ -975,6 +976,7 @@ TEST_F(DownloadBubbleUpdateServiceTest,
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);
+  EXPECT_FALSE(info.has_content_check);
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest,
@@ -1001,6 +1003,7 @@ TEST_F(DownloadBubbleUpdateServiceTest,
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);
+  EXPECT_FALSE(info.has_content_check);
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_UpdateForDangerous) {
@@ -1029,6 +1032,7 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_UpdateForDangerous) {
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);
+  EXPECT_FALSE(info.has_content_check);
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfoForWebApp) {

@@ -520,6 +520,23 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
   }
 }
 
+TEST_F(DownloadItemModelTest, InProgressStatus_ContentCheck) {
+  SetupDownloadItemDefaults();
+
+  EXPECT_CALL(item(), GetReceivedBytes()).WillRepeatedly(Return(10));
+  EXPECT_CALL(item(), GetTotalBytes()).WillRepeatedly(Return(10));
+
+  // Indicates that the content check is still pending.
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT));
+
+  SetStatusTextBuilder(/*for_bubble=*/true);
+
+  EXPECT_EQ("10 B \xE2\x80\xA2 Checking for safety\xE2\x80\xA6",
+            base::UTF16ToUTF8(model().GetStatusText()));
+}
+
 TEST_F(DownloadItemModelTest, CompletedStatus) {
   SetupDownloadItemDefaults();
 

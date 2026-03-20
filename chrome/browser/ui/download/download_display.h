@@ -21,6 +21,7 @@ class DownloadDisplay {
     kProgress,
     kComplete,
     kDeepScanning,
+    kContentCheckPending,
   };
 
   // Whether the icon should be displayed in the active color (usually blue).

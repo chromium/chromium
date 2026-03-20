@@ -19,6 +19,8 @@ struct DownloadBubbleDisplayInfo {
   base::Time last_completed_time;
   // Whether there are any downloads actively doing deep scanning.
   bool has_deep_scanning = false;
+  // Whether there are any downloads waiting for a Safe Browsing content check.
+  bool has_content_check = false;
   // Whether any downloads are unactioned.
   bool has_unactioned = false;
   // From the button UI's perspective, whether the download is considered in

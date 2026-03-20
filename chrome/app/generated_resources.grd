@@ -3442,6 +3442,10 @@ are declared in tools/grit/grit_args.gni.
                desc="Status text for a download item that is being scanned.">
         Scanning...
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_CHECKING_SAFETY"
+               desc="Status text for a download item that is being scanned.">
+        Checking for safety...
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED"
         desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
         This file might be a virus or malware.<ph name="LINE_BREAK">$1</ph>You can send it to Google Safe Browsing to check if it's unsafe. Scans usually take a few seconds.

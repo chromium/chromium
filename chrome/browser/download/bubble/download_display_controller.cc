@@ -289,6 +289,12 @@ void DownloadDisplayController::UpdateToolbarButtonState(
   if (info.has_deep_scanning) {
     updates.new_state = DownloadIconState::kDeepScanning;
   }
+  // A download requiring a content check may be marked as such as soon as it
+  // starts, but we only display a pending content check icon if the content
+  // check is the only thing blocking completion.
+  else if (info.has_content_check && progress_info.progress_percentage == 100) {
+    updates.new_state = DownloadIconState::kContentCheckPending;
+  }
 
   if (updates.new_state != DownloadIconState::kComplete ||
       HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,

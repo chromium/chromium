@@ -1084,6 +1084,14 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
     return get_size_ratio_string(
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING));
   } else {
+    if (model_->GetDangerType() ==
+        download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT) {
+      return StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+          ui::FormatBytes(
+              base::ByteSize(base::checked_cast<uint64_t>(total_bytes))),
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_CHECKING_SAFETY));
+    }
     // "120 MB • Done"
     return StatusTextBuilderUtils::GetCompletedTotalSizeString(total_bytes);
   }
