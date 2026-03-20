@@ -87,6 +87,7 @@ import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
@@ -1096,5 +1097,41 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mInputStateSupplier.hasObservers());
         mMediator.endInput();
         assertFalse(mInputStateSupplier.hasObservers());
+    }
+
+    @Test
+    public void testOnInputStateChange() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .build();
+        mInputStateSupplier.set(state);
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED));
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED));
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
     }
 }

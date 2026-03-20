@@ -211,4 +211,141 @@ public class InputState {
             return SectionConfig.getDefaultInstance();
         }
     }
+
+    public static class Builder {
+        private String mHintText = "";
+        private int[] mAllowedInputTypes = new int[0];
+        private int[] mDisabledInputTypes = new int[0];
+        private int mMaxTotalInputs;
+        private int[] mMaxInstancesKeys = new int[0];
+        private int[] mMaxInstancesValues = new int[0];
+        private byte @Nullable [][] mInputTypeConfigs;
+        private int mActiveTool;
+        private int[] mAllowedTools = new int[0];
+        private int[] mDisabledTools = new int[0];
+        private boolean mImageGenUploadActive;
+        private byte @Nullable [][] mToolConfigs;
+        private byte @Nullable [] mToolsSectionConfig;
+        private int mActiveModel;
+        private int mDefaultModel;
+        private int[] mAllowedModels = new int[0];
+        private int[] mDisabledModels = new int[0];
+        private byte @Nullable [][] mModelConfigs;
+        private byte @Nullable [] mModelSectionConfig;
+
+        public Builder withHintText(String hintText) {
+            mHintText = hintText;
+            return this;
+        }
+
+        public Builder withAllowedInputTypes(int... allowedInputTypes) {
+            mAllowedInputTypes = allowedInputTypes;
+            return this;
+        }
+
+        public Builder withDisabledInputTypes(int... disabledInputTypes) {
+            mDisabledInputTypes = disabledInputTypes;
+            return this;
+        }
+
+        public Builder withMaxTotalInputs(int maxTotalInputs) {
+            mMaxTotalInputs = maxTotalInputs;
+            return this;
+        }
+
+        public Builder withMaxInstances(int[] keys, int[] values) {
+            assert keys.length == values.length;
+            mMaxInstancesKeys = keys;
+            mMaxInstancesValues = values;
+            return this;
+        }
+
+        public Builder withInputTypeConfigs(byte[][] inputTypeConfigs) {
+            mInputTypeConfigs = inputTypeConfigs;
+            return this;
+        }
+
+        public Builder withActiveTool(int activeTool) {
+            mActiveTool = activeTool;
+            return this;
+        }
+
+        public Builder withAllowedTools(int... allowedTools) {
+            mAllowedTools = allowedTools;
+            return this;
+        }
+
+        public Builder withDisabledTools(int... disabledTools) {
+            mDisabledTools = disabledTools;
+            return this;
+        }
+
+        public Builder withImageGenUploadActive(boolean imageGenUploadActive) {
+            mImageGenUploadActive = imageGenUploadActive;
+            return this;
+        }
+
+        public Builder withToolConfigs(byte[][] toolConfigs) {
+            mToolConfigs = toolConfigs;
+            return this;
+        }
+
+        public Builder withToolsSectionConfig(byte[] toolsSectionConfig) {
+            mToolsSectionConfig = toolsSectionConfig;
+            return this;
+        }
+
+        public Builder withActiveModel(int activeModel) {
+            mActiveModel = activeModel;
+            return this;
+        }
+
+        public Builder withDefaultModel(int defaultModel) {
+            mDefaultModel = defaultModel;
+            return this;
+        }
+
+        public Builder withAllowedModels(int... allowedModels) {
+            mAllowedModels = allowedModels;
+            return this;
+        }
+
+        public Builder withDisabledModels(int... disabledModels) {
+            mDisabledModels = disabledModels;
+            return this;
+        }
+
+        public Builder withModelConfigs(byte[][] modelConfigs) {
+            mModelConfigs = modelConfigs;
+            return this;
+        }
+
+        public Builder withModelSectionConfig(byte[] modelSectionConfig) {
+            mModelSectionConfig = modelSectionConfig;
+            return this;
+        }
+
+        public InputState build() {
+            return new InputState(
+                    mHintText,
+                    mAllowedInputTypes,
+                    mDisabledInputTypes,
+                    mMaxTotalInputs,
+                    mMaxInstancesKeys,
+                    mMaxInstancesValues,
+                    mInputTypeConfigs,
+                    mActiveTool,
+                    mAllowedTools,
+                    mDisabledTools,
+                    mImageGenUploadActive,
+                    mToolConfigs,
+                    mToolsSectionConfig,
+                    mActiveModel,
+                    mDefaultModel,
+                    mAllowedModels,
+                    mDisabledModels,
+                    mModelConfigs,
+                    mModelSectionConfig);
+        }
+    }
 }
