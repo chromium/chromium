@@ -139,7 +139,9 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE,
                 isAutofillAiReauthToggleVisible(referrer));
-        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
+        mModel.set(
+                AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON,
+                isAutofillAiOn() && isEligibleToAutofillAi());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON, isAutofillAiReauthOn());
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);

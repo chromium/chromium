@@ -591,6 +591,19 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleOffWhenIneligibleEvenIfOptedIn() {
+        doReturn(false).when(mMockEntityDataManager).isEligibleToAutofillAi();
+        doReturn(true).when(mMockEntityDataManager).getAutofillAiOptInStatus();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertFalse(mFragment.getAutofillAiSwitch().isChecked());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
