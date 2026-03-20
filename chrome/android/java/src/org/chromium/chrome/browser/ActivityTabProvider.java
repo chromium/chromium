@@ -149,6 +149,15 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
                             triggerActivityTabChangeEvent(null);
                         }
                     }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        // If the last tab was removed (e.g. reparented), make sure a signal is sent
+                        // to the observers.
+                        if (selector.getCurrentModel().getCount() == 0) {
+                            triggerActivityTabChangeEvent(null);
+                        }
+                    }
                 };
 
         mTabModelSelector

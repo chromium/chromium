@@ -245,6 +245,30 @@ public class ActivityTabProviderTest {
         assertEquals("The activity's tab should be null.", null, mActivityTab);
     }
 
+    /** Test that onActivityTabChanged is triggered when the last tab is removed. */
+    @Test
+    @SmallTest
+    @Feature({"ActivityTabObserver"})
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testTriggerOnLastTabRemoved() throws TimeoutException {
+        TabModelSelector selector = mActivity.getTabModelSelector();
+
+        int callCount = mActivityTabChangedHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    selector.getCurrentModel()
+                            .getTabRemover()
+                            .removeTab(getModelSelectedTab(), /* allowDialog= */ false);
+                });
+        mActivityTabChangedHelper.waitForCallback(callCount);
+
+        assertEquals(
+                "Removing the last tab should have triggered the event once.",
+                callCount + 1,
+                mActivityTabChangedHelper.getCallCount());
+        assertEquals("The activity's tab should be null.", null, mActivityTab);
+    }
+
     /**
      * Test that the correct tab is considered the activity tab when a different tab is closed on
      * phone.
