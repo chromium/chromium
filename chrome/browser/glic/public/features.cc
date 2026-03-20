@@ -11,6 +11,8 @@ namespace features {
 BASE_FEATURE(kGlicTabRestoration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicChromeStatusIcon, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGlicChromeStatusIconSizePx{
+    &kGlicChromeStatusIcon, "glic-chrome-status-icon-size-px", 20};
 
 BASE_FEATURE(kGlicOrphanedReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
 
