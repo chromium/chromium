@@ -104,7 +104,8 @@ TEST_F(SigninProfileInfoUpdaterTest, AuthError) {
   // Set auth error.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_TRUE(GetAttributesForProfile().HasAuthenticationError());
 
