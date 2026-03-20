@@ -9,8 +9,8 @@
 
 #include "base/compiler_specific.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
+#include "crypto/keypair.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace encrypted_messages {
 
@@ -169,11 +169,9 @@ TEST(MessageEncrypterTest, EncryptedMessageCanBeDecrypted) {
   uint8_t server_private_key[32];
   std::ranges::fill(server_private_key, 1);
 
-  uint8_t client_private_key[32];
-  std::ranges::fill(client_private_key, 2);
-
-  uint8_t server_public_key[32];
-  X25519_public_from_private(server_public_key, server_private_key);
+  auto server_public_key =
+      crypto::keypair::PrivateKey::FromX25519PrivateKey(server_private_key)
+          .ToX25519PublicKey();
 
   encrypted_messages::EncryptedMessage message;
   std::string test_message = "test message";
