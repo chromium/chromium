@@ -743,9 +743,10 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           /*frecency_override=*/"");
     }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
+    case sync_pb::AutofillValuableSpecifics::kEventTicket:
+    case sync_pb::AutofillValuableSpecifics::kTransitPass:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
-      // Such specifics shouldn't reach this function as they aren't supported
-      // by AutofillAi.
+      // These entity types aren't supported by AutofillAi.
       return std::nullopt;
   }
   return std::nullopt;

@@ -2111,6 +2111,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(redress_number);
   VISIT(known_traveler_number);
   VISIT(serialized_chrome_valuables_metadata);
+  VISIT(event_ticket);
+  VISIT(transit_pass);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
@@ -2193,6 +2195,23 @@ VISIT_PROTO_FIELDS(const sync_pb::KnownTravelerNumber& proto) {
   VISIT(masked_number);
   VISIT(owner_name);
   VISIT(expiration_date);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EventTicket& proto) {
+  VISIT(ticket_holder_name);
+  VISIT(event_name);
+  VISIT(event_venue_name);
+  VISIT(event_venue_address);
+  VISIT(ticket_number);
+  VISIT(issuer_name);
+  VISIT(event_start_time_windows_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::TransitPass& proto) {
+  VISIT(agency_name);
+  VISIT(passenger_name);
+  VISIT(transit_pass_number);
+  VISIT(agency_logo_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {

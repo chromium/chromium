@@ -334,6 +334,8 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
           case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
           case sync_pb::AutofillValuableSpecifics::kRedressNumber:
           case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+          case sync_pb::AutofillValuableSpecifics::kEventTicket:
+          case sync_pb::AutofillValuableSpecifics::kTransitPass:
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecificsAndLoadMetadata(
                         specifics, *GetEntityTable())) {
@@ -451,6 +453,8 @@ bool ValuableSyncBridge::IsEntityDataValid(
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
       return IsSyncWalletPrivatePassesEnabled();
+    case sync_pb::AutofillValuableSpecifics::kEventTicket:
+    case sync_pb::AutofillValuableSpecifics::kTransitPass:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
@@ -613,6 +617,8 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
               entities.push_back(std::move(*entity));
             }
             break;
+          case sync_pb::AutofillValuableSpecifics::kEventTicket:
+          case sync_pb::AutofillValuableSpecifics::kTransitPass:
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.
             break;

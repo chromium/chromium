@@ -226,6 +226,48 @@ message KnownTravelerNumber {
   optional NaiveDate expiration_date = 4;
 }
 
+// Represents an event ticket from Google Wallet. Note that this field is
+// currently used by Android but not used in Chrome.
+message EventTicket {
+  // Name of the person assigned to the event ticket. Not necessarily the person
+  // who owns the ticket in Wallet.
+  optional string ticket_holder_name = 1;
+
+  // The name of the event, such as "LA Dodgers at SF Giants".
+  optional string event_name = 2;
+
+  // The name of the venue, such as "AT&T Park".
+  optional string event_venue_name = 3;
+
+  // The address of the venue, such as "24 Willie Mays Plaza".
+  optional string event_venue_address = 4;
+
+  // The ticket number of the event ticket.
+  optional string ticket_number = 5;
+
+  // The issuer of the event ticket.
+  optional string issuer_name = 6;
+
+  // The start time of the event in windows epoch microseconds.
+  optional int64 event_start_time_windows_epoch_micros = 7;
+}
+
+// Represents a transit pass from Google Wallet. Note that this field is
+// currently used by Android but not used in Chrome.
+message TransitPass {
+  // The transit agency that the transit pass is for.
+  optional string agency_name = 1;
+
+  // The name of the passenger that the transit pass is for.
+  optional string passenger_name = 2;
+
+  // The number of the transit pass.
+  optional string transit_pass_number = 3;
+
+  // The url of the logo of the transit agency.
+  optional string agency_logo_url = 4;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
@@ -243,6 +285,10 @@ message AutofillValuableSpecifics {
     NationalIdCard national_id_card = 9;
     RedressNumber redress_number = 10;
     KnownTravelerNumber known_traveler_number = 11;
+    // Note that EventTicket is not used in Chrome.
+    EventTicket event_ticket = 12;
+    // Note that TransitPass is not used in Chrome.
+    TransitPass transit_pass = 13;
     // add other valuable types here.
   }
 

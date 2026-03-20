@@ -238,6 +238,11 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       }
       break;
     }
+    case AutofillValuableSpecifics::kEventTicket:
+    case AutofillValuableSpecifics::kTransitPass: {
+      // Chrome does not support these types.
+      break;
+    }
     case AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       break;
   }
