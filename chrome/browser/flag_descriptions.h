@@ -1111,6 +1111,12 @@ inline constexpr char kAutofillEnableWalletBrandingDescription[] =
     "When enabled, certain strings and logos referencing Google Account, "
     "Google Payments, and Google Pay will instead reference Google Wallet.";
 
+inline constexpr char kAutofillEnableWalletBrandingV2Name[] =
+    "Further update Google Pay and Google Wallet branding where applicable";
+inline constexpr char kAutofillEnableWalletBrandingV2Description[] =
+    "When enabled, further brings certain strings and images referencing "
+    "Google Pay and Google Wallet into consistency with branding requirements.";
+
 inline constexpr char kAutoPictureInPictureAndroidName[] =
     "Auto picture in picture on Android";
 inline constexpr char kAutoPictureInPictureAndroidDescription[] =

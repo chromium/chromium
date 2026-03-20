@@ -1029,6 +1029,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-enable-wallet-branding-v2",
+    "owners": ["osaul@google.com", "ferny@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "autofill-manual-testing-data",
     "owners": ["fleimgruber@google.com", "chrome-autofill@google.com"],
     "expiry_milestone": 146

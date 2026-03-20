@@ -119,6 +119,9 @@ extern const char kAutofillEnableSupportForNameAndEmailDescription[];
 extern const char kAutofillEnableWalletBrandingName[];
 extern const char kAutofillEnableWalletBrandingDescription[];
 
+extern const char kAutofillEnableWalletBrandingV2Name[];
+extern const char kAutofillEnableWalletBrandingV2Description[];
+
 extern const char kAutofillManualTestingDataName[];
 extern const char kAutofillManualTestingDataDescription[];
 

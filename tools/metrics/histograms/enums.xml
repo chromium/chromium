@@ -17981,6 +17981,7 @@ from previous Chrome versions.
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
   <int value="1196407590" label="SmdsDbusMigration:disabled"/>
+  <int value="1196560551" label="AutofillEnableWalletBrandingV2:disabled"/>
   <int value="1196644408" label="performance-monitor-gathering"/>
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
@@ -18767,6 +18768,7 @@ from previous Chrome versions.
   <int value="1446904662" label="CCTResizableWindowAboveNavbar:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
   <int value="1447295459" label="SyncPseudoUSSApps:enabled"/>
+  <int value="1448413812" label="AutofillEnableWalletBrandingV2:enabled"/>
   <int value="1448537739" label="CameraAppPreviewOcr:disabled"/>
   <int value="1448622238" label="DeferTabSwitcherLayoutCreation:enabled"/>
   <int value="1448684258" label="TabHoverCardImages:enabled"/>

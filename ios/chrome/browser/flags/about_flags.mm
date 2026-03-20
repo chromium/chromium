@@ -2715,6 +2715,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPageContextIPCOptimizationName,
      flag_descriptions::kPageContextIPCOptimizationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPageContextIPCOptimization)},
+    {"autofill-enable-wallet-branding-v2",
+     flag_descriptions::kAutofillEnableWalletBrandingV2Name,
+     flag_descriptions::kAutofillEnableWalletBrandingV2Description,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBrandingV2)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -270,6 +270,11 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
 // Payments, and Google Pay will instead reference Google Wallet.
 BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, further brings certain strings and images referencing Google
+// Pay and Google Wallet into consistency with branding requirements.
+BASE_FEATURE(kAutofillEnableWalletBrandingV2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Payments Autofill Buy Now Pay Later (BNPL) will use each
 // corresponding issuer's blocklist instead of allowlist to check for website
 // eligibility.

@@ -178,6 +178,12 @@ const char kAutofillEnableWalletBrandingDescription[] =
     "When enabled, certain strings and logos referencing Google Account, "
     "Google Payments, and Google Pay will instead reference Google Wallet.";
 
+const char kAutofillEnableWalletBrandingV2Name[] =
+    "Further update Google Pay and Google Wallet branding where applicable";
+const char kAutofillEnableWalletBrandingV2Description[] =
+    "When enabled, further brings certain strings and images referencing "
+    "Google Pay and Google Wallet into consistency with branding requirements.";
+
 const char kAutofillManualTestingDataName[] = "Autofill manual testing data";
 const char kAutofillManualTestingDataDescription[] =
     "When set, imports the addresses and cards specified on startup. WARNING: "

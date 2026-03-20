@@ -13108,6 +13108,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch5Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch5)},
 #endif
+
+    {"autofill-enable-wallet-branding-v2",
+     flag_descriptions::kAutofillEnableWalletBrandingV2Name,
+     flag_descriptions::kAutofillEnableWalletBrandingV2Description, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBrandingV2)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
