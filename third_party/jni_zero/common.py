@@ -206,13 +206,9 @@ def jni_mangle(name):
 
 
 def sanitize_cpp_keywords(value):
-  """
-  Add the string 1 to the method name if it is a C++ reserved keyword.
-  This is necessary because some strings are reserved keywords in C++ but not
-  Java, so we need to ensure these strings are not used in generated C++ code.
-  """
+  """Add a _ suffix to the method value if it is a C++ reserved keyword."""
   if value in _CPP_RESERVED_KEYWORDS:
-    return value + '1'
+    return value + '_'
   return value
 
 
