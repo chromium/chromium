@@ -216,6 +216,14 @@ public class FuseboxViewBinderUnitTest {
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
+
+        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.DEEP_SEARCH);
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+        assertEquals("Deep Search", mViewHolder.requestType.getText());
+
+        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.CANVAS);
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+        assertEquals("Canvas", mViewHolder.requestType.getText());
     }
 
     @Test
@@ -257,6 +265,8 @@ public class FuseboxViewBinderUnitTest {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
         assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
         assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[2]);
 
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
@@ -271,6 +281,17 @@ public class FuseboxViewBinderUnitTest {
         assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
         assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[0]);
         assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
+        assertNotNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.CANVAS);
+        assertNotNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
     }
 
     @Test
@@ -378,6 +399,15 @@ public class FuseboxViewBinderUnitTest {
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
+
+        mModel.set(
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.CANVAS);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
     }
 
     @Test
@@ -525,6 +555,17 @@ public class FuseboxViewBinderUnitTest {
                 AutocompleteRequestType.IMAGE_GENERATION);
         assertEquals(
                 res.getString(R.string.acc_send_button_create_image),
+                mViewHolder.navigateButton.getContentDescription());
+
+        mModel.set(
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
+        assertEquals(
+                res.getString(R.string.ntp_compose_deep_search),
+                mViewHolder.navigateButton.getContentDescription());
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.CANVAS);
+        assertEquals(
+                res.getString(R.string.ntp_compose_canvas),
                 mViewHolder.navigateButton.getContentDescription());
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
