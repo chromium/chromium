@@ -29,8 +29,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
@@ -4277,6 +4279,118 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_MediaData_Audio) {
   EXPECT_EQ(media_data.duration_milliseconds(), 60500);          // 60.5 * 1000
   EXPECT_EQ(media_data.current_position_milliseconds(), 15000);  // 15.0 * 1000
   EXPECT_TRUE(media_data.is_playing());
+}
+
+// Tests that Autofill profile and payment data presence maps to the root node's
+// AutofillInformation proto correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_AutofillInformation) {
+  // Only applicable in V2 where Autofill info is extracted unconditionally.
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Define a simple page structure.
+  auto page_structure = HtmlPage("Autofill Page", RawHtml("<p>Hello</p>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Setup the TestAutofillClientIOS.
+  autofill::TestAutofillClientIOS autofill_client(web_state(), /*bridge=*/nil);
+
+  autofill::TestPersonalDataManager& pdm =
+      static_cast<autofill::TestPersonalDataManager&>(
+          autofill_client.GetPersonalDataManager());
+
+  // Add an address profile to the AddressDataManager.
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  pdm.address_data_manager().AddProfile(profile);
+
+  // Add a credit card to the PaymentsDataManager.
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+  pdm.payments_data_manager().AddCreditCard(card);
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(true);
+  builder.SetUseRichExtraction(false);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  ASSERT_TRUE(annotated_page_content.has_profile_information());
+  ASSERT_TRUE(
+      annotated_page_content.profile_information().has_autofill_information());
+
+  const auto& autofill_info =
+      annotated_page_content.profile_information().autofill_information();
+
+  // Verify both address and credit card are present.
+  EXPECT_EQ(autofill_info.fillable_data_size(), 2);
+  EXPECT_THAT(
+      autofill_info.fillable_data(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::AutofillInformation_FillableData_ADDRESS,
+          optimization_guide::proto::
+              AutofillInformation_FillableData_CREDIT_CARD));
+}
+
+// Tests that when Autofill profile and payment data are unavailable, the
+// autofill information is empty.
+TEST_P(PageContextWrapperTest, PopulatePageContext_AutofillInformation_Empty) {
+  // Only applicable in V2 where Autofill info is extracted unconditionally.
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Define a simple page structure.
+  auto page_structure = HtmlPage("Autofill Page", RawHtml("<p>Hello</p>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Setup the TestAutofillClientIOS.
+  autofill::TestAutofillClientIOS autofill_client(web_state(), /*bridge=*/nil);
+
+  // Note: We deliberately do NOT add any profiles or credit cards to the
+  // PersonalDataManager.
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(true);
+  builder.SetUseRichExtraction(false);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+
+  ASSERT_TRUE(annotated_page_content.has_profile_information());
+  ASSERT_TRUE(
+      annotated_page_content.profile_information().has_autofill_information());
+
+  const auto& autofill_info =
+      annotated_page_content.profile_information().autofill_information();
+
+  // Verify that the fillable data is empty.
+  EXPECT_EQ(autofill_info.fillable_data_size(), 0);
 }
 
 // Tests that attempting to trigger two extractions on one wrapper fails.

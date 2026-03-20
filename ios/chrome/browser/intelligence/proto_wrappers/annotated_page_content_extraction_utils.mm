@@ -6,7 +6,10 @@
 
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -772,5 +775,37 @@ void PopulateViewportGeometryNode(
   if (std::optional<int> height =
           ReadJsNumber(viewport_geometry_content, kHeightKey)) {
     destination_viewport_geometry_node->set_height(*height);
+  }
+}
+
+void PopulateAutofillInformation(
+    web::WebState* web_state,
+    optimization_guide::proto::AutofillInformation* autofill_information) {
+  autofill::AutofillClientIOS* client =
+      autofill::AutofillClientIOS::FromWebState(web_state);
+  if (!client || !client->HasPersonalDataManager()) {
+    return;
+  }
+
+  const autofill::PersonalDataManager& pdm = client->GetPersonalDataManager();
+
+  bool address_autofill_enabled = client->IsAutofillProfileEnabled();
+  bool has_address_profiles = !pdm.address_data_manager().GetProfiles().empty();
+  if (address_autofill_enabled && has_address_profiles) {
+    autofill_information->add_fillable_data(
+        optimization_guide::proto::AutofillInformation_FillableData_ADDRESS);
+  }
+
+  bool payment_autofill_enabled = false;
+  bool has_credit_cards = false;
+  if (auto* payments_client = client->GetPaymentsAutofillClient()) {
+    payment_autofill_enabled =
+        payments_client->IsAutofillPaymentMethodsEnabled();
+    has_credit_cards = !pdm.payments_data_manager().GetCreditCards().empty();
+  }
+  if (payment_autofill_enabled && has_credit_cards) {
+    autofill_information->add_fillable_data(
+        optimization_guide::proto::
+            AutofillInformation_FillableData_CREDIT_CARD);
   }
 }

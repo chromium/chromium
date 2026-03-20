@@ -583,6 +583,17 @@ result.links = linksArray;
   if (_config->use_refactored_extractor()) {
     // Use the new way for extracting context.
 
+    // Autofill information is only needed when extracting detailed annotated
+    // page content. It is not needed when extracting inner text.
+    // TODO(crbug.com/493904351): Add kill switch by using autofill config bit.
+    if (_shouldGetAnnotatedPageContent) {
+      optimization_guide::proto::AutofillInformation* autofillInformation =
+          _rootAPCNode->mutable_profile_information()
+              ->mutable_autofill_information();
+      CHECK(_webState);
+      PopulateAutofillInformation(_webState.get(), autofillInformation);
+    }
+
     // Callback to aggregate values from the JS execution.
     auto callback = [](PageContextWrapper* weakWrapper,
                        base::RepeatingClosure barrier, BOOL isMainFrame,
