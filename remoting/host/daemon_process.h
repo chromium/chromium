@@ -44,6 +44,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                       public HostStatusObserver,
                       public mojom::DesktopSessionManager {
  public:
+  using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
   using DesktopSessionList =
       base::circular_deque<raw_ptr<DesktopSession, CtnExperimental>>;
 
@@ -59,7 +60,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   static std::unique_ptr<DaemonProcess> Create(
       scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
       scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-      const base::OnceClosure stopped_callback);
+      StoppedCallback stopped_callback);
+
+  // Gets the location of the config file.
+  static base::FilePath GetConfigPath();
 
   // ConfigWatcher::Delegate
   void OnConfigUpdated(const std::string& serialized_config) override;
@@ -100,13 +104,13 @@ class DaemonProcess : public ConfigWatcher::Delegate,
  protected:
   DaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                 scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-                base::OnceClosure stopped_callback);
+                StoppedCallback stopped_callback);
 
   // Reads the host configuration and launches the network process.
   void Initialize();
 
   // Invokes |stopped_callback_| to ask the owner to delete |this|.
-  void Stop();
+  void Stop(int exit_code);
 
   // Returns true if |terminal_id| is in the range of allocated IDs. I.e. it is
   // less or equal to the highest ID we have seen so far.
@@ -165,9 +169,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Deletes all desktop sessions.
   void DeleteAllDesktopSessions();
 
-  // Gets the location of the config file.
-  base::FilePath GetConfigPath();
-
   // Task runner on which public methods of this class must be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;
 
@@ -186,7 +187,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   int next_terminal_id_;
 
   // Invoked to ask the owner to delete |this|.
-  base::OnceClosure stopped_callback_;
+  StoppedCallback stopped_callback_;
 
   // Writes host status updates to the system event log.
   std::unique_ptr<HostEventLogger> host_event_logger_;

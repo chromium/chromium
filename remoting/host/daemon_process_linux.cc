@@ -59,7 +59,7 @@ class DaemonProcessLinux : public DaemonProcess {
  public:
   DaemonProcessLinux(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                      scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-                     base::OnceClosure stopped_callback);
+                     StoppedCallback stopped_callback);
 
   DaemonProcessLinux(const DaemonProcessLinux&) = delete;
   DaemonProcessLinux& operator=(const DaemonProcessLinux&) = delete;
@@ -116,7 +116,7 @@ class DaemonProcessLinux : public DaemonProcess {
 DaemonProcessLinux::DaemonProcessLinux(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    base::OnceClosure stopped_callback)
+    StoppedCallback stopped_callback)
     : DaemonProcess(caller_task_runner,
                     io_task_runner,
                     std::move(stopped_callback)),
@@ -193,14 +193,14 @@ void DaemonProcessLinux::LaunchNetworkProcess() {
   base::FilePath this_exe;
   if (!base::PathService::Get(base::BasePathKey::FILE_EXE, &this_exe)) {
     LOG(ERROR) << "Failed to get the current executable path.";
-    Stop();
+    Stop(kInitializationFailed);
     return;
   }
 
   auto user_info = GetPasswdUserInfo(GetNetworkProcessUsername());
   if (!user_info.has_value()) {
     LOG(ERROR) << user_info.error();
-    Stop();
+    Stop(kInitializationFailed);
     return;
   }
 
@@ -216,7 +216,7 @@ void DaemonProcessLinux::LaunchNetworkProcess() {
   base::FilePath temp_dir;
   if (!base::PathService::Get(base::DIR_TEMP, &temp_dir)) {
     LOG(ERROR) << "Failed to get the temporary directory path.";
-    Stop();
+    Stop(kInitializationFailed);
     return;
   }
   options.working_dir = temp_dir;
@@ -272,14 +272,14 @@ void DaemonProcessLinux::OnStartDesktopSessionFactoryResult(
 
   if (!result.has_value()) {
     LOG(ERROR) << result.error();
-    Stop();
+    Stop(kInitializationFailed);
   }
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    base::OnceClosure stopped_callback) {
+    StoppedCallback stopped_callback) {
   auto daemon_process = std::make_unique<DaemonProcessLinux>(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
 

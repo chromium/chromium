@@ -72,7 +72,7 @@ class HostService : public WtsTerminalMonitor {
   int RunInConsole();
 
   // Stops and deletes |daemon_process_|.
-  void StopDaemonProcess();
+  void StopDaemonProcess(int exit_code);
 
   // Handles WM_WTSSESSION_CHANGE messages.
   bool HandleMessage(UINT message,

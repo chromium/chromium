@@ -58,7 +58,7 @@ void DaemonProcess::OnConfigUpdated(const std::string& serialized_config) {
 void DaemonProcess::OnConfigWatcherError() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  Stop();
+  Stop(kInvalidHostConfigurationExitCode);
 }
 
 void DaemonProcess::OnChannelConnected(int32_t peer_pid) {
@@ -80,7 +80,7 @@ void DaemonProcess::OnPermanentError(int exit_code) {
   DCHECK(kMinPermanentErrorExitCode <= exit_code &&
          exit_code <= kMaxPermanentErrorExitCode);
 
-  Stop();
+  Stop(exit_code);
 }
 
 void DaemonProcess::OnWorkerProcessStopped() {
@@ -166,7 +166,7 @@ void DaemonProcess::CloseDesktopSession(int terminal_id) {
 DaemonProcess::DaemonProcess(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    base::OnceClosure stopped_callback)
+    StoppedCallback stopped_callback)
     : caller_task_runner_(caller_task_runner),
       io_task_runner_(io_task_runner),
       next_terminal_id_(0),
@@ -291,13 +291,13 @@ void DaemonProcess::Initialize() {
   LaunchNetworkProcess();
 }
 
-void DaemonProcess::Stop() {
+void DaemonProcess::Stop(int exit_code) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   OnWorkerProcessStopped();
 
   if (stopped_callback_) {
-    std::move(stopped_callback_).Run();
+    std::move(stopped_callback_).Run(exit_code);
   }
 }
 
@@ -370,6 +370,7 @@ void DaemonProcess::DeleteAllDesktopSessions() {
   }
 }
 
+// static
 base::FilePath DaemonProcess::GetConfigPath() {
   base::FilePath config_path;
   const base::CommandLine* command_line =

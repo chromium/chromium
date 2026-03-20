@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/desktop_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,7 @@ class MockDaemonProcess : public DaemonProcess {
  public:
   MockDaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-                    base::OnceClosure stopped_callback);
+                    StoppedCallback stopped_callback);
 
   MockDaemonProcess(const MockDaemonProcess&) = delete;
   MockDaemonProcess& operator=(const MockDaemonProcess&) = delete;
@@ -87,7 +88,7 @@ FakeDesktopSession::~FakeDesktopSession() = default;
 MockDaemonProcess::MockDaemonProcess(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    base::OnceClosure stopped_callback)
+    StoppedCallback stopped_callback)
     : DaemonProcess(caller_task_runner,
                     io_task_runner,
                     std::move(stopped_callback)) {}
@@ -122,7 +123,7 @@ class DaemonProcessTest : public testing::Test {
   void LaunchNetworkProcess();
 
   // Deletes |daemon_process_|.
-  void DeleteDaemonProcess();
+  void DeleteDaemonProcess(int exit_code);
 
   // Quits |message_loop_|.
   void QuitMessageLoop();
@@ -169,7 +170,7 @@ void DaemonProcessTest::SetUp() {
 }
 
 void DaemonProcessTest::TearDown() {
-  daemon_process_->Stop();
+  daemon_process_->Stop(kSuccessExitCode);
   run_loop_.Run();
 }
 
@@ -182,7 +183,7 @@ void DaemonProcessTest::LaunchNetworkProcess() {
   daemon_process_->OnChannelConnected(0);
 }
 
-void DaemonProcessTest::DeleteDaemonProcess() {
+void DaemonProcessTest::DeleteDaemonProcess(int exit_code) {
   daemon_process_.reset();
 }
 

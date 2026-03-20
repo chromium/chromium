@@ -63,6 +63,36 @@ const wchar_t kComProcessMandatoryLabel[] =
     SDDL_SACL L":"
     SDDL_ACE(SDDL_MANDATORY_LABEL, SDDL_NO_EXECUTE_UP, SDDL_ML_MEDIUM);
 
+// Changes the service start type to 'manual'.
+void DisableAutoStart() {
+  ScopedScHandle scmanager(
+      OpenSCManager(nullptr, SERVICES_ACTIVE_DATABASE,
+                    SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE));
+  if (!scmanager.is_valid()) {
+    PLOG(INFO) << "Failed to connect to the service control manager";
+    return;
+  }
+
+  DWORD desired_access = SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS;
+  ScopedScHandle service(
+      OpenService(scmanager.Get(), kWindowsServiceName, desired_access));
+  if (!service.is_valid()) {
+    PLOG(INFO) << "Failed to open to the '" << kWindowsServiceName
+               << "' service";
+    return;
+  }
+
+  // Change the service start type to 'manual'. All |nullptr| parameters below
+  // mean that there is no change to the corresponding service parameter.
+  if (!ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
+                           SERVICE_DEMAND_START, SERVICE_NO_CHANGE, nullptr,
+                           nullptr, nullptr, nullptr, nullptr, nullptr,
+                           nullptr)) {
+    PLOG(INFO) << "Failed to change the '" << kWindowsServiceName
+               << "'service start type to 'manual'";
+  }
+}
+
 }  // namespace
 
 HostService* HostService::GetInstance() {
@@ -373,8 +403,17 @@ cleanup:
   return result;
 }
 
-void HostService::StopDaemonProcess() {
+void HostService::StopDaemonProcess(int exit_code) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Both kInvalidHostIdExitCode and kInvalidOAuthCredentialsExitCode are
+  // errors that will never go away with the current config.
+  // Disabling automatic service start until the host is re-enabled and config
+  // updated.
+  if (exit_code == kInvalidHostIdExitCode ||
+      exit_code == kInvalidOAuthCredentialsExitCode) {
+    DisableAutoStart();
+  }
 
   daemon_process_.reset();
 }
@@ -402,8 +441,8 @@ BOOL WINAPI HostService::ConsoleControlHandler(DWORD event) {
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
       self->main_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&HostService::StopDaemonProcess, self->weak_ptr_));
+          FROM_HERE, base::BindOnce(&HostService::StopDaemonProcess,
+                                    self->weak_ptr_, kSuccessExitCode));
       return TRUE;
 
     default:
@@ -424,8 +463,8 @@ DWORD WINAPI HostService::ServiceControlHandler(DWORD control,
     case SERVICE_CONTROL_SHUTDOWN:
     case SERVICE_CONTROL_STOP:
       self->main_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&HostService::StopDaemonProcess, self->weak_ptr_));
+          FROM_HERE, base::BindOnce(&HostService::StopDaemonProcess,
+                                    self->weak_ptr_, kSuccessExitCode));
       return NO_ERROR;
 
     case SERVICE_CONTROL_SESSIONCHANGE:
