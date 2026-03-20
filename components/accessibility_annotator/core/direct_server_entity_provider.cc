@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
@@ -44,10 +42,12 @@ void DirectServerEntityProvider::GetEntities(
     return;
   }
 
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> annotations =
+      bridge->GetAnnotationsByTypes(types);
   std::vector<Entity> entities;
-  for (const auto& specifics : bridge->GetAnnotationsByTypes(types)) {
-    std::optional<Entity> entity = CreateEntityFromSpecifics(specifics);
-    if (entity.has_value()) {
+  entities.reserve(annotations.size());
+  for (const auto& specifics : annotations) {
+    if (std::optional<Entity> entity = CreateEntityFromSpecifics(specifics)) {
       entities.push_back(std::move(*entity));
     }
   }

@@ -41,9 +41,9 @@ class DirectServerEntityProvider
   void OnAccessibilityAnnotationSyncBridgeLoaded() override;
   void OnAccessibilityAnnotationChanged() override;
 
+ private:
   void NotifyObservers();
 
- private:
   base::ObserverList<EntityDataProvider::Observer> observers_;
 
   // `backend_` is owned by the BrowserContext and is guaranteed to outlive this

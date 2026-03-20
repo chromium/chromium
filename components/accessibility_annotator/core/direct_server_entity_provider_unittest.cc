@@ -4,10 +4,9 @@
 
 #include "components/accessibility_annotator/core/direct_server_entity_provider.h"
 
-#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/version_info/channel.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
@@ -24,11 +23,15 @@ namespace accessibility_annotator {
 
 namespace {
 
-using ::base::test::RunClosure;
+using ::base::test::RunOnceClosure;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::Ref;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 sync_pb::AccessibilityAnnotationSpecifics CreateSpecifics(const std::string& id,
                                                           EntityType type) {
@@ -73,7 +76,7 @@ class DirectServerEntityProviderTest : public testing::Test {
 
  protected:
   void AddSpecificsToBridge(
-      const std::vector<sync_pb::AccessibilityAnnotationSpecifics>& specifics) {
+      std::vector<sync_pb::AccessibilityAnnotationSpecifics> specifics) {
     syncer::EntityChangeList change_list;
     for (const auto& s : specifics) {
       syncer::EntityData data;
@@ -96,70 +99,60 @@ class DirectServerEntityProviderTest : public testing::Test {
 };
 
 TEST_F(DirectServerEntityProviderTest, GetEntitiesReturnsEmpty) {
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(std::vector<Entity>)> cb;
-  EXPECT_CALL(cb, Run(IsEmpty())).WillOnce(RunClosure(run_loop.QuitClosure()));
-  provider_->GetEntities(/*types=*/{}, cb.Get());
-  run_loop.Run();
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities(/*types=*/{}, future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 TEST_F(DirectServerEntityProviderTest, GetEntities_AllTypes) {
   AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder),
                         CreateSpecifics("2", EntityType::kShipment)});
 
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(std::vector<Entity>)> cb;
-  EXPECT_CALL(cb, Run(testing::UnorderedElementsAre(
-                      testing::Field(&Entity::entity_id, "1"),
-                      testing::Field(&Entity::entity_id, "2"))))
-      .WillOnce([&](std::vector<Entity> /*entities*/) { run_loop.Quit(); });
-  provider_->GetEntities(EntityTypeEnumSet::All(), cb.Get());
-  run_loop.Run();
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities(EntityTypeEnumSet::All(), future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              UnorderedElementsAre(Field(&Entity::entity_id, "1"),
+                                   Field(&Entity::entity_id, "2")));
 }
 
 TEST_F(DirectServerEntityProviderTest, GetEntities_SubsetTypes) {
   AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder),
                         CreateSpecifics("2", EntityType::kShipment)});
 
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(std::vector<Entity>)> cb;
-  EXPECT_CALL(cb, Run(SizeIs(1))).WillOnce([&](std::vector<Entity> entities) {
-    EXPECT_EQ(entities[0].entity_id, "1");
-    EXPECT_EQ(entities[0].GetType(), EntityType::kOrder);
-    run_loop.Quit();
-  });
-  provider_->GetEntities({EntityType::kOrder}, cb.Get());
-  run_loop.Run();
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities({EntityType::kOrder}, future.GetCallback());
+
+  std::vector<Entity> entities = future.Take();
+  ASSERT_THAT(entities, SizeIs(1));
+  EXPECT_THAT(entities[0],
+              AllOf(Field(&Entity::entity_id, "1"),
+                    Property(&Entity::GetType, EntityType::kOrder)));
 }
 
 TEST_F(DirectServerEntityProviderTest, GetEntities_NoTypes) {
   AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder),
                         CreateSpecifics("2", EntityType::kShipment)});
 
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(std::vector<Entity>)> cb;
-  EXPECT_CALL(cb, Run(IsEmpty())).WillOnce(RunClosure(run_loop.QuitClosure()));
-  provider_->GetEntities(/*types=*/{}, cb.Get());
-  run_loop.Run();
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities(/*types=*/{}, future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 TEST_F(DirectServerEntityProviderTest, GetEntities_TypeNotPresent) {
   AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder)});
 
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(std::vector<Entity>)> cb;
-  EXPECT_CALL(cb, Run(IsEmpty())).WillOnce(RunClosure(run_loop.QuitClosure()));
-  provider_->GetEntities({EntityType::kShipment}, cb.Get());
-  run_loop.Run();
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities({EntityType::kShipment}, future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 TEST_F(DirectServerEntityProviderTest, ObserverNotifiedOnBridgeLoaded) {
   provider_->AddObserver(&mock_observer_);
-  base::RunLoop run_loop;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_observer_,
               OnEntityDataChanged(Ref(*provider_), EntityTypeEnumSet::All()))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   provider_->OnAccessibilityAnnotationSyncBridgeLoaded();
   run_loop.Run();
@@ -169,11 +162,11 @@ TEST_F(DirectServerEntityProviderTest, ObserverNotifiedOnBridgeLoaded) {
 
 TEST_F(DirectServerEntityProviderTest, ObserverNotifiedOnAnnotationChanged) {
   provider_->AddObserver(&mock_observer_);
-  base::RunLoop run_loop;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_observer_,
               OnEntityDataChanged(Ref(*provider_), EntityTypeEnumSet::All()))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   provider_->OnAccessibilityAnnotationChanged();
   run_loop.Run();
