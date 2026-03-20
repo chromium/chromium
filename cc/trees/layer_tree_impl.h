@@ -385,7 +385,8 @@ class CC_EXPORT LayerTreeImpl {
   void SetPageScaleOnActiveTree(float active_page_scale);
   void PushPageScaleFromMainThread(float page_scale_factor,
                                    float min_page_scale_factor,
-                                   float max_page_scale_factor);
+                                   float max_page_scale_factor,
+                                   bool limits_set = true);
   const LayerSelection& selection() const { return selection_; }
   float current_page_scale_factor() const {
     return page_scale_factor()->Current(IsActiveTree());
@@ -884,9 +885,11 @@ class CC_EXPORT LayerTreeImpl {
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,
                                     float min_page_scale_factor,
-                                    float max_page_scale_factor);
+                                    float max_page_scale_factor,
+                                    bool limits_set);
   bool SetPageScaleFactorLimits(float min_page_scale_factor,
-                                float max_page_scale_factor);
+                                float max_page_scale_factor,
+                                bool limits_set);
   void DidUpdatePageScale();
   void PushBrowserControls(const float* top_controls_shown_ratio,
                            const float* bottom_controls_shown_ratio);
@@ -924,8 +927,9 @@ class CC_EXPORT LayerTreeImpl {
 
   scoped_refptr<SyncedScale> page_scale_factor_;
 
-  // The minimum and maximum page scale factor.  A value of 0 indicates that the
-  // limit is not enforced.
+  // True if the minimum and maximum page scale factors have been explicitly
+  // set.
+  bool page_scale_factor_limits_set_ = false;
   float min_page_scale_factor_;
   float max_page_scale_factor_;
   float external_page_scale_factor_;

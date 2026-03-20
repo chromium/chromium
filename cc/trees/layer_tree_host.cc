@@ -1542,10 +1542,19 @@ void LayerTreeHost::SetOverscrollBehavior(const OverscrollBehavior& behavior) {
 void LayerTreeHost::SetPageScaleFactorAndLimits(float page_scale_factor,
                                                 float min_page_scale_factor,
                                                 float max_page_scale_factor) {
-  if (pending_commit_state()->page_scale_factor == page_scale_factor &&
+  if (pending_commit_state()->page_scale_factor_limits_set &&
+      pending_commit_state()->page_scale_factor == page_scale_factor &&
       pending_commit_state()->min_page_scale_factor == min_page_scale_factor &&
-      pending_commit_state()->max_page_scale_factor == max_page_scale_factor)
+      pending_commit_state()->max_page_scale_factor == max_page_scale_factor) {
     return;
+  }
+  if (page_scale_factor <= 0) {
+    page_scale_factor = 1;
+  }
+  if (min_page_scale_factor <= 0) {
+    min_page_scale_factor = page_scale_factor;
+  }
+  DCHECK_GE(max_page_scale_factor, min_page_scale_factor);
   DCHECK_GE(page_scale_factor, min_page_scale_factor);
   DCHECK_LE(page_scale_factor, max_page_scale_factor);
   // We should never process non-unit page_scale_delta for an OOPIF subframe.
@@ -1557,6 +1566,7 @@ void LayerTreeHost::SetPageScaleFactorAndLimits(float page_scale_factor,
       << pending_commit_state()->page_scale_factor
       << ", new psf = " << page_scale_factor;
 
+  pending_commit_state()->page_scale_factor_limits_set = true;
   pending_commit_state()->page_scale_factor = page_scale_factor;
   pending_commit_state()->min_page_scale_factor = min_page_scale_factor;
   pending_commit_state()->max_page_scale_factor = max_page_scale_factor;

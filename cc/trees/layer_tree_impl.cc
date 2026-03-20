@@ -161,8 +161,8 @@ LayerTreeImpl::LayerTreeImpl(
       hud_layer_(nullptr),
       background_color_(SkColors::kTransparent),
       page_scale_factor_(page_scale_factor),
-      min_page_scale_factor_(0),
-      max_page_scale_factor_(0),
+      min_page_scale_factor_(1.f),
+      max_page_scale_factor_(1.f),
       external_page_scale_factor_(1.f),
       device_scale_factor_(1.f),
       painted_device_scale_factor_(1.f),
@@ -496,9 +496,8 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
       0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
   float transform_delta_by_safe_area_inset_bottom = -(real_saib - blink_saib);
 
-  if (min_page_scale_factor() > 0.f) {
-    transform_delta_by_safe_area_inset_bottom /= min_page_scale_factor();
-  }
+  DCHECK_GT(min_page_scale_factor(), 0.f);
+  transform_delta_by_safe_area_inset_bottom /= min_page_scale_factor();
 
   if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
       transform_delta_by_safe_area_inset_bottom) {
@@ -845,7 +844,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
 
   PushPageScaleFromMainThread(commit_state.page_scale_factor,
                               commit_state.min_page_scale_factor,
-                              commit_state.max_page_scale_factor);
+                              commit_state.max_page_scale_factor,
+                              commit_state.page_scale_factor_limits_set);
 
   SetBrowserControlsParams(commit_state.browser_controls_params);
   set_overscroll_behavior(commit_state.overscroll_behavior);
@@ -968,7 +968,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   // Active tree already shares the page_scale_factor object with pending
   // tree so only the limits need to be provided.
   target_tree->PushPageScaleFactorAndLimits(nullptr, min_page_scale_factor(),
-                                            max_page_scale_factor());
+                                            max_page_scale_factor(),
+                                            page_scale_factor_limits_set_);
   target_tree->SetExternalPageScaleFactor(external_page_scale_factor_);
 
   target_tree->SetBrowserControlsParams(browser_controls_params_);
@@ -1296,10 +1297,15 @@ void LayerTreeImpl::ClearCurrentlyScrollingNode() {
 
 float LayerTreeImpl::ClampPageScaleFactorToLimits(
     float page_scale_factor) const {
-  if (min_page_scale_factor_ && page_scale_factor < min_page_scale_factor_)
-    page_scale_factor = min_page_scale_factor_;
-  else if (max_page_scale_factor_ && page_scale_factor > max_page_scale_factor_)
-    page_scale_factor = max_page_scale_factor_;
+  if (!page_scale_factor_limits_set_) {
+    return page_scale_factor;
+  }
+  if (page_scale_factor < min_page_scale_factor_) {
+    return min_page_scale_factor_;
+  }
+  if (page_scale_factor > max_page_scale_factor_) {
+    return max_page_scale_factor_;
+  }
   return page_scale_factor;
 }
 
@@ -1400,9 +1406,10 @@ void LayerTreeImpl::SetPageScaleOnActiveTree(float active_page_scale) {
 
 void LayerTreeImpl::PushPageScaleFromMainThread(float page_scale_factor,
                                                 float min_page_scale_factor,
-                                                float max_page_scale_factor) {
+                                                float max_page_scale_factor,
+                                                bool limits_set) {
   PushPageScaleFactorAndLimits(&page_scale_factor, min_page_scale_factor,
-                               max_page_scale_factor);
+                               max_page_scale_factor, limits_set);
 }
 
 void LayerTreeImpl::SetPageScaleFactorAndLimitsForDisplayTree(
@@ -1411,8 +1418,8 @@ void LayerTreeImpl::SetPageScaleFactorAndLimitsForDisplayTree(
     float max_page_scale_factor) {
   DCHECK(settings().trees_in_viz_in_viz_process);
   bool changed_page_scale = page_scale_factor_->SetCurrent(page_scale_factor);
-  changed_page_scale |=
-      SetPageScaleFactorLimits(min_page_scale_factor, max_page_scale_factor);
+  changed_page_scale |= SetPageScaleFactorLimits(min_page_scale_factor,
+                                                 max_page_scale_factor, true);
 
   if (changed_page_scale) {
     DidUpdatePageScale();
@@ -1421,12 +1428,13 @@ void LayerTreeImpl::SetPageScaleFactorAndLimitsForDisplayTree(
 
 void LayerTreeImpl::PushPageScaleFactorAndLimits(const float* page_scale_factor,
                                                  float min_page_scale_factor,
-                                                 float max_page_scale_factor) {
+                                                 float max_page_scale_factor,
+                                                 bool limits_set) {
   DCHECK(page_scale_factor || IsActiveTree());
   bool changed_page_scale = false;
 
-  changed_page_scale |=
-      SetPageScaleFactorLimits(min_page_scale_factor, max_page_scale_factor);
+  changed_page_scale |= SetPageScaleFactorLimits(
+      min_page_scale_factor, max_page_scale_factor, limits_set);
 
   if (page_scale_factor) {
     DCHECK(!IsActiveTree() || !host_impl_->pending_tree());
@@ -1531,11 +1539,18 @@ void LayerTreeImpl::PushBrowserControls(
 }
 
 bool LayerTreeImpl::SetPageScaleFactorLimits(float min_page_scale_factor,
-                                             float max_page_scale_factor) {
-  if (min_page_scale_factor == min_page_scale_factor_ &&
-      max_page_scale_factor == max_page_scale_factor_)
-    return false;
+                                             float max_page_scale_factor,
+                                             bool limits_set) {
+  DCHECK_GT(min_page_scale_factor, 0.f);
+  DCHECK_GE(max_page_scale_factor, min_page_scale_factor);
 
+  if (page_scale_factor_limits_set_ == limits_set &&
+      min_page_scale_factor == min_page_scale_factor_ &&
+      max_page_scale_factor == max_page_scale_factor_) {
+    return false;
+  }
+
+  page_scale_factor_limits_set_ = limits_set;
   min_page_scale_factor_ = min_page_scale_factor;
   max_page_scale_factor_ = max_page_scale_factor;
 

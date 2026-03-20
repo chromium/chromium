@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Tests that updating viewport container sizes with a 0 min page scale factor does not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// Turn on the viewport and other necessary settings for a mobile-like environment.
+if (window.internals) {
+  internals.settings.setViewportEnabled(true);
+}
+
+promise_test(async () => {
+  if (!window.internals)
+    return;
+
+  internals.setPageScaleFactorLimits(0, 10);
+  internals.setBrowserControlsShownRatio(1, 1);
+  internals.setBrowserControlsState(100, 0, true);
+
+  // This causes UpdateViewportContainerSizes on the compositor thread
+  // to be triggered. If min_page_scale_factor is 0, this used to crash
+  // due to a divide by zero error.
+  internals.setBrowserControlsShownRatio(0.5, 0.5);
+
+  // Wait a couple of frames to ensure the compositor processes the change.
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => requestAnimationFrame(resolve));
+}, "Changing browser controls shown ratio with min_page_scale_factor=0 does not crash.");
+</script>
