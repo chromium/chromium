@@ -11,9 +11,8 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-
-import android.app.Activity;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -21,8 +20,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,15 +28,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -50,18 +53,31 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
-/** Instrumentation tests for account picker dialog. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/**
+ * Instrumentation tests for account picker dialog.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ */
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
 @Batch(Batch.PER_CLASS)
 public class AccountPickerDialogTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private static Activity sActivity;
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
+                    new ParameterSet().value(true).name("withIdentityManagerSource"));
+
+    @Rule
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -78,24 +94,29 @@ public class AccountPickerDialogTest {
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private AccountPickerDialogCoordinator mCoordinator;
+    private final boolean mIsIdentityManagerSourceOfAccounts;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+    public AccountPickerDialogTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
     }
 
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+                mIsIdentityManagerSourceOfAccounts);
+        assert mActivityTestRule.getActivity() == null;
+        var activity = mActivityTestRule.launchActivity(null);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerDialogCoordinator(
-                                    sActivity,
+                                    activity,
                                     mListenerMock,
                                     new ModalDialogManager(
-                                            new AppModalPresenter(sActivity), ModalDialogType.APP),
+                                            new AppModalPresenter(activity), ModalDialogType.APP),
                                     mAccountManagerTestRule.getIdentityManager());
                 });
     }
@@ -103,6 +124,9 @@ public class AccountPickerDialogTest {
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(mCoordinator::dismissDialog);
+        if (mActivityTestRule.getActivity() != null) {
+            mActivityTestRule.finishActivity();
+        }
     }
 
     @Test
@@ -116,22 +140,27 @@ public class AccountPickerDialogTest {
     @Test
     @MediumTest
     public void testAddAccount() {
+        verifyOptionsDisplayed();
         onView(withText(R.string.signin_add_account_to_device)).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).addAccount();
+        verify(mListenerMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).addAccount();
     }
 
     @Test
     @MediumTest
     public void testSelectDefaultAccount() {
+        verifyOptionsDisplayed();
         onView(withText(TestAccounts.ACCOUNT1.getFullName())).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT1);
+        verify(mListenerMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onAccountSelected(TestAccounts.ACCOUNT1);
     }
 
     @Test
     @MediumTest
     public void testSelectNonDefaultAccount() {
+        verifyOptionsDisplayed();
         onView(withText(TestAccounts.ACCOUNT2.getFullName())).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT2);
+        verify(mListenerMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onAccountSelected(TestAccounts.ACCOUNT2);
     }
 
     @Test
@@ -141,5 +170,17 @@ public class AccountPickerDialogTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(
                 mCoordinator.getAccountPickerViewForTests(), "account_picker_dialog");
+    }
+
+    private void verifyOptionsDisplayed() {
+        onView(withText(R.string.signin_add_account_to_device))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(TestAccounts.ACCOUNT1.getFullName()))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(TestAccounts.ACCOUNT2.getFullName()))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 }
