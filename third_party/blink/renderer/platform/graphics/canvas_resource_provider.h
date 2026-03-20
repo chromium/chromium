@@ -690,9 +690,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                               int y) override {
     NOTREACHED();
   }
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes);
+  bool WritePixels(const SkPixmap& pixmap,
+                   const SkImageInfo& src_info,
+                   uint32_t src_x,
+                   uint32_t src_y);
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.

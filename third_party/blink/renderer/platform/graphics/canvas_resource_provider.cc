@@ -7,8 +7,10 @@
 #include <inttypes.h>
 
 #include <string>
+#include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -65,6 +67,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace blink {
 
@@ -763,13 +766,43 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
 }
 
 bool CanvasNon2DResourceProviderSharedImage::WritePixels(
-    const SkImageInfo& orig_info,
-    const void* pixels,
-    size_t row_bytes) {
+    const SkPixmap& pixmap,
+    const SkImageInfo& src_info,
+    uint32_t src_x,
+    uint32_t src_y) {
+  const size_t dest_width = static_cast<size_t>(Size().width());
+  const size_t dest_height = static_cast<size_t>(Size().height());
+
+  base::span<const uint8_t> pixels = gfx::SkPixmapToSpan(pixmap);
+  const size_t source_row_bytes = pixmap.rowBytes();
+  const size_t source_height = pixmap.height();
+
+  SkImageInfo copy_rect_info = src_info.makeWH(static_cast<int>(dest_width),
+                                               static_cast<int>(dest_height));
+  const size_t dest_row_bytes = copy_rect_info.bytesPerPixel() * dest_width;
+
+  std::vector<uint8_t> dest_pixels;
+  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
+    dest_pixels.resize(dest_row_bytes * dest_height);
+
+    const size_t x_offset_bytes =
+        copy_rect_info.bytesPerPixel() * static_cast<size_t>(src_x);
+    size_t src_offset =
+        static_cast<size_t>(src_y) * source_row_bytes + x_offset_bytes;
+
+    base::span<uint8_t> dest_data(dest_pixels);
+    for (size_t dst_y = 0; dst_y < dest_height;
+         ++dst_y, src_offset += source_row_bytes) {
+      dest_data.take_first(dest_row_bytes)
+          .copy_from(pixels.subspan(src_offset, dest_row_bytes));
+    }
+    pixels = dest_pixels;
+  }
+
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, /*x=*/0,
-                                    /*y=*/0);
+    return UnacceleratedWritePixels(copy_rect_info, pixels.data(),
+                                    dest_row_bytes, /*x=*/0, /*y=*/0);
   }
 
   TRACE_EVENT0("blink", "CanvasNon2DResourceProviderSharedImage::WritePixels");
@@ -790,14 +823,15 @@ bool CanvasNon2DResourceProviderSharedImage::WritePixels(
   auto client_si = resource()->GetClientSharedImage();
   RasterInterface()->WritePixels(
       client_si->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-      client_si->GetTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
+      client_si->GetTextureTarget(),
+      SkPixmap(copy_rect_info, pixels.data(), dest_row_bytes));
   resource()->EndAccess(std::move(access));
 
   // If the overdraw optimization kicked in, we need to indicate that the
   // pixels do not need to be cleared, otherwise the subsequent
   // rasterizations will clobber canvas contents.
-  if (orig_info.width() >= Size().width() &&
-      orig_info.height() >= Size().height()) {
+  if (copy_rect_info.width() >= Size().width() &&
+      copy_rect_info.height() >= Size().height()) {
     is_cleared_ = true;
   }
 

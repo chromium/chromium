@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "ui/gfx/skia_span_util.h"
 
 namespace blink {
 
@@ -112,11 +111,6 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     uint32_t src_y) {
   DCHECK(resource_provider);
 
-  const size_t dest_width =
-      static_cast<size_t>(resource_provider->Size().width());
-  const size_t dest_height =
-      static_cast<size_t>(resource_provider->Size().height());
-
   // Extract content to SkPixmap. Pixels are CPU backed resource and this
   // should be freed.
   sk_sp<SkImage> image = paint_image_.GetSwSkImage();
@@ -129,34 +123,8 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     return false;
   }
 
-  base::span<const uint8_t> pixels = gfx::SkPixmapToSpan(pixmap);
-  const size_t source_row_bytes = pixmap.rowBytes();
-  const size_t source_height = pixmap.height();
-
-  SkImageInfo copy_rect_info = paint_image_.GetSkImageInfo().makeWH(
-      static_cast<int>(dest_width), static_cast<int>(dest_height));
-  const size_t dest_row_bytes = copy_rect_info.bytesPerPixel() * dest_width;
-
-  std::vector<uint8_t> dest_pixels;
-  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
-    dest_pixels.resize(dest_row_bytes * dest_height);
-
-    const size_t x_offset_bytes =
-        copy_rect_info.bytesPerPixel() * static_cast<size_t>(src_x);
-    size_t src_offset =
-        static_cast<size_t>(src_y) * source_row_bytes + x_offset_bytes;
-
-    base::span<uint8_t> dest_data(dest_pixels);
-    for (size_t dst_y = 0; dst_y < dest_height;
-         ++dst_y, src_offset += source_row_bytes) {
-      dest_data.take_first(dest_row_bytes)
-          .copy_from(pixels.subspan(src_offset, dest_row_bytes));
-    }
-    pixels = dest_pixels;
-  }
-
-  return resource_provider->WritePixels(copy_rect_info, pixels.data(),
-                                        dest_row_bytes);
+  return resource_provider->WritePixels(pixmap, paint_image_.GetSkImageInfo(),
+                                        src_x, src_y);
 }
 
 SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfo() const {
