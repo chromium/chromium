@@ -1315,10 +1315,6 @@ BASE_FEATURE(kNullTopRowFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a holdback experiment for Drive integration.
-BASE_FEATURE(kSysUiShouldHoldbackDriveIntegration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a holdback experiment for Task Management
 // Glanceables.
 BASE_FEATURE(kSysUiShouldHoldbackTaskManagement,
@@ -2064,10 +2060,6 @@ BASE_FEATURE(kWindowSplitting, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables an experimental feature that lets users easily layout, resize and
 // position their windows using only mouse and touch gestures.
 BASE_FEATURE(kWmMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables an experimental feature that overrides the specific holdback
-// experiments on the M-129.
-BASE_FEATURE(kIgnoreM129Holdback, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables PSM CheckMembership for 28 day device active pings
 // on ChromeOS.
@@ -2875,17 +2867,6 @@ bool IsJupiterScreensaverEnabled() {
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {
-  // If the holdback feature flag is enabled, the feature should be disabled,
-  // but only if the device is eligible for the study. Exclusion happens
-  // via hardware overlay, so it needs to be checked separately from the finch
-  // controlled holdback feature flag.
-  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
-      kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (IsSysUiShouldHoldbackDriveIntegrationEnabled() &&
-      !device_excluded_from_holdback_study) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
          base::FeatureList::IsEnabled(
              kLauncherContinueSectionWithRecentsRollout);
@@ -3281,11 +3262,6 @@ bool IsSystemNudgeMigrationEnabled() {
 
 bool IsSystemTrayShadowEnabled() {
   return base::FeatureList::IsEnabled(kSystemTrayShadow);
-}
-
-bool IsSysUiShouldHoldbackDriveIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
-         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
 }
 
 bool IsTetheringExperimentalFunctionalityEnabled() {
