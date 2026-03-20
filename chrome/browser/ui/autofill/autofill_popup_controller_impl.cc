@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -913,28 +914,51 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 
 void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
-  if (suggestions_filling_product_ == FillingProduct::kAtMemory && filter &&
-      std::holds_alternative<AutofillPopupController::StringFilter>(*filter)) {
-    if (ContentAutofillClient* client =
-            ContentAutofillClient::FromWebContents(web_contents_.get())) {
-      if (accessibility_annotator::AccessibilityQueryService* query_service =
-              client->GetAccessibilityQueryService()) {
-        std::vector<Suggestion> suggestions;
-        for (const accessibility_annotator::MemorySearchResult& result :
-             query_service->Query(
-                 *std::get<AutofillPopupController::StringFilter>(*filter))) {
-          Suggestion& s = suggestions.emplace_back(
-              result.value, SuggestionType::kAtMemorySearchResult);
-          s.labels = {{Suggestion::Text(result.description)}};
-          s.payload = Suggestion::AtMemoryPayload(result.value);
-          s.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  filter_ = std::move(filter);
+
+  if (suggestions_filling_product_ == FillingProduct::kAtMemory) {
+    if (!filter_) {
+      SetSuggestions({});
+      OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
+      return;
+    }
+
+    if (const auto* string_filter =
+            std::get_if<AutofillPopupController::StringFilter>(&*filter_)) {
+      if (ContentAutofillClient* client =
+              ContentAutofillClient::FromWebContents(GetWebContents())) {
+        if (auto* query_service = client->GetAccessibilityQueryService()) {
+          query_service->Query(
+              **string_filter,
+              base::BindRepeating(
+                  [](base::WeakPtr<AutofillPopupControllerImpl> self,
+                     std::vector<accessibility_annotator::MemorySearchResult>
+                         results) {
+                    if (!self) {
+                      return;
+                    }
+                    self->SetSuggestions(base::ToVector(
+                        results,
+                        [](const accessibility_annotator::MemorySearchResult&
+                               result) {
+                          Suggestion s(result.value,
+                                       SuggestionType::kAtMemorySearchResult);
+                          s.labels = {{Suggestion::Text(result.description)}};
+                          s.payload = Suggestion::AtMemoryPayload(result.value);
+                          s.filtration_policy =
+                              Suggestion::FiltrationPolicy::kStatic;
+                          return s;
+                        }));
+                    self->OnSuggestionsChanged(
+                        /*prefer_prev_arrow_side=*/true);
+                  },
+                  weak_ptr_factory_.GetWeakPtr()));
         }
-        SetSuggestions(std::move(suggestions));
       }
     }
+    return;
   }
 
-  filter_ = std::move(filter);
   UpdateFilteredSuggestions();
   OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
 }

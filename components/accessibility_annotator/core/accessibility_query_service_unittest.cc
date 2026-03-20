@@ -8,11 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/annotation_reducer/autofill_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,9 +61,16 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
   result.description = u"Name";
   fake_data_provider->set_results({result});
 
-  auto results = service->Query(u"what is my name");
-  ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].value, u"John Doe");
+  bool callback_called = false;
+  service->Query(
+      u"what is my name",
+      base::BindLambdaForTesting([&](std::vector<MemorySearchResult> results) {
+        callback_called = true;
+        ASSERT_EQ(results.size(), 1u);
+        EXPECT_EQ(results[0].value, u"John Doe");
+      }));
+
+  EXPECT_TRUE(callback_called);
   EXPECT_EQ(fake_data_provider->last_type(), QueryIntentType::kNameFull);
 }
 
@@ -71,8 +79,14 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent) {
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
 
-  auto results = service->Query(u"random query");
-  EXPECT_TRUE(results.empty());
+  bool callback_called = false;
+  service->Query(
+      u"random query",
+      base::BindLambdaForTesting([&](std::vector<MemorySearchResult> results) {
+        callback_called = true;
+        EXPECT_TRUE(results.empty());
+      }));
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace

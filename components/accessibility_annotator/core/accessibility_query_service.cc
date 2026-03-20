@@ -24,18 +24,22 @@ void AccessibilityQueryService::Shutdown() {
   data_provider_.reset();
 }
 
-std::vector<MemorySearchResult> AccessibilityQueryService::Query(
-    std::u16string_view query) {
+void AccessibilityQueryService::Query(
+    std::u16string_view query,
+    base::RepeatingCallback<void(std::vector<MemorySearchResult>)>
+        update_callback) {
   if (!data_provider_) {
-    return {};
+    update_callback.Run({});
+    return;
   }
 
   QueryIntentType intent = classifier_.Run(query);
   if (intent == QueryIntentType::kUnknown) {
-    return {};
+    update_callback.Run({});
+    return;
   }
 
-  return data_provider_->RetrieveAll(intent);
+  update_callback.Run(data_provider_->RetrieveAll(intent));
 }
 
 }  // namespace accessibility_annotator

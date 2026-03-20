@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -563,6 +564,9 @@ TEST_F(AutofillPopupControllerImplTest, AtMemoryShowsSearchBarAndNoFiltering) {
 
   EXPECT_EQ(controller.GetMainFillingProduct(), FillingProduct::kAtMemory);
 
+  EXPECT_CALL(*client().accessibility_query_service(), Query)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<accessibility_annotator::MemorySearchResult>{}));
   controller.SetFilter(AutofillPopupController::StringFilter(u"nono"));
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
 }
@@ -758,6 +762,16 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   ShowSuggestions(manager(), {suggestion},
                   AutofillSuggestionTriggerSource::kAtMemory);
+
+  accessibility_annotator::MemorySearchResult result;
+  result.value = u"result";
+  result.title = u"result";
+  result.description = u"description";
+
+  EXPECT_CALL(*client().accessibility_query_service(), Query)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<accessibility_annotator::MemorySearchResult>{result}));
+
   client().suggestion_controller(manager()).SetFilter(
       AutofillPopupController::StringFilter(u"res"));
   EXPECT_FALSE(client().suggestion_controller(manager())
@@ -767,6 +781,11 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
 TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithNoResults_ShowMessage) {
   ShowSuggestions(manager(), std::vector<SuggestionType>{},
                   AutofillSuggestionTriggerSource::kAtMemory);
+
+  EXPECT_CALL(*client().accessibility_query_service(), Query)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<accessibility_annotator::MemorySearchResult>{}));
+
   client().suggestion_controller(manager()).SetFilter(
       AutofillPopupController::StringFilter(u"abc"));
   // In the mock/test environment, we ensure GetSuggestions() is empty.
