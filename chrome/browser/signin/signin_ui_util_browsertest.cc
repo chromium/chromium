@@ -367,7 +367,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   // require a reauth before enabling sync.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       GetIdentityManager(), account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   for (bool is_default_promo_account : {true, false}) {
     base::HistogramTester histogram_tester;
@@ -529,7 +530,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   // require a reauth before signing in.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       GetIdentityManager(), account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_CALL(
       mock_delegate_,
@@ -705,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
   // require a reauth before enabling sync.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       GetIdentityManager(), account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_CALL(
       mock_delegate_,
@@ -931,7 +934,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
       signin_metrics::AccessPoint::kStartPage);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       GetIdentityManager(), account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   Profile* profile = browser()->profile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
