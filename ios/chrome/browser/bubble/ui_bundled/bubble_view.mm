@@ -486,6 +486,13 @@ UIStackView* PageControl(BubblePageControlPage page) {
                             target:self
                           selector:@selector(snoozeButtonWasTapped:)]];
   }
+  if (self.showsNextButton) {
+    [accessibilityCustomActions
+        addObject:[[UIAccessibilityCustomAction alloc]
+                      initWithName:_nextButton.accessibilityLabel
+                            target:self
+                          selector:@selector(nextButtonWasTapped:)]];
+  }
   if (self.showsCloseButton) {
     [accessibilityCustomActions
         addObject:[[UIAccessibilityCustomAction alloc]
