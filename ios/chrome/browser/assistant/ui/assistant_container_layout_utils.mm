@@ -17,6 +17,7 @@ constexpr CGFloat kRubberBandCoefficient = 0.10;
 const CGFloat kMorphingBaseMargin = 10.0;
 const CGFloat kMorphingMediumMargin = 5.0;
 const CGFloat kMorphingBaseCornerRadius = 36.0;
+const CGFloat kMorphingMediumBottomCornerRadius = 44.0;
 const CGFloat kMaxBackgroundDimmingAlpha = 0.11;
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
@@ -81,6 +82,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
       } else {
         side_margin = kMorphingMediumMargin;
         bottom_margin = kMorphingBaseMargin;
+        bottom_corner_radius = kMorphingMediumBottomCornerRadius;
       }
       // Subtract the deficit to physically drag the anchor bounds downwards.
       bottom_margin -= (lowest_detent - height);
@@ -95,12 +97,15 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     side_margin =
         InterpolateValue(kMorphingBaseMargin, kMorphingMediumMargin, progress);
     bottom_margin = kMorphingBaseMargin;
+    bottom_corner_radius = InterpolateValue(
+        kMorphingBaseCornerRadius, kMorphingMediumBottomCornerRadius, progress);
   }
 
   // Medium.
   else if (medium_height >= 0 && height == medium_height) {
     side_margin = kMorphingMediumMargin;
     bottom_margin = kMorphingBaseMargin;
+    bottom_corner_radius = kMorphingMediumBottomCornerRadius;
   }
 
   // Medium -> Large.
@@ -110,7 +115,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     side_margin = InterpolateValue(kMorphingMediumMargin, 0, progress);
     bottom_margin = InterpolateValue(kMorphingBaseMargin, 0, progress);
     bottom_corner_radius =
-        InterpolateValue(kMorphingBaseCornerRadius, 0, progress);
+        InterpolateValue(kMorphingMediumBottomCornerRadius, 0, progress);
     background_dimming_alpha =
         InterpolateValue(0, kMaxBackgroundDimmingAlpha, progress);
   }
@@ -141,6 +146,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     if (medium_height >= 0 && height > medium_height) {
       side_margin = kMorphingMediumMargin;
       bottom_margin = kMorphingBaseMargin;
+      bottom_corner_radius = kMorphingMediumBottomCornerRadius;
     } else {
       side_margin = kMorphingBaseMargin;
       bottom_margin = kMorphingBaseMargin;
