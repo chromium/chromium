@@ -14,12 +14,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
+#include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
@@ -364,35 +366,79 @@ bool TensorImplCoreml::ImportTensorImpl(ScopedAccessPtr access) {
   return true;
 }
 
-void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access,
-                                        ExportTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  // Take an exclusive lock to the buffer contents to wait for all existing
-  // operations to finish.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
-      buffer_state_};
+void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access) {
+  // Not reachable because we override `ExportTensor`.
+  NOTREACHED();
+}
 
-  auto task = base::MakeRefCounted<ResourceTask>(
-      /*shared_resources=*/
-      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-      std::move(exclusive_resources),
+void TensorImplCoreml::ExportTensor(uint64_t flow_id,
+                                    ExportTensorCallback callback) {
+  ScopedTrace scoped_trace("TensorImplCoreml::ExportTensor");
+
+  if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // Ensure the Mojo callback is posted back to the task runner. Running
+  // it directly on the GPU sequence can violate Mojo's sequence checks,
+  // even if executing on the same thread.
+  auto mojo_callback_wrapper = base::BindPostTask(
+      context_->scheduler_task_runner(),
       base::BindOnce(
-          [](base::WeakPtr<WebNNContextImpl> context,
-             ExportTensorCallback callback,
-             base::OnceClosure completion_closure) {
-            std::move(completion_closure).Run();
-            if (!context) {
-              return;
-            }
-
-            // Schedule a task first to ensure export waits until ResourceTask
-            // completes.
-            context->gpu_sequence()->ScheduleGpuTask(base::DoNothing());
-            std::move(callback).Run(
-                context->gpu_sequence()->GenVerifiedSyncToken());
+          [](ExportTensorCallback callback, ScopedTrace scoped_trace,
+             uint64_t flow_id, gpu::SyncToken token) {
+            TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensor",
+                        perfetto::TerminatingFlow::Global(flow_id));
+            gpu::SyncToken verified_token = token;
+            verified_token.SetVerifyFlush();
+            std::move(callback).Run(verified_token);
           },
-          context_->AsWeakPtr(), std::move(callback)));
-  task->Enqueue();
+          std::move(callback), std::move(scoped_trace), flow_id));
+
+  context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
+      [](TensorImplCoreml* self,
+         base::OnceCallback<void(gpu::SyncToken)> callback,
+         mojo::ReportBadMessageCallback bad_message_cb) {
+        if (self->is_exported()) {
+          LOG(ERROR)
+              << "[WebNN] ExportTensor called on already exported tensor.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        // End WebNN access which makes the tensor be exported.
+        self->representation_access_.reset();
+
+        // Take an exclusive lock to the buffer contents to wait for all
+        // existing operations to finish.
+        std::vector<scoped_refptr<QueueableResourceStateBase>>
+            exclusive_resources = {self->GetBufferState()};
+
+        auto task = base::MakeRefCounted<ResourceTask>(
+            /*shared_resources=*/
+            std::vector<scoped_refptr<QueueableResourceStateBase>>(),
+            std::move(exclusive_resources),
+            base::BindOnce(
+                [](base::WeakPtr<WebNNContextImpl> context,
+                   base::OnceCallback<void(gpu::SyncToken)> callback,
+                   base::OnceClosure completion_closure) {
+                  std::move(completion_closure).Run();
+                  if (!context) {
+                    return;
+                  }
+
+                  // Schedule a task first to ensure export waits until
+                  // ResourceTask completes.
+                  std::move(callback).Run(
+                      context->gpu_sequence()->ScheduleGpuTask(
+                          base::DoNothing()));
+                },
+                self->context_->AsWeakPtr(), std::move(callback)));
+        task->Enqueue();
+      },
+      base::RetainedRef(this), std::move(mojo_callback_wrapper),
+      GetMojoReceiver().GetBadMessageCallback()));
 }
 
 }  // namespace webnn::coreml

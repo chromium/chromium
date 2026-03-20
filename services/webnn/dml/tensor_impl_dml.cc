@@ -92,8 +92,7 @@ scoped_refptr<gfx::D3DSharedFence> TensorImplDml::EndAccessWebNN() {
       command_queue->submission_fence(), last_submission_fence_value_);
 }
 
-void TensorImplDml::ExportTensorImpl(ScopedAccessPtr access,
-                                     ExportTensorCallback callback) {
+void TensorImplDml::ExportTensorImpl(ScopedAccessPtr access) {
   CHECK(access);
 
   auto webnn_fence_to_wait_for = EndAccessWebNN();
@@ -101,7 +100,6 @@ void TensorImplDml::ExportTensorImpl(ScopedAccessPtr access,
       << "[WebNN] Failed to end access on WebNNTensor";
 
   access->SetReleaseFence(std::move(webnn_fence_to_wait_for));
-  std::move(callback).Run(context_->GenVerifiedSyncToken());
 }
 
 bool TensorImplDml::ImportTensorImpl(ScopedAccessPtr access) {

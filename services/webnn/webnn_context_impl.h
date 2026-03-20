@@ -169,10 +169,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // sequence.
   ScopedGpuSequence* gpu_sequence() const;
 
-  // Generates a verified SyncToken that will be released once pending WebNN
-  // operations complete execution.
-  gpu::SyncToken GenVerifiedSyncToken() const;
-
   // Returns true if the data pipe consumer handle for WriteTensor() is valid.
   bool HasValidWriteTensorConsumer() const;
 

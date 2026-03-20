@@ -101,8 +101,7 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {}
   // Interop is not required by tests.
   bool ImportTensorImpl(ScopedAccessPtr access) override { return false; }
-  void ExportTensorImpl(ScopedAccessPtr access,
-                        ExportTensorCallback callback) override {}
+  void ExportTensorImpl(ScopedAccessPtr access) override {}
 };
 
 // A fake WebNNContext Mojo interface implementation that binds a pipe for

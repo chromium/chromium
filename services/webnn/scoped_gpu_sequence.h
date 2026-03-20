@@ -50,13 +50,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
     return scheduler_task_runner_;
   }
 
-  // Generates a verified SyncToken for the last task scheduled via
-  // ScheduleGpuTask. Callers must ensure a task has been scheduled before
-  // calling this method to ensure the token is released.
-  gpu::SyncToken GenVerifiedSyncToken() const;
-
   // Schedules a task to be executed in this gpu sequence.
-  void ScheduleGpuTask(base::OnceClosure task_closure);
+  // Returns a sync token which will satisfy when the task is completed; this
+  // return value can safely be ignored if the caller does not need to wait on
+  // the task.
+  gpu::SyncToken ScheduleGpuTask(base::OnceClosure task_closure);
 
   // Schedules a task to be executed in this gpu sequence after the given fence.
   void ScheduleGpuTask(base::OnceClosure task_closure,
@@ -68,8 +66,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
   // and destroyed on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  void ScheduleGpuTaskImpl(base::OnceClosure task_closure,
-                           std::vector<gpu::SyncToken> sync_token_fences);
+  gpu::SyncToken ScheduleGpuTaskImpl(
+      base::OnceClosure task_closure,
+      std::vector<gpu::SyncToken> sync_token_fences);
 
   // Marks the completion of the last schedule task in this sequence.
   // Used to generate a SyncToken which can be waited on by another sequence.

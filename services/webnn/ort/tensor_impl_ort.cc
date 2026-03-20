@@ -114,14 +114,11 @@ bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
   return true;
 }
 
-void TensorImplOrt::ExportTensorImpl(ScopedAccessPtr access,
-                                     ExportTensorCallback callback) {
+void TensorImplOrt::ExportTensorImpl(ScopedAccessPtr access) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // Since we wait for all WebNN operations to complete, we only need to release
   // the ScopedAccess to end WebNN access.
-
-  std::move(callback).Run(context_->GenVerifiedSyncToken());
 }
 
 }  // namespace webnn::ort

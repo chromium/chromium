@@ -105,8 +105,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // platform-specific tensor as a shared image.
   // Backend subclasses implement this to perform any necessary
   // device synchronization.
-  virtual void ExportTensorImpl(ScopedAccessPtr access,
-                                ExportTensorCallback callback) = 0;
+  virtual void ExportTensorImpl(ScopedAccessPtr access) = 0;
 
   // Called by `ImportTensorInternal()` after WebNN begins access of the
   // platform-specific tensor as a shared image.

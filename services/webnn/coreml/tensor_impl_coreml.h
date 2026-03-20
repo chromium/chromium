@@ -51,11 +51,13 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   void ReadTensorImpl(mojom::WebNNTensor::ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl(ScopedAccessPtr access) override;
-  void ExportTensorImpl(ScopedAccessPtr access,
-                        ExportTensorCallback callback) override;
+  void ExportTensorImpl(ScopedAccessPtr access) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
       const;
+
+  // mojom::WebNNTensor
+  void ExportTensor(uint64_t flow_id, ExportTensorCallback callback) override;
 
  private:
   ~TensorImplCoreml() override;

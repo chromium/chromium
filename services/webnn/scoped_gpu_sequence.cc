@@ -44,8 +44,9 @@ ScopedGpuSequence::~ScopedGpuSequence() {
   scheduler_->DestroySequence(sequence_id_);
 }
 
-void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure) {
-  ScheduleGpuTaskImpl(std::move(task_closure), {});
+gpu::SyncToken ScopedGpuSequence::ScheduleGpuTask(
+    base::OnceClosure task_closure) {
+  return ScheduleGpuTaskImpl(std::move(task_closure), {});
 }
 
 void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure,
@@ -53,7 +54,7 @@ void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure,
   ScheduleGpuTaskImpl(std::move(task_closure), {fence});
 }
 
-void ScopedGpuSequence::ScheduleGpuTaskImpl(
+gpu::SyncToken ScopedGpuSequence::ScheduleGpuTaskImpl(
     base::OnceClosure task_closure,
     std::vector<gpu::SyncToken> sync_token_fences) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -78,20 +79,8 @@ void ScopedGpuSequence::ScheduleGpuTaskImpl(
   scheduler_->ScheduleTask(
       gpu::Scheduler::Task(sequence_id_, std::move(runnable_task),
                            std::move(sync_token_fences), release));
-}
 
-gpu::SyncToken ScopedGpuSequence::GenVerifiedSyncToken() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  gpu::SyncToken verified_release(namespace_id_, command_buffer_id_,
-                                  last_sync_token_release_id_);
-
-  // Verify the release since the sync token could be passed to another Mojo
-  // interface which requires verification. This assumes the caller has already
-  // called ScheduleGpuTask(), ensuring that `last_sync_token_release_id_` is
-  // associated with a task that GPU scheduler will signal upon completion.
-  verified_release.SetVerifyFlush();
-  return verified_release;
+  return release;
 }
 
 }  // namespace webnn

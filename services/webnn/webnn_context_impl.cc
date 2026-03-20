@@ -255,10 +255,6 @@ ScopedGpuSequence* WebNNContextImpl::gpu_sequence() const {
   return gpu_sequence_.get();
 }
 
-gpu::SyncToken WebNNContextImpl::GenVerifiedSyncToken() const {
-  return gpu_sequence_->GenVerifiedSyncToken();
-}
-
 bool WebNNContextImpl::HasValidWriteTensorConsumer() const {
   return write_tensor_consumer_.is_valid();
 }

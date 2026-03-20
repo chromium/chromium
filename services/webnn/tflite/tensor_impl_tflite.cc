@@ -137,8 +137,7 @@ bool TensorImplTflite::ImportTensorImpl(ScopedAccessPtr access) {
   return false;
 }
 
-void TensorImplTflite::ExportTensorImpl(ScopedAccessPtr access,
-                                        ExportTensorCallback callback) {
+void TensorImplTflite::ExportTensorImpl(ScopedAccessPtr access) {
   NOTIMPLEMENTED();
 }
 
