@@ -7,10 +7,12 @@
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -27,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -92,7 +95,31 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kErrorFederatedTimeout:
       // TODO(crbug.com/477507796): Handle federated login errors.
       return mojom::ActionResultCode::kLoginFillingNotAllowed;
+    case actor_login::LoginStatusResult::kRequiresButtonClick:
+      // TODO(crbug.com/479505793): Consider adding a more specific error code.
+      return mojom::ActionResultCode::kArgumentsInvalid;
   }
+}
+
+actor_login::LoginStatusResultCallback CreateFederatedLoginCallback(
+    const actor_login::Credential& credential,
+    ToolDelegate& delegate) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFederatedClickFromActor) ||
+      credential.type != actor_login::CredentialType::kFederated) {
+    return base::NullCallback();
+  }
+  return base::BindOnce(
+      [](base::WeakPtr<ToolDelegate> delegate,
+         actor_login::LoginStatusResult result) {
+        if (delegate) {
+          mojom::ActionResultCode code = LoginResultToActorResult(result);
+          if (!IsOk(code)) {
+            delegate->FailCurrentTool(code);
+          }
+        }
+      },
+      delegate.GetAsWeakPtrForCurrentActions());
 }
 
 }  // namespace
@@ -102,11 +129,13 @@ AttemptLoginTool::AttemptLoginTool(
     ToolDelegate& tool_delegate,
     tabs::TabInterface& tab,
     std::optional<PageTarget> password_button,
-    std::optional<PageTarget> sign_in_with_google_button)
+    std::optional<PageTarget> sign_in_with_google_button,
+    bool requires_opening_web_contents)
     : Tool(task_id, tool_delegate),
       tab_handle_(tab.GetHandle()),
       password_button_(password_button),
       sign_in_with_google_button_(sign_in_with_google_button),
+      requires_opening_web_contents_(requires_opening_web_contents),
       attempt_login_tool_start_time_(base::TimeTicks::Now()) {}
 
 AttemptLoginTool::~AttemptLoginTool() {
@@ -178,6 +207,12 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
     const bool should_store_permission =
         user_selected_credential_and_pemission->permission_duration ==
         webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
+
+    actor_login::LoginStatusResultCallback federated_login_callback =
+        CreateFederatedLoginCallback(
+            user_selected_credential_and_pemission->credential,
+            tool_delegate());
+
     GetActorLoginService().AttemptLogin(
         tab, user_selected_credential_and_pemission->credential,
         should_store_permission, quality_logger_.AsWeakPtr(),
@@ -185,7 +220,8 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr(),
                        user_selected_credential_and_pemission->credential,
-                       should_store_permission));
+                       should_store_permission),
+        std::move(federated_login_callback));
     return;
   }
 
@@ -408,12 +444,17 @@ void AttemptLoginTool::OnCredentialCachingDone(
   const bool should_store_permission =
       permission_duration ==
       webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
+
+  actor_login::LoginStatusResultCallback federated_login_callback =
+      CreateFederatedLoginCallback(selected_credential, tool_delegate());
+
   GetActorLoginService().AttemptLogin(
       tab, selected_credential, should_store_permission,
       quality_logger_.AsWeakPtr(), attempt_login_tool_start_time_,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr(), selected_credential,
-                     should_store_permission));
+                     should_store_permission),
+      std::move(federated_login_callback));
 }
 
 void AttemptLoginTool::OnAttemptLogin(
@@ -440,6 +481,21 @@ void AttemptLoginTool::OnAttemptLogin(
                                        should_store_permission};
     ObserveTabToAwaitFocus();
     tool_delegate().InterruptFromTool();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFederatedClickFromActor) &&
+      login_status.value() ==
+          actor_login::LoginStatusResult::kRequiresButtonClick &&
+      selected_credential.type == actor_login::CredentialType::kFederated &&
+      selected_credential.federation_detail->idp_origin ==
+          GaiaUrls::GetInstance()->gaia_origin() &&
+      sign_in_with_google_button_.has_value()) {
+    tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
+        tab_handle_, *sign_in_with_google_button_, mojom::ClickType::kLeft,
+        mojom::ClickCount::kSingle, requires_opening_web_contents_));
+    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
     return;
   }
 
@@ -529,7 +585,9 @@ void AttemptLoginTool::MaybeRetryCredentialNeedingFocus() {
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr(),
                      credential_awaiting_task_focus_->first,
-                     credential_awaiting_task_focus_->second));
+                     credential_awaiting_task_focus_->second),
+      CreateFederatedLoginCallback(credential_awaiting_task_focus_->first,
+                                   tool_delegate()));
 }
 
 std::string AttemptLoginTool::DebugString() const {

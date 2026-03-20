@@ -40,6 +40,7 @@ namespace actor {
 
 class AggregatedJournal;
 class AutofillSelectionDialogEventHandler;
+class ToolRequest;
 
 // Provides tools with functionality implemented by the code invoking the tool.
 class ToolDelegate {
@@ -126,6 +127,15 @@ class ToolDelegate {
   // The task still has control of the tab.
   virtual void InterruptFromTool() = 0;
   virtual void UninterruptFromTool() = 0;
+
+  // Enqueues an action to be performed as a followup to the current action.
+  virtual void EnqueueFollowupAction(std::unique_ptr<ToolRequest> action) = 0;
+
+  // If there is an ongoing tool request, treat it as having failed with the
+  // given reason.
+  virtual void FailCurrentTool(mojom::ActionResultCode reason) = 0;
+
+  virtual base::WeakPtr<ToolDelegate> GetAsWeakPtrForCurrentActions() = 0;
 };
 
 }  // namespace actor

@@ -116,6 +116,9 @@ void RecordAttemptLoginResult(const LoginStatusResultOrError& result_or_error) {
       case LoginStatusResult::kErrorFederatedTimeout:
         RecordAttemptLoginResult(AttemptLoginResult::kErrorFederatedTimeout);
         break;
+      case LoginStatusResult::kRequiresButtonClick:
+        RecordAttemptLoginResult(AttemptLoginResult::kRequiresButtonClick);
+        break;
     }
     return;
   }

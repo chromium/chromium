@@ -43,6 +43,9 @@ namespace actor_login {
 // 4. The potential buttons are narrowed down using the page content and
 //    heuristics on the attributes from DOM.
 // 5. The controller clicks the first button that satisfies all requirements.
+// When `kActorLoginFederatedClickFromActor` is enabled, most of this logic is
+// skipped in favour of having the actor framework trigger the button click
+// based on server identification of the correct button.
 class ActorLoginSiwgController : public content::WebContentsObserver {
  public:
   using GetPageContentProvider =
@@ -50,11 +53,15 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
                                    blink::mojom::AIPageContentOptionsPtr,
                                    optimization_guide::OnAIPageContentDone)>;
 
-  ActorLoginSiwgController(content::WebContents* web_contents,
-                           LoginStatusResultOrErrorReply callback);
-  ActorLoginSiwgController(content::WebContents* web_contents,
-                           GetPageContentProvider get_page_content_provider,
-                           LoginStatusResultOrErrorReply callback);
+  ActorLoginSiwgController(
+      content::WebContents* web_contents,
+      LoginStatusResultOrErrorReply on_finished_callback,
+      LoginStatusResultCallback federated_login_outcome_callback);
+  ActorLoginSiwgController(
+      content::WebContents* web_contents,
+      GetPageContentProvider get_page_content_provider,
+      LoginStatusResultOrErrorReply on_finished_callback,
+      LoginStatusResultCallback federated_login_outcome_callback);
   ~ActorLoginSiwgController() override;
 
   // Not copyable or movable.
@@ -64,13 +71,13 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // Starts the federated login flow. This will notify FedCM API that an
   // automated login is in progress, and then start the button detection and
   // click flow.
-  void StartFederatedLogin(const Credential& credential);
+  void StartFederatedLogin(
+      const Credential& credential,
+      std::unique_ptr<ActorLoginMetricsHelper> metrics_helper);
 
   // Starts the detection process for SiwG buttons on the current page and
   // clicks the first one found.
   void ClickSiwgButton();
-
-  void SetMetricsHelper(ActorLoginMetricsHelper* metrics_helper);
 
  private:
   void OnPageContentReceived(
@@ -94,15 +101,19 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
 
   void OnClickFinished(actor::mojom::ActionResultPtr result);
 
-  void OnFederatedLoginResultReceived(
+  static void OnFederatedLoginResultReceived(
+      base::WeakPtr<ActorLoginSiwgController> controller,
+      std::unique_ptr<ActorLoginMetricsHelper> metrics_helper,
+      LoginStatusResultCallback federated_login_outcome_callback,
       content::webid::FederatedLoginResult result);
 
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;
+  // Invoked once the actions taken by this class to advance the login are
+  // complete. The login itself may still be in progress.
   LoginStatusResultOrErrorReply on_finished_callback_;
-
-  // Owned by ActorLoginDelegateImpl.
-  raw_ptr<ActorLoginMetricsHelper> metrics_helper_ = nullptr;
+  // Invoked once the login request initiated by this class produces a result.
+  LoginStatusResultCallback federated_login_outcome_callback_;
 
   // Remote for the `ChromeRenderFrame` in the local root of the frame where the
   // SiwG button was found. Keeps the remote alive for the duration of the click

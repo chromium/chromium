@@ -38,7 +38,8 @@ class AttemptLoginTool : public Tool {
                    ToolDelegate& tool_delegate,
                    tabs::TabInterface& tab,
                    std::optional<PageTarget> password_button,
-                   std::optional<PageTarget> sign_in_with_google_button);
+                   std::optional<PageTarget> sign_in_with_google_button,
+                   bool requires_opening_web_contents);
   ~AttemptLoginTool() override;
 
   // actor::Tool
@@ -110,6 +111,8 @@ class AttemptLoginTool : public Tool {
   std::optional<PageTarget> password_button_;
   // Identifies a "Sign in with Google" button.
   std::optional<PageTarget> sign_in_with_google_button_;
+
+  const bool requires_opening_web_contents_;
 
   // The time where the attempt tool is created, used to calculate the overall
   // time of the flow until filling and submission time.

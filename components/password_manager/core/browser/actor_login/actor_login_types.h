@@ -178,12 +178,15 @@ enum class LoginStatusResult {
   kErrorFederatedExpectedAccountNotPresent,
   // Federated login failed because of a timeout.
   kErrorFederatedTimeout,
+  // Federated login requires a button click to trigger sign in.
+  kRequiresButtonClick,
 };
 
 using LoginStatusResultOrError =
     base::expected<LoginStatusResult, ActorLoginError>;
 using LoginStatusResultOrErrorReply =
     base::OnceCallback<void(LoginStatusResultOrError)>;
+using LoginStatusResultCallback = base::OnceCallback<void(LoginStatusResult)>;
 
 // C++ enum copy of `GetCredentialsOutcome` in `actor_login.proto`.
 enum class GetCredentialsOutcomeMqls {

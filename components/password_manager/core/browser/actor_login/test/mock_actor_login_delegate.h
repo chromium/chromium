@@ -33,7 +33,8 @@ class MockActorLoginDelegate : public ActorLoginDelegate {
                bool should_store_permission,
                base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
                base::TimeTicks attempt_login_tool_start_time,
-               LoginStatusResultOrErrorReply callback),
+               LoginStatusResultOrErrorReply done_callback,
+               LoginStatusResultCallback federated_login_outcome_callback),
               (override));
 };
 

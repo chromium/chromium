@@ -31,10 +31,10 @@ void OnGetCredentialsResult(CredentialsOrErrorReply callback,
   std::move(callback).Run(std::move(result));
 }
 
-void OnAttemptLoginResult(LoginStatusResultOrErrorReply callback,
+void OnAttemptLoginResult(LoginStatusResultOrErrorReply done_callback,
                           LoginStatusResultOrError result) {
   RecordAttemptLoginResult(result);
-  std::move(callback).Run(std::move(result));
+  std::move(done_callback).Run(std::move(result));
 }
 }  // namespace
 
@@ -76,13 +76,14 @@ void ActorLoginServiceImpl::AttemptLogin(
     bool should_store_permission,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
-    LoginStatusResultOrErrorReply callback) {
+    LoginStatusResultOrErrorReply done_callback,
+    LoginStatusResultCallback federated_login_outcome_callback) {
   CHECK(tab);
 
   content::WebContents* web_contents = tab->GetContents();
   if (!web_contents) {
     OnAttemptLoginResult(
-        std::move(callback),
+        std::move(done_callback),
         base::unexpected(ActorLoginError::kInvalidTabInterface));
     return;
   }
@@ -96,7 +97,8 @@ void ActorLoginServiceImpl::AttemptLogin(
   delegate->AttemptLogin(
       credential, should_store_permission, mqls_logger,
       attempt_login_tool_start_time,
-      base::BindOnce(&OnAttemptLoginResult, std::move(callback)));
+      base::BindOnce(&OnAttemptLoginResult, std::move(done_callback)),
+      std::move(federated_login_outcome_callback));
 }
 
 void ActorLoginServiceImpl::SetActorLoginDelegateFactoryForTesting(

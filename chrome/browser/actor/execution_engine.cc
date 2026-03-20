@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/execution_engine.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -714,7 +715,9 @@ void ExecutionEngine::KickOffNextAction() {
   CHECK_LT(next_action_index_, action_sequence_.size());
 
   SetState(State::kStartAction);
-  action_start_time_ = base::TimeTicks::Now();
+  if (!GetNextAction().IsFollowup()) {
+    action_start_time_ = base::TimeTicks::Now();
+  }
 
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
@@ -961,7 +964,17 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   base::TimeTicks end_time = base::TimeTicks::Now();
   RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
                     end_time - *result->execution_end_time);
-  action_results_.emplace_back(action_start_time_, end_time, std::move(result));
+
+  if (GetInProgressAction().IsFollowup()) {
+    CHECK(!action_results_.empty());
+    ActionResultWithLatencyInfo& action_result = action_results_.back();
+    action_result.result = std::move(result);
+    action_result.end_time = end_time;
+  } else {
+    action_results_.emplace_back(action_start_time_, end_time,
+                                 std::move(result));
+  }
+
   SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),
@@ -996,15 +1009,21 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
   // If we have not yet appended the action_results for the failed index,
   // append it now.
   if (action_index) {
-    if (action_results_.size() == *action_index) {
+    size_t result_index = GetResultIndexForAction(*action_index);
+    if (action_results_.size() == result_index) {
       action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
                                    result->Clone());
-    } else if (action_results_.size() > *action_index && !IsOk(*result)) {
+    } else if (action_results_.size() > result_index &&
+               (!IsOk(*result) ||
+                action_sequence_[*action_index]->IsFollowup())) {
       // If we already have a result for this action, and the new result is an
       // error, overwrite it. This can happen if a tool invocation succeeds
-      // but a subsequent UI post-invoke stage fails.
-      action_results_[*action_index].result = result->Clone();
-      action_results_[*action_index].end_time = base::TimeTicks::Now();
+      // but a subsequent UI post-invoke stage fails, or for follow up tools
+      // that fail.
+      ActionResultWithLatencyInfo& action_result =
+          action_results_[result_index];
+      action_result.result = result->Clone();
+      action_result.end_time = base::TimeTicks::Now();
     }
   } else if (!IsOk(*result)) {
     // If it's a general error, we still want it in action_results.
@@ -1191,6 +1210,17 @@ void ExecutionEngine::UninterruptFromTool() {
   task_->Uninterrupt(ActorTask::State::kActing);
 }
 
+void ExecutionEngine::EnqueueFollowupAction(
+    std::unique_ptr<ToolRequest> action) {
+  action->SetAsFollowup(base::PassKey<ExecutionEngine>());
+  action_sequence_.insert(action_sequence_.begin() + next_action_index_,
+                          std::move(action));
+}
+
+base::WeakPtr<ToolDelegate> ExecutionEngine::GetAsWeakPtrForCurrentActions() {
+  return actions_weak_ptr_factory_.GetWeakPtr();
+}
+
 void ExecutionEngine::AddWritableMainframeOrigins(
     const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins) {
   if (!IsNavigationGatingEnabled()) {
@@ -1214,6 +1244,20 @@ size_t ExecutionEngine::InProgressActionIndex() const {
 
 const ToolRequest& ExecutionEngine::GetInProgressAction() const {
   return *action_sequence_.at(InProgressActionIndex()).get();
+}
+
+size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {
+  CHECK_LT(action_index, action_sequence_.size());
+  size_t original_count = std::count_if(
+      action_sequence_.begin(), action_sequence_.begin() + action_index + 1,
+      [](const std::unique_ptr<ToolRequest>& action) {
+        return !action->IsFollowup();
+      });
+
+  // At least the first action could not be a follow up.
+  CHECK_GT(original_count, 0ul);
+
+  return original_count - 1;
 }
 
 std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s) {

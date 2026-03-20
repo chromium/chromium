@@ -18,6 +18,9 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kActorLogin);
+// Enables a click using the actor framework for federated logins without
+// heuristics.
+BASE_DECLARE_FEATURE(kActorLoginFederatedClickFromActor);
 // Enables Actor Login form finding with async check
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 // Ensures that `GetCredentials` differentiates between no saved credentials

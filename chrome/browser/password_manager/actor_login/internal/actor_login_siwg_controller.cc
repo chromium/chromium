@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/actor.mojom.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -72,44 +74,58 @@ LoginStatusResult FromFederatedLoginResult(
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
-    LoginStatusResultOrErrorReply on_finished_callback)
+    LoginStatusResultOrErrorReply on_finished_callback,
+    LoginStatusResultCallback federated_login_outcome_callback)
     : ActorLoginSiwgController(
           web_contents,
           base::BindRepeating(&optimization_guide::GetAIPageContent),
-          std::move(on_finished_callback)) {}
+          std::move(on_finished_callback),
+          std::move(federated_login_outcome_callback)) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
     GetPageContentProvider get_page_content_provider,
-    LoginStatusResultOrErrorReply on_finished_callback)
+    LoginStatusResultOrErrorReply on_finished_callback,
+    LoginStatusResultCallback federated_login_outcome_callback)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
-      on_finished_callback_(std::move(on_finished_callback)) {}
+      on_finished_callback_(std::move(on_finished_callback)),
+      federated_login_outcome_callback_(
+          std::move(federated_login_outcome_callback)) {}
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
 void ActorLoginSiwgController::StartFederatedLogin(
-    const Credential& credential) {
+    const Credential& credential,
+    std::unique_ptr<ActorLoginMetricsHelper> metrics_helper) {
   CHECK(credential.federation_detail);
 
   auto* source = content::webid::IdentityCredentialSource::FromPage(
       web_contents()->GetPrimaryPage());
 
+  auto* metrics_helper_raw = metrics_helper.get();
   source->SetEmbedderLoginRequest(
       credential.federation_detail->idp_origin,
       credential.federation_detail->account_id,
       base::BindOnce(&ActorLoginSiwgController::OnFederatedLoginResultReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(metrics_helper),
+                     std::move(federated_login_outcome_callback_)));
 
   // There may be an existing FedCM dialog; if so, select an account in that
   // dialog instead of clicking the signin button.
-  if (metrics_helper_) {
-    metrics_helper_->RecordFederatedHangingFedCmRequestExists(
+  if (metrics_helper_raw) {
+    metrics_helper_raw->RecordFederatedHangingFedCmRequestExists(
         source->HasPendingRequest());
   }
   if (!source->SelectAccount(credential.federation_detail->idp_origin,
                              credential.federation_detail->account_id)) {
-    ClickSiwgButton();
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kActorLoginFederatedClickFromActor)) {
+      std::move(on_finished_callback_)
+          .Run(LoginStatusResult::kRequiresButtonClick);
+    } else {
+      ClickSiwgButton();
+    }
   }
 }
 
@@ -122,25 +138,27 @@ void ActorLoginSiwgController::ClickSiwgButton() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ActorLoginSiwgController::SetMetricsHelper(
-    ActorLoginMetricsHelper* metrics_helper) {
-  metrics_helper_ = metrics_helper;
-}
-
+// static
 void ActorLoginSiwgController::OnFederatedLoginResultReceived(
+    base::WeakPtr<ActorLoginSiwgController> controller,
+    std::unique_ptr<ActorLoginMetricsHelper> metrics_helper,
+    LoginStatusResultCallback federated_login_outcome_callback,
     content::webid::FederatedLoginResult result) {
-  if (metrics_helper_) {
+  if (metrics_helper) {
     if (result == content::webid::FederatedLoginResult::kContinuation) {
-      metrics_helper_->RecordFederatedContinuationShown();
+      metrics_helper->RecordFederatedContinuationShown();
     } else {
-      metrics_helper_->RecordFederatedLoginResult(result);
+      metrics_helper->RecordFederatedLoginResult(result);
     }
   }
 
-  if (!on_finished_callback_) {
-    return;
+  LoginStatusResult status = FromFederatedLoginResult(result);
+  if (federated_login_outcome_callback) {
+    std::move(federated_login_outcome_callback).Run(status);
   }
-  std::move(on_finished_callback_).Run(FromFederatedLoginResult(result));
+  if (controller && controller->on_finished_callback_) {
+    std::move(controller->on_finished_callback_).Run(status);
+  }
 }
 
 void ActorLoginSiwgController::OnPageContentReceived(
@@ -222,7 +240,8 @@ void ActorLoginSiwgController::ClickButton(
     content::RenderFrameHost* rfh,
     int dom_node_id,
     actor::mojom::ObservedToolTargetPtr observed_target) {
-  // TODO(crbug.com/478798187): Use ActorTask instead of InvokeTool.
+  CHECK(!base::FeatureList::IsEnabled(
+      password_manager::features::kActorLoginFederatedClickFromActor));
   GetLocalRoot(rfh)->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame_);
 

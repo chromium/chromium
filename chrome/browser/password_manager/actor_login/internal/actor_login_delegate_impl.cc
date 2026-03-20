@@ -105,7 +105,7 @@ void ActorLoginDelegateImpl::GetCredentials(
 
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
-  if (get_credentials_helper_ || pending_attempt_login_callback_) {
+  if (get_credentials_helper_ || pending_attempt_login_done_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -172,15 +172,16 @@ void ActorLoginDelegateImpl::AttemptLogin(
     bool should_store_permission,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
-    LoginStatusResultOrErrorReply callback) {
-  CHECK(callback);
+    LoginStatusResultOrErrorReply done_callback,
+    LoginStatusResultCallback federated_login_outcome_callback) {
+  CHECK(done_callback);
 
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
-  if (get_credentials_helper_ || pending_attempt_login_callback_) {
+  if (get_credentials_helper_ || pending_attempt_login_done_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
+        base::BindOnce(std::move(done_callback),
                        base::unexpected(ActorLoginError::kServiceBusy)));
     return;
   }
@@ -188,13 +189,13 @@ void ActorLoginDelegateImpl::AttemptLogin(
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
+        base::BindOnce(std::move(done_callback),
                        base::unexpected(ActorLoginError::kFeatureDisabled)));
     return;
   }
 
   // Store the callback to mark as active
-  pending_attempt_login_callback_ = std::move(callback);
+  pending_attempt_login_done_callback_ = std::move(done_callback);
 
   PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
   CHECK(driver);
@@ -215,11 +216,13 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   if (credential.type == CredentialType::kFederated) {
     siwg_controller_ = std::make_unique<ActorLoginSiwgController>(
-        &GetWebContents(), base::BindPostTaskToCurrentDefault(base::BindOnce(
-                               &ActorLoginDelegateImpl::OnAttemptLoginCompleted,
-                               weak_ptr_factory_.GetWeakPtr())));
-    siwg_controller_->SetMetricsHelper(metrics_helper_.get());
-    siwg_controller_->StartFederatedLogin(credential);
+        &GetWebContents(),
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
+                           weak_ptr_factory_.GetWeakPtr())),
+        std::move(federated_login_outcome_callback));
+    siwg_controller_->StartFederatedLogin(credential,
+                                          std::move(metrics_helper_));
     return;
   }
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
@@ -286,14 +289,14 @@ void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
 void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
     base::expected<LoginStatusResult, ActorLoginError> result) {
   // There shouldn't be a pending request without a pending callback.
-  CHECK(pending_attempt_login_callback_);
+  CHECK(pending_attempt_login_done_callback_);
   credential_filler_.reset();
   siwg_controller_.reset();
 
   // Record metrics by resetting the metrics helper.
   metrics_helper_.reset();
 
-  std::move(pending_attempt_login_callback_).Run(std::move(result));
+  std::move(pending_attempt_login_done_callback_).Run(std::move(result));
 }
 
 void ActorLoginDelegateImpl::RecordGetCredentialsMetricsAndResetHelper(

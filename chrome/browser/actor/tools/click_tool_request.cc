@@ -23,6 +23,16 @@ ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
       click_type_(type),
       click_count_(count) {}
 
+ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
+                                   const PageTarget& target,
+                                   mojom::ClickType type,
+                                   mojom::ClickCount count,
+                                   bool requires_opening_web_contents)
+    : PageToolRequest(tab_handle, target),
+      click_type_(type),
+      click_count_(count),
+      requires_opening_web_contents_(requires_opening_web_contents) {}
+
 ClickToolRequest::~ClickToolRequest() = default;
 
 void ClickToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
@@ -31,6 +41,11 @@ void ClickToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string_view ClickToolRequest::Name() const {
   return kName;
+}
+
+bool ClickToolRequest::RequiresOpeningWebContents() const {
+  return requires_opening_web_contents_ ||
+         PageToolRequest::RequiresOpeningWebContents();
 }
 
 mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction(

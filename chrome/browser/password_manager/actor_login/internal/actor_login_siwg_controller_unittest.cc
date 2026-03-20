@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/common/actor.mojom.h"
@@ -31,6 +33,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
@@ -128,6 +131,10 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kActorLoginFederatedClickFromActor);
+
     // Navigate to a URL so we have a valid last committed URL.
     NavigateAndCommit(GURL("https://example.com/login"));
 
@@ -144,6 +151,7 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
@@ -162,6 +170,7 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
   optimization_guide::OnAIPageContentDone page_content_callback;
@@ -173,13 +182,11 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
       web_contents(),
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
-      finished_callback.Get());
-
-  controller.SetMetricsHelper(metrics_helper_owned.get());
+      finished_callback.Get(), base::NullCallback());
 
   Credential credential;
   credential.federation_detail = FederationDetail();
-  controller.StartFederatedLogin(credential);
+  controller.StartFederatedLogin(credential, std::move(metrics_helper_owned));
 
   // 1. Simulate Page Content Received with a SiwG button.
   optimization_guide::proto::AnnotatedPageContent page_content;
@@ -233,6 +240,10 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
   std::move(page_content_callback).Run(std::move(result));
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Actor.Login.Federated.LoginResult",
+                                      ActorLoginFederatedLoginResult::kSuccess,
+                                      1);
 }
 
 TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
@@ -243,11 +254,11 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
       web_contents(),
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
-      finished_callback.Get());
+      finished_callback.Get(), base::NullCallback());
 
   Credential credential;
   credential.federation_detail = FederationDetail();
-  controller.StartFederatedLogin(credential);
+  controller.StartFederatedLogin(credential, /*metrics_helper=*/nullptr);
 
   // 1. Simulate Page Content Received with a SiwG button.
   optimization_guide::proto::AnnotatedPageContent page_content;
@@ -302,11 +313,11 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
       web_contents(),
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
-      finished_callback.Get());
+      finished_callback.Get(), base::NullCallback());
 
   Credential credential;
   credential.federation_detail = FederationDetail();
-  controller.StartFederatedLogin(credential);
+  controller.StartFederatedLogin(credential, /*metrics_helper=*/nullptr);
 
   // No buttons in the page content.
   optimization_guide::proto::AnnotatedPageContent page_content;
@@ -332,6 +343,71 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
   std::move(page_content_callback).Run(std::move(result));
 
   run_loop.Run();
+}
+
+class ActorLoginSiwgControllerDelegateClickTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kActorLoginFederatedClickFromActor);
+
+    // Navigate to a URL so we have a valid last committed URL.
+    NavigateAndCommit(GURL("https://example.com/login"));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
+  base::MockCallback<LoginStatusResultCallback>
+      federated_login_outcome_callback;
+
+  auto metrics_helper_owned =
+      std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
+  auto controller = std::make_unique<ActorLoginSiwgController>(
+      web_contents(), finished_callback.Get(),
+      federated_login_outcome_callback.Get());
+
+  Credential credential;
+  credential.federation_detail = FederationDetail();
+
+  base::RunLoop start_run_loop;
+  EXPECT_CALL(finished_callback,
+              Run(base::test::ValueIs(LoginStatusResult::kRequiresButtonClick)))
+      .WillOnce(base::test::RunClosure(start_run_loop.QuitClosure()));
+
+  controller->StartFederatedLogin(credential, std::move(metrics_helper_owned));
+
+  start_run_loop.Run();
+
+  // The attempt by the controller is complete and so it is destroyed. However,
+  // the result still needs to be reported. We now check that this reporting
+  // outlives the controller.
+  controller.reset();
+
+  base::RunLoop outcome_run_loop;
+  EXPECT_CALL(federated_login_outcome_callback,
+              Run(LoginStatusResult::kSuccessFederated))
+      .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
+
+  // Manually trigger the federated login completion callback.
+  auto* request =
+      content::webid::FederatedEmbedderLoginRequest::Get(web_contents());
+  ASSERT_TRUE(request);
+  request->OnFederatedResultReceived(
+      content::webid::FederatedLoginResult::kSuccess);
+
+  outcome_run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Actor.Login.Federated.LoginResult",
+                                      ActorLoginFederatedLoginResult::kSuccess,
+                                      1);
 }
 
 }  // namespace actor_login

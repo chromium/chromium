@@ -55,11 +55,13 @@ class ActorLoginDelegateImpl
       bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) override;
-  void AttemptLogin(const Credential& credential,
-                    bool should_store_permission,
-                    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
-                    base::TimeTicks attempt_login_tool_start_time,
-                    LoginStatusResultOrErrorReply callback) override;
+  void AttemptLogin(
+      const Credential& credential,
+      bool should_store_permission,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time,
+      LoginStatusResultOrErrorReply done_callback,
+      LoginStatusResultCallback federated_login_outcome_callback) override;
 
  private:
   friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
@@ -93,7 +95,7 @@ class ActorLoginDelegateImpl
 
   // Store the pending callback. A non-null callback indicates an active
   // request.
-  LoginStatusResultOrErrorReply pending_attempt_login_callback_;
+  LoginStatusResultOrErrorReply pending_attempt_login_done_callback_;
 
   // Helper for `GetCredentials`. Scoped to one `GetCredentials` request.
   std::unique_ptr<ActorLoginGetCredentialsHelper> get_credentials_helper_;

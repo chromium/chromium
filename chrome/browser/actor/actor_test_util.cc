@@ -688,6 +688,24 @@ std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(
       tab.GetHandle(), password_button, sign_in_with_google_button);
 }
 
+std::unique_ptr<ToolRequest> MakeAttemptLoginRequestByNodeIds(
+    tabs::TabInterface& tab,
+    std::optional<int> password_button_id,
+    std::optional<int> sign_in_with_google_button_id) {
+  content::RenderFrameHost& rfh = *tab.GetContents()->GetPrimaryMainFrame();
+  std::optional<PageTarget> password_button;
+  if (password_button_id) {
+    password_button = MakeTarget(rfh, *password_button_id);
+  }
+  std::optional<PageTarget> sign_in_with_google_button;
+  if (sign_in_with_google_button_id) {
+    sign_in_with_google_button =
+        MakeTarget(rfh, *sign_in_with_google_button_id);
+  }
+  return MakeAttemptLoginRequest(tab, password_button,
+                                 sign_in_with_google_button);
+}
+
 std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     content::RenderFrameHost& rfh,
     const std::string& name,

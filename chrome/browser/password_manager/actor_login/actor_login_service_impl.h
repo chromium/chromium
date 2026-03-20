@@ -30,13 +30,14 @@ class ActorLoginServiceImpl : public ActorLoginService {
       bool has_sign_in_with_google_button,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) override;
-  void AttemptLogin(tabs::TabInterface* tab,
-                    const Credential& credential,
-                    bool should_store_permission,
-                    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
-                    base::TimeTicks attempt_login_tool_start_time,
-                    LoginStatusResultOrErrorReply callback) override;
-
+  void AttemptLogin(
+      tabs::TabInterface* tab,
+      const Credential& credential,
+      bool should_store_permission,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time,
+      LoginStatusResultOrErrorReply done_callback,
+      LoginStatusResultCallback federated_login_outcome_callback) override;
   void SetActorLoginDelegateFactoryForTesting(
       base::RepeatingCallback<ActorLoginDelegate*(content::WebContents*)>
           factory);

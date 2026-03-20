@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -23,6 +24,7 @@ namespace actor {
 
 class Tool;
 class ToolDelegate;
+class ExecutionEngine;
 class ToolRequestVisitorFunctor;
 
 // Base class for all tool requests. For tools scoped to a tab (e.g. History
@@ -69,6 +71,10 @@ class ToolRequest {
   // the proper ToolRequestVariant type.
   virtual void Apply(ToolRequestVisitorFunctor&) const = 0;
 
+  // Returns true if this request was created as a follow-up action.
+  bool IsFollowup() const;
+  void SetAsFollowup(base::PassKey<ExecutionEngine>);
+
   struct CreateToolResult {
     CreateToolResult(std::unique_ptr<Tool> tool, mojom::ActionResultPtr result);
     ~CreateToolResult();
@@ -99,6 +105,9 @@ class ToolRequest {
   // special case its handling of the popup until general support for multi-tab
   // is implemented.
   virtual bool RequiresOpeningWebContents() const;
+
+ private:
+  bool is_followup_ = false;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this

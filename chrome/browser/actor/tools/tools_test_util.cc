@@ -94,7 +94,8 @@ void MockActorLoginService::AttemptLogin(
     bool should_store_permission,
     base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
-    actor_login::LoginStatusResultOrErrorReply callback) {
+    actor_login::LoginStatusResultOrErrorReply callback,
+    actor_login::LoginStatusResultCallback federated_login_callback) {
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;
   std::move(callback).Run(login_status_);

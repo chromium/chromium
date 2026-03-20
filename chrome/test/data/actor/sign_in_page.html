@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign In Page</title>
+</head>
+<body>
+  <h1>Sign In</h1>
+  <form id="login-form" action="simple.html">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" aria-label="Username" autocomplete="username">
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" aria-label="Password" autocomplete="current-password">
+    </div>
+    <button type="submit" id="submit-button" aria-label="Submit Sign In Form">Sign In</button>
+  </form>
+
+  <hr>
+
+  <div>
+    <button id="provider-button" aria-label="Sign in with Test Provider">
+      Sign in with Test Provider
+    </button>
+  </div>
+  <div>
+    <button id="provider-popup-button" aria-label="Sign in with Test Provider (Popup)">
+      Sign in with Test Provider (Popup)
+    </button>
+  </div>
+
+  <script>
+    document.getElementById('provider-button').addEventListener('click', () => {
+      window.location.href = 'simple.html';
+    });
+
+    document.getElementById('provider-popup-button').addEventListener('click', () => {
+      window.open('blank.html', 'test-provider-popup', 'popup');
+    });
+
+    window.addEventListener('message', (event) => {
+      if (event.data === 'signin-complete') {
+        window.location.href = 'simple.html';
+      }
+    });
+  </script>
+</body>
+</html>
