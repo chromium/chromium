@@ -281,6 +281,14 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
                          : std::nullopt),
       manifest_id_(manifest_id),
       parent_app_id_(parent_app_id) {
+  // Fix invalid scope values.
+  if (!scope_.is_valid() || !url::IsSameOriginWith(scope_, start_url_) ||
+      !base::StartsWith(start_url_.spec(), scope_.spec(),
+                        base::CompareCase::SENSITIVE)) {
+    DLOG(ERROR) << "Invalid scope " << scope_.possibly_invalid_spec()
+                << " for start_url " << start_url_;
+    scope_ = start_url_.GetWithoutFilename();
+  }
   // Must drop the fragments and queries per `scope` rules
   // https://w3c.github.io/manifest/#scope-member
   GURL::Replacements replacements;
