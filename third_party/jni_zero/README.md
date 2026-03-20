@@ -1,7 +1,10 @@
 # JNI Zero
-A zero-overhead (or better!) middleware for JNI.
+A zero-overhead (or better!) middleware for JNI. Works on JVMs, but the focus is
+Android.
 
-For Googlers, see: go/jnizero.
+Recommended pre-reading: https://developer.android.com/ndk/guides/jni-tips
+
+Googlers, see: go/jnizero.
 
 [TOC]
 
@@ -19,28 +22,55 @@ JNI Zero generates boiler-plate code with the goal of making our code:
  2. typesafe,
  3. more optimizable.
 
-JNI Zero uses regular expressions to parse .java files, so don't do
-anything too fancy :).
-
-### Exposing Native Methods
-
-There are two ways to have native methods be found by Java:
-1) Explicitly register the name -> function pointer mapping using JNI's
-   `RegisterNatives()` function.
-2) Export the symbols from the shared library, and let the runtime resolve them
-   on-demand (using `dlsym()`) the first time a native method is called.
-
-(2) Is generally preferred due to a smaller code size and less up-front work, but
-(1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
-Both ways are supported by this tool.
-
-### Exposing Java Methods
-
-Java methods just need to be annotated with `@CalledByNative`. By default the
-generated method stubs on the native side are not namespaced. The generated
-functions can be put into a namespace using `@JNINamespace("your_namespace")`.
+JNI Zero uses regular expressions to parse .java files, so don't do anything
+too fancy :).
 
 ## Usage
+
+### Java Smart Pointers
+
+Pointers to Java objects must be registered with JNI in order to prevent
+garbage collection from invalidating them.
+
+To help with this, JNI Zero provides the following smart pointers:
+
+ * `ScopedJavaLocalRef<>` - When lifetime is the current function's scope.
+ * `ScopedJavaGlobalRef<>` - When lifetime is longer than the current function's
+   scope.
+ * `LeakedJavaGlobalRef<>` - For singletons (avoids having a destructor).
+ * `JavaObjectWeakGlobalRef<>` - Weak reference (does not prevent garbage
+   collection).
+ * `JavaRef<>&` - Use to accept any of the above as a parameter to a
+   function without creating a redundant registration.
+
+`jni.h` provides a limited number of types to represent Java objects. E.g.:
+
+* `jobject`
+* `jstring`
+* `jthrowable`
+* `jclass`
+
+To provide type-safety, JNI Zero generates subclasses for all referenced Java
+classes. E.g.:
+
+* `JList`
+* `JMap`
+* `JMyClass`
+
+Each of these types is defined in a C++ namespace that mirrors its Java
+package, and is aliased to the top-level scope on a first-come basis.
+
+Example usage:
+
+```
+jni_zero::ScopedJavaLocalRef<JList> GetValues(const jni_zero::JavaRef<JMap>& map) {
+    ...
+}
+```
+
+These custom subclasses are defined in a generated `ClassName_shared_jni.h`
+header so that they can be used from header files without pulling in all of the
+method-calling-related codegen (which lives in `ClassName_jni.h`).
 
 ### Calling Java -> Native
 
@@ -80,7 +110,7 @@ class MyClass {
   // Cannot be private. Must be package or public.
   @NativeMethods
   /* package */ interface Natives {
-    void foo();
+    void foo(List<String> list);
     double bar(int a, int b);
     // Either the |MyClass| part of the |nativeMyClass| parameter name must
     // match the native class name exactly, or the method annotation
@@ -97,7 +127,7 @@ class MyClass {
     // Storing MyClassJni.get() in a field defeats some of the desired R8
     // optimizations, but local variables are fine.
     Natives jni = MyClassJni.get();
-    jni.foo();
+    jni.foo(List.of("hi"));
     jni.bar(1,2);
     jni.nonStatic(mNativePointer);
   }
@@ -120,7 +150,7 @@ public:
 namespace { // Can also declare each with `static`
 
 // The JNIEnv* parameter is optional.
-void JNI_MyClass_Foo(JNIEnv* env) {
+void JNI_MyClass_Foo(JNIEnv* env, const jni_zero::JavaRef<JList>& list) {
   ...
 }
 
@@ -135,6 +165,12 @@ void MyClass::NonStatic(JNIEnv* env) { ... }
 DEFINE_JNI(MyClass)
 ```
 
+#### Legacy Syntax
+
+Directly expose Java methods using the `native` keyword and JNI Zero will
+generate the bindings. This still works, but we are keen to drop support once
+all usage has been migrated.
+
 ### Calling Native -> Java
 
 1. Annotate some methods with `@CalledByNative`, the generator will now generate
@@ -145,16 +181,49 @@ DEFINE_JNI(MyClass)
 
 2. In C++ code, `#include` the header `${OriginalClassName}_jni.h`. (The path
    will depend on the location of the `generate_jni` build rule that lists your
-   Java source code). That `.cc` can call the stubs with their generated name
-   `Java_${OriginalClassName}_${UpperCamelCaseMethod}`.
+   Java source code).
 
-Note: For test-only methods, use `@CalledByNativeForTesting` which will ensure
+3. Call the generated methods using the `JClassNameJni` class or the `JClassName` type.
+   * **Constructors:** `ScopedJavaLocalRef<JMyClass> obj = JMyClassJni::New(env, ...);`
+   * **Static Methods:** `JMyClassJni::staticMethod(env, ...);`
+   * **Instance Methods:** `obj->instanceMethod(env, ...);`
+
+**Note**: For test-only methods, use `@CalledByNativeForTesting` which will ensure
 that it is stripped in our release binaries.
 
-Note: Because the generated header files contain definitions as well as declarations,
-they must not be `#included` by multiple sources. If there are Java functions
-that need to be called by multiple sources, one source should be chosen to
-expose the functions to the others via additional wrapper functions.
+#### Example:
+
+**Java**
+```java
+class MyClass {
+  @CalledByNative MyClass() {}
+
+  @CalledByNative int method() {
+      return 0;
+  }
+}
+```
+
+**C++**
+```c++
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "<path to BUILD.gn>/<generate_jni target name>/MyClass_jni.h"
+
+void Example() {
+    JNIEnv* env = jni_zero::AttachCurrentThread();
+    jni_zero::ScopedJavaLocalRef<JMyClass> ref = JMyClassJni::New(env);
+    ref->method(env);
+}
+```
+
+#### Legacy Syntax
+
+Calling methods like: `Java_ClassName_methodName(env, ...)`.
+
+This syntax still works, but support will be dropped when all usages are
+migrated. It does not use `jobject` subclasses.
 
 ### Automatic Type Conversions using @JniType {#jnitype}
 
@@ -187,6 +256,10 @@ annotation.
 types, but **there can be only one conversion for each C++ type**. E.g. you
 cannot have a different conversion from `String <-> std::string` and
 `URI <-> std::string`.
+
+Annotating your class with `@JNINamespace("foo")` will result in a `using
+namespace ::foo;` being added to the codegen, allowing for `@JniType` strings
+to be reference types that are defined in a namespace.
 
 #### Example Usage
 
@@ -305,6 +378,23 @@ and thus cannot be `nullptr`. This means some conversion functions that return
 non-nullable types have to handle the situation where the passed in java type is
 null.
 
+### Exposing Native Methods
+
+There are two ways to have native methods be found by Java:
+1) Explicitly register the name -> function pointer mapping using JNI's
+   `RegisterNatives()` function.
+2) Export the symbols from the shared library, and let the runtime resolve them
+   on-demand (using `dlsym()`) the first time a native method is called.
+
+(2) Is generally preferred due to a smaller code size and less up-front work, but
+(1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
+Both ways are supported.
+
+### Exposing Java Methods
+
+JNI Zero ships with R8 configs that disable renaming of symbols that use
+`@CalledByNative`.
+
 ### Testing Mockable Natives
 
 ```java
@@ -372,21 +462,6 @@ JNI methods.
 
 One robust solution is to use your own "`sIsNativeReady`" flag that is set via
 a `@CalledByNative` method.
-
-### Java Objects and Garbage Collection
-
-All pointers to Java objects must be registered with JNI in order to prevent
-garbage collection from invalidating them.
-
-For other objects - use smart pointers to store them:
- * `ScopedJavaLocalRef<>` - When lifetime is the current function's scope.
- * `ScopedJavaGlobalRef<>` - When lifetime is longer than the current function's
-   scope.
- * `LeakedJavaGlobalRef<>` - For singletons (avoids having a destructor).
- * `JavaObjectWeakGlobalRef<>` - Weak reference (does not prevent garbage
-   collection).
- * `JavaRef<>&` - Use to accept any of the above as a parameter to a
-   function without creating a redundant registration.
 
 ### Additional Guidelines / Advice
 
