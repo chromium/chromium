@@ -586,6 +586,8 @@ ci.thin_tester(
                 args = [
                     "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
                 ],
+            ),
+            "not_site_per_process_blink_wpt_tests": targets.mixin(
                 ci_only = True,
             ),
             "telemetry_perf_unittests": targets.mixin(
