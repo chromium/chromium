@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -36,6 +37,7 @@ public class FuseboxSessionState implements UserData {
                     FuseboxSessionState.this.onAttachmentListChanged();
                 }
             };
+    private final Callback<Integer> mOnToolModeChanged = this::onToolModeChanged;
 
     /**
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for
@@ -78,15 +80,16 @@ public class FuseboxSessionState implements UserData {
     private static FuseboxSessionState getSessionForTab(UserDataHost userDataHost) {
         FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
         if (state == null) {
-            state = new FuseboxSessionState();
+            state = new FuseboxSessionState(new AutocompleteInput());
             userDataHost.setUserData(FuseboxSessionState.class, state);
         }
         return state;
     }
 
     /** Constructs a new, empty FuseboxSessionState. */
-    private FuseboxSessionState() {
-        mAutocompleteInput = new AutocompleteInput();
+    private FuseboxSessionState(AutocompleteInput input) {
+        mAutocompleteInput = input;
+        mAutocompleteInput.getToolModeSupplier().addSyncObserver(mOnToolModeChanged);
     }
 
     /** A test only constructor with initial values. */
@@ -95,7 +98,7 @@ public class FuseboxSessionState implements UserData {
             AutocompleteInput input,
             @Nullable ComposeboxQueryControllerBridge composeboxQueryControllerBridge,
             @Nullable FuseboxAttachmentModelList fuseboxAttachmentModelList) {
-        mAutocompleteInput = input;
+        this(input);
         mComposeBoxQueryControllerBridge = composeboxQueryControllerBridge;
         mFuseboxAttachmentModelList = fuseboxAttachmentModelList;
     }
@@ -145,7 +148,7 @@ public class FuseboxSessionState implements UserData {
         if (mPendingProfileCallback != null) return;
 
         mPendingProfileCallback =
-                new OneShotCallback<Profile>(
+                new OneShotCallback<>(
                         profileSupplier, p -> setUpSessionControllers(p, onFullyActivated));
     }
 
@@ -227,9 +230,13 @@ public class FuseboxSessionState implements UserData {
         mAutocompleteInput.setHasAttachments(hasAttachments);
     }
 
-    /**
-     * @return Whether the Fusebox session is active.
-     */
+    private void onToolModeChanged(int toolMode) {
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.setActiveTool(toolMode);
+        }
+    }
+
+    /** Returns whether the Fusebox session is active. */
     public boolean isSessionActive() {
         return mIsActive;
     }
@@ -239,23 +246,17 @@ public class FuseboxSessionState implements UserData {
         mAutocompleteInput.copyFrom(input);
     }
 
-    /**
-     * @return The current {@link AutocompleteInput} for this session.
-     */
+    /** Returns the current {@link AutocompleteInput} for this session. */
     public AutocompleteInput getAutocompleteInput() {
         return mAutocompleteInput;
     }
 
-    /**
-     * @return The current {@link ComposeboxQueryControllerBridge} for this session.
-     */
+    /** Returns the current {@link ComposeboxQueryControllerBridge} for this session. */
     public @Nullable ComposeboxQueryControllerBridge getComposeboxQueryControllerBridge() {
         return mComposeBoxQueryControllerBridge;
     }
 
-    /**
-     * @return The current {@link FuseboxAttachmentModelList} for this session.
-     */
+    /** Returns the current {@link FuseboxAttachmentModelList} for this session. */
     public @Nullable FuseboxAttachmentModelList getFuseboxAttachmentModelList() {
         return mFuseboxAttachmentModelList;
     }

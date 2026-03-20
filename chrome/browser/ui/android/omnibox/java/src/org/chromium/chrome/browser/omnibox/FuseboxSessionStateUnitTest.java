@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.os.SystemClock;
 
@@ -56,9 +56,8 @@ public class FuseboxSessionStateUnitTest {
                 () -> {
                     AutocompleteInput input = session.getAutocompleteInput();
                     input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-                    assertEquals(
-                            ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
-                            input.getToolModeSupplier().get().intValue());
+                    verify(mComposeboxQueryControllerBridge)
+                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
                     session.getFuseboxAttachmentModelList()
                             .add(
@@ -69,9 +68,8 @@ public class FuseboxSessionStateUnitTest {
                                             "data".getBytes(),
                                             SystemClock.elapsedRealtime(),
                                             FuseboxAttachmentButtonType.FILES));
-                    assertEquals(
-                            ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE,
-                            input.getToolModeSupplier().get().intValue());
+                    verify(mComposeboxQueryControllerBridge)
+                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
                 };
         session.activate(mProfileSupplier, onFullyActivated);
     }

@@ -165,14 +165,14 @@ public class ComposeboxQueryControllerBridge {
     /**
      * @param toolMode The active tool to set.
      */
-    void setActiveTool(int toolMode) {
+    public void setActiveTool(int toolMode) {
         ComposeboxQueryControllerBridgeJni.get().setActiveTool(mNativeInstance, toolMode);
     }
 
     /**
      * @param modelMode The active model to set.
      */
-    void setActiveModel(int modelMode) {
+    public void setActiveModel(int modelMode) {
         ComposeboxQueryControllerBridgeJni.get().setActiveModel(mNativeInstance, modelMode);
     }
 
