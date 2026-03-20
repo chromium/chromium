@@ -2403,6 +2403,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_test_core_java",
+      ":androidx_test_espresso_espresso_core_java",
       ":androidx_test_ext_junit_java",
       ":androidx_test_monitor_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
