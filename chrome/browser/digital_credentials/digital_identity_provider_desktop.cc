@@ -390,7 +390,7 @@ void DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete() {
 }
 
 void DigitalIdentityProviderDesktop::OnCanceled() {
-  EndRequestWithError(RequestStatusForMetrics::kErrorOther);
+  EndRequestWithError(RequestStatusForMetrics::kErrorUserDeclined);
 }
 
 void DigitalIdentityProviderDesktop::EndRequestWithError(

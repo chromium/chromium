@@ -228,3 +228,134 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest, InterstitialNotShown) {
 
   EXPECT_FALSE(was_dialog_shown);
 }
+
+class TestQrCodeDigitalIdentityProvider
+    : public DigitalIdentityProviderDesktop {
+ public:
+  TestQrCodeDigitalIdentityProvider() = default;
+  ~TestQrCodeDigitalIdentityProvider() override = default;
+
+  void Get(content::WebContents* web_contents,
+           const url::Origin& origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override {
+    set_web_contents_for_testing(web_contents->GetWeakPtr());
+    set_rp_origin_for_testing(origin);
+    set_callback_for_testing(std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TestQrCodeDigitalIdentityProvider::ShowQrCodeDialog,
+                       base::Unretained(this), "fake_qr_url",
+                       content::digital_credentials::cross_device::RequestInfo::
+                           RequestType::kGet));
+  }
+};
+
+class QrCodeTestBrowserClient : public ChromeContentBrowserClient {
+ public:
+  QrCodeTestBrowserClient() = default;
+  ~QrCodeTestBrowserClient() override = default;
+
+  std::unique_ptr<content::DigitalIdentityProvider>
+  CreateDigitalIdentityProvider() override {
+    return std::make_unique<TestQrCodeDigitalIdentityProvider>();
+  }
+};
+
+class DigitalIdentityIntegrationQrCodeTest : public InProcessBrowserTest {
+ public:
+  DigitalIdentityIntegrationQrCodeTest() = default;
+  ~DigitalIdentityIntegrationQrCodeTest() override = default;
+
+  void SetUpOnMainThread() override {
+    client_ = std::make_unique<QrCodeTestBrowserClient>();
+    original_client_ = content::SetBrowserClientForTesting(client_.get());
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(original_client_.get());
+  }
+
+ protected:
+  std::unique_ptr<QrCodeTestBrowserClient> client_;
+  raw_ptr<content::ContentBrowserClient> original_client_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebIdentityDigitalCredentials};
+};
+
+IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationQrCodeTest,
+                       QrCodeDialogCancelledReturnsNotAllowedError) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  std::u16string kExpectedQrTitle =
+      l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
+  std::u16string kExpectedBleTitle = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE);
+
+  auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
+      views::test::AnyWidgetTestPasskey());
+
+  dialog_observer->set_shown_callback(base::BindRepeating(
+      [](std::u16string expected_qr_title, std::u16string expected_ble_title,
+         views::Widget* widget) {
+        std::u16string title = widget->widget_delegate()->GetWindowTitle();
+        if (title == expected_qr_title || title == expected_ble_title) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](views::Widget* w) {
+                    w->CloseWithReason(
+                        views::Widget::ClosedReason::kCancelButtonClicked);
+                  },
+                  widget));
+        }
+      },
+      kExpectedQrTitle, kExpectedBleTitle));
+
+  GURL url = chrome_test_utils::GetTestUrl(
+      base::FilePath(),
+      base::FilePath(FILE_PATH_LITERAL("digital_credentials.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  std::string script = R"(
+    (async () => {
+      try {
+        await navigator.credentials.get({
+          digital: {
+            requests: [{
+              protocol: "openid4vp",
+              data: {
+                dcql_query: {
+                  credentials: [
+                    {
+                      id: "cred1",
+                      format: "mso_mdoc",
+                      meta: {
+                        doctype_value: "org.iso.18013.5.1.mDL"
+                      },
+                      claims: [
+                        {
+                          path: ["org.iso.18013.5.1", "age_over_21"]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }]
+          }
+        });
+        return "Success";
+      } catch (e) {
+        return e.name;
+      }
+    })();
+  )";
+
+  EXPECT_EQ("NotAllowedError",
+            content::EvalJs(web_contents, script).ExtractString());
+}
