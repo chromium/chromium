@@ -166,7 +166,7 @@ void StringImpl::DestroyIfNeeded() {
   }
 }
 
-unsigned StringImpl::ComputeASCIIFlags() const {
+unsigned StringImpl::ComputeAsciiFlags() const {
   AsciiStringAttributes ascii_attributes = VisitCharacters(
       *this, [](auto chars) { return CharacterAttributes(chars); });
   uint32_t new_flags = AsciiStringAttributesToFlags(ascii_attributes);

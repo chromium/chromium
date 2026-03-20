@@ -491,9 +491,9 @@ TEST(StringViewTest, EqualIgnoringAsciiCase) {
   static const UChar kLink16[5] = {0x006c, 0x0069, 0x006e, 0x006b, 0};  // link
   static const UChar kLinkCaps16[5] = {0x004c, 0x0049, 0x004e, 0x004b,
                                        0};                         // LINK
-  static const UChar kNonASCII16[3] = {0x0061, 0x00e1, 0};         // a\xE1
-  static const UChar kNonASCIICaps16[3] = {0x0041, 0x00e1, 0};     // A\xE1
-  static const UChar kNonASCIIInvalid16[3] = {0x0061, 0x00c1, 0};  // a\xC1
+  static const UChar kNonAscii16[3] = {0x0061, 0x00e1, 0};         // a\xE1
+  static const UChar kNonAsciiCaps16[3] = {0x0041, 0x00e1, 0};     // A\xE1
+  static const UChar kNonAsciiInvalid16[3] = {0x0061, 0x00c1, 0};  // a\xC1
 
   EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kLink16), link8));
   EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kLink16), kLinkCaps16));
@@ -502,13 +502,13 @@ TEST(StringViewTest, EqualIgnoringAsciiCase) {
   EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(link8), kLink16));
 
   EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(non_ascii8), non_ascii_caps8));
-  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(non_ascii8), kNonASCIICaps16));
-  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kNonASCII16), kNonASCIICaps16));
-  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kNonASCII16), non_ascii_caps8));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(non_ascii8), kNonAsciiCaps16));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kNonAscii16), kNonAsciiCaps16));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(StringView(kNonAscii16), non_ascii_caps8));
   EXPECT_FALSE(
       EqualIgnoringAsciiCase(StringView(non_ascii8), non_ascii_invalid8));
   EXPECT_FALSE(
-      EqualIgnoringAsciiCase(StringView(non_ascii8), kNonASCIIInvalid16));
+      EqualIgnoringAsciiCase(StringView(non_ascii8), kNonAsciiInvalid16));
 
   EXPECT_TRUE(EqualIgnoringAsciiCase(StringView("link"), "lInK"));
   EXPECT_FALSE(EqualIgnoringAsciiCase(StringView("link"), "INKL"));

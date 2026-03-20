@@ -15,7 +15,7 @@ class TextOffsetMap;
 
 // This class performs the full Unicode case-mapping.
 //
-// See LowerASCII/UpperASCII() variants for faster, ASCII-only,
+// See ToAsciiLower/ToAsciiUpper() variants for faster, ASCII-only,
 // locale-independent case-mapping.
 class WTF_EXPORT CaseMap {
  public:

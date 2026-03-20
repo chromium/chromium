@@ -394,7 +394,7 @@ class WTF_EXPORT StringView {
   // The odd lifetime of the returned object occurs because lowercasing may
   // require allocation. When that happens, |backing_store| is used as the
   // backing store and the returned StringView has the same lifetime.
-  StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
+  StringView LowerAsciiMaybeUsingBuffer(StackBackingStore& backing_store) const;
 
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such

@@ -69,7 +69,7 @@ class AtomicStringTable;
 
 enum TextCaseSensitivity {
   kTextCaseSensitive,
-  kTextCaseASCIIInsensitive,
+  kTextCaseAsciiInsensitive,
 };
 
 // Computes a standard StringHasher string for the given buffer,
@@ -648,7 +648,7 @@ class WTF_EXPORT StringImpl {
 
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
-  unsigned ComputeASCIIFlags() const;
+  unsigned ComputeAsciiFlags() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
@@ -711,7 +711,7 @@ ALWAYS_INLINE bool StringImpl::ContainsOnlyAsciiOrEmpty() const {
   uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
     return flags & kContainsOnlyAscii;
-  return ComputeASCIIFlags() & kContainsOnlyAscii;
+  return ComputeAsciiFlags() & kContainsOnlyAscii;
 }
 
 ALWAYS_INLINE size_t StringImpl::GetAllocatedSize() const {
@@ -725,7 +725,7 @@ ALWAYS_INLINE bool StringImpl::ContainsNoAsciiUpper() const {
   uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
     return flags & kIsLowerAscii;
-  return ComputeASCIIFlags() & kIsLowerAscii;
+  return ComputeAsciiFlags() & kIsLowerAscii;
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might

@@ -93,21 +93,21 @@ TEST(StringImplTest, ToAsciiLower) {
       Equal(test_string_impl16.get(),
             StringImpl::Create(kTestCapitalized)->ToAsciiLower().get()));
 
-  static const UChar kTestWithNonASCII[2] = {0x0061, 0x00e1};  // a\xE1
-  static const UChar kTestWithNonASCIIComparison[2] = {0x0061,
+  static const UChar kTestWithNonAscii[2] = {0x0061, 0x00e1};  // a\xE1
+  static const UChar kTestWithNonAsciiComparison[2] = {0x0061,
                                                        0x00c1};  // a\xC1
-  static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
+  static const UChar kTestWithNonAsciiCapitalized[2] = {0x0041,
                                                         0x00e1};  // A\xE1
 
   // Make sure we support scoped_refptr<StringImpl>.
   scoped_refptr<StringImpl> isolated_ref = test_string_impl->IsolatedCopy();
   DCHECK(isolated_ref->HasOneRef());
   EXPECT_TRUE(Equal(
-      StringImpl::Create(kTestWithNonASCII).get(),
-      StringImpl::Create(kTestWithNonASCIICapitalized)->ToAsciiLower().get()));
+      StringImpl::Create(kTestWithNonAscii).get(),
+      StringImpl::Create(kTestWithNonAsciiCapitalized)->ToAsciiLower().get()));
   EXPECT_FALSE(Equal(
-      StringImpl::Create(kTestWithNonASCII).get(),
-      StringImpl::Create(kTestWithNonASCIIComparison)->ToAsciiLower().get()));
+      StringImpl::Create(kTestWithNonAscii).get(),
+      StringImpl::Create(kTestWithNonAsciiComparison)->ToAsciiLower().get()));
 }
 
 TEST(StringImplTest, ToAsciiUpper) {
@@ -175,21 +175,21 @@ TEST(StringImplTest, ToAsciiUpper) {
       Equal(test_string_impl16.get(),
             StringImpl::Create(kTestCapitalized)->ToAsciiUpper().get()));
 
-  static const UChar kTestWithNonASCII[2] = {0x0061, 0x00e1};  // a\xE1
-  static const UChar kTestWithNonASCIIComparison[2] = {0x0061,
+  static const UChar kTestWithNonAscii[2] = {0x0061, 0x00e1};  // a\xE1
+  static const UChar kTestWithNonAsciiComparison[2] = {0x0061,
                                                        0x00c1};  // a\xC1
-  static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
+  static const UChar kTestWithNonAsciiCapitalized[2] = {0x0041,
                                                         0x00e1};  // A\xE1
 
   // Make sure we support scoped_refptr<StringImpl>.
   scoped_refptr<StringImpl> isolated_ref = test_string_impl->IsolatedCopy();
   DCHECK(isolated_ref->HasOneRef());
   EXPECT_TRUE(
-      Equal(StringImpl::Create(kTestWithNonASCIICapitalized).get(),
-            StringImpl::Create(kTestWithNonASCII)->ToAsciiUpper().get()));
+      Equal(StringImpl::Create(kTestWithNonAsciiCapitalized).get(),
+            StringImpl::Create(kTestWithNonAscii)->ToAsciiUpper().get()));
   EXPECT_FALSE(Equal(
-      StringImpl::Create(kTestWithNonASCIICapitalized).get(),
-      StringImpl::Create(kTestWithNonASCIIComparison)->ToAsciiUpper().get()));
+      StringImpl::Create(kTestWithNonAsciiCapitalized).get(),
+      StringImpl::Create(kTestWithNonAsciiComparison)->ToAsciiUpper().get()));
 }
 
 TEST(StringImplTest, CodeUnitCompareIgnoringAsciiCase) {

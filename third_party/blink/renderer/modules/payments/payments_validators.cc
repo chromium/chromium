@@ -32,7 +32,7 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
     const String& code,
     String* optional_error_message) {
   auto* regexp = MakeGarbageCollected<ScriptRegexp>(isolate, "^[A-Z]{3}$",
-                                                    kTextCaseASCIIInsensitive);
+                                                    kTextCaseAsciiInsensitive);
   if (regexp->Match(code) == 0)
     return true;
 

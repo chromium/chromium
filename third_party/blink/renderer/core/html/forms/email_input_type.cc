@@ -64,7 +64,7 @@ namespace blink {
 
 ScriptRegexp* EmailInputType::CreateEmailRegexp(v8::Isolate* isolate) {
   return MakeGarbageCollected<ScriptRegexp>(isolate, kEmailPattern,
-                                            kTextCaseASCIIInsensitive);
+                                            kTextCaseAsciiInsensitive);
 }
 
 Vector<StringView> EmailInputType::ParseMultipleValues(

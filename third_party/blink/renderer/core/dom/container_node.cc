@@ -1806,7 +1806,7 @@ StaticNodeList* ContainerNode::FindAllTextNodesMatchingRegex(
   blink::HeapVector<Member<Node>> nodes_matching_regex;
   Node* node = FlatTreeTraversal::FirstWithin(*this);
   ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(
-      GetDocument().GetAgent().isolate(), regex, kTextCaseASCIIInsensitive);
+      GetDocument().GetAgent().isolate(), regex, kTextCaseAsciiInsensitive);
   while (node) {
     if (node->IsTextNode()) {
       String text = To<Text>(node)->data();

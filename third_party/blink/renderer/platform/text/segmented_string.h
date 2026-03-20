@@ -239,7 +239,7 @@ class PLATFORM_EXPORT SegmentedString {
     return LookAheadInline<kTextCaseSensitive>(string);
   }
   LookAheadResult LookAheadIgnoringCase(const String& string) {
-    return LookAheadInline<kTextCaseASCIIInsensitive>(string);
+    return LookAheadInline<kTextCaseAsciiInsensitive>(string);
   }
 
   // Used to advance by multiple characters. Specifically this advances by

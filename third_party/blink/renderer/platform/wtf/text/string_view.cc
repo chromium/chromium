@@ -369,7 +369,7 @@ bool EqualIgnoringAsciiCase(const StringView& a, const StringView& b) {
   });
 }
 
-StringView StringView::LowerASCIIMaybeUsingBuffer(
+StringView StringView::LowerAsciiMaybeUsingBuffer(
     StackBackingStore& buffer) const {
   if (ContainsNoAsciiUpper()) {
     return *this;
