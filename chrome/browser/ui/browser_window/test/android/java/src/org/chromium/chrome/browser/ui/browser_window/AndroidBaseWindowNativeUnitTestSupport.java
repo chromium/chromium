@@ -38,7 +38,10 @@ final class AndroidBaseWindowNativeUnitTestSupport {
         mChromeAndroidTask = mock(ChromeAndroidTask.class);
         mAndroidBrowserWindow =
                 new AndroidBrowserWindow(
-                        mChromeAndroidTask, mock(Profile.class), mock(ActivityWindowAndroid.class));
+                        mChromeAndroidTask,
+                        mock(Profile.class),
+                        BrowserWindowType.NORMAL,
+                        mock(ActivityWindowAndroid.class));
         mAndroidBaseWindow = new AndroidBaseWindow(mAndroidBrowserWindow);
     }
 

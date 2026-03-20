@@ -284,7 +284,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var actualPendingTaskInfo = task.getPendingTaskInfo();
         assertNotNull(actualPendingTaskInfo);
         assertEquals(pendingTaskInfo.mPendingTaskId, actualPendingTaskInfo.mPendingTaskId);
-        assertEquals(pendingTaskInfo.mCreateParams.getWindowType(), task.getBrowserWindowType());
+        assertEquals(
+                pendingTaskInfo.mCreateParams.getWindowType(),
+                task.getPendingTaskInfo().mCreateParams.getWindowType());
         assertEquals(State.PENDING_CREATE, task.getState());
         assertNull(task.getId());
         assertTrue(task.getActivityScopedObjectsListForTesting().isEmpty());

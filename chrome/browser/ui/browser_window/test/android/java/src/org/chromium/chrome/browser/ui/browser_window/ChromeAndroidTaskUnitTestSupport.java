@@ -254,6 +254,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 createMockActivityScopedObjects(
                         activityWindowAndroidMocks.mMockActivityWindowAndroid,
                         profile,
+                        BrowserWindowType.NORMAL,
                         profileType);
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
@@ -309,13 +310,27 @@ public final class ChromeAndroidTaskUnitTestSupport {
      */
     static ChromeAndroidTask.ActivityScopedObjects createMockActivityScopedObjects(
             int taskId, Profile profile) {
+        return createMockActivityScopedObjects(taskId, profile, BrowserWindowType.NORMAL);
+    }
+
+    /**
+     * Creates a {@link ChromeAndroidTask.ActivityScopedObjects} instance containing mock objects.
+     *
+     * @param taskId The Task ID of the {@code Activity} the mock objects are associated with.
+     * @param profile The {@link Profile} the mock objects are associated with.
+     * @param windowType The mock {@link BrowserWindowType} for this window.
+     * @return The new {@link ChromeAndroidTask.ActivityScopedObjects} instance.
+     */
+    static ChromeAndroidTask.ActivityScopedObjects createMockActivityScopedObjects(
+            int taskId, Profile profile, @BrowserWindowType int windowType) {
         var activityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
         if (VERSION.SDK_INT >= VERSION_CODES.R) {
             mockDesktopWindowingMode(activityWindowAndroidMocks);
         }
         var activityWindowAndroid = activityWindowAndroidMocks.mMockActivityWindowAndroid;
 
-        return createMockActivityScopedObjects(activityWindowAndroid, profile);
+        return createMockActivityScopedObjects(
+                activityWindowAndroid, profile, windowType, SupportedProfileType.REGULAR);
     }
 
     /**
@@ -329,7 +344,10 @@ public final class ChromeAndroidTaskUnitTestSupport {
     static ChromeAndroidTask.ActivityScopedObjects createMockActivityScopedObjects(
             ActivityWindowAndroid activityWindowAndroid, Profile profile) {
         return createMockActivityScopedObjects(
-                activityWindowAndroid, profile, SupportedProfileType.REGULAR);
+                activityWindowAndroid,
+                profile,
+                BrowserWindowType.NORMAL,
+                SupportedProfileType.REGULAR);
     }
 
     /**
@@ -338,12 +356,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} for the {@code Activity} the
      *     mock objects are associated with.
      * @param profile The {@link Profile} the mock objects are associated with.
+     * @param windowType The mock {@link BrowserWindowType} for this window.
      * @param profileType The {@link SupportedProfileType} for this window.
      * @return The new {@link ChromeAndroidTask.ActivityScopedObjects} instance.
      */
     static ChromeAndroidTask.ActivityScopedObjects createMockActivityScopedObjects(
             ActivityWindowAndroid activityWindowAndroid,
             Profile profile,
+            @BrowserWindowType int windowType,
             @SupportedProfileType int profileType) {
         assert mockingDetails(activityWindowAndroid).isMock();
 
@@ -376,6 +396,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         return new ChromeAndroidTask.ActivityScopedObjects(
                 activityWindowAndroid,
                 mockTabModelSelector,
+                windowType,
                 profileType,
                 mockDesktopWindowStateManager,
                 mockMultiInstanceManager);

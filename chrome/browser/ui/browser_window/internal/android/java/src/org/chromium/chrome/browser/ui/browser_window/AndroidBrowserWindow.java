@@ -23,6 +23,7 @@ final class AndroidBrowserWindow {
 
     private final ChromeAndroidTask mChromeAndroidTask;
     private final Profile mProfile;
+    private final @BrowserWindowType int mBrowserWindowType;
     private final AndroidBaseWindow mAndroidBaseWindow;
     private @Nullable ActivityWindowAndroid mActivityWindowAndroid;
 
@@ -38,9 +39,11 @@ final class AndroidBrowserWindow {
     AndroidBrowserWindow(
             ChromeAndroidTask chromeAndroidTask,
             Profile profile,
+            @BrowserWindowType int browserWindowType,
             @Nullable ActivityWindowAndroid activityWindowAndroid) {
         mChromeAndroidTask = chromeAndroidTask;
         mProfile = profile;
+        mBrowserWindowType = browserWindowType;
         mAndroidBaseWindow = new AndroidBaseWindow(this);
         mActivityWindowAndroid = activityWindowAndroid;
     }
@@ -59,8 +62,7 @@ final class AndroidBrowserWindow {
     long getOrCreateNativePtr() {
         if (mNativeAndroidBrowserWindow == 0) {
             mNativeAndroidBrowserWindow =
-                    AndroidBrowserWindowJni.get()
-                            .create(this, mChromeAndroidTask.getBrowserWindowType(), mProfile);
+                    AndroidBrowserWindowJni.get().create(this, mBrowserWindowType, mProfile);
         }
         return mNativeAndroidBrowserWindow;
     }

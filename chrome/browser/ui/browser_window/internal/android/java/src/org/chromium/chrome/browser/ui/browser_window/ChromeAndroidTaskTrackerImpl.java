@@ -87,8 +87,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         var existingTask = mTasks.get(taskId);
         if (existingTask != null) {
-            assert existingTask.getBrowserWindowType() == browserWindowType
-                    : "The browser window type of an existing task can't be changed.";
             existingTask.addActivityScopedObjects(activityScopedObjects);
             return existingTask;
         }
@@ -104,7 +102,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             return pendingTask;
         }
 
-        var newTask = new ChromeAndroidTaskImpl(browserWindowType, activityScopedObjects);
+        var newTask = new ChromeAndroidTaskImpl(activityScopedObjects);
         mTasks.put(taskId, newTask);
         for (var observer : mObservers) {
             observer.onTaskAdded(newTask);

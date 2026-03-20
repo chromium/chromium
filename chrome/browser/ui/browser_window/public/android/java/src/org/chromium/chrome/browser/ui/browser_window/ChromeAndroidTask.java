@@ -59,6 +59,7 @@ public interface ChromeAndroidTask {
     final class ActivityScopedObjects {
         final ActivityWindowAndroid mActivityWindowAndroid;
         final TabModelSelector mTabModelSelector;
+        final @BrowserWindowType int mBrowserWindowType;
         final @SupportedProfileType int mSupportedProfileType;
         final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
         final @Nullable MultiInstanceManager mMultiInstanceManager;
@@ -66,11 +67,13 @@ public interface ChromeAndroidTask {
         public ActivityScopedObjects(
                 ActivityWindowAndroid activityWindowAndroid,
                 TabModelSelector tabModelSelector,
+                @BrowserWindowType int browserWindowType,
                 @SupportedProfileType int supportedProfileType,
                 @Nullable DesktopWindowStateManager desktopWindowStateManager,
                 @Nullable MultiInstanceManager multiInstanceManager) {
             mActivityWindowAndroid = activityWindowAndroid;
             mTabModelSelector = tabModelSelector;
+            mBrowserWindowType = browserWindowType;
             assert supportedProfileType != SupportedProfileType.UNSET;
             mSupportedProfileType = supportedProfileType;
             mDesktopWindowStateManager = desktopWindowStateManager;
@@ -146,14 +149,6 @@ public interface ChromeAndroidTask {
      * state, otherwise {@code null}.
      */
     @Nullable PendingTaskInfo getPendingTaskInfo();
-
-    /**
-     * Returns the browser window type of this {@link ChromeAndroidTask}.
-     *
-     * <p>The types are defined in the native {@code BrowserWindowInterface::Type} enum.
-     */
-    @BrowserWindowType
-    int getBrowserWindowType();
 
     /**
      * Adds an instance of {@link ActivityScopedObjects}.

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import org.jni_zero.CalledByNative;
 
@@ -38,10 +37,12 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
     private AndroidBrowserWindowNativeUnitTestSupport(
             @BrowserWindowType int browserWindowType, Profile profile) {
         mMockChromeAndroidTask = mock(ChromeAndroidTask.class);
-        when(mMockChromeAndroidTask.getBrowserWindowType()).thenReturn(browserWindowType);
         mAndroidBrowserWindow =
                 new AndroidBrowserWindow(
-                        mMockChromeAndroidTask, profile, mock(ActivityWindowAndroid.class));
+                        mMockChromeAndroidTask,
+                        profile,
+                        browserWindowType,
+                        mock(ActivityWindowAndroid.class));
 
         ProfileManager.setLastUsedProfileForTesting(profile);
     }

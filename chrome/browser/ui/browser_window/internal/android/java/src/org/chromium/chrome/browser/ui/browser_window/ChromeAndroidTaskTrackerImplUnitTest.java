@@ -51,6 +51,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowShowState;
@@ -113,17 +114,17 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         assertNotNull(task);
-        assertNotNull(task.getPendingTaskInfo());
+        var pendingTaskInfo = task.getPendingTaskInfo();
+        assertNotNull(pendingTaskInfo);
         assertNotNull(
-                mChromeAndroidTaskTracker.getPendingTaskForTesting(
-                        task.getPendingTaskInfo().mPendingTaskId));
+                mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingTaskInfo.mPendingTaskId));
         assertEquals(
                 // Creating a pending Task of "NORMAL" type requires an existing ChromeAndroidTask.
                 // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
                 // one pointer is the existing Task and the other is the pending Task.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
-        assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
+        assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
     }
 
     @Test
@@ -136,17 +137,17 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         assertNotNull(task);
-        assertNotNull(task.getPendingTaskInfo());
+        var pendingTaskInfo = task.getPendingTaskInfo();
+        assertNotNull(pendingTaskInfo);
         assertNotNull(
-                mChromeAndroidTaskTracker.getPendingTaskForTesting(
-                        task.getPendingTaskInfo().mPendingTaskId));
+                mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingTaskInfo.mPendingTaskId));
         assertEquals(
                 // Creating a pending Task of "POPUP" type requires an existing ChromeAndroidTask.
                 // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
                 // one pointer is the existing Task and the other is the pending Task.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
-        assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
+        assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
 
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mContext).startActivity(intentCaptor.capture());
@@ -425,28 +426,39 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
     @Test
     public void
-            obtainTask_activityScopedObjectsBelongToExistingTask_differentBrowserWindowType_throwsException() {
+            obtainTask_activityScopedObjectsBelongToExistingTask_differentBrowserWindowType_succeeds() {
         // Arrange.
         // (1) Create a new task.
         int taskId = 1;
         var activityScopedObjects1 =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(taskId);
-        mChromeAndroidTaskTracker.obtainTask(
-                BrowserWindowType.NORMAL, activityScopedObjects1, /* pendingId= */ null);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        taskId, mock(Profile.class), BrowserWindowType.NORMAL);
+        var task =
+                (ChromeAndroidTaskImpl)
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL,
+                                activityScopedObjects1,
+                                /* pendingId= */ null);
+        assertEquals(
+                BrowserWindowType.NORMAL,
+                task.getActivityScopedObjectsListForTesting().get(0).mBrowserWindowType);
 
         // (2) Create another ActivityScopedObjects that belongs to the same Task.
         var activityScopedObjects2 =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(taskId);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        taskId, mock(Profile.class), BrowserWindowType.POPUP);
 
-        // Act & Assert.
+        // Act.
+        var task2 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.POPUP, activityScopedObjects2, /* pendingId= */ null);
+
+        // Assert.
         // Note that we use a different browser window type here.
-        assertThrows(
-                AssertionError.class,
-                () ->
-                        mChromeAndroidTaskTracker.obtainTask(
-                                BrowserWindowType.POPUP,
-                                activityScopedObjects2,
-                                /* pendingId= */ null));
+        assertEquals(task, task2);
+        assertEquals(
+                BrowserWindowType.POPUP,
+                task.getActivityScopedObjectsListForTesting().get(0).mBrowserWindowType);
     }
 
     @Test

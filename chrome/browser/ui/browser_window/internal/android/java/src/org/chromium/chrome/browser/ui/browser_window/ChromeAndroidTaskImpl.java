@@ -279,8 +279,6 @@ final class ChromeAndroidTaskImpl
 
     private final PendingActionManager mPendingActionManager = new PendingActionManager();
 
-    private final @BrowserWindowType int mBrowserWindowType;
-
     // TODO(crbug.com/491791515): Consider removing this field and just relying on the
     // TabModelSelector to determine the profile.
     private final Profile mInitialProfile;
@@ -393,6 +391,9 @@ final class ChromeAndroidTaskImpl
                     new AndroidBrowserWindow(
                             mChromeAndroidTaskImpl,
                             incognitoProfile,
+                            mInternalActivityScopedObjects
+                                    .mActivityScopedObjects
+                                    .mBrowserWindowType,
                             mInternalActivityScopedObjects
                                     .mActivityScopedObjects
                                     .mActivityWindowAndroid);
@@ -556,9 +557,7 @@ final class ChromeAndroidTaskImpl
         return WindowResizePrecheckResult.OK;
     }
 
-    ChromeAndroidTaskImpl(
-            @BrowserWindowType int browserWindowType, ActivityScopedObjects activityScopedObjects) {
-        mBrowserWindowType = browserWindowType;
+    ChromeAndroidTaskImpl(ActivityScopedObjects activityScopedObjects) {
         mId = getActivity(activityScopedObjects.mActivityWindowAndroid).getTaskId();
 
         Profile initialProfile =
@@ -576,7 +575,6 @@ final class ChromeAndroidTaskImpl
     ChromeAndroidTaskImpl(PendingTaskInfo pendingTaskInfo) {
         mPendingTaskInfo = pendingTaskInfo;
 
-        mBrowserWindowType = pendingTaskInfo.mCreateParams.getWindowType();
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
         assert mInitialProfile != null
                 : "PendingTaskInfo must be initialized with a non-null profile";
@@ -587,6 +585,7 @@ final class ChromeAndroidTaskImpl
                 new AndroidBrowserWindow(
                         /* chromeAndroidTask= */ this,
                         mInitialProfile,
+                        pendingTaskInfo.mCreateParams.getWindowType(),
                         /* activityWindowAndroid= */ null);
 
         ProfileManager.addObserver(mProfileObserver);
@@ -605,12 +604,6 @@ final class ChromeAndroidTaskImpl
     public @Nullable PendingTaskInfo getPendingTaskInfo() {
         ThreadUtils.assertOnUiThread();
         return mPendingTaskInfo;
-    }
-
-    @Override
-    public @BrowserWindowType int getBrowserWindowType() {
-        ThreadUtils.assertOnUiThread();
-        return mBrowserWindowType;
     }
 
     @Override
@@ -1388,7 +1381,10 @@ final class ChromeAndroidTaskImpl
             } else {
                 newBrowserWindow =
                         new AndroidBrowserWindow(
-                                /* chromeAndroidTask= */ this, profile, activityWindowAndroid);
+                                /* chromeAndroidTask= */ this,
+                                profile,
+                                activityScopedObjects.mBrowserWindowType,
+                                activityWindowAndroid);
             }
 
             // Associate the new AndroidBrowserWindow with TabModel.
