@@ -31,10 +31,9 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#include <limits>
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -473,40 +472,26 @@ TEST(StringBuilderTest, ReserveCapacityTwice16) {
 }
 
 TEST(StringBuilderTest, DoesAppendCauseOverflow) {
+  constexpr wtf_size_t kMaxLength = static_cast<wtf_size_t>(1) << 30;
+
   {
     StringBuilder builder;
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(0));
-  }
-
-  {
-    StringBuilder builder;
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(1));
-  }
-
-  {
-    StringBuilder builder;
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        std::numeric_limits<wtf_size_t>::max() / 4 - 1));
+        base::checked_cast<unsigned>(kMaxLength)));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(
+        base::checked_cast<unsigned>(kMaxLength + 1)));
   }
 
   {
-    StringBuilder builder;
-    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        std::numeric_limits<wtf_size_t>::max() / 4));
-  }
-
-  {
+    // 16-bit strings have the same character count limit.
     StringBuilder builder;
     builder.Ensure16Bit();
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        std::numeric_limits<wtf_size_t>::max() / 8 - 1));
-  }
-
-  {
-    StringBuilder builder;
-    builder.Ensure16Bit();
-    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        std::numeric_limits<wtf_size_t>::max() / 8));
+        base::checked_cast<unsigned>(kMaxLength)));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(
+        base::checked_cast<unsigned>(kMaxLength + 1)));
   }
 }
 

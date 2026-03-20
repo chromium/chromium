@@ -29,7 +29,10 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/feature_list.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/span_printf.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -229,7 +232,20 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
 }
 
 bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
-  unsigned new_length = length_ + length;
+  base::CheckedNumeric<wtf_size_t> checked_new_length(length_);
+  checked_new_length += length;
+  if (!checked_new_length.IsValid()) {
+    return true;
+  }
+  const wtf_size_t new_length = checked_new_length.ValueOrDie();
+
+  if (base::FeatureList::IsEnabled(features::kCapStringBuilderLengthTo1GiB)) {
+    constexpr wtf_size_t kMaxLength = static_cast<wtf_size_t>(1) << 30;
+    if (new_length > kMaxLength) {
+      return true;
+    }
+  }
+
   if (new_length < Capacity()) {
     return false;
   }

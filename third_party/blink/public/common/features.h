@@ -236,6 +236,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernationNoSmallCanvas);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kCanvas2DHibernationReleaseTransferMemory);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCapStringBuilderLengthTo1GiB);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCaptureJSExecutionLocation);
 
 // If enabled, the Clear-Site-Data header will handle "prefetchCache" and

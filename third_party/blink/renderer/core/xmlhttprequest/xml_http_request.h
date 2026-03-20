@@ -24,7 +24,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XMLHTTPREQUEST_XML_HTTP_REQUEST_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
@@ -177,6 +176,8 @@ class CORE_EXPORT XMLHttpRequest final
   bool HasRequestHeaderForTesting(AtomicString name) const;
 
  private:
+  friend class XMLHttpRequestTest_ResponseTextUsesDecodedData_Test;
+
   class BlobLoader;
 
   void DidSendData(uint64_t bytes_sent,
