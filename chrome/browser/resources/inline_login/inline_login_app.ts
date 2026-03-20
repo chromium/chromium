@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 
 import type {AuthCompletedCredentials, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {Authenticator} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './inline_login_app.html.js';
+import {getCss} from './inline_login_app.css.js';
+import {getHtml} from './inline_login_app.html.js';
 import type {InlineLoginBrowserProxy} from './inline_login_browser_proxy.js';
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
@@ -33,62 +33,49 @@ export interface InlineLoginAppElement {
   };
 }
 
-const InlineLoginAppElementBase = WebUiListenerMixin(PolymerElement);
+const InlineLoginAppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class InlineLoginAppElement extends InlineLoginAppElementBase {
   static get is() {
     return 'inline-login-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Indicates whether the page is loading.
        */
-      loading_: {
-        type: Boolean,
-        value: true,
-      },
+      loading_: {type: Boolean},
 
       /**
        * Indicates whether the account is being verified.
        */
-      verifyingAccount_: {
-        type: Boolean,
-        value: false,
-      },
+      verifyingAccount_: {type: Boolean},
 
       /**
        * The auth extension host instance.
        */
-      authenticator_: {
-        type: Object,
-        value: null,
-      },
+      authenticator_: {type: Object},
     };
   }
 
-  declare private loading_: boolean;
-  declare private verifyingAccount_: boolean;
-  declare private authenticator_: Authenticator|null;
+  protected accessor loading_: boolean = true;
+  protected accessor verifyingAccount_: boolean = false;
+  private accessor authenticator_: Authenticator|null = null;
 
   /** Whether the login UI is loaded for signing in primary account. */
   private isLoginPrimaryAccount_: boolean = false;
 
   private browserProxy_: InlineLoginBrowserProxy =
       InlineLoginBrowserProxyImpl.getInstance();
-
-  override ready() {
-    super.ready();
-
-    this.authenticator_ = new Authenticator(this.$.signinFrame);
-    this.addAuthenticatorListeners_();
-    this.browserProxy_.initialize();
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -100,6 +87,12 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
         'send-lst-fetch-results',
         (arg: string) => this.sendLstFetchResults_(arg));
     this.addWebUiListener('close-dialog', () => this.closeDialog_());
+  }
+
+  override firstUpdated() {
+    this.authenticator_ = new Authenticator(this.$.signinFrame);
+    this.addAuthenticatorListeners_();
+    this.browserProxy_.initialize();
   }
 
   private addAuthenticatorListeners_() {
@@ -175,14 +168,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.browserProxy_.lstFetchResults(arg);
   }
 
-  /**
-   * @param loading Indicates whether the page is loading.
-   * @param verifyingAccount Indicates whether the user account is being
-   *     verified.
-   */
-  private isSpinnerActive_(loading: boolean, verifyingAccount: boolean):
-      boolean {
-    return loading || verifyingAccount;
+  protected isSpinnerActive_(): boolean {
+    return this.loading_ || this.verifyingAccount_;
   }
 
   /**

@@ -7,9 +7,8 @@ import 'chrome://chrome-signin/inline_login_app.js';
 import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {fakeAuthenticationData, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
@@ -27,11 +26,12 @@ suite('InlineLoginTest', () => {
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();
     inlineLoginComponent.setAuthenticatorForTest(testAuthenticator);
-    flush();
+    return microtasksFinished();
   });
 
-  test('Initialize', () => {
+  test('Initialize', async () => {
     webUIListenerCallback('load-authenticator', fakeAuthenticationData);
+    await microtasksFinished();
     // The 'loading' spinner should be shown and 'initialize' should be called
     // on startup.
     assertTrue(isVisible(inlineLoginComponent.$.spinner));
@@ -61,6 +61,7 @@ suite('InlineLoginTest', () => {
 
     assertTrue(isVisible(inlineLoginComponent.$.spinner));
     testAuthenticator.dispatchEvent(new Event('ready'));
+    await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('authenticatorReady'));
     assertFalse(isVisible(inlineLoginComponent.$.spinner));
 
@@ -73,6 +74,7 @@ suite('InlineLoginTest', () => {
     const fakeCredentials = {email: 'example@gmail.com'};
     testAuthenticator.dispatchEvent(
         new CustomEvent('authCompleted', {detail: fakeCredentials}));
+    await microtasksFinished();
     const completeLoginResult =
         await testBrowserProxy.whenCalled('completeLogin');
     assertTrue(isVisible(inlineLoginComponent.$.spinner));
