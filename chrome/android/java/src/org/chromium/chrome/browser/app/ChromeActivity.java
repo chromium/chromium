@@ -2768,6 +2768,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return false;
         }
 
+        if (id == R.id.back_menu_id) {
+            if (currentTab.canGoBack()) {
+                currentTab.goBack();
+                RecordUserAction.record("MobileMenuBack");
+                return true;
+            }
+            return false;
+        }
+
         if (id == R.id.forward_menu_id) {
             if (currentTab.canGoForward()) {
                 currentTab.goForward();

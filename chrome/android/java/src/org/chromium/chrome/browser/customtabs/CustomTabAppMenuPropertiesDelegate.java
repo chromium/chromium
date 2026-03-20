@@ -261,6 +261,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         // --- Icon Row ---
         if (iconRowVisible) {
             List<PropertyModel> iconModels = new ArrayList<>();
+            if (ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()) {
+                iconModels.add(buildBackwardActionModel(currentTab));
+            }
             iconModels.add(buildForwardActionModel(currentTab));
 
             if (bookmarkItemVisible) {
@@ -271,7 +274,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 iconModels.add(buildDownloadActionModel(currentTab));
             }
 
-            iconModels.add(buildPageInfoModel(currentTab));
+            if (!ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()) {
+                iconModels.add(buildPageInfoModel(currentTab));
+            }
             iconModels.add(buildReloadModel(currentTab));
 
             modelList.add(

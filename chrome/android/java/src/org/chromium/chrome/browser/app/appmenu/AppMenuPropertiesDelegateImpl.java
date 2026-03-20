@@ -698,6 +698,19 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return isTabletSizeScreen() && shouldEnableDownloadPage(currentTab);
     }
 
+    /** Build the PropertyModel for the backward navigation action. */
+    protected PropertyModel buildBackwardActionModel(@Nullable Tab currentTab) {
+        PropertyModel backwardButton =
+                buildModelForIcon(
+                        R.id.back_menu_id,
+                        R.string.accessibility_menu_back,
+                        R.string.menu_back,
+                        R.drawable.btn_back);
+        backwardButton.set(
+                AppMenuItemProperties.ENABLED, currentTab != null && currentTab.canGoBack());
+        return backwardButton;
+    }
+
     /** Build the PropertyModel for the forward navigation action. */
     protected PropertyModel buildForwardActionModel(@Nullable Tab currentTab) {
         PropertyModel forwardButton =

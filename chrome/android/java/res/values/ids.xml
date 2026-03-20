@@ -128,6 +128,7 @@ found in the LICENSE file.
     <!-- App Menu -->
     <item type="id" name="icon_row_menu_id" />
     <item type="id" name="submenu_header_menu_id" />
+    <item type="id" name="back_menu_id" />
     <item type="id" name="forward_menu_id" />
     <item type="id" name="bookmark_this_page_id" />
     <item type="id" name="offline_page_id" />

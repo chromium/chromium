@@ -2951,6 +2951,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TOAST_DISALLOW_PRINT" desc="Toast message shown when a user tries to print a native page that doesn't support printing.">
         This page can't be printed
       </message>
+      <message name="IDS_ACCESSIBILITY_MENU_BACK" desc="Content description for the backward navigation button.">
+        Go back
+      </message>
       <message name="IDS_ACCESSIBILITY_MENU_BOOKMARK" desc="Content description for the bookmark button when the page is not currently bookmarked.">
         Bookmark this page
       </message>
@@ -4307,6 +4310,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_MENU_MANAGE_ALL_WINDOWS" desc="Menu item for bringing up instance switcher UI. [CHAR_LIMIT=27]">
         Manage windows
+      </message>
+      <message name="IDS_MENU_BACK" desc="Tooltip for the button to advance to the previous web page. Verb. [CHAR_LIMIT=27]">
+        Back
       </message>
       <message name="IDS_MENU_FORWARD" desc="Tooltip for the button to advance to the next web page. Verb. [CHAR_LIMIT=27]">
         Forward

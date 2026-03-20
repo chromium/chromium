@@ -58,6 +58,8 @@ public class ToolbarUtils {
     public static final @ToolbarComponentId int[] APP_MENU_ICON_ROW_COMPONENTS =
             new int[] {
                 ToolbarComponentId.RELOAD,
+                // TODO(crbug.com/493306650): Revisit after finishing back button experiment.
+                ToolbarComponentId.BACK,
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.OMNIBOX_BOOKMARK
             };
