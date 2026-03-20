@@ -16,7 +16,8 @@
 
 - (void)start {
   _mediator = [[FullscreenMediator alloc]
-      initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(self.browser)];
+      initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(self.browser)
+              webStateList:self.browser->GetWebStateList()];
 }
 
 - (void)stop {

@@ -16,6 +16,7 @@ class FullscreenCoordinatorTest : public PlatformTest {
   FullscreenCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[FullscreenCoordinator alloc]
         initWithBaseViewController:view_controller_

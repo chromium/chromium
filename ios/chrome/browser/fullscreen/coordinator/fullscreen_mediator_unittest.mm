@@ -18,8 +18,8 @@ class FullscreenMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     mediator_ = [[FullscreenMediator alloc]
-        initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(
-                                 browser_.get())];
+        initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser_.get())
+                webStateList:browser_->GetWebStateList()];
   }
 
   base::test::TaskEnvironment task_environment_;
