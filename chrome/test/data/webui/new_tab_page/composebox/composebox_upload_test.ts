@@ -339,7 +339,10 @@ suite('NewTabPageComposeboxUploadTest', () => {
   });
 
   test('delete file', async () => {
-    loadTimeData.overrideValues({composeboxFileMaxCount: 5});
+    loadTimeData.overrideValues({
+      composeboxFileMaxCount: 5,
+      composeboxSource: 'NewTabPage',
+    });
     testSupport.createComposeboxElement(testProxy);
     let i = 0;
     testProxy.searchboxHandler.setResultMapperFor(
@@ -378,6 +381,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
       detail: {
         uuid: deletedId,
+        fromUserAction: true,
       },
       bubbles: true,
       composed: true,
@@ -392,6 +396,34 @@ suite('NewTabPageComposeboxUploadTest', () => {
         testProxy.searchboxHandler.getArgs('deleteContext')[0];
     assertEquals(idArg, deletedId);
     assertFalse(fromChip);
+    const metricName =
+        'ContextualSearch.UserAction.InputStateDeletion.File.NewTabPage';
+    assertEquals(1, testProxy.metrics.count(metricName, 0));
+    assertEquals(1, testProxy.metrics.count(metricName, true));
+  });
+
+  test('delete tab', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    testSupport.createComposeboxElement(testProxy);
+    const uuid = await testSupport.addTab(testProxy);
+
+    // Act.
+    testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
+      detail: {
+        uuid: uuid,
+        fromUserAction: true,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+
+    // Assert.
+    const metricName =
+        'ContextualSearch.UserAction.InputStateDeletion.Tab.NewTabPage';
+    assertEquals(1, testProxy.metrics.count(metricName, 0));
+    assertEquals(1, testProxy.metrics.count(metricName, true));
   });
 
   test('image upload button clicks file input', () => {

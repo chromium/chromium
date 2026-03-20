@@ -956,11 +956,22 @@ export class ComposeboxElement extends I18nMixinLit
         uuidToDelete === this.automaticActiveTab_?.uuid &&
         (fromUserAction === true);
     if (fromAutoSuggestedChip) {
+      // TODO(crbug.com/492797638): Consider folding this into the
+      // `InputStateDeletion` metric.
       const metricName = 'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
           this.composeboxSource_;
       recordUserAction(metricName);
       recordBoolean(metricName, true);
       this.automaticActiveTab_ = null;
+    }
+
+    if (fromUserAction === true) {
+      const isTab = !!file?.tabId;
+      const type = isTab ? 'Tab' : 'File';
+      const metricName = `ContextualSearch.UserAction.InputStateDeletion.${
+          type}.${this.composeboxSource_}`;
+      recordUserAction(metricName);
+      recordBoolean(metricName, true);
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -1472,6 +1483,10 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (this.activeToolMode_ === tool) {
       this.activeToolMode_ = ComposeboxToolMode.kUnspecified;
+      const metricName = `ContextualSearch.UserAction.InputStateDeletion.Tool.${
+          this.composeboxSource_}`;
+      recordUserAction(metricName);
+      recordBoolean(metricName, true);
     } else {
       this.activeToolMode_ = tool;
     }
