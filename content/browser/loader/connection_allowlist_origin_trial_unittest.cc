@@ -68,8 +68,9 @@ class ConnectionAllowlistOriginTrialTest
   // Only if the document has trial enabled, then it can have a connection
   // allowlist in its policy container.
   bool HasConnectionAllowlist(const RenderFrameHost* rfh) const {
-    return GetPolicyContainerPolicies(rfh)
-        .connection_allowlists.enforced.has_value();
+    const PolicyContainerPolicies& policies = GetPolicyContainerPolicies(rfh);
+    return policies.connection_allowlists.enforced.has_value() ||
+           policies.connection_allowlists.report_only.has_value();
   }
 
  private:
@@ -194,11 +195,11 @@ TEST_F(ConnectionAllowlistOriginTrialTest,
   EXPECT_FALSE(HasConnectionAllowlist(navigation->GetFinalRenderFrameHost()));
 }
 
-// Response contains a valid trial token but the "Connection-Allowlist" header
-// is missing. Only the "Connection-Allowlist-Report-Only" is present. The trial
-// is not enabled.
+// Response contains a valid trial token. The "Connection-Allowlist" header
+// is missing, but there is a "Connection-Allowlist-Report-Only" header. The
+// trial is enabled.
 TEST_F(ConnectionAllowlistOriginTrialTest,
-       ValidTokenWithReportOnlyHeaderTrialDisabled) {
+       ValidTokenWithReportOnlyHeaderTrialEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
 
@@ -213,7 +214,7 @@ TEST_F(ConnectionAllowlistOriginTrialTest,
   navigation->SetResponseHeaders(response_headers);
   navigation->Commit();
 
-  EXPECT_FALSE(HasConnectionAllowlist(navigation->GetFinalRenderFrameHost()));
+  EXPECT_TRUE(HasConnectionAllowlist(navigation->GetFinalRenderFrameHost()));
 }
 
 // When there is a copy of the policy container, the connection allowlist stored

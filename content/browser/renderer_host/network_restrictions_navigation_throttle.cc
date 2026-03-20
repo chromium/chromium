@@ -59,10 +59,8 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
   // container. If there does not exist an enforced allowlist in policies, it
   // means either:
   // 1. the trial was not active for that context.
-  // 2. or the parsed allowlist is null. For example:
-  //   - A "Connection-Allowlist" header with empty field value.
-  //   - A response contains a "Connection-Allowlist-Report-Only" header, but
-  //   not "Connection-Allowlist".
+  // 2. or the parsed enforced allowlist is null. For example, the
+  // "Connection-Allowlist" header has an empty field value.
   //
   // The network restriction id is not applied in either case.
   if (!policy_container_policies.connection_allowlists.enforced &&

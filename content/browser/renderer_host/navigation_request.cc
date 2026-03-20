@@ -1225,13 +1225,15 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
 }
 
 // Returns true if the parsed response headers contains a valid
-// "Connection-Allowlist" header.
-bool ResponseEnforcesConnectionAllowlist(
+// "Connection-Allowlist" or "Connection-Allowlist-Report-Only" header.
+bool ResponseContainsConnectionAllowlist(
     const network::mojom::URLResponseHead* response_head) {
   return response_head && response_head->headers &&
          response_head->parsed_headers &&
-         response_head->parsed_headers->connection_allowlists.enforced
-             .has_value();
+         (response_head->parsed_headers->connection_allowlists.enforced
+              .has_value() ||
+          response_head->parsed_headers->connection_allowlists.report_only
+              .has_value());
 }
 
 // The sampling rate for UKM.
@@ -7468,10 +7470,8 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   // container. If the initiator doesn't have an enforced allowlist in its
   // policies, it means either:
   // 1. the trial was not active for that context.
-  // 2. or the parsed allowlist is null. For example:
-  //   - A "Connection-Allowlist" header with empty field value.
-  //   - A response contains a "Connection-Allowlist-Report-Only" header, but
-  //   not "Connection-Allowlist".
+  // 2. or the parsed enforced allowlist is null. For example, the
+  // "Connection-Allowlist" header has an empty field value.
   if (!policies || !policies->connection_allowlists.enforced) {
     return true;
   }
@@ -10707,7 +10707,7 @@ void NavigationRequest::ComputePoliciesToCommit() {
         true);
   }
 
-  if (ResponseEnforcesConnectionAllowlist(response_head_.get()) &&
+  if (ResponseContainsConnectionAllowlist(response_head_.get()) &&
       base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     // Connection allowlist needs to be enforced once the allowlist response
     // header is received. The origin trial token for this feature is received
