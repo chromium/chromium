@@ -10,14 +10,47 @@ component("isolated_web_app") {
   sources = [
     "isolated_web_app_api_bridge_impl.cc",
     "isolated_web_app_api_bridge_impl.h",
+    "shaped_window_targeter.cc",
+    "shaped_window_targeter.h",
   ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP_IMPL" ]
 
   deps = [
+    "//base",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/aura",
     "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "isolated_web_app_api_bridge_impl_unittest.cc",
+    "shaped_window_targeter_unittest.cc",
+  ]
+
+  deps = [
+    ":isolated_web_app",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//ui/wm",
   ]
 }

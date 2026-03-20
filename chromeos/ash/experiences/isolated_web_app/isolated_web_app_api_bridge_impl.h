@@ -18,6 +18,10 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 // Implements the mojo service for IWA blink extensions in ChromeOS.
@@ -26,8 +30,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
     : public content::DocumentUserData<IsolatedWebAppApiBridgeImpl>,
       public blink::mojom::IsolatedWebAppApiBridge {
  public:
-  // `render_frame_host` and `receiver` must not be null.
+  // If the `render_frame_host` is allowed to access this service, this function
+  // creates an instance for the document and binds `receiver` to it. Otherwise
+  // it does nothing.
+  //
+  // `render_frame_host` must be non-null and `receiver` must be valid.
   static void Create(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
+
+  // Similar to `Create`, but always binds the receiver without without checking
+  // that the `render_frame_host` is allowed. Must only be used in tests.
+  //
+  // `render_frame_host` must be non-null and `receiver` must be valid.
+  static void CreateForTesting(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
 
@@ -48,12 +64,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
   explicit IsolatedWebAppApiBridgeImpl(
       content::RenderFrameHost* render_frame_host);
 
-  // Binds the `receiver`. If the receiver is already bound, it will be
-  // re-bound to the new pipe.
+  // Binds `receiver` to `receiver_`. If the `receiver_` is already bound,
+  // it will be re-bound to the new pipe.
   void Bind(
       mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
 
+  // Returns the top-level `Widget` associated with the `render_frame_host()`,
+  // or `nullptr` if a native view cannot be found.
+  views::Widget* GetWidget();
+
   mojo::Receiver<blink::mojom::IsolatedWebAppApiBridge> receiver_{this};
+
+  // When true the API is enabled for every document. Must only be set in tests.
+  bool force_enable_api_for_testing_ = false;
 };
 
 }  // namespace ash

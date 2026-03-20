@@ -65,10 +65,12 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
   webapps::AppId app_id = InstallIsolatedWebAppAndReturnAppId(profile());
   content::RenderFrameHost* frame = OpenApp(app_id);
 
-  // `setShape` always returns a resolved `Promise<undefined>`.
-  // TODO(crbug.com/480146201): Update once `setShape` is implemented.
-  auto result =
-      content::EvalJs(frame, "window.chromeos.isolatedWebApp.setShape([])");
+  // `setShape` returns a resolved `Promise<undefined>` on success.
+  auto result = content::EvalJs(frame, R"(
+      window.chromeos.isolatedWebApp.setShape([
+        new DOMRect(0, 0, 200, 200)
+      ])
+    )");
   EXPECT_EQ(base::Value(), result);
 }
 

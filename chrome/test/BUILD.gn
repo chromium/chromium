@@ -9480,6 +9480,7 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chrome/services/sharing/nearby/quick_start_decoder:unit_tests",
       "//chrome/services/sharing/public/cpp:unit_tests",
+      "//chromeos/ash/experiences/isolated_web_app:unit_tests",
       "//components/app_restore:unit_tests",
       "//components/sharing_message:unit_tests",
       "//ui/webui/resources/cr_components/app_management:unit_tests",
