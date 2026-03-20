@@ -981,6 +981,8 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
         last_request_type_, ClientSideDetectionType_MAX + 1);
   }
   is_csd_running_ = false;
+  last_request_type_ =
+      ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     if (did_first_visually_non_empty_paint_ ^ on_first_contentful_paint_) {
