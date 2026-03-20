@@ -49,6 +49,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/prefetch_deduplication_utils.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
@@ -490,38 +491,12 @@ bool PrefetchService::IsPrefetchDuplicate(
     const GURL& url,
     const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   TRACE_EVENT("loading", "PrefetchService::IsPrefetchDuplicate");
-  for (const auto& [key, prefetch_container] : owned_prefetches()) {
-    if (IsPrefetchStale(prefetch_container->GetWeakPtr())) {
-      continue;
-    }
-
-    // We will only compare the URLs if the no-vary-search hints match for
-    // determinism. This is because comparing URLs with different no-vary-search
-    // hints will change the outcome of the comparison based on the order the
-    // requests happened in.
-    //
-    // This approach optimizes for determinism over minimizing wasted
-    // or redundant prefetches.
-    bool nvs_hints_match = no_vary_search_hint ==
-                           prefetch_container->request().no_vary_search_hint();
-    if (!nvs_hints_match) {
-      continue;
-    }
-
-    bool urls_equal;
-    if (no_vary_search_hint) {
-      urls_equal = no_vary_search_hint->AreEquivalent(url, key.url());
-    } else {
-      // If there is no no-vary-search hint, just compare the URLs.
-      urls_equal = url == key.url();
-    }
-
-    if (!urls_equal) {
-      continue;
-    }
-    return true;
+  std::vector<const PrefetchDeduplicationEntry*> candidates;
+  candidates.reserve(owned_prefetches_.size());
+  for (const auto& [key, container] : owned_prefetches_) {
+    candidates.push_back(container.get());
   }
-  return false;
+  return content::IsPrefetchDuplicate(candidates, url, no_vary_search_hint);
 }
 
 bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
@@ -574,18 +549,6 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
     case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
       return true;
   }
-}
-
-bool PrefetchService::IsPrefetchStale(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  TRACE_EVENT("loading", "PrefetchService::IsPrefetchStale");
-  if (!prefetch_container) {
-    return true;
-  }
-
-  PrefetchServableState servable_state =
-      prefetch_container->GetMatchResolverAction().ToServableState();
-  return servable_state == PrefetchServableState::kNotServable;
 }
 
 // Parameter class used during eligibility check and `OnGotEligibility*` methods

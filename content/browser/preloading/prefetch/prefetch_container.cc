@@ -1680,6 +1680,13 @@ PrefetchContainer::GetNoVarySearchHint() const {
   return request().no_vary_search_hint();
 }
 
+bool PrefetchContainer::IsPrefetchStale() const {
+  TRACE_EVENT("loading", "PrefetchContainer::IsPrefetchStale");
+  PrefetchServableState servable_state =
+      GetMatchResolverAction().ToServableState();
+  return servable_state == PrefetchServableState::kNotServable;
+}
+
 bool PrefetchContainer::ShouldApplyUserAgentOverride(
     const GURL& request_url) const {
   if (!base::FeatureList::IsEnabled(

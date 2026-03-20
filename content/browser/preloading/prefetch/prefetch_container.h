@@ -20,6 +20,7 @@
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/prefetch_deduplication_utils.h"
 #include "content/public/browser/preloading.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -171,7 +172,11 @@ enum class PrefetchContainerLoadState {
 // - `PrefetchService::OnGotEligibilityForRedirect()` [redirect].
 // A new `PrefetchStreamingURLLoader` is also created if needed in
 // `PrefetchService::MakePrefetchRequest()`.
-class CONTENT_EXPORT PrefetchContainer {
+//
+// Do not pass `PrefetchContainer` to outside //content using
+// `PrefetchDeduplicationEntry`.
+class CONTENT_EXPORT PrefetchContainer
+    : public content::PrefetchDeduplicationEntry {
  public:
   // In non-test, `PrefetchContainer` should be only created and owned by
   // `PrefetchService`.
@@ -185,7 +190,7 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(base::PassKey<PrefetchContainer>,
                     std::unique_ptr<const PrefetchRequest> request);
 
-  ~PrefetchContainer();
+  ~PrefetchContainer() override;
 
   PrefetchContainer(const PrefetchContainer&) = delete;
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
@@ -267,10 +272,26 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void OnWillBeDestroyed();
 
-  const PrefetchKey& key() const;
-
+  // `content::PrefetchDeduplicationEntry` overrides.
   // The initial URL that was requested to be prefetched.
-  const GURL& GetURL() const;
+  // Equivalent to `request().key().url()`.
+  const GURL& GetURL() const override;
+
+  // Equivalent to `request().no_vary_search_hint()`.
+  // Exposed for `PrefetchMatchResolver`.
+  const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint()
+      const override;
+
+  // Returns `true` if the `prefetch_container` is stale. I.e.
+  // the prefetch either is not or never will be servable to a
+  // navigation.
+  //
+  // Note: This is currently used for WebView initiated prefetches so
+  // consideration should be taken if updating the underlying implementation (or
+  // its dependencies).
+  bool IsPrefetchStale() const override;
+
+  const PrefetchKey& key() const;
 
   // The current URL being fetched.
   GURL GetCurrentURL() const;
@@ -304,10 +325,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`, where resource
   // request might not yet created.
   const std::string& GetDevtoolsRequestId() const;
-
-  // Equivalent to `request().no_vary_search_hint()`.
-  // Exposed for `PrefetchMatchResolver`.
-  const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const;
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();

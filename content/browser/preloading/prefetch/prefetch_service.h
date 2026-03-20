@@ -445,15 +445,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   void MaybeSetPrefetchMatchMissedTimeForMetrics(
       PrefetchContainer& prefetch_container) const;
 
-  // Returns `true` if the `prefetch_container` is stale. I.e.
-  // the prefetch either is not or never will be servable to a
-  // navigation.
-  //
-  // Note: This is currently used for WebView initiated prefetches so
-  // consideration should be taken if updating the underlying implementation (or
-  // its dependencies).
-  bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
-
   void DumpPrefetchesForDebug() const;
 
   // Wrappers for `owned_prefetches_`. Use these wrappers and do not directly

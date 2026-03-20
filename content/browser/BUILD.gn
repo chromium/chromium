@@ -1609,6 +1609,7 @@ source_set("browser") {
     "preloading/prefetch/prefetch_cookie_listener.h",
     "preloading/prefetch/prefetch_data_pipe_tee.cc",
     "preloading/prefetch/prefetch_data_pipe_tee.h",
+    "preloading/prefetch/prefetch_deduplication_utils_impl.cc",
     "preloading/prefetch/prefetch_dns_prober.cc",
     "preloading/prefetch/prefetch_dns_prober.h",
     "preloading/prefetch/prefetch_document_manager.cc",
