@@ -38,6 +38,11 @@ export const MAX_NAME_CHAR_COUNT =
     loadTimeData.getInteger('MAX_NAME_CHAR_COUNT');
 export const MAX_PROMPT_CHAR_COUNT =
     loadTimeData.getInteger('MAX_PROMPT_CHAR_COUNT');
+
+// The amount of pixels the user can be from the very bottom of the skills
+// dialog before the gradient is removed.
+export const BOTTOM_SCROLL_OFFSET_PX = 5;
+
 const REFINE_SKILL_TIMEOUT_MS = 5000;
 
 let windowProxyInstance: WindowProxy|null = null;
@@ -226,6 +231,10 @@ export class SkillsDialogAppElement extends CrLitElement {
     }
   }
 
+  override firstUpdated() {
+    this.attachTextareaResizeObserver_();
+  }
+
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties as PropertyValues<this>);
 
@@ -268,10 +277,17 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   private checkTextareaOverflow_() {
+    // During a loading state, the textarea is removed from the DOM.
+    if (this.isRefineLoading_) {
+      return;
+    }
     const textarea = this.instructionsTextarea_;
     const hasScrollbar = textarea.scrollHeight > textarea.clientHeight;
+    // Add a small offset so the user doesn't have to scroll to the absolute
+    // bottom
     const isScrolledToBottom =
-        textarea.scrollTop + textarea.clientHeight >= textarea.scrollHeight;
+        textarea.scrollTop + textarea.clientHeight + BOTTOM_SCROLL_OFFSET_PX >=
+        textarea.scrollHeight;
     textarea.classList.toggle(
         'has-overflow', hasScrollbar && !isScrolledToBottom);
   }
