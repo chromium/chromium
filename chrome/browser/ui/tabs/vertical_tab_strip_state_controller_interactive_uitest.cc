@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
           ClickMouse(ui_controls::RIGHT),
           WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
           SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId)),
-      WaitForShow(kVerticalTabStripRegionElementId));
+      WaitForShow(kVerticalTabStripCollapseButtonElementId));
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
 }

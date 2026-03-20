@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class MockTabDragContext : public TabDragContext {
@@ -61,6 +62,11 @@ class MockTabDragContext : public TabDragContext {
   MOCK_METHOD(TabDragPositioningDelegate*,
               GetPositioningDelegate,
               (),
+              (override));
+  MOCK_METHOD(bool,
+              NotifyCustomEvent,
+              (ui::CustomElementEventType event_type,
+               TabSlotView* tab_slot_view),
               (override));
 };
 

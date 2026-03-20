@@ -35,7 +35,7 @@ class VerticalTabsInteractiveTestMixin
           VerticalTabsBrowserTestMixin<T>::EnterVerticalTabsMode();
         }),
         VerticalTabsBrowserTestMixin<T>::WaitForShow(
-            kVerticalTabStripRegionElementId));
+            kVerticalTabStripCollapseButtonElementId));
     VerticalTabsBrowserTestMixin<T>::AddDescriptionPrefix(
         result, "EnterVerticalTabsMode()");
     return result;
@@ -47,7 +47,7 @@ class VerticalTabsInteractiveTestMixin
           VerticalTabsBrowserTestMixin<T>::ExitVerticalTabsMode();
         }),
         VerticalTabsBrowserTestMixin<T>::WaitForHide(
-            kVerticalTabStripRegionElementId));
+            kVerticalTabStripCollapseButtonElementId));
     VerticalTabsBrowserTestMixin<T>::AddDescriptionPrefix(
         result, "ExitVerticalTabsMode()");
     return result;

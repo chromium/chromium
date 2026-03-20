@@ -484,6 +484,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     drag_controller_set_callback_ = std::move(callback);
   }
 
+  bool NotifyCustomEvent(ui::CustomElementEventType event_type,
+                         TabSlotView* tab_slot_view) override {
+    return views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        event_type, tab_slot_view);
+  }
+
   // TabDragPositioningDelegate
   TabDragContext* GetContext() override { return this; }
 

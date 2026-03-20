@@ -31,6 +31,10 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class CustomElementEventType;
+}
+
 // A limited subset of TabDragPositioningDelegate for use by
 // non-TabDragController clients.
 class TabDragPositioningDelegateBase {
@@ -164,6 +168,9 @@ class TabDragContext : public views::View {
   virtual void StoppedDragging() = 0;
 
   virtual TabDragPositioningDelegate* GetPositioningDelegate() = 0;
+
+  virtual bool NotifyCustomEvent(ui::CustomElementEventType event_type,
+                                 TabSlotView* tab_slot_view) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_

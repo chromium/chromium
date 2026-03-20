@@ -203,6 +203,8 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
       !editor_bubble_tracker_.is_open()) {
     tab_slot_controller_->ToggleTabGroupCollapsedState(
         group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
+    views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+        kTabGroupHeaderElementId, this);
     NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
     return true;
   }
@@ -273,6 +275,8 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
     } else if (toggle_collapse) {
       tab_slot_controller_->ToggleTabGroupCollapsedState(
           group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+          kTabGroupHeaderElementId, this);
     }
   }
 
@@ -293,6 +297,8 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureTap:
       tab_slot_controller_->ToggleTabGroupCollapsedState(
           group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+          kTabGroupHeaderElementId, this);
       break;
     case ui::EventType::kGestureLongTap: {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
@@ -502,13 +508,6 @@ void TabGroupHeader::SetCollapsedState() {
       tab_slot_controller_->IsGroupCollapsed(group().value());
   if (is_collapsed_ != collapsed_state) {
     is_collapsed_ = collapsed_state;
-
-    const ui::ElementIdentifier element_id =
-        GetProperty(views::kElementIdentifierKey);
-    if (element_id) {
-      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
-                                                                     this);
-    }
   }
 }
 
