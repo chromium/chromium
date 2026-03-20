@@ -19,18 +19,19 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     WebUIMochaBrowserTest::SetUpDefaultCommandLine(command_line);
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
-    auto base_url = embedded_test_server()->base_url();
-    // Reusing the GlicGuestURL switch to communicate the test server root URL
-    // to the test via loadTimeData.
-    command_line->AppendSwitchASCII(switches::kGlicGuestURL, base_url.spec());
+    auto webview_url = embedded_test_server()->GetURL("/red.html");
+    // Reusing the GlicGuestURL switch to communicate a guest URL to the test
+    // via loadTimeData.
+    command_line->AppendSwitchASCII(switches::kGlicGuestURL,
+                                    webview_url.spec());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kGlic};
 };
 
-IN_PROC_BROWSER_TEST_F(SlimWebviewBrowserTest, All) {
+IN_PROC_BROWSER_TEST_F(SlimWebviewBrowserTest, LoadEvents) {
   RunTest("guest_view_shared/slim_webview_test.js", "mocha.run();");
 }
