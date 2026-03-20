@@ -175,6 +175,14 @@ IsolationInfo IsolationInfo::CreateTransient(
                        /*frame_ancestor_relation=*/std::nullopt);
 }
 
+IsolationInfo IsolationInfo::CreateEmptyWithPartition(
+    NetworkIsolationPartition network_isolation_partition) {
+  return IsolationInfo(RequestType::kOther, /*top_frame_origin=*/std::nullopt,
+                       /*frame_origin=*/std::nullopt, SiteForCookies(),
+                       /*nonce=*/std::nullopt, network_isolation_partition,
+                       /*frame_ancestor_relation=*/std::nullopt);
+}
+
 std::optional<IsolationInfo> IsolationInfo::Deserialize(
     const std::string& serialized) {
   proto::IsolationInfo proto;
@@ -500,7 +508,8 @@ IsolationInfo::Data::Data(
       site_for_cookies_(std::move(site_for_cookies)),
       network_isolation_key_(
           !this->top_frame_origin()
-              ? NetworkIsolationKey()
+              ? NetworkIsolationKey::CreateEmptyWithPartition(
+                    network_isolation_partition)
               : NetworkIsolationKey(SchemefulSite(*this->top_frame_origin()),
                                     SchemefulSite(*this->frame_origin()),
                                     std::move(nonce),

@@ -190,6 +190,10 @@ class NET_EXPORT IsolationInfo {
   static IsolationInfo CreateTransient(
       std::optional<base::UnguessableToken> nonce);
 
+  // Creates an empty IsolationInfo with the provided NetworkIsolationPartition.
+  static IsolationInfo CreateEmptyWithPartition(
+      NetworkIsolationPartition network_isolation_partition);
+
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
   static std::optional<IsolationInfo> Deserialize(

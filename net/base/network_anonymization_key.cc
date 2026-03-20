@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -32,10 +33,34 @@ bool g_partition_by_default = false;
 // `g_partition_by_default` cannot be changed.
 constinit std::atomic<bool> g_partition_by_default_locked = false;
 
+std::optional<NetworkIsolationPartition> ValueToNetworkIsolationPartition(
+    const base::Value& value) {
+  if (!value.is_int()) {
+    return std::nullopt;
+  }
+
+  int partition_int = value.GetInt();
+  if (partition_int < 0 ||
+      partition_int >
+          base::strict_cast<int32_t>(NetworkIsolationPartition::kMaxValue)) {
+    return std::nullopt;
+  }
+
+  return static_cast<NetworkIsolationPartition>(partition_int);
+}
+
 }  // namespace
 
 NetworkAnonymizationKey::NetworkAnonymizationKey()
     : data_(Data::GetEmptyData()) {}
+
+// static
+NetworkAnonymizationKey NetworkAnonymizationKey::CreateEmptyWithPartition(
+    NetworkIsolationPartition network_isolation_partition) {
+  return NetworkAnonymizationKey(
+      /*top_frame_site=*/std::nullopt, /*is_cross_site=*/false,
+      /*nonce=*/std::nullopt, network_isolation_partition);
+}
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const NetworkAnonymizationKey& network_anonymization_key) = default;
@@ -89,28 +114,30 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
+  std::string partition =
+      network_isolation_partition() == NetworkIsolationPartition::kGeneral
+          ? ""
+          : base::StrCat({" (",
+                          NetworkIsolationPartitionToDebugString(
+                              network_isolation_partition()),
+                          ")"});
+
   if (IsEmpty()) {
-    return "null";
+    return base::StrCat({"null", partition});
   }
 
-  std::string str = GetSiteDebugString(GetTopFrameSite());
-  str += IsCrossSite() ? " cross_site" : " same_site";
+  std::string top_frame_site = GetSiteDebugString(GetTopFrameSite());
+  std::string_view is_cross_site = IsCrossSite() ? " cross_site" : " same_site";
 
   // Currently, if the NAK has a nonce it will be marked transient. For debug
   // purposes we will print the value but if called via
   // `NetworkAnonymizationKey::ToString` we will have already returned "".
-  if (GetNonce().has_value()) {
-    str += " (with nonce " + GetNonce()->ToString() + ")";
-  }
+  std::string nonce =
+      GetNonce().has_value()
+          ? base::StrCat({" (with nonce ", GetNonce()->ToString(), ")"})
+          : "";
 
-  if (network_isolation_partition() != NetworkIsolationPartition::kGeneral) {
-    str +=
-        " (" +
-        NetworkIsolationPartitionToDebugString(network_isolation_partition()) +
-        ")";
-  }
-
-  return str;
+  return base::StrCat({top_frame_site, is_cross_site, nonce, partition});
 }
 
 bool NetworkAnonymizationKey::IsEmpty() const {
@@ -127,17 +154,25 @@ bool NetworkAnonymizationKey::IsTransient() const {
 
 bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
   if (IsEmpty()) {
-    *out_value = base::Value(base::Value::Type::LIST);
+    // Empty kGeneral partition NAKs just use an empty list, while empty NAKs
+    // for other partitions are represented as single-element lists.
+    base::ListValue list;
+    if (network_isolation_partition() != NetworkIsolationPartition::kGeneral) {
+      list.Append(base::strict_cast<int32_t>(network_isolation_partition()));
+    }
+    *out_value = base::Value(std::move(list));
     return true;
   }
 
-  if (IsTransient())
+  if (IsTransient()) {
     return false;
+  }
 
   std::optional<std::string> top_frame_value =
       SerializeSiteWithNonce(*GetTopFrameSite());
-  if (!top_frame_value)
+  if (!top_frame_value) {
     return false;
+  }
   base::ListValue list;
   list.Append(std::move(top_frame_value).value());
 
@@ -162,13 +197,25 @@ bool NetworkAnonymizationKey::FromValue(
     return true;
   }
 
+  if (list.size() == 1) {
+    std::optional<NetworkIsolationPartition> network_isolation_partition =
+        ValueToNetworkIsolationPartition(list[0]);
+    if (!network_isolation_partition) {
+      return false;
+    }
+    *network_anonymization_key =
+        NetworkAnonymizationKey::CreateEmptyWithPartition(
+            *network_isolation_partition);
+    return true;
+  }
+
   // Check the format.
   // While migrating to using NetworkIsolationPartition, continue supporting
   // values of length 2 for a few months.
   // TODO(abigailkatcoff): Stop support for lists of length 2 after a few
   // months.
-  if (list.size() < 2 || list.size() > 3 || !list[0].is_string() ||
-      !list[1].is_bool()) {
+  CHECK_GE(list.size(), 2u);
+  if (list.size() > 3 || !list[0].is_string() || !list[1].is_bool()) {
     return false;
   }
 
@@ -185,14 +232,12 @@ bool NetworkAnonymizationKey::FromValue(
   NetworkIsolationPartition network_isolation_partition =
       NetworkIsolationPartition::kGeneral;
   if (list.size() == 3) {
-    if (!list[2].is_int() ||
-        list[2].GetInt() >
-            base::strict_cast<int32_t>(NetworkIsolationPartition::kMaxValue) ||
-        list[2].GetInt() < 0) {
+    std::optional<NetworkIsolationPartition> parsed_partition =
+        ValueToNetworkIsolationPartition(list[2]);
+    if (!parsed_partition) {
       return false;
     }
-    network_isolation_partition =
-        static_cast<NetworkIsolationPartition>(list[2].GetInt());
+    network_isolation_partition = *parsed_partition;
   }
 
   *network_anonymization_key = NetworkAnonymizationKey(

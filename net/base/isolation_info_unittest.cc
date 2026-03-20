@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <optional>
+#include <set>
 #include <string_view>
 
 #include "base/strings/strcat.h"
@@ -560,15 +561,6 @@ TEST_F(IsolationInfoTest, Serialization) {
   const IsolationInfo kPositiveTestCases[] = {
       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
                             kOrigin2, SiteForCookies::FromOrigin(kOrigin1)),
-      // Null party context
-      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
-                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1)),
-      // Empty party context
-      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
-                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1)),
-      // Multiple party context entries.
-      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
-                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1)),
       // Without SiteForCookies
       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
                             kOrigin2, SiteForCookies()),
@@ -587,34 +579,84 @@ TEST_F(IsolationInfoTest, Serialization) {
           SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
           NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
           IsolationInfo::FrameAncestorRelation::kSameOrigin),
+      // Second non-general NetworkIsolationPartition
+      IsolationInfo::Create(
+          IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
+          SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
+          NetworkIsolationPartition::kFedCmUncredentialedRequests,
+          IsolationInfo::FrameAncestorRelation::kSameOrigin),
       // Non-none IsolationInfo::FrameAncestorRelation
       IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin1,
                             kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
                             /*nonce=*/std::nullopt,
                             NetworkIsolationPartition::kGeneral,
                             IsolationInfo::FrameAncestorRelation::kSameOrigin),
+      // Second Non-none IsolationInfo::FrameAncestorRelation
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin1,
+                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
+                            /*nonce=*/std::nullopt,
+                            NetworkIsolationPartition::kGeneral,
+                            IsolationInfo::FrameAncestorRelation::kCrossSite),
   };
+
+  std::set<std::string> serialized_values;
   for (const auto& info : kPositiveTestCases) {
-    auto rt = IsolationInfo::Deserialize(info.Serialize());
+    std::string serialized = info.Serialize();
+    // Ensure this serialization is unique.
+    EXPECT_TRUE(serialized_values.insert(serialized).second);
+    auto rt = IsolationInfo::Deserialize(serialized);
     ASSERT_TRUE(rt);
     EXPECT_TRUE(rt->IsEqualForTesting(info));
   }
 
-  const IsolationInfo kNegativeTestCases[] = {
+  const IsolationInfo kTransientTestCases[] = {
+      // Empty with general NetworkIsolationPartition
+      IsolationInfo(),
+      // Empty with non-general NetworkIsolationPartition
+      IsolationInfo::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+      // Using CreateTransient (no nonce)
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       // With nonce (i.e transient).
       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
                             kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
                             kNonce1),
-      // With an opaque frame origin. The opaque frame site will cause it to be
-      // considered transient and fail to serialize.
+      // With an opaque frame origin.
       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
                             url::Origin(),
                             SiteForCookies::FromOrigin(kOrigin1)),
   };
-  for (const auto& info : kNegativeTestCases) {
+  for (const auto& info : kTransientTestCases) {
     EXPECT_TRUE(info.Serialize().empty());
   }
+}
+
+TEST_F(IsolationInfoTest, CreateEmptyWithPartition) {
+  IsolationInfo isolation_info = IsolationInfo::CreateEmptyWithPartition(
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+
+  EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
+  EXPECT_FALSE(isolation_info.top_frame_origin().has_value());
+  EXPECT_FALSE(isolation_info.frame_origin().has_value());
+  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            isolation_info.GetNetworkIsolationPartition());
+  EXPECT_FALSE(isolation_info.nonce().has_value());
+  EXPECT_FALSE(isolation_info.frame_ancestor_relation().has_value());
+
+  // Check the NetworkIsolationKey.
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsEmpty());
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+  EXPECT_EQ(
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      isolation_info.network_isolation_key().GetNetworkIsolationPartition());
+
+  // Check the NetworkAnonymizationKey.
+  EXPECT_TRUE(isolation_info.network_anonymization_key().IsEmpty());
+  EXPECT_TRUE(isolation_info.network_anonymization_key().IsTransient());
+  EXPECT_EQ(
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      isolation_info.network_anonymization_key().network_isolation_partition());
 }
 
 TEST_F(IsolationInfoTest,

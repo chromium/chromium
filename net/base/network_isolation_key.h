@@ -41,9 +41,11 @@ namespace net {
 //
 // An empty NetworkIsolationKey (one where the `top_frame_site` is empty) can be
 // used for transient network requests where the responses should not be written
-// to disk. Note that although a given NetworkIsolationKey may be empty, the
-// corresponding NetworkAnonymizationKey (also empty) may still result in
-// metadata such as HttpServerProperties being written to disk.
+// to disk. Note that empty NetworkAnonymizationKeys can still have different
+// NetworkIsolationPartition values. Also note that although a given
+// NetworkIsolationKey may be empty, the corresponding NetworkAnonymizationKey
+// (also empty) may still result in metadata such as HttpServerProperties being
+// written to disk.
 class NET_EXPORT NetworkIsolationKey {
  public:
   // Full constructor.  When a request is initiated by the top frame, it must
@@ -65,6 +67,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Construct an empty key.
   NetworkIsolationKey();
+
+  // Create an empty NetworkIsolationKey with a partition.
+  static NetworkIsolationKey CreateEmptyWithPartition(
+      NetworkIsolationPartition network_isolation_partition);
 
   NetworkIsolationKey(const NetworkIsolationKey& network_isolation_key);
   NetworkIsolationKey(NetworkIsolationKey&& network_isolation_key);
@@ -163,11 +169,11 @@ class NET_EXPORT NetworkIsolationKey {
    public:
     static scoped_refptr<Data> GetEmptyData();
 
-    // Conctruct an empty data.
+    // Construct an empty data.
     explicit Data(base::PassKey<Data>);
 
-    Data(SchemefulSite&& top_frame_site,
-         SchemefulSite&& frame_site,
+    Data(std::optional<SchemefulSite>&& top_frame_site,
+         std::optional<SchemefulSite>&& frame_site,
          std::optional<base::UnguessableToken>&& nonce,
          NetworkIsolationPartition network_isolation_partition);
 

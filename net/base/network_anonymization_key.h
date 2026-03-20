@@ -66,11 +66,16 @@ class NetworkIsolationKey;
 // An empty NetworkAnonymizationKey (one where the `top_frame_site` and `nonce`
 // are both empty) should be used when network state partitioning is disabled
 // (see `IsPartitioningEnabled()`), or for non-web requests where storage
-// partitioning should not apply.
+// partitioning should not apply. Note that empty NetworkAnonymizationKeys can
+// still have different NetworkIsolationPartition values.
 class NET_EXPORT NetworkAnonymizationKey {
  public:
   // Construct an empty key.
   NetworkAnonymizationKey();
+
+  // Create an empty NetworkAnonymizationKey with a partition.
+  static NetworkAnonymizationKey CreateEmptyWithPartition(
+      NetworkIsolationPartition network_isolation_partition);
 
   NetworkAnonymizationKey(
       const NetworkAnonymizationKey& network_anonymization_key);

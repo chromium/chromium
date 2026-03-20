@@ -20,4 +20,9 @@ std::string NetworkIsolationPartitionToDebugString(
   }
 }
 
+bool NetworkIsolationPartitionAlwaysAllowEmptyPartition(
+    NetworkIsolationPartition network_isolation_partition) {
+  return false;
+}
+
 }  // namespace net

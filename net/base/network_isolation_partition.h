@@ -35,6 +35,12 @@ enum class NetworkIsolationPartition : int32_t {
 std::string NetworkIsolationPartitionToDebugString(
     NetworkIsolationPartition network_isolation_partition);
 
+// Returns true if requests in this partition are allowed to have an empty
+// IsolationInfo, even when
+// `URLRequestContext::require_network_anonymization_key()` is true.
+bool NetworkIsolationPartitionAlwaysAllowEmptyPartition(
+    NetworkIsolationPartition network_isolation_partition);
+
 }  // namespace net
 
 #endif  // NET_BASE_NETWORK_ISOLATION_PARTITION_H_
