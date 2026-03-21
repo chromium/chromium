@@ -561,6 +561,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1368603372088757436">Linux wordt niet ondersteund op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account</translation>
 <translation id="1370384480654163477">Bekijk en bewerk bestanden van de laatste keer dat je deze site bezocht:</translation>
+<translation id="1371253136879578532">Gebruik de sneltoets om een deel van het scherm te selecteren in Gemini.</translation>
 <translation id="1372259917802609049">Er is een fout opgetreden bij het verwijderen van de beperking</translation>
 <translation id="1372841398847029212">Synchroniseren met je account</translation>
 <translation id="1373176046406139583">Je apparaatzichtbaarheid bepaalt wie content met je kan delen terwijl je scherm ontgrendeld is. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -5378,6 +5379,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 bestand om te gebruiken bij je vraag}other{Upload maximaal # bestanden om te gebruiken bij je vraag}}</translation>
 <translation id="4608500690299898628">&amp;Zoeken...</translation>
 <translation id="4609164937357979319">Accountselectie</translation>
+<translation id="4610022258080608778">Sneltoets voor selectie bewerken</translation>
 <translation id="4610493438923139095">Niet vertrouwd</translation>
 <translation id="4610637590575890427">Wilde je naar <ph name="SITE" /> gaan?</translation>
 <translation id="4611114513649582138">Gegevensverbinding beschikbaar</translation>
@@ -7346,6 +7348,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5976780232488408272">Hulp bij het schrijven</translation>
 <translation id="5977976211062815271">Op dit apparaat</translation>
 <translation id="5978277834170881274">Standaard spellingcontrole gebruiken</translation>
+<translation id="597889390120790610">Meer informatie over de sneltoets voor selectie</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Je hebt 1 potentieel schadelijke extensie weer aangezet}other{Je hebt {NUM_EXTENSIONS} potentieel schadelijke extensies weer aangezet}}</translation>
 <translation id="5979353814339191480">Deze optie is van toepassing op Chromebooks met een dongle voor een data-abonnement of een mobiel netwerk, of bij tethering naar een draagbare hotspot</translation>
@@ -9456,6 +9459,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7431991332293347422">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken en meer te personaliseren</translation>
 <translation id="7432200167665670017">Je beheerder heeft <ph name="EXTENSION_NAME" /> geblokkeerd (app-ID <ph name="EXTENSION_ID" />)</translation>
 <translation id="7433103263856598557">Archiveren</translation>
+<translation id="7433333862363162673">Sneltoets voor selectie wissen</translation>
 <translation id="7433708794692032816">Plaats een smartcard om je <ph name="DEVICE_TYPE" /> te blijven gebruiken</translation>
 <translation id="7433957986129316853">Behouden</translation>
 <translation id="7434100547946193426">Andere apps</translation>

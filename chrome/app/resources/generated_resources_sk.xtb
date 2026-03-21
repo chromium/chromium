@@ -563,6 +563,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> nepodporuje Linux. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google</translation>
 <translation id="1370384480654163477">Zobrazte si a upravte súbory z poslednej návštevy tohto webu:</translation>
+<translation id="1371253136879578532">Ak chcete vybrať časť obrazovky v Gemini, použite klávesovú skratku.</translation>
 <translation id="1372259917802609049">Pri odstraňovaní obmedzenia sa vyskytla chyba</translation>
 <translation id="1372841398847029212">Synchronizovať do účtu</translation>
 <translation id="1373176046406139583">Viditeľnosťou zariadenia ovládate, kto s vami môže zdieľať obsah, keď máte odomknutú obrazovku. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -5383,6 +5384,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Nahrajte 1 súbor, ktorý chcete použiť s otázkou}few{Nahrajte maximálne # súbory, ktoré chcete použiť s otázkou}many{Upload up to # files to use with your question}other{Nahrajte maximálne # súborov, ktoré chcete použiť s otázkou}}</translation>
 <translation id="4608500690299898628">&amp;Nájsť...</translation>
 <translation id="4609164937357979319">Výber účtu</translation>
+<translation id="4610022258080608778">Upraviť skratku výberu</translation>
 <translation id="4610493438923139095">Nedôveryhodný</translation>
 <translation id="4610637590575890427">Chceli ste prejsť na adresu <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Je k dispozícii dátové pripojenie</translation>
@@ -7354,6 +7356,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5976780232488408272">Získať pomoc s písaním</translation>
 <translation id="5977976211062815271">V tomto zariadení</translation>
 <translation id="5978277834170881274">&amp;Použiť základnú kontrolu pravopisu</translation>
+<translation id="597889390120790610">Ďalšie informácie o skratke výberu</translation>
 <translation id="5979084224081478209">Skontrolovať heslá</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Znova ste zapli 1 potenciálne škodlivé rozšírenie}few{Znova ste zapli {NUM_EXTENSIONS} potenciálne škodlivé rozšírenia}many{You turned {NUM_EXTENSIONS} potentially harmful extensions back on}other{Znova ste zapli {NUM_EXTENSIONS} potenciálnych škodlivých rozšírení}}</translation>
 <translation id="5979353814339191480">Táto možnosť sa týka iba Chromebookov s doplnkovými dátovými tarifami alebo mobilnými sieťami, prípadne ak zdieľajú dátové pripojenie do prenosného hotspotu</translation>
@@ -9468,6 +9471,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7431991332293347422">Ovládajte, ako sa história prehliadania používa na prispôsobenie Vyhľadávania a ďalšieho obsahu</translation>
 <translation id="7432200167665670017">Váš správca zablokoval <ph name="EXTENSION_NAME" /> – identifikátor aplikácie <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Archivovať</translation>
+<translation id="7433333862363162673">Vymazať skratku výberu</translation>
 <translation id="7433708794692032816">Ak chcete naďalej používať zariadenie <ph name="DEVICE_TYPE" />, vložte čipovú kartu</translation>
 <translation id="7433957986129316853">Ponechať</translation>
 <translation id="7434100547946193426">Ďalšie aplikácie</translation>

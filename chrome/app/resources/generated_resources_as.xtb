@@ -562,6 +562,7 @@
 <translation id="1368603372088757436">আপোনাৰ <ph name="DEVICE_TYPE" />ত Linux সমৰ্থন নকৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
 <translation id="1370384480654163477">আপুনি অন্তিমবাৰ এই ছাইটটোলৈ অহাৰ সময়ৰ পৰা ফাইলসমূহ চাওক আৰু সম্পাদনা কৰক:</translation>
+<translation id="1371253136879578532">Geminiত স্ক্ৰীনৰ অংশ বাছনি কৰিবলৈ, কীব’ৰ্ডৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক।</translation>
 <translation id="1372259917802609049">সীমাবদ্ধতা মচোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="1372841398847029212">আপোনাৰ একাউণ্টত ছিংক কৰক</translation>
 <translation id="1373176046406139583">আপোনাৰ ডিভাইচৰ দৃশ্যমানতাই আপোনাৰ ডিভাইচটোৰ স্ক্ৰীন আনলক থকা অৱস্থাত আপোনাৰ সৈতে কোনে শ্বেয়াৰ কৰিব পাৰে সেয়া নিয়ন্ত্ৰণ কৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -5391,6 +5392,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{আপোনাৰ প্ৰশ্নৰ সৈতে ব্যৱহাৰ কৰিবলৈ ১ টা ফাইল আপল’ড কৰক}one{আপোনাৰ প্ৰশ্নৰ সৈতে ব্যৱহাৰ কৰিবলৈ # টা পৰ্যন্ত ফাইল আপল’ড কৰক}other{আপোনাৰ প্ৰশ্নৰ সৈতে ব্যৱহাৰ কৰিবলৈ # টা পৰ্যন্ত ফাইল আপল’ড কৰক}}</translation>
 <translation id="4608500690299898628">&amp;বিচাৰক…</translation>
 <translation id="4609164937357979319">একাউণ্টৰ বাছনি</translation>
+<translation id="4610022258080608778">বাছনি সম্পাদনা কৰাৰ শ্বৰ্টকাট</translation>
 <translation id="4610493438923139095">অবিশ্বাসী</translation>
 <translation id="4610637590575890427">আপুনি <ph name="SITE" />লৈ যাব বিচাৰিছিল নেকি?</translation>
 <translation id="4611114513649582138">ডেটা সংযোগ নাই</translation>
@@ -7364,6 +7366,7 @@
 <translation id="5976780232488408272">লিখাৰ ক্ষেত্ৰত সহায় পাওক</translation>
 <translation id="5977976211062815271">এই ডিভাইচটোত</translation>
 <translation id="5978277834170881274">&amp;সাধাৰণ বানান পৰীক্ষক ব্যৱহাৰ কৰক</translation>
+<translation id="597889390120790610">বাছনিৰ শ্বৰ্টকাটৰ বিষয়ে অধিক জানক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{আপুনি ১ টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}one{আপুনি {NUM_EXTENSIONS} টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}other{আপুনি {NUM_EXTENSIONS} টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}}</translation>
 <translation id="5979353814339191480">এই বিকল্পটো Chromebookত এখন ডেটাৰ আঁচনি অথবা ম'বাইল নেটৱৰ্কৰ ডংগলৰ জৰিয়তে অথবা এটা প'ৰ্টেবল হ'টস্প'টত টেডাৰিঙৰ সময়ত প্ৰযোজ্য হয়</translation>
@@ -9476,6 +9479,7 @@
 <translation id="7431991332293347422">আপোনাক Search আৰু অন্য সেৱাসমূহত ব্যক্তিগতকৰণ কৰা অভিজ্ঞতা প্ৰদান কৰিবলৈ কেনেকৈ আপোনাৰ ব্ৰাউজিংৰ ইতিহাস ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="7432200167665670017">আপোনাৰ প্ৰশাসকে "<ph name="EXTENSION_NAME" />" অৱৰোধ কৰিছে - এপৰ আইডি <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">আৰ্কাইভ কৰক</translation>
+<translation id="7433333862363162673">বাছনিৰ শ্বৰ্টকাট মচক</translation>
 <translation id="7433708794692032816">আপোনাৰ <ph name="DEVICE_TYPE" /> ব্যৱহাৰ কৰি থাকিবলৈ স্মাৰ্ট কাৰ্ড ভৰাওক</translation>
 <translation id="7433957986129316853">এয়া ৰাখক</translation>
 <translation id="7434100547946193426">অন্য এপ্</translation>

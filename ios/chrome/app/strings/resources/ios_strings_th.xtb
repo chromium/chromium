@@ -550,7 +550,7 @@
 <translation id="2987670534697681860">โปรดยืนยันว่าเป็นคุณเพื่อเข้าถึงรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="2989523299700148168">เข้าชมล่าสุด</translation>
 <translation id="2989805286512600854">เปิดในแท็บใหม่</translation>
-<translation id="2996291259634659425">สร้างรหัสผ่าน</translation>
+<translation id="2996291259634659425">สร้างพาสเฟรส</translation>
 <translation id="3010025794097054078">ปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ</translation>
 <translation id="3012310354105716927">ยังไม่ได้บันทึกข้อมูลบางอย่าง</translation>
 <translation id="3013922155552460252">ดูและจัดการกิจกรรม Gemini เช่น แชท ความคิดเห็น และพรอมต์</translation>
@@ -1344,7 +1344,7 @@
 <translation id="5843013299019689749">สีพื้นหลังสีดำ</translation>
 <translation id="5844284118433003733">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="5854790677617711513">เกิน 30 วัน</translation>
-<translation id="5857770089550859117">ต้องระบุรหัสผ่านเพื่อเริ่มการซิงค์</translation>
+<translation id="5857770089550859117">ต้องระบุพาสเฟรสเพื่อเริ่มการซิงค์</translation>
 <translation id="5859715514067755465">ไปข้างหน้า</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5868644772996939262">ป้อนรหัสผ่านและพาสคีย์อัตโนมัติ</translation>
@@ -1592,7 +1592,7 @@
 <translation id="6668619169535738264">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="6670729408462528018">แกลเลอรี</translation>
 <translation id="6671294218820966278">ทำเครื่องหมายว่าอ่านแล้ว</translation>
-<translation id="6672697278890207089">ป้อนรหัสผ่านของคุณ</translation>
+<translation id="6672697278890207089">ป้อนพาสเฟรสของคุณ</translation>
 <translation id="6674917187596384849">คุณสลับระหว่างบัญชีต่างๆ ได้อย่างง่ายดาย</translation>
 <translation id="6676349090816247042">ตัวเลือกการลงชื่อเข้าใช้</translation>
 <translation id="667999046851023355">เอกสาร</translation>
@@ -1643,7 +1643,7 @@
 <translation id="6867369562105931222">รหัสผ่าน</translation>
 <translation id="6867400383614725881">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="686831807558000905">ไม่ต้องลงชื่อเข้าใช้</translation>
-<translation id="686899695320434745">ที่อยู่ไม่ได้เข้ารหัสด้วยรหัสผ่าน คุณจึงนำไปใช้ในบริการอื่นๆ ของ Google ได้</translation>
+<translation id="686899695320434745">ที่อยู่ไม่ได้เข้ารหัสด้วยพาสเฟรส คุณจึงนำไปใช้ในบริการอื่นๆ ของ Google ได้</translation>
 <translation id="687135068089457384">แสดงการตั้งค่า</translation>
 <translation id="6871397658902960384">เริ่มท่องเว็บ</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{บันทึกรหัสผ่านในบัญชี}other{บันทึกรหัสผ่านในบัญชี}}</translation>
@@ -1809,7 +1809,7 @@
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="750886945254958667">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{เพิ่มแท็บได้สูงสุด 1 แท็บ}other{เพิ่มแท็บได้สูงสุด {COUNT} แท็บ}}</translation>
-<translation id="7512909159512473473">ป้อนรหัสผ่าน…</translation>
+<translation id="7512909159512473473">ป้อนพาสเฟรส…</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514530647142300459">ใช้รหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
 <translation id="7522587739845660862">ข้อมูลเกี่ยวกับตำแหน่งของคุณ</translation>
@@ -1842,7 +1842,7 @@
 <translation id="7612849887607288481">เปิดเมนูการสร้างต้นแบบ AI</translation>
 <translation id="7620522820075868385">ยกเลิก</translation>
 <translation id="762078666799342162">คุณดูไฟล์ที่ดาวน์โหลดก่อนหน้านี้ได้ใน<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
-<translation id="7638584964844754484">รหัสผ่านไม่ถูกต้อง</translation>
+<translation id="7638584964844754484">พาสเฟรสไม่ถูกต้อง</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="7640669552036055091">แท็บจาก Android</translation>
 <translation id="7642277834834046856">ดูราคาที่ต่ำลงได้ในแท็บ</translation>
@@ -1881,7 +1881,7 @@
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7763878244904387570">การดำเนินการนี้จะลบข้อมูลที่เลือกซึ่งบันทึกไว้ในอุปกรณ์นี้</translation>
 <translation id="7765158879357617694">ย้าย</translation>
-<translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
+<translation id="7772032839648071052">ยืนยันพาสเฟรส</translation>
 <translation id="7772948288262733182">ยินดีต้อนรับกลับมาอีกครั้ง</translation>
 <translation id="777637629667389858">เมื่อลงชื่อเข้าใช้ ฟีเจอร์จะปกป้องคุณในบริการต่างๆ ของ Google</translation>
 <translation id="7776604279034196531">เข้าถึงโหมดการอ่านจากแถบที่อยู่เมื่อพร้อมใช้งาน</translation>
@@ -2279,7 +2279,7 @@
 <translation id="9098541895599151034">ลบรหัสผ่าน <ph name="NUMBER_OF_ACCOUNTS" /> บัญชีใช่ไหม</translation>
 <translation id="9099233023029360602">ถามว่าจะใช้บัญชีใดทุกครั้ง</translation>
 <translation id="9099821309562615674">โปรดตรวจสอบว่าข้อความที่คุณกำลังแปลนั้นมองเห็นได้ชัดเจนและอยู่ในเฟรม</translation>
-<translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
+<translation id="9100610230175265781">ต้องระบุพาสเฟรส</translation>
 <translation id="91023216973987714">วิธีการชำระเงิน</translation>
 <translation id="9106655997975673326">จาก "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
@@ -2316,7 +2316,7 @@
 <translation id="932305336591073205">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="932327136139879170">บ้าน</translation>
 <translation id="939472100615258482">เว็บไซต์ปัจจุบัน</translation>
-<translation id="939598580284253335">ป้อนรหัสผ่าน</translation>
+<translation id="939598580284253335">ป้อนพาสเฟรส</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="942624946817804130">ส่งออก</translation>

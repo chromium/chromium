@@ -561,6 +561,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1368603372088757436">Linux stöds inte på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.</translation>
 <translation id="1370384480654163477">Visa och redigera filer från den senaste gången du besökte den här webbplatsen:</translation>
+<translation id="1371253136879578532">Använd kortkommandot för att välja en del av skärmen i Gemini.</translation>
 <translation id="1372259917802609049">Det gick inte att radera begränsningen</translation>
 <translation id="1372841398847029212">Synkronisera till ditt konto</translation>
 <translation id="1373176046406139583">Synlighetsinställningarna på enheten styr vem som kan dela filer med dig när skärmen är upplåst. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -5394,6 +5395,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Ladda upp en fil som du vill använda med din fråga}other{Ladda upp upp till # filer som du vill använda med din fråga}}</translation>
 <translation id="4608500690299898628">&amp;Sök...</translation>
 <translation id="4609164937357979319">Kontoval</translation>
+<translation id="4610022258080608778">Redigera kortkommando för val</translation>
 <translation id="4610493438923139095">Inte betrodd</translation>
 <translation id="4610637590575890427">Ville du besöka <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Dataanslutningar är tillgängliga</translation>
@@ -7367,6 +7369,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5976780232488408272">Få hjälp med att skriva</translation>
 <translation id="5977976211062815271">På den här enheten</translation>
 <translation id="5978277834170881274">Använd grundläggande stavningskontroll</translation>
+<translation id="597889390120790610">Läs mer om kortkommando för val</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Du har återaktiverat 1 tillägg som kan vara skadligt}other{Du har återaktiverat {NUM_EXTENSIONS} tillägg som kan vara skadliga}}</translation>
 <translation id="5979353814339191480">Det här alternativet gäller Chromebook-enheter med ett dataabonnemang eller en dongel för mobilnätverk och vid internetdelning till en mobil surfzon</translation>
@@ -9478,6 +9481,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7431991332293347422">Styr hur webbhistoriken får användas för att anpassa Sök med mera</translation>
 <translation id="7432200167665670017">Administratören blockerar <ph name="EXTENSION_NAME" /> – app-id <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arkivera</translation>
+<translation id="7433333862363162673">Rensa kortkommando för val</translation>
 <translation id="7433708794692032816">Sätt i smartkort för att fortsätta använda din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Behåll den</translation>
 <translation id="7434100547946193426">Andra appar</translation>

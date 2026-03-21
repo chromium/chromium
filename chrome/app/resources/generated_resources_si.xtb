@@ -562,6 +562,7 @@
 <translation id="1368603372088757436">Linux ඔබගේ <ph name="DEVICE_TYPE" /> හි සහාය නොදක්වයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න</translation>
 <translation id="1370384480654163477">ඔබ අවසන් වරට මෙම අඩවියට පිවිසි ගොනු බලන්න සහ සංස්කරණ කරන්න:</translation>
+<translation id="1371253136879578532">Gemini හි තිරයේ කොටසක් තේරීමට, යතුරුපුවරු කෙටිමඟ භාවිතා කරන්න.</translation>
 <translation id="1372259917802609049">සංරෝධනය මකා දැමීමේ දෝෂයක් විය</translation>
 <translation id="1372841398847029212">ඔබේ ගිණුමට සමමුහුර්ත කරන්න</translation>
 <translation id="1373176046406139583">ඔබගේ තිරය අගුලු හැර ඇති අතරතුර ඔබට බෙදා ගත හැක්කේ කාටද යන්න ඔබගේ උපාංග දෘශ්‍යතාව පාලනය කරයි <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -5381,6 +5382,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට 1 ගොනුවක් උඩුගත කරන්න}one{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}other{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}}</translation>
 <translation id="4608500690299898628">සොයන්න... (&amp;F)</translation>
 <translation id="4609164937357979319">ගිණුම තේරීම</translation>
+<translation id="4610022258080608778">තේරීම් කෙටිමඟ සංස්කරණය කරන්න</translation>
 <translation id="4610493438923139095">අවිශ්වාසයි</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> වෙත යෑමට ඔබ අදහස් කලාද?</translation>
 <translation id="4611114513649582138">දත්ත සබැඳුම ලබා ගත හැකිය</translation>
@@ -7354,6 +7356,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5976780232488408272">ලිවීමේ උපකාර ලබා ගන්න</translation>
 <translation id="5977976211062815271">මෙම උපාංගය මත</translation>
 <translation id="5978277834170881274">&amp;මූලික අක්‍ෂර වින්‍යාස පරීක්‍ෂාව භාවිත කරන්න</translation>
+<translation id="597889390120790610">තේරීම් කෙටිමඟ ගැන තව දැන ගන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{ඔබ 1 හානිකර විය හැකි දිගුවක් ආපසු සක්‍රීය කර ඇත}one{ඔබ හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් ආපසු සක්‍රීය කර ඇත}other{ඔබ හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් ආපසු සක්‍රීය කර ඇත}}</translation>
 <translation id="5979353814339191480">මෙම විකල්පය දත්ත සැලැස්මක් හෝ ජංගම ජාල ඩොංගලයක් සහිත Chromebooks සඳහා හෝ අතේ ගෙන යා හැකි හොට්ස්පොට් එකකට සම්බන්ධ වන විට අදාළ වේ</translation>
@@ -9464,6 +9467,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7431991332293347422">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීම, සහ තවත් දේ පුද්ගලායන කිරීමට භාවිත කරන ආකාරය පාලන කිරීම</translation>
 <translation id="7432200167665670017">ඔබගේ පරිපාලක "<ph name="EXTENSION_NAME" />" - යෙදුම් ID <ph name="EXTENSION_ID" /> අවහිර කර ඇත</translation>
 <translation id="7433103263856598557">සංරක්ෂණය</translation>
+<translation id="7433333862363162673">තේරීම් කෙටිමඟ හිස් කරන්න</translation>
 <translation id="7433708794692032816">ඔබගේ <ph name="DEVICE_TYPE" /> භාවිත කිරීම දිගටම සිදු කිරීමට ස්මාර්ට් කාඩ්පත ඇතුළු කරන්න</translation>
 <translation id="7433957986129316853">එය තබා ගන්න</translation>
 <translation id="7434100547946193426">වෙනත් යෙදුම්</translation>

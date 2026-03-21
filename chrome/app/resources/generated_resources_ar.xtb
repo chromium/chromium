@@ -565,6 +565,7 @@
 <translation id="1368603372088757436">‏لا يتوافق نظام التشغيل Linux مع <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">‏يمكنك حفظ كلمات المرور في حسابك على Google لاستخدامها على أجهزتك الأخرى.</translation>
 <translation id="1370384480654163477">عرض وتعديل الملفات التي تم منحها أذونات خلال آخر مرة زرت فيها هذا الموقع الإلكتروني:</translation>
+<translation id="1371253136879578532">‏يمكنك استخدام اختصار لوحة المفاتيح لاختيار جزء من الشاشة في Gemini.</translation>
 <translation id="1372259917802609049">حدث خطأ أثناء حذف الشرط</translation>
 <translation id="1372841398847029212">المزامنة مع حسابك</translation>
 <translation id="1373176046406139583">تسمح لك عناصر التحكّم في ظهور جهازك بتحديد من يمكنه مشاركة الملفات معك عندما تكون شاشة جهازك غير مقفلة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -5384,6 +5385,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{يمكنك تحميل ملف واحد لاستخدامه مع سؤالك}zero{يمكنك تحميل ما يصل إلى # ملف لاستخدامه مع سؤالك}two{يمكنك تحميل ما يصل إلى ملفَين لاستخدامهما مع سؤالك}few{يمكنك تحميل ما يصل إلى # ملفات لاستخدامها مع سؤالك}many{يمكنك تحميل ما يصل إلى # ملفًا لاستخدامها مع سؤالك}other{يمكنك تحميل ما يصل إلى # ملف لاستخدامه مع سؤالك}}</translation>
 <translation id="4608500690299898628">&amp;بحث...</translation>
 <translation id="4609164937357979319">اختيار الحساب</translation>
+<translation id="4610022258080608778">تعديل اختصار الاختيار</translation>
 <translation id="4610493438923139095">غير موثوق بها</translation>
 <translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611114513649582138">اتصال البيانات متاح</translation>
@@ -7357,6 +7359,7 @@
 <translation id="5976780232488408272">الحصول على مساعدة في الكتابة</translation>
 <translation id="5977976211062815271">على هذا الجهاز</translation>
 <translation id="5978277834170881274">واستخدام التدقيق الإملائي الأساسي</translation>
+<translation id="597889390120790610">مزيد من المعلومات حول اختصار الاختيار</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{أعَدت تشغيل إضافة واحدة يُحتمل أن تكون ضارة.}zero{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}two{أعَدت تشغيل إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين.}few{أعَدت تشغيل {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة.}many{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}other{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}}</translation>
 <translation id="5979353814339191480">‏ينطبق هذا الخيار على أجهزة Chromebook التي تستخدم خطة بيانات أو جهاز دونغل يوفّر إمكانية الوصول إلى شبكة الجوّال أو عند التوصيل بنقطة اتصال محمولة.</translation>
@@ -9476,6 +9479,7 @@
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7432200167665670017">حظَر المشرف الإضافة "<ph name="EXTENSION_NAME" />"، رقم تعريف التطبيق <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">أرشفة</translation>
+<translation id="7433333862363162673">محو اختصار الاختيار</translation>
 <translation id="7433708794692032816">أدخِل بطاقة ذكية للاستمرار في استخدام الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">تجاهل</translation>
 <translation id="7434100547946193426">تطبيقات أخرى</translation>

@@ -561,6 +561,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> eszköze nem támogatja a Linux rendszert. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="1370249617397887619">Ha a többi eszközén is használni szeretné őket, mentse őket a Google-fiókjába</translation>
 <translation id="1370384480654163477">Megtekintheti és szerkesztheti a webhely legutóbbi felkeresésének idejéből származó fájlokat:</translation>
+<translation id="1371253136879578532">Billentyűparancs használata a képernyő egy részének kiválasztásához a Geminiben.</translation>
 <translation id="1372259917802609049">Hiba történt a korlátozás törlésekor</translation>
 <translation id="1372841398847029212">Szinkronizálás saját fiókkal</translation>
 <translation id="1373176046406139583">Eszközének láthatósága befolyásolja azt, hogy ki oszthat meg Önnel fájlokat, amíg a képernyője fel van oldva. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
@@ -5391,6 +5392,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Legfeljebb 1 fájlt tölthet fel a kérdéséhez}other{Legfeljebb # fájlt tölthet fel a kérdéséhez}}</translation>
 <translation id="4608500690299898628">&amp;Keresés...</translation>
 <translation id="4609164937357979319">Fiókválasztó</translation>
+<translation id="4610022258080608778">Kiválasztási billentyűparancs szerkesztése</translation>
 <translation id="4610493438923139095">Nem megbízható</translation>
 <translation id="4610637590575890427">Valójában ide szeretett volna menni: <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Rendelkezésre áll adatkapcsolat</translation>
@@ -7365,6 +7367,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5976780232488408272">Segítség az íráshoz</translation>
 <translation id="5977976211062815271">Ezen az eszközön</translation>
 <translation id="5978277834170881274">&amp;Alap helyesírás-ellenőrzés használata</translation>
+<translation id="597889390120790610">További információ a kiválasztás billentyűparancsról</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 potenciálisan kártékony bővítményt visszakapcsolt}other{{NUM_EXTENSIONS} potenciálisan kártékony bővítményt visszakapcsolt}}</translation>
 <translation id="5979353814339191480">Ez a lehetőség olyan Chromebookokra érvényes, amelyekhez adatcsomag vagy mobilhálózati hardverkulcs tartozik, illetve amelyek hordozható hotspothoz kapcsolódnak internetmegosztás céljából</translation>
@@ -9475,6 +9478,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7431991332293347422">Beállíthatja, hogy a rendszer hogyan szabja személyre a Keresést és egyebeket a böngészési előzmények alapján</translation>
 <translation id="7432200167665670017">A(z) „<ph name="EXTENSION_NAME" />” bővítményt letiltotta a rendszergazda – alkalmazásazonosító: <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Archiválás</translation>
+<translation id="7433333862363162673">Kiválasztási billentyűparancs törlése</translation>
 <translation id="7433708794692032816">Helyezze be az intelligens kártyát, hogy tovább használhassa <ph name="DEVICE_TYPE" /> eszközét</translation>
 <translation id="7433957986129316853">Megtartom</translation>
 <translation id="7434100547946193426">Egyéb alkalmazások</translation>

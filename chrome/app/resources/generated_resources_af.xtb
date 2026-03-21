@@ -561,6 +561,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1368603372088757436">Linux word nie op jou <ph name="DEVICE_TYPE" /> gesteun nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Stoor hulle in jou Google-rekening, om hulle op jou ander toestelle te gebruik</translation>
 <translation id="1370384480654163477">Bekyk en wysig lêers van die laaste keer dat jy hierdie webwerf besoek het:</translation>
+<translation id="1371253136879578532">Gebruik kortpadsleutel om ’n deel van die skerm in Gemini te kies.</translation>
 <translation id="1372259917802609049">Daar was ’n fout met die uitvee van die beperking</translation>
 <translation id="1372841398847029212">Sinkroniseer met jou rekening</translation>
 <translation id="1373176046406139583">Jou toestelsigbaarheid beheer wie met jou kan deel terwyl jou skerm ontsluit is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -5394,6 +5395,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Laai 1 lêer op om saam met jou vraag te gebruik}other{Laai tot # lêers op om saam met jou vraag te gebruik}}</translation>
 <translation id="4608500690299898628">Vind …</translation>
 <translation id="4609164937357979319">Rekeningkeuse</translation>
+<translation id="4610022258080608778">Wysig keusekortpad</translation>
 <translation id="4610493438923139095">Gewantrou</translation>
 <translation id="4610637590575890427">Het jy bedoel om na <ph name="SITE" /> te gaan?</translation>
 <translation id="4611114513649582138">Dataverbinding beskikbaar</translation>
@@ -7368,6 +7370,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5976780232488408272">Kry skryfhulp</translation>
 <translation id="5977976211062815271">Op hierdie toestel</translation>
 <translation id="5978277834170881274">&amp;Gebruik basiese speltoets</translation>
+<translation id="597889390120790610">Kry meer inligting oor die keusekortpad</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Jy het 1 potensieel skadelike uitbreiding weer aangeskakel}other{Jy het {NUM_EXTENSIONS} potensieel skadelike uitbreidings weer aangeskakel}}</translation>
 <translation id="5979353814339191480">Hierdie opsie is van toepassing op Chromebooks met 'n dataplan of mobielenetwerkdongel, of wat aan 'n draagbare warmkol verbind is</translation>
@@ -9478,6 +9481,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7432200167665670017">Jou admin het "<ph name="EXTENSION_NAME" />" – app-ID <ph name="EXTENSION_ID" /> geblokkeer</translation>
 <translation id="7433103263856598557">Argief</translation>
+<translation id="7433333862363162673">Vee keusekortpad uit</translation>
 <translation id="7433708794692032816">Sit slimkaart in om aan te hou om jou <ph name="DEVICE_TYPE" /> te gebruik</translation>
 <translation id="7433957986129316853">Hou dit</translation>
 <translation id="7434100547946193426">Ander apps</translation>

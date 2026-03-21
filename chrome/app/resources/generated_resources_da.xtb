@@ -562,6 +562,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1368603372088757436">Linux understøttes ikke på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto</translation>
 <translation id="1370384480654163477">Se og redigere filer fra sidste gang, du besøgte dette website:</translation>
+<translation id="1371253136879578532">Brug tastaturgenvejen for at vælge en del af skærmen i Gemini.</translation>
 <translation id="1372259917802609049">Der opstod en fejl under forsøget på at slette begrænsningen</translation>
 <translation id="1372841398847029212">Synkroniser med din konto</translation>
 <translation id="1373176046406139583">Din enheds synlighed styrer, hvem der kan dele indhold med dig, når din skærm er låst op. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -5396,6 +5397,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 fil, der skal bruges sammen med dit spørgsmål}one{Upload op til # fil, der skal bruges sammen med dit spørgsmål}other{Upload op til # filer, der skal bruges sammen med dit spørgsmål}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4609164937357979319">Valg af konto</translation>
+<translation id="4610022258080608778">Genvej til redigering af valg</translation>
 <translation id="4610493438923139095">Upålidelig</translation>
 <translation id="4610637590575890427">Ville du gå til <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Tilgængelig dataforbindelse</translation>
@@ -7369,6 +7371,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5976780232488408272">Få hjælp til at skrive</translation>
 <translation id="5977976211062815271">På denne enhed</translation>
 <translation id="5978277834170881274">&amp;Brug grundlæggende stavekontrol</translation>
+<translation id="597889390120790610">Få flere oplysninger om genvejen til valg</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Du har genaktiveret 1 potentielt skadelig udvidelse}one{Du har genaktiveret {NUM_EXTENSIONS} potentielt skadelig udvidelse}other{Du har genaktiveret {NUM_EXTENSIONS} potentielt skadelige udvidelser}}</translation>
 <translation id="5979353814339191480">Denne valgmulighed gælder for Chromebooks med dataabonnement eller en dongle til mobilnetværk eller for netdeling med et mobilt hotspot</translation>
@@ -9482,6 +9485,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7432200167665670017">Din administrator har blokeret "<ph name="EXTENSION_NAME" />" – app-id <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arkivér</translation>
+<translation id="7433333862363162673">Genvej til at rydde valg</translation>
 <translation id="7433708794692032816">Indsæt chipkortet for at blive ved med at bruge din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Behold den</translation>
 <translation id="7434100547946193426">Andre apps</translation>

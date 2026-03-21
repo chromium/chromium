@@ -561,6 +561,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1368603372088757436">Linux støttes ikke på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">For å bruke dem på andre enheter, lagre dem i Google-kontoen din.</translation>
 <translation id="1370384480654163477">Se og rediger filer fra forrige gang du besøkte dette nettstedet:</translation>
+<translation id="1371253136879578532">Bruk en hurtigtast for å velge en del av skjermen i Gemini.</translation>
 <translation id="1372259917802609049">Det oppsto en feil under sletting av begrensningen</translation>
 <translation id="1372841398847029212">Synkroniser til kontoen din</translation>
 <translation id="1373176046406139583">Synligheten til enheten din kontrollerer hvem som kan dele med deg mens skjermen er låst opp. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -5386,6 +5387,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Last opp én fil som skal brukes med spørsmålet ditt}other{Last opp opptil # filer som skal brukes med spørsmålet ditt}}</translation>
 <translation id="4608500690299898628">&amp;Finn</translation>
 <translation id="4609164937357979319">Kontovalg</translation>
+<translation id="4610022258080608778">Hurtigtast for redigering av utvalg</translation>
 <translation id="4610493438923139095">Ikke klarert</translation>
 <translation id="4610637590575890427">Vil du gå til <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">En datatilkobling er tilgjengelig</translation>
@@ -7356,6 +7358,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5976780232488408272">Få skrivehjelp</translation>
 <translation id="5977976211062815271">På denne enheten</translation>
 <translation id="5978277834170881274">&amp;Bruk grunnleggende stavekontroll</translation>
+<translation id="597889390120790610">Finn ut mer om snarveien for valg</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Du har slått på igjen én potensielt skadelig utvidelse}other{Du har slått på igjen {NUM_EXTENSIONS} potensielt skadelige utvidelser}}</translation>
 <translation id="5979353814339191480">Dette alternativet gjelder for Chromebook-enheter med dataabonnement- eller mobilnettverksdongler, eller ved bruk av delt internett fra en flyttbar wifi-sone</translation>
@@ -9467,6 +9470,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7432200167665670017">Administratoren din har blokkert «<ph name="EXTENSION_NAME" />» – app-ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arkiver</translation>
+<translation id="7433333862363162673">Snarvei for å fjerne merking</translation>
 <translation id="7433708794692032816">Sett inn smartkortet for å fortsette å bruke <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Nei</translation>
 <translation id="7434100547946193426">Andre apper</translation>

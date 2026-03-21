@@ -561,6 +561,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1368603372088757436">Linux no s'admet al teu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google</translation>
 <translation id="1370384480654163477">Consulta i edita els fitxers de la darrera vegada que vas visitar aquest lloc web:</translation>
+<translation id="1371253136879578532">Per seleccionar una part de la pantalla a Gemini, utilitza les tecles de drecera.</translation>
 <translation id="1372259917802609049">S'ha produït un error en suprimir la restricció</translation>
 <translation id="1372841398847029212">Sincronitza amb el meu compte</translation>
 <translation id="1373176046406139583">La visibilitat del dispositiu determina qui pot compartir contingut amb tu quan tens la pantalla desbloquejada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -5378,6 +5379,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Penja 1 fitxer per utilitzar-lo amb la pregunta}other{Penja fins a # fitxers per utilitzar-los amb la pregunta}}</translation>
 <translation id="4608500690299898628">&amp;Cerca...</translation>
 <translation id="4609164937357979319">Selecció del compte</translation>
+<translation id="4610022258080608778">Drecera per editar la selecció</translation>
 <translation id="4610493438923139095">No és de confiança</translation>
 <translation id="4610637590575890427">Volíeu anar a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Connexió de dades disponible</translation>
@@ -7348,6 +7350,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5976780232488408272">Obtén ajuda per escriure</translation>
 <translation id="5977976211062815271">En aquest dispositiu</translation>
 <translation id="5978277834170881274">&amp;Fes servir el corrector ortogràfic bàsic</translation>
+<translation id="597889390120790610">Més informació sobre la drecera de selecció</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Has tornat a activar 1 extensió potencialment perjudicial}other{Has tornat a activar {NUM_EXTENSIONS} extensions potencialment perjudicials}}</translation>
 <translation id="5979353814339191480">Aquesta opció s'aplica als dispositius Chromebook amb un pla de dades o un adaptador de xarxa mòbil, o quan es comparteix la xarxa amb un punt d'accés Wi-Fi</translation>
@@ -9459,6 +9462,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7432200167665670017">L'administrador ha bloquejat <ph name="EXTENSION_NAME" />. Identificador de l'aplicació: <ph name="EXTENSION_ID" />.</translation>
 <translation id="7433103263856598557">Arxiva</translation>
+<translation id="7433333862363162673">Drecera per esborrar la selecció</translation>
 <translation id="7433708794692032816">Insereix la targeta intel·ligent per continuar utilitzant el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Mantén els canvis</translation>
 <translation id="7434100547946193426">Altres aplicacions</translation>

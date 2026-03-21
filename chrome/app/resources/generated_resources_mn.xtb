@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">Linux-г таны <ph name="DEVICE_TYPE" /> дээр дэмждэггүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд Google Бүртгэлдээ хадгална уу</translation>
 <translation id="1370384480654163477">Таны энэ сайтад хамгийн сүүлд зочилсон үеийн файлуудыг харах болон засах:</translation>
+<translation id="1371253136879578532">Gemini-д дэлгэцийн хэсгийг сонгохын тулд товчлуурын шууд холбоосыг ашиглана уу.</translation>
 <translation id="1372259917802609049">Хязгаарлалтыг устгахад алдаа гарлаа</translation>
 <translation id="1372841398847029212">Бүртгэлдээ синк хийх</translation>
 <translation id="1373176046406139583">Таны төхөөрөмжийн харагдац нь дэлгэцийн тань түгжээ тайлагдсан үед тантай хуваалцах боломжтой хүмүүсийг хянадаг. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -5389,6 +5390,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 файл байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэлх файл байршуулна уу}}</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
 <translation id="4609164937357979319">Бүртгэлийн сонголт</translation>
+<translation id="4610022258080608778">Сонголтын товчлолыг засах</translation>
 <translation id="4610493438923139095">Итгэмжлэгдээгүй</translation>
 <translation id="4610637590575890427">Та энэ <ph name="SITE" /> руу орох гэж байсан уу?</translation>
 <translation id="4611114513649582138">Дата холболт боломжтой байна</translation>
@@ -7362,6 +7364,7 @@
 <translation id="5976780232488408272">Бичих тусламж авах</translation>
 <translation id="5977976211062815271">Энэ төхөөрөмж дээр</translation>
 <translation id="5978277834170881274">&amp;Зөв бичгийн алдаа шалгах энгийн онцлогийг ашиглах</translation>
+<translation id="597889390120790610">Сонголтын товчлолын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Та аюултай байж болзошгүй 1 өргөтгөлийг буцааж идэвхжүүлсэн}other{Та аюултай байж болзошгүй {NUM_EXTENSIONS} өргөтгөлийг буцааж идэвхжүүлсэн}}</translation>
 <translation id="5979353814339191480">Энэ сонголт нь дата багц эсвэл хөдөлгөөнт холбооны сүлжээний донглтой Chromebooks-д эсвэл зөөврийн сүлжээний цэгийг модем болгох үед хэрэгждэг</translation>
@@ -9472,6 +9475,7 @@
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7432200167665670017">Танай админ "<ph name="EXTENSION_NAME" />"-г блоклосон - Аппын ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Архивлах</translation>
+<translation id="7433333862363162673">Сонголтын товчлолыг арилгах</translation>
 <translation id="7433708794692032816">Өөрийн <ph name="DEVICE_TYPE" />-г үргэлжлүүлэн ашиглахын тулд ухаалаг карт оруулна уу</translation>
 <translation id="7433957986129316853">Үүнийг хадгалах</translation>
 <translation id="7434100547946193426">Бусад апп</translation>

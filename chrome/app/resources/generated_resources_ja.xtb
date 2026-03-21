@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">Linux はお使いの <ph name="DEVICE_TYPE" /> ではサポートされていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">他のデバイスで使用するには、Google アカウントに保存してください</translation>
 <translation id="1370384480654163477">前回このサイトにアクセスしたときのファイルを表示、編集する。</translation>
+<translation id="1371253136879578532">Gemini でキーボード ショートカットを使用して画面の一部を選択できます。</translation>
 <translation id="1372259917802609049">制約の削除中にエラーが発生しました</translation>
 <translation id="1372841398847029212">アカウントに同期</translation>
 <translation id="1373176046406139583">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5370,6 +5371,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{質問で使用するファイルを 1 個アップロードできます}other{質問で使用するファイルを # 個までアップロードできます}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4609164937357979319">アカウントを選択</translation>
+<translation id="4610022258080608778">選択ショートカットを編集</translation>
 <translation id="4610493438923139095">信頼不可</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>
 <translation id="4611114513649582138">データ接続が可能です</translation>
@@ -7338,6 +7340,7 @@
 <translation id="5976780232488408272">文章作成のサポート</translation>
 <translation id="5977976211062815271">保存先: このデバイス</translation>
 <translation id="5978277834170881274">基本スペルチェックを使用(&amp;U)</translation>
+<translation id="597889390120790610">選択ショートカットの詳細</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 個の有害な可能性がある拡張機能を再度有効にしました}other{{NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
 <translation id="5979353814339191480">このオプションは、データプランやモバイル ネットワーク ドングル、またはモバイル アクセス ポイントのテザリングを使用する Chromebook に適用されます。</translation>
@@ -9447,6 +9450,7 @@
 <translation id="7431991332293347422">検索などのパーソナライズに閲覧履歴がどのように使われるかを管理します</translation>
 <translation id="7432200167665670017">「<ph name="EXTENSION_NAME" />」（アプリ ID: <ph name="EXTENSION_ID" />）は管理者によってブロックされています</translation>
 <translation id="7433103263856598557">アーカイブ</translation>
+<translation id="7433333862363162673">選択ショートカットを解除</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> を引き続き使用するにはスマートカードを挿入してください</translation>
 <translation id="7433957986129316853">そのままにする</translation>
 <translation id="7434100547946193426">その他のアプリ</translation>

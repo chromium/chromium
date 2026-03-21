@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">「<ph name="DEVICE_TYPE" />」不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">如要在其他裝置上使用，請儲存到 Google 帳戶</translation>
 <translation id="1370384480654163477">查看和編輯上次造訪這個網站時的檔案：</translation>
+<translation id="1371253136879578532">如要在 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="1372259917802609049">刪除限制時發生錯誤</translation>
 <translation id="1372841398847029212">同步到你的帳戶</translation>
 <translation id="1373176046406139583">裝置分享設定可以控制當螢幕處於解鎖狀態時，哪些人能夠與你分享內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5374,6 +5375,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提問時最多只能上傳 1 個檔案}other{提問時最多只能上傳 # 個檔案}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)...</translation>
 <translation id="4609164937357979319">選取帳戶</translation>
+<translation id="4610022258080608778">編輯選取範圍的快速鍵</translation>
 <translation id="4610493438923139095">不信任</translation>
 <translation id="4610637590575890427">你的意思是想瀏覽 <ph name="SITE" /> 嗎?</translation>
 <translation id="4611114513649582138">可使用數據連線</translation>
@@ -7342,6 +7344,7 @@
 <translation id="5976780232488408272">取得寫作輔助</translation>
 <translation id="5977976211062815271">在這部裝置上</translation>
 <translation id="5978277834170881274">使用基本拼字檢查功能(&amp;U)</translation>
+<translation id="597889390120790610">進一步瞭解選取範圍捷徑</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{你已重新開啟 1 個可能有害的擴充功能}other{你已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="5979353814339191480">這個選項適用於符合下列任一條件的 Chromebook：使用數據方案、行動網路連接器，或透過網路共用功能使用可攜式無線基地台</translation>
@@ -9451,6 +9454,7 @@
 <translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7432200167665670017">你的管理員已封鎖「<ph name="EXTENSION_NAME" />」(應用程式 ID：<ph name="EXTENSION_ID" />)</translation>
 <translation id="7433103263856598557">封存</translation>
+<translation id="7433333862363162673">清除選取範圍快速鍵</translation>
 <translation id="7433708794692032816">插入智慧型卡片才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">保留</translation>
 <translation id="7434100547946193426">其他應用程式</translation>

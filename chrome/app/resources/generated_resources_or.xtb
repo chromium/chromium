@@ -560,6 +560,7 @@
 <translation id="1368603372088757436">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Linux ସମର୍ଥିତ ନୁହେଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="1370384480654163477">ଗତ ଥର ଆପଣ ଏହି ସାଇଟ ଭିଜିଟ କରିବା ସମୟରୁ ଫାଇଲଗୁଡ଼ିକୁ ଦେଖି ଏଡିଟ କରନ୍ତୁ:</translation>
+<translation id="1371253136879578532">Geminiରେ ସ୍କ୍ରିନର ଅଂଶ ଚୟନ କରିବାକୁ କୀବୋର୍ଡ ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1372259917802609049">ବାଧା ଡିଲିଟ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="1372841398847029212">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="1373176046406139583">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍ ଅନଲକ୍ ଥିବା ସମୟରେ ଆପଣଙ୍କ ସହ କିଏ ସେୟାର୍ କରିପାରିବେ ତାହା ଆପଣଙ୍କ ଡିଭାଇସ୍ ଭିଜିବିଲିଟୀ ନିୟନ୍ତ୍ରଣ କରିଥାଏ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
@@ -5378,6 +5379,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # ପର୍ଯ୍ୟନ୍ତ ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="4608500690299898628">&amp;ଖୋଜନ୍ତୁ...</translation>
 <translation id="4609164937357979319">ଆକାଉଣ୍ଟ ଚୟନ</translation>
+<translation id="4610022258080608778">ଚୟନ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="4610493438923139095">ଅବିଶ୍ୱସ୍ତ</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> କୁ ଯିବା ଲାଗି ଆପଣ ବୁଝନ୍ତି କି?</translation>
 <translation id="4611114513649582138">ଡାଟା ସଂଯୋଗ ଉପଲବ୍ଧ ଅଛି</translation>
@@ -7347,6 +7349,7 @@
 <translation id="5976780232488408272">ଲେଖିବାରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="5977976211062815271">ଏହି ଡିଭାଇସ୍‌ରେ</translation>
 <translation id="5978277834170881274">&amp;ମୌଳିକ ବନାନ ଯାଞ୍ଚ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="597889390120790610">ଚୟନ ସର୍ଟକଟ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5979084224081478209">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{ଆପଣ ପୁଣି 1ଟି ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନ୍ ଚାଲୁ କରିଛନ୍ତି}other{ଆପଣ ପୁଣି {NUM_EXTENSIONS}ଟି ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନ୍ ଚାଲୁ କରିଛନ୍ତି}}</translation>
 <translation id="5979353814339191480">ଡାଟା ପ୍ଲାନ୍ ବା ମୋବାଇଲ ନେଟୱାର୍କ ଡଙ୍ଗଲ୍ ମାଧ୍ୟମରେ କିମ୍ବା କୌଣସି ପୋର୍ଟେବଲ୍ ହଟସ୍ପଟ୍ ଟିଥରିଂ କରି Chromebooks ଇଣ୍ଟରନେଟ୍ ବ୍ୟବହାର କରିବା ବେଳେ ଏହି ବିକଳ୍ପଟି ଲାଗୁ ହୁଏ</translation>
@@ -9459,6 +9462,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7431991332293347422">Search ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ କିପରି ବ୍ୟବହାର ହେଉଛି ତାହା ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="7432200167665670017">ଆପଣଙ୍କ ଆଡମିନ୍ "<ph name="EXTENSION_NAME" />"କୁ ବ୍ଲକ୍ କରିଛନ୍ତି - ଆପ୍ ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">ଆର୍କାଇଭ କରନ୍ତୁ</translation>
+<translation id="7433333862363162673">ଚୟନ ସର୍ଟକଟ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="7433708794692032816">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର ବ୍ୟବହାର ଜାରି ରଖିବା ପାଇଁ ସ୍ମାର୍ଟ କାର୍ଡକୁ ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7433957986129316853">ଏହାକୁ ରଖନ୍ତୁ</translation>
 <translation id="7434100547946193426">ଅନ୍ୟ ଆପ୍ସ</translation>

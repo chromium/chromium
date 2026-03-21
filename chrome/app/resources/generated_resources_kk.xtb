@@ -561,6 +561,7 @@
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> құрылғысында Linux жүйесіне қолдау көрсетілмейді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз</translation>
 <translation id="1370384480654163477">Осы сайтқа соңғы рет кірген кезіңіздегі файлдарды көру және өзгерту:</translation>
+<translation id="1371253136879578532">Gemini-да экранның бір бөлігін таңдау үшін жылдам пәрменді пайдаланыңыз.</translation>
 <translation id="1372259917802609049">Шектеуді жою кезінде қате пайда болды.</translation>
 <translation id="1372841398847029212">Аккаунтпен синхрондау</translation>
 <translation id="1373176046406139583">Экранның құлпы ашық кезде, көріну мүмкіндігі сізбен кім бөлісе алатынын басқарады. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -5376,6 +5377,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Сұрағыңызға қосу үшін 1 файл жүктеп салыңыз.}other{Сұрағыңызға қосу үшін көп дегенде # файл жүктеп салыңыз.}}</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4609164937357979319">Аккаунт таңдау</translation>
+<translation id="4610022258080608778">Таңдаудың пернелер тіркесімін өзгерту</translation>
 <translation id="4610493438923139095">Сенімсіз</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> сайтына өту керек пе?</translation>
 <translation id="4611114513649582138">Деректер байланысы қолжетімді</translation>
@@ -7344,6 +7346,7 @@
 <translation id="5976780232488408272">Жазуға көмек алу</translation>
 <translation id="5977976211062815271">Осы құрылғыда</translation>
 <translation id="5978277834170881274">&amp;Негізгі емле тексеру құралын пайдалану</translation>
+<translation id="597889390120790610">Таңдаудың пернелер тіркесімі туралы толық ақпарат</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Зиянды болуы мүмкін 1 кеңейтімді қайта іске қостыңыз.}other{Зиянды болуы мүмкін {NUM_EXTENSIONS} кеңейтімді қайта іске қостыңыз.}}</translation>
 <translation id="5979353814339191480">Бұл опция мобильдік интернет тарифі немесе мобильдік интернеті бар Chromebooks құрылғыларына немесе портативтік хотспотқа қосылған кезде қолданылады.</translation>
@@ -9453,6 +9456,7 @@
 <translation id="7431991332293347422">Search және т.б. қызметтерді жекелендіру үшін шолу тарихын қалай пайдалану керектігін көрсетіңіз</translation>
 <translation id="7432200167665670017">Әкімшіңіз "<ph name="EXTENSION_NAME" />" қолданбасын бөгеді, қолданба идентификаторы – <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Мұрағаттау</translation>
+<translation id="7433333862363162673">Таңдауды өшіру жылдам пәрмені</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> құрылғысын пайдалана беру үшін смарт картаны салу</translation>
 <translation id="7433957986129316853">Сақтау</translation>
 <translation id="7434100547946193426">Басқа қолданбалар</translation>

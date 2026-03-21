@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">사용 중인 <ph name="DEVICE_TYPE" />에서 Linux가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">다른 기기에서 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
 <translation id="1370384480654163477">이 사이트를 마지막으로 방문했을 때의 파일을 보고 수정합니다.</translation>
+<translation id="1371253136879578532">Gemini에서 화면의 일부를 선택하려면 단축키를 사용하세요.</translation>
 <translation id="1372259917802609049">제약 조건을 삭제하는 중에 오류가 발생했습니다.</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -5395,6 +5396,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{질문과 함께 사용할 1개의 파일을 업로드하세요.}other{질문과 함께 사용할 최대 #개의 파일을 업로드하세요.}}</translation>
 <translation id="4608500690299898628">찾기(&amp;F)...</translation>
 <translation id="4609164937357979319">계정 선택</translation>
+<translation id="4610022258080608778">선택 항목 수정 단축키</translation>
 <translation id="4610493438923139095">신뢰할 수 없음</translation>
 <translation id="4610637590575890427"><ph name="SITE" />(으)로 이동하려고 하셨나요?</translation>
 <translation id="4611114513649582138">데이터 연결을 사용할 수 있습니다.</translation>
@@ -7368,6 +7370,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5976780232488408272">글쓰기 관련 도움받기</translation>
 <translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5978277834170881274">기본 맞춤법 검사 사용(&amp;U)</translation>
+<translation id="597889390120790610">선택 단축키에 대해 자세히 알아보기</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
 <translation id="5979353814339191480">이 옵션은 데이터 요금제 또는 모바일 네트워크 동글을 사용하거나 휴대용 핫스팟에 테더링된 Chromebook에 적용됩니다.</translation>
@@ -9478,6 +9481,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7432200167665670017">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램(앱 ID: <ph name="EXTENSION_ID" />)을 차단함</translation>
 <translation id="7433103263856598557">보관처리</translation>
+<translation id="7433333862363162673">선택 항목 지우기 단축키</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> 기기를 계속 사용하려면 스마트 카드 삽입</translation>
 <translation id="7433957986129316853">유지</translation>
 <translation id="7434100547946193426">기타 앱</translation>

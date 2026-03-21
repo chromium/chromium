@@ -561,6 +561,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1368603372088757436">Linux is not supported on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">To use them on your other devices, save them in your Google Account</translation>
 <translation id="1370384480654163477">View and edit files from the last time you visited this site:</translation>
+<translation id="1371253136879578532">To select part of the screen in Gemini, use keyboard shortcut.</translation>
 <translation id="1372259917802609049">There was an error deleting the constraint</translation>
 <translation id="1372841398847029212">Sync to your account</translation>
 <translation id="1373176046406139583">Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -5394,6 +5395,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 file to use with your question}other{Upload up to # files to use with your question}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4609164937357979319">Account selection</translation>
+<translation id="4610022258080608778">Edit selection shortcut</translation>
 <translation id="4610493438923139095">Distrusted</translation>
 <translation id="4610637590575890427">Did you mean to go to <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Data connection available</translation>
@@ -7367,6 +7369,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5976780232488408272">Get writing help</translation>
 <translation id="5977976211062815271">On this device</translation>
 <translation id="5978277834170881274">Use basic spell check</translation>
+<translation id="597889390120790610">Learn more about the selection shortcut</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{You turned 1 potentially harmful extension back on}other{You turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
 <translation id="5979353814339191480">This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot</translation>
@@ -9478,6 +9481,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7432200167665670017">Your admin has blocked '<ph name="EXTENSION_NAME" />' – app ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Archive</translation>
+<translation id="7433333862363162673">Clear selection shortcut</translation>
 <translation id="7433708794692032816">Insert smart card to keep using your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Keep it</translation>
 <translation id="7434100547946193426">Other apps</translation>

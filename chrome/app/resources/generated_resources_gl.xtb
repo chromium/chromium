@@ -561,6 +561,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1368603372088757436">O teu dispositivo (<ph name="DEVICE_TYPE" />) non é compatible con Linux. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Para usalos noutros dispositivos, gárdaos na túa Conta de Google</translation>
 <translation id="1370384480654163477">Consulta e edita os ficheiros da última vez que visitaches este sitio:</translation>
+<translation id="1371253136879578532">Para seleccionar unha parte da pantalla en Gemini, usa o atallo de teclado.</translation>
 <translation id="1372259917802609049">Produciuse un erro ao eliminar a restrición</translation>
 <translation id="1372841398847029212">Sincronizar coa túa conta</translation>
 <translation id="1373176046406139583">A visibilidade do dispositivo permíteche controlar quen pode compartir contido contigo cando a pantalla estea desbloqueada. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -5383,6 +5384,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carga 1 ficheiro para usalo coa túa pregunta}other{Carga ata # ficheiros para usalos coa túa pregunta}}</translation>
 <translation id="4608500690299898628">&amp;Buscar...</translation>
 <translation id="4609164937357979319">Selección de conta</translation>
+<translation id="4610022258080608778">Editar atallo de selección</translation>
 <translation id="4610493438923139095">Non fiable</translation>
 <translation id="4610637590575890427">Talvez querías acceder a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Está dispoñible a conexión de datos</translation>
@@ -7353,6 +7355,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5976780232488408272">Obter axuda para escribir</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar corrector ortográfico básico</translation>
+<translation id="597889390120790610">Máis información sobre o atallo de selección</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Activaches de novo 1 extensión potencialmente daniña}other{Activaches de novo {NUM_EXTENSIONS} extensións potencialmente daniñas}}</translation>
 <translation id="5979353814339191480">Esta opción aplícase aos Chromebook que teñen un plan de datos ou un dispositivo de rede de telefonía móbil conectado, ou cando se comparte a conexión cunha zona wifi portátil</translation>
@@ -9463,6 +9466,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7432200167665670017">O teu administrador bloqueou "<ph name="EXTENSION_NAME" />" (código de identificación da aplicación: <ph name="EXTENSION_ID" />)</translation>
 <translation id="7433103263856598557">Arquivar</translation>
+<translation id="7433333862363162673">Borrar atallo de selección</translation>
 <translation id="7433708794692032816">Para seguir usando o teu dispositivo (<ph name="DEVICE_TYPE" />), insire a tarxeta intelixente</translation>
 <translation id="7433957986129316853">Conservar cambios</translation>
 <translation id="7434100547946193426">Outras aplicacións</translation>

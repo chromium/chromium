@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">Linux ला तुमच्या <ph name="DEVICE_TYPE" /> वर सपोर्ट नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">इतर डिव्हाइसवर वापरण्यासाठी, ते तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="1370384480654163477">तुम्ही या साइटला शेवटच्या वेळी भेट दिली होती, तेव्हाच्या फाइल पहा आणि संपादित करा:</translation>
+<translation id="1371253136879578532">Gemini मध्ये स्क्रीनचा भाग निवडण्यासाठी, कीबोर्ड शॉर्टकट वापरा.</translation>
 <translation id="1372259917802609049">मर्यादा हटवताना एरर आली</translation>
 <translation id="1372841398847029212">तुमच्या खात्याशी सिंक करा</translation>
 <translation id="1373176046406139583">तुमची स्क्रीन अनलॉक केलेली असताना तुमच्यासोबत कोण शेअर करू शकते हे तुमच्या डिव्हाइसची दृश्यमानता नियंत्रित करते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -5392,6 +5393,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{तुमच्या प्रश्नासोबत वापरण्यासाठी १ फाइल अपलोड करा}other{तुमच्या प्रश्नासोबत वापरण्यासाठी कमाल # फाइल अपलोड करा}}</translation>
 <translation id="4608500690299898628">&amp;शोधा...</translation>
 <translation id="4609164937357979319">खाते निवड</translation>
+<translation id="4610022258080608778">निवड शॉर्टकट संपादित करा</translation>
 <translation id="4610493438923139095">विश्वसनीय नसलेले</translation>
 <translation id="4610637590575890427">तुम्हाला <ph name="SITE" /> कडे जायचे असे म्हणायचे होते काय?</translation>
 <translation id="4611114513649582138">डेटा कनेक्शन उपलब्ध आहे</translation>
@@ -7366,6 +7368,7 @@
 <translation id="5976780232488408272">लेखनासंबंधित मदत मिळवा</translation>
 <translation id="5977976211062815271">या डिव्हाइसवरील</translation>
 <translation id="5978277834170881274">आणि मूलभूत स्पेल चेक वापरा</translation>
+<translation id="597889390120790610">निवड शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन तुम्ही पुन्हा सुरू केले}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन तुम्ही पुन्हा सुरू केली}}</translation>
 <translation id="5979353814339191480">डेटा प्लॅन किंवा मोबाइल नेटवर्क डोंगल असलेल्या Chromebooks साठी किंवा पोर्टेबल हॉटस्पॉटद्वारे टेदर करताना हा पर्याय लागू होतो</translation>
@@ -9479,6 +9482,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7432200167665670017">तुमच्या ॲडमिनने "<ph name="EXTENSION_NAME" />" ब्लॉक केले आहे - अ‍ॅप आयडी <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">संग्रहित करा</translation>
+<translation id="7433333862363162673">निवड शॉर्टकट साफ करा</translation>
 <translation id="7433708794692032816">तुमचे <ph name="DEVICE_TYPE" /> वापरत राहण्यासाठी स्मार्ट कार्ड घाला</translation>
 <translation id="7433957986129316853">ठेवा</translation>
 <translation id="7434100547946193426">इतर अ‍ॅप्स</translation>

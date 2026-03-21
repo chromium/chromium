@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">Linux не се поддържа от вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">За да ги използвате на другите си устройства, запазете ги в профила си в Google</translation>
 <translation id="1370384480654163477">Прегледайте и редактирайте файловете от последния път, когато сте посетили този сайт:</translation>
+<translation id="1371253136879578532">За да изберете част от екрана в Gemini, използвайте клавишна комбинация.</translation>
 <translation id="1372259917802609049">При изтриването на ограничението възникна грешка</translation>
 <translation id="1372841398847029212">Синхронизиране с профила ви</translation>
 <translation id="1373176046406139583">Видимостта на устройството ви управлява това, кой може да споделя с вас, докато екранът ви е отключен. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -5391,6 +5392,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Качете 1 файл, който да използвате с въпроса си}other{Качете до # файла, които да използвате с въпроса си}}</translation>
 <translation id="4608500690299898628">&amp;Търсене...</translation>
 <translation id="4609164937357979319">Избиране на профил</translation>
+<translation id="4610022258080608778">Клавишна комбинация за редактиране на избраното</translation>
 <translation id="4610493438923139095">Ненадеждно</translation>
 <translation id="4610637590575890427">Може би искахте да отворите <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Налице е връзка за пренос на данни</translation>
@@ -7365,6 +7367,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5976780232488408272">Получаване на помощ при писане</translation>
 <translation id="5977976211062815271">На това устройство</translation>
 <translation id="5978277834170881274">&amp;Използване на основната проверка на правописа</translation>
+<translation id="597889390120790610">Научете повече за клавишната комбинация за избиране</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Включихте 1 потенциално опасно разширение}other{Включихте {NUM_EXTENSIONS} потенциално опасни разширения}}</translation>
 <translation id="5979353814339191480">Тази опция се отнася за устройства Chromebook с план за данни или адаптер за връзка с мобилна мрежа, или връзка с тетъринг към преносима точка за достъп</translation>
@@ -9476,6 +9479,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7432200167665670017">Администраторът ви е блокирал <ph name="EXTENSION_NAME" /> – идентификационен номер на приложението <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Архивиране</translation>
+<translation id="7433333862363162673">Клавишна комбинация за изчистване на избраното</translation>
 <translation id="7433708794692032816">Поставете смарткарта, за да продължите да използвате своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Запазване</translation>
 <translation id="7434100547946193426">Други приложения</translation>

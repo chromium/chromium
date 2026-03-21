@@ -15,7 +15,7 @@
 <translation id="104491362976654916">Pagina offline</translation>
 <translation id="1046742265332833834">Tema blu</translation>
 <translation id="1049743911850919806">In incognito</translation>
-<translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
+<translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per avere preferiti, password e altro nel tuo account.</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Mai salvate</translation>
 <translation id="1062138828266376352">Il PIN non è stato modificato. Controlla la connessione a internet e riprova</translation>
@@ -335,7 +335,7 @@
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2180338296831857171">Elimina indirizzi</translation>
 <translation id="218350106843433823">Inserisci automaticamente password e passkey</translation>
-<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2184272387334793084">Accedi per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tocca <ph name="BEGIN_BOLD" />Salva nei download<ph name="END_BOLD" /></translation>
 <translation id="2191406283620379491">Si è verificato un problema. Aggiorna la versione di iOS.</translation>

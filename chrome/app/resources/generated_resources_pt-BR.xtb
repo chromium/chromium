@@ -562,6 +562,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1368603372088757436">Seu <ph name="DEVICE_TYPE" /> não tem suporte para Linux. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Para usar em outros dispositivos, salve-as na sua Conta do Google</translation>
 <translation id="1370384480654163477">Conferir e editar arquivos da última vez que você visitou este site:</translation>
+<translation id="1371253136879578532">Para selecionar parte da tela no Gemini, use o atalho do teclado.</translation>
 <translation id="1372259917802609049">Ocorreu um erro ao excluir a restrição</translation>
 <translation id="1372841398847029212">Sincronizar com sua conta</translation>
 <translation id="1373176046406139583">A visibilidade do dispositivo controla quem pode compartilhar itens com você enquanto sua tela está desbloqueada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -5395,6 +5396,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Faça upload de 1 arquivo para usar com sua pergunta}one{Faça upload de até # arquivo para usar com sua pergunta}other{Faça upload de até # arquivos para usar com sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4609164937357979319">Seleção de conta</translation>
+<translation id="4610022258080608778">Editar atalho de seleção</translation>
 <translation id="4610493438923139095">Não confiável</translation>
 <translation id="4610637590575890427">Você quis ir a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Conexão de dados disponível</translation>
@@ -7369,6 +7371,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5976780232488408272">Receber ajuda para escrever</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Usar a verificação ortográfica básica</translation>
+<translation id="597889390120790610">Saiba mais sobre o atalho de seleção</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Você reativou 1 extensão possivelmente nociva}one{Você reativou {NUM_EXTENSIONS} extensão possivelmente nociva}other{Você reativou {NUM_EXTENSIONS} extensões possivelmente nocivas}}</translation>
 <translation id="5979353814339191480">Esta opção se aplica a Chromebooks com um plano de dados ou dongle de rede móvel, ou então a processos de tethering para pontos de acesso portáteis</translation>
@@ -9482,6 +9485,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7431991332293347422">Controle como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
 <translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arquivar</translation>
+<translation id="7433333862363162673">Limpar atalho de seleção</translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
 <translation id="7434100547946193426">Outros apps</translation>

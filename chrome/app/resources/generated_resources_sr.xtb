@@ -563,6 +563,7 @@
 <translation id="1368603372088757436">Linux није подржан на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Да бисте их користили на другим уређајима, сачувајте их на Google налогу</translation>
 <translation id="1370384480654163477">Прегледајте и измените фајлове од последње посете овом сајту:</translation>
+<translation id="1371253136879578532">Да бисте изабрали део екрана у Gemini-ју, користите тастерску пречицу.</translation>
 <translation id="1372259917802609049">Дошло је до грешке при брисању ограничења</translation>
 <translation id="1372841398847029212">Синхронизујте са налогом</translation>
 <translation id="1373176046406139583">Подешавање видљивости контролише ко може да дели садржај са вама док је екран откључан. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -5379,6 +5380,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Отпремите 1 фајл који ћете користити уз питање}one{Отпремите највише # фајл који ћете користити уз питање}few{Отпремите највише # фајла које ћете користити уз питање}other{Отпремите највише # фајлова које ћете користити уз питање}}</translation>
 <translation id="4608500690299898628">&amp;Пронађи...</translation>
 <translation id="4609164937357979319">Избор налога</translation>
+<translation id="4610022258080608778">Измени пречицу за избор</translation>
 <translation id="4610493438923139095">Непоуздано</translation>
 <translation id="4610637590575890427">Да ли сте желели да одете на <ph name="SITE" /></translation>
 <translation id="4611114513649582138">Веза за пренос података је доступна</translation>
@@ -7351,6 +7353,7 @@
 <translation id="5976780232488408272">Затражи помоћ за писање</translation>
 <translation id="5977976211062815271">На овом уређају</translation>
 <translation id="5978277834170881274">&amp;Користи основну проверу правописа</translation>
+<translation id="597889390120790610">Сазнајте више о пречици за избор</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Поново сте укључили 1 потенцијално штетан додатак}one{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетан додатак}few{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетна додатка}other{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетних додатака}}</translation>
 <translation id="5979353814339191480">Ова опција важи за Chromebook-ове са донглом за тарифни пакет или мобилну мрежу, односно при привезивању на преносиви хотспот</translation>
@@ -9466,6 +9469,7 @@
 <translation id="7431991332293347422">Контролишите како се историја прегледања користи за персонализовање Претраге и других услуга</translation>
 <translation id="7432200167665670017">Администратор је блокирао додатак „<ph name="EXTENSION_NAME" />“ – ИД апликације <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Архивирај</translation>
+<translation id="7433333862363162673">Избриши пречицу за избор</translation>
 <translation id="7433708794692032816">Уметните паметну картицу да бисте наставили да користите <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Задржи</translation>
 <translation id="7434100547946193426">Друге апликације</translation>

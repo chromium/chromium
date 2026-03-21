@@ -561,6 +561,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1368603372088757436">Linuxit teie seadmes <ph name="DEVICE_TYPE" /> ei toetata. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole</translation>
 <translation id="1370384480654163477">Saidi eelmisest külastusest pärinevate failide vaatamine ja muutmine:</translation>
+<translation id="1371253136879578532">Ekraanikuva osa valimiseks Geminis kasutage klaviatuuri otseteed.</translation>
 <translation id="1372259917802609049">Piirangu kustutamisel tekkis viga</translation>
 <translation id="1372841398847029212">Sünkrooni minu kontoga</translation>
 <translation id="1373176046406139583">Teie seadme nähtavus määrab, kes saavad teiega jagada, kui teie ekraanikuva on avatud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -1312,7 +1313,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Andke veebisaidile <ph name="WEBSITE" /> uuesti load</translation>
 <translation id="1874248162548993294">Lubatud kuvada mis tahes reklaame</translation>
-<translation id="1874972853365565008">{NUM_TABS,plural, =1{Vahelehe teisaldamine teise aknasse}other{Vahelehtede teisaldamine teise aknasse}}</translation>
+<translation id="1874972853365565008">{NUM_TABS,plural, =1{Teisalda vaheleht teise aknasse}other{Teisalda vahelehed teise aknasse}}</translation>
 <translation id="1877377290348678128">Silt (valikuline)</translation>
 <translation id="1877377730633446520">See kasutab umbes <ph name="REQUIRED_SPACE" />. Teil on praegu saadaval <ph name="FREE_SPACE" />.</translation>
 <translation id="1877860345998737529">Lüliti toimingu määramine</translation>
@@ -5385,6 +5386,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Laadige üles üks fail, mida oma küsimusega kasutada}other{Laadige üles kuni # faili, mida oma küsimusega kasutada}}</translation>
 <translation id="4608500690299898628">&amp;Otsi...</translation>
 <translation id="4609164937357979319">Kontode valik</translation>
+<translation id="4610022258080608778">Valiku otsetee muutmine</translation>
 <translation id="4610493438923139095">Ebausaldusväärne</translation>
 <translation id="4610637590575890427">Kas soovisite minna aadressile <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Andmesideühendus on saadaval</translation>
@@ -7358,6 +7360,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5976780232488408272">Kirjutamisabi hankimine</translation>
 <translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5978277834170881274">&amp;Kasuta lihtsat õigekirjakontrolli</translation>
+<translation id="597889390120790610">Lisateave valiku otsetee kohta</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Lülitasite 1 potentsiaalselt ohtliku laienduse uuesti sisse}other{Lülitasite {NUM_EXTENSIONS} potentsiaalselt ohtlikku laiendust uuesti sisse}}</translation>
 <translation id="5979353814339191480">See valik rakendub Chromebookidele, millel on andmesidepakett või mobiilsidevõrgu tongel, või kui võrguühendust jagatakse mobiilse kuumkohaga</translation>
@@ -9469,6 +9472,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7432200167665670017">Teie administraator on blokeerinud rakenduse/laienduse „<ph name="EXTENSION_NAME" />“ – Rakenduse ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arhiivi</translation>
+<translation id="7433333862363162673">Kustuta valiku otsetee</translation>
 <translation id="7433708794692032816">Sisestage kiipkaart, et jätkata seadme <ph name="DEVICE_TYPE" /> kasutamist</translation>
 <translation id="7433957986129316853">Säilita</translation>
 <translation id="7434100547946193426">Muud rakendused</translation>

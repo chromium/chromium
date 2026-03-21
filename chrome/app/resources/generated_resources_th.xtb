@@ -561,6 +561,7 @@
 <translation id="1368603372088757436">ไม่รองรับ Linux ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google</translation>
 <translation id="1370384480654163477">ดูและแก้ไขไฟล์จากครั้งล่าสุดที่คุณเข้าชมเว็บไซต์นี้</translation>
+<translation id="1371253136879578532">ใช้แป้นพิมพ์ลัดเพื่อเลือกส่วนหนึ่งของหน้าจอใน Gemini</translation>
 <translation id="1372259917802609049">เกิดข้อผิดพลาดขณะลบรีวิว</translation>
 <translation id="1372841398847029212">ซิงค์กับบัญชีของคุณ</translation>
 <translation id="1373176046406139583">ระดับการเข้าถึงของอุปกรณ์จะควบคุมผู้ที่แชร์กับคุณได้ขณะที่ปลดล็อกหน้าจออยู่ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -990,7 +991,7 @@
 <translation id="164936512206786300">เลิกจับคู่อุปกรณ์บลูทูธ</translation>
 <translation id="1650407365859096313">เปิดในแท็บใหม่ สิทธิ์เป็นแบบ<ph name="PERMISSION_STATE" /></translation>
 <translation id="1650801028905250434">ไฟล์ใน "ไดรฟ์ของฉัน" จะซิงค์กับ Chromebook โดยอัตโนมัติ เพื่อให้คุณเข้าถึงได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า &gt; ไฟล์</translation>
-<translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
+<translation id="1651008383952180276">คุณต้องป้อนพาสเฟรสเดียวกัน 2 ครั้ง</translation>
 <translation id="1651609627703324721">แท็บนี้กำลังนำเสนอเนื้อหา VR ไปยังชุดหูฟัง</translation>
 <translation id="1652281434788353738">ช่างคิด</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
@@ -1700,7 +1701,7 @@
 <translation id="21354425047973905">ซ่อน PIN</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2135787500304447609">&amp;ทำต่อ</translation>
-<translation id="2136476978468204130">รหัสผ่านที่คุณป้อนไม่ถูกต้อง</translation>
+<translation id="2136476978468204130">พาสเฟรสที่คุณป้อนไม่ถูกต้อง</translation>
 <translation id="2137128126782078222">ไม่อนุญาตการแจ้งเตือนจาก <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">ปุ่มตั้งค่า</translation>
 <translation id="2140788884185208305">ประสิทธิภาพของแบตเตอรี่</translation>
@@ -2999,7 +3000,7 @@
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว}other{เก็บกลุ่มเหล่านี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว}}</translation>
 <translation id="2996071302059856125">ดูข้อมูลเพิ่มเติมเกี่ยวกับวิธีที่ AI ช่วยสร้างประสบการณ์การใช้งานของคุณและการควบคุมที่ Chrome มอบให้</translation>
 <translation id="2996108796702395498">หมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขนี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
-<translation id="2996286169319737844">มีการเข้ารหัสลับข้อมูลด้วยรหัสผ่านการซิงค์ ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
+<translation id="2996286169319737844">มีการเข้ารหัสข้อมูลด้วยพาสเฟรสการซิงค์ ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="2996722619877761919">กลับด้านตามแนวยาว</translation>
 <translation id="2998097899774209901">เปิด • ส่วนขยายนี้ละเมิดนโยบาย Chrome เว็บสโตร์</translation>
 <translation id="2998267783395280091">พบเครือข่าย</translation>
@@ -4126,7 +4127,7 @@
 <translation id="375841316537350618">กำลังดาวน์โหลดพร็อกซีสคริปต์...</translation>
 <translation id="3758887577462995665">เคล็ดลับ:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> เดือน</translation>
-<translation id="3759805539887442413"><ph name="BEGIN_LINK" />ป้อนรหัสผ่าน<ph name="END_LINK" />เพื่อลบข้อมูลการท่องเว็บออกจากอุปกรณ์ทุกเครื่องที่ซิงค์และบัญชี Google</translation>
+<translation id="3759805539887442413"><ph name="BEGIN_LINK" />ป้อนพาสเฟรส<ph name="END_LINK" />เพื่อลบข้อมูลการท่องเว็บออกจากอุปกรณ์ทุกเครื่องที่ซิงค์และบัญชี Google</translation>
 <translation id="3759933321830434300">บล็อกส่วนต่างๆ ของหน้าเว็บ</translation>
 <translation id="3760460896538743390">ตรวจสอบ&amp;หน้าพื้นหลัง</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> วัน</translation>
@@ -4326,7 +4327,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 แท็บ)}other{<ph name="GROUP_TITLE" /> (# แท็บ)}}</translation>
 <translation id="3871350334636688135">เมื่อผ่านไป 24 ชั่วโมง ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่องเมื่อคุณรีสตาร์ทอุปกรณ์ โปรดบันทึกข้อมูลในเครื่องที่คุณจำเป็นต้องใช้ลงในพื้นที่เก็บข้อมูลระบบคลาวด์ภายใน 24 ชั่วโมง</translation>
 <translation id="3872991219937722530">เพิ่มพื้นที่ว่างในดิสก์ มิเช่นนั้นอุปกรณ์จะไม่ตอบสนองต่อการทำงาน</translation>
-<translation id="3873315167136380065">หากต้องการเปิดการตั้งค่า ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" />เพื่อนำรหัสผ่านการซิงค์ออก</translation>
+<translation id="3873315167136380065">หากต้องการเปิดการตั้งค่า ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" />เพื่อนำพาสเฟรสการซิงค์ออก</translation>
 <translation id="3873423927483480833">แสดง PIN</translation>
 <translation id="3873915545594852654">เกิดปัญหาเกี่ยวกับ ARC++</translation>
 <translation id="3874845889165401548">ฟีเจอร์นี้ใช้ AI และอยู่ในขั้นทดลอง</translation>
@@ -4838,7 +4839,7 @@
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4242577469625748426">ไม่สามารถติดตั้งการตั้งค่านโยบายบนอุปกรณ์: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />เบราว์เซอร์และโปรไฟล์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="DOMAIN" /></translation>
-<translation id="424315890655130736">ป้อนรหัสผ่าน</translation>
+<translation id="424315890655130736">ป้อนพาสเฟรส</translation>
 <translation id="4243504193894350135">เครื่องพิมพ์หยุดชั่วคราว</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" /> ระดับ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">ค้นหาแอปสไตลัสเพิ่มเติม</translation>
@@ -5379,6 +5380,7 @@
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ 1 ไฟล์เพื่อใช้กับคำถาม}other{อัปโหลดไฟล์สูงสุด # ไฟล์เพื่อใช้กับคำถาม}}</translation>
 <translation id="4608500690299898628">&amp;ค้นหา...</translation>
 <translation id="4609164937357979319">การเลือกบัญชี</translation>
+<translation id="4610022258080608778">แก้ไขทางลัดการเลือก</translation>
 <translation id="4610493438923139095">ไม่น่าเชื่อถือ</translation>
 <translation id="4610637590575890427">คุณหมายความว่าต้องการไปที่ <ph name="SITE" /> หรือไม่</translation>
 <translation id="4611114513649582138">มีการเชื่อมต่อข้อมูลพร้อมใช้งาน</translation>
@@ -6725,7 +6727,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">เลือกการตั้งค่า</translation>
 <translation id="5551573675707792127">แป้นพิมพ์และการป้อนข้อความ</translation>
-<translation id="5551753770140674714">ระบบจะเข้ารหัสข้อมูลด้วยรหัสผ่านการซิงค์ ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
+<translation id="5551753770140674714">ระบบจะเข้ารหัสข้อมูลด้วยพาสเฟรสการซิงค์ ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="5553089923092577885">การจับคู่นโยบายใบรับรอง</translation>
 <translation id="5554403733534868102">หลังจากครั้งนี้ ก็ไม่ต้องรอการอัปเดตอีก</translation>
 <translation id="5554489410841842733">ไอคอนนี้จะมองเห็นได้เมื่อส่วนขยายสามารถทำงานบนหน้าปัจจุบันได้</translation>
@@ -7214,7 +7216,7 @@
 <translation id="5888337581644150257">หมายเลขบัญชีธนาคารระหว่างประเทศ</translation>
 <translation id="5888889603768021126">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="5889282057229379085">จำนวนสูงสุดของ CA ระดับกลาง: <ph name="NUM_INTERMEDIATE_CA" /></translation>
-<translation id="5889629805140803638">เข้ารหัสข้อมูลที่ซิงค์ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />ของคุณเอง ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์</translation>
+<translation id="5889629805140803638">เข้ารหัสข้อมูลที่ซิงค์ด้วย<ph name="BEGIN_LINK" />พาสเฟรสการซิงค์<ph name="END_LINK" />ของคุณเอง ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์</translation>
 <translation id="5891688036610113830">เครือข่าย Wi-Fi ที่ต้องการ</translation>
 <translation id="5894056653502215961">ยกเลิกการเลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -7347,6 +7349,7 @@
 <translation id="5976780232488408272">รับความช่วยเหลือในการเขียน</translation>
 <translation id="5977976211062815271">ในอุปกรณ์นี้</translation>
 <translation id="5978277834170881274">&amp;ใช้ฟีเจอร์ตรวจตัวสะกดพื้นฐาน</translation>
+<translation id="597889390120790610">ดูข้อมูลเพิ่มเติมเกี่ยวกับทางลัดการเลือก</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
 <translation id="5979353814339191480">ตัวเลือกนี้ใช้กับ Chromebook ที่มีแพ็กเกจอินเทอร์เน็ตหรือดองเกิลเครือข่ายมือถือ หรือเมื่อเชื่อมต่ออินเทอร์เน็ตผ่านฮอตสปอตแบบพกพา</translation>
@@ -7883,7 +7886,7 @@
 <translation id="6355632359041940003">เข้าควบคุมงาน</translation>
 <translation id="635609604405270300">โปรดเปิดอุปกรณ์ไว้</translation>
 <translation id="6356537493253478650">เรียบๆ</translation>
-<translation id="63566973648609420">เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นจึงจะสามารถอ่านข้อมูลที่เข้ารหัสของคุณได้ Google จะไม่ส่งหรือจัดเก็บรหัสผ่านนี้ หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้อง<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
+<translation id="63566973648609420">เฉพาะผู้ที่มีพาสเฟรสของคุณเท่านั้นจึงจะสามารถอ่านข้อมูลที่เข้ารหัสของคุณได้ Google จะไม่ส่งหรือจัดเก็บพาสเฟรสนี้ หากคุณลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้อง<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6356718524173428713">เลื่อนขึ้นเพื่อเลื่อนหน้าลง</translation>
 <translation id="6356893102071098867">ตรวจสอบว่าเลือกบัญชีที่ถูกต้อง</translation>
 <translation id="6357305427698525450">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /> หรือ <ph name="APP_NAME_2" /></translation>
@@ -8011,7 +8014,7 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6450876761651513209">เปลี่ยนการตั้งค่าที่เกี่ยวข้องกับความเป็นส่วนตัว</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
-<translation id="6451689256222386810">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
+<translation id="6451689256222386810">หากคุณลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6451861213630784801">คุณออกจากระบบแล้ว</translation>
 <translation id="6452181791372256707">ปฏิเสธ</translation>
 <translation id="6452251728599530347">สมบูรณ์แล้ว <ph name="PERCENT" /></translation>
@@ -8334,13 +8337,13 @@
 <translation id="6670983860904543332">การอัปเดตอัตโนมัติทำให้คุณได้ใช้ฟีเจอร์ล่าสุด สำรวจไฮไลต์จากการอัปเดตล่าสุด</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 ที่อยู่}other{# ที่อยู่}}</translation>
 <translation id="6671497123040790595">กำลังตั้งค่าการจัดการโดย <ph name="MANAGER" /></translation>
-<translation id="6672697278890207089">ป้อนรหัสผ่านของคุณ</translation>
+<translation id="6672697278890207089">ป้อนพาสเฟรสของคุณ</translation>
 <translation id="6672917148207387131">เพิ่ม <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">โหมดไม่ระบุตัวตนทำให้<ph name="BEGIN_LINK" />การท่องเว็บของคุณเป็นแบบส่วนตัวจากผู้อื่น<ph name="END_LINK" />ที่ใช้อุปกรณ์ของคุณ</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">ยืดอายุการใช้งานแบตเตอรี่ด้วยการลดความสว่าง จํากัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ หน่วงเวลาการแจ้งเตือน และเปิดโหมดประหยัดพลังงานของ Chrome</translation>
 <translation id="6673898378497337661">เพิ่มความสว่างของแป้นพิมพ์</translation>
-<translation id="6674571176963658787">หากต้องการเริ่มต้นการซิงค์ ให้ป้อนรหัสผ่านของคุณ</translation>
+<translation id="6674571176963658787">หากต้องการเริ่มต้นการซิงค์ ให้ป้อนพาสเฟรสของคุณ</translation>
 <translation id="6675665718701918026">เชื่อมต่ออุปกรณ์ชี้ตำแหน่งแล้ว</translation>
 <translation id="6675717447295898330">สร้างโปรไฟล์ใหม่สำหรับงานโดยไม่มีข้อมูลที่มีอยู่</translation>
 <translation id="6676291960742508499">ระบบจะส่งแท็บ ชื่อหน้า และ URL ไปยัง Google</translation>
@@ -8574,7 +8577,7 @@
 <translation id="6827121912381363404">อนุญาตให้ส่วนขยายทั้งหมดอ่านและเปลี่ยนแปลง <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">แอปและการตั้งค่าจะซิงค์กับอุปกรณ์ Chrome OS ทุกเครื่องที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชี Google ดูตัวเลือกการซิงค์เบราว์เซอร์ได้ที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome<ph name="LINK_END" /></translation>
 <translation id="6827767090350758381">แอป Chrome เวอร์ชันเก่าจะเปิดใช้งานในอุปกรณ์ Windows ไม่ได้แล้วหลังเดือนธันวาคม 2022 โปรดแจ้งให้ผู้ดูแลระบบอัปเดตเป็นเวอร์ชันใหม่หรือนำแอปนี้ออก</translation>
-<translation id="6828182567531805778">ป้อนรหัสผ่านเพื่อซิงค์ข้อมูล</translation>
+<translation id="6828182567531805778">ป้อนพาสเฟรสเพื่อซิงค์ข้อมูล</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">ไม่สามารถตั้งค่าการอัปเดตอัตโนมัติสำหรับผู้ใช้ทุกคน (ข้อผิดพลาดในการดำเนินการตรวจสอบล่วงหน้า: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">นโยบายความเป็นส่วนตัวของ Google</translation>
@@ -9457,6 +9460,7 @@
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="7432200167665670017">ผู้ดูแลระบบของคุณบล็อก "<ph name="EXTENSION_NAME" />" ไว้ - รหัสแอป <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">เก็บ</translation>
+<translation id="7433333862363162673">ล้างทางลัดการเลือก</translation>
 <translation id="7433708794692032816">เสียบสมาร์ทการ์ดเพื่อให้ใช้ <ph name="DEVICE_TYPE" /> ได้ต่อไป</translation>
 <translation id="7433957986129316853">เก็บไว้</translation>
 <translation id="7434100547946193426">แอปอื่นๆ</translation>
@@ -9466,7 +9470,7 @@
 <translation id="7436921188514130341">แย่จัง! เกิดข้อผิดพลาดในระหว่างการตั้งชื่อ</translation>
 <translation id="7439519621174723623">เพิ่มชื่ออุปกรณ์เพื่อดำเนินการต่อ</translation>
 <translation id="7441736532026945583">เลือก "ซ่อนกลุ่ม" เพื่อนำกลุ่มออกจากแนวแท็บ</translation>
-<translation id="7441736921018636843">หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" />เพื่อนำรหัสผ่านการซิงค์ออก</translation>
+<translation id="7441736921018636843">หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" />เพื่อนำพาสเฟรสการซิงค์ออก</translation>
 <translation id="7441830548568730290">ผู้ใช้รายอื่น</translation>
 <translation id="744341768939279100">สร้างโปรไฟล์ใหม่</translation>
 <translation id="744366959743242014">กำลังโหลดข้อมูล การดำเนินการนี้จะใช้เวลาไม่กี่วินาที</translation>
@@ -9965,7 +9969,7 @@
 <translation id="7770827449915784217">เฟิร์มแวร์เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7771452384635174008">รูปแบบ</translation>
 <translation id="7771955436058544691">บ่อเกลือ</translation>
-<translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
+<translation id="7772032839648071052">ยืนยันพาสเฟรส</translation>
 <translation id="7772127298218883077">เกี่ยวกับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">พื้นที่จัดเก็บเซสชัน</translation>
 <translation id="7774365994322694683">นก</translation>
@@ -10319,7 +10323,7 @@
 <translation id="8008704580256716350">บล็อกไฟล์ที่น่าสงสัยแล้ว</translation>
 <translation id="8009196983040865987">เมื่อคุณใช้การจัดระเบียบแท็บ ระบบจะส่งชื่อและ URL ของแท็บที่เปิดอยู่ไปยัง Google เพื่อสร้างกลุ่มแท็บที่แนะนำ</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
-<translation id="8010312870936510509">มีการเข้ารหัสข้อมูลด้วยรหัสผ่านการซิงค์เมื่อ <ph name="TIME" /> ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
+<translation id="8010312870936510509">มีการเข้ารหัสข้อมูลด้วยพาสเฟรสการซิงค์เมื่อ <ph name="TIME" /> ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="8011372169388649948">ย้าย '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013181884974864006">งานตามบริบท</translation>
@@ -11318,7 +11322,7 @@
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
 <translation id="8678192320753081984">ให้การรักษาความปลอดภัยของบัญชีที่เข้มงวดที่สุดจาก Google สำหรับผู้ที่มีความเสี่ยงต่อการโจมตีแบบกำหนดเป้าหมาย</translation>
 <translation id="8678378565142776698">รีสตาร์ทและรับการอัปเดตอัตโนมัติ</translation>
-<translation id="8678538439778360739">มีการเข้ารหัสข้อมูลด้วยรหัสผ่านการซิงค์เมื่อ <ph name="TIME" /> ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
+<translation id="8678538439778360739">มีการเข้ารหัสข้อมูลด้วยพาสเฟรสการซิงค์เมื่อ <ph name="TIME" /> ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="8678933587484842200">คุณต้องการเปิดแอปพลิเคชันนี้ด้วยวิธีใด</translation>
 <translation id="8679054765393461130">รายการแสดงผลการเลือกเครือข่ายจะทำให้มีการสแกนหา Wi-Fi บ่อยครั้ง ซึ่งอาจส่งผลต่อประสิทธิภาพของเครือข่าย Wi-Fi</translation>
 <translation id="8680251145628383637">ลงชื่อเข้าใช้เพื่อดึงบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ บนอุปกรณ์ทุกเครื่องของคุณ ทั้งนี้ ระบบจะลงชื่อเข้าใช้บริการต่างๆ ของ Google ให้คุณโดยอัตโนมัติ</translation>
@@ -11906,7 +11910,7 @@
 <translation id="9044838301401489071">คุณจะโต้ตอบกับแท็บนี้ไม่ได้จนกว่างานจะหยุดชั่วคราวหรือเสร็จสมบูรณ์แล้ว</translation>
 <translation id="9045160989383249058">เรื่องรออ่านย้ายไปแผงด้านข้างใหม่แล้ว ลองที่นี่</translation>
 <translation id="9048745018038487540">เลือกแบบอักษรทั้งหมด</translation>
-<translation id="9050666287014529139">รหัสผ่าน</translation>
+<translation id="9050666287014529139">พาสเฟรส</translation>
 <translation id="905137631551495997">ส่วนขยาย</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากย้ายโฟลเดอร์นี้ไปยัง "<ph name="LOCAL_FOLDER" />" คุณจะไม่เห็นโฟลเดอร์นี้ในอุปกรณ์อื่นๆ อีกต่อไป</translation>
 <translation id="9052404922357793350">บล็อกต่อไป</translation>
@@ -12174,7 +12178,7 @@
 <translation id="936801553271523408">ข้อมูลวินิจฉัยระบบ</translation>
 <translation id="93766956588638423">ซ่อมส่วนขยาย</translation>
 <translation id="938623846785894166">ไฟล์ที่ไม่แพร่หลาย</translation>
-<translation id="939598580284253335">ป้อนรหัสผ่าน</translation>
+<translation id="939598580284253335">ป้อนพาสเฟรส</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940212040923880623">ค้นหาและแก้ไข</translation>
 <translation id="942296794412775122">เปิด/ปิดไมโครโฟน</translation>
@@ -12248,7 +12252,7 @@
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ต้องการรับข้อมูลจากมือถือของคุณ</translation>
 <translation id="988320949174893488">กระตุกเป็นบางครั้ง</translation>
-<translation id="988978206646512040">ต้องระบุรหัสผ่าน</translation>
+<translation id="988978206646512040">ต้องระบุพาสเฟรส</translation>
 <translation id="992032470292211616">ส่วนขยาย แอป และธีมอาจเป็นอันตรายต่ออุปกรณ์ของคุณ คุณแน่ใจไหมว่าต้องการดำเนินการต่อ</translation>
 <translation id="992256792861109788">สีชมพู</translation>
 <translation id="992592832486024913">ปิดใช้ ChromeVox (การตอบสนองด้วยเสียง)</translation>
