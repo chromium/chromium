@@ -231,7 +231,11 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
 
   // Submitting with deep search and Gemini regular model enabled.
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  handler().RecordModelSelectionAction(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
@@ -242,7 +246,10 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
 
   // Submitting with create image and Gemini Pro model enabled.
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  handler().RecordModelSelectionAction(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",

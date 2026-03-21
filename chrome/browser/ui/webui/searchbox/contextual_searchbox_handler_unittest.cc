@@ -693,7 +693,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           GetMetricsRecorderPtr(),
           &MockContextualSearchMetricsRecorder::RecordToolModeBase));
 
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  handler_->RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_CANVAS);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_1.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
   histogram_tester().ExpectUniqueSample(
@@ -708,6 +709,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           &MockContextualSearchMetricsRecorder::RecordModelModeBase));
 
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  handler().RecordModelSelectionAction(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_2.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_EQ(received_state_2.active_model,

@@ -942,6 +942,13 @@ suite('NewTabPageComposeboxUploadTest', () => {
     assertEquals(
         ComposeboxToolMode.kImageGen,
         testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('recordToolSelectionAction'),
+        1);
+    assertEquals(
+        ComposeboxToolMode.kImageGen,
+        testProxy.searchboxHandler.getArgs('recordToolSelectionAction')[0]);
+
   });
 
   test('composebox does not open match when only file present', async () => {

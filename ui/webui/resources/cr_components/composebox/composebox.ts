@@ -709,7 +709,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (previousTool !== ComposeboxToolMode.kUnspecified) {
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
-      this.handleToolModeUpdate_();
+      this.handleToolModeUpdate_(ComposeboxToolMode.kUnspecified);
     }
   }
 
@@ -1509,29 +1509,28 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected handleToolClick_(tool: ComposeboxToolMode) {
+    const isTogglingOff = this.activeToolMode_ === tool;
+
     if (this.contextMenuDescriptionEnabled_) {
-      if (this.activeToolMode_ === tool) {
-        this.showContextMenuDescription_ = true;
-      } else {
-        this.showContextMenuDescription_ =
-            tool === ComposeboxToolMode.kUnspecified;
-      }
+      this.showContextMenuDescription_ =
+          isTogglingOff || tool === ComposeboxToolMode.kUnspecified;
     }
 
-    if (this.activeToolMode_ === tool) {
-      this.activeToolMode_ = ComposeboxToolMode.kUnspecified;
+    const newToolMode = isTogglingOff ? ComposeboxToolMode.kUnspecified : tool;
+
+    if (isTogglingOff) {
       const metricName = `ContextualSearch.UserAction.InputStateDeletion.Tool.${
           this.composeboxSource_}`;
       recordUserAction(metricName);
       recordBoolean(metricName, true);
     } else {
-      this.activeToolMode_ = tool;
+      this.searchboxHandler_.recordToolSelectionAction(newToolMode);
     }
-
-    this.handleToolModeUpdate_();
+    this.handleToolModeUpdate_(newToolMode);
   }
 
-  private handleToolModeUpdate_() {
+  private handleToolModeUpdate_(toolMode: ComposeboxToolMode) {
+    this.activeToolMode_ = toolMode;
     this.searchboxHandler_.setActiveToolMode(this.activeToolMode_);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
@@ -1539,6 +1538,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+    this.searchboxHandler_.recordModelSelectionAction(e.detail.model);
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
     this.updateInputPlaceholder_();
   }
@@ -1894,13 +1894,13 @@ export class ComposeboxElement extends I18nMixinLit
 
       switch (context.toolMode) {
         case ToolMode.kDeepSearch:
-          this.handleToolClick_(ComposeboxToolMode.kDeepSearch);
+          this.handleToolModeUpdate_(ComposeboxToolMode.kDeepSearch);
           break;
         case ToolMode.kCreateImage:
-          this.handleToolClick_(ComposeboxToolMode.kImageGen);
+          this.handleToolModeUpdate_(ComposeboxToolMode.kImageGen);
           break;
         case ToolMode.kCanvas:
-          this.handleToolClick_(ComposeboxToolMode.kCanvas);
+          this.handleToolModeUpdate_(ComposeboxToolMode.kCanvas);
           break;
         default:
       }

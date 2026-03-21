@@ -182,7 +182,9 @@ class ContextualSearchboxHandler
   // Resets `input_state_model_`.
   void ResetInputStateModel();
   void SetActiveToolMode(omnibox::ToolMode tool) override;
+  void RecordToolSelectionAction(omnibox::ToolMode tool) override;
   void SetActiveModelMode(omnibox::ModelMode model) override;
+  void RecordModelSelectionAction(omnibox::ModelMode model) override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
 
   void OnInputStateChangedForTesting(
