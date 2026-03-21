@@ -453,6 +453,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "protectedErrorPageBottomLine",
       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);
+#else
+  // TODO(crbug.com/483442073): Replace the values with Android resources.
+  source->AddBoolean("darkMode", false);
+  source->AddString("protectedErrorPageTopLine", "string");
+  source->AddString("protectedErrorPageBottomLine", "string");
 #endif
 
   source->AddString("userAgentSuffix",

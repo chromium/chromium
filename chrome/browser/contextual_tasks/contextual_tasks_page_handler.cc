@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom-shared.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
@@ -44,10 +45,6 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
-#endif
 
 namespace {
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
@@ -231,11 +228,7 @@ void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
 
 void ContextualTasksPageHandler::IsZeroState(const GURL& url,
                                              IsZeroStateCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(ContextualTasksUI::IsZeroState(url, ui_service_));
-#else
-  std::move(callback).Run(false);
-#endif
 }
 
 void ContextualTasksPageHandler::IsAiPage(const GURL& url,

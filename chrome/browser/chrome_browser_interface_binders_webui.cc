@@ -6,6 +6,7 @@
 
 #include "build/android_buildflags.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/actor_internals/actor_internals.mojom.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/policy/core/common/features.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -146,6 +148,11 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
           policy::features::kPolicyPageMojoMigration)) {
     RegisterWebUIControllerInterfaceBinder<
         policy::mojom::PolicyPageHandlerFactory, PolicyUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
   }
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().

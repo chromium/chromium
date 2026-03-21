@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/autocomplete/aim_eligibility_refresh_navigation_throttle.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_navigation_throttle.h"
 #include "chrome/browser/custom_handlers/chrome_protocol_handler_navigation_throttle.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
@@ -91,7 +92,6 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_navigation_throttle.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
@@ -466,7 +466,6 @@ void CreateAndAddChromeThrottlesForNavigation(
   // before ContextualTasksNavigationThrottle intercepts them.
   AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(registry);
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
       base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksUrlRedirectToAimUrl)) {
@@ -474,6 +473,7 @@ void CreateAndAddChromeThrottlesForNavigation(
         registry);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   DevToolsWindow::MaybeCreateAndAddNavigationThrottle(registry);
 
   if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {

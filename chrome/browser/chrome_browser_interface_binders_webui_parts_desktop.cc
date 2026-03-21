@@ -562,9 +562,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   if (is_contextual_tasks_enabled) {
     RegisterWebUIControllerInterfaceBinder<
-        contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
-    RegisterWebUIControllerInterfaceBinder<
         omnibox::logging::mojom::PageHandlerFactory, OmniboxUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks_internals::mojom::
+            ContextualTasksInternalsPageHandlerFactory,
+        ContextualTasksUI>(map);
   }
 
   // Registering bindings for all WebUIControllers, even if only one of the
@@ -602,13 +604,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<
         private_ai_internals::mojom::PrivateAiInternalsPageHandler,
         private_ai::PrivateAiInternalsUI>(map);
-  }
-
-  if (is_contextual_tasks_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        contextual_tasks_internals::mojom::
-            ContextualTasksInternalsPageHandlerFactory,
-        ContextualTasksUI>(map);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
