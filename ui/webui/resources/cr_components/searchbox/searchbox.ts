@@ -416,8 +416,11 @@ export class SearchboxElement extends SearchboxElementBase implements
       waitForLazyRender().then(async () => {
         const {config} = await this.pageHandler_.getPlaceholderConfig();
         const texts = config.texts;
-        assert(texts[0]);
-        this.placeholderText = texts[0];
+        if (texts.length === 0) {
+          // PEC API returned no placeholders; feature is disabled.
+          return;
+        }
+        this.placeholderText = texts[0]!;
         this.placeholderCycler_ = new PlaceholderTextCycler(
             this.$.input.inputElement, texts,
             Number(config.changeTextAnimationInterval.microseconds / 1000n),

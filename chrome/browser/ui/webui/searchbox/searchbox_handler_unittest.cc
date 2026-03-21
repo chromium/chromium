@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -42,6 +44,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/model_config.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/tool_config.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/webui/web_ui_util.h"
 
 class SearchboxHandlerTest : public ::testing::Test {
@@ -201,14 +208,113 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   }
 }
 
-TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
+TEST_F(RealboxHandlerTest, GetPlaceholderConfig_NoPecApiReturnsEmpty) {
   base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
   handler_->GetPlaceholderConfig(future.GetCallback());
   auto config = future.Take();
 
-  ASSERT_GT(config->texts.size(), 0u);
+  ASSERT_EQ(config->texts.size(), 0u);
   ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 2000u);
   ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
+}
+
+namespace {
+std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
+    content::BrowserContext* context) {
+  auto* profile = Profile::FromBrowserContext(context);
+  auto service = std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+      *profile->GetPrefs(),
+      /*template_url_service=*/nullptr,
+      /*url_loader_factory=*/nullptr,
+      /*identity_manager=*/nullptr, AimEligibilityService::Configuration{});
+  return service;
+}
+}  // namespace
+
+class SearchboxHandlerPecApiTest : public RealboxHandlerTest {
+ public:
+  SearchboxHandlerPecApiTest() = default;
+  ~SearchboxHandlerPecApiTest() override = default;
+
+ protected:
+  raw_ptr<testing::NiceMock<MockAimEligibilityService>>
+      mock_aim_eligibility_service_ = nullptr;
+
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildMockAimEligibilityService));
+
+    mock_aim_eligibility_service_ =
+        static_cast<testing::NiceMock<MockAimEligibilityService>*>(
+            AimEligibilityServiceFactory::GetForProfile(profile()));
+
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    handler_ = std::make_unique<RealboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        web_contents_.get(),
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
+    handler_->SetPage(page_.BindAndGetRemote());
+  }
+
+  void TearDown() override {
+    mock_aim_eligibility_service_ = nullptr;
+    RealboxHandlerTest::TearDown();
+  }
+};
+
+TEST_F(SearchboxHandlerPecApiTest, GetPlaceholderConfig_WithToolConfigs) {
+  omnibox::SearchboxConfig& config = mock_aim_eligibility_service_->config();
+
+  auto* tool = config.add_tool_configs();
+  tool->set_tool(omnibox::TOOL_MODE_IMAGE_GEN);
+
+  auto* tool2 = config.add_tool_configs();
+  tool2->set_tool(omnibox::TOOL_MODE_CANVAS);
+
+  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
+      .WillByDefault(testing::Return(&config));
+
+  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
+  handler_->GetPlaceholderConfig(future.GetCallback());
+  auto result = future.Take();
+
+  ASSERT_EQ(result->texts.size(), 3u);
+  EXPECT_EQ(result->texts[0], u"Ask Google");
+  EXPECT_EQ(result->texts[1], u"Describe your image");
+  EXPECT_EQ(result->texts[2], u"Create anything");
+}
+
+TEST_F(SearchboxHandlerPecApiTest,
+       GetPlaceholderConfig_EmptySearchboxConfigReturnsAskGoogleOnly) {
+  omnibox::SearchboxConfig& config = mock_aim_eligibility_service_->config();
+
+  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
+      .WillByDefault(testing::Return(&config));
+
+  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
+  handler_->GetPlaceholderConfig(future.GetCallback());
+  auto result = future.Take();
+
+  ASSERT_EQ(result->texts.size(), 1u);
+  EXPECT_EQ(result->texts[0], u"Ask Google");
+}
+
+TEST_F(SearchboxHandlerPecApiTest,
+       GetPlaceholderConfig_NullSearchboxConfigReturnsEmpty) {
+  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
+      .WillByDefault(testing::Return(nullptr));
+
+  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
+  handler_->GetPlaceholderConfig(future.GetCallback());
+  auto result = future.Take();
+
+  ASSERT_EQ(result->texts.size(), 0u);
 }
 
 TEST_F(RealboxHandlerTest, AddFileContext) {
