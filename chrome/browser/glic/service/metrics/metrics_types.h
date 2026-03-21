@@ -47,7 +47,8 @@ enum class GlicEntrypoint {
   kAutoOpenedForPdf = 12,
   kIph = 13,
   kOther = 14,
-  kMaxValue = kOther,
+  kWebContentsContextMenu = 15,
+  kMaxValue = kWebContentsContextMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntrypoint)
 

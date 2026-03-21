@@ -2797,6 +2797,8 @@ export enum InvocationSource {
   IPH = 21,
   // User clicked an anchored contextual cue chip.
   ANCHORED_CONTEXTUAL_CUE = 22,
+  // From the context menu.
+  WEB_CONTENTS_CONTEXT_MENU = 23,
 }
 
 ///////////////////////////////////////////////

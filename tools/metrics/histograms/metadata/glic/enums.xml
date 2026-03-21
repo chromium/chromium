@@ -219,9 +219,10 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Automatically opened for a PDF"/>
   <int value="13" label="IPH"/>
   <int value="14" label="Other"/>
+  <int value="15" label="Context menu"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
 
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
@@ -535,6 +536,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="From capture region hotkey"/>
   <int value="21" label="In-product help"/>
   <int value="22" label="User clicked an anchored contextual cue chip"/>
+  <int value="23" label="Context menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -743,6 +745,10 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Anchored contextual cue, attached, audio mode."/>
   <int value="91" label="Anchored contextual cue, detached, text mode."/>
   <int value="92" label="Anchored contextual cue, detached, audio mode."/>
+  <int value="93" label="Context menu, attached, text mode."/>
+  <int value="94" label="Context menu, attached, audio mode."/>
+  <int value="95" label="Context menu, detached, text mode."/>
+  <int value="96" label="Context menu, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

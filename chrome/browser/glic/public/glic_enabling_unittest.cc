@@ -623,39 +623,43 @@ TEST_P(GlicEnablingAnyFreModeTest,
 
 INSTANTIATE_TEST_SUITE_P(All, GlicEnablingAnyFreModeTest, testing::Bool());
 
-struct AutoOpenPdfParams {
-  bool auto_open_pdf = false;
-  bool auto_open_pdf_with_onboarding = false;
-  bool has_consent = false;
-  bool trust_first = false;
-  bool result = false;
+struct GatedFeatureParams {
+  std::string name;
+  bool is_feature_enabled = false;
+  bool is_onboarding_param_enabled = false;
+  bool has_user_consented = false;
+  bool is_trust_first_enabled = false;
+  bool expected_result = false;
 };
 
-class GlicEnablingAutoOpenForPdfTest
+// Base class for testing features that follow the "gated" enablement pattern
+// (Multi-instance -> Feature Flag -> Consent OR Onboarding Gate).
+class GlicEnablingGatedFeatureTest
     : public GlicEnablingProfileReadyStateTestBase,
-      public testing::WithParamInterface<AutoOpenPdfParams> {
+      public testing::WithParamInterface<GatedFeatureParams> {
  public:
-  void SetUp() override {
+  void SetUpFeature(const base::Feature& feature,
+                    const base::FeatureParam<bool>& onboarding_param) {
     GlicEnablingProfileReadyStateTestBase::SetUp();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    // Always enable multi-instance features.
+    // Always enable multi-instance features as a prerequisite.
     enabled_features.push_back({features::kGlicMultiInstance, {}});
     enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
     enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
 
-    if (GetParam().auto_open_pdf) {
+    if (GetParam().is_feature_enabled) {
       enabled_features.push_back(
-          {features::kAutoOpenGlicForPdf,
-           {{"AutoOpenGlicForPdfWithOnboarding",
-             GetParam().auto_open_pdf_with_onboarding ? "true" : "false"}}});
+          {feature,
+           {{onboarding_param.name,
+             GetParam().is_onboarding_param_enabled ? "true" : "false"}}});
     } else {
-      disabled_features.push_back(features::kAutoOpenGlicForPdf);
+      disabled_features.push_back(feature);
     }
 
-    if (GetParam().trust_first) {
+    if (GetParam().is_trust_first_enabled) {
       enabled_features.push_back({features::kGlicTrustFirstOnboarding, {}});
     } else {
       disabled_features.push_back(features::kGlicTrustFirstOnboarding);
@@ -665,45 +669,114 @@ class GlicEnablingAutoOpenForPdfTest
                                                        disabled_features);
   }
 
+ protected:
+  void SetConsent(bool has_consent) {
+    const auto fre_status = has_consent ? prefs::FreStatus::kCompleted
+                                        : prefs::FreStatus::kIncomplete;
+    profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
+                                      static_cast<int>(fre_status));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// --- PDF Auto-Open Tests ---
+
+class GlicEnablingAutoOpenForPdfTest : public GlicEnablingGatedFeatureTest {
+ public:
+  void SetUp() override {
+    SetUpFeature(features::kAutoOpenGlicForPdf,
+                 features::kAutoOpenGlicForPdfWithOnboarding);
+  }
+};
+
 TEST_P(GlicEnablingAutoOpenForPdfTest, ExpectedBehavior) {
-  const auto fre_status = GetParam().has_consent
-                              ? prefs::FreStatus::kCompleted
-                              : prefs::FreStatus::kIncomplete;
-  profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                    static_cast<int>(fre_status));
-  EXPECT_EQ(GetParam().result,
-            GlicEnabling::IsAutoOpenForPdfEnabled(profile()));
+  SetConsent(GetParam().has_user_consented);
+  EXPECT_EQ(GetParam().expected_result,
+            GlicEnabling::IsAutoOpenForPdfEnabled(profile()))
+      << "Failed for case: " << GetParam().name;
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     GlicEnablingAutoOpenForPdfTest,
-    testing::Values(AutoOpenPdfParams{},  // Default values
-                    AutoOpenPdfParams{.trust_first = true},
-                    AutoOpenPdfParams{.auto_open_pdf = true,
-                                      .has_consent = true,
-                                      .result = true},
-                    AutoOpenPdfParams{.auto_open_pdf = true,
-                                      .has_consent = true,
-                                      .trust_first = true,
-                                      .result = true},
-                    AutoOpenPdfParams{.auto_open_pdf = true,
-                                      .has_consent = false,
-                                      .trust_first = true,
-                                      .result = false},
-                    AutoOpenPdfParams{.auto_open_pdf = true,
-                                      .auto_open_pdf_with_onboarding = true,
-                                      .has_consent = false,
-                                      .trust_first = false,
-                                      .result = false},
-                    AutoOpenPdfParams{.auto_open_pdf = true,
-                                      .auto_open_pdf_with_onboarding = true,
-                                      .has_consent = false,
-                                      .trust_first = true,
-                                      .result = true}));
+    testing::Values(
+        GatedFeatureParams{.name = "Default (All Off)",
+                           .expected_result = false},
+        GatedFeatureParams{.name = "TrustFirstOnly (Not Enough)",
+                           .is_trust_first_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "Consented (Pure)",
+                           .is_feature_enabled = true,
+                           .has_user_consented = true,
+                           .expected_result = true},
+        GatedFeatureParams{.name = "ConsentedWithTrustFirst",
+                           .is_feature_enabled = true,
+                           .has_user_consented = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = true},
+        GatedFeatureParams{.name = "FeatureEnabledWithTrustFirst (No Gate)",
+                           .is_feature_enabled = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "OnboardingGatedOnly (No TrustFirst)",
+                           .is_feature_enabled = true,
+                           .is_onboarding_param_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "OnboardingGatedWithTrustFirst (Success)",
+                           .is_feature_enabled = true,
+                           .is_onboarding_param_enabled = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = true}));
+
+// --- Context Menu Item Tests ---
+
+class GlicEnablingContextMenuTest : public GlicEnablingGatedFeatureTest {
+ public:
+  void SetUp() override {
+    SetUpFeature(features::kGlicContextMenu,
+                 features::kGlicContextMenuWithOnboarding);
+  }
+};
+
+TEST_P(GlicEnablingContextMenuTest, ExpectedBehavior) {
+  SetConsent(GetParam().has_user_consented);
+  EXPECT_EQ(GetParam().expected_result,
+            GlicEnabling::IsContextualMenuItemEnabled(profile()))
+      << "Failed for case: " << GetParam().name;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicEnablingContextMenuTest,
+    testing::Values(
+        GatedFeatureParams{.name = "Default (All Off)",
+                           .expected_result = false},
+        GatedFeatureParams{.name = "TrustFirstOnly (Not Enough)",
+                           .is_trust_first_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "Consented (Pure)",
+                           .is_feature_enabled = true,
+                           .has_user_consented = true,
+                           .expected_result = true},
+        GatedFeatureParams{.name = "ConsentedWithTrustFirst",
+                           .is_feature_enabled = true,
+                           .has_user_consented = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = true},
+        GatedFeatureParams{.name = "FeatureEnabledWithTrustFirst (No Gate)",
+                           .is_feature_enabled = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "OnboardingGatedOnly (No TrustFirst)",
+                           .is_feature_enabled = true,
+                           .is_onboarding_param_enabled = true,
+                           .expected_result = false},
+        GatedFeatureParams{.name = "OnboardingGatedWithTrustFirst (Success)",
+                           .is_feature_enabled = true,
+                           .is_onboarding_param_enabled = true,
+                           .is_trust_first_enabled = true,
+                           .expected_result = true}));
 }  // namespace
 }  // namespace glic

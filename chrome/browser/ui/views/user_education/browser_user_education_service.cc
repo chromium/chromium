@@ -19,6 +19,7 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -2237,6 +2238,11 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       features::kGlicAppMenuNewBadge,
       user_education::Metadata(136, "sophey@chromium.org",
                                "Shown in the three dot menu.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kGlicContextMenu,
+      user_education::Metadata(146, "basiaz@google.com",
+                               "Shown in the contextual menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       tabs::kVerticalTabsPreviewBadge,

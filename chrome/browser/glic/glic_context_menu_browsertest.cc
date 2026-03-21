@@ -1,0 +1,89 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace glic {
+
+class GlicContextMenuBrowserTest : public GlicBrowserTest {
+ public:
+  GlicContextMenuBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicContextMenu);
+  }
+
+ protected:
+  std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::ContextMenuParams params;
+    params.page_url = web_contents->GetVisibleURL();
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetPrimaryMainFrame(), params);
+    menu->Init();
+    return menu;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicItemPresent) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto menu = CreateContextMenu();
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_TRUE(menu->IsItemEnabled(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicInvokeStandard) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto menu = CreateContextMenu();
+
+  // Initially no Glic instance.
+  EXPECT_EQ(nullptr, GetOnlyGlicInstance());
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+
+  // Now Glic should be open.
+  ASSERT_TRUE(WaitForGlicOpen());
+  EXPECT_NE(nullptr, GetOnlyGlicInstance());
+}
+
+class GlicContextMenuArm2BrowserTest : public GlicContextMenuBrowserTest {
+ public:
+  GlicContextMenuArm2BrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicContextMenu,
+        {{features::kGlicContextMenuArm.name, "arm2"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuArm2BrowserTest, GlicInvokeArm2) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto menu = CreateContextMenu();
+
+  // Initially no Glic instance.
+  EXPECT_EQ(nullptr, GetOnlyGlicInstance());
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+
+  // Now Glic should be open.
+  ASSERT_TRUE(WaitForGlicOpen());
+  EXPECT_NE(nullptr, GetOnlyGlicInstance());
+}
+
+}  // namespace glic

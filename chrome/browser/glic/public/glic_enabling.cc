@@ -625,8 +625,23 @@ bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
 }
 
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
-  if (!IsMultiInstanceEnabled() ||
-      !base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+  return IsTrustFirstOnboardingGatedFeatureEnabled(
+      profile, features::kAutoOpenGlicForPdf,
+      features::kAutoOpenGlicForPdfWithOnboarding);
+}
+
+bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
+  return IsTrustFirstOnboardingGatedFeatureEnabled(
+      profile, features::kGlicContextMenu,
+      features::kGlicContextMenuWithOnboarding);
+}
+
+// static
+bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
+    Profile* profile,
+    const base::Feature& feature,
+    const base::FeatureParam<bool>& onboarding_param) {
+  if (!IsMultiInstanceEnabled() || !base::FeatureList::IsEnabled(feature)) {
     return false;
   }
 
@@ -634,9 +649,9 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
     return true;
   }
 
-  // If the user has not consented and with onboarding is enabled, the auto open
-  // behavior is gated by the Trust First onboarding feature.
-  if (features::kAutoOpenGlicForPdfWithOnboarding.Get()) {
+  // If the user has not consented and the onboarding gate is enabled,
+  // the behavior is gated by the Trust First onboarding feature.
+  if (onboarding_param.Get()) {
     return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
   }
   return false;

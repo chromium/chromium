@@ -616,6 +616,7 @@ source_set("browser_tests") {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",
       "glic_browsertest.cc",
+      "glic_context_menu_browsertest.cc",
       "glic_metrics_browsertest.cc",
       "glic_navigation_throttle_browsertest.cc",
       "glic_net_log_browsertest.cc",

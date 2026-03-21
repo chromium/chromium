@@ -1543,6 +1543,8 @@ enum InvocationSource {
   [MinVersion=13] kIph = 21,
   // User clicked an anchored contextual cue chip.
   [MinVersion=14] kAnchoredContextualCue = 22,
+  // From the context menu.
+  [MinVersion=15] kWebContentsContextMenu = 23,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation, //chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint)

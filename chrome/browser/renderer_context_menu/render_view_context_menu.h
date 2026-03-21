@@ -223,6 +223,8 @@ class RenderViewContextMenu
                                bool started_from_context_menu) override;
 
  private:
+  void ExecGlic();
+
   friend class RenderViewContextMenuTest;
   friend class TestRenderViewContextMenu;
   friend class FormatUrlForClipboardTest;
@@ -609,6 +611,9 @@ class RenderViewContextMenu
            // Image loading commands.
            IDC_CONTENT_CONTEXT_LOAD_IMAGE,
            IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB,
+
+           // Opening Glic
+           IDC_CONTENT_CONTEXT_GLIC,
 
            // Autofill commands.
            IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY});

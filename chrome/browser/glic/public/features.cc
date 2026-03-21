@@ -57,4 +57,10 @@ BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicContextMenuArm{&kGlicContextMenu,
+                                                          "variant", "arm1"};
+const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
+    &kGlicContextMenu, "WithOnboarding", false};
+
 }  // namespace features
