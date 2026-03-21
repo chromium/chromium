@@ -114,13 +114,6 @@ struct LayerTreeUpdate {
   // calling GenerateCompositorFrame() again in viz process.
   bool send_frame_token_to_embedder;
 
-  // The viz::LocalSurfaceId to unthrottle drawing for.
-  // This is from LayerTreeHostImpl.
-  // It is still necessary to send it over to viz because
-  // LayerContextImpl::BeginFrame calls LayerTreeHostImpl::WillBeginImplFrame
-  // which uses the target_local_surface_id_.
-  LocalSurfaceId? target_local_surface_id;
-
   // The background color with which to fill any space not covered by layers
   // within the tree's content rect.
   skia.mojom.SkColor4f background_color;
@@ -261,6 +254,9 @@ interface LayerContext {
 
   // Updates one or more tiles in a specific tiling.
   UpdateDisplayTiling(Tiling tiling);
+
+  // Sets the target LocalSurfaceId to unthrottle drawing for.
+  SetTargetLocalSurfaceId(LocalSurfaceId target_local_surface_id);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

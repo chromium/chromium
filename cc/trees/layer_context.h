@@ -41,13 +41,16 @@ class CC_EXPORT LayerContext {
   // Globally controls the visibility of layers within the tree.
   virtual void SetVisible(bool visible) = 0;
 
+  // Sets the target LocalSurfaceId to unthrottle drawing for.
+  virtual void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id) = 0;
+
   // Pushes updates from `tree` into the context's display tree.
   virtual base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
-      const viz::LocalSurfaceId& target_local_surface_id,
       bool frame_has_damage,
       std::vector<ui::LatencyInfo> latency_info) = 0;
 

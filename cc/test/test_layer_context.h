@@ -19,12 +19,14 @@ class TestLayerContext : public LayerContext {
 
   void SetVisible(bool visible) override;
 
+  void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id) override;
+
   base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
-      const viz::LocalSurfaceId& target_local_surface_id,
       bool frame_has_damage,
       std::vector<ui::LatencyInfo> latency_info) override;
 

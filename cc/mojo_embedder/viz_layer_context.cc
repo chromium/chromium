@@ -1365,12 +1365,16 @@ void VizLayerContext::SetVisible(bool visible) {
   service_->SetVisible(visible);
 }
 
+void VizLayerContext::SetTargetLocalSurfaceId(
+    const viz::LocalSurfaceId& target_local_surface_id) {
+  service_->SetTargetLocalSurfaceId(target_local_surface_id);
+}
+
 base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
     const gfx::Rect& viewport_damage_rect,
-    const viz::LocalSurfaceId& target_local_surface_id,
     bool frame_has_damage,
     std::vector<ui::LatencyInfo> latency_info) {
   TRACE_EVENT0("viz", "VizLayerContext::UpdateDisplayTreeFrom");
@@ -1411,9 +1415,6 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
   update->current_local_surface_id = host_impl_->GetCurrentLocalSurfaceId();
-  if (target_local_surface_id.is_valid()) {
-    update->target_local_surface_id = target_local_surface_id;
-  }
   DCHECK_NE(host_impl_->next_frame_token(), viz::kInvalidFrameToken);
   update->next_frame_token = host_impl_->next_frame_token();
   update->send_frame_token_to_embedder =

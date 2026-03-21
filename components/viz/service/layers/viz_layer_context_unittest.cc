@@ -36,6 +36,9 @@ void FakeLayerContext::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
 // TODO(b/492322546): Add tests for UpdateDisplayTiling in the future.
 void FakeLayerContext::UpdateDisplayTiling(mojom::TilingPtr tiling) {}
 
+void FakeLayerContext::SetTargetLocalSurfaceId(
+    const LocalSurfaceId& target_local_surface_id) {}
+
 FakeCompositorFrameSink::FakeCompositorFrameSink(
     FakeLayerContext* layer_context)
     : layer_context_(layer_context) {}
@@ -87,14 +90,13 @@ cc::LayerImpl* VizLayerContextTest::SetupRootLayer() {
 void VizLayerContextTest::UpdateDisplayTreeAndWait() {
   const gfx::Rect& viewport_damage_rect =
       VizLayerContextTest::kDefaultDamageRect;
-  const LocalSurfaceId& target_local_surface_id = LocalSurfaceId();
   bool frame_has_damage = false;
   std::vector<ui::LatencyInfo> latency_info = {};
 
   viz_layer_context_->UpdateDisplayTreeFrom(
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
       /*shared_image_interface=*/nullptr, viewport_damage_rect,
-      target_local_surface_id, frame_has_damage, std::move(latency_info));
+      frame_has_damage, std::move(latency_info));
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();

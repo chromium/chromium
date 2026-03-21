@@ -4182,13 +4182,12 @@ TEST_F(LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest,
             kDefaultViewTransitionContentLayerMaxExtentsRect);
 }
 
-TEST_F(LayerContextImplTest, UpdateDisplayTreeWithTargetLocalSurfaceId) {
-  auto update = CreateDefaultUpdate();
+TEST_F(LayerContextImplTest, SetTargetLocalSurfaceId) {
   const LocalSurfaceId target_local_surface_id(
       1, base::UnguessableToken::CreateForTesting(2, 3));
-  update->target_local_surface_id = target_local_surface_id;
 
-  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  auto result =
+      layer_context_impl_->DoSetTargetLocalSurfaceId(target_local_surface_id);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(layer_context_impl_->host_impl()->target_local_surface_id(),
             target_local_surface_id);

@@ -2142,6 +2142,9 @@ void LayerTreeHostImpl::DidModifyTilePriorities(bool pending_update_tiles) {
 void LayerTreeHostImpl::SetTargetLocalSurfaceId(
     const viz::LocalSurfaceId& target_local_surface_id) {
   target_local_surface_id_ = target_local_surface_id;
+  if (layer_context_) {
+    layer_context_->SetTargetLocalSurfaceId(target_local_surface_id);
+  }
 }
 
 std::unique_ptr<RasterTilePriorityQueue> LayerTreeHostImpl::BuildRasterQueue(
@@ -3622,8 +3625,7 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(
   return layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
       layer_tree_frame_sink_->shared_image_interface().get(),
-      viewport_damage_rect_, target_local_surface_id_, !frame.has_no_damage,
-      std::move(latency_info));
+      viewport_damage_rect_, !frame.has_no_damage, std::move(latency_info));
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {

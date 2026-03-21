@@ -13,12 +13,14 @@ namespace cc {
 
 void FakeLayerContext::SetVisible(bool visible) {}
 
+void FakeLayerContext::SetTargetLocalSurfaceId(
+    const viz::LocalSurfaceId& target_local_surface_id) {}
+
 base::TimeTicks FakeLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
     const gfx::Rect& viewport_damage_rect,
-    const viz::LocalSurfaceId& target_local_surface_id,
     bool frame_has_damage,
     std::vector<ui::LatencyInfo> latency_info) {
   return base::TimeTicks::Now();

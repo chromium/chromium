@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -40,6 +41,8 @@ class FakeLayerContext : public mojom::LayerContext {
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
   void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
+  void SetTargetLocalSurfaceId(
+      const LocalSurfaceId& target_local_surface_id) override;
 
   mojom::LayerTreeUpdatePtr last_update_;
   base::OnceClosure on_update_display_tree_;
