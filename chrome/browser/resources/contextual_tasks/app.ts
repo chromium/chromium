@@ -285,6 +285,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('forcedEmbeddedPageHost');
   private signInDomains_: string[] =
       loadTimeData.getString('contextualTasksSignInDomains').split(',');
+  // Whether the composebox jump fix is enabled. This fix hides the composebox
+  // until the server gives the embedded page gives the initial bounds for the
+  // composebox.
+  private enableComposeboxJumpFix_: boolean =
+      loadTimeData.getBoolean('enableComposeboxJumpFix');
   private enableGhostLoader_: boolean =
       loadTimeData.getBoolean('enableGhostLoader');
   // A callback to allow tests to wait until the popstate handler in this class
@@ -786,6 +791,31 @@ export class ContextualTasksAppElement extends CrLitElement {
     }
   }
 
+  protected isComposeboxHidden_(): boolean {
+    // Stay hidden until the first isZeroState_ value is determined to prevent
+    // the composebox from flickering in.
+    if (this.isZeroState_ === undefined) {
+      return true;
+    }
+
+    // If using the basic mode without z-ordering, if in basic mode, hide the
+    // composebox.
+    if (this.enableBasicMode_ && this.isInBasicMode_ &&
+        !this.enableBasicModeZOrder_) {
+      return true;
+    }
+
+    // If on an AI page and not the zero state, only show the composebox if the
+    // forcedcomposeboxBounds are set. No-op if the feature flag is not enabled.
+    if (this.enableComposeboxJumpFix_ && this.isAiPage_ && !this.isZeroState_ &&
+        !this.forcedComposeboxBounds_) {
+      return true;
+    }
+
+    // In all other cases, show the composebox.
+    return false;
+  }
+
   getComposeboxBoundsStyles() {
     if (this.isZeroState_ || !this.forcedComposeboxBounds_) {
       return '';
@@ -1139,6 +1169,18 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   setIsZeroStateForTesting(isZeroState: boolean) {
     this.isZeroState_ = isZeroState;
+  }
+
+  setForcedComposeboxBoundsForTesting(bounds: Rect|null) {
+    this.forcedComposeboxBounds_ = bounds;
+  }
+
+  getOccludersForTesting(): Rect[]|null {
+    return this.occluders_;
+  }
+
+  getPendingBasicModeForTesting(): boolean|null {
+    return this.pendingBasicMode_;
   }
 
   private updateBackgroundColor_() {

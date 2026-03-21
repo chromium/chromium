@@ -61,6 +61,9 @@ BASE_DECLARE_FEATURE(kContextualTasksInsertWebContentsAt);
 // If enabled, animates the caret.
 BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
 
+// Fixes the composebox jump.
+BASE_DECLARE_FEATURE(kContextualTasksComposeboxJumpFix);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -252,6 +255,9 @@ extern bool ShouldUseStratusDarkModeColors();
 
 // Returns whether the file hint is enabled in the composebox.
 extern bool GetEnableFileHint();
+
+// Returns whether the composebox jump fix is enabled.
+extern bool GetEnableComposeboxJumpFix();
 
 // Returns the UI option to expand contextual tasks side panel to tab.
 extern ExpandButtonOption GetExpandButtonOption();
