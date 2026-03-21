@@ -287,6 +287,7 @@ suite('SpeechController', () => {
       });
 
   test('onPlayPauseToggle with selection reads from there', async () => {
+    chrome.readingMode.isImmersiveEnabled = true;
     const id = 35;
     const p = document.createElement('p');
     const text1 = 'And our fame. ';
@@ -335,6 +336,7 @@ suite('SpeechController', () => {
   });
 
   test('onPlayPauseToggle with selection resets word boundaries', async () => {
+    chrome.readingMode.isImmersiveEnabled = true;
     const id = 35;
     const p = document.createElement('p');
     const text1 = 'And the disgraces. ';

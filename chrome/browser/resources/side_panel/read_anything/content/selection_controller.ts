@@ -39,6 +39,37 @@ export class SelectionController {
   }
 
   getCurrentSelectionStart(): SelectionEndpoint {
+    if (chrome.readingMode.isImmersiveEnabled) {
+      return this.getCurrentSelectionStartImmersive();
+    }
+
+    const anchorNodeId = chrome.readingMode.startNodeId;
+    const anchorOffset = chrome.readingMode.startOffset;
+    const focusNodeId = chrome.readingMode.endNodeId;
+    const focusOffset = chrome.readingMode.endOffset;
+
+    // If only one of the ids is present, use that one.
+    let startingNodeId: number|undefined =
+        anchorNodeId ? anchorNodeId : focusNodeId;
+    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
+    // If both are present, start with the node that is sooner in the page.
+    if (anchorNodeId && focusNodeId) {
+      const selection = this.currentSelection_;
+      if (anchorNodeId === focusNodeId) {
+        startingOffset = Math.min(anchorOffset, focusOffset);
+      } else if (selection && selection.anchorNode && selection.focusNode) {
+        const pos =
+            selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
+        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
+        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+      }
+    }
+
+    return {nodeId: startingNodeId, offset: startingOffset};
+  }
+
+  getCurrentSelectionStartImmersive(): SelectionEndpoint {
     const selection = this.currentSelection_;
     if (!selection || !selection.anchorNode || !selection.focusNode) {
       return {nodeId: 0, offset: -1};

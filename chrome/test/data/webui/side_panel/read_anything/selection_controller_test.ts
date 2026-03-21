@@ -128,12 +128,14 @@ suite('SelectionController', () => {
     });
 
     test('current selection start with no selection', () => {
+      chrome.readingMode.isImmersiveEnabled = true;
       const selectionStart = selectionController.getCurrentSelectionStart();
       assertEquals(0, selectionStart.nodeId);
       assertEquals(-1, selectionStart.offset);
     });
 
     test('current selection start with forward selection in one node', () => {
+      chrome.readingMode.isImmersiveEnabled = true;
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 10;
       const node = getNodeAt(1);
@@ -147,6 +149,7 @@ suite('SelectionController', () => {
     });
 
     test('current selection start with backward selection in one node', () => {
+      chrome.readingMode.isImmersiveEnabled = true;
       const expectedAnchorOffset = 10;
       const expectedFocusOffset = 2;
       const node = getNodeAt(1);
@@ -160,6 +163,7 @@ suite('SelectionController', () => {
     });
 
     test('current selection start with forward selection across nodes', () => {
+      chrome.readingMode.isImmersiveEnabled = true;
       const expectedAnchorOffset = 10;
       const expectedFocusOffset = 2;
       const node1 = getNodeAt(0);
@@ -175,6 +179,7 @@ suite('SelectionController', () => {
     });
 
     test('current selection start with backward selection across nodes', () => {
+      chrome.readingMode.isImmersiveEnabled = true;
       const expectedAnchorOffset = 10;
       const expectedFocusOffset = 2;
       const node1 = getNodeAt(0);
