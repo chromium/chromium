@@ -32,6 +32,13 @@ namespace webnn {
 
 namespace {
 
+struct Conv2dInputOutputInfo {
+  uint32_t batches;
+  uint32_t channels;
+  uint32_t height;
+  uint32_t width;
+};
+
 // The error message labels for corresponding operands.
 static constexpr char kBiasParam[] = "bias";
 static constexpr char kCellStateParam[] = "cellState";
@@ -56,6 +63,51 @@ static constexpr char kUpdatesParam[] = "updates";
 static constexpr char kVarianceParam[] = "variance";
 static constexpr char kWeightParam[] = "weight";
 static constexpr char kZeroPointParam[] = "zeroPoint";
+
+// Validate that the intermediate padded shape is within the limits of
+// OperandDescriptor. This is useful for convolution and pooling operations
+// that may be implemented by padding the input tensor first.
+base::expected<void, std::string> ValidateIntermediatePaddedDescriptor(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const Padding2d& padding,
+    const InputOperandLayout& input_layout,
+    const Conv2dInputOutputInfo& input_info,
+    std::string_view label) {
+  uint32_t padded_height;
+  uint32_t padded_width;
+  if (!(base::CheckedNumeric<uint32_t>(input_info.height) +
+        padding.beginning.height + padding.ending.height)
+           .AssignIfValid(&padded_height) ||
+      !(base::CheckedNumeric<uint32_t>(input_info.width) +
+        padding.beginning.width + padding.ending.width)
+           .AssignIfValid(&padded_width)) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The padded intermediate shape is too large."));
+  }
+
+  std::array<uint32_t, 4> padded_shape;
+  switch (input_layout) {
+    case InputOperandLayout::kNchw:
+      padded_shape = {input_info.batches, input_info.channels, padded_height,
+                      padded_width};
+      break;
+    case InputOperandLayout::kNhwc:
+      padded_shape = {input_info.batches, padded_height, padded_width,
+                      input_info.channels};
+      break;
+  }
+
+  auto padded_descriptor = OperandDescriptor::Create(
+      context_properties, input.data_type(), padded_shape, label);
+  if (!padded_descriptor.has_value()) {
+    return base::unexpected(ErrorWithLabel(
+        label, base::StrCat({"The padded intermediate operand is invalid: ",
+                             padded_descriptor.error()})));
+  }
+
+  return base::ok();
+}
 
 // Validate and calculate the output spatial dimensions of convTranspose2d given
 // input sizes, filter sizes, padding, strides, dilations and output padding.
@@ -108,13 +160,6 @@ ValidateAndCalculateConvTranspose2dOutputSizes(
   return Size2d<uint32_t>{.height = output_height.value(),
                           .width = output_width.value()};
 }
-
-struct Conv2dInputOutputInfo {
-  uint32_t batches;
-  uint32_t channels;
-  uint32_t height;
-  uint32_t width;
-};
 
 // Get the input info of 2-D direct and transposed convolution
 // operation given input operand and attributes.
@@ -738,6 +783,10 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
         label, "The groups must evenly divide the output channels."));
   }
 
+  RETURN_IF_ERROR(ValidateIntermediatePaddedDescriptor(
+      context_properties, input, attributes.padding, attributes.input_layout,
+      input_info, label));
+
   // Validate and calculate output sizes.
   ASSIGN_OR_RETURN(
       Size2d<double> output_sizes,
@@ -843,6 +892,10 @@ ValidateConvTranspose2dAndInferOutput(
         ErrorWithLabel(label, "The output channels is too large."));
   }
   const uint32_t output_channels = checked_output_channels.ValueOrDie();
+
+  RETURN_IF_ERROR(ValidateIntermediatePaddedDescriptor(
+      context_properties, input, attributes.padding, attributes.input_layout,
+      input_info, label));
 
   // Validate and calculate output sizes.
   uint32_t output_height, output_width;
@@ -2244,6 +2297,14 @@ base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
     window_height = attributes.window_dimensions->height;
     window_width = attributes.window_dimensions->width;
   }
+
+  RETURN_IF_ERROR(ValidateIntermediatePaddedDescriptor(
+      context_properties, input, attributes.padding, attributes.layout,
+      Conv2dInputOutputInfo{.batches = input_batches,
+                            .channels = input_channels,
+                            .height = input_height,
+                            .width = input_width},
+      label));
 
   // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
   // sizes.
