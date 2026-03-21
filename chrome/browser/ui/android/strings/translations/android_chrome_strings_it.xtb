@@ -271,7 +271,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2175927920773552910">Codice QR</translation>
-<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2184272387334793084">Accedi per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="218608176142494674">Condivisione</translation>
 <translation id="2186779861549045980">Puoi scegliere quali dati salvare nel tuo Account Google.\nPuoi visualizzare e gestire questi elementi anche nei preferiti, nell'elenco di lettura o in Gestore delle password.</translation>
 <translation id="219283042927675668">Schede nel gruppo</translation>
@@ -375,7 +375,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="260403163289591229">Stai seguendo</translation>
 <translation id="2604446170045642109">Puoi disattivare il tema scuro per i siti nelle impostazioni.</translation>
 <translation id="2605017215201958293">Ascolta questa pagina con l'AI</translation>
-<translation id="2607441479295509868">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
+<translation id="2607441479295509868">Account disconnesso. Accedi di nuovo per avere preferiti, password e altro nel tuo account.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> ti ha inviato un invito ad accedere a un elemento condiviso.</translation>
 <translation id="2634393460268044753">Invia a Google Navigazione sicura gli URL dei siti che visiti e un piccolo campione di contenuti di pagine, download, attività delle estensioni e informazioni di sistema per controllare se sono dannosi.</translation>
 <translation id="2643064289437760082">Puoi eliminare in qualsiasi momento i dati di misurazione degli annunci eliminando i dati di navigazione</translation>
@@ -687,7 +687,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4000670338830950598">Personalizza e controlla Google Chrome con un elemento evidenziato</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 password compromessa nel tuo Account Google}other{# password compromesse nel tuo Account Google}}</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
-<translation id="4023638601467301498">Accedi a Chrome per trovare preferiti e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="4023638601467301498">Accedi a Chrome per avere preferiti e altro su tutti i tuoi dispositivi</translation>
 <translation id="4024768890073681126">Il tuo browser è gestito da un genitore</translation>
 <translation id="4027569221211770437">Cartella <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
@@ -761,7 +761,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4307992518367153382">Impostazioni di base</translation>
 <translation id="4311652497846705514">Aprire il PDF?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possibile spam}other{Possibile spam (#)}}</translation>
-<translation id="4320177379694898372">Nessuna connessione Internet</translation>
+<translation id="4320177379694898372">Nessuna connessione internet</translation>
 <translation id="4326079409704643112">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo Account Google</translation>
 <translation id="433213510553688132">In attesa di seguire…</translation>
 <translation id="4335835283689002019">Navigazione sicura non attiva</translation>
@@ -942,7 +942,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5010886807652684893">Visualizzazione grafica</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> desidera collegarsi</translation>
-<translation id="5012016139642806466">Usa le tue password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="5012016139642806466">Trova le tue password e altro su tutti i tuoi dispositivi</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> e <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> sembrano correlati. Assicurati di considerare <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> attendibile prima di utilizzare la password.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Ultimi 15 minuti</translation>
@@ -1061,7 +1061,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5599455543593328020">Modalità Incognito</translation>
 <translation id="5601180634394228718">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
-<translation id="5601924940067278327">Usa le tue schede e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="5601924940067278327">Trova le tue schede e altro su tutti i tuoi dispositivi</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="5613381935190035031">Accedi a Chrome come <ph name="EMAIL" /> per avere schede e altro su tutti i tuoi dispositivi</translation>
 <translation id="5614625640221885312">Accedi per avere a disposizione i tuoi preferiti, le password e altro ancora su tutti i dispositivi</translation>
@@ -1352,7 +1352,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
-<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati su tutti i dispositivi</translation>
+<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6752130751133944215">Per ripristinare una nuova finestra, riduci il numero totale di finestre attive e inattive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno. Le finestre inattive vengono eliminate dopo 6 mesi.</translation>
 <translation id="6754359471209693699">Inizia una nuova ricerca</translation>

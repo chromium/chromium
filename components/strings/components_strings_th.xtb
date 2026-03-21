@@ -1779,7 +1779,7 @@
 <translation id="382518646247711829">หากคุณใช้พร็อกซีเซิร์ฟเวอร์...</translation>
 <translation id="3826050100957962900">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
 <translation id="3827112369919217609">Absolute</translation>
-<translation id="3828924085048779000">ข้อความรหัสผ่านต้องไม่เว้นว่างไว้</translation>
+<translation id="3828924085048779000">พาสเฟรสต้องไม่เว้นว่างไว้</translation>
 <translation id="3830139096297532361">ไม่สามารถเข้าถึง PDF นี้ได้ ดาวน์โหลดไฟล์การดึงข้อความไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3830470485672984938">ใช้พาสคีย์อื่น</translation>
 <translation id="3831065134033923230">ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
@@ -3588,7 +3588,7 @@
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6734506549556896534">เกมจำลองเหตุการณ์</translation>
 <translation id="6737708609449480586">สินค้าเบเกอรี</translation>
-<translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
+<translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสไว้ด้วย<ph name="BEGIN_LINK" />พาสเฟรสการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนพาสเฟรสเพื่อเริ่มซิงค์</translation>
 <translation id="6740851646645036700">ขณะนี้คุณขอความช่วยเหลือในการเขียนถึงขีดจำกัดแล้ว โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
 <translation id="6743841972744298686">การตั้งค่าการซิงค์</translation>
@@ -4645,7 +4645,7 @@
 <translation id="8409413588194360210">เครื่องจัดการการชำระเงิน</translation>
 <translation id="8410956920192583322">รายเดือนหรือผ่อนชำระ 4 งวด</translation>
 <translation id="8412145213513410671">ข้อขัดข้อง (<ph name="CRASH_COUNT" />)</translation>
-<translation id="8412392972487953978">คุณต้องป้อนข้อความรหัสผ่านที่เหมือนกันสองครั้ง</translation>
+<translation id="8412392972487953978">คุณต้องป้อนพาสเฟรสเดียวกัน 2 ครั้ง</translation>
 <translation id="8414322570408428950">เกิดเหตุการณ์ของส่วนขยาย</translation>
 <translation id="8416694386774425977">การกำหนดค่าเครือข่ายไม่ถูกต้องและนำเข้าไม่ได้
 รายละเอียดเพิ่มเติม:
@@ -4678,7 +4678,7 @@
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">เปิด</translation>
 <translation id="8461289985785035071">แก้ไขเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
-<translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
+<translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยพาสเฟรสการซิงค์ของคุณเอง</translation>
 <translation id="8461973047386722744">ไม่พบรหัสผ่าน</translation>
 <translation id="8467494337615822642">ไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
@@ -5014,7 +5014,7 @@
 <translation id="9048035366624198823">การดำเนินการเหล่านี้กำหนดให้ตั้งค่านโยบาย <ph name="POLICY_NAME" /> เป็น <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /></translation>
 <translation id="9048662076076074925">24 x 36 นิ้ว</translation>
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>
-<translation id="9050666287014529139">รหัสผ่าน</translation>
+<translation id="9050666287014529139">พาสเฟรส</translation>
 <translation id="9051072642122229460">เครื่องชงกาแฟ</translation>
 <translation id="9053840549256861041">เรากำลังเปิดตัวฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เรียกว่าการวัดผลโฆษณา Chrome จะแชร์แค่ข้อมูลจำนวนน้อยมากระหว่างเว็บไซต์ต่างๆ เช่น ข้อมูลเวลาที่แสดงโฆษณาแก่คุณ เพื่อช่วยให้เว็บไซต์วัดประสิทธิภาพโฆษณาได้</translation>
 <translation id="9053955920216300738">URL ที่คุณเข้าชม</translation>
@@ -5121,7 +5121,7 @@
 <translation id="9198613052465150219">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>
 <translation id="9204089334327209740">เมื่ออัปโหลดเสร็จสมบูรณ์แล้ว คุณจะแก้ไขไฟล์ใน <ph name="CLOUD_PROVIDER" /> ได้ ระบบจะนำพื้นที่เก็บข้อมูลในเครื่อง รวมถึงไฟล์ในถังขยะออกโดยอัตโนมัติ</translation>
-<translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่านการซิงค์ โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
+<translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยพาสเฟรสการซิงค์ โปรดป้อนพาสเฟรสเพื่อเริ่มซิงค์</translation>
 <translation id="920643408853370361">ประกันภัยการเดินทาง</translation>
 <translation id="9207861905230894330">การเพิ่มบทความล้มเหลว</translation>
 <translation id="9209339767782560829">เกิดปัญหาในการใช้ใบรับรองการเข้าสู่ระบบ</translation>

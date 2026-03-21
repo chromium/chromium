@@ -1317,7 +1317,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Andke veebisaidile <ph name="WEBSITE" /> uuesti load</translation>
 <translation id="1874248162548993294">Lubatud kuvada mis tahes reklaame</translation>
-<translation id="1874972853365565008">{NUM_TABS,plural, =1{Vahelehe teisaldamine teise aknasse}other{Vahelehtede teisaldamine teise aknasse}}</translation>
+<translation id="1874972853365565008">{NUM_TABS,plural, =1{Teisalda vaheleht teise aknasse}other{Teisalda vahelehed teise aknasse}}</translation>
 <translation id="1875387611427697908">Seda on võimalik lisada vaid teenusest <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Silt (valikuline)</translation>
 <translation id="1877377730633446520">See kasutab umbes <ph name="REQUIRED_SPACE" />. Teil on praegu saadaval <ph name="FREE_SPACE" />.</translation>

@@ -1775,7 +1775,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2182058453334755893">Copia negli appunti eseguita</translation>
 <translation id="2182419606502127232">Includi i miei log del server.</translation>
 <translation id="2183570493397356669">Pulsante Continua non attivo</translation>
-<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2184272387334793084">Accedi per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="2184515124301515068">Consenti a Chrome di scegliere quando i siti possono riprodurre audio (opzione consigliata)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Avvia una nuova chat con Gemini</translation>
@@ -4965,7 +4965,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4317733381297736564">Acquisti in-app</translation>
 <translation id="4317820549299924617">La verifica non è andata a buon fine</translation>
 <translation id="4319441675152393296">Fai clic sull'icona di questa estensione per consentire di leggere e modificare <ph name="HOST" /></translation>
-<translation id="4320177379694898372">Nessuna connessione Internet</translation>
+<translation id="4320177379694898372">Nessuna connessione internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Mostra <ph name="FILE_NAME" /> nel Finder</translation>
 <translation id="4322394346347055525">Chiudi le altre schede</translation>
@@ -8429,7 +8429,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="67465227497040338">Mostra password per <ph name="DOMAIN" /></translation>
-<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati su tutti i dispositivi</translation>
+<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="6748980958975836188">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6749473226660745022">Foto</translation>
