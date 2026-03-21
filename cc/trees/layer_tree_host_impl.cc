@@ -520,11 +520,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       task_graph_runner_(task_graph_runner),
       id_(id),
       consecutive_frame_with_damage_count_(settings.damaged_frame_limit),
-      // It is safe to use base::Unretained here since we will outlive the
-      // ImageAnimationController.
-      image_animation_controller_(GetTaskRunner(),
-                                  this,
-                                  settings_.enable_image_animation_resync),
       frame_trackers_(settings.single_thread_proxy_scheduler),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       has_input_resetter_(
@@ -533,6 +528,11 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                               base::Unretained(this)),
           kHasInputResetDelay),
       contains_srgb_cache_(kContainsSrgbCacheSize) {
+  if (!settings_.trees_in_viz_in_viz_process) {
+    image_animation_controller_ = std::make_unique<ImageAnimationController>(
+        GetTaskRunner(), this, settings_.enable_image_animation_resync);
+  }
+
   CHECK(!(settings.scrollbar_flash_once_after_scroll_update &&
           settings.scrollbar_flash_after_any_scroll_update))
       << "Only one of "
@@ -934,8 +934,10 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   PaintImageIdFlatSet images_to_invalidate =
       tile_manager_.TakeImagesToInvalidateOnSyncTree();
 
+  CHECK(!settings_.trees_in_viz_in_viz_process);
+  CHECK(image_animation_controller_);
   const auto& animated_images =
-      image_animation_controller_.AnimateForSyncTree(CurrentBeginFrameArgs());
+      image_animation_controller_->AnimateForSyncTree(CurrentBeginFrameArgs());
   images_to_invalidate.insert(animated_images.begin(), animated_images.end());
 
   // Invalidate cached PaintRecords for worklets whose input properties were
@@ -2259,7 +2261,9 @@ size_t LayerTreeHostImpl::GetFrameIndexForImage(const PaintImage& paint_image,
     return PaintImage::kDefaultFrameIndex;
   }
 
-  return image_animation_controller_.GetFrameIndexForImage(
+  CHECK(!settings_.trees_in_viz_in_viz_process);
+  CHECK(image_animation_controller_);
+  return image_animation_controller_->GetFrameIndexForImage(
       paint_image.stable_id(), tree);
 }
 
@@ -3459,9 +3463,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   if (frame->damage_reasons.Has(DamageReason::kAnimatedImage)) {
+    CHECK(!settings_.trees_in_viz_in_viz_process);
+    CHECK(image_animation_controller_);
     std::optional<ImageAnimationController::ConsistentFrameDuration>
         animating_image_duration =
-            image_animation_controller_.GetConsistentContentFrameDuration();
+            image_animation_controller_->GetConsistentContentFrameDuration();
     if (animating_image_duration) {
       metadata.frame_interval_inputs.content_interval_info.push_back(
           {viz::ContentFrameIntervalType::kAnimatingImage,
@@ -3815,7 +3821,10 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
     Animate();
   }
 
-  image_animation_controller_.WillBeginImplFrame(args);
+  if (image_animation_controller_) {
+    CHECK(!settings().trees_in_viz_in_viz_process);
+    image_animation_controller_->WillBeginImplFrame(args);
+  }
 
   for (VideoFrameController* it : video_frame_controllers_) {
     it->OnBeginFrame(args);
@@ -4328,11 +4337,9 @@ void LayerTreeHostImpl::ActivateSyncTree() {
 }
 
 void LayerTreeHostImpl::ActivateStateForImages() {
-  if (settings_.trees_in_viz_in_viz_process) {
-    return;
-  }
-
-  image_animation_controller_.DidActivate();
+  CHECK(!settings_.trees_in_viz_in_viz_process);
+  CHECK(image_animation_controller_);
+  image_animation_controller_->DidActivate();
   tile_manager_.DidActivateSyncTree();
 }
 
@@ -4655,7 +4662,10 @@ void LayerTreeHostImpl::ClearCaches() {
   if (GetImageDecodeCache()) {
     GetImageDecodeCache()->ClearCache();
   }
-  image_animation_controller_.set_did_navigate();
+  if (image_animation_controller_) {
+    CHECK(!settings_.trees_in_viz_in_viz_process);
+    image_animation_controller_->set_did_navigate();
+  }
 }
 
 void LayerTreeHostImpl::DidChangeScrollbarVisibility() {
@@ -6431,11 +6441,13 @@ void LayerTreeHostImpl::AllocateLocalSurfaceId() {
 }
 
 void LayerTreeHostImpl::RequestBeginFrameForAnimatedImages() {
+  CHECK(!settings_.trees_in_viz_in_viz_process);
   SetNeedsOneBeginImplFrame();
 }
 
 void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
-  DCHECK_EQ(impl_thread_phase_, ImplThreadPhase::INSIDE_IMPL_FRAME);
+  CHECK(!settings_.trees_in_viz_in_viz_process);
+  CHECK_EQ(impl_thread_phase_, ImplThreadPhase::INSIDE_IMPL_FRAME);
 
   // If we are animating an image, we want at least one draw of the active tree
   // before a new tree is activated.

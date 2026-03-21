@@ -580,7 +580,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   ResourcePool* resource_pool() { return resource_pool_.get(); }
   ImageAnimationController* image_animation_controller() {
-    return &image_animation_controller_;
+    return image_animation_controller_.get();
   }
 
   ImageDecodeCache* GetImageDecodeCache() const;
@@ -1301,7 +1301,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   };
   ImplThreadPhase impl_thread_phase_ = ImplThreadPhase::IDLE;
 
-  ImageAnimationController image_animation_controller_;
+  std::unique_ptr<ImageAnimationController> image_animation_controller_;
 
   // Provides RenderFrameMetadata to the Browser process upon the submission of
   // each CompositorFrame.

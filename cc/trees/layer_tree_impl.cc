@@ -1873,6 +1873,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
   }
 
   if (update_image_animation_controller && image_animation_controller()) {
+    CHECK(!settings().trees_in_viz_in_viz_process);
     image_animation_controller()->UpdateStateFromDrivers();
   }
 
