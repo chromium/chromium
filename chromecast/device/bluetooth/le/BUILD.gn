@@ -115,5 +115,8 @@ cast_source_set("unittests") {
 
 fuzzer_test("le_scan_result_fuzzer") {
   sources = [ "le_scan_result_fuzzer.cc" ]
-  deps = [ ":le" ]
+  deps = [
+    ":le",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }

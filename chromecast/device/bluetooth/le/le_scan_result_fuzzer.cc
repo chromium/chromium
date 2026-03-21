@@ -4,10 +4,12 @@
 
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
+
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::span<const uint8_t> adv_data(data, size);
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   chromecast::bluetooth::LeScanResult res;
-  res.SetAdvData(adv_data);
+  res.SetAdvData(data);
   return 0;
 }
