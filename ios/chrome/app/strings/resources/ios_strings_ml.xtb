@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2360196772093551345">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. ക്രമീകരണം തുറക്കുന്നു.</translation>
+<translation id="2367025302166767427">നിങ്ങളുടെ വിവരങ്ങൾ പൂരിപ്പിക്കുന്നതിൽ പ്രശ്‌നമുണ്ട്</translation>
 <translation id="2371084566192454134">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും</translation>
 <translation id="2371303771137626249">പുതിയത്</translation>
 <translation id="2381405137052800939">അടിസ്ഥാനങ്ങൾ</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">ഓഫ്‌ലൈനിൽ ലഭ്യമല്ല</translation>
 <translation id="2697530870203420261">വിളിപ്പേര് അസാധുവാണ്</translation>
 <translation id="269819437389494246">നിങ്ങൾ സന്ദർശിച്ച പേജുകൾ കാണാനോ അവ നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് ഇല്ലാതാക്കാനോ കഴിയും</translation>
+<translation id="2704295676501803339">ഇടതുവശത്തേക്ക് നീക്കുക</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2708051474374549906">Google-ലേക്ക് അയയ്‌ക്കുന്ന നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റയെ അടിസ്ഥാനമാക്കിയുള്ള അപകടകരമായ സൈറ്റുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് തത്സമയവും മുൻകൂറായുമുള്ള പരിരക്ഷ</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
@@ -1662,6 +1664,7 @@
 <translation id="6899890595581608884">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ ഓഫാക്കി</translation>
 <translation id="6900532703269623216">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ</translation>
 <translation id="6900702165119149418">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="6903282483217634857">വലതുവശത്തേക്ക് നീക്കുക</translation>
 <translation id="6903907808598579934">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="6906448540340261898">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="6908734251759299256">നിങ്ങളുടെ ബ്രൗസർ‌ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
@@ -2321,7 +2324,6 @@
 <translation id="926455622548529175">മാറുക, ഇല്ലാതാക്കുക</translation>
 <translation id="929748059769569925">ഹൈലൈറ്റ് ചെയ്ത ടെക്സ്റ്റ്</translation>
 <translation id="932305336591073205">{count,plural, =1{ടാബ് അടയ്ക്കുക}other{ടാബുകൾ അടയ്ക്കുക}}</translation>
-<translation id="932327136139879170">ഹോം</translation>
 <translation id="939472100615258482">നിലവിലെ സൈറ്റ്</translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>

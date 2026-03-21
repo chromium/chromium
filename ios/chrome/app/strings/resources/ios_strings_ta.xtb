@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">நிறுவ, இருமுறை தட்டவும்.</translation>
 <translation id="1740650426894359238">வேறொரு சுயவிவரத்திற்கு மாறுதல்</translation>
 <translation id="1741219894094057085">ஸ்மார்ட் வாட்ச்</translation>
+<translation id="1742773766788162541">கார்டை ஸ்கேன் செய்து தானாக நிரப்பு</translation>
 <translation id="1743244221910283364">மாற்றங்களை நிராகரி</translation>
 <translation id="1748975028205587434">ஃபைலைத் தேர்ந்தெடு</translation>
 <translation id="1749733017156547309">கடவுச்சொல் தேவை</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2360196772093551345">மொபைல் தளத்தைக் கோரு</translation>
 <translation id="2362083820973145409">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. அமைப்புகளைத் திறக்கும்.</translation>
+<translation id="2367025302166767427">உங்கள் தகவல்களை நிரப்ப முடியவில்லை</translation>
 <translation id="2371084566192454134">பக்கங்களும் பக்கக் குழுக்களும்</translation>
 <translation id="2371303771137626249">புதிது</translation>
 <translation id="2381405137052800939">அடிப்படைகள்</translation>
@@ -480,6 +482,7 @@
 <translation id="2691653761409724435">ஆஃப்லைனில் கிடைக்காது</translation>
 <translation id="2697530870203420261">தவறான புனைப்பெயர்</translation>
 <translation id="269819437389494246">நீங்கள் பார்த்த பக்கங்களைப் பதிவில் பார்க்கலாம், நீக்கலாம்</translation>
+<translation id="2704295676501803339">இடதுபுறமாக நகர்த்து</translation>
 <translation id="2704606927547763573">நகலெடுக்கப்பட்டது</translation>
 <translation id="2708051474374549906">Googleக்கு அனுப்பப்படும் உங்கள் உலாவிய தரவின் அடிப்படையில் ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக வழங்கப்படும் நிகழ்நேர, முன்கூட்டிய பாதுகாப்பு</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
@@ -708,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ஐ மாற்றவா?</translation>
 <translation id="3581564640715911333">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்க்க அனுமதி</translation>
+<translation id="3583726884554296148">இந்தப் பர்ச்சேஸுக்கும் Chromeமில் எதிர்காலத்தில் மேற்கொள்ளும் பர்ச்சேஸ்களுக்கும் உங்கள் கார்டைத் தானாக நிரப்ப அதை உங்கள் Google கணக்கில் சேமிக்கலாம்</translation>
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3587885837929752825">நீங்கள் எவற்றையெல்லாம் Google கணக்கில் சேமிக்கலாம் என்பதை உங்கள் நிறுவனம் கட்டுப்படுத்துகிறது.</translation>
 <translation id="3588820906588687999">படத்தைப் புதிய தாவலில் திற</translation>
@@ -1554,6 +1558,7 @@
 <translation id="6532106788206463496">மாற்றங்களைச் சேமி</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> குழுவைத் திறக்கும், இதில் <ph name="NUMBER_OF_TABS" /> பக்கங்கள் உள்ளன, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">உங்கள் சாதனங்கள் எல்லாவற்றிலும் தானாக நிரப்புதல் அம்சம் மூலம் விரைவாகச் செக்-அவுட் செய்யுங்கள்</translation>
 <translation id="6550675742724504774">விருப்பத்தேர்வுகள்</translation>
 <translation id="6550891580932862748">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றிலிருந்து உங்களைப் பாதுகாக்காது. பிற Google தயாரிப்புகளில் அமைக்கப்பட்டிருக்கும் உங்கள் பாதுகாப்பு உலாவல் அமைப்புகள் மாற்றப்படாது.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1662,6 +1667,7 @@
 <translation id="6899890595581608884">பாதுகாப்புச் சரிபார்ப்பு அறிவிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="6900532703269623216">மேம்பட்ட பாதுகாப்பு</translation>
 <translation id="6900702165119149418">வெளியேறிவிட்டீர்கள்</translation>
+<translation id="6903282483217634857">வலதுபுறமாக நகர்த்து</translation>
 <translation id="6903907808598579934">ஒத்திசைவை இயக்கு</translation>
 <translation id="6906448540340261898">உங்கள் Google கணக்கில் எப்போதும் கடவுச்சொற்களைப் பயன்படுத்த முடிவதை உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="6908734251759299256">பிரவுசரைப் புதுப்பியுங்கள்</translation>
@@ -2321,7 +2327,6 @@
 <translation id="926455622548529175">மாற்றிவிட்டு நீக்கு</translation>
 <translation id="929748059769569925">ஹைலைட் செய்யப்பட்ட வார்த்தைகள்</translation>
 <translation id="932305336591073205">{count,plural, =1{பக்கத்தை மூடு}other{பக்கங்களை மூடு}}</translation>
-<translation id="932327136139879170">முகப்பு</translation>
 <translation id="939472100615258482">தற்போதைய தளம்</translation>
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="939736085109172342">புதிய ஃபோல்டர்</translation>

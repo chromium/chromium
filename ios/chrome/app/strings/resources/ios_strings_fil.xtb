@@ -394,6 +394,7 @@
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360196772093551345">Hilingin ang Pang-mobile na Site</translation>
 <translation id="2362083820973145409">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
+<translation id="2367025302166767427">Nagkaproblema sa paglalagay ng iyong impormasyon</translation>
 <translation id="2371084566192454134">Mga tab at grupo ng tab</translation>
 <translation id="2371303771137626249">Bago</translation>
 <translation id="2381405137052800939">Mga Pangunahing Kaalaman</translation>
@@ -481,6 +482,7 @@
 <translation id="2691653761409724435">Hindi available offline</translation>
 <translation id="2697530870203420261">Invalid na nickname</translation>
 <translation id="269819437389494246">Makikita mo ang mga page na binisita mo o made-delete mo ang mga ito sa iyong history</translation>
+<translation id="2704295676501803339">Lumipat Pakaliwa</translation>
 <translation id="2704606927547763573">Kinopya</translation>
 <translation id="2708051474374549906">Real-time at proactive na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
 <translation id="2709516037105925701">AutoFill</translation>
@@ -1665,6 +1667,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6899890595581608884">Naka-off ang mga notification sa pag-check sa kaligtasan</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900702165119149418">Naka-sign out ka</translation>
+<translation id="6903282483217634857">Lumipat Pakanan</translation>
 <translation id="6903907808598579934">I-on ang pag-sync</translation>
 <translation id="6906448540340261898">Tiyaking magagamit mo sa anumang oras ang mga password sa iyong Google Account</translation>
 <translation id="6908734251759299256">I-update ang iyong browser</translation>
@@ -2325,7 +2328,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="926455622548529175">Lumipat at I-delete</translation>
 <translation id="929748059769569925">Naka-highlight na text</translation>
 <translation id="932305336591073205">{count,plural, =1{Isara ang tab}one{Isara ang mga tab}other{Isara ang mga tab}}</translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="939472100615258482">Kasalukuyang site</translation>
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="939736085109172342">Bagong folder</translation>

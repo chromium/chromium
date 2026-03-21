@@ -1240,7 +1240,6 @@
 <translation id="184273675144259287">以先前的备份替换您的 Linux 应用和文件</translation>
 <translation id="1842766183094193446">确定要启用演示模式吗？</translation>
 <translation id="1843048149176045210">复制下载链接</translation>
-<translation id="1843347690926158494">使用 Google 智能镜头搜索此标签页</translation>
 <translation id="1845060436536902492">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。按空格键即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="1845727111305721124">允许播放声音</translation>
 <translation id="1846308012215045257">按住 Ctrl 键的同时点击即可运行 <ph name="PLUGIN_NAME" /></translation>
@@ -3741,7 +3740,6 @@
 <translation id="3581861561942370740">搜索下载记录</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3582299299336701326">将亮屏幕调暗，或将暗屏幕调亮。按搜索键 + Ctrl + H 即可开启和关闭颜色反转功能。</translation>
-<translation id="358381413217813387">使用 Google 智能镜头搜索此页面</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
 <translation id="3586741240886978899">您曾通过该账号访问此网站</translation>
 <translation id="3586806079541226322">无法打开此文件</translation>
@@ -3785,7 +3783,6 @@
 <translation id="3610961622607302617">更改 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="3611634011145829814">前往订阅页面</translation>
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
-<translation id="3612673635130633812">由&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;下载</translation>
 <translation id="3612731022682274718">将设备上的视频文件投屏到其他屏幕</translation>
 <translation id="3613134908380545408">显示“<ph name="FOLDER_NAME" />”</translation>
 <translation id="3613422051106148727">在新标签页中打开(&amp;O)</translation>
@@ -6321,7 +6318,6 @@
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5392864580775235956">添加和编辑图片</translation>
 <translation id="5393330235977997602">PIN 码选项</translation>
-<translation id="5393474451146553463">向 Google 询问与此标签页有关的问题</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="5394529681046491727">Wi-Fi 直连</translation>
 <translation id="5395353843367783642">正在保存到您的账号中…</translation>
@@ -8942,7 +8938,6 @@
 <translation id="7248671827512403053">应用</translation>
 <translation id="7249197363678284330">在地址栏中更改此设置。</translation>
 <translation id="7249764475759804559">将此应用添加为文件打开方式选项</translation>
-<translation id="7249885578105575587">向 Google 询问与此标签页有关的问题：<ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">目标设备未响应您的文件分享请求。请重试。</translation>
 <translation id="725109152065019550">抱歉，您的管理员已停用了您账号上的外部存储功能。</translation>
 <translation id="7251635775446614726">您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
@@ -10263,7 +10258,6 @@
 <translation id="8143442547342702591">无效的应用</translation>
 <translation id="8144429778087524791">标为已完成并隐藏</translation>
 <translation id="8145170459658034418">省内存模式</translation>
-<translation id="8145219802299093106">使用 Google 智能镜头搜索此页面：<ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">如果您已在此设备上注册，就能<ph name="LINK2_START" />以现有用户的身份登录<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">添加您的首选语言并为它们排序。网站会尽可能以您的首选语言显示。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">登录失败，请与管理员联系或重试。</translation>
@@ -11809,7 +11803,6 @@
 <translation id="9182556968660520230">不允许网站播放受保护内容</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
-<translation id="9184211686591068713">使用 Google 智能镜头搜索此标签页：<ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
@@ -11858,7 +11851,6 @@
 <translation id="930893132043726269">目前正在使用漫游服务</translation>
 <translation id="930991362911221750">允许“<ph name="APP_NAME" />”查看此标签页？</translation>
 <translation id="931273044114601262">允许在此网站上使用</translation>
-<translation id="932327136139879170">家</translation>
 <translation id="932508678520956232">无法开始打印。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{这个文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}other{这些文件中的部分文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}}</translation>
 <translation id="93343527085570547">如要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将部分账号和系统信息发送给 Google。我们会根据<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />使用您提供的信息，以解决技术问题并改进服务。</translation>

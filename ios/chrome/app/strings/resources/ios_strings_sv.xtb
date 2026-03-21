@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
 <translation id="2697530870203420261">Ogiltigt namn</translation>
 <translation id="269819437389494246">Du kan se sidor som du har besökt eller radera dem från historiken</translation>
+<translation id="2704295676501803339">Flytta åt vänster</translation>
 <translation id="2704606927547763573">Kopierat</translation>
 <translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
 <translation id="2709516037105925701">Autofyll</translation>
@@ -1662,6 +1663,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6899890595581608884">Aviseringar från säkerhetskontroll har inaktiverats</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
 <translation id="6900702165119149418">Du är utloggad</translation>
+<translation id="6903282483217634857">Flytta åt höger</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6906448540340261898">Se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="6908734251759299256">Uppdatera webbläsaren</translation>
@@ -2321,7 +2323,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="926455622548529175">Byt och radera</translation>
 <translation id="929748059769569925">Markerad text</translation>
 <translation id="932305336591073205">{count,plural, =1{Stäng flik}other{Stäng flikar}}</translation>
-<translation id="932327136139879170">Startsida</translation>
 <translation id="939472100615258482">Nuvarande webbplats</translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="939736085109172342">Ny mapp</translation>

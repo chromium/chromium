@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1740650426894359238">Przełącz na inny profil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
+<translation id="1742773766788162541">Zeskanuj kartę i wypełnij automatycznie</translation>
 <translation id="1743244221910283364">Odrzuć zmiany</translation>
 <translation id="1748975028205587434">Wybierz plik</translation>
 <translation id="1749733017156547309">Hasło jest wymagane</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360196772093551345">Żądaj strony mobilnej</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
+<translation id="2367025302166767427">Nie udało się uzupełnić informacji</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
 <translation id="2371303771137626249">Nowa</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
@@ -480,6 +482,7 @@
 <translation id="2691653761409724435">Niedostępne offline</translation>
 <translation id="2697530870203420261">Nieprawidłowy pseudonim</translation>
 <translation id="269819437389494246">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
+<translation id="2704295676501803339">Przejdź w lewo</translation>
 <translation id="2704606927547763573">Skopiowano</translation>
 <translation id="2708051474374549906">Proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, realizowana w czasie rzeczywistym dzięki wysyłaniu Twoich danych przeglądania do Google</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
@@ -708,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, zarządzane przez Twoją organizację.</translation>
 <translation id="3580448612293054698">Zaktualizować: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
+<translation id="3583726884554296148">Zapisz kartę na koncie Google, żeby uzupełniać ją automatycznie podczas tego i przyszłych zakupów w Chrome</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3587885837929752825">Twoja organizacja nie zezwala na zapisywanie niektórych typów danych na koncie Google.</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
@@ -1554,6 +1558,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6532106788206463496">Zapisz zmiany</translation>
 <translation id="6536759809440150308">Otwórz grupę <ph name="GROUP_TITLE" />, zawartość: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Płać szybciej dzięki autouzupełnianiu na wszystkich swoich urządzeniach</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="6550891580932862748">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Nie wpływa na ustawienia Bezpiecznego przeglądania dostępne w innych usługach Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1662,6 +1667,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6899890595581608884">Powiadomienia o kontroli zabezpieczeń zostały wyłączone</translation>
 <translation id="6900532703269623216">Silniejsza ochrona</translation>
 <translation id="6900702165119149418">Nie korzystasz teraz z konta</translation>
+<translation id="6903282483217634857">Przejdź w prawo</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6906448540340261898">Upewnij się, że zawsze możesz używać haseł na swoim koncie Google</translation>
 <translation id="6908734251759299256">Zaktualizuj przeglądarkę</translation>
@@ -2321,7 +2327,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="926455622548529175">Przełącz i usuń</translation>
 <translation id="929748059769569925">Zaznaczony tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
-<translation id="932327136139879170">Strona główna</translation>
 <translation id="939472100615258482">Bieżąca witryna</translation>
 <translation id="939598580284253335">Wpisz hasło wielowyrazowe</translation>
 <translation id="939736085109172342">Nowy folder</translation>

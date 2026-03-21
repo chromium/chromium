@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">No disponible sin conexión</translation>
 <translation id="2697530870203420261">Nombre no válido</translation>
 <translation id="269819437389494246">Puedes ver las páginas que has visitado o eliminarlas de tu historial</translation>
+<translation id="2704295676501803339">Mover hacia la izquierda</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2708051474374549906">Protección proactiva en tiempo real (frente a descargas, extensiones y sitios peligrosos) que se basa en el envío de tus datos de navegación a Google.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
@@ -1662,6 +1663,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6899890595581608884">Notificaciones de Comprobación de tu estado desactivadas</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>
 <translation id="6900702165119149418">Se ha cerrado tu sesión</translation>
+<translation id="6903282483217634857">Mover hacia la derecha</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de que siempre puedas usar las contraseñas en tu cuenta de Google</translation>
 <translation id="6908734251759299256">Actualiza tu navegador</translation>
@@ -2321,7 +2323,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="926455622548529175">Cambiar y eliminar</translation>
 <translation id="929748059769569925">Texto resaltado</translation>
 <translation id="932305336591073205">{count,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
-<translation id="932327136139879170">Casa</translation>
 <translation id="939472100615258482">Sitio actual</translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>

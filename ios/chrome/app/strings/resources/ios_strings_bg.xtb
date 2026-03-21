@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Не е налице офлайн</translation>
 <translation id="2697530870203420261">Невалиден псевдоним</translation>
 <translation id="269819437389494246">Можете да видите посетените от вас страници или да ги изтриете от историята си</translation>
+<translation id="2704295676501803339">Преместване наляво</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2708051474374549906">Проактивна защита в реално време срещу опасни сайтове, изтегляния и разширения, която работи чрез изпращане на данни за сърфирането ви до Google</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">Известията от функцията „Проверка на безопасността“ са изключени</translation>
 <translation id="6900532703269623216">Подобрена защита</translation>
 <translation id="6900702165119149418">Не сте в профила си</translation>
+<translation id="6903282483217634857">Преместване надясно</translation>
 <translation id="6903907808598579934">Включване на синхронизирането</translation>
 <translation id="6906448540340261898">Уверете се, че винаги можете да използвате паролите в профила си в Google</translation>
 <translation id="6908734251759299256">Актуализиране на браузъра ви</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">Превключване и изтриване</translation>
 <translation id="929748059769569925">Откроен текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
-<translation id="932327136139879170">Начална страница</translation>
 <translation id="939472100615258482">Настоящ сайт</translation>
 <translation id="939598580284253335">Въведете пропуск</translation>
 <translation id="939736085109172342">Нова папка</translation>

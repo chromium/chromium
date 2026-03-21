@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
 <translation id="2697530870203420261">Ungültiger Alternativname</translation>
 <translation id="269819437389494246">Du kannst dir die von dir besuchten Seiten ansehen oder sie aus dem Verlauf löschen</translation>
+<translation id="2704295676501803339">Nach links</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2708051474374549906">Proaktiver Schutz in Echtzeit vor gefährlichen Websites, Downloads und Erweiterungen auf der Grundlage deiner Browserdaten, die an Google gesendet werden</translation>
 <translation id="2709516037105925701">Autofill</translation>
@@ -1662,6 +1663,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6899890595581608884">„Sicherheitscheck“-Benachrichtigungen deaktiviert</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
 <translation id="6900702165119149418">Du bist abgemeldet</translation>
+<translation id="6903282483217634857">Nach rechts</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
 <translation id="6906448540340261898">Achte darauf, dass du die Passwörter in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="6908734251759299256">Browser aktualisieren</translation>
@@ -2321,7 +2323,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="926455622548529175">Wechseln und löschen</translation>
 <translation id="929748059769569925">Markierter Text</translation>
 <translation id="932305336591073205">{count,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
-<translation id="932327136139879170">Privat</translation>
 <translation id="939472100615258482">Aktuelle Website</translation>
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>

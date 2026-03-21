@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nepasiekiama neprisijungus</translation>
 <translation id="2697530870203420261">Netinkamas slapyvardis</translation>
 <translation id="269819437389494246">Galite peržiūrėti puslapius, kuriuose lankėtės, arba ištrinti juos iš istorijos</translation>
+<translation id="2704295676501803339">Perkelti į kairę</translation>
 <translation id="2704606927547763573">Nukopij.</translation>
 <translation id="2708051474374549906">Realiuoju laiku teikiama, proaktyvi apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių, pagrįsta jūsų naršymo duomenimis, siunčiamais „Google“</translation>
 <translation id="2709516037105925701">Automatinis pildymas</translation>
@@ -1662,6 +1663,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6899890595581608884">Saugos patikros pranešimai išjungti</translation>
 <translation id="6900532703269623216">Sustiprinta apsauga</translation>
 <translation id="6900702165119149418">Esate atsijungę</translation>
+<translation id="6903282483217634857">Perkelti į dešinę</translation>
 <translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
 <translation id="6906448540340261898">Užtikrinkite, kad visada galėtumėte naudoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="6908734251759299256">Naršyklės atnaujinimas</translation>
@@ -2321,7 +2323,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="926455622548529175">Perjungti ir ištrinti</translation>
 <translation id="929748059769569925">Paryškintas tekstas</translation>
 <translation id="932305336591073205">{count,plural, =1{Uždaryti skirtuką}one{Uždaryti skirtukus}few{Uždaryti skirtukus}many{Uždaryti skirtukus}other{Uždaryti skirtukus}}</translation>
-<translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="939472100615258482">Dabartinė svetainė</translation>
 <translation id="939598580284253335">Įvesti slaptafrazę</translation>
 <translation id="939736085109172342">Naujas aplankas</translation>

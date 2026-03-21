@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Não está disponível off-line</translation>
 <translation id="2697530870203420261">Apelido inválido</translation>
 <translation id="269819437389494246">Você pode consultar as páginas visitadas ou excluí-las do histórico</translation>
+<translation id="2704295676501803339">Mover para a esquerda</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
@@ -490,6 +491,7 @@
 <translation id="2721190673959776287">Exemplo de ajuda detalhada do produto para o painel contextual, que deve aparecer várias vezes por dia.</translation>
 <translation id="2739887572830526131">Mantenha este grupo para adicionar guias mais tarde ou exclua se não precisar mais dele.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> movido para a posição <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">As mudanças feitas são vistas por todos no grupo</translation>
 <translation id="2755595981383829244">Agora você vai receber notificações de conteúdo</translation>
 <translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
@@ -1662,6 +1664,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6899890595581608884">As notificações da confirmação de segurança foram desativadas</translation>
 <translation id="6900532703269623216">Proteção reforçada</translation>
 <translation id="6900702165119149418">Você não fez login</translation>
+<translation id="6903282483217634857">Mover para a direita</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
 <translation id="6906448540340261898">Garanta que você sempre possa usar as senhas na sua Conta do Google</translation>
 <translation id="6908734251759299256">Atualize o navegador</translation>
@@ -2026,6 +2029,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8209237163365258530">Modelos do Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Você recebeu senhas de <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
+<translation id="8213190397436801658">Início</translation>
 <translation id="8214293972734702249">Guia fixada. <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Ver versão off-line em uma nova guia</translation>
 <translation id="8221665793629393739">Seu lembrete para rever</translation>
@@ -2321,7 +2325,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="926455622548529175">Trocar e excluir</translation>
 <translation id="929748059769569925">Texto em destaque</translation>
 <translation id="932305336591073205">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
-<translation id="932327136139879170">Casa</translation>
 <translation id="939472100615258482">Site atual</translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="939736085109172342">Nova pasta</translation>

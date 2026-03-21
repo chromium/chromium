@@ -1254,7 +1254,6 @@
 <translation id="184273675144259287">Linux 앱 및 파일을 이전 백업으로 대체</translation>
 <translation id="1842766183094193446">데모 모드를 사용하도록 설정하시겠습니까?</translation>
 <translation id="1843048149176045210">다운로드 링크 복사</translation>
-<translation id="1843347690926158494">Google 렌즈로 이 탭 검색</translation>
 <translation id="1845060436536902492">ChromeOS Flex의 스크린 리더인 ChromeVox는 주로 시각장애인과 저시력자가 음성 합성기나 점자 디스플레이를 통해 화면에 표시된 텍스트를 읽는 데 사용됩니다. ChromeVox를 사용 설정하려면 스페이스바를 누르세요. ChromeVox가 활성화되면 빠르게 둘러볼 수 있습니다.</translation>
 <translation id="1845727111305721124">소리 재생이 허용됨</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />을(를) 실행하려면 Control 키를 누르고 클릭합니다.</translation>
@@ -3766,7 +3765,6 @@
 <translation id="3581861561942370740">다운로드 기록 검색</translation>
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3582299299336701326">밝은 화면을 어둡게 하고 어두운 화면을 밝게 합니다. 색상 반전을 사용 설정 또는 중지하려면 검색 + Ctrl + H를 누르세요.</translation>
-<translation id="358381413217813387">Google 렌즈로 이 페이지 검색하기</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
 <translation id="3586741240886978899">이 사이트에서 사용</translation>
 <translation id="3586806079541226322">파일을 열 수 없음</translation>
@@ -3810,7 +3808,6 @@
 <translation id="3610961622607302617"><ph name="WEBSITE" /> 비밀번호를 변경합니다.</translation>
 <translation id="3611634011145829814">구독 페이지로 이동</translation>
 <translation id="3611658447322220736">최근에 닫은 사이트에서 데이터 송수신을 완료할 수 있음</translation>
-<translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;에서 다운로드함</translation>
 <translation id="3612731022682274718">기기의 동영상 파일을 다른 화면으로 전송</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> 표시</translation>
 <translation id="3613422051106148727">새 탭에서 열기(&amp;O)</translation>
@@ -6347,7 +6344,6 @@
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
 <translation id="5392864580775235956">이미지를 추가 및 수정하세요.</translation>
 <translation id="5393330235977997602">PIN 옵션</translation>
-<translation id="5393474451146553463">Google에 이 탭 알아보기 요청</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">계정에 저장 중…</translation>
@@ -8971,7 +8967,6 @@
 <translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7249197363678284330">주소 표시줄에서 이 설정을 변경하세요.</translation>
 <translation id="7249764475759804559">파일을 열 때 이 앱을 연결 프로그램 옵션으로 포함합니다.</translation>
-<translation id="7249885578105575587">Google에 이 탭 알아보기 요청: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10291,7 +10286,6 @@
 <translation id="8143442547342702591">잘못된 애플리케이션</translation>
 <translation id="8144429778087524791">완료로 표시하고 숨기기</translation>
 <translation id="8145170459658034418">메모리 절약</translation>
-<translation id="8145219802299093106">Google 렌즈로 이 페이지 검색하기: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">이 기기에 이미 등록한 경우 <ph name="LINK2_START" />기존 사용자로 로그인<ph name="LINK2_END" />할 수 있습니다.</translation>
 <translation id="8146287226035613638">기본 언어를 추가하고 순위를 지정하세요. 가능한 경우 웹사이트가 기본 언어로 표시됩니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">로그인하지 못했습니다. 관리자에게 문의하거나 다시 시도해 보세요.</translation>
@@ -11837,7 +11831,6 @@
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
-<translation id="9184211686591068713">Google 렌즈로 이 탭 검색: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=2{관리자가 <ph name="APP0_NAME" /> 및 <ph name="APP1_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=3{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 1개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}other{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 #개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}}</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
@@ -11886,7 +11879,6 @@
 <translation id="930893132043726269">현재 로밍 중</translation>
 <translation id="930991362911221750"><ph name="APP_NAME" />에서 이 탭을 보도록 허용하시겠습니까?</translation>
 <translation id="931273044114601262">이 사이트에서 허용됨</translation>
-<translation id="932327136139879170">집</translation>
 <translation id="932508678520956232">인쇄를 시작할 수 없습니다.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{파일이 너무 커서 보안 확인을 할 수 없습니다. 최대 50MB 크기의 파일을 업로드할 수 있습니다.}other{일부 파일이 너무 커서 보안 확인을 할 수 없습니다. 최대 50MB 크기의 파일을 업로드할 수 있습니다.}}</translation>
 <translation id="93343527085570547">법적인 이유로 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말 페이지<ph name="END_LINK1" />로 이동하세요. 일부 계정 및 시스템 정보가 Google에 전송될 수 있습니다. Google에서는 제공해 주신 정보를 <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />에 따라 사용하여 기술적인 문제를 해결하고 서비스를 개선합니다.</translation>

@@ -367,6 +367,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1567405528131216114"><ph name="TOPIC" /> kiritish</translation>
 <translation id="1569487616857761740">Amal qilish muddatini kiriting</translation>
 <translation id="1569694109004336106">Google Chrome parollarni kiritishda Windows Hello himoyasini yoqishga urinmoqda.</translation>
+<translation id="1569905000953679183">Kengaytma oʻrnatish qoidalarini olish</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="1574714699824202614">Toʻlov usulini tasdiqlash</translation>
 <translation id="1576277203042721907">Shopping statistikasi</translation>
@@ -2209,6 +2210,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4454620051637646665">Bannerni yopish</translation>
 <translation id="4456937135469235202">Sarguzashtli sayohatlar</translation>
 <translation id="4458013283022578512">Savolni kiriting</translation>
+<translation id="4458516738555515761">Qoidalarni olish</translation>
 <translation id="4464826014807964867">Tashkilotingiz axborot yuborgan saytlar</translation>
 <translation id="4466576951214254884">Talaba kreditlari va kollejni moliyalashtirish</translation>
 <translation id="4467821340016922962">Butun ekrandan chiqish va yuklanmani ochish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
@@ -3371,6 +3373,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6326947323444967009">iOS sozlamalari orqali Chrome brauzerini tizimning asosiy qilib sozlang</translation>
 <translation id="6327065120806001832">mahalliy tarmoqqa ruxsat</translation>
 <translation id="6328639280570009161">Tarmoqni oldindan aniqlash funksiyasidan foydalanib ko‘ring</translation>
+<translation id="6329742260390895689">Axborotni avtomatik kiritish uchun Wallet sozlamalarida “Google xizmatlarida talonlardan foydalanish” funksiyasini yoqing</translation>
 <translation id="6329815962353376655">&lt;Savolni yozing&gt;</translation>
 <translation id="6331597954316706229">Eng moslashtirilgan javoblar uchun barcha yozishmalarga tegishli ochiq varaqlarga murojaat qilishga ruxsat bering.</translation>
 <translation id="633348045801643466">Hisob-kitob sahifasida <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />keyinroq toʻlash<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> usulini chiqarish</translation>
@@ -3458,6 +3461,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6436994298828707228">Ulanish bloklangan, chunki lokal tarmoqdagi qurilma yoki serverlarga ulanish uchun ochiq sahifa tomonidan boshlangan.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">Liboslar</translation>
+<translation id="6440450906295708112">Variantlar manbasi</translation>
 <translation id="6440503408713884761">Rad etilgan</translation>
 <translation id="6443406338865242315">Oʻrnatilgan kengaytma va plaginlar</translation>
 <translation id="6444329331928531170">Pensiyaga chiqish va nafaqa</translation>

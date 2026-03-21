@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Není k dispozici offline</translation>
 <translation id="2697530870203420261">Neplatná přezdívka</translation>
 <translation id="269819437389494246">Můžete si zobrazit stránky, které jste navštívili, a případně je z historie smazat</translation>
+<translation id="2704295676501803339">Přesunout doleva</translation>
 <translation id="2704606927547763573">Zkopírováno</translation>
 <translation id="2708051474374549906">Proaktivní ochrana v reálném čase před nebezpečnými weby, soubory ke stažení a rozšířeními, která je založena na odesílání údajů o prohlížení do Googlu</translation>
 <translation id="2709516037105925701">Automatické vyplňování</translation>
@@ -1662,6 +1663,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6899890595581608884">Oznámení bezpečnostní kontroly jsou vypnutá</translation>
 <translation id="6900532703269623216">Vylepšená ochrana</translation>
 <translation id="6900702165119149418">Jste odhlášeni</translation>
+<translation id="6903282483217634857">Přesunout doprava</translation>
 <translation id="6903907808598579934">Zapnout synchronizaci</translation>
 <translation id="6906448540340261898">Zajistěte, abyste vždy mohli používat hesla ve svém účtu Google</translation>
 <translation id="6908734251759299256">Aktualizujte prohlížeč</translation>
@@ -2321,7 +2323,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="926455622548529175">Přepnout a smazat</translation>
 <translation id="929748059769569925">Zvýrazněný text</translation>
 <translation id="932305336591073205">{count,plural, =1{Zavřít kartu}few{Zavřít karty}many{Zavřít karty}other{Zavřít karty}}</translation>
-<translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939472100615258482">Aktuální web</translation>
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="939736085109172342">Nová složka</translation>

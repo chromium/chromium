@@ -1255,7 +1255,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="184273675144259287">Skipta Linux-forritunum og -skránum út fyrir eldra afrit</translation>
 <translation id="1842766183094193446">Ertu viss um að þú viljir kveikja á kynningarstillingu?</translation>
 <translation id="1843048149176045210">Afrita niðurhalstengil</translation>
-<translation id="1843347690926158494">Leita á þessum flipa með Google-linsu</translation>
 <translation id="1845060436536902492">Skjálesarinn í ChromeOS Flex, ChromeVox, er aðallega notaður af fólki sem er blint eða með lélega sjón til að lesa texta sem birtur er á skjánum með talgervli eða blindraletri. Ýttu á bilslána til að kveikja á ChromeVox. Þegar kveikt hefur verið á ChromeVox er þér boðið upp á stutta kynningu.</translation>
 <translation id="1845727111305721124">Mega spila hljóð</translation>
 <translation id="1846308012215045257">Ýttu á Ctrl og smelltu til að keyra <ph name="PLUGIN_NAME" /></translation>
@@ -3765,7 +3764,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3581861561942370740">Leitaðu í niðurhalsferlinum</translation>
 <translation id="3582057310199111521">Notað á villandi vefsvæði og fannst í öryggisbroti</translation>
 <translation id="3582299299336701326">Gerðu ljósar skjámyndir dökkar og dökkar skjámyndir ljósar. Ýttu á Search + Ctrl + H til að kveikja og slökkva á umsnúningi lita.</translation>
-<translation id="358381413217813387">Leita á þessari síðu með Google-linsu</translation>
 <translation id="3584169441612580296">Lesa og breyta myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
 <translation id="3586741240886978899">Þú notaðir á þessu vefsvæði</translation>
 <translation id="3586806079541226322">Ekki er hægt að opna þessa skrá</translation>
@@ -3809,7 +3807,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3610961622607302617">Breyta aðgangsorðinu fyrir <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Fara á áskriftarsíðu</translation>
 <translation id="3611658447322220736">Vefsvæði sem nýlega var lokað geta lokið við að senda og taka á móti gögnum</translation>
-<translation id="3612673635130633812">Sótt af &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Varpaðu vídeóskrám í tækinu yfir á annan skjá</translation>
 <translation id="3613134908380545408">Sýna <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Opna í nýjum flipa</translation>
@@ -6348,7 +6345,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5392192690789334093">Mega senda tilkynningar</translation>
 <translation id="5392864580775235956">Bæta við og breyta mynd</translation>
 <translation id="5393330235977997602">Valkostir PIN-númers</translation>
-<translation id="5393474451146553463">Spurja Google út í þennan flipa</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Tengill}one{# tengill}other{# tenglar}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Vistar í reikningnum þínum ...</translation>
@@ -8973,7 +8969,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7248671827512403053">Forrit</translation>
 <translation id="7249197363678284330">Breyttu þessari stillingu á veffangastikunni.</translation>
 <translation id="7249764475759804559">Hafa þetta forrit með sem valkost við opnun skráa</translation>
-<translation id="7249885578105575587">Spurja Google út í þennan flipa: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Tækið sem þú ert að deila með svaraði ekki. Reyndu aftur.</translation>
 <translation id="725109152065019550">Kerfisstjóri hefur því miður lokað á ytri geymslu á reikningnum þínum.</translation>
 <translation id="7251635775446614726">Kerfisstjórinn þinn segir: „<ph name="CUSTOM_MESSAGE" />“</translation>
@@ -10294,7 +10289,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8143442547342702591">Ógilt forrit</translation>
 <translation id="8144429778087524791">Merkja sem lokið og fela</translation>
 <translation id="8145170459658034418">Minnissparnaður</translation>
-<translation id="8145219802299093106">Leita á þessari síðu með Google-linsu: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Ef þú hefur þegar skráð þig í þessu tæki geturðu <ph name="LINK2_START" />skráð þig inn sem fyrirliggjandi notandi<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Bættu við kjörtungumálum og raðaðu þeim í forgangsröð. Vefsvæði birtast á kjörtungumálum sé þess kostur. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Innskráning mistókst. Hafðu samband við kerfisstjóra eða reyndu aftur.</translation>
@@ -11841,7 +11835,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
 <translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Forrit}one{# forrit}other{# forrit}}</translation>
-<translation id="9184211686591068713">Leita á þessum flipa með Google-linsu: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />. Þú færð ekki tilkynningu þegar upptakan hefst.}=2{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Þú færð ekki tilkynningu þegar upptakan hefst.}=3{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og einu öðru forriti. Þú færð ekki tilkynningu þegar upptakan hefst.}one{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # öðru forriti. Þú færð ekki tilkynningu þegar upptakan hefst.}other{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # öðrum forritum. Þú færð ekki tilkynningu þegar upptakan hefst.}}</translation>
 <translation id="9186963452600581158">Skráðu þig inn með Google-reikningi barnsins</translation>
 <translation id="9187967020623675250">Lyklarnir passa ekki saman. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
@@ -11890,7 +11883,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="930893132043726269">Í reiki núna</translation>
 <translation id="930991362911221750">Leyfa <ph name="APP_NAME" /> að sjá þennan flipa?</translation>
 <translation id="931273044114601262">Leyft á þessu vefsvæði</translation>
-<translation id="932327136139879170">Heim</translation>
 <translation id="932508678520956232">Ekki var hægt að hefja prentun.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Þessi skrá er of stór fyrir öryggisathugun. Þú getur hlaðið upp allt að 50 MB skrám.}one{Sumar þessara skráa eru of stórar fyrir öryggisathugun. Þú getur hlaðið upp allt að 50 MB skrám.}other{Sumar þessara skráa eru of stórar fyrir öryggisathugun. Þú getur hlaðið upp allt að 50 MB skrám.}}</translation>
 <translation id="93343527085570547">Farðu á <ph name="BEGIN_LINK1" />hjálparsíðu lagalegra atriða<ph name="END_LINK1" /> til að fara fram á breytingar á efni af lagalegum ástæðum. Einhverjar reiknings- og kerfisupplýsingar kunna að verða sendar til Google. Við munum nota upplýsingarnar sem þú veitir okkur til að laga tæknileg vandamál og bæta þjónustu okkar, í samræmi við <ph name="BEGIN_LINK2" />persónuverndarstefnu<ph name="END_LINK2" /> okkar og <ph name="BEGIN_LINK3" />þjónustuskilmála<ph name="END_LINK3" />.</translation>

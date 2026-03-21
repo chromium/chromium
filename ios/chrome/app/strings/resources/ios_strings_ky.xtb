@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Орнотуу үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1740650426894359238">Башка профилге которулуңуз</translation>
 <translation id="1741219894094057085">Акылдуу саат</translation>
+<translation id="1742773766788162541">Картаны скандоо жана автотолтуруу</translation>
 <translation id="1743244221910283364">Өзгөрүүлөрдү жоюу</translation>
 <translation id="1748975028205587434">Файл тандоо</translation>
 <translation id="1749733017156547309">Сырсөз талап кылынат</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">Оффлайнда жеткиликтүү эмес</translation>
 <translation id="2697530870203420261">Ылакап ат жараксыз</translation>
 <translation id="269819437389494246">Кирген барактарыңызды көрүп же аларды таржымалдан өчүрө аласыз</translation>
+<translation id="2704295676501803339">Солго жылуу</translation>
 <translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2708051474374549906">Google'га жөнөтүлгөн серептөө дайындарынын негизинде кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн тез жана проактивдүү коргоо</translation>
 <translation id="2709516037105925701">Автотолтуруу</translation>
@@ -708,6 +710,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> жаңыртылсынбы?</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
+<translation id="3583726884554296148">Бул жана Chrome'догу келечектеги сатып алууларда картаңызды автотолтуруу үчүн аны Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="3587482841069643663">Баары</translation>
 <translation id="3587885837929752825">Уюмуңуз Google аккаунтуңузга сактоого боло турган нерселерди чектеп койгон.</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
@@ -1554,6 +1557,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6532106788206463496">Өзгөрүүлөрдү сактоо</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> тобун ачуу, <ph name="NUMBER_OF_TABS" /> өтмөктөн турган топ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Түзмөктөрүңүздө автотолтуруу менен тезирээк төлөңүз</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
 <translation id="6550891580932862748">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Мунун Google'дагы башка товарлардын Коопсуз серептөө параметрлерине кедергиси тийбейт.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1662,6 +1666,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6899890595581608884">Коопсуздукту текшерүү функциясынын билдирмелери өчүрүлдү</translation>
 <translation id="6900532703269623216">Жакшыртылган коргоо</translation>
 <translation id="6900702165119149418">Аккаунттан чыгып кеттиңиз</translation>
+<translation id="6903282483217634857">Оңго жылуу</translation>
 <translation id="6903907808598579934">Шайкештирүүнү күйгүзүү</translation>
 <translation id="6906448540340261898">Google аккаунтуңуздагы сырсөздөрдү каалаган убакта колдоно аларыңызды текшериңиз</translation>
 <translation id="6908734251759299256">Серепчиңизди жаңыртыңыз</translation>
@@ -2321,7 +2326,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="926455622548529175">Башка аккаунтка которулуп, өчүрүү</translation>
 <translation id="929748059769569925">Бөлүнүп көрсөтүлгөн текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
-<translation id="932327136139879170">Башкы</translation>
 <translation id="939472100615258482">Учурдагы сайт</translation>
 <translation id="939598580284253335">Купуя сөз айкашын киргизиңиз</translation>
 <translation id="939736085109172342">Жаңы папка</translation>

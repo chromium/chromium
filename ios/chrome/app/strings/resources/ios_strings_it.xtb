@@ -15,7 +15,7 @@
 <translation id="104491362976654916">Pagina offline</translation>
 <translation id="1046742265332833834">Tema blu</translation>
 <translation id="1049743911850919806">In incognito</translation>
-<translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
+<translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per avere preferiti, password e altro nel tuo account.</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Mai salvate</translation>
 <translation id="1062138828266376352">Il PIN non è stato modificato. Controlla la connessione a internet e riprova</translation>
@@ -335,7 +335,7 @@
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2180338296831857171">Elimina indirizzi</translation>
 <translation id="218350106843433823">Inserisci automaticamente password e passkey</translation>
-<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2184272387334793084">Accedi per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tocca <ph name="BEGIN_BOLD" />Salva nei download<ph name="END_BOLD" /></translation>
 <translation id="2191406283620379491">Si è verificato un problema. Aggiorna la versione di iOS.</translation>
@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Non disponibile offline</translation>
 <translation id="2697530870203420261">Nickname non valido</translation>
 <translation id="269819437389494246">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
+<translation id="2704295676501803339">Sposta a sinistra</translation>
 <translation id="2704606927547763573">Copiata</translation>
 <translation id="2708051474374549906">Protezione proattiva in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
@@ -1662,6 +1663,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6899890595581608884">Notifiche del controllo di sicurezza disattivate</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>
 <translation id="6900702165119149418">Accesso non eseguito</translation>
+<translation id="6903282483217634857">Sposta a destra</translation>
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
 <translation id="6906448540340261898">Assicurati di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="6908734251759299256">Aggiorna il browser</translation>
@@ -2321,7 +2323,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="926455622548529175">Cambia ed elimina</translation>
 <translation id="929748059769569925">Testo evidenziato</translation>
 <translation id="932305336591073205">{count,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
-<translation id="932327136139879170">Home page</translation>
 <translation id="939472100615258482">Sito corrente</translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="939736085109172342">Nuova cartella</translation>

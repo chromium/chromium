@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nuk mundësohet offline</translation>
 <translation id="2697530870203420261">Pseudonim i pavlefshëm</translation>
 <translation id="269819437389494246">Mund të shikosh faqet që ke vizituar ose t'i fshish ato nga historiku yt</translation>
+<translation id="2704295676501803339">Zhvendose majtas</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2708051474374549906">Mbrojtje proaktive dhe në kohë reale nga sajtet, shkarkimet dhe shtesat e rrezikshme që bazohet në të dhënat e tua të shfletimit që dërgohen te Google</translation>
 <translation id="2709516037105925701">Plotëso automatikisht</translation>
@@ -1662,6 +1663,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6899890595581608884">Njoftimet e "Kontrollit të sigurisë" janë çaktivizuar</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6900702165119149418">Ke dalë</translation>
+<translation id="6903282483217634857">Lëviz djathtas</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6906448540340261898">Sigurohu që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="6908734251759299256">Përditëso shfletuesin</translation>
@@ -2321,7 +2323,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="926455622548529175">Ndërro dhe fshi</translation>
 <translation id="929748059769569925">Teksti i theksuar</translation>
 <translation id="932305336591073205">{count,plural, =1{Mbyll skedën}other{Mbyll skedat}}</translation>
-<translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="939472100615258482">Sajti aktual</translation>
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="939736085109172342">Dosje e re</translation>

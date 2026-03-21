@@ -1242,7 +1242,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="184273675144259287">Reemplaza tus archivos y apps de Linux con una copia de seguridad anterior</translation>
 <translation id="1842766183094193446">¿Realmente quieres habilitar el modo de demostración?</translation>
 <translation id="1843048149176045210">Copiar vínculo de descarga</translation>
-<translation id="1843347690926158494">Buscar esta pestaña con Google Lens</translation>
 <translation id="1845060436536902492">El lector de pantalla de ChromeOS Flex, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Presiona la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Presionar Ctrl+clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
@@ -3748,7 +3747,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3581861561942370740">Buscar en el historial de descargas</translation>
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
-<translation id="358381413217813387">Buscar esta página con Google Lens</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
 <translation id="3586741240886978899">La usaste en este sitio</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
@@ -3792,7 +3790,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3610961622607302617">Cambiar la contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="3611634011145829814">Ir a la página de suscripciones</translation>
 <translation id="3611658447322220736">Permitir que los sitios cerrados recientemente terminen de enviar y recibir datos</translation>
-<translation id="3612673635130633812">Descargado por &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Transmite archivos de video de tu dispositivo a otra pantalla</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir en una pestaña nueva</translation>
@@ -6331,7 +6328,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>
 <translation id="5392864580775235956">Agrega y edita una imagen</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
-<translation id="5393474451146553463">Preguntar a Google sobre esta pestaña</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
 <translation id="5394529681046491727">Wi-Fi directo</translation>
 <translation id="5395353843367783642">Guardando en tu cuenta…</translation>
@@ -8955,7 +8951,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7249197363678284330">Puedes cambiar este parámetro de configuración desde la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta app como opción cuando abres archivos</translation>
-<translation id="7249885578105575587">Pregúntale a Google sobre esta pestaña: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">El dispositivo con el que quieres compartir contenido no respondió. Vuelve a intentarlo.</translation>
 <translation id="725109152065019550">Tu administrador inhabilitó el almacenamiento externo en tu cuenta.</translation>
 <translation id="7251635775446614726">Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
@@ -10276,7 +10271,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8143442547342702591">La app no es válida</translation>
 <translation id="8144429778087524791">Marcar como completada y ocultar</translation>
 <translation id="8145170459658034418">Ahorro de memoria</translation>
-<translation id="8145219802299093106">Buscar esta página con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Si ya estás registrado en este dispositivo, puedes <ph name="LINK2_START" />acceder como un usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Agrega tus idiomas preferidos y ordénalos. Los sitios web, cuando sea posible, se mostrarán en estos idiomas. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Se produjo un error en el acceso. Comunícate con el administrador o vuelve a intentarlo.</translation>
@@ -11822,7 +11816,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9184211686591068713">Buscar esta pestaña con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
@@ -11871,7 +11864,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="930893132043726269">Hay roaming disponible</translation>
 <translation id="930991362911221750">¿Deseas permitir que <ph name="APP_NAME" /> vea esta pestaña?</translation>
 <translation id="931273044114601262">Se permite en este sitio</translation>
-<translation id="932327136139879170">Casa</translation>
 <translation id="932508678520956232">No se pudo iniciar la impresión.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos archivos son demasiado grandes para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
 <translation id="93343527085570547">Para solicitar cambios en el contenido por motivos legales, visita la <ph name="BEGIN_LINK1" />página de ayuda legal<ph name="END_LINK1" />. Es posible que se envíe a Google información sobre el sistema y la cuenta. Según lo establecido en nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y las <ph name="BEGIN_LINK3" />Condiciones del Servicio<ph name="END_LINK3" />, la información que nos brindes se usará para solucionar problemas técnicos y mejorar nuestros servicios.</translation>

@@ -1247,7 +1247,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="184273675144259287">Zamijenite Linux aplikacije i datoteke prethodnom sigurnosnom kopijom</translation>
 <translation id="1842766183094193446">Jeste li sigurni da želite omogućiti demo-način?</translation>
 <translation id="1843048149176045210">Kopiraj vezu za preuzimanje</translation>
-<translation id="1843347690926158494">Pretražite ovu karticu pomoću Google objektiva</translation>
 <translation id="1845060436536902492">Čitač zaslona na ChromeOS Flexu pod nazivom ChromeVox prvenstveno upotrebljavaju slijepe i slabovidne osobe kako bi čitale tekst prikazan na zaslonu uz alat za sintezu govora ili brajev redak. Pritisnite razmaknicu da biste uključili ChromeVox. Kada se ChromeVox aktivira, proći ćete kroz kratki obilazak.</translation>
 <translation id="1845727111305721124">Dopuštena je reprodukcija zvuka</translation>
 <translation id="1846308012215045257">Kliknite uz tipku Control za pokretanje dodatka <ph name="PLUGIN_NAME" /></translation>
@@ -3753,7 +3752,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3581861561942370740">Pretraživanje povijesti preuzimanja</translation>
 <translation id="3582057310199111521">Unesena na obmanjujućoj web-lokaciji i pronađena među zaporkama otkrivenim u povredi podataka</translation>
 <translation id="3582299299336701326">Potamnite svijetle zaslone i posvijetlite tamne zaslone. Pritisnite Pretraživanje + Ctrl + H da biste uključili ili isključili inverziju boja.</translation>
-<translation id="358381413217813387">Pretražite tu stranicu pomoću Google objektiva</translation>
 <translation id="3584169441612580296">čitati i mijenjati fotografije, glazbu i druge medije s vašeg računala</translation>
 <translation id="3586741240886978899">Upotrijebili ste na ovoj web-lokaciji</translation>
 <translation id="3586806079541226322">Datoteku nije moguće otvoriti</translation>
@@ -3797,7 +3795,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3610961622607302617">Promijenite zaporku za <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Otvorite stranicu pretplate</translation>
 <translation id="3611658447322220736">Nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka</translation>
-<translation id="3612673635130633812">Datoteku je preuzelo proširenje &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Emitiranje videodatoteka na uređaju na drugi zaslon</translation>
 <translation id="3613134908380545408">Prikaži <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otvori u novoj kartici</translation>
@@ -6334,7 +6331,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5392192690789334093">Dopušteno je slanje obavijesti</translation>
 <translation id="5392864580775235956">Dodajte i uredite sliku</translation>
 <translation id="5393330235977997602">Opcije PIN-a</translation>
-<translation id="5393474451146553463">Postavite pitanje Googleu o ovoj kartici</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Veza}one{# veza}few{# veze}other{# veza}}</translation>
 <translation id="5394529681046491727">Izravni Wi-Fi</translation>
 <translation id="5395353843367783642">Spremanje na račun…</translation>
@@ -8959,7 +8955,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7248671827512403053">Aplikacija</translation>
 <translation id="7249197363678284330">Promijenite tu postavku u adresnoj traci.</translation>
 <translation id="7249764475759804559">Uključi ovu aplikaciju kao opciju prilikom otvaranja datoteka</translation>
-<translation id="7249885578105575587">Postavite pitanje Googleu o ovoj kartici: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Uređaj s kojim dijelite nije odgovorio. Pokušajte ponovo.</translation>
 <translation id="725109152065019550">Nažalost, vaš je administrator onemogućio vanjsku pohranu na vašem računu.</translation>
 <translation id="7251635775446614726">Administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10280,7 +10275,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8143442547342702591">Nevažeća aplikacija</translation>
 <translation id="8144429778087524791">Označi kao dovršeno i sakrij</translation>
 <translation id="8145170459658034418">Štednja memorije</translation>
-<translation id="8145219802299093106">Pretražite ovu stranicu pomoću Google objektiva: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Ako ste već registrirani na ovom uređaju, možete <ph name="LINK2_START" />se prijaviti kao postojeći korisnik<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Dodajte i rangirajte preferirane jezike. Web-lokacije će se prikazivati na vašim preferiranim jezicima kad je to moguće. Te se preferencije sinkroniziraju s postavkama vašeg preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Prijava nije uspjela. Obratite se administratoru ili pokušajte ponovo.</translation>
@@ -11828,7 +11822,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9182556968660520230">Ne dopuštaj web-lokacijama reproduciranje zaštićenog sadržaja</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
-<translation id="9184211686591068713">Pretražite ovu karticu pomoću Google objektiva: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator može snimiti vaš zaslon pomoću aplikacije <ph name="APP0_NAME" />. Nećete primiti obavijest kad se snimanje pokrene.}=2{Administrator može snimiti vaš zaslon pomoću aplikacija <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Nećete primiti obavijest kad se snimanje pokrene.}=3{Administrator može snimati vaš zaslon pomoću aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još jedne aplikacije. Nećete primiti obavijest kad se snimanje pokrene.}one{Administrator može snimiti vaš zaslon pomoću aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Nećete primiti obavijest kad se snimanje pokrene.}few{Administrator može snimiti vaš zaslon pomoću aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Nećete primiti obavijest kad se snimanje pokrene.}other{Administrator može snimiti vaš zaslon pomoću aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Nećete primiti obavijest kad se snimanje pokrene.}}</translation>
 <translation id="9186963452600581158">Prijavite se djetetovim Google računom</translation>
 <translation id="9187967020623675250">Tipke se ne podudaraju. Pritisnite bilo koju tipku za <ph name="RESPONSE" />.</translation>
@@ -11877,7 +11870,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="930893132043726269">Trenutačno u roamingu</translation>
 <translation id="930991362911221750">Želite li dopustiti aplikaciji <ph name="APP_NAME" /> da vidi tu karticu?</translation>
 <translation id="931273044114601262">Dopušteno na ovoj web-lokaciji</translation>
-<translation id="932327136139879170">Početna stranica</translation>
 <translation id="932508678520956232">Nije bilo moguće pokrenuti ispis.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Datoteka je prevelika za sigurnosnu provjeru. Možete prenositi datoteke do 50 MB.}one{Neke od tih datoteka prevelike su za sigurnosnu provjeru. Možete prenositi datoteke do 50 MB.}few{Neke od tih datoteka prevelike su za sigurnosnu provjeru. Možete prenositi datoteke do 50 MB.}other{Neke od tih datoteka prevelike su za sigurnosnu provjeru. Možete prenositi datoteke do 50 MB.}}</translation>
 <translation id="93343527085570547">Promjenu sadržaja iz pravnih razloga možete zatražiti na <ph name="BEGIN_LINK1" />stranici za pravnu pomoć<ph name="END_LINK1" />. Googleu se mogu slati neki podaci o računu i sustavu. Podatke koje nam pošaljete upotrebljavat ćemo za rješavanje tehničkih poteškoća i poboljšanje usluga, u skladu sa svojim <ph name="BEGIN_LINK2" />pravilima o privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uvjetima pružanja usluge<ph name="END_LINK3" />.</translation>

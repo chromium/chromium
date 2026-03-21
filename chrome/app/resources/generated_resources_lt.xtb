@@ -1257,7 +1257,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="184273675144259287">Pakeisti „Linux“ programas ir failus ankstesne atsargine kopija</translation>
 <translation id="1842766183094193446">Ar tikrai norite įgalinti demonstracinį režimą?</translation>
 <translation id="1843048149176045210">Kopijuoti atsisiuntimo nuorodą</translation>
-<translation id="1843347690926158494">Ieškoti šiame skirtuke naudojant „Google Lens“</translation>
 <translation id="1845060436536902492">Ekrano skaitytuvą sistemoje „ChromeOS Flex“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite tarpo klavišą. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="1845727111305721124">Leidžiama leisti garsą</translation>
 <translation id="1846308012215045257">Spustelėkite „Ctrl“, kad paleistumėte „<ph name="PLUGIN_NAME" />“</translation>
@@ -3767,7 +3766,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3581861561942370740">Ieškoti atsisiuntimo istorijoje</translation>
 <translation id="3582057310199111521">Įvesta apgaulingoje svetainėje ir aptiktas duomenų saugos pažeidimas</translation>
 <translation id="3582299299336701326">Nustatykite, kad šviesūs ekranai būtų tamsūs, o tamsūs ekranai – šviesūs. Paspauskite paieškos klavišą + „Ctrl“ + H, kad įjungtumėte ar išjungtumėte spalvų inversiją.</translation>
-<translation id="358381413217813387">Ieškoti šiame puslapyje naudojant „Google Lens“</translation>
 <translation id="3584169441612580296">Skaityti ir keisti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
 <translation id="3586741240886978899">Naudojote šioje svetainėje</translation>
 <translation id="3586806079541226322">Nepavyksta atidaryti šio failo</translation>
@@ -3811,7 +3809,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3610961622607302617">Keisti <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="3611634011145829814">Eiti į prenumeratos puslapį</translation>
 <translation id="3611658447322220736">Neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis</translation>
-<translation id="3612673635130633812">Atsisiuntė &lt;a href="<ph name="URL" />"&gt;„<ph name="EXTENSION" />“&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Perduokite vaizdo įrašo failus iš įrenginio į kitą ekraną</translation>
 <translation id="3613134908380545408">Rodyti „<ph name="FOLDER_NAME" />“</translation>
 <translation id="3613422051106148727">&amp;Atidaryti naujo skirtuko lape</translation>
@@ -6350,7 +6347,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5392192690789334093">Leidžiama siųsti pranešimus</translation>
 <translation id="5392864580775235956">Pridėkite ir redaguokite vaizdą</translation>
 <translation id="5393330235977997602">PIN kodo parinktys</translation>
-<translation id="5393474451146553463">Klausti „Google“ apie šį skirtuką</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Nuoroda}one{# nuoroda}few{# nuorodos}many{# nuorodos}other{# nuorodų}}</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">Išsaugoma paskyroje...</translation>
@@ -8981,7 +8977,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7248671827512403053">Programa</translation>
 <translation id="7249197363678284330">Pakeiskite šį nustatymą adreso juostoje.</translation>
 <translation id="7249764475759804559">Įtraukti šią programą kaip parinktį atidarant failus</translation>
-<translation id="7249885578105575587">Klausti „Google“ apie šį skirtuką: „<ph name="TAB_TITLE" />“</translation>
 <translation id="7250616558727237648">Įrenginys, su kuriuo bendrinate, neatsakė. Bandykite dar kartą.</translation>
 <translation id="725109152065019550">Deja, jūsų administratorius išjungė išorinę paskyros atmintinę.</translation>
 <translation id="7251635775446614726">Administratorius sako: „<ph name="CUSTOM_MESSAGE" />“</translation>
@@ -10302,7 +10297,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8143442547342702591">Netinkama programa</translation>
 <translation id="8144429778087524791">Pažymėti kaip atliktą ir paslėpti</translation>
 <translation id="8145170459658034418">Atminties taupymo priemonė</translation>
-<translation id="8145219802299093106">Ieškoti šiame puslapyje naudojant „Google Lens“: „<ph name="PAGE_TITLE" />“</translation>
 <translation id="8146177459103116374">Jei jau esate užsiregistravę šiame įrenginyje, galite <ph name="LINK2_START" />prisijungti kaip esamas naudotojas<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Pridėkite ir išdėstykite pageidaujamas kalbas pirmumo tvarka. Kai bus įmanoma, svetainės bus rodomos pageidaujamomis kalbomis. Šios nuostatos sinchronizuojamos su naršyklės nustatymais. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Nepavyko prisijungti. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
@@ -11851,7 +11845,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
 <translation id="9183302530794969518">„Google“ dokumentai</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Programa}one{# programa}few{# programos}many{# programos}other{# programų}}</translation>
-<translation id="9184211686591068713">Ieškoti šiame skirtuke naudojant „Google Lens“: „<ph name="PAGE_TITLE" />“</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“. Jums nebus pranešta, kai įrašymas prasidės.}=2{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“ ir „<ph name="APP1_NAME" />“. Jums nebus pranešta, kai įrašymas prasidės.}=3{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“, „<ph name="APP1_NAME" />“ ir dar vieną programą. Jums nebus pranešta, kai įrašymas prasidės.}one{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“, „<ph name="APP1_NAME" />“ ir dar # programą. Jums nebus pranešta, kai įrašymas prasidės.}few{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“, „<ph name="APP1_NAME" />“ ir dar # programas. Jums nebus pranešta, kai įrašymas prasidės.}many{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“, „<ph name="APP1_NAME" />“ ir dar # programos. Jums nebus pranešta, kai įrašymas prasidės.}other{Administratorius gali įrašyti jūsų ekraną naudodamas „<ph name="APP0_NAME" />“, „<ph name="APP1_NAME" />“ ir dar # programų. Jums nebus pranešta, kai įrašymas prasidės.}}</translation>
 <translation id="9186963452600581158">Prisijungti naudojant vaiko „Google“ paskyrą</translation>
 <translation id="9187967020623675250">Klavišai neatitinka. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
@@ -11900,7 +11893,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="930893132043726269">Šiuo metu tarptinklinis ryšys veikia</translation>
 <translation id="930991362911221750">Leisti „<ph name="APP_NAME" />“ matyti šį skirtuką?</translation>
 <translation id="931273044114601262">Leidžiama šioje svetainėje</translation>
-<translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="932508678520956232">Spausdinimo pradėti nepavyko.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Šis failas per didelis, kad būtų galima atlikti saugos patikrą. Galite įkelti iki 50 MB failus.}one{Kai kurie iš šių failų per dideli, kad būtų galima atlikti saugos patikrą. Galite įkelti iki 50 MB failus.}few{Kai kurie iš šių failų per dideli, kad būtų galima atlikti saugos patikrą. Galite įkelti iki 50 MB failus.}many{Kai kurie iš šių failų per dideli, kad būtų galima atlikti saugos patikrą. Galite įkelti iki 50 MB failus.}other{Kai kurie iš šių failų per dideli, kad būtų galima atlikti saugos patikrą. Galite įkelti iki 50 MB failus.}}</translation>
 <translation id="93343527085570547">Eikite į <ph name="BEGIN_LINK1" />teisinės pagalbos puslapį<ph name="END_LINK1" /> ir pateikite užklausą pakeisti turinį dėl teisinių priežasčių. Kai kuri paskyros ir sistemos informacija gali būti išsiųsta į sistemą „Google“. Naudosime informaciją, kurią pateiksite mums, kad galėtume padėti išspręsti technines problemas ir tobulinti savo paslaugas, kurioms taikoma: <ph name="BEGIN_LINK2" />privatumo politika<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />paslaugų teikimo sąlygos<ph name="END_LINK3" />.</translation>

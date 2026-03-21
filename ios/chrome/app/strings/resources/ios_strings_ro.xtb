@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Indisponibil offline</translation>
 <translation id="2697530870203420261">Pseudonim nevalid</translation>
 <translation id="269819437389494246">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
+<translation id="2704295676501803339">Mutați spre stânga</translation>
 <translation id="2704606927547763573">Copiat</translation>
 <translation id="2708051474374549906">Protecție proactivă în timp real împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
 <translation id="2709516037105925701">Completare automată</translation>
@@ -1662,6 +1663,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6899890595581608884">Notificările privind Verificarea de siguranță sunt dezactivate</translation>
 <translation id="6900532703269623216">Protecție îmbunătățită</translation>
 <translation id="6900702165119149418">Te-ai deconectat</translation>
+<translation id="6903282483217634857">Mutați spre dreapta</translation>
 <translation id="6903907808598579934">Activează sincronizarea</translation>
 <translation id="6906448540340261898">Asigură-te că poți folosi oricând parolele din Contul Google</translation>
 <translation id="6908734251759299256">Actualizează browserul</translation>
@@ -2321,7 +2323,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="926455622548529175">Comută și șterge</translation>
 <translation id="929748059769569925">Text evidențiat</translation>
 <translation id="932305336591073205">{count,plural, =1{Închide fila}few{Închide filele}other{Închide filele}}</translation>
-<translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="939472100615258482">Site-ul actual</translation>
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="939736085109172342">Dosar nou</translation>

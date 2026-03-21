@@ -1246,7 +1246,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="184273675144259287">Remplacer vos applications et vos fichiers Linux par une sauvegarde précédente</translation>
 <translation id="1842766183094193446">Voulez-vous vraiment activer le mode Démo?</translation>
 <translation id="1843048149176045210">Copier le lien de téléchargement</translation>
-<translation id="1843347690926158494">Rechercher cet onglet avec Lentille Google</translation>
 <translation id="1845060436536902492">Le lecteur d'écran sur ChromeOS Flex, ChromeVox, est principalement utilisé par les personnes aveugles ou ayant une basse vision pour lire le texte affiché à l'écran avec un synthétiseur vocal ou un afficheur braille. Appuyez sur la barre d'espacement pour activer ChromeVox. Lorsque ChromeVox est activé, une présentation rapide s'affiche.</translation>
 <translation id="1845727111305721124">Autorisés à faire jouer des sons</translation>
 <translation id="1846308012215045257">Cliquez en appuyant sur Ctrl pour exécuter le plugiciel <ph name="PLUGIN_NAME" />.</translation>
@@ -3754,7 +3753,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3581861561942370740">Rechercher dans l'historique des téléchargements</translation>
 <translation id="3582057310199111521">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3582299299336701326">Assombrissez les écrans clairs et éclaircissez les écrans sombres. Appuyez sur Rechercher+Ctrl+H pour activer et désactiver l'inversion des couleurs.</translation>
-<translation id="358381413217813387">Rechercher cette page avec Lentille Google</translation>
 <translation id="3584169441612580296">Lire et modifier les photos, la musique et les autres médias stockés sur votre ordinateur</translation>
 <translation id="3586741240886978899">Vous l'avez utilisé sur ce site</translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
@@ -3798,7 +3796,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3610961622607302617">Changer le mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Accéder à la page d'abonnement</translation>
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
-<translation id="3612673635130633812">Téléchargé par &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Diffusez des fichiers vidéo de votre appareil sur un autre écran</translation>
 <translation id="3613134908380545408">Afficher « <ph name="FOLDER_NAME" /> »</translation>
 <translation id="3613422051106148727">&amp;Ouvrir dans un nouvel onglet</translation>
@@ -6335,7 +6332,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5392864580775235956">Ajoutez et modifiez une image</translation>
 <translation id="5393330235977997602">Options de NIP</translation>
-<translation id="5393474451146553463">Poser une question à Google à propos de cet onglet</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395353843367783642">Enregistrement dans votre compte en cours…</translation>
@@ -8960,7 +8956,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7248671827512403053">Application</translation>
 <translation id="7249197363678284330">Modifiez ce paramètre dans la barre d'adresse.</translation>
 <translation id="7249764475759804559">Inclure cette application comme option lors de l'ouverture de fichiers</translation>
-<translation id="7249885578105575587">Poser une question à Google à propos de cet onglet : <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">L'appareil avec lequel vous tentez de partager le fichier ne répond pas. Veuillez réessayer.</translation>
 <translation id="725109152065019550">Désolés, votre administrateur a désactivé le stockage externe pour votre compte.</translation>
 <translation id="7251635775446614726">Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> »</translation>
@@ -10281,7 +10276,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8143442547342702591">Application non valide</translation>
 <translation id="8144429778087524791">Marquer comme terminé et masquer</translation>
 <translation id="8145170459658034418">Économiseur de mémoire</translation>
-<translation id="8145219802299093106">Rechercher cette page avec Lentille Google : <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez <ph name="LINK2_START" />vous connecter à l'aide de votre compte<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Ajoutez et classez vos langues préférées. Les sites Web s'afficheront dans vos langues préférées lorsque cela est possible. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Échec de la connexion. Veuillez communiquer avec votre administrateur ou essayer de nouveau.</translation>
@@ -11827,7 +11821,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9182556968660520230">Ne pas autoriser les sites à faire jouer du contenu protégé</translation>
 <translation id="9183302530794969518">Google Documents</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
-<translation id="9184211686591068713">Rechercher cet onglet avec Lentille Google : <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=2{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" /> et <ph name="APP1_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=3{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et une autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}one{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}other{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autres applis. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}}</translation>
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
 <translation id="9187967020623675250">Les touches ne correspondent pas. Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
@@ -11876,7 +11869,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="930893132043726269">Présentement en itinérance</translation>
 <translation id="930991362911221750">Autoriser <ph name="APP_NAME" /> à voir cet onglet?</translation>
 <translation id="931273044114601262">Autorisé sur ce site</translation>
-<translation id="932327136139879170">Accueil</translation>
 <translation id="932508678520956232">Impossible de lancer l'impression.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Impossible d'effectuer la vérification de sécurité de ce fichier parce qu'il est trop volumineux. Vous ne pouvez pas téléverser de fichiers de plus de 50 Mo.}one{Impossible d'effectuer la vérification de sécurité de ce fichier parce qu'il est trop volumineux. Vous ne pouvez pas téléverser de fichiers de plus de 50 Mo.}other{Impossible d'effectuer la vérification de sécurité de ces fichiers parce qu'ils sont trop volumineux. Vous ne pouvez pas téléverser de fichiers de plus de 50 Mo.}}</translation>
 <translation id="93343527085570547">Accédez à la <ph name="BEGIN_LINK1" />page d'aide juridique<ph name="END_LINK1" /> pour demander des modifications de contenu pour des raisons juridiques. Certaines données de compte et de système peuvent être envoyées à Google. Nous utiliserons les données que vous nous fournissez pour aider à répondre aux problèmes techniques afin d'améliorer nos services, conformément à notre <ph name="BEGIN_LINK2" />politique de confidentialité<ph name="END_LINK2" /> et à nos <ph name="BEGIN_LINK3" />conditions d'utilisation<ph name="END_LINK3" />.</translation>

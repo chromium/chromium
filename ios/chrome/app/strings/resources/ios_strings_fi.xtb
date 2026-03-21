@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Ei offline-käytössä</translation>
 <translation id="2697530870203420261">Virheellinen lyhytnimi</translation>
 <translation id="269819437389494246">Voit nähdä avaamasi sivut tai poistaa ne historiastasi</translation>
+<translation id="2704295676501803339">Siirrä vasemmalle</translation>
 <translation id="2704606927547763573">Kopioitu</translation>
 <translation id="2708051474374549906">Googlelle lähetettävään selausdataan perustuva reaaliaikainen, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="2709516037105925701">Automaattinen täyttö</translation>
@@ -1662,6 +1663,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6899890595581608884">Turvatarkistusilmoitukset on laitettu pois päältä</translation>
 <translation id="6900532703269623216">Parannettu suojaus</translation>
 <translation id="6900702165119149418">Olet kirjautunut ulos</translation>
+<translation id="6903282483217634857">Siirrä oikealle</translation>
 <translation id="6903907808598579934">Ota synkronointi käyttöön</translation>
 <translation id="6906448540340261898">Varmista, että voit aina käyttää Google-tilisi salasanoja</translation>
 <translation id="6908734251759299256">Päivitä selain</translation>
@@ -2321,7 +2323,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="926455622548529175">Vaihda ja poista</translation>
 <translation id="929748059769569925">Korostettu teksti</translation>
 <translation id="932305336591073205">{count,plural, =1{Sulje välilehti}other{Sulje välilehdet}}</translation>
-<translation id="932327136139879170">Etusivu</translation>
 <translation id="939472100615258482">Nykyinen sivusto</translation>
 <translation id="939598580284253335">Anna tunnuslause</translation>
 <translation id="939736085109172342">Uusi kansio</translation>

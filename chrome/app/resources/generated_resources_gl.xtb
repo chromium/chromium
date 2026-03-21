@@ -1244,7 +1244,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="184273675144259287">Substitúe as aplicacións e os ficheiros de Linux por unha copia de seguranza creada anteriormente</translation>
 <translation id="1842766183094193446">Seguro que queres activar o modo de demostración?</translation>
 <translation id="1843048149176045210">Copiar ligazón de descarga</translation>
-<translation id="1843347690926158494">Busca nesta pestana con Google Lens</translation>
 <translation id="1845060436536902492">Os principais usuarios de ChromeVox, o lector de pantalla de ChromeOS Flex, son as persoas cegas ou con visión reducida, que o utilizan para ler, cun sintetizador ou cunha liña braille, o texto que se mostra en pantalla. Para activar este lector, preme a barra de espazo. Unha vez activado, ofreceráseche unha guía rápida.</translation>
 <translation id="1845727111305721124">Permiso concedido para reproducir son</translation>
 <translation id="1846308012215045257">Fai clic mentres mantés premida a tecla Control para executar <ph name="PLUGIN_NAME" />.</translation>
@@ -3750,7 +3749,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3581861561942370740">Fai buscas no historial de descargas</translation>
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="3582299299336701326">Escurece as pantallas claras e aclarea as escuras. Para activar e desactivar a inversión da cor, preme Buscar + Control + H.</translation>
-<translation id="358381413217813387">Fai buscas nesta páxina con Google Lens</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
 <translation id="3586741240886978899">Usáchela neste sitio</translation>
 <translation id="3586806079541226322">Non se pode abrir este ficheiro</translation>
@@ -3794,7 +3792,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3610961622607302617">Cambiar contrasinal de <ph name="WEBSITE" />.</translation>
 <translation id="3611634011145829814">Ir á páxina de subscrición</translation>
 <translation id="3611658447322220736">Os sitios pechados recentemente poden rematar de enviar e recibir datos</translation>
-<translation id="3612673635130633812">Descargouse a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Emite ficheiros de vídeo do teu dispositivo noutra pantalla</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir nunha pestana nova</translation>
@@ -6336,7 +6333,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5392192690789334093">Permiso concedido para enviar notificacións</translation>
 <translation id="5392864580775235956">Engadir e editar unha imaxe</translation>
 <translation id="5393330235977997602">Opcións de PIN</translation>
-<translation id="5393474451146553463">Preguntarlle a Google sobre esta pestana</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Ligazón}other{# ligazóns}}</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">Gardando na túa conta...</translation>
@@ -8956,7 +8952,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7249197363678284330">Cambia esta opción de configuración na barra de enderezos.</translation>
 <translation id="7249764475759804559">Incluír esta aplicación como opción ao abrir ficheiros</translation>
-<translation id="7249885578105575587">Preguntarlle a Google sobre esta pestana: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">O dispositivo co que tentaches compartir o ficheiro non respondeu. Téntao de novo.</translation>
 <translation id="725109152065019550">O teu administrador desactivou o almacenamento externo na túa conta.</translation>
 <translation id="7251635775446614726">O teu administrador di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10277,7 +10272,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8143442547342702591">Aplicación non válida</translation>
 <translation id="8144429778087524791">Marcar como feito e ocultar</translation>
 <translation id="8145170459658034418">Aforro de memoria</translation>
-<translation id="8145219802299093106">Fai buscas nesta páxina con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Se xa te rexistraches neste dispositivo, podes <ph name="LINK2_START" />iniciar sesión como usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Engade e clasifica os teus idiomas preferidos. Sempre que sexa posible, os sitios web mostraránseche nesas linguas. Estas preferencias sincronízanse coa configuración do teu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Produciuse un erro no inicio de sesión. Ponte en contacto co administrador ou téntao de novo.</translation>
@@ -11823,7 +11817,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
-<translation id="9184211686591068713">Buscar nesta pestana con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />. Non te avisaremos cando se inicie a gravación.}=2{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non te avisaremos cando se inicie a gravación.}=3{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e 1 aplicación máis. Non te avisaremos cando se inicie a gravación.}other{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e # aplicacións máis. Non te avisaremos cando se inicie a gravación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
@@ -11872,7 +11865,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="930893132043726269">Nestes momentos, estase usando a itinerancia</translation>
 <translation id="930991362911221750">Queres permitir que <ph name="APP_NAME" /> vexa esta pestana?</translation>
 <translation id="931273044114601262">Permitido neste sitio</translation>
-<translation id="932327136139879170">Inicio</translation>
 <translation id="932508678520956232">Non se puido empezar a imprimir.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este ficheiro é demasiado grande para realizar unha Comprobación de seguranza. Podes cargar ficheiros de ata 50 MB.}other{Algúns destes ficheiros son demasiado grandes para realizar unha Comprobación de seguranza. Podes cargar ficheiros de ata 50 MB.}}</translation>
 <translation id="93343527085570547">Accede á <ph name="BEGIN_LINK1" />páxina de axuda legal<ph name="END_LINK1" /> para solicitar cambios de contido por motivos legais. Enviarase a Google información da conta e do sistema. Utilizaremos os datos que nos indiques para axudarche a solucionar problemas técnicos e mellorar os nosos servizos, de conformidade coa nosa <ph name="BEGIN_LINK2" />Política de privacidade<ph name="END_LINK2" /> e coas <ph name="BEGIN_LINK3" />Condicións de servizo<ph name="END_LINK3" />.</translation>

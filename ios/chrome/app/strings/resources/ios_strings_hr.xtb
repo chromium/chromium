@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nije dostupno offline</translation>
 <translation id="2697530870203420261">Nevažeći nadimak</translation>
 <translation id="269819437389494246">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
+<translation id="2704295676501803339">Premjesti ulijevo</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2708051474374549906">Proaktivna zaštita u stvarnom vremenu od opasnih web-lokacija, preuzimanja i proširenja koja se temelji na slanju vaših podataka o pregledavanju Googleu</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
@@ -1662,6 +1663,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6899890595581608884">Isključene su obavijesti sigurnosne provjere</translation>
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
 <translation id="6900702165119149418">Odjavljeni ste</translation>
+<translation id="6903282483217634857">Premjesti udesno</translation>
 <translation id="6903907808598579934">Uključi sinkronizaciju</translation>
 <translation id="6906448540340261898">Provjerite možete li uvijek upotrebljavati zaporke na svom Google računu</translation>
 <translation id="6908734251759299256">Ažurirajte preglednik</translation>
@@ -2321,7 +2323,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="926455622548529175">Promijeni i izbriši</translation>
 <translation id="929748059769569925">Istaknuti tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
-<translation id="932327136139879170">Početna stranica</translation>
 <translation id="939472100615258482">Trenutačna web-lokacija</translation>
 <translation id="939598580284253335">Unesite zaporku</translation>
 <translation id="939736085109172342">Nova mapa</translation>

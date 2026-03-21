@@ -1207,7 +1207,7 @@
 <translation id="5352128922772839949">Cadw'r ffeil</translation>
 <translation id="5355191726083956201">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="536067926684072644">Dangos Nodau Tudalen</translation>
-<translation id="5364647308446127983">{count,plural, =1{Methu â mewnforio {count} cod pas}zero{Methu â mewnforio {count} cod pas}two{Methu â mewnforio {count} god pas}few{Methu â mewnforio {count} chod pas}many{Methu â mewnforio {count} cod pas}other{Methu â mewnforio {count} cod pas}}</translation>
+<translation id="5364647308446127983">{count,plural, =1{Methu â mewnforio {count} cod pas}zero{Methu â mewnforio {count} cod pas}two{Methu â mewnforio {count} god pas}few{Methu â mewnforio {count} chod pas}many{Methu â mewnforio {count} chod pas}other{Methu â mewnforio {count} cod pas}}</translation>
 <translation id="5371112366564891538">Chwyddo maint y testun</translation>
 <translation id="5376135254804080693">Dad-ddewis popeth</translation>
 <translation id="537853552771686272">Rheoli'r pynciau a'r gwefannau y mae gennych ddiddordeb ynddynt</translation>
@@ -2321,7 +2321,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="926455622548529175">Newid a Dileu</translation>
 <translation id="929748059769569925">Testun a amlygir</translation>
 <translation id="932305336591073205">{count,plural, =1{Cau tab}zero{Cau tabiau}two{Cau tabiau}few{Cau tabiau}many{Cau tabiau}other{Cau tabiau}}</translation>
-<translation id="932327136139879170">Cartref</translation>
 <translation id="939472100615258482">Gwefan bresennol</translation>
 <translation id="939598580284253335">Rhowch gyfrinymadrodd</translation>
 <translation id="939736085109172342">Ffolder newydd</translation>

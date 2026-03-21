@@ -1254,7 +1254,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="184273675144259287">Replace your Linux apps and files with a previous backup</translation>
 <translation id="1842766183094193446">Are you sure that you want to enable demo mode?</translation>
 <translation id="1843048149176045210">Copy download link</translation>
-<translation id="1843347690926158494">Search this tab with Google Lens</translation>
 <translation id="1845060436536902492">The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesiser or braille display. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="1845727111305721124">Allowed to play sound</translation>
 <translation id="1846308012215045257">Control-click to run <ph name="PLUGIN_NAME" /></translation>
@@ -3764,7 +3763,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3581861561942370740">Search download history</translation>
 <translation id="3582057310199111521">Entered on deceptive site and found in data breach</translation>
 <translation id="3582299299336701326">Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn colour inversion on and off.</translation>
-<translation id="358381413217813387">Search this page with Google Lens</translation>
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
 <translation id="3586741240886978899">You used on this site</translation>
 <translation id="3586806079541226322">Can't open this file</translation>
@@ -3808,7 +3806,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3610961622607302617">Change password for <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Go to subscription page</translation>
 <translation id="3611658447322220736">Recently closed sites can finish sending and receiving data</translation>
-<translation id="3612673635130633812">Downloaded by &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Cast video files on your device to another screen</translation>
 <translation id="3613134908380545408">Show <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Open in new tab</translation>
@@ -6347,7 +6344,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5392192690789334093">Allowed to send notifications</translation>
 <translation id="5392864580775235956">Add and edit an image</translation>
 <translation id="5393330235977997602">PIN options</translation>
-<translation id="5393474451146553463">Ask Google about this tab</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395353843367783642">Saving in your account…</translation>
@@ -8971,7 +8967,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7248671827512403053">Application</translation>
 <translation id="7249197363678284330">Change this setting in the address bar.</translation>
 <translation id="7249764475759804559">Include this app as an option when opening files</translation>
-<translation id="7249885578105575587">Ask Google about this tab: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
 <translation id="725109152065019550">Sorry, your administrator has disabled external storage on your account.</translation>
 <translation id="7251635775446614726">Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
@@ -10292,7 +10287,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8143442547342702591">Invalid application</translation>
 <translation id="8144429778087524791">Mark as done and hide</translation>
 <translation id="8145170459658034418">Memory Saver</translation>
-<translation id="8145219802299093106">Search this page with Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Add and rank your preferred languages. Websites will show in your preferred languages, when possible. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Sign-in failed. Please contact your administrator or try again.</translation>
@@ -11838,7 +11832,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9184211686591068713">Search this tab with Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Your administrator can record your screen with <ph name="APP0_NAME" />. You will not be notified when the recording starts.}=2{Your administrator can record your screen with <ph name="APP0_NAME" /> and <ph name="APP1_NAME" />. You will not be notified when the recording starts.}=3{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and 1 other app. You will not be notified when the recording starts.}other{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will not be notified when the recording starts.}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
@@ -11887,7 +11880,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="930893132043726269">Currently roaming</translation>
 <translation id="930991362911221750">Allow <ph name="APP_NAME" /> to see this tab?</translation>
 <translation id="931273044114601262">Allowed on this site</translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="932508678520956232">Could not initiate printing.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{This file is too big for a security check. You can upload files up to 50 MB.}other{Some of these files are too big for a security check. You can upload files up to 50 MB.}}</translation>
 <translation id="93343527085570547">Go to the <ph name="BEGIN_LINK1" />Legal Help page<ph name="END_LINK1" /> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information that you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2" />Privacy Policy<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Terms of Service<ph name="END_LINK3" />.</translation>

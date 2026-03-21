@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2360196772093551345">Yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="2362083820973145409">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
+<translation id="2367025302166767427">Đã xảy ra lỗi khi điền thông tin của bạn</translation>
 <translation id="2371084566192454134">Thẻ và nhóm thẻ</translation>
 <translation id="2371303771137626249">Mới</translation>
 <translation id="2381405137052800939">Thông tin cơ bản</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">Ko khả dụng khi ngoại tuyến</translation>
 <translation id="2697530870203420261">Biệt hiệu không hợp lệ</translation>
 <translation id="269819437389494246">Bạn có thể xem các trang mà mình đã truy cập hoặc xoá những trang này khỏi nhật ký</translation>
+<translation id="2704295676501803339">Di chuyển sang trái</translation>
 <translation id="2704606927547763573">Đã sao chép</translation>
 <translation id="2708051474374549906">Khả năng bảo vệ chủ động theo thời gian thực trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, dựa trên dữ liệu duyệt web được gửi tới Google</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
@@ -1662,6 +1664,7 @@
 <translation id="6899890595581608884">Đã tắt thông báo của tính năng kiểm tra an toàn</translation>
 <translation id="6900532703269623216">Bảo vệ nâng cao</translation>
 <translation id="6900702165119149418">Bạn đã đăng xuất</translation>
+<translation id="6903282483217634857">Di chuyển sang phải</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6906448540340261898">Đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google</translation>
 <translation id="6908734251759299256">Cập nhật trình duyệt của bạn</translation>
@@ -2321,7 +2324,6 @@
 <translation id="926455622548529175">Đổi và xoá</translation>
 <translation id="929748059769569925">Văn bản được đánh dấu</translation>
 <translation id="932305336591073205">{count,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
-<translation id="932327136139879170">Nhà riêng</translation>
 <translation id="939472100615258482">Trang hiện tại</translation>
 <translation id="939598580284253335">Nhập cụm mật khẩu</translation>
 <translation id="939736085109172342">Thư mục mới</translation>

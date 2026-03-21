@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Oflayn şəkildə əlçatan deyil</translation>
 <translation id="2697530870203420261">Yanlış ləqəb</translation>
 <translation id="269819437389494246">Tarixçədə daxil olduğunuz səhifələri görə və ya onları silə bilərsiniz</translation>
+<translation id="2704295676501803339">Sola Çəkin</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2708051474374549906">Google-a göndərilən baxış datasına əsasən təhlükəli sayt, endirmə və artırmalardan real zamanda proaktiv qoruma</translation>
 <translation id="2709516037105925701">Avtomatik doldurma</translation>
@@ -1662,6 +1663,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6899890595581608884">Təhlükəsizlik yoxlanışı bildirişləri deaktiv edilib</translation>
 <translation id="6900532703269623216">Təkmil qoruma</translation>
 <translation id="6900702165119149418">Hesabdan çıxdınız</translation>
+<translation id="6903282483217634857">Sağa Daşıyın</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6906448540340261898">Google Hesabında hər zaman parollardan istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="6908734251759299256">Brauzeri güncəlləyin</translation>
@@ -2321,7 +2323,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="926455622548529175">Dəyişin və silin</translation>
 <translation id="929748059769569925">Vurğulanmış mətn</translation>
 <translation id="932305336591073205">{count,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
-<translation id="932327136139879170">Ev</translation>
 <translation id="939472100615258482">Cari sayt</translation>
 <translation id="939598580284253335">Parol daxil edin</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>

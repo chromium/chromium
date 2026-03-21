@@ -1254,7 +1254,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="184273675144259287">Vervang Linux-programme en -lêers met 'n vorige rugsteun</translation>
 <translation id="1842766183094193446">Is jy seker jy wil demonstrasiemodus aktiveer?</translation>
 <translation id="1843048149176045210">Kopieer aflaaiskakel</translation>
-<translation id="1843347690926158494">Deursoek hierdie oortjie met Google Lens</translation>
 <translation id="1845060436536902492">Die skermleser op ChromeOS Flex, ChromeVox, word hoofsaaklik deur mense met blindheid of swak sig gebruik om teks wat op die skerm vertoon word met ’n spraaksintetiseerder of brailleskerm te lees. Druk die spasiebalk om ChromeVox aan te skakel. Jy sal deur ’n vinnige toer gaan wanneer ChromeVox geaktiveer is.</translation>
 <translation id="1845727111305721124">Mag klank speel</translation>
 <translation id="1846308012215045257">Control-klik om <ph name="PLUGIN_NAME" /> te laat loop</translation>
@@ -3764,7 +3763,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3581861561942370740">Deursoek aflaaigeskiedenis</translation>
 <translation id="3582057310199111521">Op 'n misleidende werf ingevoer en in dataskending gevind</translation>
 <translation id="3582299299336701326">Maak ligte skerms donker en donker skerms lig. Druk Soek + Ctrl + H om kleuromkering aan en af te skakel.</translation>
-<translation id="358381413217813387">Soek hierdie bladsy met Google Lens</translation>
 <translation id="3584169441612580296">Lees en verander foto's, musiek en ander media van jou rekenaar af</translation>
 <translation id="3586741240886978899">Jy het op hierdie werf gebruik</translation>
 <translation id="3586806079541226322">Kan nie hierdie lêer oopmaak nie</translation>
@@ -3808,7 +3806,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3610961622607302617">Verander wagwoord vir <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Gaan na intekeningbladsy</translation>
 <translation id="3611658447322220736">Werwe wat onlangs toegemaak is, kan data klaar stuur en ontvang</translation>
-<translation id="3612673635130633812">Afgelaai deur &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Saai videolêers op jou toestel na ’n ander skerm uit</translation>
 <translation id="3613134908380545408">Wys <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">Maak in nuwe oortjie oop</translation>
@@ -6347,7 +6344,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5392192690789334093">Mag kennisgewings stuur</translation>
 <translation id="5392864580775235956">Voeg ’n prent by en wysig dit</translation>
 <translation id="5393330235977997602">PIN-opsies</translation>
-<translation id="5393474451146553463">Vra Google oor hierdie oortjie</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Skakel}other{# skakels}}</translation>
 <translation id="5394529681046491727">Wi-fi-direk</translation>
 <translation id="5395353843367783642">Stoor tans in jou rekening …</translation>
@@ -8971,7 +8967,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7248671827512403053">App</translation>
 <translation id="7249197363678284330">Verander hierdie instelling in die adresbalk.</translation>
 <translation id="7249764475759804559">Sluit hierdie app in as ’n opsie wanneer jy lêers oopmaak</translation>
-<translation id="7249885578105575587">Vra Google oor hierdie oortjie: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Die toestel waarmee jy deel, het nie geantwoord nie. Probeer weer.</translation>
 <translation id="725109152065019550">Jammer, jou administrateur het eksterne berging op jou rekening gedeaktiveer.</translation>
 <translation id="7251635775446614726">Jou administrateur sê: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10292,7 +10287,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8143442547342702591">Ongeldige app</translation>
 <translation id="8144429778087524791">Merk as gedoen en versteek</translation>
 <translation id="8145170459658034418">Geheuebespaarder</translation>
-<translation id="8145219802299093106">Deursoek hierdie bladsy met Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">As jy reeds op hierdie toestel geregistreer is, kan jy <ph name="LINK2_START" />as 'n bestaande gebruiker aanmeld<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Voeg jou voorkeurtale by en gradeer hulle. Webwerwe sal indien moontlik in jou voorkeurtale gewys word. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Kon nie aanmeld nie. Kontak asseblief jou administrateur of probeer weer.</translation>
@@ -11838,7 +11832,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
 <translation id="9183302530794969518">Google Dokumente</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9184211686591068713">Deursoek hierdie oortjie met Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=2{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=3{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 ander app opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}other{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # ander apps opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
@@ -11887,7 +11880,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="930893132043726269">Swerf tans</translation>
 <translation id="930991362911221750">Laat <ph name="APP_NAME" /> toe om hierdie oortjie te sien?</translation>
 <translation id="931273044114601262">Toegelaat op hierdie werf</translation>
-<translation id="932327136139879170">Tuis</translation>
 <translation id="932508678520956232">Kon nie uitdruk begin nie.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Hierdie lêer is te groot vir 'n sekuriteitkontrole. Jy kan lêers van tot 50 MB oplaai.}other{Sommige van hierdie lêers is te groot vir 'n sekuriteitkontrole. Jy kan lêers van tot 50 MB oplaai.}}</translation>
 <translation id="93343527085570547">Gaan na die <ph name="BEGIN_LINK1" />Regshulpbladsy<ph name="END_LINK1" /> om inhoudveranderinge om regsredes te versoek. Van die inhoud- en stelselinligting kan na Google gestuur word. Ons sal die inligting wat jy vir ons gee, gebruik om tegniese kwessies te help aanspreek en ons dienste te verbeter, onderworpe aan ons <ph name="BEGIN_LINK2" />Privaatheidsbeleid<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />Diensbepalings<ph name="END_LINK3" />.</translation>

@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">ከመስመር ውጭ አይገኝም</translation>
 <translation id="2697530870203420261">ልክ ያልሆነ ቅጽል ስም</translation>
 <translation id="269819437389494246">የጎበኟቸዉን ገጾች ማየት ወይም ከታሪክዎ ውስጥ መሰረዝ ይችላሉ</translation>
+<translation id="2704295676501803339">ወደ ግራ ውሰድ</translation>
 <translation id="2704606927547763573">ተቀድቷል</translation>
 <translation id="2708051474374549906">ወደ Google በሚላከው የእርስዎ የአሰሳ ውሂብ ላይ ተመስርቶ አደገኛ ከሆኑ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች የሚደረግ የእውነተኛ ጊዜ ንቁ ጥበቃ</translation>
 <translation id="2709516037105925701">ራስ-ሙላ</translation>
@@ -1662,6 +1663,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6899890595581608884">የደህንነት ፍተሻ ማሳወቂያዎች ጠፍተዋል</translation>
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6900702165119149418">ዘግተው ወጥተዋል</translation>
+<translation id="6903282483217634857">ወደ ቀኝ ውሰድ</translation>
 <translation id="6903907808598579934">ስምረትን አብራ</translation>
 <translation id="6906448540340261898">በGoogle መለያዎ ውስጥ በማንኛውም ጊዜ የይለፍ ቃላትን መጠቀም መቻልዎን ያረጋግጡ</translation>
 <translation id="6908734251759299256">አሳሽዎን ያዘምኑ</translation>
@@ -2321,7 +2323,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="926455622548529175">ቀይር እና ሰርዝ</translation>
 <translation id="929748059769569925">የደመቀው ጽሁፍ</translation>
 <translation id="932305336591073205">{count,plural, =1{ትርን ዝጋ}one{ትርን ዝጋ}other{ትሮችን ዝጋ}}</translation>
-<translation id="932327136139879170">መነሻ</translation>
 <translation id="939472100615258482">የአሁኑ ጣቢያ</translation>
 <translation id="939598580284253335">የይለፍ ሐረግ ያስገቡ</translation>
 <translation id="939736085109172342">አዲስ ዓቃፊ</translation>

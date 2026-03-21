@@ -3377,6 +3377,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6326947323444967009">Itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="6327065120806001832">access sa lokal na network</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
+<translation id="6329742260390895689">Para i-autofill ang iyong impormasyon, i-on ang "Gumamit ng mga pass sa buong Google" sa mga setting ng Wallet</translation>
 <translation id="6329815962353376655">&lt;Mag-type ng tanong&gt;</translation>
 <translation id="6331597954316706229">Para sa mga pinakamahusay na naka-personalize na sagot, payagan ang lahat ng thread na sumangguni sa iyong mga nauugnay na nakabukas na tab.</translation>
 <translation id="633348045801643466">Ipakita ang mga opsyon sa <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pay later<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> sa pag-checkout</translation>
@@ -3464,6 +3465,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6436994298828707228">Na-block ang koneksyon dahil sinimulan ito ng isang pampublikong page para kumonekta sa mga device o server sa iyong lokal na network.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">Mga Bestida</translation>
+<translation id="6440450906295708112">Source ng Mga Variation</translation>
 <translation id="6440503408713884761">Binalewala</translation>
 <translation id="6443406338865242315">Aling mga extension at plugin ang na-install mo</translation>
 <translation id="6444329331928531170">Pagreretiro at Pensyon</translation>

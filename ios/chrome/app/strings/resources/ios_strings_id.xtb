@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Tidak tersedia secara offline</translation>
 <translation id="2697530870203420261">Nama panggilan tidak valid</translation>
 <translation id="269819437389494246">Anda dapat melihat halaman yang pernah Anda buka atau menghapusnya dari histori</translation>
+<translation id="2704295676501803339">Pindah ke Kiri</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2708051474374549906">Perlindungan proaktif secara real time terhadap situs, download, dan ekstensi berbahaya yang didasarkan pada data penjelajahan yang dikirim ke Google</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
@@ -1662,6 +1663,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6899890595581608884">Notifikasi pemeriksaan keamanan dinonaktifkan</translation>
 <translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
 <translation id="6900702165119149418">Anda telah logout</translation>
+<translation id="6903282483217634857">Pindah ke Kanan</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6906448540340261898">Pastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda</translation>
 <translation id="6908734251759299256">Update browser Anda</translation>
@@ -2321,7 +2323,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="926455622548529175">Ganti dan Hapus</translation>
 <translation id="929748059769569925">Teks yang ditandai</translation>
 <translation id="932305336591073205">{count,plural, =1{Tutup tab}other{Tutup tab}}</translation>
-<translation id="932327136139879170">Beranda</translation>
 <translation id="939472100615258482">Situs saat ini</translation>
 <translation id="939598580284253335">Masukkan frasa sandi</translation>
 <translation id="939736085109172342">Folder baru</translation>

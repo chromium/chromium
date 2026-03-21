@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">انسٹال کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1740650426894359238">دوسری پروفائل پر سوئچ کریں</translation>
 <translation id="1741219894094057085">اسمارٹ گھڑی</translation>
+<translation id="1742773766788162541">کارڈ اسکین کریں اور آٹو فل کریں</translation>
 <translation id="1743244221910283364">تبدیلیاں مسترد کریں</translation>
 <translation id="1748975028205587434">اپنی فائل منتخب کریں</translation>
 <translation id="1749733017156547309">ایک پاس ورڈ درکار ہے</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">آف لائن دستیاب نہیں ہے</translation>
 <translation id="2697530870203420261">غلط عرفی نام</translation>
 <translation id="269819437389494246">آپ ان صفحات کو دیکھ سکتے ہیں جن کا آپ نے ملاحظہ کیا ہے یا انہیں اپنی سرگزشت سے حذف بھی کر سکتے ہیں</translation>
+<translation id="2704295676501803339">بائیں منتقل کریں</translation>
 <translation id="2704606927547763573">کاپی کیا</translation>
 <translation id="2708051474374549906">‏ریئل ٹائم، خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف فعال تحفظ جو آپ کے براؤزنگ ڈیٹا کی بنیاد پر Google کو بھیجے جا رہے ہیں</translation>
 <translation id="2709516037105925701">آٹو فل</translation>
@@ -708,6 +710,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> اپ ڈیٹ کریں؟</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
+<translation id="3583726884554296148">‏اپنے کارڈ کو اپنے Google اکاؤنٹ میں محفوظ کریں تاکہ اسے اس خریداری اور Chrome پر کی جانے والی مستقبل کی خریداریوں کے لیے آٹو فل کیا جا سکے</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
@@ -1554,6 +1557,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6532106788206463496">تبدیلیاں محفوظ کریں</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> گروپ کھولیں، جس میں <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /> ہیں</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">اپنے تمام آلات پر آٹو فل کے ساتھ تیزی سے چیک آؤٹ کریں</translation>
 <translation id="6550675742724504774">اختیارات</translation>
 <translation id="6550891580932862748">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ Google کے دیگر پروڈکٹس میں آپ کی محفوظ براؤزنگ کی ترتیبات متاثر نہیں ہوں گی۔</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1662,6 +1666,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6899890595581608884">سیفٹی چیک کی اطلاعات آف ہیں</translation>
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>
 <translation id="6900702165119149418">آپ سائن آؤٹ ہیں</translation>
+<translation id="6903282483217634857">دائیں منتقل کریں</translation>
 <translation id="6903907808598579934">مطابقت پذیری آن کریں</translation>
 <translation id="6906448540340261898">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں</translation>
 <translation id="6908734251759299256">اپنے براؤزر کو اپ ڈیٹ کریں</translation>
@@ -2321,7 +2326,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="926455622548529175">سوئچ کریں اور حذف کریں</translation>
 <translation id="929748059769569925">نمایاں کردہ ٹیکسٹ</translation>
 <translation id="932305336591073205">{count,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
-<translation id="932327136139879170">ھوم</translation>
 <translation id="939472100615258482">موجودہ سائٹ</translation>
 <translation id="939598580284253335">پاس فریز درج کریں</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>

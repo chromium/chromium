@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360196772093551345">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। सेटिङ खोल्छ।</translation>
+<translation id="2367025302166767427">तपाईंको जानकारी भर्ने क्रममा समस्या आयो</translation>
 <translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
 <translation id="2371303771137626249">नयाँ</translation>
 <translation id="2381405137052800939">आधारभूत</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">अफलाइन उपलब्ध छैन</translation>
 <translation id="2697530870203420261">अवैध उपनाम</translation>
 <translation id="269819437389494246">तपाईं आफूले खोलेका पेजहरू हेर्न वा आफ्नो हिस्ट्रीबाट ती पेज मेटाउन सक्नुहुन्छ</translation>
+<translation id="2704295676501803339">बायाँ सार्नुहोस्</translation>
 <translation id="2704606927547763573">कपी गरियो</translation>
 <translation id="2708051474374549906">Google मा पठाइने तपाईंको ब्राउजिङ डेटाका आधारमा प्रदान गरिने खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट प्रत्यक्ष र सक्रिय सुरक्षा</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
@@ -1662,6 +1664,7 @@
 <translation id="6899890595581608884">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गरिएको छ</translation>
 <translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6900702165119149418">तपाईं साइन आउट हुनुभएको छ</translation>
+<translation id="6903282483217634857">दायाँ सार्नुहोस्</translation>
 <translation id="6903907808598579934">सिंकलाई अन गर्नुहोस्</translation>
 <translation id="6906448540340261898">तपाईं आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="6908734251759299256">आफ्नो ब्राउजर अपडेट गर्नुहोस्</translation>
@@ -2321,7 +2324,6 @@
 <translation id="926455622548529175">बदल्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="929748059769569925">हाइलाइट गरिएको टेक्स्ट</translation>
 <translation id="932305336591073205">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
-<translation id="932327136139879170">गृहपृष्ठ</translation>
 <translation id="939472100615258482">हालको साइट</translation>
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>

@@ -1247,7 +1247,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="184273675144259287">Nahradit aplikace a soubory systému Linux verzemi z předchozí zálohy</translation>
 <translation id="1842766183094193446">Opravdu chcete zapnout ukázkový režim?</translation>
 <translation id="1843048149176045210">Zkopírovat odkaz ke stažení</translation>
-<translation id="1843347690926158494">Vyhledat tuto kartu pomocí Google Lens</translation>
 <translation id="1845060436536902492">Čtečku obrazovky v systému ChromeOS Flex, ChromeVox, používají především nevidomí a slabozrací lidé ke čtení textu zobrazeného na obrazovce pomocí syntetizéru řeči nebo hmatového displeje. Zapnete ji stisknutím mezerníku. Po aktivaci čtečky ChromeVox budete provedeni rychlou prohlídkou.</translation>
 <translation id="1845727111305721124">Povolení přehrávat zvuk</translation>
 <translation id="1846308012215045257">Plugin <ph name="PLUGIN_NAME" /> spustíte kliknutím se stisknutou klávesou CTRL</translation>
@@ -3751,7 +3750,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3581861561942370740">Prohledat historii stahování</translation>
 <translation id="3582057310199111521">Zadáno na klamavém webu a nalezeno v porušení zabezpečení údajů</translation>
 <translation id="3582299299336701326">Ztmavit světlé obrazovky a zesvětlit tmavé obrazovky. Převrácení barev zapnete a vypnete stisknutím kláves Hledat + Ctrl + H.</translation>
-<translation id="358381413217813387">Vyhledat tuto stránku pomocí Google Lens</translation>
 <translation id="3584169441612580296">Číst a měnit fotografie, hudbu a další média z počítače</translation>
 <translation id="3586741240886978899">Použili jste na tomhle webu</translation>
 <translation id="3586806079541226322">Soubor nelze otevřít</translation>
@@ -3795,7 +3793,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3610961622607302617">Změna hesla pro web <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Přejít na stránku předplatného</translation>
 <translation id="3611658447322220736">Nedávno zavřené weby mohou dokončit odeslání a příjem dat</translation>
-<translation id="3612673635130633812">Staženo pomocí rozšíření &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Odesílejte video soubory ze svého zařízení na jinou obrazovku</translation>
 <translation id="3613134908380545408">Zobrazit <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otevřít v nové kartě</translation>
@@ -6331,7 +6328,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5392192690789334093">Odesílání oznámení je povoleno</translation>
 <translation id="5392864580775235956">Přidejte a upravte obrázek</translation>
 <translation id="5393330235977997602">Možnosti kódu PIN</translation>
-<translation id="5393474451146553463">Zeptat se Googlu na tuhle kartu</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Odkaz}few{# odkazy}many{# odkazu}other{# odkazů}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Ukládání na váš účet…</translation>
@@ -8956,7 +8952,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7248671827512403053">Aplikace</translation>
 <translation id="7249197363678284330">Toto nastavení můžete změnit na adresním řádku.</translation>
 <translation id="7249764475759804559">Zahrnout tuto aplikaci jako možnost při otevírání souborů</translation>
-<translation id="7249885578105575587">Zeptat se Googlu na tuhle kartu: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Cílové zařízení neodpovědělo. Zkuste to znovu.</translation>
 <translation id="725109152065019550">Je nám líto, správce ve vašem účtu zakázal používání externích úložišť.</translation>
 <translation id="7251635775446614726">Váš administrátor říká: „<ph name="CUSTOM_MESSAGE" />“</translation>
@@ -10276,7 +10271,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8143442547342702591">Neplatná aplikace</translation>
 <translation id="8144429778087524791">Označit jako hotové a skrýt</translation>
 <translation id="8145170459658034418">Spořič paměti</translation>
-<translation id="8145219802299093106">Vyhledat tuhle stránku pomocí Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">V tomto zařízení jste již zaregistrováni. Můžete se <ph name="LINK2_START" />přihlásit jako stávající uživatel<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Přidejte a ohodnoťte preferované jazyky. Pokud to bude možné, webové stránky se budou zobrazovat ve vašem preferovaném jazyce. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Přihlášení se nezdařilo. Kontaktujte administrátora nebo to zkuste znovu.</translation>
@@ -11823,7 +11817,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
-<translation id="9184211686591068713">Vyhledat tuhle kartu pomocí Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Váš administrátor může pomocí aplikace <ph name="APP0_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=2{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" /> a <ph name="APP1_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=3{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a 1 další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}few{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}many{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}other{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}}</translation>
 <translation id="9186963452600581158">Přihlásit se pomocí účtu Google dítěte</translation>
 <translation id="9187967020623675250">Klávesy se neshodují. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
@@ -11872,7 +11865,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="930893132043726269">Roaming je aktivní</translation>
 <translation id="930991362911221750">Povolit aplikaci <ph name="APP_NAME" /> zobrazit tuto kartu?</translation>
 <translation id="931273044114601262">Na tomto webu povoleno</translation>
-<translation id="932327136139879170">Domovská stránka</translation>
 <translation id="932508678520956232">Tisk nelze zahájit.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Tento soubor je na bezpečnostní kontrolu příliš velký. Můžete nahrát soubory maximálně do 50 MB.}few{Některé z těchto souborů jsou na bezpečnostní kontrolu příliš velké. Můžete nahrát soubory maximálně do 50 MB.}many{Některé z těchto souborů jsou na bezpečnostní kontrolu příliš velké. Můžete nahrát soubory maximálně do 50 MB.}other{Některé z těchto souborů jsou na bezpečnostní kontrolu příliš velké. Můžete nahrát soubory maximálně do 50 MB.}}</translation>
 <translation id="93343527085570547">Chcete-li požádat o změnu obsahu z právních důvodů, přejděte na <ph name="BEGIN_LINK1" />stránku právní nápovědy<ph name="END_LINK1" />. Společnosti Google mohou být odeslány některé informace o účtu a systému. Použijeme je k řešení technických problémů a zlepšování našich služeb. Na použití vašich údajů se vztahují naše <ph name="BEGIN_LINK2" />zásady ochrany soukromí<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />smluvní podmínky<ph name="END_LINK3" />.</translation>

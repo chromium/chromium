@@ -1245,7 +1245,6 @@
 <translation id="184273675144259287">以先前的備份取代你的 Linux 應用程式和檔案</translation>
 <translation id="1842766183094193446">確定要啟用展示模式嗎？</translation>
 <translation id="1843048149176045210">複製下載連結</translation>
-<translation id="1843347690926158494">使用 Google 智慧鏡頭搜尋這個分頁</translation>
 <translation id="1845060436536902492">ChromeVox 是 ChromeOS Flex 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="1845727111305721124">可以播放音效</translation>
 <translation id="1846308012215045257">按下 Ctrl 鍵並點選即可執行「<ph name="PLUGIN_NAME" />」</translation>
@@ -3748,7 +3747,6 @@
 <translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
-<translation id="358381413217813387">使用 Google 智慧鏡頭搜尋這個頁面</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586741240886978899">你在這個網站上使用過</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
@@ -3792,7 +3790,6 @@
 <translation id="3610961622607302617">變更 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="3611634011145829814">前往訂閱頁面</translation>
 <translation id="3611658447322220736">最近關閉的網站可以完成資料收發作業</translation>
-<translation id="3612673635130633812">「&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;」下載了這個檔案</translation>
 <translation id="3612731022682274718">將裝置上的影片檔案投放到其他螢幕</translation>
 <translation id="3613134908380545408">顯示「<ph name="FOLDER_NAME" />」</translation>
 <translation id="3613422051106148727">在新分頁中開啟(&amp;O)</translation>
@@ -6325,7 +6322,6 @@
 <translation id="5392192690789334093">允許傳送通知</translation>
 <translation id="5392864580775235956">新增及編輯圖片</translation>
 <translation id="5393330235977997602">PIN 碼選項</translation>
-<translation id="5393474451146553463">向 Google 詢問與這個分頁相關的資訊</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">正在儲存至你的帳戶...</translation>
@@ -8944,7 +8940,6 @@
 <translation id="7248671827512403053">應用程式</translation>
 <translation id="7249197363678284330">前往網址列變更這項設定。</translation>
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
-<translation id="7249885578105575587">向 Google 詢問與這個分頁相關的資訊：<ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="725109152065019550">很抱歉，你的管理員已停用你帳戶中的外部儲存裝置。</translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
@@ -10265,7 +10260,6 @@
 <translation id="8143442547342702591">應用程式無效</translation>
 <translation id="8144429778087524791">標示為完成並隱藏</translation>
 <translation id="8145170459658034418">記憶體節省模式</translation>
-<translation id="8145219802299093106">使用 Google 智慧鏡頭搜尋這個頁面：<ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">如果你已在這部裝置上註冊，你可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">新增偏好語言及指定各語言的優先順序。網站會視情況以你偏好的語言顯示內容。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">登入失敗，請與您的管理員聯絡或再試一次。</translation>
@@ -11811,7 +11805,6 @@
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
-<translation id="9184211686591068713">使用 Google 智慧鏡頭搜尋這個分頁：<ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理員可以使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面，開始錄製時，你不會收到通知。}=2{管理員可以使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面，開始錄製時，你不會收到通知。}=3{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你不會收到通知。}other{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面，開始錄製時，你不會收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
@@ -11860,7 +11853,6 @@
 <translation id="930893132043726269">目前處於漫遊狀態</translation>
 <translation id="930991362911221750">要允許「<ph name="APP_NAME" />」查看這個分頁嗎？</translation>
 <translation id="931273044114601262">允許在這個網站執行</translation>
-<translation id="932327136139879170">住家</translation>
 <translation id="932508678520956232">無法初始化列印作業。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{這個檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}other{部分檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}}</translation>
 <translation id="93343527085570547">如要基於法律原因提出內容變更要求，請前往<ph name="BEGIN_LINK1" />法律說明頁面<ph name="END_LINK1" />。系統可能會將部分帳戶和系統資訊傳送給 Google。我們會使用您提供的資訊處理技術問題及改良服務，且相關過程適用於《<ph name="BEGIN_LINK2" />隱私權政策<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》。</translation>

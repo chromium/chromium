@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nije dostupno offline</translation>
 <translation id="2697530870203420261">Nevažeći nadimak</translation>
 <translation id="269819437389494246">Možete vidjeti stranice koje ste posjetili ili ih izbrisati iz historije</translation>
+<translation id="2704295676501803339">Premjesti ulijevo</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2708051474374549906">Proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija u stvarnom vremenu koja se zasniva na vašim podacima o pregledanju koji se šalju Googleu</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
@@ -1662,6 +1663,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6899890595581608884">Obavještenja o sigurnosnoj provjeri su isključena</translation>
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
 <translation id="6900702165119149418">Odjavljeni ste</translation>
+<translation id="6903282483217634857">Premjesti udesno</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6906448540340261898">Pobrinite se da uvijek možete koristiti lozinke na Google računu</translation>
 <translation id="6908734251759299256">Ažurirajte preglednik</translation>
@@ -2321,7 +2323,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="926455622548529175">Promijeni i izbriši</translation>
 <translation id="929748059769569925">Istaknuti tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
-<translation id="932327136139879170">Dom</translation>
 <translation id="939472100615258482">Trenutna web lokacija</translation>
 <translation id="939598580284253335">Unesite pristupni izraz</translation>
 <translation id="939736085109172342">Novi folder</translation>

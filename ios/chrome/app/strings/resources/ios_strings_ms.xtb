@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2360196772093551345">Minta Tapak Mudah Alih</translation>
 <translation id="2362083820973145409">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
+<translation id="2367025302166767427">Terdapat masalah semasa mengisi maklumat anda</translation>
 <translation id="2371084566192454134">Tab dan kumpulan tab</translation>
 <translation id="2371303771137626249">Baharu</translation>
 <translation id="2381405137052800939">Asas</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
 <translation id="2697530870203420261">Nama panggilan tidak sah</translation>
 <translation id="269819437389494246">Anda dapat melihat halaman yang telah dilawati atau memadamkan halaman tersebut daripada sejarah anda</translation>
+<translation id="2704295676501803339">Alihkan Ke Kiri</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2708051474374549906">Perlindungan masa nyata dan proaktif terhadap laman, muat turun dan sambungan berbahaya yang berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
 <translation id="2709516037105925701">Autoisi</translation>
@@ -1662,6 +1664,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6899890595581608884">Pemberitahuan semakan keselamatan dimatikan</translation>
 <translation id="6900532703269623216">Perlindungan dipertingkat</translation>
 <translation id="6900702165119149418">Anda telah log keluar</translation>
+<translation id="6903282483217634857">Alihkan Ke Kanan</translation>
 <translation id="6903907808598579934">Hidupkan penyegerakan</translation>
 <translation id="6906448540340261898">Pastikan anda dapat menggunakan kata laluan pada bila-bila masa dalam Google Account anda</translation>
 <translation id="6908734251759299256">Kemas kinikan penyemak imbas anda</translation>
@@ -2321,7 +2324,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="926455622548529175">Tukar dan Padam</translation>
 <translation id="929748059769569925">Teks yang diserlahkan</translation>
 <translation id="932305336591073205">{count,plural, =1{Tutup tab}other{Tutup tab}}</translation>
-<translation id="932327136139879170">Laman Utama</translation>
 <translation id="939472100615258482">Laman semasa</translation>
 <translation id="939598580284253335">Masukkan frasa laluan</translation>
 <translation id="939736085109172342">Folder baharu</translation>

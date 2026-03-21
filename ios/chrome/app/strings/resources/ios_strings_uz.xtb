@@ -394,6 +394,7 @@
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360196772093551345">Mobil versiya</translation>
 <translation id="2362083820973145409">Siz <ph name="USER_NAME" /> nomidan kirdingiz. <ph name="USER_EMAIL" />. Sozlamalarni ochadi.</translation>
+<translation id="2367025302166767427">Axborot kiritilmadi</translation>
 <translation id="2371084566192454134">Varaq va varaqlar guruhi</translation>
 <translation id="2371303771137626249">Yangi</translation>
 <translation id="2381405137052800939">Asosiy</translation>
@@ -481,6 +482,7 @@
 <translation id="2691653761409724435">Oflayn rejimda mavjud emas</translation>
 <translation id="2697530870203420261">Nik yaroqsiz</translation>
 <translation id="269819437389494246">Tarix orqali ochilgan sahifalarni koʻrish yoki oʻchirish mumkin</translation>
+<translation id="2704295676501803339">Chapga o‘tish</translation>
 <translation id="2704606927547763573">Nusxa olindi</translation>
 <translation id="2708051474374549906">Googlega yuborilgan koʻrish maʼlumotlaringiz asosida xavfli saytlar, yuklanmalar va kengaytmalardan real vaqtda faol himoya.</translation>
 <translation id="2709516037105925701">Avtoto‘ldirish</translation>
@@ -491,6 +493,7 @@
 <translation id="2721190673959776287">Kun davomida chiqadigan mahsulotga oid kontekstli yordam paneli namunasi.</translation>
 <translation id="2739887572830526131">Keyinroq varaqlar kiritish uchun ushbu guruhni saqlab qoling yoki kerak boʻlmasa, uni oʻchirib tashlang.</translation>
 <translation id="2747003861858887689">Avvalgi maydoncha</translation>
+<translation id="2750583038402718064">“<ph name="WEBSITE_TITLE" />” <ph name="POSITION" />-joyga olindi</translation>
 <translation id="2755485474385016903">Oʻzgarishlar guruhning barcha ishtirokchilariga koʻrinadi</translation>
 <translation id="2755595981383829244">Endi kontentga oid bildirishnomalar olasiz</translation>
 <translation id="2761788987260570878">Qidiruv obyektini suratga oling</translation>
@@ -1665,6 +1668,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6899890595581608884">Xavfsizlik tekshiruvi bildirishnomalari yoqilmagan</translation>
 <translation id="6900532703269623216">Kuchaytirilgan himoya</translation>
 <translation id="6900702165119149418">Hisobingizdan chiqqansiz</translation>
+<translation id="6903282483217634857">O‘ngga o‘tish</translation>
 <translation id="6903907808598579934">Sinxronizatsiyani yoqish</translation>
 <translation id="6906448540340261898">Parollar Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="6908734251759299256">Brauzerni yangilang</translation>
@@ -2029,6 +2033,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> modellari</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> uchun parollar oldingiz</translation>
 <translation id="8211406090763984747">Bu ulanish xavfsiz</translation>
+<translation id="8213190397436801658">Uy</translation>
 <translation id="8214293972734702249">Mahkamlangan, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Oflayn versiyasini yangi varaqda ochish</translation>
 <translation id="8221665793629393739">Qayta ochish eslatmasi</translation>
@@ -2324,7 +2329,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="926455622548529175">Almashtirish va oʻchirish</translation>
 <translation id="929748059769569925">Belgilangan matn</translation>
 <translation id="932305336591073205">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
-<translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="939472100615258482">Joriy sayt</translation>
 <translation id="939598580284253335">Kodli iborani kiriting</translation>
 <translation id="939736085109172342">Yangi jild</translation>

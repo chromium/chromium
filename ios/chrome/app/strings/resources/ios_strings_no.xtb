@@ -481,6 +481,7 @@
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2697530870203420261">Ugyldig kallenavn</translation>
 <translation id="269819437389494246">Du kan se sidene du har besøkt, eller slette dem fra loggen</translation>
+<translation id="2704295676501803339">Flytt til venstre</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="2709516037105925701">Autofyll</translation>
@@ -1665,6 +1666,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6899890595581608884">Varsler fra sikkerhetssjekk er slått av</translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>
 <translation id="6900702165119149418">Du er logget av</translation>
+<translation id="6903282483217634857">Flytt til høyre</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
 <translation id="6906448540340261898">Sørg for at du alltid kan bruke passordene i Google-kontoen din</translation>
 <translation id="6908734251759299256">Oppdater nettleseren</translation>
@@ -2324,7 +2326,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="926455622548529175">Bytt og slett</translation>
 <translation id="929748059769569925">Markert tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
-<translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939472100615258482">Gjeldende nettsted</translation>
 <translation id="939598580284253335">Angi en passordfrase</translation>
 <translation id="939736085109172342">Ny mappe</translation>

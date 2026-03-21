@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">オフラインで使用不可</translation>
 <translation id="2697530870203420261">無効なニックネーム</translation>
 <translation id="269819437389494246">アクセスしたページを確認したり履歴から削除したりできます</translation>
+<translation id="2704295676501803339">左に移動</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します。</translation>
 <translation id="2709516037105925701">自動入力</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">安全チェックの通知がオフになっています</translation>
 <translation id="6900532703269623216">保護強化機能</translation>
 <translation id="6900702165119149418">ログアウトしました</translation>
+<translation id="6903282483217634857">右に移動</translation>
 <translation id="6903907808598579934">同期をオンにする</translation>
 <translation id="6906448540340261898">Google アカウントのパスワードを常に使用できるようにしてください</translation>
 <translation id="6908734251759299256">ブラウザを更新してください</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">切り替えて削除</translation>
 <translation id="929748059769569925">選択したテキスト</translation>
 <translation id="932305336591073205">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
-<translation id="932327136139879170">自宅</translation>
 <translation id="939472100615258482">現在のサイト</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>

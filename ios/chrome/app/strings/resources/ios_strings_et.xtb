@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360196772093551345">Taotle mobiilisaiti</translation>
 <translation id="2362083820973145409">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avab seaded.</translation>
+<translation id="2367025302166767427">Teie teavet ei saa sisestada</translation>
 <translation id="2371084566192454134">Vahelehed ja vahelehegrupid</translation>
 <translation id="2371303771137626249">Uus</translation>
 <translation id="2381405137052800939">Põhiteave</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">Pole võrguühenduseta saadaval</translation>
 <translation id="2697530870203420261">Sobimatu hüüdnimi</translation>
 <translation id="269819437389494246">Saate vaadata külastatud lehti või need ajaloost kustutada</translation>
+<translation id="2704295676501803339">Liiguta vasakule</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
 <translation id="2708051474374549906">Reaalajas ja ennetav kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
 <translation id="2709516037105925701">Automaattäide</translation>
@@ -1662,6 +1664,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6899890595581608884">Ohutuskontrolli märguanded on välja lülitatud</translation>
 <translation id="6900532703269623216">Parem kaitse</translation>
 <translation id="6900702165119149418">Te ei ole sisse logitud</translation>
+<translation id="6903282483217634857">Liiguta paremale</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
 <translation id="6906448540340261898">Veenduge, et saaksite alati kasutada oma Google'i kontol paroole</translation>
 <translation id="6908734251759299256">Värskendage oma brauserit</translation>
@@ -2223,7 +2226,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8879604564928138696">Topeltpuudutage proovimiseks</translation>
 <translation id="8879952635974818770">Isikupärastatud sisu</translation>
-<translation id="8887595428614802520">Sulge kõik vahelehed ja grupid</translation>
+<translation id="8887595428614802520">Sule kõik vahelehed ja grupid</translation>
 <translation id="8888595487174963247">Eemalda meeldetuletus</translation>
 <translation id="8891031436559779793">Saate märguande, kui hind mõnel saidil langeb.</translation>
 <translation id="8893208530912252670">Videod</translation>
@@ -2321,7 +2324,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="926455622548529175">Vaheta ja kustuta</translation>
 <translation id="929748059769569925">Esiletõstetud tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Sulge vaheleht}other{Sulge vahelehed}}</translation>
-<translation id="932327136139879170">Kodu</translation>
 <translation id="939472100615258482">Praegune sait</translation>
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="939736085109172342">Uus kaust</translation>

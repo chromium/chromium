@@ -471,6 +471,7 @@
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
 <translation id="4789067489790477934">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4790766916287588578">ภาษาฮินดีด้วยแป้นพิมพ์ InScript</translation>
+<translation id="4798645114741131062">อุปกรณ์ ChromeOS Flex ของคุณจะหยุดรับการอัปเดตในเร็วๆ นี้ คุณควรอัปเกรดเป็นอุปกรณ์ ChromeOS</translation>
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
 <translation id="4802185962157240723">ฮังการี</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
@@ -620,6 +621,7 @@
 <translation id="5819442873484330149">ฮังกูลแบบ 3 ชุด (สุดท้าย)</translation>
 <translation id="5832976493438355584">ล็อกอยู่</translation>
 <translation id="5833610766403489739">ไฟล์นี้ไม่อยู่ในตำแหน่งที่กำหนดไว้ โปรดตรวจสอบการตั้งค่าตำแหน่งที่เก็บไฟล์ดาวน์โหลดและลองอีกครั้ง</translation>
+<translation id="5833859326857395309">การอัปเดตครั้งสุดท้าย</translation>
 <translation id="5838451609423551646">นำรายการทั้งหมดออกจากรายการที่เลือกไว้</translation>
 <translation id="5845721951356578987">พยาบาล</translation>
 <translation id="5858478190805449225">เปิดโหมดประหยัดแบตเตอรี่แล้ว ลองอีกครั้งเมื่อโหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
@@ -1051,7 +1053,7 @@
 <translation id="908378762078012445">รัสเซียด้วยแป้นพิมพ์ AATSEEL (ตามการออกเสียง)</translation>
 <translation id="9086302186042011942">กำลังซิงค์</translation>
 <translation id="9099674669267916096">จำนวนหน้า</translation>
-<translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
+<translation id="9100610230175265781">ต้องระบุพาสเฟรส</translation>
 <translation id="9110990317705400362">เรายังคงค้นหาวิธีที่จะทำให้การท่องเว็บของคุณปลอดภัยยิ่งขึ้นอย่างสม่ำเสมอ ก่อนหน้านี้ทุกเว็บไซต์สามารถแสดงข้อความแจ้งให้คุณเพิ่มส่วนขยายในเบราว์เซอร์ แต่ใน Google Chrome เวอร์ชันล่าสุด คุณจะต้องแจ้งให้ Chrome ทราบอย่างชัดเจนว่าคุณต้องการติดตั้งส่วนขยายเหล่านี้โดยการเพิ่มส่วนขยายผ่านหน้า "ส่วนขยาย" <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9116909380156770361">การโอนไฟล์ไปยัง <ph name="RESTRICTED_COMPONENTS" /></translation>

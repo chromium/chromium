@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ta yangi bildirishnoma}other{# ta yangi bildirishnoma}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Inkognito rejimida quyidagi kengaytmani yoqish:}other{Inkognito rejimida quyidagi kengaytmalarni yoqish:}}</translation>
+<translation id="4230098358142093034">Shaxsiy</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 oy oldin}other{# oy oldin}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> ustuni oshib borish tartibida saralandi</translation>
 <translation id="4289300219472526559">Gapirishni boshlang</translation>
@@ -247,7 +248,6 @@
 <translation id="9170848237812810038">&amp;Bekor qilish</translation>
 <translation id="9195990613383871904">Ertaga</translation>
 <translation id="928628199082367701">Super</translation>
-<translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="944069440740578670">Yangi bildirishnomalar</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 soniya oldin}other{# soniya oldin:}}</translation>
 </translationbundle>

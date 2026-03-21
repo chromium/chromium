@@ -394,6 +394,7 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2360196772093551345">درخواست سایت ویژه دستگاه همراه</translation>
 <translation id="2362083820973145409">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. تنظیمات را باز می‌کند.</translation>
+<translation id="2367025302166767427">مشکلی در تکمیل اطلاعات پیش آمد</translation>
 <translation id="2371084566192454134">زبانه‌ها و گروه زبانه‌ها</translation>
 <translation id="2371303771137626249">جدید</translation>
 <translation id="2381405137052800939">ساده</translation>
@@ -481,6 +482,7 @@
 <translation id="2691653761409724435">به‌صورت آفلاین در دسترس نیست</translation>
 <translation id="2697530870203420261">نام مستعار نامعتبر است</translation>
 <translation id="269819437389494246">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
+<translation id="2704295676501803339">حرکت به چپ</translation>
 <translation id="2704606927547763573">کپی شد</translation>
 <translation id="2708051474374549906">‏محافظت بی‌وقفه و پیش‌کنشی دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
@@ -1665,6 +1667,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6899890595581608884">اعلان‌های «بررسی ایمنی» خاموش شد</translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6900702165119149418">از سیستم خارج شده‌اید</translation>
+<translation id="6903282483217634857">حرکت به راست</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6906448540340261898">‏مطمئن شوید همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="6908734251759299256">مرورگرتان را به‌روز کنید</translation>
@@ -2324,7 +2327,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="926455622548529175">عوض و حذف کردن</translation>
 <translation id="929748059769569925">نوشتار برجسته‌شده</translation>
 <translation id="932305336591073205">{count,plural, =1{بستن زبانه}one{بستن زبانه}other{بستن زبانه‌ها}}</translation>
-<translation id="932327136139879170">منزل</translation>
 <translation id="939472100615258482">سایت فعلی</translation>
 <translation id="939598580284253335">گذرعبارت را وارد کنید</translation>
 <translation id="939736085109172342">پوشهٔ جدید</translation>

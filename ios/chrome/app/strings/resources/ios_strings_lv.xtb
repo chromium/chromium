@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nav pieejami bezsaistē</translation>
 <translation id="2697530870203420261">Nederīgs segvārds</translation>
 <translation id="269819437389494246">Varat skatīt apmeklētās lapas vai dzēst tās no vēstures.</translation>
+<translation id="2704295676501803339">Pārvietot pa kreisi</translation>
 <translation id="2704606927547763573">Nokopēts</translation>
 <translation id="2708051474374549906">Aktīva reāllaika aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem, kura tiek nodrošināta, sūtot jūsu pārlūkošanas datus uzņēmumam Google.</translation>
 <translation id="2709516037105925701">Automātiskā aizpilde</translation>
@@ -1662,6 +1663,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6899890595581608884">Drošības pārbaudes paziņojumi ir izslēgti.</translation>
 <translation id="6900532703269623216">Uzlabota aizsardzība</translation>
 <translation id="6900702165119149418">Jūs esat izrakstījies</translation>
+<translation id="6903282483217634857">Pārvietot pa labi</translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6906448540340261898">Parūpējieties, lai vienmēr varētu izmantot Google kontā saglabātās paroles</translation>
 <translation id="6908734251759299256">Pārlūka atjaunināšana</translation>
@@ -2321,7 +2323,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="926455622548529175">Pārslēgt un dzēst</translation>
 <translation id="929748059769569925">Atzīmētais teksts</translation>
 <translation id="932305336591073205">{count,plural, =1{Aizvērt cilni}zero{Aizvērt cilnes}one{Aizvērt cilnes}other{Aizvērt cilnes}}</translation>
-<translation id="932327136139879170">Sākums</translation>
 <translation id="939472100615258482">Aktīvā vietne</translation>
 <translation id="939598580284253335">Ievadiet ieejas frāzi</translation>
 <translation id="939736085109172342">Jauna mape</translation>

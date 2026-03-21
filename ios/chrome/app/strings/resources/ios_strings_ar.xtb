@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">غير متاح بلا اتصال</translation>
 <translation id="2697530870203420261">اللقب غير صالح</translation>
 <translation id="269819437389494246">يمكنك من خلال السجلّ الاطّلاع على الصفحات التي زرتها أو حذفها</translation>
+<translation id="2704295676501803339">الانتقال يسارًا</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2708051474374549906">‏يوفّر هذا الوضع حمايةً استباقية في الوقت الفعلي من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات التصفّح التي يتم إرسالها إلى Google.</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
@@ -1660,6 +1661,7 @@
 <translation id="6899890595581608884">تمّ إيقاف إشعارات ميزة "التحقّق من الأمان"</translation>
 <translation id="6900532703269623216">الحماية المحسَّنة</translation>
 <translation id="6900702165119149418">لقد سجّلت الخروج من حسابك</translation>
+<translation id="6903282483217634857">الانتقال يمينًا</translation>
 <translation id="6903907808598579934">تفعيل المزامنة</translation>
 <translation id="6906448540340261898">‏يُرجى التأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
 <translation id="6908734251759299256">تحديث المتصفِّح</translation>
@@ -2320,7 +2322,6 @@
 <translation id="926455622548529175">تبديل وحذف</translation>
 <translation id="929748059769569925">النص المُحدَّد</translation>
 <translation id="932305336591073205">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
-<translation id="932327136139879170">المنزل</translation>
 <translation id="939472100615258482">الموقع الإلكتروني الحالي</translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="939736085109172342">مجلد جديد</translation>

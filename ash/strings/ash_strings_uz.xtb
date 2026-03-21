@@ -60,7 +60,6 @@
 <translation id="1180117276105724040">Avvalgi seans oynalari tiklanmoqda...</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1182225749592316782">Kamera va mikrofon ruxsatiga ega barcha ilova va saytlarga kirish imkonini beradi</translation>
-<translation id="1182876754474670069">home</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" /> faylini lokal keshga o‘rnatib bo‘lmayapti.</translation>
 <translation id="1183863904939664422">Bu tavsiya menga qiziq emas</translation>
 <translation id="1184126796192815024">Bu tarmoqda telefondan ilovalarni namoyish qilib boʻlmaydi. Telefondagi hotspotdan foydalanib koʻring. <ph name="LEARN_MORE" /></translation>
@@ -1212,6 +1211,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4708185346211948049">Keyingi hafta <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C kabelingiz USB4 qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="4730374152663651037">TEZ-TEZ ISHLATILADIGAN</translation>
+<translation id="4731197594811674831">home</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (chap)</translation>
 <translation id="4734965478015604180">Gorizontal</translation>

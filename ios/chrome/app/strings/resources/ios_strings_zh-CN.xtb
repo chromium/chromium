@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2697530870203420261">昵称无效</translation>
 <translation id="269819437389494246">您可以查看自己访问过的网页，也可将它们从历史记录中删除</translation>
+<translation id="2704295676501803339">左移</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
 <translation id="2709516037105925701">自动填充</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">已关闭安全检查通知</translation>
 <translation id="6900532703269623216">增强型保护</translation>
 <translation id="6900702165119149418">您已退出账号</translation>
+<translation id="6903282483217634857">右移</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6906448540340261898">请确保您可以一直使用 Google 账号的密码</translation>
 <translation id="6908734251759299256">更新浏览器</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">切换并删除</translation>
 <translation id="929748059769569925">突出显示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{关闭标签页}other{关闭标签页}}</translation>
-<translation id="932327136139879170">家</translation>
 <translation id="939472100615258482">当前网站</translation>
 <translation id="939598580284253335">输入口令</translation>
 <translation id="939736085109172342">新建文件夹</translation>

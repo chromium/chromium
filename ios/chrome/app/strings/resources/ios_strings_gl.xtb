@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
 <translation id="2697530870203420261">O alcume non é válido</translation>
 <translation id="269819437389494246">Podes ver as páxinas que visitaches ou eliminalas do teu historial</translation>
+<translation id="2704295676501803339">Mover á esquerda</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2708051474374549906">Protección proactiva e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
@@ -1662,6 +1663,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6899890595581608884">Desactiváronse as notificacións de Comprobación de seguranza</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6900702165119149418">Pechouse a sesión</translation>
+<translation id="6903282483217634857">Mover á dereita</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de poder usar sempre os contrasinais na túa Conta de Google</translation>
 <translation id="6908734251759299256">Actualiza o navegador</translation>
@@ -2321,7 +2323,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="926455622548529175">Cambiar e eliminar</translation>
 <translation id="929748059769569925">Texto destacado</translation>
 <translation id="932305336591073205">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
-<translation id="932327136139879170">Inicio</translation>
 <translation id="939472100615258482">Sitio actual</translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="939736085109172342">Cartafol novo</translation>

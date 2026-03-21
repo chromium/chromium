@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">無法離線使用</translation>
 <translation id="2697530870203420261">暱稱無效</translation>
 <translation id="269819437389494246">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中刪除</translation>
+<translation id="2704295676501803339">左移</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
 <translation id="2709516037105925701">自動填入</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">安全檢查通知已關閉</translation>
 <translation id="6900532703269623216">強化防護</translation>
 <translation id="6900702165119149418">你已登出帳戶</translation>
+<translation id="6903282483217634857">右移</translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6906448540340261898">確保你隨時可以使用 Google 帳戶中的密碼</translation>
 <translation id="6908734251759299256">更新瀏覽器</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">切換並刪除</translation>
 <translation id="929748059769569925">醒目顯示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{關閉分頁}other{關閉分頁}}</translation>
-<translation id="932327136139879170">住家</translation>
 <translation id="939472100615258482">目前網站</translation>
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="939736085109172342">新增資料夾</translation>

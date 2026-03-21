@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1652197001188145583">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na użycie urządzeń z NFC. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
 <translation id="1660204651932907780">Zezwalaj na odtwarzanie dźwięku na stronach internetowych (zalecane)</translation>
+<translation id="1676590040242013349">Opcja „Zawsze używaj bezpiecznych połączeń” jest włączona.</translation>
 <translation id="1677097821151855053">Plików cookie i innych danych stron używamy, żeby Cię zapamiętać, na przykład w celu logowania czy personalizowania reklam. Plikami cookie wszystkich stron możesz zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Strony mogą prosić o zgodę na używanie urządzeń NFC</translation>
 <translation id="1686785653877010442">Witryny zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomościach czatu.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Zablokuj stronom możliwość odczytywania tekstu i obrazów ze schowka</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6950072572526089586">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Strony często zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
+<translation id="6964291282260073066">Opcja „WebGPU” jest wyłączona.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Motyw różowy</translation>
 <translation id="6980861169612950611">Usunąć dane witryny? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń rzeczywistości wirtualnej. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
 <translation id="7282197670900591579">Motyw cytrynowy</translation>
 <translation id="728412880473384942">Strony są szybsze, ale mniej bezpieczne</translation>
+<translation id="7352902948037373520">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
+
+Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
 <translation id="7369678931043226462">Plansza dolna Dostosuj stronę nowej karty otwarta do połowy wysokości</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8473055640493819707">Aplikacja „<ph name="APP_NAME" />” jest nieaktualna. Zainstaluj ją ponownie.</translation>
 <translation id="847433688444405067">Przeglądaj na różnych urządzeniach</translation>
+<translation id="8484556725636319115">Opcja „Optymalizator JavaScriptu” jest wyłączona. <ph name="BEGIN_LINK2" />Zarządzaj wyjątkami dotyczącymi witryny<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="848952951823693243">Zawsze żądaj strony mobilnej</translation>
 <translation id="8492822722330266509">Strony mogą wysyłać wyskakujące okienka i używać przekierowań</translation>

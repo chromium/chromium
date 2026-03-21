@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
 <translation id="2697530870203420261">Ógilt gælunafn</translation>
 <translation id="269819437389494246">Þú getur skoðað síður sem þú hefur opnað eða eytt þeim úr ferlinum þínum</translation>
+<translation id="2704295676501803339">Færa til vinstri</translation>
 <translation id="2704606927547763573">Afritað</translation>
 <translation id="2708051474374549906">Forvirk vörn í rauntíma gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
 <translation id="2709516037105925701">Sjálfvirk útfylling</translation>
@@ -1662,6 +1663,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6899890595581608884">Slökkt er á tilkynningum öryggisathugunar</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>
 <translation id="6900702165119149418">Þú ert skráð(ur) út</translation>
+<translation id="6903282483217634857">Færa til hægri</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6906448540340261898">Gakktu úr skugga um að þú getir alltaf notað aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="6908734251759299256">Uppfærðu vafrann þinn</translation>
@@ -2321,7 +2323,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="926455622548529175">Skipta um og eyða</translation>
 <translation id="929748059769569925">Yfirstrikaður texti</translation>
 <translation id="932305336591073205">{count,plural, =1{Loka flipa}one{Loka flipum}other{Loka flipum}}</translation>
-<translation id="932327136139879170">Heim</translation>
 <translation id="939472100615258482">Þessi síða</translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
 <translation id="939736085109172342">Ný mappa</translation>

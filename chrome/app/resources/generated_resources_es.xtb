@@ -1245,7 +1245,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="184273675144259287">Sustituye tus aplicaciones y archivos de Linux por una copia de seguridad anterior</translation>
 <translation id="1842766183094193446">¿Seguro que quieres habilitar el modo Demo?</translation>
 <translation id="1843048149176045210">Copiar enlace de descarga</translation>
-<translation id="1843347690926158494">Buscar en esta pestaña con Google Lens</translation>
 <translation id="1845060436536902492">ChromeVox, el lector de pantalla de ChromeOS Flex, lo usan principalmente las personas invidentes o con baja visión para leer el texto que se muestra en la pantalla con un sintetizador de voz o una pantalla braille. Pulsa la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar una visita guiada rápida.</translation>
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Pulsa la tecla Ctrl y haz clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
@@ -3752,7 +3751,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3581861561942370740">Buscar en el historial de descargas</translation>
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una brecha de seguridad de datos</translation>
 <translation id="3582299299336701326">Si la pantalla es clara, la oscurece. Si es oscura, la aclara. Pulsa la tecla de búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
-<translation id="358381413217813387">Busca esta página con Google Lens</translation>
 <translation id="3584169441612580296">Leer y modificar fotos, música y otros archivos multimedia de tu ordenador</translation>
 <translation id="3586741240886978899">Usada en este sitio</translation>
 <translation id="3586806079541226322">No se puede abrir el archivo</translation>
@@ -3796,7 +3794,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3610961622607302617">Cambiar contraseña de <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Ir a la página de suscripciones</translation>
 <translation id="3611658447322220736">Los sitios cerrados recientemente pueden terminar de enviar y recibir datos</translation>
-<translation id="3612673635130633812">Descargado a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Envía archivos de vídeo de tu dispositivo a otra pantalla</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir en una pestaña nueva</translation>
@@ -6332,7 +6329,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5392192690789334093">Con permiso para enviar notificaciones</translation>
 <translation id="5392864580775235956">Añadir y editar una imagen</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
-<translation id="5393474451146553463">Preguntar a Google sobre esta pestaña</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Enlace}other{# enlaces}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Guardando en tu cuenta...</translation>
@@ -8956,7 +8952,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7249197363678284330">Cambia este ajuste en la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta aplicación como opción al abrir archivos</translation>
-<translation id="7249885578105575587">Preguntar a Google sobre esta pestaña: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">El dispositivo con el que estás compartiendo contenido no responde. Inténtalo de nuevo.</translation>
 <translation id="725109152065019550">Tu administrador ha inhabilitado el almacenamiento externo en tu cuenta.</translation>
 <translation id="7251635775446614726">Mensaje de tu administrador: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10277,7 +10272,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8143442547342702591">La aplicación no es válida</translation>
 <translation id="8144429778087524791">Marcar como completado y ocultar</translation>
 <translation id="8145170459658034418">Ahorro de memoria</translation>
-<translation id="8145219802299093106">Buscar en esta página con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Si ya te has registrado en este dispositivo, puedes <ph name="LINK2_START" />iniciar sesión con tu nombre de usuario<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Añade los idiomas que quieras y ordénalos según tu preferencia. Si es posible, los sitios web se mostrarán en tus idiomas preferidos. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Se ha producido un error al iniciar sesión. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
@@ -11823,7 +11817,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicaciones}}</translation>
-<translation id="9184211686591068713">Buscar en esta pestaña con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás ninguna notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás ninguna notificación cuando se inicie la grabación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión con la cuenta de Google de un niño/a</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
@@ -11872,7 +11865,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="930893132043726269">Actualmente en roaming</translation>
 <translation id="930991362911221750">¿Permitir que <ph name="APP_NAME" /> vea esta pestaña?</translation>
 <translation id="931273044114601262">Se permite en este sitio</translation>
-<translation id="932327136139879170">Casa</translation>
 <translation id="932508678520956232">No se ha podido iniciar la impresión.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos de estos archivos son demasiado grandes para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
 <translation id="93343527085570547">Accede a la <ph name="BEGIN_LINK1" />página de Ayuda Legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Parte de la información del sistema y de la cuenta se enviará a Google, que la utilizará para solucionar problemas técnicos y mejorar sus servicios, de acuerdo con su <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>

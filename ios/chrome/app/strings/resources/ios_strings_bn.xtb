@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2360196772093551345">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। <ph name="USER_EMAIL" />. সেটিংস খোলে।</translation>
+<translation id="2367025302166767427">আপনার তথ্য পূরণ করতে সমস্যা হচ্ছে</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
 <translation id="2371303771137626249">নতুন</translation>
 <translation id="2381405137052800939">প্রাথমিক বিষয়াদি</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
 <translation id="2697530870203420261">ভুল ডাকনাম</translation>
 <translation id="269819437389494246">আপনার ইতিহাস থেকে কোন কোন পৃষ্ঠায় গেছেন তা দেখতে বা সেগুলি মুছে দিতে পারবেন</translation>
+<translation id="2704295676501803339">বামদিকে সরান</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2708051474374549906">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটা অনুযায়ী বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে সুরক্ষা পাওয়া যায়</translation>
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
@@ -1663,6 +1665,7 @@
 <translation id="6899890595581608884">নিরাপত্তা সংক্রান্ত পরীক্ষার বিজ্ঞপ্তি বন্ধ করা হয়েছে</translation>
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6900702165119149418">আপনি সাইন-আউট করেছেন</translation>
+<translation id="6903282483217634857">ডানদিকে সরান</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
 <translation id="6906448540340261898">আপনার Google অ্যাকাউন্টে সবসময় পাসওয়ার্ড ব্যবহার করতে পারবেন তা কনফার্ম করুন</translation>
 <translation id="6908734251759299256">আপনার ব্রাউজার আপডেট করুন</translation>
@@ -2322,7 +2325,6 @@
 <translation id="926455622548529175">পাল্টে নিন ও মুছুন</translation>
 <translation id="929748059769569925">হাইলাইট করা টেক্সট</translation>
 <translation id="932305336591073205">{count,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
-<translation id="932327136139879170">হোম</translation>
 <translation id="939472100615258482">বর্তমান সাইট</translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>

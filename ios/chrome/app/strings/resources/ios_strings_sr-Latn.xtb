@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Nije dostupno oflajn</translation>
 <translation id="2697530870203420261">Nevažeći nadimak</translation>
 <translation id="269819437389494246">Možete da vidite stranice koje ste posetili ili da ih izbrišete iz istorije</translation>
+<translation id="2704295676501803339">Pomeri ulevo</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2708051474374549906">Proaktivna zaštita u realnom vremenu od opasnih sajtova, preuzimanja i dodataka koja se zasniva na podacima pregledanja koji se šalju Google-u</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
@@ -1662,6 +1663,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6899890595581608884">Obaveštenja provere bezbednosti su isključena</translation>
 <translation id="6900532703269623216">Napredna zaštita</translation>
 <translation id="6900702165119149418">Odjavljeni ste</translation>
+<translation id="6903282483217634857">Pomeri udesno</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6906448540340261898">Uverite se da uvek možete da koristite lozinke na Google nalogu</translation>
 <translation id="6908734251759299256">Ažurirajte pregledač</translation>
@@ -2321,7 +2323,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="926455622548529175">Promeni i izbriši</translation>
 <translation id="929748059769569925">Istaknuti tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
-<translation id="932327136139879170">Početna</translation>
 <translation id="939472100615258482">Aktuelni sajt</translation>
 <translation id="939598580284253335">Unesite pristupnu frazu</translation>
 <translation id="939736085109172342">Novi folder</translation>

@@ -1244,7 +1244,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="184273675144259287">Zamenite Linux aplikacije i datoteke prethodnom rezervnom kopijom</translation>
 <translation id="1842766183094193446">Želite li stvarno da omogućite režim demonstracije?</translation>
 <translation id="1843048149176045210">Kopiraj link za preuzimanje</translation>
-<translation id="1843347690926158494">Pretraži ovu karticu pomoću Google objektiva</translation>
 <translation id="1845060436536902492">ChromeVox, čitač ekrana u ChromeOS Flex-u, prvenstveno koriste slepe ili slabovide osobe za čitanje teksta prikazanog na ekranu pomoću sintetizatora govora ili Brajevog ekrana. Pritisnite taster za razmak da biste uključili ChromeVox. Kada se ChromeVox aktivira, krenućete u kratak obilazak.</translation>
 <translation id="1845727111305721124">Dozvoljeno im je da puštaju zvuk</translation>
 <translation id="1846308012215045257">Kliknite i zadržite taster Control da biste pokrenuli <ph name="PLUGIN_NAME" /></translation>
@@ -3749,7 +3748,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3581861561942370740">Pretražite istoriju preuzimanja</translation>
 <translation id="3582057310199111521">Uneto na obmanjujućem sajtu i pronađeno pri upadu u podatke</translation>
 <translation id="3582299299336701326">Svetli ekrani postaju tamni, a tamni ekrani svetli. Pritisnite taster za pretragu + Ctrl + H da biste uključili ili isključili inverziju boja.</translation>
-<translation id="358381413217813387">Pretražite ovu stranicu pomoću Google objektiva</translation>
 <translation id="3584169441612580296">Čitanje slika, muzike i drugih medija sa računara i menjanje tih medija</translation>
 <translation id="3586741240886978899">Koristili ste na ovom sajtu</translation>
 <translation id="3586806079541226322">Otvaranje ove datoteke nije uspelo</translation>
@@ -3793,7 +3791,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3610961622607302617">Promenite lozinku za <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Idi na stranicu pretplate</translation>
 <translation id="3611658447322220736">Nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka</translation>
-<translation id="3612673635130633812">Dodatak &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; je preuzeo</translation>
 <translation id="3612731022682274718">Prebacujte video fajlove sa uređaja na drugi ekran</translation>
 <translation id="3613134908380545408">Prikaži <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otvori na novoj kartici</translation>
@@ -6331,7 +6328,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5392192690789334093">Dozvoljeno je slanje obaveštenja</translation>
 <translation id="5392864580775235956">Dodajte i izmenite sliku</translation>
 <translation id="5393330235977997602">Opcije za PIN</translation>
-<translation id="5393474451146553463">Upitaj Google o ovoj kartici</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}few{# linka}other{# linkova}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Čuva se na nalogu…</translation>
@@ -8959,7 +8955,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7248671827512403053">Aplikacija</translation>
 <translation id="7249197363678284330">Promenite ovo podešavanje na traci za adresu.</translation>
 <translation id="7249764475759804559">Uvrsti ovu aplikaciju kao opciju pri otvaranju fajlova</translation>
-<translation id="7249885578105575587">Upitaj Google o ovoj kartici: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Uređaj sa kojim delite sadržaj nije odgovorio. Probajte ponovo.</translation>
 <translation id="725109152065019550">Žao nam je, administrator je onemogućio spoljnu memoriju na ovom nalogu.</translation>
 <translation id="7251635775446614726">Administrator kaže: „<ph name="CUSTOM_MESSAGE" />“</translation>
@@ -10280,7 +10275,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8143442547342702591">Nevažeća aplikacija</translation>
 <translation id="8144429778087524791">Označi kao gotovo i sakrij se</translation>
 <translation id="8145170459658034418">Ušteda memorije</translation>
-<translation id="8145219802299093106">Pretraži ovu stranicu pomoću Google objektiva: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Ako ste se već registrovali na ovom uređaju, možete da <ph name="LINK2_START" />se prijavite kao postojeći korisnik<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Dodajte i rangirajte željene jezike. Veb-sajtovi će se prikazivati na željenim jezicima kada je to moguće. Ova podešavanja se sinhronizuju sa podešavanjima pregledača. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Prijavljivanje nije uspelo. Kontaktirajte administratora ili pokušajte ponovo.</translation>
@@ -11828,7 +11822,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
-<translation id="9184211686591068713">Pretraži ovu karticu pomoću Google objektiva: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />. Obavestićemo vas kada počne snimanje.}=2{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Obavestićemo vas kada počne snimanje.}=3{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još jednu aplikaciju. Nećete dobiti obaveštenje kada počne snimanje.}one{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikaciju. Obavestićemo vas kada počne snimanje.}few{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Obavestićemo vas kada počne snimanje.}other{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Obavestićemo vas kada počne snimanje.}}</translation>
 <translation id="9186963452600581158">Prijavite se pomoću Google naloga deteta</translation>
 <translation id="9187967020623675250">Tasteri se ne podudaraju. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>
@@ -11877,7 +11870,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="930893132043726269">Trenutno je u romingu</translation>
 <translation id="930991362911221750">Želite da dozvolite da <ph name="APP_NAME" /> vidi ovu karticu?</translation>
 <translation id="931273044114601262">Dozvoljeno na ovom sajtu</translation>
-<translation id="932327136139879170">Početna</translation>
 <translation id="932508678520956232">Nije moguće pokrenuti štampanje.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Ova datoteka je prevelika za bezbednosnu proveru. Možete da otpremite datoteke veličine do 50 MB.}one{Neke od ovih datoteka su prevelike za bezbednosnu proveru. Možete da otpremite datoteke veličine do 50 MB.}few{Neke od ovih datoteka su prevelike za bezbednosnu proveru. Možete da otpremite datoteke veličine do 50 MB.}other{Neke od ovih datoteka su prevelike za bezbednosnu proveru. Možete da otpremite datoteke veličine do 50 MB.}}</translation>
 <translation id="93343527085570547">Idite na <ph name="BEGIN_LINK1" />stranicu pravne pomoći<ph name="END_LINK1" /> da biste zatražili izmene sadržaja iz pravnih razloga. Neke informacije o nalogu i sistemu se možda šalju Google-u. Informacije koje nam date koristićemo za rešavanje tehničkih problema i poboljšanje svojih usluga, u skladu sa <ph name="BEGIN_LINK2" />Politikom privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korišćenja usluge<ph name="END_LINK3" />.</translation>

@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Офлайн үед боломжгүй</translation>
 <translation id="2697530870203420261">Хоч буруу байна</translation>
 <translation id="269819437389494246">Та түүхээсээ зочилсон хуудсаа харах эсвэл устгах боломжтой</translation>
+<translation id="2704295676501803339">Зүүн тийш зөөх</translation>
 <translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2708051474374549906">Таны Google-д илгээсэн интернэтээр үзсэн өгөгдөлд тулгуурласан аюултай сайт, татаж авсан файл болон өргөтгөлүүдийн эсрэг тухайн агшны, идэвхтэй хамгаалалт</translation>
 <translation id="2709516037105925701">Автоматаар бөглөх</translation>
@@ -1662,6 +1663,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6899890595581608884">Аюулгүй байдлын шалгалтын мэдэгдлийг унтраасан</translation>
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
 <translation id="6900702165119149418">Та гарлаа</translation>
+<translation id="6903282483217634857">Баруун талруугаа хөдөлгөх</translation>
 <translation id="6903907808598579934">Синк хийхийг асаах</translation>
 <translation id="6906448540340261898">Та Google Бүртгэлдээ нууц үгнүүдийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="6908734251759299256">Хөтчөө шинэчилнэ үү</translation>
@@ -2321,7 +2323,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="926455622548529175">Сэлгээд, устгах</translation>
 <translation id="929748059769569925">Тодруулсан текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Табыг хаах}other{Табуудыг хаах}}</translation>
-<translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="939472100615258482">Одоогийн сайт</translation>
 <translation id="939598580284253335">Нэвтрэх үгүүдийг оруулна уу</translation>
 <translation id="939736085109172342">Шинэ хавтас</translation>

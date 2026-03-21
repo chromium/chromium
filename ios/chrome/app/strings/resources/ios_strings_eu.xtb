@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
 <translation id="2697530870203420261">Goitizenak ez du balio</translation>
 <translation id="269819437389494246">Historian, bisitatu dituzun orriak ikus ditzakezu, edo haiek ezabatu</translation>
+<translation id="2704295676501803339">Ezkerretara</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
 <translation id="2708051474374549906">Webgune, deskarga eta luzapen arriskutsuen aurkako babes proaktiboa denbora errealean, Google-ri bidaltzen zaizkion zure arakatze-datuetan oinarritutakoa</translation>
 <translation id="2709516037105925701">Betetze automatikoa</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">Desaktibatu dira segurtasun-egiaztapenaren jakinarazpenak</translation>
 <translation id="6900532703269623216">Babes hobetua</translation>
 <translation id="6900702165119149418">Saioa amaitu duzu</translation>
+<translation id="6903282483217634857">Joan eskuinera</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6906448540340261898">Izan beti Google-ko kontuko pasahitzak erabiltzeko aukera</translation>
 <translation id="6908734251759299256">Eguneratu arakatzailea</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">Aldatu eta ezabatu</translation>
 <translation id="929748059769569925">Nabarmendutako testua</translation>
 <translation id="932305336591073205">{count,plural, =1{Itxi fitxa}other{Itxi fitxak}}</translation>
-<translation id="932327136139879170">Hasiera</translation>
 <translation id="939472100615258482">Oraingo webgunea</translation>
 <translation id="939598580284253335">Idatzi pasaesaldia</translation>
 <translation id="939736085109172342">Karpeta berria</translation>

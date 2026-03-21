@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
 <translation id="2697530870203420261">Ugyldigt kaldenavn</translation>
 <translation id="269819437389494246">Du kan se de sider, du har besøgt, eller slette dem fra din historik</translation>
+<translation id="2704295676501803339">Flyt til vestre</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2708051474374549906">Proaktiv beskyttelse i realtid mod skadelige websites, downloads og udvidelser i realtid, der er baseret på dine browserdata, som sendes til Google</translation>
 <translation id="2709516037105925701">Autofyld</translation>
@@ -1662,6 +1663,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6899890595581608884">Notifikationer om Sikkerhedstjek er deaktiveret</translation>
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
 <translation id="6900702165119149418">Du er logget ud</translation>
+<translation id="6903282483217634857">Flyt til højre</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6906448540340261898">Sørg for, at du altid kan bruge adgangskoderne på din Google-konto</translation>
 <translation id="6908734251759299256">Opdater din browser</translation>
@@ -2321,7 +2323,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="926455622548529175">Skift og slet</translation>
 <translation id="929748059769569925">Fremhævet tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
-<translation id="932327136139879170">Start</translation>
 <translation id="939472100615258482">Aktuelt website</translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
 <translation id="939736085109172342">Ny mappe</translation>

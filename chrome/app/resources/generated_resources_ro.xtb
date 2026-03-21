@@ -1246,7 +1246,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="184273675144259287">Înlocuiește aplicațiile și fișierele Linux cu cele dintr-un backup anterior</translation>
 <translation id="1842766183094193446">Sigur vrei să activezi modul demonstrativ?</translation>
 <translation id="1843048149176045210">Copiază linkul de descărcare</translation>
-<translation id="1843347690926158494">Caută această filă cu Google Lens</translation>
 <translation id="1845060436536902492">Cititorul de ecran din ChromeOS Flex, ChromeVox, este folosit în principal de persoane oarbe sau cu vedere slabă pentru a citi textul afișat pe ecran cu un sintetizator vocal sau un afișaj Braille. Apasă pe bara de spațiu pentru a activa ChromeVox. Când ChromeVox este activat, vei face un tur rapid.</translation>
 <translation id="1845727111305721124">Au permisiunea de a reda sunet</translation>
 <translation id="1846308012215045257">Dă control-clic pentru a rula <ph name="PLUGIN_NAME" /></translation>
@@ -3751,7 +3750,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3581861561942370740">Caută în istoricul descărcărilor</translation>
 <translation id="3582057310199111521">A fost introdusă pe un site înșelător și folosită pentru încălcarea securității datelor</translation>
 <translation id="3582299299336701326">Întunecă ecranele luminoase și deschide ecranele întunecate. Apasă pe tasta de căutare + Ctrl + H pentru a activa și a dezactiva inversarea culorilor.</translation>
-<translation id="358381413217813387">Caută această pagină cu Google Lens</translation>
 <translation id="3584169441612580296">Citește și modifică fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
 <translation id="3586741240886978899">Folosit pe acest site</translation>
 <translation id="3586806079541226322">Fișierul nu poate fi deschis</translation>
@@ -3795,7 +3793,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3610961622607302617">Schimbă parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Accesează pagina abonamentului</translation>
 <translation id="3611658447322220736">Site-urile închise recent pot să finalizeze trimiterea sau primirea datelor</translation>
-<translation id="3612673635130633812">Descărcat de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Proiectează fișiere video de pe dispozitiv pe alt ecran</translation>
 <translation id="3613134908380545408">Vezi <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Deschideți într-o filă nouă</translation>
@@ -6332,7 +6329,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5392192690789334093">Au permisiunea de a trimite notificări</translation>
 <translation id="5392864580775235956">Adaugă și editează o imagine</translation>
 <translation id="5393330235977997602">Opțiuni pentru PIN</translation>
-<translation id="5393474451146553463">Întreabă Google despre această filă</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}few{# linkuri}other{# de linkuri}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Se salvează în cont...</translation>
@@ -8958,7 +8954,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7248671827512403053">Aplicație</translation>
 <translation id="7249197363678284330">Schimbă această setare în bara de adrese.</translation>
 <translation id="7249764475759804559">Include aplicația ca opțiune la deschiderea fișierelor</translation>
-<translation id="7249885578105575587">Întreabă Google despre această filă: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Dispozitivul căruia îi trimiți nu a răspuns. Încearcă din nou.</translation>
 <translation id="725109152065019550">Ne pare rău, administratorul a dezactivat stocarea externă pentru contul dvs.</translation>
 <translation id="7251635775446614726">Administratorul rostește <ph name="CUSTOM_MESSAGE" />.</translation>
@@ -10279,7 +10274,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8143442547342702591">Aplicație nevalidă</translation>
 <translation id="8144429778087524791">Marchează ca finalizată și ascunde</translation>
 <translation id="8145170459658034418">Economisirea memoriei</translation>
-<translation id="8145219802299093106">Caută această pagină cu Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Dacă v-ați înregistrat deja pe acest dispozitiv, puteți să vă <ph name="LINK2_START" />conectați ca utilizator existent<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Adaugă și ordonează limbile preferate. Site-urile se vor afișa în limbile tale preferate, dacă este posibil. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Conectarea nu a reușit. Contactează administratorul sau încearcă din nou.</translation>
@@ -11826,7 +11820,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
 <translation id="9183302530794969518">Documente Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicație}few{# aplicații}other{# de aplicații}}</translation>
-<translation id="9184211686591068713">Caută această filă cu Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratorul tău poate să îți înregistreze ecranul cu <ph name="APP0_NAME" />. Nu vei primi o notificare când începe înregistrarea.}=2{Administratorul poate să îți înregistreze ecranul cu <ph name="APP0_NAME" /> și <ph name="APP1_NAME" />. Nu vei primi o notificare când începe înregistrarea.}=3{Administratorul poate să îți înregistreze ecranul cu <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> și încă o aplicație. Nu vei primi o notificare când începe înregistrarea.}few{Administratorul poate să îți înregistreze ecranul cu <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> și încă # aplicații. Nu vei primi o notificare când începe înregistrarea.}other{Administratorul poate să îți înregistreze ecranul cu <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> și încă # de aplicații. Nu vei primi o notificare când începe înregistrarea.}}</translation>
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
@@ -11875,7 +11868,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="930893132043726269">Se folosește roamingul</translation>
 <translation id="930991362911221750">Permiți ca <ph name="APP_NAME" /> să vadă această filă?</translation>
 <translation id="931273044114601262">Permisă pe acest site</translation>
-<translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="932508678520956232">Printarea nu a putut fi inițiată.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Acest fișier este prea mare pentru verificarea de securitate. Poți să încarci fișiere de maximum 50 MB.}few{Unele dintre aceste fișiere sunt prea mari pentru verificarea de securitate. Poți să încarci fișiere de maximum 50 MB.}other{Unele dintre aceste fișiere sunt prea mari pentru verificarea de securitate. Poți să încarci fișiere de maximum 50 MB.}}</translation>
 <translation id="93343527085570547">Accesează <ph name="BEGIN_LINK1" />Pagina de ajutor pentru probleme juridice<ph name="END_LINK1" /> pentru a solicita modificări de conținut din motive juridice. Se pot trimite la Google unele informații despre sistem și despre cont. Vom folosi informațiile pe care ni le oferi pentru a rezolva unele probleme tehnice și pentru a îmbunătăți serviciile, sub rezerva <ph name="BEGIN_LINK2" />Politicii privind confidențialitatea<ph name="END_LINK2" /> și a <ph name="BEGIN_LINK3" />Termenilor și condițiilor<ph name="END_LINK3" />.</translation>

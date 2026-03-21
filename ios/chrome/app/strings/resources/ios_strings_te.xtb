@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2360196772093551345">మొబైల్ సైట్‌ని రిక్వెస్ట్ చేయండి</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
+<translation id="2367025302166767427">మీ సమాచారాన్ని ఫిల్ చేయడంలో సమస్య ఏర్పడింది</translation>
 <translation id="2371084566192454134">ట్యాబ్‌లు, ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="2371303771137626249">కొత్తది</translation>
 <translation id="2381405137052800939">ప్రాథమికాలు</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">ఆఫ్‌లైన్‌లో అందుబాటులో లేదు</translation>
 <translation id="2697530870203420261">చెల్లని మారుపేరు</translation>
 <translation id="269819437389494246">మీరు తెరిచిన పేజీలను చూడవచ్చు లేదా వాటిని మీ హిస్టరీ నుండి తొలగించవచ్చు</translation>
+<translation id="2704295676501803339">ఎడమ వైపునకు తరలించండి</translation>
 <translation id="2704606927547763573">కాపీ అయింది</translation>
 <translation id="2708051474374549906">Googleకు పంపబడే మీ బ్రౌజింగ్ డేటా ఆధారంగా ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రియల్-టైమ్, క్రియాశీలమైన రక్షణ</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
@@ -1662,6 +1664,7 @@
 <translation id="6899890595581608884">సేఫ్టీ చెక్ నోటిఫికేషన్‌లు ఆఫ్ చేయబడ్డాయి</translation>
 <translation id="6900532703269623216">మెరుగైన రక్షణ</translation>
 <translation id="6900702165119149418">మీరు సైన్ అవుట్ చేశారు</translation>
+<translation id="6903282483217634857">కుడివైపు తరలించండి</translation>
 <translation id="6903907808598579934">సింక్‌ను ఆన్ చేయి</translation>
 <translation id="6906448540340261898">మీరు మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోండి</translation>
 <translation id="6908734251759299256">మీ బ్రౌజర్‌ను అప్‌డేట్ చేయండి</translation>
@@ -2321,7 +2324,6 @@
 <translation id="926455622548529175">స్విచ్ చేయండి, తొలగించండి</translation>
 <translation id="929748059769569925">హైలైట్ చేయబడిన టెక్స్ట్</translation>
 <translation id="932305336591073205">{count,plural, =1{ట్యాబ్‌ను మూసివేయండి}other{ట్యాబ్‌లను మూసివేయండి}}</translation>
-<translation id="932327136139879170">హోమ్</translation>
 <translation id="939472100615258482">ప్రస్తుత సైట్</translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>

@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">לא זמין במצב אופליין</translation>
 <translation id="2697530870203420261">הכינוי לא תקין</translation>
 <translation id="269819437389494246">בדף ההיסטוריה אפשר לראות או למחוק את הדפים שנכנסת אליהם</translation>
+<translation id="2704295676501803339">עבור שמאלה</translation>
 <translation id="2704606927547763573">הועתק</translation>
 <translation id="2708051474374549906">‏הגנה יזומה בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">ההתראות של בדיקת האבטחה מושבתות</translation>
 <translation id="6900532703269623216">הגנה משופרת</translation>
 <translation id="6900702165119149418">לא נכנסת לחשבון</translation>
+<translation id="6903282483217634857">עבור ימינה</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6906448540340261898">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך</translation>
 <translation id="6908734251759299256">עדכון הדפדפן</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">החלפה ומחיקה</translation>
 <translation id="929748059769569925">הטקסט המודגש</translation>
 <translation id="932305336591073205">{count,plural, =1{סגירת הכרטיסייה}one{סגירת הכרטיסיות}two{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
-<translation id="932327136139879170">בית</translation>
 <translation id="939472100615258482">האתר הנוכחי</translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>

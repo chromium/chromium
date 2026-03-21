@@ -1244,7 +1244,6 @@
 <translation id="184273675144259287">Linux のアプリとファイルを以前のバックアップで置き換えます</translation>
 <translation id="1842766183094193446">デモモードを有効にしてもよろしいですか？</translation>
 <translation id="1843048149176045210">ダウンロード リンクをコピー</translation>
-<translation id="1843347690926158494">Google レンズでこのタブを検索</translation>
 <translation id="1845060436536902492">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="1845727111305721124">音声の再生を許可するサイト</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> を実行するには Control キーを押しながらクリックします</translation>
@@ -3742,7 +3741,6 @@
 <translation id="3581861561942370740">ダウンロード履歴を検索</translation>
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
-<translation id="358381413217813387">Google レンズでこのページを検索する</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
 <translation id="3586741240886978899">過去にこのサイトで使用</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
@@ -3786,7 +3784,6 @@
 <translation id="3610961622607302617"><ph name="WEBSITE" /> のパスワードを変更</translation>
 <translation id="3611634011145829814">登録ページに移動</translation>
 <translation id="3611658447322220736">最近閉じたサイトがデータの送受信を完了できるようにする</translation>
-<translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; によりダウンロードされました</translation>
 <translation id="3612731022682274718">デバイス上の動画ファイルを別の画面にキャストする</translation>
 <translation id="3613134908380545408">「<ph name="FOLDER_NAME" />」を表示</translation>
 <translation id="3613422051106148727">新しいタブで開く(&amp;O)</translation>
@@ -6319,7 +6316,6 @@
 <translation id="5392192690789334093">通知の送信を許可するサイト</translation>
 <translation id="5392864580775235956">画像を追加、編集できます</translation>
 <translation id="5393330235977997602">PIN のオプション</translation>
-<translation id="5393474451146553463">このタブについて Google に質問する</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">アカウントに保存しています...</translation>
@@ -8940,7 +8936,6 @@
 <translation id="7248671827512403053">アプリケーション</translation>
 <translation id="7249197363678284330">アドレスバーでこの設定を変更できます。</translation>
 <translation id="7249764475759804559">ファイルを開く際にオプションとしてこのアプリを含める</translation>
-<translation id="7249885578105575587">このタブについて Google に質問する: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">共有先のデバイスから応答がありませんでした。もう一度お試しください。</translation>
 <translation id="725109152065019550">このアカウントでの外部ストレージの使用は、管理者によって無効にされています。</translation>
 <translation id="7251635775446614726">管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
@@ -10260,7 +10255,6 @@
 <translation id="8143442547342702591">無効なアプリケーション</translation>
 <translation id="8144429778087524791">完了として非表示にする</translation>
 <translation id="8145170459658034418">メモリセーバー</translation>
-<translation id="8145219802299093106">Google レンズでこのページを検索する: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146287226035613638">使用する言語とその順序を設定できます。ウェブサイトは指定した言語で表示されるようになります（可能な場合）。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">ログインできませんでした。管理者にお問い合わせいただくか、もう一度お試しください。</translation>
@@ -11806,7 +11800,6 @@
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="9183302530794969518">Google ドキュメント</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
-<translation id="9184211686591068713">Google レンズでこのタブを検索する: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理者は <ph name="APP0_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=2{管理者は <ph name="APP0_NAME" /> と <ph name="APP1_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=3{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 1 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}other{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 # 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}}</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
@@ -11855,7 +11848,6 @@
 <translation id="930893132043726269">現在ローミングあり</translation>
 <translation id="930991362911221750">このタブの表示を <ph name="APP_NAME" /> に許可しますか？</translation>
 <translation id="931273044114601262">このサイトで許可されています</translation>
-<translation id="932327136139879170">自宅</translation>
 <translation id="932508678520956232">印刷を開始できませんでした。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{このファイルはセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}other{一部のファイルがセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}}</translation>
 <translation id="93343527085570547">法的な理由でコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />にアクセスしてください。リクエストの際、アカウントとシステムに関する情報の一部が Google に送信される場合があります。Google は受け取った情報を、Google の<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に従って、技術的な問題への対処やサービスの改善に使用します。</translation>

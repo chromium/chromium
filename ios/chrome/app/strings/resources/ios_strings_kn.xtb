@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2360196772093551345">ಮೊಬೈಲ್ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
+<translation id="2367025302166767427">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆ</translation>
 <translation id="2371084566192454134">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="2371303771137626249">ಹೊಸತು</translation>
 <translation id="2381405137052800939">ಪ್ರಾಥಮಿಕ ಸಂಗತಿಗಳು</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2697530870203420261">ಅಮಾನ್ಯವಾದ ಅಡ್ಡ ಹೆಸರು</translation>
 <translation id="269819437389494246">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ನೀವು ನೋಡಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಅವುಗಳನ್ನು ಅಳಿಸಬಹುದು</translation>
+<translation id="2704295676501803339">ಎಡಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2704606927547763573">ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2708051474374549906">Google ಗೆ ಕಳುಹಿಸಲಾಗುವ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಆಧರಿಸಿ ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಸಂಬಂಧಿಸಿದಂತೆ ನೈಜ-ಸಮಯದ, ಪೂರ್ವಭಾವಿ ರಕ್ಷಣೆ</translation>
 <translation id="2709516037105925701">ಸ್ವಯಂತುಂಬುವಿಕೆ</translation>
@@ -1662,6 +1664,7 @@
 <translation id="6899890595581608884">ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆ ನೋಟಿಫಿಕೇಶನ್‌ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6900532703269623216">ವರ್ಧಿತ ಸುರಕ್ಷತೆ</translation>
 <translation id="6900702165119149418">ನೀವು ಸೈನ್ ಔಟ್ ಆಗಿದ್ದೀರಿ</translation>
+<translation id="6903282483217634857">ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6903907808598579934">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="6906448540340261898">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಯಾವಾಗಲೂ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಬಹುದು ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6908734251759299256">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ ಅನ್ನು ಅಪ್‌‌ಡೇಟ್‌ ಮಾಡಿ</translation>
@@ -2321,7 +2324,6 @@
 <translation id="926455622548529175">ಬದಲಿಸಿ ಮತ್ತು ಅಳಿಸಿ</translation>
 <translation id="929748059769569925">ಹೈಲೈಟ್ ಮಾಡಿದ ಪಠ್ಯ</translation>
 <translation id="932305336591073205">{count,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
-<translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939472100615258482">ಪ್ರಸ್ತುತ ಸೈಟ್‌</translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>

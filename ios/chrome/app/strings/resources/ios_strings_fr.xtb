@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2697530870203420261">Pseudo non valide</translation>
 <translation id="269819437389494246">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
+<translation id="2704295676501803339">Déplacer vers la gauche</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2708051474374549906">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google.</translation>
 <translation id="2709516037105925701">Saisir automatiquement</translation>
@@ -1662,6 +1663,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6899890595581608884">Notifications du contrôle de sécurité désactivées</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6900702165119149418">Vous êtes déconnecté</translation>
+<translation id="6903282483217634857">Déplacer vers la droite</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6906448540340261898">Assurez-vous de toujours pouvoir utiliser les mots de passe de votre compte Google</translation>
 <translation id="6908734251759299256">Mettre à jour votre navigateur</translation>
@@ -2321,7 +2323,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="926455622548529175">Changer et supprimer</translation>
 <translation id="929748059769569925">Texte en surbrillance</translation>
 <translation id="932305336591073205">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
-<translation id="932327136139879170">Domicile</translation>
 <translation id="939472100615258482">Site actuel</translation>
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>

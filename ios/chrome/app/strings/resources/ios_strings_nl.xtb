@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360196772093551345">Mobiele site opvragen</translation>
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
+<translation id="2367025302166767427">Er is een probleem bij het invullen van je gegevens</translation>
 <translation id="2371084566192454134">Tabbladen en tabbladgroepen</translation>
 <translation id="2371303771137626249">Nieuw</translation>
 <translation id="2381405137052800939">Basisinstellingen</translation>
@@ -480,6 +481,7 @@
 <translation id="2691653761409724435">Niet offline beschikbaar</translation>
 <translation id="2697530870203420261">Ongeldige bijnaam</translation>
 <translation id="269819437389494246">Je kunt de pagina's zien die je hebt bezocht en ze uit je geschiedenis verwijderen</translation>
+<translation id="2704295676501803339">Naar links verplaatsen</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2708051474374549906">Realtime, proactieve bescherming tegen gevaarlijke sites, downloads en extensies op basis van je browsegegevens die naar Google worden gestuurd</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
@@ -1662,6 +1664,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6899890595581608884">Meldingen van Veiligheidscheck uitgezet</translation>
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6900702165119149418">Je bent uitgelogd</translation>
+<translation id="6903282483217634857">Naar rechts verplaatsen</translation>
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6906448540340261898">Zorg dat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
 <translation id="6908734251759299256">Update je browser</translation>
@@ -2321,7 +2324,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="926455622548529175">Overschakelen en verwijderen</translation>
 <translation id="929748059769569925">Gemarkeerde tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Tabblad sluiten}other{Tabbladen sluiten}}</translation>
-<translation id="932327136139879170">Homepage</translation>
 <translation id="939472100615258482">Huidige site</translation>
 <translation id="939598580284253335">Wachtwoordzin invoeren</translation>
 <translation id="939736085109172342">Nieuwe map</translation>

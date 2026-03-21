@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Not available offline</translation>
 <translation id="2697530870203420261">Invalid nickname</translation>
 <translation id="269819437389494246">You can see the pages that you've visited or delete them from your history</translation>
+<translation id="2704295676501803339">Move Left</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that are based on your browsing data getting sent to Google</translation>
 <translation id="2709516037105925701">Autofill</translation>
@@ -1662,6 +1663,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6899890595581608884">Safety check notifications turned off</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900702165119149418">You're signed out</translation>
+<translation id="6903282483217634857">Move Right</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6906448540340261898">Make sure that you can always use the passwords in your Google Account</translation>
 <translation id="6908734251759299256">Update your browser</translation>
@@ -2321,7 +2323,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="926455622548529175">Switch and delete</translation>
 <translation id="929748059769569925">Highlighted text</translation>
 <translation id="932305336591073205">{count,plural, =1{Close tab}other{Close tabs}}</translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="939472100615258482">Current site</translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="939736085109172342">New folder</translation>

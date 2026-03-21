@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Недоступно в офлайн-режиме</translation>
 <translation id="2697530870203420261">Недопустимое название карты</translation>
 <translation id="269819437389494246">Вы сможете посмотреть посещенные страницы или удалить их из истории.</translation>
+<translation id="2704295676501803339">Перейти влево</translation>
 <translation id="2704606927547763573">Скопировано</translation>
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов. Она действует с учетом данных о вашей работе в браузере, которые отправляются в Google.</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
@@ -1662,6 +1663,7 @@
 <translation id="6899890595581608884">Уведомления проверки безопасности отключены.</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
 <translation id="6900702165119149418">Вход в аккаунт не выполнен</translation>
+<translation id="6903282483217634857">Перейти вправо</translation>
 <translation id="6903907808598579934">Включить синхронизацию</translation>
 <translation id="6906448540340261898">Обеспечьте доступ к паролям в аккаунте Google.</translation>
 <translation id="6908734251759299256">Обновите браузер</translation>
@@ -2321,7 +2323,6 @@
 <translation id="926455622548529175">Сменить аккаунт и удалить данные</translation>
 <translation id="929748059769569925">Выделенный текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
-<translation id="932327136139879170">Дом</translation>
 <translation id="939472100615258482">Текущий сайт</translation>
 <translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="939736085109172342">Новая папка</translation>

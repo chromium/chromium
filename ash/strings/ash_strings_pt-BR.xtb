@@ -55,7 +55,6 @@
 <translation id="1180117276105724040">Restaurando as janelas da sessão anterior…</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1182225749592316782">Esta ação libera o acesso para todos os apps e sites com essas permissões</translation>
-<translation id="1182876754474670069">início</translation>
 <translation id="1183237619868651138">Não foi possível instalar o arquivo <ph name="EXTERNAL_CRX_FILE" /> no cache local.</translation>
 <translation id="1183863904939664422">Não tenho interesse nesta sugestão</translation>
 <translation id="1184126796192815024">Esta rede não oferece suporte aos apps de streaming do seu smartphone. Tente usar o ponto de acesso do smartphone. <ph name="LEARN_MORE" /></translation>
@@ -1200,6 +1199,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> da próxima semana</translation>
 <translation id="4717575069099566988">O cabo USB-C não oferece suporte a USB4. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="4730374152663651037">USADOS FREQUENTEMENTE</translation>
+<translation id="4731197594811674831">início</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>

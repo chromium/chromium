@@ -1242,7 +1242,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="184273675144259287">Zëvendëso aplikacionet dhe skedarët Linux me një rezervim të mëparshëm</translation>
 <translation id="1842766183094193446">Je i sigurt për aktivizimin e modalitetit të demonstrimit?</translation>
 <translation id="1843048149176045210">Kopjo lidhjen e shkarkimit</translation>
-<translation id="1843347690926158494">Kërko në këtë skedë me "Lenten e Google"</translation>
 <translation id="1845060436536902492">Lexuesi i ekranit në ChromeOS Flex, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp shiritin e hapësirës për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
 <translation id="1845727111305721124">Lejohen të luajnë tinguj</translation>
 <translation id="1846308012215045257">Kliko "kontroll" për të ekzekutuar <ph name="PLUGIN_NAME" /></translation>
@@ -3748,7 +3747,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3581861561942370740">Kërko në historikun e shkarkimeve</translation>
 <translation id="3582057310199111521">Është futur në një sajt mashtrues dhe është gjendur në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3582299299336701326">Errëson ekranet e ndritshme dhe ndriçon ekranet e errëta. Shtyp "Kërko" + Ctrl + H për të aktivizuar dhe çaktivizuar anasjelljen e ngjyrës.</translation>
-<translation id="358381413217813387">Kërko në këtë faqe me "Lenten e Google"</translation>
 <translation id="3584169441612580296">Lexo dhe ndrysho fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
 <translation id="3586741240886978899">E ke përdorur në këtë sajt</translation>
 <translation id="3586806079541226322">Ky skedar nuk mund të hapet</translation>
@@ -3792,7 +3790,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3610961622607302617">Ndrysho fjalëkalimin për <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Shko te faqja e abonimit</translation>
 <translation id="3611658447322220736">Sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave</translation>
-<translation id="3612673635130633812">Shkarkoje nga &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Transmeto skedarët video nga pajisja jote në një ekran tjetër</translation>
 <translation id="3613134908380545408">Shfaq <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Hape në një skedë të re</translation>
@@ -6329,7 +6326,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5392192690789334093">Lejohen të dërgojnë njoftime</translation>
 <translation id="5392864580775235956">Shto dhe modifiko një imazh</translation>
 <translation id="5393330235977997602">Opsionet e kodit PIN</translation>
-<translation id="5393474451146553463">Pyet Google rreth kësaj skede</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lidhje}other{# lidhje}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Po ruhen në llogarinë tënde...</translation>
@@ -8952,7 +8948,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7248671827512403053">Aplikacion</translation>
 <translation id="7249197363678284330">Të ndryshohet ky cilësim në shiritin e adresave?</translation>
 <translation id="7249764475759804559">Përfshije këtë aplikacion si opsion kur hap skedarët</translation>
-<translation id="7249885578105575587">Pyet Google rreth kësaj skede: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Pajisja me të cilën po ndan nuk u përgjigj. Provo përsëri.</translation>
 <translation id="725109152065019550">Na vjen keq, por administratori yt ka çaktivizuar hapësirën ruajtëse të jashtme në llogarinë tënde.</translation>
 <translation id="7251635775446614726">Administratori yt thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10273,7 +10268,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8143442547342702591">Aplikacion i pavlefshëm</translation>
 <translation id="8144429778087524791">Shënoje si të kryer dhe fshihe</translation>
 <translation id="8145170459658034418">Kursyesi i memories</translation>
-<translation id="8145219802299093106">Kërko në këtë faqe me "Lenten e Google": <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Nëse je regjistruar tashmë në këtë pajisje, mund <ph name="LINK2_START" />të identifikohesh si përdorues ekzistues<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Shto dhe rendit gjuhët e tua të preferuara. Faqet e internetit do të shfaqen në gjuhët e tua të preferuara, kur të jetë e mundur. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Identifikimi dështoi. Kontakto me administratorin ose provo përsëri.</translation>
@@ -11819,7 +11813,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
-<translation id="9184211686591068713">Kërko në këtë skedë me "Lenten e Google": <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Nuk do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Nuk do të njoftohesh kur të fillojë regjistrimi.}}</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
 <translation id="9187967020623675250">Tastet nuk përputhen. Shtyp një tast çfarëdo për veprimin "<ph name="RESPONSE" />".</translation>
@@ -11868,7 +11861,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="930893132043726269">Aktualisht në roaming</translation>
 <translation id="930991362911221750">Të lejohet që <ph name="APP_NAME" /> të shikojë këtë skedë?</translation>
 <translation id="931273044114601262">Lejohet në këtë sajt</translation>
-<translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="932508678520956232">Printimi nuk mund të iniciohej.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Ky skedar është shumë i madh për kontroll sigurie. Mund të ngarkosh skedarë deri në 50 MB.}other{Disa prej këtyre skedarëve janë shumë të mëdhenj për kontroll sigurie. Mund të ngarkosh skedarë deri në 50 MB.}}</translation>
 <translation id="93343527085570547">Shko te <ph name="BEGIN_LINK1" />faqja "Ndihmë ligjore"<ph name="END_LINK1" /> për të kërkuar ndryshime të përmbajtjes për arsye ligjore.  Disa nga informacionet e llogarisë dhe të sistemit mund t'i dërgohen Google.  Informacionet që na jepni do t'i përdorim për zgjidhjen e problemeve teknike për përmirësimin e shërbimeve tona, sipas <ph name="BEGIN_LINK2" />Politikës së privatësisë<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />Kushteve të shërbimit<ph name="END_LINK3" />.</translation>

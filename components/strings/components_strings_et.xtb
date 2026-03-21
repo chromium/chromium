@@ -3377,6 +3377,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6326947323444967009">iOS-i seadetes Chrome'i süsteemi vaikebrauseriks määramine</translation>
 <translation id="6327065120806001832">juurdepääs kohalikule võrgule</translation>
 <translation id="6328639280570009161">Proovige keelata võrguprognoos</translation>
+<translation id="6329742260390895689">Kui soovite välju oma teabega automaatselt täita, lülitage Walleti seadetes sisse valik „Pääsmete kasutamine kogu Google'is“.</translation>
 <translation id="6329815962353376655">&lt;Sisestage küsimus&gt;</translation>
 <translation id="6331597954316706229">Kõige enam isikupärastatud vastuste saamiseks lubage kõigil lõimedel kasutada teie asjakohaseid avatud vahelehti.</translation>
 <translation id="633348045801643466">Kuvab kassas <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />hiljem maksmise võimalused<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
@@ -3464,6 +3465,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6436994298828707228">Ühendus on blokeeritud, kuna selle algatas avalik leht teie kohalikus võrgus olevate seadmete või serveritega ühenduse loomiseks.</translation>
 <translation id="6437647869369934905">Google'i joonised</translation>
 <translation id="643917412048333145">Kleidid</translation>
+<translation id="6440450906295708112">Variantide allikas</translation>
 <translation id="6440503408713884761">Eiras</translation>
 <translation id="6443406338865242315">Millised laiendused ja pistikprogrammid olete installinud</translation>
 <translation id="6444329331928531170">Pensionile jäämine ja pension</translation>

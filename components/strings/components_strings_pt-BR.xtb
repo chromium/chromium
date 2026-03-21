@@ -368,6 +368,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1567405528131216114">Adicionar <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está tentando ativar o Windows Hello para preencher senhas.</translation>
+<translation id="1569905000953679183">Busca da política de instalação de extensão</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
 <translation id="1574714699824202614">Verificando a forma de pagamento</translation>
 <translation id="1576277203042721907">Insights de compras</translation>
@@ -2214,6 +2215,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4454620051637646665">Dispensar banner</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
 <translation id="4458013283022578512">Digite uma pergunta</translation>
+<translation id="4458516738555515761">Busca de políticas</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="4466576951214254884">Empréstimos estudantis e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo tela cheia e conferir o download, pressione |<ph name="ACCELERATOR" />|</translation>

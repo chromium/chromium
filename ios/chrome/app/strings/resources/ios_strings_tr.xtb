@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
 <translation id="2697530870203420261">Takma ad geçersiz</translation>
 <translation id="269819437389494246">Ziyaret ettiğiniz sayfaları görebilir veya geçmişinizden silebilirsiniz</translation>
+<translation id="2704295676501803339">Sola Git</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2708051474374549906">Tarama verilerinizin Google'a gönderilmesi aracılığıyla tehlikeli siteler, indirmeler ve uzantılara karşı gerçek zamanlı, proaktif koruma</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
@@ -1662,6 +1663,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6899890595581608884">Güvenlik kontrolü bildirimleri kapatıldı</translation>
 <translation id="6900532703269623216">Gelişmiş koruma</translation>
 <translation id="6900702165119149418">Oturumunuz kapalı</translation>
+<translation id="6903282483217634857">Sağa Git</translation>
 <translation id="6903907808598579934">Senkronizasyonu aç</translation>
 <translation id="6906448540340261898">Google Hesabınızdaki şifreleri her zaman kullanabildiğinizden emin olun</translation>
 <translation id="6908734251759299256">Tarayıcınızı güncelleyin</translation>
@@ -2321,7 +2323,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="926455622548529175">Hesap Değiştir ve Sil</translation>
 <translation id="929748059769569925">Vurgulanan metin</translation>
 <translation id="932305336591073205">{count,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
-<translation id="932327136139879170">Ev</translation>
 <translation id="939472100615258482">Geçerli site</translation>
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="939736085109172342">Yeni klasör</translation>

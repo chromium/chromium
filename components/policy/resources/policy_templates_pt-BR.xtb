@@ -1101,6 +1101,20 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
 <translation id="1736032188431871940">Bloquear o acesso a uma lista de URLs no modo de navegação anônima.</translation>
 <translation id="1736269219679256369">Permitir a continuação na página de aviso SSL</translation>
 <translation id="1736990730683753958">Uma página do histórico do Chrome organizada em grupos não ficará visível em chrome://history/grouped.</translation>
+<translation id="1737524389648824113">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado.
+
+Se a política não for definida, será usado o valor padrão de 32.
+
+Alguns apps da web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar interrupções na rede do navegador caso haja muitos apps da web com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (32) fica por sua conta e risco.
+
+O valor deve ser igual ou inferior a 256 (99 no <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Se você definir um valor acima desse limite, será usado 256 (99 no <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Aumentar acima do padrão (32) fica por sua conta e risco.</translation>
 <translation id="1740724790865999129">Se a política for definida como uma lista de tipos de dispositivos, os dados de depuração de baixo nível dos tipos mencionados poderão ser incluídos no feedback do usuário.
 
       A entrada especial "todos" inclui todos os tipos de dispositivos, inclusive os que serão adicionados no futuro.
@@ -3081,6 +3095,13 @@ Se o valor for "false", os usuários não poderão acessar o recurso.</translati
 <translation id="2969568582351417848">Desativar avisos de download com base na extensão do tipo de arquivo para os tipos especificados nos domínios</translation>
 <translation id="2971096666394658693">O menu de contexto terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Se a política for ativada, os aplicativos da Web de terceiros vão poder usar a <ph name="DESK_API_NAME" /> para salvar e compartilhar espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se ela for desativada, o usuário não vai poder salvar e compartilhar dados de espaços de trabalho pela <ph name="DESK_API_NAME" />. Se a política for deixada sem definição, o comportamento será o mesmo que o desativado. A política só será aplicada em dispositivos registrados.</translation>
+<translation id="2974326457745806202">Os SharedWorkers podem ter uma vida útil estendida se a opção "extendedLifetime" for definida como verdadeira no construtor de SharedWorker.
+
+Se esta política estiver ativada ou não configurada, os SharedWorkers poderão ter um tempo de vida estendido.
+
+Se esta política estiver definida como Desativada, os SharedWorkers não poderão ter uma vida útil estendida, mesmo se a opção estiver definida como verdadeira.
+
+Essa política é temporária e será removida.</translation>
 <translation id="2976033779241323433">Ativar o teclado virtual de toque com base na heurística padrão do sistema</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
@@ -9965,6 +9986,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
 <translation id="7218238054592349618">Permitir a otimização do JavaScript nestes sites</translation>
 <translation id="721970071627370558">Desativar relatórios de status de energia do dispositivo</translation>
+<translation id="7220960206733388609">Os SharedWorkers podem ter uma vida útil estendida.</translation>
 <translation id="7221574724100909818">Usar o ícone de bloqueio em conexões seguras</translation>
 <translation id="7227348936232766462">Permitir que os usuários incluam dados de depuração de baixo nível de todos os tipos de dispositivos disponíveis abaixo no feedback</translation>
 <translation id="7229365071755865554">Ativar o salvamento de senhas no gerenciador de senhas</translation>
@@ -10623,6 +10645,7 @@ Quando esta política estiver ativada, o visualizador de PDF vai usar o renderiz
 Quando ela estiver desativada, o visualizador de PDF vai usar o renderizador AGG atual.
 
 Quando ela for deixada sem definição, o renderizador de PDF será escolhido pelo navegador.</translation>
+<translation id="7704244074621846004">Ativar tempo de vida estendido para SharedWorkers</translation>
 <translation id="7707869387893611318">Ativar o recurso de sons de carregamento.
 
           Esse recurso é responsável por reproduzir os sons de carregamento no dispositivo.
@@ -10640,6 +10663,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 
       Recomendamos que os servidores migrem para pacotes de criptografia ECDHE. Se eles não estiverem disponíveis, garanta um pacote de criptografia com a troca de chaves RSA ativada.</translation>
 <translation id="7709470712369261710">Não permitir que os Serviços do Google forneçam descrições automáticas de imagens</translation>
+<translation id="7711003696883532277">Os SharedWorkers não podem ter uma vida útil estendida.</translation>
 <translation id="7712109699186360774">Perguntar toda vez que um site quiser acessar minha câmera e/ou meu microfone</translation>
 <translation id="7712245244073542805">Impressão da plataforma pelo processo do navegador.</translation>
 <translation id="7713608076604149344">Restrições de downloads</translation>

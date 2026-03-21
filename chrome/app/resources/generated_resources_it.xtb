@@ -1245,7 +1245,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="184273675144259287">Sostituisci app e file Linux con un backup precedente</translation>
 <translation id="1842766183094193446">Vuoi attivare questa modalità demo?</translation>
 <translation id="1843048149176045210">Copia link di download</translation>
-<translation id="1843347690926158494">Cerca in questa scheda con Google Lens</translation>
 <translation id="1845060436536902492">ChromeVox, lo screen reader su ChromeOS Flex, viene usato principalmente da persone cieche o ipovedenti per leggere il testo visualizzato sullo schermo con un sintetizzatore vocale o un display braille. Premi la barra spaziatrice per attivare ChromeVox. Quando ChromeVox verrà attivato potrai fare un rapido tour.</translation>
 <translation id="1845727111305721124">Possono riprodurre suoni</translation>
 <translation id="1846308012215045257">Premi CTRL e fai clic per eseguire <ph name="PLUGIN_NAME" /></translation>
@@ -1737,7 +1736,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2182058453334755893">Copia negli appunti eseguita</translation>
 <translation id="2182419606502127232">Includi i miei log del server.</translation>
 <translation id="2183570493397356669">Pulsante Continua non attivo</translation>
-<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2184272387334793084">Accedi per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="2184515124301515068">Consenti a Chrome di scegliere quando i siti possono riprodurre audio (opzione consigliata)</translation>
 <translation id="2184754597051264978">Gemini non sarà più in grado di consentirti di accedere a <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -3750,7 +3749,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3581861561942370740">Cerca nella cronologia dei download</translation>
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3582299299336701326">Scurisci gli schermi chiari e schiarisci quelli scuri. Premi il tasto per la ricerca + Ctrl + H per attivare e disattivare l'inversione dei colori.</translation>
-<translation id="358381413217813387">Cerca in questa pagina con Google Lens</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
 <translation id="3586741240886978899">Utilizzato su questo sito</translation>
 <translation id="3586806079541226322">Impossibile aprire questo file</translation>
@@ -3794,7 +3792,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3610961622607302617">Modifica password per <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Vai alla pagina dell'abbonamento</translation>
 <translation id="3611658447322220736">I siti chiusi di recente possono terminare l'invio e la ricezione di dati</translation>
-<translation id="3612673635130633812">Scaricato da &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3612731022682274718">Trasmetti file video presenti sul dispositivo a un altro schermo</translation>
 <translation id="3613134908380545408">Mostra <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Apri in un'altra scheda</translation>
@@ -4840,7 +4837,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4317733381297736564">Acquisti in-app</translation>
 <translation id="4317820549299924617">La verifica non è andata a buon fine</translation>
 <translation id="4319441675152393296">Fai clic sull'icona di questa estensione per consentire di leggere e modificare <ph name="HOST" /></translation>
-<translation id="4320177379694898372">Nessuna connessione Internet</translation>
+<translation id="4320177379694898372">Nessuna connessione internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Mostra <ph name="FILE_NAME" /> nel Finder</translation>
 <translation id="4322394346347055525">Chiudi le altre schede</translation>
@@ -6332,7 +6329,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5392192690789334093">Possono inviare notifiche</translation>
 <translation id="5392864580775235956">Aggiungi e modifica un'immagine</translation>
 <translation id="5393330235977997602">Opzioni PIN</translation>
-<translation id="5393474451146553463">Chiedi a Google informazioni su questa scheda</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Salvataggio nel tuo account in corso…</translation>
@@ -8236,7 +8232,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="67465227497040338">Mostra password per <ph name="DOMAIN" /></translation>
-<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati su tutti i dispositivi</translation>
+<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="6748980958975836188">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6749473226660745022">Foto</translation>
@@ -8953,7 +8949,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7248671827512403053">Applicazione</translation>
 <translation id="7249197363678284330">Cambia questa impostazione nella barra degli indirizzi.</translation>
 <translation id="7249764475759804559">Includi questa app come opzione per l'apertura dei file</translation>
-<translation id="7249885578105575587">Chiedi a Google informazioni su questa scheda: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Il dispositivo con cui hai tentato di condividere il file non ha risposto. Riprova.</translation>
 <translation id="725109152065019550">Spiacenti, l'amministratore ha disabilitato l'archiviazione esterna per il tuo account.</translation>
 <translation id="7251635775446614726">Messaggio dell'amministratore: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10274,7 +10269,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8143442547342702591">Applicazione non valida</translation>
 <translation id="8144429778087524791">Contrassegna come completata e nascondi</translation>
 <translation id="8145170459658034418">Risparmio memoria</translation>
-<translation id="8145219802299093106">Cerca con Google Lens in questa pagina: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Se sei già registrato sul dispositivo in uso, puoi <ph name="LINK2_START" />accedere come utente esistente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Aggiungi e classifica le tue lingue preferite. Se possibile, i siti web verranno mostrati in queste lingue. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Accesso non riuscito. Contatta l'amministratore o riprova.</translation>
@@ -11820,7 +11814,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
-<translation id="9184211686591068713">Cerca con Google Lens in questa scheda: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app. Non riceverai una notifica all'inizio della registrazione.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app. Non riceverai una notifica all'inizio della registrazione.}}</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
@@ -11869,7 +11862,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="930893132043726269">Roaming attualmente attivo</translation>
 <translation id="930991362911221750">Vuoi consentire all'app <ph name="APP_NAME" /> di vedere questa scheda?</translation>
 <translation id="931273044114601262">Consentito su questo sito</translation>
-<translation id="932327136139879170">Home page</translation>
 <translation id="932508678520956232">Impossibile inizializzare la stampa.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Il file è troppo grande per essere sottoposto a un controllo di sicurezza. La dimensione massima dei file che puoi caricare è di 50 MB.}other{Alcuni di questi file sono troppo grandi per essere sottoposti a un controllo di sicurezza. La dimensione massima dei file che puoi caricare è di 50 MB.}}</translation>
 <translation id="93343527085570547">Vai alla <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" /> per richiedere modifiche ai contenuti per motivi legali. Alcuni dati dell'account e del sistema potrebbero essere inviati a Google, che li userà per risolvere problemi tecnici e migliorare i suoi servizi nel rispetto delle sue <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e dei suoi <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />.</translation>

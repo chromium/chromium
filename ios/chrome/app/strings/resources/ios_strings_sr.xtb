@@ -480,6 +480,7 @@
 <translation id="2691653761409724435">Није доступно офлајн</translation>
 <translation id="2697530870203420261">Неважећи надимак</translation>
 <translation id="269819437389494246">Можете да видите странице које сте посетили или да их избришете из историје</translation>
+<translation id="2704295676501803339">Помери улево</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2708051474374549906">Проактивна заштита у реалном времену од опасних сајтова, преузимања и додатака која се заснива на подацима прегледања који се шаљу Google-у</translation>
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
@@ -1662,6 +1663,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6899890595581608884">Обавештења провере безбедности су искључена</translation>
 <translation id="6900532703269623216">Напредна заштита</translation>
 <translation id="6900702165119149418">Одјављени сте</translation>
+<translation id="6903282483217634857">Помери удесно</translation>
 <translation id="6903907808598579934">Укључи синхронизацију</translation>
 <translation id="6906448540340261898">Уверите се да увек можете да користите лозинке на Google налогу</translation>
 <translation id="6908734251759299256">Ажурирајте прегледач</translation>
@@ -2321,7 +2323,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="926455622548529175">Промени и избриши</translation>
 <translation id="929748059769569925">Истакнути текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
-<translation id="932327136139879170">Почетна</translation>
 <translation id="939472100615258482">Актуелни сајт</translation>
 <translation id="939598580284253335">Унесите приступну фразу</translation>
 <translation id="939736085109172342">Нови фолдер</translation>
