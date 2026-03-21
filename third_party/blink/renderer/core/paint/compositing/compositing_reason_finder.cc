@@ -370,12 +370,12 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   CompositingReasons reasons = CompositingReason::kNone;
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  if (element && IsA<LayoutBox>(object) &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
     if (element->IsInCanvasSubtree()) [[unlikely]] {
       auto* canvas_parent =
           DynamicTo<HTMLCanvasElement>(element->parentElement());
-      if (canvas_parent && canvas_parent->layoutSubtree() &&
+      if (IsA<LayoutBox>(object) && canvas_parent &&
+          canvas_parent->layoutSubtree() &&
           !canvas_parent->IsInCanvasSubtree()) {
         reasons |= CompositingReason::kCanvasChild;
       } else {
