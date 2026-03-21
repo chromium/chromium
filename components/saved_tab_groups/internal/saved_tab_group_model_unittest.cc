@@ -1713,8 +1713,7 @@ TEST_F(SavedTabGroupModelTest, UpdateGroupPinnedPositionForMigration) {
             saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
 }
 
-TEST_F(SavedTabGroupModelTest,
-       MigratePinnedPositionToProjectsPositionWithProjectsPanel) {
+TEST_F(SavedTabGroupModelTest, MigratePinnedPositionToProjectsPosition) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
 
@@ -1791,6 +1790,72 @@ TEST_F(SavedTabGroupModelTest,
 
   EXPECT_EQ(unpinned_id_1, groups[3].saved_guid());
   EXPECT_EQ(3, groups[3].position());
+}
+
+TEST_F(SavedTabGroupModelTest,
+       MigratePinnedPositionToProjectsPosition_SomePositionsEqual) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  RemoveTestData();
+
+  base::Time fixed_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time creation_time = fixed_time - base::Minutes(10);
+  base::Uuid pinned_id_1 = base::Uuid::GenerateRandomV4();
+  base::Uuid pinned_id_2 = base::Uuid::GenerateRandomV4();
+  base::Uuid pinned_id_3 = base::Uuid::GenerateRandomV4();
+
+  // Pinned group 1, position 0, older update time.
+  SavedTabGroup pinned_group_1(
+      u"Pinned 1", tab_groups::TabGroupColorId::kRed, {}, 0, pinned_id_1,
+      /*local_group_id=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*created_before_syncing_tab_groups=*/false, creation_time,
+      /*update_time=*/fixed_time - base::Minutes(10));
+  pinned_group_1.SetPinnedPositionForMigration(0);
+
+  // Pinned group 2, position 0, newer update time.
+  SavedTabGroup pinned_group_2(
+      u"Pinned 2", tab_groups::TabGroupColorId::kBlue, {}, 0, pinned_id_2,
+      /*local_group_id=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*created_before_syncing_tab_groups=*/false, creation_time,
+      /*update_time=*/fixed_time - base::Minutes(5));
+  pinned_group_2.SetPinnedPositionForMigration(0);
+
+  // Pinned group 3, position 1.
+  SavedTabGroup pinned_group_3(
+      u"Pinned 3", tab_groups::TabGroupColorId::kGreen, {}, 1, pinned_id_3,
+      /*local_group_id=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*created_before_syncing_tab_groups=*/false, creation_time,
+      /*update_time=*/fixed_time - base::Minutes(1));
+  pinned_group_3.SetPinnedPositionForMigration(1);
+
+  saved_tab_group_model_->AddedLocally(pinned_group_1);
+  saved_tab_group_model_->AddedLocally(pinned_group_2);
+  saved_tab_group_model_->AddedLocally(pinned_group_3);
+
+  // Trigger the migration.
+  saved_tab_group_model_->MigratePinnedPositionToProjectsPosition();
+
+  // Expected order:
+  // 1. Pinned 2 (Position 0, more recently updated)
+  // 2. Pinned 1 (Position 0, less recently updated)
+  // 3. Pinned 3 (Position 1)
+
+  ASSERT_EQ(3, saved_tab_group_model_->Count());
+  const auto& groups = saved_tab_group_model_->saved_tab_groups();
+
+  EXPECT_EQ(pinned_id_2, groups[0].saved_guid());
+  EXPECT_EQ(0, groups[0].position());
+
+  EXPECT_EQ(pinned_id_1, groups[1].saved_guid());
+  EXPECT_EQ(1, groups[1].position());
+
+  EXPECT_EQ(pinned_id_3, groups[2].saved_guid());
+  EXPECT_EQ(2, groups[2].position());
 }
 
 }  // namespace

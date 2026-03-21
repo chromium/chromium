@@ -993,16 +993,31 @@ void SavedTabGroupModel::MigratePinnedPositionToProjectsPosition() {
       saved_tab_groups_.begin(), saved_tab_groups_.end(),
       [](const tab_groups::SavedTabGroup& left,
          const tab_groups::SavedTabGroup& right) {
-        bool left_pinned = left.pinned_position_for_migration().has_value();
-        bool right_pinned = right.pinned_position_for_migration().has_value();
+        const bool left_pinned =
+            left.pinned_position_for_migration().has_value();
+        const bool right_pinned =
+            right.pinned_position_for_migration().has_value();
+
         if (left_pinned != right_pinned) {
           return left_pinned;
         }
-        if (left_pinned) {
-          return left.pinned_position_for_migration().value() <
-                 right.pinned_position_for_migration().value();
+
+        if (!left_pinned) {
+          return left.creation_time() > right.creation_time();
         }
-        return left.creation_time() > right.creation_time();
+
+        const size_t left_pos = left.pinned_position_for_migration().value();
+        const size_t right_pos = right.pinned_position_for_migration().value();
+
+        // If two groups have the same pinned_position, order the
+        // more recently updated group first. This matches how
+        // conflicts with pinned_position are resolved in
+        // ShouldPlaceBefore.
+        if (left_pos == right_pos) {
+          return left.update_time() > right.update_time();
+        }
+
+        return left_pos < right_pos;
       });
 
   for (size_t i = 0; i < saved_tab_groups_.size(); ++i) {
