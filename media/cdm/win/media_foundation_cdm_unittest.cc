@@ -264,7 +264,7 @@ TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpV1_1_KeyStatusUsable) {
 }
 
 TEST_F(MediaFoundationCdmTest,
-       GetStatusForPolicy_HdcpV2_3_KeyStatusOutputRestricted) {
+       GetStatusForPolicy_HdcpV2_2_KeyStatusOutputRestricted) {
   StrictMock<base::MockCallback<MediaFoundationCdm::IsTypeSupportedCB>>
       is_type_supported_cb;
   Initialize();
@@ -274,6 +274,21 @@ TEST_F(MediaFoundationCdmTest,
           InvokeCallbackArgument<1,
                                  MediaFoundationCdm::IsTypeSupportedResultCB>(
               /*value_or_error=*/base::ok(false)));
+  is_type_supported_cb_handler_.SetBehavior(is_type_supported_cb.Get());
+
+  CdmKeyInformation::KeyStatus key_status;
+  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion2_2,
+                           std::make_unique<MockCdmKeyStatusPromise>(
+                               /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
+}
+
+TEST_F(MediaFoundationCdmTest,
+       GetStatusForPolicy_HdcpV2_3_KeyStatusOutputRestricted) {
+  StrictMock<base::MockCallback<MediaFoundationCdm::IsTypeSupportedCB>>
+      is_type_supported_cb;
+  Initialize();
+  EXPECT_CALL(is_type_supported_cb, Run(_, _)).Times(0);
   is_type_supported_cb_handler_.SetBehavior(is_type_supported_cb.Get());
 
   CdmKeyInformation::KeyStatus key_status;
@@ -294,7 +309,7 @@ TEST_F(MediaFoundationCdmTest,
       }));
 
   CdmKeyInformation::KeyStatus key_status;
-  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion2_3,
+  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion2_2,
                            std::make_unique<MockCdmKeyStatusPromise>(
                                /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);

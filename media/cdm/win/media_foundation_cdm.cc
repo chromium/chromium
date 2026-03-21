@@ -44,6 +44,19 @@ using Microsoft::WRL::RuntimeClass;
 using Microsoft::WRL::RuntimeClassFlags;
 using Exception = CdmPromise::Exception;
 
+// The HDCP value follows the feature value in
+// https://docs.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported?view=winrt-19041
+// - 0 (off)
+// - 1 (on without HDCP 2.2 Type 1 restriction)
+// - 2 (on with HDCP 2.2 Type 1 restriction)
+enum class HdcpValue {
+  kHdcpNotSupported = -1,
+  kHdcpAlawaysSupported = 0,
+  kHdcp1 = 1,
+  kHdcp2 = 2,
+  kMaxValue = kHdcp2
+};
+
 HRESULT CreatePolicySetEvent(ComPtr<IMFMediaEvent>& policy_set_event) {
   base::win::ScopedPropVariant policy_set_prop;
   PROPVARIANT* var_to_set = policy_set_prop.Receive();
@@ -98,15 +111,11 @@ HRESULT RefreshDecryptor(IMFTransform* decryptor,
   return S_OK;
 }
 
-// The HDCP value follows the feature value in
-// https://docs.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported?view=winrt-19041
-// - 0 (off)
-// - 1 (on without HDCP 2.2 Type 1 restriction)
-// - 2 (on with HDCP 2.2 Type 1 restriction)
-int GetHdcpValue(HdcpVersion hdcp_version) {
+HdcpValue GetHdcpValue(HdcpVersion hdcp_version) {
   switch (hdcp_version) {
     case HdcpVersion::kHdcpVersionNone:
-      return 0;
+      // Keys should be always usable since there is no HDCP requirement.
+      return HdcpValue::kHdcpAlawaysSupported;
     case HdcpVersion::kHdcpVersion1_0:
     case HdcpVersion::kHdcpVersion1_1:
     case HdcpVersion::kHdcpVersion1_2:
@@ -114,10 +123,13 @@ int GetHdcpValue(HdcpVersion hdcp_version) {
     case HdcpVersion::kHdcpVersion1_4:
     case HdcpVersion::kHdcpVersion2_0:
     case HdcpVersion::kHdcpVersion2_1:
-      return 1;
+      return HdcpValue::kHdcp1;
     case HdcpVersion::kHdcpVersion2_2:
+      return HdcpValue::kHdcp2;
     case HdcpVersion::kHdcpVersion2_3:
-      return 2;
+      // IsTypeSupported cannot differentiate between HDCP 2.2 and 2.3. For now,
+      // we treat HDCP 2.3 as not supported.
+      return HdcpValue::kHdcpNotSupported;
   }
 }
 
@@ -383,17 +395,20 @@ void MediaFoundationCdm::GetStatusForPolicy(
     return;
   }
 
-  // Keys should be always usable when there is no HDCP requirement.
-  if (min_hdcp_version == HdcpVersion::kHdcpVersionNone) {
+  const auto hdcp_value = GetHdcpValue(min_hdcp_version);
+  if (hdcp_value == HdcpValue::kHdcpAlawaysSupported) {
     promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+    return;
+  }
+  if (hdcp_value == HdcpValue::kHdcpNotSupported) {
+    promise->resolve(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
     return;
   }
 
   // HDCP is independent to the codec. So query H.264, which is always supported
   // by MFCDM.
-  const std::string content_type =
-      base::StringPrintf("video/mp4;codecs=\"avc1\";features=\"hdcp=%d\"",
-                         GetHdcpValue(min_hdcp_version));
+  const std::string content_type = base::StringPrintf(
+      "video/mp4;codecs=\"avc1\";features=\"hdcp=%d\"", hdcp_value);
 
   is_type_supported_cb_.Run(
       content_type,
