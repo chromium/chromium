@@ -2789,7 +2789,8 @@ TransposePendingPermutation(
     bool use_xnnpack = false;
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
     if (base::FeatureList::IsEnabled(
-            kWebNNUseXNNPackForConstantTransposeFolding)) {
+            kWebNNUseXNNPackForConstantTransposeFolding) &&
+        rank <= XNN_MAX_TENSOR_DIMS) {
       use_xnnpack = true;
     }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
