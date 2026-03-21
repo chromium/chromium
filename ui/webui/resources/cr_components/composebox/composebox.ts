@@ -22,7 +22,7 @@ import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_h
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
@@ -63,6 +63,24 @@ export interface ComposeboxState {
 export enum VoiceSearchAction {
   ACTIVATE = 0,
   QUERY_SUBMITTED = 1,
+}
+
+export function isTerminalState(status: ContextUploadStatus): boolean {
+  switch (status) {
+    case ContextUploadStatus.kUploadSuccessful:
+    case ContextUploadStatus.kUploadFailed:
+    case ContextUploadStatus.kValidationFailed:
+    case ContextUploadStatus.kUploadExpired:
+    case ContextUploadStatus.kUploadReplaced:
+      return true;
+    case ContextUploadStatus.kNotUploaded:
+    case ContextUploadStatus.kProcessing:
+    case ContextUploadStatus.kUploadStarted:
+    case ContextUploadStatus.kProcessingSuggestSignalsReady:
+      return false;
+    default:
+      assertNotReachedCase(status, 'Unknown enum value');
+  }
 }
 
 const DEBOUNCE_TIMEOUT_MS: number = 20;
@@ -2318,12 +2336,8 @@ export class ComposeboxElement extends I18nMixinLit
     let errorMessage = null;
     let file = this.files_.get(token);
     if (file) {
-      if ([
-            ContextUploadStatus.kValidationFailed,
-            ContextUploadStatus.kUploadFailed,
-            ContextUploadStatus.kUploadExpired,
-            ContextUploadStatus.kUploadReplaced,
-          ].includes(status)) {
+      if (isTerminalState(status) &&
+          status !== ContextUploadStatus.kUploadSuccessful) {
         this.files_.delete(token);
 
         if (file.tabId) {
