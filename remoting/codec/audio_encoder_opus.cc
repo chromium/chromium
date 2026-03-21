@@ -6,10 +6,9 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/numerics/safe_math.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -256,16 +255,9 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
     return nullptr;
   }
 
-  base::span<const uint8_t> byte_input = base::as_byte_span(packet->data(0));
-  CHECK_EQ(byte_input.size() % kBytesPerSample, 0u);
-  CHECK(base::IsAligned(byte_input.data(), sizeof(int16_t)));
-
-  // SAFETY: This data is coming from an external source, but we've CHECK'ed
-  // that there are the right number of bytes, and that they have the proper
-  // alignment.
-  base::span<const int16_t> input_samples = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const int16_t*>(byte_input.data()),
-                 byte_input.size() / sizeof(int16_t)));
+  base::span<const int16_t> input_samples =
+      base::subtle::reinterpret_span<const int16_t>(
+          base::as_byte_span(packet->data(0)));
 
   if (needs_resampling_) {
     return EncodeInternalWithResampling(input_samples);
