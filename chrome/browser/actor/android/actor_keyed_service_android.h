@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ACTOR_ANDROID_ACTOR_KEYED_SERVICE_ANDROID_H_
 #define CHROME_BROWSER_ACTOR_ANDROID_ACTOR_KEYED_SERVICE_ANDROID_H_
 
-#include <map>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -33,7 +31,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   void StopTask(JNIEnv* env, int32_t task_id, int32_t stop_reason);
 
  private:
-  void OnTaskStateChanged(TaskId task_id, ActorTask::State state);
+  void OnTaskStateChanged(ActorTask& task);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;

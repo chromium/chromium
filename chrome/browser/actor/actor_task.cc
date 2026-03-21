@@ -279,7 +279,7 @@ void ActorTask::SetState(State new_state) {
         ui::UiEventDispatcher::ChangeTaskState{
             .task_id = id_, .old_state = old_state, .new_state = new_state});
   }
-  service_->NotifyTaskStateChanged(id_, state_);
+  service_->NotifyTaskStateChanged(*this);
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished || state_ == kCancelled || state_ == kFailed) {

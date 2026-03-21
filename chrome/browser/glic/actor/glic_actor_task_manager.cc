@@ -671,15 +671,13 @@ void GlicActorTaskManager::CanActOnWebChanged(bool can_act_on_web) {
   }
 }
 
-void GlicActorTaskManager::NotifyActorTaskStateChanged(
-    actor::TaskId task_id,
-    actor::ActorTask::State task_state) {
-  CHECK(!task_id.is_null());
-  if (current_task_id_ != task_id) {
+void GlicActorTaskManager::NotifyActorTaskStateChanged(actor::ActorTask& task) {
+  CHECK(!task.id().is_null());
+  if (current_task_id_ != task.id()) {
     return;
   }
 
-  if (actor::ActorTask::IsCompletedState(task_state)) {
+  if (task.IsCompleted()) {
     current_task_id_ = actor::TaskId();
     attempted_reload_after_crash_ = false;
     reload_observer_.reset();

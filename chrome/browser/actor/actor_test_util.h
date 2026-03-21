@@ -314,7 +314,7 @@ class ActorTaskStateWaiter {
   ~ActorTaskStateWaiter();
 
  private:
-  void StateChanged(TaskId task_id, ActorTask::State state);
+  void StateChanged(ActorTask& task);
 
   base::OnceClosure callback_;
   TaskId task_id_;

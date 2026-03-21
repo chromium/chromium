@@ -201,6 +201,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
   int originator_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(originator_contents);
   browser()->tab_strip_model()->ActivateTabAt(originator_index);
@@ -208,8 +209,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
             originator_contents);
 
   // Simulate an interruption state.
-  actor_service->NotifyTaskStateChanged(
-      task_id, actor::ActorTask::State::kPausedByActor);
+  task->Pause(/* from_actor = */ true);
 
   // The delegate should have caught the interruption and force the actuation
   // tab into focus.
@@ -239,21 +239,21 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
   content::WebContents* actuation_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   int originator_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(originator_contents);
   browser()->tab_strip_model()->ActivateTabAt(originator_index);
   // Simulate an interruption state.
-  actor_service->NotifyTaskStateChanged(
-      task_id, actor::ActorTask::State::kPausedByActor);
+  task->Pause(/* from_actor = */ true);
   // Verify actuation tab is focused due to the interruption.
   ASSERT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             actuation_contents);
 
   // Simulate the user resuming the task.
-  actor_service->NotifyTaskStateChanged(task_id,
-                                        actor::ActorTask::State::kActing);
+  task->Resume();
+  task->SetState(actor::ActorTask::State::kActing);
 
   // The delegate should have caught that the task was resumed and force the
   // originator tab into focus.

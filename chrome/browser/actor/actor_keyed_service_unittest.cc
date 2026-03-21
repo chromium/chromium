@@ -242,6 +242,27 @@ TEST_F(ActorKeyedServiceTest, SetsTaskSourceInfo) {
   EXPECT_EQ(actor_service->GetTask(task2)->source_info().id, kId2);
 }
 
+// Tests that GetActiveTasks() can be called from a TaskStateChangedCallback
+// without crashing, even when a task is completing.
+TEST_F(ActorKeyedServiceTest, GetActiveTasksDuringStateChangeCallback) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  TaskId id = actor_service->CreateTask(TestTaskSourceInfo(),
+                                        NoEnterprisePolicyChecker());
+
+  bool callback_called = false;
+  auto subscription = actor_service->AddTaskStateChangedCallback(
+      base::BindLambdaForTesting([&](ActorTask& task) {
+        if (ActorTask::IsCompletedState(task.GetState())) {
+          // This should not crash. Repro for crash in http://b/493610427.
+          actor_service->GetActiveTasks();
+          callback_called = true;
+        }
+      }));
+
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_TRUE(callback_called);
+}
+
 }  // namespace
 
 }  // namespace actor

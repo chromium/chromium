@@ -113,7 +113,7 @@ bool IsTaskInterrupted(actor::ActorTask::State new_state) {
 bool IsTaskResumed(actor::ActorTask::State old_state,
                    actor::ActorTask::State new_state) {
   return IsTaskInterrupted(old_state) &&
-         new_state == actor::ActorTask::State::kActing;
+         new_state == actor::ActorTask::State::kReflecting;
 }
 
 void ActivateTabForWebContents(content::WebContents* web_contents) {
@@ -251,8 +251,8 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 }
 
 void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
-    actor::TaskId task_id,
-    actor::ActorTask::State new_state) {
+    actor::ActorTask& task) {
+  const actor::ActorTask::State new_state = task.GetState();
   if (!find_form_task_id_ && new_state == actor::ActorTask::State::kCreated) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
@@ -270,7 +270,7 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     return;
   }
 
-  if (find_form_task_id_ && *find_form_task_id_ != task_id) {
+  if (find_form_task_id_ && *find_form_task_id_ != task.id()) {
     return;  // Ignore unrelated tasks
   }
 
@@ -393,23 +393,10 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
 }
 
 void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
-    actor::TaskId task_id,
-    actor::ActorTask::State new_state) {
+    actor::ActorTask& task) {
+  const actor::ActorTask::State new_state = task.GetState();
   if (!verification_task_id_) {
-    actor::ActorKeyedService* actor_service =
-        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
-            actuation_web_contents_->GetBrowserContext()));
-    CHECK(actor_service);
-
-    actor::ActorTask* actor_task =
-        actor_service->GetTaskFromTab(*tabs::TabInterface::MaybeGetFromContents(
-            actuation_web_contents_.get()));
-
-    if (!actor_task) {
-      return;
-    }
-
-    verification_task_id_ = actor_task->id();
+    verification_task_id_ = task.id();
     verification_task_created_ = true;
     // A task was created, so stopping the timer to not trigger
     // the password being saved.
@@ -418,7 +405,7 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
   }
 
   // Ignore unrelated tasks.
-  if (verification_task_id_ && *verification_task_id_ != task_id) {
+  if (verification_task_id_ && *verification_task_id_ != task.id()) {
     return;
   }
 

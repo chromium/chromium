@@ -147,12 +147,17 @@ class ActorKeyedService : public KeyedService,
   static std::optional<std::string> ExtractErrorMessageIfFailed(
       const TabObservationResult& result);
 
-  using TaskStateChangedCallback =
-      base::RepeatingCallback<void(TaskId, ActorTask::State)>;
+  using TaskStateChangedCallback = base::RepeatingCallback<void(ActorTask&)>;
+  // Registers a callback to be notified of state changes for any task. The
+  // callback receives a reference to the affected ActorTask. Note: For
+  // transitions to a completed state, the task is removed from the service's
+  // internal tracking before the callback is invoked. Consequently, the task
+  // will not be discoverable via GetTask() or GetActiveTasks() during this
+  // final notification.
   base::CallbackListSubscription AddTaskStateChangedCallback(
       TaskStateChangedCallback callback);
 
-  void NotifyTaskStateChanged(TaskId task_id, ActorTask::State state);
+  void NotifyTaskStateChanged(ActorTask& task);
 
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
@@ -212,7 +217,7 @@ class ActorKeyedService : public KeyedService,
 
   TaskId::Generator next_task_id_;
 
-  base::RepeatingCallbackList<void(TaskId, ActorTask::State)>
+  base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
 
   // Owns this.

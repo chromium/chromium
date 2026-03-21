@@ -823,13 +823,12 @@ ActorTaskStateWaiter::ActorTaskStateWaiter(base::OnceClosure callback,
 
 ActorTaskStateWaiter::~ActorTaskStateWaiter() = default;
 
-void ActorTaskStateWaiter::StateChanged(TaskId task_id,
-                                        ActorTask::State state) {
+void ActorTaskStateWaiter::StateChanged(ActorTask& task) {
   if (!callback_) {
     return;
   }
 
-  if (task_id_ == task_id && target_state_ == state) {
+  if (task_id_ == task.id() && target_state_ == task.GetState()) {
     std::move(callback_).Run();
   }
 }

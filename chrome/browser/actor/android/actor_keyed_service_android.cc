@@ -112,11 +112,11 @@ void ActorKeyedServiceAndroid::StopTask(JNIEnv* env,
                      static_cast<ActorTask::StoppedReason>(stop_reason));
 }
 
-void ActorKeyedServiceAndroid::OnTaskStateChanged(TaskId task_id,
-                                                  ActorTask::State state) {
+void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
   JNIEnv* env = AttachCurrentThread();
-  Java_ActorKeyedService_onTaskStateChanged(
-      env, java_obj_, task_id.GetUnsafeValue(), static_cast<int>(state));
+  Java_ActorKeyedService_onTaskStateChanged(env, java_obj_,
+                                            task.id().GetUnsafeValue(),
+                                            static_cast<int>(task.GetState()));
 }
 
 }  // namespace actor

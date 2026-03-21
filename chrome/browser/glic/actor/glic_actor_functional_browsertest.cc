@@ -96,12 +96,12 @@ GlicActorFunctionalBrowserTestBase::CreateTaskCompletionSubscription(
     TaskId for_task_id,
     TestFuture<ActorTask::State>& future) {
   return actor_keyed_service()->AddTaskStateChangedCallback(
-      base::BindLambdaForTesting(
-          [&future, for_task_id](TaskId task_id, ActorTask::State state) {
-            if (task_id == for_task_id && ActorTask::IsCompletedState(state)) {
-              future.SetValue(state);
-            }
-          }));
+      base::BindLambdaForTesting([&future, for_task_id](ActorTask& task) {
+        if (task.id() == for_task_id &&
+            ActorTask::IsCompletedState(task.GetState())) {
+          future.SetValue(task.GetState());
+        }
+      }));
 }
 
 ActorTask::State GlicActorFunctionalBrowserTestBase::GetActorTaskState(
@@ -248,12 +248,11 @@ void GlicActorFunctionalBrowserTestBase::WaitForTaskState(
   base::RunLoop run_loop;
   base::CallbackListSubscription subscription =
       actor_keyed_service()->AddTaskStateChangedCallback(
-          base::BindLambdaForTesting(
-              [&](TaskId task_id_param, ActorTask::State state) {
-                if (task_id_param == task_id && state == expected_state) {
-                  run_loop.Quit();
-                }
-              }));
+          base::BindLambdaForTesting([&](ActorTask& task) {
+            if (task.id() == task_id && task.GetState() == expected_state) {
+              run_loop.Quit();
+            }
+          }));
   run_loop.Run();
 }
 

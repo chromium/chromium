@@ -193,8 +193,7 @@ class IdentityDialogController
   // Whether to show FedCM UI or not.
   bool ShouldShowFedCmUi();
 
-  void OnActorTaskStateChanged(actor::TaskId task_id,
-                               actor::ActorTask::State state);
+  void OnActorTaskStateChanged(actor::ActorTask& task);
 
   void UpdateTaskId(actor::TaskId task_id);
 

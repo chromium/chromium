@@ -87,9 +87,10 @@ IdentityDialogController::IdentityDialogController(
 
 IdentityDialogController::~IdentityDialogController() = default;
 
-void IdentityDialogController::OnActorTaskStateChanged(
-    actor::TaskId task_id,
-    actor::ActorTask::State state) {
+void IdentityDialogController::OnActorTaskStateChanged(actor::ActorTask& task) {
+  const actor::TaskId task_id = task.id();
+  const actor::ActorTask::State state = task.GetState();
+
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(rp_web_contents_->GetBrowserContext());
   CHECK(actor_service);
@@ -100,10 +101,9 @@ void IdentityDialogController::OnActorTaskStateChanged(
     return;
   }
 
-  actor::ActorTask* task = actor_service->GetTask(task_id);
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(rp_web_contents_);
-  if (!tab || !task || !task->IsActingOnTab(tab->GetHandle())) {
+  if (!tab || !task.IsActingOnTab(tab->GetHandle())) {
     if (acting_task_id_ == task_id) {
       // The task we thought was acting on this tab is no longer active, so we
       // clear the task ID.
@@ -111,7 +111,7 @@ void IdentityDialogController::OnActorTaskStateChanged(
     }
     return;
   }
-  UpdateTaskId(task->IsUnderActorControl() ? task_id : actor::TaskId());
+  UpdateTaskId(task.IsUnderActorControl() ? task_id : actor::TaskId());
 }
 
 void IdentityDialogController::UpdateTaskId(actor::TaskId task_id) {

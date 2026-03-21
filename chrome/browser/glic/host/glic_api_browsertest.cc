@@ -1207,10 +1207,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
 
   base::test::TestFuture<actor::TaskId> task_created;
   base::CallbackListSubscription subscription =
-      actor_service->AddTaskStateChangedCallback(base::BindLambdaForTesting(
-          [&](actor::TaskId task_id, actor::ActorTask::State state) {
-            if (state == actor::ActorTask::State::kCreated) {
-              task_created.SetValue(task_id);
+      actor_service->AddTaskStateChangedCallback(
+          base::BindLambdaForTesting([&](actor::ActorTask& task) {
+            if (task.GetState() == actor::ActorTask::State::kCreated) {
+              task_created.SetValue(task.id());
             }
           }));
 

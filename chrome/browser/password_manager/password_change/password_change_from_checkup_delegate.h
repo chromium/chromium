@@ -58,16 +58,14 @@ class PasswordChangeFromCheckupDelegate {
 
   glic::GlicKeyedService* GetGlicService();
 
-  void OnFindFormTaskStateChanged(actor::TaskId task_id,
-                                  actor::ActorTask::State state);
+  void OnFindFormTaskStateChanged(actor::ActorTask& task);
 
   void OnChangePasswordFormManagerFound(
       password_manager::PasswordFormManager* form_manager);
   void OnChangePasswordFormSubmitted(
       ChangePasswordFormFillingSubmissionHelper::SubmissionResult result);
 
-  void OnVerificationTaskStateChanged(actor::TaskId task_id,
-                                      actor::ActorTask::State state);
+  void OnVerificationTaskStateChanged(actor::ActorTask& task);
   void OnVerificationTimeout();
   void HandleMaybeSuccessfulPasswordChange();
 

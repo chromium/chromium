@@ -1509,9 +1509,10 @@ ToastController* ChromeAutofillClient::GetToastController() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::OnActorTaskStateChange(
-    actor::TaskId task_id,
-    actor::ActorTask::State state) {
+void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
+  const actor::TaskId task_id = task.id();
+  const actor::ActorTask::State state = task.GetState();
+
   if (active_actor_task_ && *active_actor_task_ != task_id) {
     // The update is for an actor that isn't working on the current tab.
     return;
@@ -1525,23 +1526,8 @@ void ChromeAutofillClient::OnActorTaskStateChange(
     return;
   }
 
-  const actor::ActorTask* task =
-      actor::ActorKeyedService::Get(GetProfile())->GetTask(task_id);
-  // Since the callbacks are asynchronous and can be executed in any order. It
-  // may happen that the update notification is issued for a task that already
-  // finished.
-  if (!task) {
-    // Given the early return earlier in the function, it is guaranteed that if
-    // the `active_actor_task_` is set, its value is the same as `task_id`.
-    // Since fetching the `ActorTask` for `task_id` did not return any valid
-    // object and the `task_id`s are unique, the `ActorTask` that was active on
-    // this tab must have finished by now.
-    active_actor_task_.reset();
-    return;
-  }
-
   const tabs::TabInterface* tab_interface = GetTabInterface();
-  if (tab_interface && !task->HasTab(tab_interface->GetHandle())) {
+  if (tab_interface && !task.HasTab(tab_interface->GetHandle())) {
     // The status update is for an actor that isn't interacting with this tab.
     // The value of `is_actor_mode_` shouldn't be updated.
     return;

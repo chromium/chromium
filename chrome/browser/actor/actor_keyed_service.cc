@@ -377,9 +377,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
       std::move(ui_event_dispatcher), std::move(options), source_info,
       policy_checker, std::move(delegate));
 
-  const ActorTask::State task_state = actor_task->GetState();
   active_tasks_[task_id] = std::move(actor_task);
-  NotifyTaskStateChanged(task_id, task_state);
+  NotifyTaskStateChanged(*active_tasks_[task_id]);
   return task_id;
 }
 
@@ -388,15 +387,12 @@ base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(
   return task_state_change_callback_list_.Add(std::move(callback));
 }
 
-void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
-                                               ActorTask::State state) {
-  task_state_change_callback_list_.Notify(task_id, state);
-
-  if (ActorTask::IsCompletedState(state)) {
+void ActorKeyedService::NotifyTaskStateChanged(ActorTask& task) {
+  if (task.IsCompleted()) {
     // Remove a stopped task from the active_tasks_ list. Post this since this
     // call comes from the ActorTask so we don't want to delete it while it's on
     // the stack.
-    auto node = active_tasks_.extract(task_id);
+    auto node = active_tasks_.extract(task.id());
     if (!node.empty()) {
       pending_delete_tasks_.insert(std::move(node));
 
@@ -407,9 +403,11 @@ void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
             }
             self->pending_delete_tasks_.erase(task_id);
           },
-          GetWeakPtr(), task_id));
+          GetWeakPtr(), task.id()));
     }
   }
+
+  task_state_change_callback_list_.Notify(task);
 }
 
 void ActorKeyedService::RequestTabObservation(

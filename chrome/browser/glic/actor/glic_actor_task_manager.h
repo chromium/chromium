@@ -107,8 +107,7 @@ class GlicActorTaskManager {
   void ReloadObserverDone(tabs::TabHandle tab_handle,
                           base::OnceClosure callback,
                           actor::ObservationDelayController::Result result);
-  void NotifyActorTaskStateChanged(actor::TaskId task_id,
-                                   actor::ActorTask::State task_state);
+  void NotifyActorTaskStateChanged(actor::ActorTask& task);
   void StopTaskImpl(actor::TaskId task_id,
                     actor::ActorTask::StoppedReason reason);
 
