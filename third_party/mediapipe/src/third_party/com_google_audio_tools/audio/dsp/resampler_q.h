@@ -205,6 +205,7 @@
 #include "audio/dsp/eigen_types.h"
 #include "audio/dsp/resampler.h"
 #include "audio/dsp/types.h"
+#include "absl/log/absl_check.h"
 #include "absl/meta/type_traits.h"
 #include "third_party/eigen3/Eigen/Core"
 
