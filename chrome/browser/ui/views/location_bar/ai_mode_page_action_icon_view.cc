@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
@@ -25,10 +26,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -76,6 +79,26 @@ views::BubbleDialogDelegate* AiModePageActionIconView::GetBubble() const {
 
 const gfx::VectorIcon& AiModePageActionIconView::GetVectorIcon() const {
   return omnibox::kSearchSparkIcon;
+}
+
+void AiModePageActionIconView::UpdateIconImage() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  SkColor icon_color = GetActive()
+                           ? views::GetCascadingAccentColor(
+                                 const_cast<AiModePageActionIconView*>(this))
+                           : GetIconColor();
+  if (IconColorShouldMatchForeground()) {
+    icon_color = GetForegroundColor();
+  }
+
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          GetVectorIcon(), icon_color,
+          GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize)));
 }
 
 // This event handler exists because, on Mac, the <return> key doesn't activate
