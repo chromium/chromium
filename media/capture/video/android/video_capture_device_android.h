@@ -101,6 +101,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   void OnHardwareBufferAvailableOnMainThread(
       base::android::ScopedHardwareBufferHandle ahb_handle,
+      int32_t data_space,
       int32_t rotation,
       int64_t timestamp);
 
@@ -115,13 +116,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
                             int32_t width,
                             int32_t height,
                             int32_t rotation,
-                            int64_t timestamp);
+                            int64_t timestamp,
+                            int32_t data_space);
 
   // Implement
   // org.chromium.media.VideoCapture.Natives.onHardwareBufferAvailable.
   void OnHardwareBufferAvailable(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& hardwareBuffer,
+      int32_t data_space,
       int32_t rotation,
       int64_t timestamp);
 
@@ -169,7 +172,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
                                 int length,
                                 int rotation,
                                 base::TimeTicks reference_time,
-                                base::TimeDelta timestamp);
+                                base::TimeDelta timestamp,
+                                gfx::ColorSpace color_space);
 
  private:
   enum InternalState {
@@ -212,7 +216,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
   VideoCaptureFormat capture_format_;
-  gfx::ColorSpace capture_color_space_;
 
   // Java VideoCaptureAndroid instance.
   base::android::ScopedJavaLocalRef<jobject> j_capture_;

@@ -221,6 +221,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
                     throw new IllegalStateException();
                 }
 
+                int dataSpace = 0;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    dataSpace = image.getDataSpace();
+                }
+
                 if (mUseHardwareBuffers) {
                     try (HardwareBuffer hardwareBuffer = image.getHardwareBuffer()) {
                         if (hardwareBuffer == null) {
@@ -231,7 +236,10 @@ public class VideoCaptureCamera2 extends VideoCapture {
                             return;
                         }
                         onHardwareBufferAvailable(
-                                hardwareBuffer, getCameraRotation(), image.getTimestamp());
+                                hardwareBuffer,
+                                dataSpace,
+                                getCameraRotation(),
+                                image.getTimestamp());
                     }
                 } else {
                     if (image.getFormat() != ImageFormat.YUV_420_888
@@ -256,7 +264,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
                             image.getWidth(),
                             image.getHeight(),
                             getCameraRotation(),
-                            image.getTimestamp());
+                            image.getTimestamp(),
+                            dataSpace);
                 }
             } catch (IllegalStateException ex) {
                 Log.e(TAG, "acquireLatestImage():", ex);

@@ -309,7 +309,8 @@ public abstract class VideoCapture {
             int width,
             int height,
             int rotation,
-            long timestamp) {
+            long timestamp,
+            int dataSpace) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
                 VideoCaptureJni.get()
@@ -324,19 +325,21 @@ public abstract class VideoCapture {
                                 width,
                                 height,
                                 rotation,
-                                timestamp);
+                                timestamp,
+                                dataSpace);
             }
         }
     }
 
     protected void onHardwareBufferAvailable(
-            HardwareBuffer hardwareBuffer, int rotation, long timestamp) {
+            HardwareBuffer hardwareBuffer, int dataSpace, int rotation, long timestamp) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
                 VideoCaptureJni.get()
                         .onHardwareBufferAvailable(
                                 mNativeVideoCaptureDeviceAndroid,
                                 hardwareBuffer,
+                                dataSpace,
                                 rotation,
                                 timestamp);
             }
@@ -418,11 +421,13 @@ public abstract class VideoCapture {
                 int width,
                 int height,
                 int rotation,
-                long timestamp);
+                long timestamp,
+                int dataSpace);
 
         void onHardwareBufferAvailable(
                 long nativeVideoCaptureDeviceAndroid,
                 HardwareBuffer hardwareBuffer,
+                int dataSpace,
                 int rotation,
                 long timestamp);
 

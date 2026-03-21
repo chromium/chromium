@@ -4,6 +4,7 @@
 
 #include "media/capture/video/android/video_capture_device_android.h"
 
+#include <android/data_space.h>
 #include <android/hardware_buffer.h>
 #include <android/hardware_buffer_jni.h>
 #include <stdint.h>
@@ -113,6 +114,19 @@ void notifyVideoCaptureDeviceChanged() {
   }
 }
 
+gfx::ColorSpace ColorSpaceFromADataSpace(int32_t dataspace) {
+  // TODO(b/40626111): Add more color spaces, especially BT709 and BT601_625.
+  switch (dataspace) {
+    case ADATASPACE_JFIF:
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT470BG,
+                             gfx::ColorSpace::TransferID::SMPTE170M,
+                             gfx::ColorSpace::MatrixID::BT470BG,
+                             gfx::ColorSpace::RangeID::FULL);
+    default:
+      return gfx::ColorSpace::CreateREC601();
+  }
+}
+
 }  // anonymous namespace
 
 VideoCaptureDeviceAndroid::VideoCaptureDeviceAndroid(
@@ -163,10 +177,6 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
                   "failed to allocate");
     return;
   }
-
-  // TODO(julien.isorce): Use Camera.SENSOR_COLOR_TRANSFORM2 to build a
-  // gfx::ColorSpace. see http://crbug.com/959901.
-  capture_color_space_ = gfx::ColorSpace();
 
   capture_format_.frame_size.SetSize(
       Java_VideoCapture_queryWidth(env, j_capture_),
@@ -298,7 +308,8 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
     int32_t width,
     int32_t height,
     int32_t rotation,
-    int64_t timestamp) {
+    int64_t timestamp,
+    int32_t data_space) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceAndroid::OnI420FrameAvailable");
   if (!IsClientConfigured())
@@ -341,11 +352,12 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
                            dst_v_span.data(), width / 2, width, height);
 
   SendIncomingDataToClient(buffer.data(), buffer_length, rotation, current_time,
-                           capture_time);
+                           capture_time, ColorSpaceFromADataSpace(data_space));
 }
 
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
     base::android::ScopedHardwareBufferHandle ahb_handle,
+    int32_t data_space,
     int32_t rotation,
     int64_t timestamp) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -383,8 +395,6 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
       return;
   }
 
-  // TODO(crbug.com/467351937): Determine the correct color space.
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC601();
   VideoCaptureFormat format(gfx::Size(desc.width, desc.height),
                             capture_format_.frame_rate, video_pixel_format);
 
@@ -407,8 +417,9 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
   auto shared_image = sii->CreateSharedImage(
-      {shared_image_format, gfx::Size(desc.width, desc.height), color_space,
-       kSharedImageUsage, "AndroidCaptureDevice"},
+      {shared_image_format, gfx::Size(desc.width, desc.height),
+       ColorSpaceFromADataSpace(data_space), kSharedImageUsage,
+       "AndroidCaptureDevice"},
       std::move(gmb_handle));
 
   if (!shared_image) {
@@ -433,6 +444,7 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& hardware_buffer,
+    int32_t data_space,
     int32_t rotation,
     int64_t timestamp) {
   if (!IsClientConfigured()) {
@@ -453,12 +465,12 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(
         FROM_HERE,
         base::BindOnce(
             &VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread,
-            weak_ptr_factory_.GetWeakPtr(), std::move(ahb_handle), rotation,
-            timestamp));
+            weak_ptr_factory_.GetWeakPtr(), std::move(ahb_handle), data_space,
+            rotation, timestamp));
     return;
   }
-  OnHardwareBufferAvailableOnMainThread(std::move(ahb_handle), rotation,
-                                        timestamp);
+  OnHardwareBufferAvailableOnMainThread(std::move(ahb_handle), data_space,
+                                        rotation, timestamp);
 }
 
 void VideoCaptureDeviceAndroid::OnError(
@@ -719,13 +731,14 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
     int length,
     int rotation,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    gfx::ColorSpace color_space) {
   base::AutoLock lock(lock_);
   if (!client_)
     return;
   client_->OnIncomingCapturedData(
-      data, length, capture_format_, capture_color_space_, rotation,
-      false /* flip_y */, reference_time, timestamp,
+      data, length, capture_format_, color_space, rotation, false /* flip_y */,
+      reference_time, timestamp,
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
