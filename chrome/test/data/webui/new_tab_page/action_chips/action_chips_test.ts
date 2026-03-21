@@ -163,10 +163,10 @@ suite('NewTabPageActionChipsTest', () => {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
 
-    assertEquals('Suggestion for recent tab', event.detail.searchboxText);
-    assertTrue(!!event.detail.contextFiles);
-    assertEquals(1, event.detail.contextFiles.length);
-    assertDeepEquals(expectedTab, event.detail.contextFiles[0]);
+    assertEquals('Suggestion for recent tab', event.detail.text);
+    assertTrue(!!event.detail.files);
+    assertEquals(1, event.detail.files.length);
+    assertDeepEquals(expectedTab, event.detail.files[0]);
   });
 
   test('recent tab chip renders favicon', async () => {
@@ -241,7 +241,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for image', event.detail.searchboxText);
+      assertEquals('Suggestion for image', event.detail.text);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kBanana));
@@ -259,7 +259,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for deep search', event.detail.searchboxText);
+      assertEquals('Suggestion for deep search', event.detail.text);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
@@ -279,7 +279,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for recent tab', event.detail.searchboxText);
+      assertEquals('Suggestion for recent tab', event.detail.text);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kFavicon));
@@ -317,7 +317,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for deep dive', event.detail.searchboxText);
+      assertEquals('Suggestion for deep dive', event.detail.text);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
@@ -352,7 +352,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for canvas', event.detail.searchboxText);
+      assertEquals('Suggestion for canvas', event.detail.text);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,

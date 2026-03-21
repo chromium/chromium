@@ -16,10 +16,11 @@ import 'chrome://resources/cr_components/composebox/threads_rail.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement, ComposeboxState} from 'chrome://resources/cr_components/composebox/composebox.js';
+import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {OpenComposeboxEventDetail, SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
+import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
+import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -866,17 +867,12 @@ export class AppElement extends AppElementBase {
     return false;
   }
 
-  protected onActionChipClick_(e: CustomEvent<OpenComposeboxEventDetail>) {
+  protected onActionChipClick_(e: CustomEvent<ComposeboxState>) {
     this.onOpenComposebox_(e);
   }
 
-  protected onOpenComposebox_(e: CustomEvent<OpenComposeboxEventDetail>) {
-    this.composeboxState_ = {
-      text: e.detail.searchboxText,
-      files: e.detail.contextFiles,
-      mode: e.detail.mode,
-      model: e.detail.model,
-    };
+  protected onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
+    this.composeboxState_ = e.detail;
 
     this.toggleComposebox_();
   }

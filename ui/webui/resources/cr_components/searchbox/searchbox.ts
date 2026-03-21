@@ -12,7 +12,7 @@ import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 import './searchbox_input.js';
 
-import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {GlifAnimationState, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
@@ -62,13 +62,6 @@ interface ClickEventDetail {
   ctrlKey: boolean;
   metaKey: boolean;
   shiftKey: boolean;
-}
-
-export interface OpenComposeboxEventDetail {
-  searchboxText: string;
-  contextFiles: ContextualUpload[];
-  mode: ToolMode;
-  model: ModelMode;
 }
 
 export interface SearchboxElement {
@@ -781,9 +774,9 @@ export class SearchboxElement extends SearchboxElementBase implements
       assert(context);
       context.closeMenu();
     }
-    this.fire<OpenComposeboxEventDetail>('open-composebox', {
-      searchboxText: this.$.input.inputElement.value,
-      contextFiles: uploads,
+    this.fire<ComposeboxState>('open-composebox', {
+      text: this.$.input.inputElement.value,
+      files: uploads,
       mode: mode,
       model: model,
     });

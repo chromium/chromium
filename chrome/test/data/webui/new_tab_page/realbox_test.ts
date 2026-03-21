@@ -279,9 +279,9 @@ suite('NewTabPageRealboxNextTest', () => {
       composed: true,
     }));
     const event = await whenOpenComposeBox;
-    assertEquals(event.detail.contextFiles.length, 1);
-    assertEquals(event.detail.contextFiles[0].tabId, 1);
-    assertEquals(event.detail.contextFiles[0].title, 'title');
+    assertEquals(event.detail.files.length, 1);
+    assertEquals(event.detail.files[0].tabId, 1);
+    assertEquals(event.detail.files[0].title, 'title');
   });
 
   test('clicking deep search button opens composebox', async () => {
@@ -396,11 +396,11 @@ suite('NewTabPageRealboxNextTest', () => {
     const event = await whenOpenComposeBox;
 
     assertTrue(!!event);
-    assertEquals(event.detail.contextFiles.length, 2);
-    const file1 = event.detail.contextFiles[0];
+    assertEquals(event.detail.files.length, 2);
+    const file1 = event.detail.files[0];
     assertEquals('pasted.png', file1.file.name);
     assertEquals('image/png', file1.file.type);
-    const file2 = event.detail.contextFiles[1];
+    const file2 = event.detail.files[1];
     assertEquals('pasted.pdf', file2.file.name);
     assertEquals('application/pdf', file2.file.type);
     assertFalse((realbox.$.input as any).pastedInInput_);
