@@ -60,6 +60,7 @@ const char kExtensionsInstallVerification[] = "extensions-install-verification";
 const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 
 const char kAppsGalleryURL[] = "apps-gallery-url";
+const char kAppsGalleryDownloadURL[] = "apps-gallery-download-url";
 
 bool AreExtensionsOnChromeURLsAllowed() {
   if (base::FeatureList::IsEnabled(

@@ -145,6 +145,10 @@ extern const char kExtensionsNotWebstore[];
 // webstore APIs and giving it some special protections.
 extern const char kAppsGalleryURL[];
 
+// Overrides the URL that the webstore APIs download extensions from.
+// Note: the URL must contain one '%s' for the extension ID.
+extern const char kAppsGalleryDownloadURL[];
+
 // Checks if extensions are allowed to run on chrome:// URLs.
 bool AreExtensionsOnChromeURLsAllowed();
 

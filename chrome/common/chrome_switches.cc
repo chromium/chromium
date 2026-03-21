@@ -73,10 +73,6 @@ const char kAppRunOnOsLoginMode[] = "app-run-on-os-login-mode";
 // See chrome/app_shim/app_shim_main_delegate.mm.
 const char kAppShim[] = "app-shim";
 
-// Overrides the URL that the webstore APIs download extensions from.
-// Note: the URL must contain one '%s' for the extension ID.
-const char kAppsGalleryDownloadURL[] = "apps-gallery-download-url";
-
 // Overrides the update url used by webstore extensions.
 const char kAppsGalleryUpdateURL[] = "apps-gallery-update-url";
 

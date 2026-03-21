@@ -427,7 +427,7 @@ void FakeCWS::OverrideGalleryCommandlineSwitches() {
 
   GURL downloads_url =
       web_store_url_.Resolve(base::StrCat({kCrxDownloadPath, "%s.crx"}));
-  command_line->AppendSwitchASCII(::switches::kAppsGalleryDownloadURL,
+  command_line->AppendSwitchASCII(extensions::switches::kAppsGalleryDownloadURL,
                                   downloads_url.spec());
 
   GURL update_url = web_store_url_.Resolve(update_check_end_point_);
