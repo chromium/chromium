@@ -55,7 +55,7 @@ class CheckCargoTomlIsSortedTests(unittest.TestCase):
         msg = CheckCargoTomlIsSorted(cargo_toml)
         self.assertTrue(
             "Simple string entries should appear before table entries" in msg)
-        self.assertTrue("`xyz` should appear after `def`" in msg)
+        self.assertTrue("`xyz` should appear before `def`" in msg)
 
     def testSortedSimpleAndElaborate(self):
         cargo_toml = {
