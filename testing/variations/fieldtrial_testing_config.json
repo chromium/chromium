@@ -10545,6 +10545,23 @@
             ]
         }
     ],
+    "GlicAnchoredCues": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260320",
+                    "enable_features": [
+                        "UseAnchoredMessage"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicAutoOpenPdf": [
         {
             "platforms": [
