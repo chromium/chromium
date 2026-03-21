@@ -52,6 +52,8 @@ embedder.setUp_ = function(config) {
       '/extensions/platform_apps/web_view/shim/mailto.html';
   embedder.safeBrowsingDangerousURL = 'http://evil.com:' +
       config.testServer.port + '/title1.html';
+  embedder.testWebSocketPort = config.testWebSocketPort;
+  embedder.testWebTransportPort = config.testWebTransportPort;
 };
 
 window.runTest = function(testName) {
@@ -3721,6 +3723,61 @@ function testInsertIntoDetachedIframe() {
   document.body.appendChild(iframe);
 }
 
+// Chrome Platform Apps have a strict Content Security Policy (CSP) that
+// prohibits loading external scripts directly from a server. To bypass this
+// restriction for testing purposes, this method fetches the script as a Blob
+// and execute it via a Blob URL.
+// See: https://developer.chrome.com/docs/apps/app_external#external
+async function loadScript(url) {
+  const blob = await (await fetch(url)).blob();
+  const blobUrl = URL.createObjectURL(blob);
+  return new Promise((resolve, reject) => {
+    let script = document.createElement('script');
+    script.src = blobUrl;
+    script.addEventListener('load', () => {
+      URL.revokeObjectURL(blobUrl);
+      resolve();
+    });
+    script.addEventListener('error', (e) => {
+      URL.revokeObjectURL(blobUrl);
+      reject(e);
+    });
+    document.body.appendChild(script);
+  });
+}
+
+
+// This test verifies that requests from a <webview> are intercepted by the
+// webview.request API. It loads request_interception_coverage.js and calls
+// run_tests().
+async function testRequestInterceptionCoverage() {
+  try {
+    await loadScript(
+        embedder.baseGuestURL + '/webview/request_interception_coverage.js');
+    const expectedFailures = [
+      {title: 'Service Worker script', event: 'onBeforeRequest'},
+      {title: 'Fetch from Shared Worker', event: 'onBeforeRequest'},
+      {title: 'Fetch from Service Worker', event: 'onBeforeRequest'},
+      {title: 'WebSocket in Shared Worker', event: 'onBeforeRequest'},
+      {title: 'WebSocket in Service Worker', event: 'onBeforeRequest'},
+      {title: 'WebTransport in Shared Worker', event: 'onBeforeRequest'},
+      {title: 'WebTransport in Service Worker', event: 'onBeforeRequest'},
+    ];
+
+    const result = await run_tests(
+        'webview', embedder.baseGuestURL + '/', embedder.testWebSocketPort,
+        embedder.testWebTransportPort, expectedFailures.map(f => f.title));
+    const kExpectedResult =
+        expectedFailures.map(f => `${f.title}: not observed by ${f.event}`)
+            .join('\n');
+
+    embedder.test.assertEq(kExpectedResult, result);
+    embedder.test.succeed();
+  } catch (e) {
+    embedder.test.fail('Unexpected failure: ' + e.message);
+  }
+}
+
 // Calling `documentPictureInPicture.requestWindow` from a webview shouldn't
 // crash.
 function testPictureInPictureRequestWindow() {
@@ -4115,6 +4172,7 @@ embedder.test.testList = {
   'testBluetoothDisabled': testBluetoothDisabled,
   'testFileSystemAccessAvailable': testFileSystemAccessAvailable,
   'testCannotLockKeyboard': testCannotLockKeyboard,
+  'testRequestInterceptionCoverage': testRequestInterceptionCoverage,
   'testPictureInPictureRequestWindow': testPictureInPictureRequestWindow,
 };
 

@@ -64,11 +64,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -77,6 +77,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
@@ -135,6 +136,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -163,6 +165,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
@@ -185,7 +188,6 @@
 #include "ui/latency/latency_info.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/url_constants.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -5103,6 +5105,44 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestWebRequestBlockedNavigation) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
   TestHelper("testWebRequestBlockedNavigation", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
+// This test verifies that various types of network requests (defined in
+// chrome/test/data/webview/request_interception_coverage_guest.js) are
+// correctly intercepted by the extensions::WebRequestAPI. The same test logic
+// is executed across four different environments:
+// 1. Normal extension with WebRequest API permissions
+// 2. WebView embedded in an Extension  <<This test>>
+// 3. WebView embedded in a WebUI
+// 4. Controlled Frame in an Isolated Web App
+class WebViewInterceptionCoverageTest : public WebViewTestBase {
+ public:
+  WebViewInterceptionCoverageTest() = default;
+  ~WebViewInterceptionCoverageTest() override = default;
+
+  void SetUpOnMainThread() override {
+    WebViewTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(StartWebSocketServer());
+    GetTestConfig()->Set("testWebTransportPort",
+                         webtransport_server().server_address().port());
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebViewTestBase::SetUpCommandLine(command_line);
+    webtransport_server_.SetUpCommandLine(command_line);
+    webtransport_server_.Start();
+  }
+  content::WebTransportSimpleTestServer& webtransport_server() {
+    return webtransport_server_;
+  }
+
+ private:
+  content::WebTransportSimpleTestServer webtransport_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewInterceptionCoverageTest,
+                       Shim_TestRequestInterceptionCoverage) {
+  TestHelper("testRequestInterceptionCoverage", "web_view/shim",
              NEEDS_TEST_SERVER);
 }
 

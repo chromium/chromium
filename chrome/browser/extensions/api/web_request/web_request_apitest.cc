@@ -8695,6 +8695,23 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
                       GetWebSocketServer().GetURL("/echo-with-no-extension"));
 }
 
+// This test verifies that various types of network requests (defined in
+// chrome/test/data/webview/request_interception_coverage_guest.js) are
+// correctly intercepted by the extensions::WebRequestAPI. The same test logic
+// is executed across four different environments:
+// 1. Normal extension with WebRequest API permissions  <<This test>>
+// 2. WebView embedded in an Extension
+// 3. WebView embedded in a WebUI
+// 4. Controlled Frame in an Isolated Web App
+using ExtensionWebRequestApiCoverageTest =
+    ExtensionWebRequestApiWebTransportTest;
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiCoverageTest,
+                       RequestInterceptionCoverage) {
+  ASSERT_TRUE(StartWebSocketServer());
+  ASSERT_TRUE(RunTest("test_interception_coverage.html")) << message_;
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

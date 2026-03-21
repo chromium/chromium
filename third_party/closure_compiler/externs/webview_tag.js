@@ -200,6 +200,9 @@ var SelectionRect;
  */
 function WebRequestEventInterface() {}
 
+/** @type {!WebRequestOnAuthRequiredEvent} */
+WebRequestEventInterface.prototype.onAuthRequired;
+
 /** @type {!WebRequestOptionallySynchronousEvent} */
 WebRequestEventInterface.prototype.onBeforeRequest;
 

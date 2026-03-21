@@ -129,6 +129,10 @@ declare global {
       // Manually added to match the web_request.js Closure externs file.
       export interface WebRequestOptionallySynchronousEvent extends
           WebRequestBaseEvent<(obj: any) => BlockingResponse | null> {}
+      export interface WebRequestOnAuthRequiredEvent extends
+          WebRequestBaseEvent<
+              (obj: any, callback?: (response: BlockingResponse) => void) =>
+                  BlockingResponse | null> {}
 
       export enum IgnoredActionType {
         REDIRECT = 'redirect',

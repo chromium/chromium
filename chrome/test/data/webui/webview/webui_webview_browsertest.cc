@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -42,8 +43,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
@@ -203,6 +205,60 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
   std::unique_ptr<content::ScopedWebUIConfigRegistration>
       web_ui_config_registration_;
 };
+
+// This test verifies that various types of network requests (defined in
+// chrome/test/data/webview/request_interception_coverage_guest.js) are
+// correctly intercepted by the extensions::WebRequestAPI. The same test logic
+// is executed across four different environments:
+// 1. Normal extension with WebRequest API permissions
+// 2. WebView embedded in an Extension
+// 3. WebView embedded in a WebUI  <<This test>>
+// 4. Controlled Frame in an Isolated Web App
+class WebUIWebViewBrowserInterceptionCoverageTest
+    : public WebUIWebViewBrowserTest {
+ public:
+  WebUIWebViewBrowserInterceptionCoverageTest() = default;
+  ~WebUIWebViewBrowserInterceptionCoverageTest() override = default;
+
+  void SetUpOnMainThread() override {
+    WebUIWebViewBrowserTest::SetUpOnMainThread();
+    websocket_test_server_.AddDefaultHandlers(
+        chrome_test_utils::GetChromeTestDataDir());
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server_);
+    ASSERT_TRUE(websocket_test_server_.Start());
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIWebViewBrowserTest::SetUpCommandLine(command_line);
+    webtransport_server_.SetUpCommandLine(command_line);
+    webtransport_server_.Start();
+  }
+  net::EmbeddedTestServer& websocket_test_server() {
+    return websocket_test_server_;
+  }
+  content::WebTransportSimpleTestServer& webtransport_server() {
+    return webtransport_server_;
+  }
+
+ private:
+  net::EmbeddedTestServer websocket_test_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTP};
+  content::WebTransportSimpleTestServer webtransport_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserInterceptionCoverageTest,
+                       RequestInterceptionCoverage) {
+  ASSERT_TRUE(RunTestOnWebContents(
+      GetWebContentsForTesting(), "webview/webview_content_script_test.js",
+      base::StringPrintf("window.webviewUrl = '%s'; "
+                         "window.webSocketPort = %d; "
+                         "window.webTransportPort = %d; "
+                         "runMochaTest('WebviewContentScriptTest', '%s');",
+                         GetTestUrl("empty.html").spec().c_str(),
+                         websocket_test_server().port(),
+                         webtransport_server().server_address().port(),
+                         "RequestInterceptionCoverageTest"),
+      true));
+}
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
 // it.

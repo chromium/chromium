@@ -787,6 +787,88 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
       blink::mojom::WebFeature::kHTMLControlledFrameElement, 1);
 }
 
+// This test verifies that various types of network requests (defined in
+// chrome/test/data/webview/request_interception_coverage_guest.js) are
+// correctly intercepted by the extensions::WebRequestAPI. The same test logic
+// is executed across four different environments:
+// 1. Normal extension with WebRequest API permissions
+// 2. WebView embedded in an Extension
+// 3. WebView embedded in a WebUI
+// 4. Controlled Frame in an Isolated Web App  <<This test>>
+class ControlledFrameApiInterceptionCoverageTest
+    : public ControlledFrameApiTest {
+ public:
+  ControlledFrameApiInterceptionCoverageTest() = default;
+  ~ControlledFrameApiInterceptionCoverageTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ControlledFrameApiTest::SetUpOnMainThread();
+    websocket_test_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server_);
+    ASSERT_TRUE(websocket_test_server_.Start());
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ControlledFrameApiTest::SetUpCommandLine(command_line);
+    webtransport_server_.SetUpCommandLine(command_line);
+    webtransport_server_.Start();
+  }
+  net::EmbeddedTestServer& websocket_test_server() {
+    return websocket_test_server_;
+  }
+  content::WebTransportSimpleTestServer& webtransport_server() {
+    return webtransport_server_;
+  }
+
+ private:
+  net::EmbeddedTestServer websocket_test_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTP};
+  content::WebTransportSimpleTestServer webtransport_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiInterceptionCoverageTest,
+                       RequestInterceptionCoverage) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  std::string test_script_contents;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::ReadFileToString(
+        net::EmbeddedTestServer::GetFullPathFromSourceDirectory(
+            base::FilePath::FromASCII(
+                "chrome/test/data/webview/request_interception_coverage.js")),
+        &test_script_contents));
+  }
+
+  ASSERT_TRUE(ExecJs(app_frame, test_script_contents));
+  EXPECT_EQ(content::EvalJs(app_frame,
+                            content::JsReplace(
+                                R"(
+    (async () => {
+      const expectedFailures = [
+        {title: 'Service Worker script', event: 'onBeforeRequest'},
+        {title: 'Fetch from Shared Worker', event: 'onBeforeRequest'},
+        {title: 'Fetch from Service Worker', event: 'onBeforeRequest'},
+        {title: 'WebSocket in Shared Worker', event: 'onBeforeRequest'},
+        {title: 'WebSocket in Service Worker', event: 'onBeforeRequest'},
+        {title: 'WebTransport in Shared Worker', event: 'onBeforeRequest'},
+        {title: 'WebTransport in Service Worker', event: 'onBeforeRequest'},
+      ];
+      const result = await run_tests(
+          'controlledframe', $1, $2, $3, expectedFailures.map(f => f.title));
+      const expectedResult =
+          expectedFailures.map(f => f.title + ': not observed by ' + f.event)
+              .join('\n');
+      return result === expectedResult ? 'OK' : 'Unexpected result ' + result;
+    })()
+      )",
+                                embedded_https_test_server().base_url(),
+                                websocket_test_server().port(),
+                                webtransport_server().server_address().port())),
+            "OK");
+}
+
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
  public:
   void SetUpOnMainThread() override {

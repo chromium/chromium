@@ -33,6 +33,16 @@ suite('WebviewContentScriptTest', function() {
     return (window as unknown as Window & {webviewUrl: string}).webviewUrl;
   }
 
+  function getWebSocketPort(): number {
+    return (window as unknown as Window & {webSocketPort: number})
+        .webSocketPort;
+  }
+
+  function getWebTransportPort(): number {
+    return (window as unknown as Window & {webTransportPort: number})
+        .webTransportPort;
+  }
+
   test('ExecuteScriptCode', async () => {
     const webview = createWebview();
 
@@ -523,5 +533,97 @@ suite('WebviewContentScriptTest', function() {
     document.body.appendChild(webview);
     await whenLoadStop;
     await checkBackgroundColor(webview);
+  });
+
+  test('RequestInterceptionCoverageTest', async () => {
+    const kResultMessageType = 'TEST_RESULT';
+    const kObservedRequestMessageType = 'OBSERVED_REQUEST';
+    const kStartTestsMessageType = 'START_TESTS';
+
+    const webview =
+        document.createElement('webview') as chrome.webviewTag.WebView;
+
+    const whenLoadStop = new Promise<void>(resolve => {
+      webview.addEventListener('loadstop', () => resolve());
+    });
+
+    // Promise that resolves when the guest page sends its test results
+    // via the transferred port.
+    const testResultPromise = whenLoadStop.then(() => {
+      const channel = new MessageChannel();
+      const resultPromise = new Promise<string>((resolve) => {
+        channel.port1.onmessage = (e) => {
+          if (e.data.type === kResultMessageType) {
+            resolve(e.data.result);
+          }
+        };
+      });
+      webview.contentWindow!.postMessage(
+          {type: kStartTestsMessageType}, '*', [channel.port2]);
+      return resultPromise;
+    });
+
+    // Signals to the guest that a request has been observed.
+    const signalObservation = (url: string, event: string) => {
+      whenLoadStop.then(() => {
+        webview.contentWindow!.postMessage(
+            {type: kObservedRequestMessageType, data: {url, event}}, '*');
+      });
+    };
+
+
+    // Set up request interception for normal and WebSocket requests.
+    webview.request.onBeforeRequest.addListener((details: any) => {
+      signalObservation(details.url, 'onBeforeRequest');
+      return {};
+    }, {urls: ['*://*/*', 'ws://*/*']}, ['blocking']);
+
+    // Set up request interception for basic authentication.
+    webview.request.onAuthRequired.addListener((details: any) => {
+      signalObservation(details.url, 'onAuthRequired');
+      return {
+        authCredentials: {
+          username: 'test',
+          password: new URL(details.url).searchParams.get('password')!,
+        },
+      };
+    }, {urls: ['*://*/auth-basic*']}, ['blocking']);
+
+    // Construct guest URL with WebSocket and WebTransport ports.
+    const guestUrl = new URL(
+        './webview/request_interception_coverage_guest.html', getWebviewUrl());
+    guestUrl.searchParams.set('ws_port', getWebSocketPort().toString());
+    guestUrl.searchParams.set('wt_port', getWebTransportPort().toString());
+
+    const expectedFailures = [
+      {title: 'Service Worker script', event: 'onBeforeRequest'},
+      {title: 'Fetch from Shared Worker', event: 'onBeforeRequest'},
+      {title: 'Fetch from Service Worker', event: 'onBeforeRequest'},
+      {title: 'WebSocket', event: 'onBeforeRequest'},
+      {title: 'WebSocket in Dedicated Worker', event: 'onBeforeRequest'},
+      {title: 'WebSocket in Shared Worker', event: 'onBeforeRequest'},
+      {title: 'WebSocket in Service Worker', event: 'onBeforeRequest'},
+      {title: 'WebTransport', event: 'onBeforeRequest'},
+      {title: 'WebTransport in Dedicated Worker', event: 'onBeforeRequest'},
+      {title: 'WebTransport in Shared Worker', event: 'onBeforeRequest'},
+      {title: 'WebTransport in Service Worker', event: 'onBeforeRequest'},
+      {title: 'Auth request', event: 'onAuthRequired'},
+    ];
+    guestUrl.searchParams.set(
+        'expected_failures', expectedFailures.map(f => f.title).join(','));
+
+    webview.src = guestUrl.href;
+    document.body.appendChild(webview);
+
+    const result = await testResultPromise;
+
+    // Expected result indicates that several request types were NOT observed
+    // by the <webview> request interception API in this WebUI context.
+    const kExpectedResult =
+        expectedFailures.map(f => `${f.title}: not observed by ${f.event}`)
+            .join('\n');
+
+    assertEquals(
+        kExpectedResult, result, `Unexpected test results:\n${result}`);
   });
 });
