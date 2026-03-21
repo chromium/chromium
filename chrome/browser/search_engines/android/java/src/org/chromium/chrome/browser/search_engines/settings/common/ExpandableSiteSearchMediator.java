@@ -50,13 +50,6 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
         super(context, modelList, profile);
     }
 
-    @Override
-    public void onTemplateURLServiceChanged() {
-        mIsExpanded = false;
-        // Triggers refreshList() in the base class.
-        super.onTemplateURLServiceChanged();
-    }
-
     public boolean isExpandedForTesting() {
         return mIsExpanded;
     }
@@ -95,6 +88,10 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
      */
     protected void setUpMoreButtonIfNeeded(int numUrls) {
         if (numUrls <= DEFAULT_MAX_ROWS) {
+            // If the user originally had more than DEFAULT_MAX_ROWS items and the state is
+            // expanded, after refresh, the number of items becomes less than or equal to
+            // DEFAULT_MAX_ROWS, we should collapse the list.
+            mIsExpanded = false;
             return;
         }
         PropertyModel moreButtonModel =
@@ -104,6 +101,18 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
         moreButtonModel.set(
                 SiteSearchProperties.ON_CLICK, v -> onMoreButtonClicked(moreButtonModel));
         mModelList.add(new ListItem(SiteSearchProperties.ViewType.MORE, moreButtonModel));
+    }
+
+    /**
+     * Checks the current expanded state and expands the list if necessary. This method is typically
+     * called by subclasses after refreshList() or when handling click events that toggle the list's
+     * expanded state.
+     */
+    protected void maybeExpandListFromPreviousState() {
+        if (mIsExpanded) {
+            prepareExpandableItemsIfNeeded();
+            maybeAddExpandableItemsToModelList();
+        }
     }
 
     /**
@@ -121,8 +130,7 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
         moreButtonModel.set(SiteSearchProperties.IS_EXPANDED, mIsExpanded);
 
         if (mIsExpanded) {
-            prepareExpandableItemsIfNeeded();
-            maybeAddExpandableItemsToModelList();
+            maybeExpandListFromPreviousState();
         } else {
             // Dynamically calculate where the expandable items start by removing them from the
             // tail. This safely accounts for any buttons (Add, More) that might precede the
@@ -157,5 +165,9 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
 
     boolean areExpandableItemsEmptyForTesting() {
         return mExpandableItems.isEmpty();
+    }
+
+    boolean areStagedUrlsEmptyForTesting() {
+        return mStagedUrls.isEmpty();
     }
 }

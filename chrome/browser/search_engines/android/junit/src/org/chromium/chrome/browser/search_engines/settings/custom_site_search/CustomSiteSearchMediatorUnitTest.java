@@ -170,8 +170,14 @@ public class CustomSiteSearchMediatorUnitTest {
 
         mMediator.onTemplateURLServiceChanged();
 
-        assertFalse(mMediator.isExpandedForTesting());
-        verifyCollapsedModelListView(/* searchEngineCount= */ 7);
+        assertTrue(mMediator.isExpandedForTesting());
+        assertEquals(9, mModelList.size());
+        for (int i = 7; i < 9; i++) {
+            ListItem item = mModelList.get(i);
+            assertEquals(SiteSearchProperties.ViewType.SEARCH_ENGINE, item.type);
+            assertEquals("test site " + (i - 2), item.model.get(SiteSearchProperties.SITE_NAME));
+            assertEquals("keyword" + (i - 2), item.model.get(SiteSearchProperties.SITE_SHORTCUT));
+        }
     }
 
     @Test

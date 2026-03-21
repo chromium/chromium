@@ -42,6 +42,7 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
 
         populateTemplateUrls(urls);
         setUpMoreButtonIfNeeded(urls.size());
+        maybeExpandListFromPreviousState();
     }
 
     @Override
