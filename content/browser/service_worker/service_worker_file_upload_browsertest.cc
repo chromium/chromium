@@ -232,7 +232,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
-  int GetServiceWorkerProcessId() {
+  ChildProcessId GetServiceWorkerProcessId() {
     const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
         wrapper()->GetRunningServiceWorkerInfos();
     EXPECT_EQ(1u, infos.size());
@@ -269,9 +269,9 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     CHECK(NavigateToURL(shell(), page_url));
 
     if (IsDifferentProcessForced()) {
-      int page_process_id =
-          current_frame_host()->GetProcess()->GetDeprecatedID();
-      int worker_process_id = GetServiceWorkerProcessId();
+      ChildProcessId page_process_id =
+          current_frame_host()->GetProcess()->GetID();
+      ChildProcessId worker_process_id = GetServiceWorkerProcessId();
       CHECK_NE(page_process_id, worker_process_id);
     }
 

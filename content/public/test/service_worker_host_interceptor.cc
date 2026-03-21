@@ -25,7 +25,7 @@ blink::ServiceWorkerStatusCode
 ServiceWorkerHostInterceptor::InterceptServiceWorkerHostWithScope(
     BrowserContext* browser_context,
     const GURL& scope,
-    int* service_worker_process_id_out) {
+    ChildProcessId* service_worker_process_id_out) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ServiceWorkerContextWrapper> context =
       static_cast<ServiceWorkerContextWrapper*>(
@@ -73,9 +73,8 @@ void ServiceWorkerHostInterceptor::OnFoundRegistration(
     scoped_refptr<ServiceWorkerRegistration> registration) {
   status_ = status;
   service_worker_version_ = registration->active_version();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   service_worker_process_id_ =
-      service_worker_version_->embedded_worker()->process_id().GetUnsafeValue();
+      service_worker_version_->embedded_worker()->process_id();
   forwarding_interface_ =
       service_worker_version_->service_worker_host_receiver_for_testing()
           .SwapImplForTesting(this);

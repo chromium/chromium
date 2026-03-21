@@ -1248,7 +1248,8 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
   }
 }
 
-bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
+bool ServiceWorkerVersion::IsControlleeProcessID(
+    ChildProcessId process_id) const {
   for (const auto& controllee : controllee_map_) {
     if (controllee.second && controllee.second->GetProcessId() == process_id) {
       return true;
@@ -3150,7 +3151,7 @@ ServiceWorkerVersion::TakeComparedScriptInfo(const GURL& script_url) {
 }
 
 bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
-    int worker_process_id) const {
+    ChildProcessId worker_process_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Currently FetchEvents are the only type of event we need to really process
@@ -3169,7 +3170,8 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
   // service workers.  The impact of foreground service workers is further
   // limited by the automatic shutdown mechanism.
   for (const auto& controllee : controllee_map_) {
-    const int controllee_process_id = controllee.second->GetProcessId();
+    const ChildProcessId controllee_process_id =
+        controllee.second->GetProcessId();
     RenderProcessHost* render_host =
         RenderProcessHost::FromID(controllee_process_id);
 

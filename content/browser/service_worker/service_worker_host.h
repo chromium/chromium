@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -68,7 +69,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
 
   ~ServiceWorkerHost() override;
 
-  int worker_process_id() const { return worker_process_id_; }
+  ChildProcessId worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
   const blink::ServiceWorkerToken& token() const { return token_; }
 
@@ -79,7 +80,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   // Completes initialization of this provider host. It is called once a
   // renderer process has been found to host the worker.
   void CompleteStartWorkerPreparation(
-      int process_id,
+      ChildProcessId process_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           broker_receiver,
       mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
@@ -146,7 +147,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   RenderProcessHost* GetProcessHost() const;
 
  private:
-  int worker_process_id_;
+  ChildProcessId worker_process_id_;
 
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.

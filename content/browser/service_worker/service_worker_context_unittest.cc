@@ -1122,7 +1122,7 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
 }
 
 TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
-  const int kRenderProcessId2 = 2;
+  const ChildProcessId kRenderProcessId2(2);
   const GURL kOrigin1 = GURL("https://www.example.com/");
   const GURL kOrigin2 = GURL("https://another-origin.example.net/");
   const blink::StorageKey kKey1 =

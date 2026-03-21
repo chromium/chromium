@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -46,7 +47,7 @@ class ServiceWorkerHostInterceptor
   blink::ServiceWorkerStatusCode InterceptServiceWorkerHostWithScope(
       BrowserContext* browser_context,
       const GURL& scope,
-      int* service_worker_process_id_out);
+      ChildProcessId* service_worker_process_id_out);
 
   // This method can be overridden to change the |url| of the payment handler
   // window or to prevent the OpenPaymentHandlerWindow call from going through
@@ -72,7 +73,7 @@ class ServiceWorkerHostInterceptor
 
   blink::ServiceWorkerStatusCode status_ =
       blink::ServiceWorkerStatusCode::kErrorFailed;
-  int service_worker_process_id_ = -1;
+  ChildProcessId service_worker_process_id_;
   raw_ptr<ServiceWorkerVersion, AcrossTasksDanglingUntriaged>
       service_worker_version_ = nullptr;
   raw_ptr<blink::mojom::ServiceWorkerHost, AcrossTasksDanglingUntriaged>

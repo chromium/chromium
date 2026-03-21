@@ -45,6 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -660,7 +661,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   // Called by the EmbeddedWorkerInstance to determine if its worker process
   // should be kept at foreground priority.
-  bool ShouldRequireForegroundPriority(int worker_process_id) const;
+  bool ShouldRequireForegroundPriority(ChildProcessId worker_process_id) const;
 
   // Called when a controlled client's state changes in a way that might effect
   // whether the service worker should be kept at foreground priority.
@@ -694,7 +695,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void InitializeGlobalScope();
 
   // Returns true if |process_id| is a controllee process ID of this version.
-  bool IsControlleeProcessID(int process_id) const;
+  bool IsControlleeProcessID(ChildProcessId process_id) const;
 
   // Executes the given `script` in the associated worker. If `callback` is
   // non-empty, invokes `callback` with the result of the script after

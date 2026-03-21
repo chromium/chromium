@@ -142,8 +142,7 @@ class ServiceWorkerProcessBrowserTest
         wrapper()->GetRunningServiceWorkerInfos();
     DCHECK_EQ(infos.size(), 1u);
     const ServiceWorkerRunningInfo& info = infos.begin()->second;
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    return ChildProcessId::FromUnsafeValue(info.render_process_id);
+    return info.render_process_id;
   }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }

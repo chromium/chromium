@@ -483,11 +483,9 @@ void ServiceWorkerContextWrapper::OnStarted(
   ServiceWorkerRunningInfo::ServiceWorkerVersionStatus version_status =
       version ? GetRunningInfoVersionStatusForStatus(version->status())
               : ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kUnknown;
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
-      version_id, ServiceWorkerRunningInfo(script_url, scope, key,
-                                           process_id.GetUnsafeValue(), token,
-                                           version_status)));
+      version_id, ServiceWorkerRunningInfo(script_url, scope, key, process_id,
+                                           token, version_status)));
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;

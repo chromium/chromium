@@ -10,7 +10,7 @@ ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
     const GURL& script_url,
     const GURL& scope,
     const blink::StorageKey& key,
-    int64_t render_process_id,
+    ChildProcessId render_process_id,
     const blink::ServiceWorkerToken& token,
     ServiceWorkerVersionStatus version_status)
     : script_url(script_url),

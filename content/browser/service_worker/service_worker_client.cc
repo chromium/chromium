@@ -135,7 +135,6 @@ ServiceWorkerClient::ServiceWorkerClient(
       is_parent_frame_secure_(is_parent_frame_secure),
       is_initiated_by_prefetch_(false),
       client_info_(ServiceWorkerClientInfo()),
-      process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
       ongoing_navigation_frame_tree_node_id_(
           ongoing_navigation_frame_tree_node_id) {
   DCHECK(context_);
@@ -153,7 +152,6 @@ ServiceWorkerClient::ServiceWorkerClient(
       is_parent_frame_secure_(is_parent_frame_secure),
       is_initiated_by_prefetch_(true),
       client_info_(ServiceWorkerClientInfo()),
-      process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
       network_url_loader_factory_for_prefetch_(
           std::move(network_url_loader_factory_for_prefetch)) {
   DCHECK(context_);
@@ -161,7 +159,7 @@ ServiceWorkerClient::ServiceWorkerClient(
 
 ServiceWorkerClient::ServiceWorkerClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    int process_id,
+    ChildProcessId process_id,
     ServiceWorkerClientInfo client_info)
     : context_(std::move(context)),
       owner_(context_->service_worker_client_owner()),
@@ -174,7 +172,7 @@ ServiceWorkerClient::ServiceWorkerClient(
   DCHECK(context_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(process_id_for_worker_client_, ChildProcessHost::kInvalidUniqueID);
+  DCHECK(process_id_for_worker_client_);
 }
 
 ServiceWorkerClient::~ServiceWorkerClient() {
@@ -225,8 +223,7 @@ void ServiceWorkerClient::EnsureFileAccess(
   if (version) {
     ChildProcessId controller_process_id =
         version->embedded_worker()->process_id();
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    ChildProcessId process_id = ChildProcessId::FromUnsafeValue(GetProcessId());
+    ChildProcessId process_id = GetProcessId();
 
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
@@ -800,10 +797,9 @@ GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
   return std::get<GlobalRenderFrameHostId>(client_info_);
 }
 
-int ServiceWorkerClient::GetProcessId() const {
+ChildProcessId ServiceWorkerClient::GetProcessId() const {
   if (IsContainerForWindowClient()) {
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    return GetRenderFrameHostId().child_id.GetUnsafeValue();
+    return GetRenderFrameHostId().child_id;
   }
   DCHECK(IsContainerForWorkerClient());
   return process_id_for_worker_client_;

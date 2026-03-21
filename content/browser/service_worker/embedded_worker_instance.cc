@@ -594,9 +594,8 @@ void EmbeddedWorkerInstance::SendStartWorker(
   inflight_start_info_->start_worker_sent_time = base::TimeTicks::Now();
 
   // The host must be alive as long as |params->provider_info| is alive.
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   owner_version_->worker_host()->CompleteStartWorkerPreparation(
-      process_id().GetUnsafeValue(),
+      process_id(),
       params->provider_info->browser_interface_broker
           .InitWithNewPipeAndPassReceiver(),
       params->interface_provider.InitWithNewPipeAndPassRemote());
@@ -776,8 +775,8 @@ void EmbeddedWorkerInstance::UpdateForegroundPriority() {
   }
 
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (process_handle_ && owner_version_->ShouldRequireForegroundPriority(
-                             process_id().GetUnsafeValue())) {
+  if (process_handle_ &&
+      owner_version_->ShouldRequireForegroundPriority(process_id())) {
     NotifyForegroundServiceWorkerAdded();
   } else {
     NotifyForegroundServiceWorkerRemoved();

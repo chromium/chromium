@@ -690,11 +690,9 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
           helper_->context()->AsWeakPtr());
   registration1_->SetActiveVersion(version);
 
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
-      helper_->mock_render_process_id().GetUnsafeValue(),
-      true /* is_parent_frame_secure */, *version,
-      helper_->context()->AsWeakPtr());
+      helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
+      *version, helper_->context()->AsWeakPtr());
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
   ServiceWorkerTestContentBrowserClient test_browser_client;
@@ -1009,7 +1007,6 @@ class ServiceWorkerContainerHostTestByClientType
  public:
   ServiceWorkerContainerHostTestByClientType() = default;
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   ScopedServiceWorkerClient CreateClient() {
     switch (GetParam()) {
       case ClientType::kWindow:
@@ -1304,11 +1301,9 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
             helper_->context()->AsWeakPtr());
     registration1_->SetActiveVersion(version);
 
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     worker_host = CreateServiceWorkerHost(
-        helper_->mock_render_process_id().GetUnsafeValue(),
-        true /* is_parent_frame_secure */, *version,
-        helper_->context()->AsWeakPtr());
+        helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
+        *version, helper_->context()->AsWeakPtr());
     ASSERT_TRUE(worker_host);
   }
   {

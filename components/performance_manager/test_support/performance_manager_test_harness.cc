@@ -295,8 +295,8 @@ PerformanceManagerTestHarness::ServiceWorkerFactory::StartServiceWorker(
     const ProcessNode* process_node,
     const GURL& worker_url,
     const GURL& scope_url) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
+  content::ChildProcessId worker_process_id =
+      process_node->GetRenderProcessHostId();
 
   // Create a new token for the worker.
   blink::ServiceWorkerToken token;

@@ -5819,7 +5819,7 @@ void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
     // TODO(crbug.com/40805534): It appears that some times `version` is
     // nullptr here, but we don't know why.  Once that is solved revert this
     // runtime check back to a DCHECK.
-    if (version && version->IsControlleeProcessID(GetDeprecatedID())) {
+    if (version && version->IsControlleeProcessID(GetID())) {
       version->UpdateForegroundPriority();
       break;
     }

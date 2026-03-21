@@ -461,9 +461,8 @@ ScopedServiceWorkerClient
 ServiceWorkerClientOwner::CreateServiceWorkerClientForWorker(
     ChildProcessId process_id,
     ServiceWorkerClientInfo client_info) {
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue().
-  auto client = std::make_unique<ServiceWorkerClient>(
-      context_->AsWeakPtr(), process_id.GetUnsafeValue(), client_info);
+  auto client = std::make_unique<ServiceWorkerClient>(context_->AsWeakPtr(),
+                                                      process_id, client_info);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))

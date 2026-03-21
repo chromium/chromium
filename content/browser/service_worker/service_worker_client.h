@@ -21,6 +21,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
@@ -73,7 +74,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
-                      int process_id,
+                      ChildProcessId process_id,
                       ServiceWorkerClientInfo client_info);
 
   ServiceWorkerClient(const ServiceWorkerClient& other) = delete;
@@ -288,7 +289,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // For service worker clients. For window clients, this is not populated until
   // after navigation commit.
-  int GetProcessId() const;
+  ChildProcessId GetProcessId() const;
 
   // For service worker window clients.
   // Returns the ongoing navigation request before the navigation commit starts.
@@ -610,7 +611,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // set during initialization. Use `GetProcessId()` instead of directly
   // accessing `process_id_for_worker_client_` to avoid using a wrong process
   // id.
-  const int process_id_for_worker_client_;
+  const ChildProcessId process_id_for_worker_client_;
 
   // For window clients only ---------------------------------------------------
 

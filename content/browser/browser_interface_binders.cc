@@ -392,12 +392,10 @@ void BindFileUtilitiesHost(
     mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&FileUtilitiesHostImpl::Create,
-                                       content::ChildProcessId::FromUnsafeValue(
-                                           host->worker_process_id()),
-                                       std::move(receiver)));
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FileUtilitiesHostImpl::Create, host->worker_process_id(),
+                     std::move(receiver)));
 }
 
 // The following two functions bind the RenderFrameHost ID, the storage key, and

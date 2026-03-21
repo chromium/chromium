@@ -339,11 +339,13 @@ void WorkerWatcher::OnVersionStartedRunning(
     const content::ServiceWorkerRunningInfo& running_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   const auto& [it, node_inserted] = service_worker_nodes_.emplace(
-      version_id, PerformanceManagerImpl::CreateWorkerNode(
-                      browser_context_id_, WorkerNode::WorkerType::kService,
-                      GetProcessNode(running_info.render_process_id),
-                      running_info.token, running_info.key.origin()));
+      version_id,
+      PerformanceManagerImpl::CreateWorkerNode(
+          browser_context_id_, WorkerNode::WorkerType::kService,
+          GetProcessNode(running_info.render_process_id.GetUnsafeValue()),
+          running_info.token, running_info.key.origin()));
   DCHECK(node_inserted);
   WorkerNodeImpl* worker_node = it->second.get();
 

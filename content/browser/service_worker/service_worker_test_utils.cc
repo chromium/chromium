@@ -444,7 +444,7 @@ ScopedServiceWorkerClient CreateServiceWorkerClient(
 }
 
 std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
-    int process_id,
+    ChildProcessId process_id,
     bool is_parent_frame_secure,
     ServiceWorkerVersion& hosted_version,
     base::WeakPtr<ServiceWorkerContextCore> context) {
