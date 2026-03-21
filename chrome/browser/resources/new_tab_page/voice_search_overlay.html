@@ -8,7 +8,7 @@
       <div text="waiting">$i18n{waiting}</div>
       <div text="speak" class="display-stack">
         <div id="speak">$i18n{speak}</div>
-        <div id="listening">$i18n{listening}</div>
+        <div id="listening">$i18n{voiceListening}</div>
       </div>
       <div text="result" aria-hidden="true">
         <span id="finalResult">${this.finalResult_}</span>
@@ -20,7 +20,7 @@
           <span error="no-speech">$i18n{noVoice}</span>
           <span error="audio-capture">$i18n{audioError}</span>
           <span error="network">$i18n{networkError}</span>
-          <span error="not-allowed">$i18n{permissionError}</span>
+          <span error="not-allowed">$i18n{voicePermissionError}</span>
           <span error="language-not-supported">$i18n{languageError}</span>
           <span error="no-match">$i18n{noTranslation}</span>
           <span error="other">$i18n{otherError}</span>
@@ -37,7 +37,7 @@
           <a link="details" target="_blank" href="${this.helpUrl_}"
               @keydown="${this.onLinkKeydown_}"
               aria-label="$i18nPolymer{learnMoreA11yLabel}"><!--
-            -->$i18n{details}
+            -->$i18n{voiceDetails}
           </a>
           <a link="try-again" id="retryLink" href="#"
               @click="${this.onTryAgainClick_}"
@@ -59,6 +59,6 @@
       </div>
     </div>
   </div>
-  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
+  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{voiceClose}">
   </cr-icon-button>
 </dialog>
