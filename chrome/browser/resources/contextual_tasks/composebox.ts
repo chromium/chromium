@@ -304,6 +304,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     return this.isZeroState;
   }
 
+  protected get dropdownNeeded_() {
+    return !this.showSuggestions_;
+  }
+
   get showLensButton_() {
     return this.isSidePanel;
   }
@@ -345,14 +349,17 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       e.preventDefault();
       e.stopPropagation();
     }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
-  private updateSelection_(index: number) {
-    this.selectedMatchIndex_ = index;
-  }
-
+  // TODO(crbug.com/:494603388): This function definition should be updated: It should be
+  // `FocusIn` and use `CustomEvent<number>`. However, this means `composebox_match.ts`
+  // and its event needs to be updated, too.
   protected onMatchFocusin_(e: CustomEvent<{index: number}>) {
-    this.updateSelection_(e.detail.index);
+    this.selectedMatchIndex_ = e.detail.index;
   }
 
   private navigateToMatch_(index: number) {

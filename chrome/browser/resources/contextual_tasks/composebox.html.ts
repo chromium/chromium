@@ -56,7 +56,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .suggestionActivityEnabled="${false}"
           .disableCaretColorAnimation="${!this.caretAnimationsEnabled_}"
           .inputPlaceholderOverride="${this.getInputPlaceholder_()}"
-          .isInCoBrowsingZeroState="${this.isZeroState}"
+          .dropdownNeeded="${this.dropdownNeeded_}"
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"

@@ -862,4 +862,91 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     // File hint should take precedence over overlay hint.
     assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
   });
+
+  test('Arrow in zero state is ignored in full tab', async () => {
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    testProxy.handler.setIsShownInTab(true);
+
+    testProxy.callbackRouterRemote.onSidePanelStateChanged();
+    await microtasksFinished();
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+
+    composebox.dispatchEvent(event);
+    await microtasksFinished();
+
+    // DropdownNeeded by default is supposed to be false, so arrow
+    // keys should be ignored.
+    assertEquals(
+        composebox.input, '',
+        'Input should not change since arrow down does not select suggestion');
+    assertEquals(
+        composebox.selectedMatchIndex_, -1,
+        'No suggestion should be selected on arrow down in zero state full tab');
+    const event2 = new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+
+    composebox.dispatchEvent(event2);
+    await microtasksFinished();
+
+    assertEquals(
+        composebox.input, '',
+        'Input should not change since arrow up does not select suggestion');
+    assertEquals(
+        composebox.selectedMatchIndex_, -1,
+        'No suggestion should be selected on arrow up in zero state full tab');
+  });
+
+  test('Arrow in zero state is ignored in side panel', async () => {
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    testProxy.handler.setIsShownInTab(false);  // side panel
+
+    testProxy.callbackRouterRemote.onSidePanelStateChanged();
+    await microtasksFinished();
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+
+    composebox.dispatchEvent(event);
+    await microtasksFinished();
+
+    // DropdownNeeded by default is supposed to be false, so arrow
+    // keys should be ignored.
+    assertEquals(
+        composebox.input, '',
+        'Input should not change since arrow down does not select suggestion');
+    assertEquals(
+        composebox.selectedMatchIndex_, -1,
+        'No suggestion should be selected on arrow down in zero state full tab');
+    const event2 = new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+
+    composebox.dispatchEvent(event2);
+    await microtasksFinished();
+
+    assertEquals(
+        composebox.input, '',
+        'Input should not change since arrow up does not select suggestion');
+    assertEquals(
+        composebox.selectedMatchIndex_, -1,
+        'No suggestion should be selected on arrow up in zero state full tab');
+  });
+
 });

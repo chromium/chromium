@@ -273,6 +273,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       isFollowupQuery: {type: Boolean},
       shouldShowGhostFiles: {type: Boolean},
       enableFileHint: {type: Boolean},
+      dropdownNeeded: {type: Boolean},
     };
   }
 
@@ -297,14 +298,19 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
-  protected accessor tabSuggestions_: TabInfo[] = [];
   accessor lensButtonDisabled: boolean = false;
+  // If linked to `showDropdown`, then matches will not be propagated upwards to
+  // parent component. This is purely to hide cr composebox's dropdown, while
+  // `showDropdown` seems to be affecting the presence of matches in `result_`.
+  accessor dropdownNeeded: boolean = true;
+
   // Set this to true in parent component if it is desired
   // to show files that are not in the file map when
   // file status is updated from backend. Ghost files will be
   // shown as image chip with spinner in file carousel.
   accessor shouldShowGhostFiles: boolean = false;
   protected isRtl_: boolean = document.documentElement.dir === 'rtl';
+  protected accessor tabSuggestions_: TabInfo[] = [];
 
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
@@ -1694,6 +1700,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private handleArrowKey_(e: KeyboardEvent) {
+    if (!this.dropdownNeeded) {
+      return;
+    }
     if (this.isFocusInInput_() && !this.showDropdown_) {
       return;
     }
@@ -1723,7 +1732,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return;
     }
 
-    if (this.hasMatches_() && !hasKeyModifiers(e)) {
+    if (this.hasMatches_() && this.dropdownNeeded && !hasKeyModifiers(e)) {
       // If focus goes past the last match, unselect the last match.
       if (this.selectedMatchIndex_ === this.result_!.matches.length - 1) {
         if (this.selectedMatch_!.supportsDeletion) {
@@ -1757,7 +1766,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private handlePageNavigation_(e: KeyboardEvent) {
-    if (!this.hasMatches_() || hasKeyModifiers(e)) {
+    if (!this.hasMatches_() || !this.dropdownNeeded || hasKeyModifiers(e)) {
       return;
     }
 

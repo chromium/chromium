@@ -134,7 +134,7 @@ export function getHtml(this: ComposeboxElement) {
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
               @match-focusin="${this.onMatchFocusin_}"
               @match-click="${this.onMatchClick_}"
-              ?hidden="${!this.showDropdown_}"
+              ?hidden="${!this.showDropdown_ || !this.dropdownNeeded}"
               .lastQueriedInput="${this.lastQueriedInput_}">
           </cr-composebox-dropdown>
           ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
