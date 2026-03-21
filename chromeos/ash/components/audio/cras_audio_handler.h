@@ -20,6 +20,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_metrics_handler.h"
@@ -47,6 +48,7 @@ class SingleThreadTaskRunner;
 namespace ash {
 
 class AudioDevicesPrefHandler;
+class VideoCaptureObserverProxy;
 
 // Callback to handle response of methods without result.
 // |result| is true if the method call is successfully completed, otherwise
@@ -75,7 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     : public CrasAudioClient::Observer,
       public ui::MicrophoneMuteSwitchMonitor::Observer,
       public AudioPrefObserver,
-      public media::VideoCaptureObserver,
       public media_session::mojom::MediaControllerObserver {
  public:
   typedef std::vector<uint64_t> NodeIdList;
@@ -322,10 +323,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   CrasAudioHandler(const CrasAudioHandler&) = delete;
   CrasAudioHandler& operator=(const CrasAudioHandler&) = delete;
-
-  // Overrides media::VideoCaptureObserver.
-  void OnVideoCaptureStarted(media::VideoFacingMode facing) override;
-  void OnVideoCaptureStopped(media::VideoFacingMode facing) override;
 
   // Overrides media_session::mojom::MediaControllerObserver.
   void MediaSessionInfoChanged(
@@ -785,6 +782,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Simulate number of ARC streams changing in a test.
   void SetNumberOfArcStreamsForTesting(int32_t num);
 
+  // Returns a `media::VideoCaptureObserver` that forwards events to this
+  // `CrasAudioHandler`. The observer must be deleted on `io_task_runner`.
+  media::VideoCaptureObserver* GetVideoCaptureObserver(
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
  protected:
   CrasAudioHandler(
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>
@@ -799,10 +801,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
  private:
   friend class CrasAudioHandlerTest;
+  friend class VideoCaptureObserverProxy;
 
   // A helper function to set up CrasAudioHandler.
   void SetupCrasAudioHandler(
       scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
+
+  void OnVideoCaptureStarted(media::VideoFacingMode facing);
+  void OnVideoCaptureStopped(media::VideoFacingMode facing);
 
   // CrasAudioClient::Observer overrides.
   void AudioClientRestarted() override;
@@ -1157,6 +1163,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // return true.
   bool ActivateMostRecentActiveDevice(bool is_input);
 
+  base::WeakPtr<CrasAudioHandler> GetWeakPtr();
+
   // Static helper function to abstract the |AudioSurvey| from input
   // |survey_specific_data|.
   static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
@@ -1283,6 +1291,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   int32_t num_arc_streams_ = 0;
 
   std::unique_ptr<Delegate> delegate_;
+
+  // A proxy observer that lives on the IO thread and forwards video capture
+  // notifications to this handler on the UI thread.
+  std::unique_ptr<media::VideoCaptureObserver, base::OnTaskRunnerDeleter>
+      video_capture_observer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };

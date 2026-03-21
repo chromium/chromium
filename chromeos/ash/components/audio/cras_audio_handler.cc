@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_encoding.h"
@@ -84,6 +85,42 @@ bool IsMicrophoneMuteSwitchOn() {
 
 }  // namespace
 
+// A proxy class that implements `media::VideoCaptureObserver` and forwards
+// notifications to `CrasAudioHandler` on the UI thread. This is used to handle
+// the case where `CrasAudioHandler` lives on the UI thread but is registered as
+// a `VideoCaptureObserver` on the IO thread. By using this proxy, we ensure
+// that the thread affinity of the `CheckedObserver` is respected while allowing
+// `CrasAudioHandler` to handle notifications on the UI thread.
+class VideoCaptureObserverProxy : public media::VideoCaptureObserver {
+ public:
+  explicit VideoCaptureObserverProxy(base::WeakPtr<CrasAudioHandler> handler)
+      : handler_(std::move(handler)),
+        ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+
+  VideoCaptureObserverProxy(const VideoCaptureObserverProxy&) = delete;
+  VideoCaptureObserverProxy& operator=(const VideoCaptureObserverProxy&) =
+      delete;
+
+  ~VideoCaptureObserverProxy() override = default;
+
+  // media::VideoCaptureObserver:
+  void OnVideoCaptureStarted(media::VideoFacingMode facing) override {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CrasAudioHandler::OnVideoCaptureStarted,
+                                  handler_, facing));
+  }
+
+  void OnVideoCaptureStopped(media::VideoFacingMode facing) override {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CrasAudioHandler::OnVideoCaptureStopped,
+                                  handler_, facing));
+  }
+
+ private:
+  base::WeakPtr<CrasAudioHandler> handler_;
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+};
+
 // TODO(b/277300962): Clean up the default value and handle the unset case.
 CrasAudioHandler::AudioSurvey::AudioSurvey() : type_(SurveyType::kGeneral) {}
 
@@ -140,32 +177,6 @@ void CrasAudioHandler::Shutdown() {
 // static
 CrasAudioHandler* CrasAudioHandler::Get() {
   return g_cras_audio_handler;
-}
-
-void CrasAudioHandler::OnVideoCaptureStarted(media::VideoFacingMode facing) {
-  DCHECK(main_task_runner_);
-  if (!main_task_runner_->BelongsToCurrentThread()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CrasAudioHandler::OnVideoCaptureStartedOnMainThread,
-                       weak_ptr_factory_.GetWeakPtr(), facing));
-    return;
-  }
-  // Unittest may call this from the main thread.
-  OnVideoCaptureStartedOnMainThread(facing);
-}
-
-void CrasAudioHandler::OnVideoCaptureStopped(media::VideoFacingMode facing) {
-  DCHECK(main_task_runner_);
-  if (!main_task_runner_->BelongsToCurrentThread()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CrasAudioHandler::OnVideoCaptureStoppedOnMainThread,
-                       weak_ptr_factory_.GetWeakPtr(), facing));
-    return;
-  }
-  // Unittest may call this from the main thread.
-  OnVideoCaptureStoppedOnMainThread(facing);
 }
 
 void CrasAudioHandler::OnVideoCaptureStartedOnMainThread(
@@ -1486,6 +1497,16 @@ void CrasAudioHandler::SetupCrasAudioHandler(
   g_cras_audio_handler = this;
 }
 
+void CrasAudioHandler::OnVideoCaptureStarted(media::VideoFacingMode facing) {
+  CHECK(main_task_runner_->BelongsToCurrentThread());
+  OnVideoCaptureStartedOnMainThread(facing);
+}
+
+void CrasAudioHandler::OnVideoCaptureStopped(media::VideoFacingMode facing) {
+  CHECK(main_task_runner_->BelongsToCurrentThread());
+  OnVideoCaptureStoppedOnMainThread(facing);
+}
+
 CrasAudioHandler::~CrasAudioHandler() {
   hdmi_rediscover_timer_.Stop();
   DCHECK(CrasAudioClient::Get());
@@ -2444,6 +2465,10 @@ bool CrasAudioHandler::ActivateMostRecentActiveDevice(bool is_input) {
     return true;
   }
   return false;
+}
+
+base::WeakPtr<CrasAudioHandler> CrasAudioHandler::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool CrasAudioHandler::ShouldSwitchToHotPlugDevice(
@@ -3415,6 +3440,16 @@ int32_t CrasAudioHandler::NumberOfArcStreams() const {
 
 void CrasAudioHandler::SetNumberOfArcStreamsForTesting(int32_t num) {
   num_arc_streams_ = num;
+}
+
+media::VideoCaptureObserver* CrasAudioHandler::GetVideoCaptureObserver(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  if (!video_capture_observer_) {
+    video_capture_observer_ = {
+        new VideoCaptureObserverProxy(GetWeakPtr()),
+        base::OnTaskRunnerDeleter(std::move(io_task_runner))};
+  }
+  return video_capture_observer_.get();
 }
 
 }  // namespace ash

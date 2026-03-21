@@ -843,7 +843,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       std::make_unique<CameraGeneralSurveyHandler>();
 
   content::MediaCaptureDevices::GetInstance()->AddVideoCaptureObserver(
-      CrasAudioHandler::Get());
+      CrasAudioHandler::Get()->GetVideoCaptureObserver(
+          content::GetIOThreadTaskRunner({})));
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // While on ChromeOS devices in production, /var/cache/display_profiles
