@@ -25,6 +25,7 @@ build_webui("build") {
     "composebox.html.ts",
     "composebox.ts",
     "composebox_context_menu.html.ts",
+    "composebox_mixin.ts",
     "composebox_dropdown.html.ts",
     "composebox_dropdown.ts",
     "composebox_file_inputs.html.ts",

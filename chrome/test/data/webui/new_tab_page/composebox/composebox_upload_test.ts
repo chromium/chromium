@@ -527,12 +527,12 @@ suite('NewTabPageComposeboxUploadTest', () => {
         assertFalse(testProxy.element['uploadButtonDisabled_']);
 
         // Enter create image mode.
-        testProxy.element['activeToolMode_'] = ComposeboxToolMode.kImageGen;
+        testProxy.element['activeToolMode'] = ComposeboxToolMode.kImageGen;
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
 
         // Exit create image mode. `uploadButtonDisabled` should be false.
-        testProxy.element['activeToolMode_'] = ComposeboxToolMode.kUnspecified;
+        testProxy.element['activeToolMode'] = ComposeboxToolMode.kUnspecified;
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
       });

@@ -712,7 +712,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        assertEquals(0, composebox.files_.size);
+        assertEquals(0, composebox.files.size);
 
         // Should be no longer `EXPANDING` after successful upload and submit
         // click.
@@ -761,7 +761,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       await microtasksFinished();
 
       toolChip = composebox.shadowRoot.querySelector('cr-composebox-tool-chip');
-      assertFalse(!!composebox.input_, 'Input value should be cleared');
+      assertFalse(!!composebox.input, 'Input value should be cleared');
       assertTrue(
           composebox.fileUploadsComplete, 'File uploads should be complete');
       assertFalse(

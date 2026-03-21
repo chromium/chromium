@@ -229,7 +229,7 @@ suite('ContextualTasksComposeboxTest', () => {
       microtasksFinished(),
     ]);
 
-    assertEquals(0, composebox.files_.size);
+    assertEquals(0, composebox.files.size);
 
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
@@ -257,7 +257,7 @@ suite('ContextualTasksComposeboxTest', () => {
             token1, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
             composebox, mockSearchboxPageHandler);
 
-        const currentFiles = composebox.files_;
+        const currentFiles = composebox.files;
         currentFiles.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
@@ -320,7 +320,7 @@ suite('ContextualTasksComposeboxTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        const currentFiles2 = composebox.files_;
+        const currentFiles2 = composebox.files;
         currentFiles2.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
