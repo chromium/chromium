@@ -289,7 +289,7 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
 
   // First request fails with a transient error.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   // The service should retry. We need to fast forward time to trigger the
   // retry. The backoff policy has an initial delay of 500ms.
@@ -311,7 +311,8 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
 
   // First request fails with a persistent error.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // The service should NOT retry.
   EXPECT_EQ(token_future.Get(), "");
