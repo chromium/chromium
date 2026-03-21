@@ -566,10 +566,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private blurSearchbox() {
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.shadowRoot!.querySelector<HTMLElement>('input')
-        ?.blur();
-
+    this.$.searchbox.blurInput();
     this.$.composebox.blur();
   }
 
@@ -758,7 +755,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.$.composebox.focusInput();
       return;
     }
-    this.$.searchbox.focus();
+    this.$.searchbox.focusInput();
   }
 
   private async showToast(toast: CrToastElement, message?: string) {

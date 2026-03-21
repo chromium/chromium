@@ -772,9 +772,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private focusSearchbox() {
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.shadowRoot!.querySelector<HTMLElement>('input')
-        ?.focus();
+  this.shadowRoot!.querySelector<SearchboxElement>('cr-searchbox')
+      ?.focusInput();
     this.triggerSearchboxSuggestions();
   }
 

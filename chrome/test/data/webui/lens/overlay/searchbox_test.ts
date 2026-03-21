@@ -24,6 +24,8 @@ suite('Searchbox', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
+      'autoFocusSearchbox': true,
+      'enablePrivacyNotice': false,
       'enableOverlayContextualSearchbox': true,
       'enableGhostLoader': true,
     });
@@ -37,6 +39,30 @@ suite('Searchbox', () => {
 
     testBrowserProxy.page.shouldShowContextualSearchBox(true);
     await waitAfterNextRender(lensOverlayElement);
+  });
+
+  test('SearchboxIsFocusedInitially', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    let focusInputCalled = false;
+    lensOverlayElement.$.searchbox.focusInput = () => {
+      focusInputCalled = true;
+    };
+
+    // Simulate the initial flash animation ending and screenshot rendering.
+    // Dispatch from a child so it bubbles up to the app-container.
+    lensOverlayElement.$.backgroundScrim.dispatchEvent(new CustomEvent('initial-flash-animation-end', {
+      bubbles: true,
+      composed: true,
+    }));
+    lensOverlayElement.$.backgroundScrim.dispatchEvent(new CustomEvent('screenshot-rendered', {
+      bubbles: true,
+      composed: true,
+      detail: {isSidePanelOpen: false},
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+
+    assertTrue(focusInputCalled);
   });
 
   test('SearchBoxHidesWhenSidePanelOpens', async () => {
@@ -141,5 +167,41 @@ suite('Searchbox', () => {
     // Ghost loader should be visible since autocomplete started with empty
     // input.
     assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
+  });
+
+  test('Searchbox focus is maintained when focus moves to ghost loader', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    lensOverlayElement.setSearchboxFocusForTesting(true);
+    await waitAfterNextRender(lensOverlayElement);
+    assertTrue(lensOverlayElement.isSearchboxFocused);
+
+    // Simulate focus moving to the ghost loader
+    const focusoutEvent = new FocusEvent('focusout', {
+      relatedTarget: lensOverlayElement.$.searchboxGhostLoader,
+    });
+    lensOverlayElement.$.searchboxContainer.dispatchEvent(focusoutEvent);
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Searchbox focus should be maintained
+    assertTrue(lensOverlayElement.isSearchboxFocused);
+  });
+
+  test('Searchbox is blurred when focus moves outside', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    lensOverlayElement.setSearchboxFocusForTesting(true);
+    await waitAfterNextRender(lensOverlayElement);
+    assertTrue(lensOverlayElement.isSearchboxFocused);
+
+    // Simulate focus moving outside the container
+    const focusoutEvent = new FocusEvent('focusout', {
+      relatedTarget: document.body,
+    });
+    lensOverlayElement.$.searchboxContainer.dispatchEvent(focusoutEvent);
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Searchbox focus should be lost
+    assertFalse(lensOverlayElement.isSearchboxFocused);
   });
 });
