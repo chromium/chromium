@@ -372,7 +372,8 @@ void AddAdditionalRequestHeaders(
     const std::string& user_agent_override,
     const std::optional<url::Origin>& initiator_origin,
     blink::mojom::Referrer* referrer,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    bool is_browser_initiated) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
@@ -410,37 +411,34 @@ void AddAdditionalRequestHeaders(
     origin_header_value = Referrer::SanitizeOriginForRequest(
         url, origin_header_value, referrer->policy);
     std::string serialized_origin = origin_header_value.Serialize();
-    if (existing_origin && existing_origin != serialized_origin) {
-      if (base::FeatureList::IsEnabled(features::kDumpOnOriginHeaderMismatch)) {
-        // TODO(https://crbug.com/487795397): this should
-        // be a `bad_message::ReceivedBadMessage` and return `false` once
-        // DumpWithoutCrashing data is evaluated.
-        SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
-                                  net::HttpRequestHeaders::kOrigin);
-        SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
-                                  existing_origin.value());
-        SCOPED_CRASH_KEY_STRING64("Bug487795397", "serialized_origin",
-                                  serialized_origin);
-        SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", true);
-        base::debug::DumpWithoutCrashing();
-      }
+    if (existing_origin && existing_origin != serialized_origin &&
+        !is_browser_initiated &&
+        base::FeatureList::IsEnabled(features::kDumpOnOriginHeaderMismatch)) {
+      // TODO(https://crbug.com/487795397): this should
+      // be a `bad_message::ReceivedBadMessage` and return `false` once
+      // DumpWithoutCrashing data is evaluated.
+      SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                                net::HttpRequestHeaders::kOrigin);
+      SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
+                                existing_origin.value());
+      SCOPED_CRASH_KEY_STRING64("Bug487795397", "serialized_origin",
+                                serialized_origin);
+      SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", true);
+      base::debug::DumpWithoutCrashing();
     }
     headers->SetHeader(net::HttpRequestHeaders::kOrigin, serialized_origin);
-  } else {
-    if (existing_origin) {
-      if (base::FeatureList::IsEnabled(
-              features::kDumpOnUnexpectedOriginHeader)) {
-        // TODO(https://crbug.com/40093290): this should
-        // be a `bad_message::ReceivedBadMessage` and return `false` once
-        // DumpWithoutCrashing() data is evaluated.
-        SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
-                                  net::HttpRequestHeaders::kOrigin);
-        SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
-                                  existing_origin.value());
-        SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", false);
-        base::debug::DumpWithoutCrashing();
-      }
-    }
+  } else if (existing_origin && !is_browser_initiated &&
+             base::FeatureList::IsEnabled(
+                 features::kDumpOnUnexpectedOriginHeader)) {
+    // TODO(https://crbug.com/40093290): this should
+    // be a `bad_message::ReceivedBadMessage` and return `false` once
+    // DumpWithoutCrashing() data is evaluated.
+    SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                              net::HttpRequestHeaders::kOrigin);
+    SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
+                              existing_origin.value());
+    SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", false);
+    base::debug::DumpWithoutCrashing();
   }
 
   if (base::FeatureList::IsEnabled(features::kDocumentPolicyNegotiation)) {
@@ -2120,7 +2118,8 @@ NavigationRequest::NavigationRequest(
         ui::PageTransitionFromInt(common_params_->transition),
         controller->GetBrowserContext(), common_params_->method,
         GetUserAgentOverride(), common_params_->initiator_origin,
-        common_params_->referrer.get(), frame_tree_node);
+        common_params_->referrer.get(), frame_tree_node,
+        commit_params_->is_browser_initiated);
 
     if (begin_params_->is_form_submission) {
       // During form resubmit, `commit_params_->post_content_type` is populated
