@@ -490,13 +490,13 @@ class GraphBuilderTflite final {
                                          TensorIndex false_tensor_index,
                                          TensorIndex output_tensor_index);
 
-  // Insert a tempary pad operation if the `paddings` can't be converted to
+  // Insert a temporary pad operation if the `paddings` can't be converted to
   // tflite padding mode.
   base::expected<TensorIndex, std::string> InsertPadOperation(
       const TensorInfo& input_tensor_info,
-      base::span<const uint32_t> paddings);
+      base::span<const int16_t> paddings);
 
-  // Insert a tempary transpose operation for input operand with calling
+  // Insert a temporary transpose operation for input operand with calling
   // `SerializeTransposeOperation`.
   base::expected<TensorIndex, std::string> InsertTransposeOperation(
       const TensorInfo& input_tensor_info,
