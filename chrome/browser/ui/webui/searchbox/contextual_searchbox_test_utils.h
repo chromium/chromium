@@ -154,6 +154,10 @@ class MockContextualSearchMetricsRecorder
                composebox_query::mojom::ModelMode model_mode),
               (override));
   MOCK_METHOD(void, RecordZeroSuggestClick, (bool is_contextual), (override));
+  MOCK_METHOD(void,
+              RecordTypedSuggestNavigation,
+              (bool is_verbatim),
+              (override));
 
   void NotifySessionStateChangedBase(
       contextual_search::SessionState session_state) {
@@ -185,6 +189,10 @@ class MockContextualSearchMetricsRecorder
 
   void RecordZeroSuggestClickBase(bool is_contextual) {
     ContextualSearchMetricsRecorder::RecordZeroSuggestClick(is_contextual);
+  }
+
+  void RecordTypedSuggestNavigationBase(bool is_verbatim) {
+    ContextualSearchMetricsRecorder::RecordTypedSuggestNavigation(is_verbatim);
   }
 };
 

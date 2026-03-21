@@ -751,6 +751,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.TypedSuggestNavigation.IsVerbatim.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2026-08-09">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a user navigates to a suggestion in typed mode from
+    {ContextualSearchSource}. Logs true if the suggestion was verbatim, and
+    false otherwise (SearchSuggest).
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.UserAction.DeleteAutoSuggestedTab.{ContextualSearchSource}"
     enum="Boolean" expires_after="2026-08-09">
   <owner>sophiechang@google.com</owner>

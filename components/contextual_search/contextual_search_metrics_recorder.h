@@ -163,6 +163,9 @@ class ContextualSearchMetricsRecorder {
   // Records when a zero-suggest suggestion is clicked.
   virtual void RecordZeroSuggestClick(bool is_contextual);
 
+  // Records when a typed suggestion is clicked.
+  virtual void RecordTypedSuggestNavigation(bool is_verbatim);
+
  private:
   // Called when the session starts to correctly track session
   // durations.

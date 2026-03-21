@@ -218,6 +218,8 @@ class ContextualSearchboxHandler
                            DeleteContext_DelayUpload);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            OpenAutocompleteMatch_ZeroSuggestClick);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
+                           OpenAutocompleteMatch_TypedSuggestNavigation);
 
   std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
       content::WebContents* web_contents);
