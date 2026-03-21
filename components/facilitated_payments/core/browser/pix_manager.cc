@@ -89,6 +89,8 @@ void PixManager::OnPixCodeCopiedToClipboard(
     ukm::SourceId ukm_source_id) {
   pix_code_is_in_iframe_ = iframe_url.has_value();
   if (has_payflow_started_) {
+    // Log that a new flow trigger was ignored because one is already active.
+    LogPixFlowExitedReason(PixFlowExitedReason::kFlowAlreadyStarted);
     return;
   }
   has_payflow_started_ = true;

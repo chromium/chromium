@@ -170,7 +170,9 @@ enum class PixFlowExitedReason {
   kStaticCode = 19,
   // Pix code was copied within an iframe whose URL is not in the allowlist.
   kIframeUrlNotAllowlisted = 20,
-  kMaxValue = kIframeUrlNotAllowlisted
+  // Pix code was copied when a payflow has already started.
+  kFlowAlreadyStarted = 21,
+  kMaxValue = kFlowAlreadyStarted
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 

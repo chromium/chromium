@@ -536,7 +536,8 @@ INSTANTIATE_TEST_SUITE_P(
                     PixFlowExitedReason::kFrameNotActive,
                     PixFlowExitedReason::kCctWithGboardAsDefaultIme,
                     PixFlowExitedReason::kStaticCode,
-                    PixFlowExitedReason::kIframeUrlNotAllowlisted));
+                    PixFlowExitedReason::kIframeUrlNotAllowlisted,
+                    PixFlowExitedReason::kFlowAlreadyStarted));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

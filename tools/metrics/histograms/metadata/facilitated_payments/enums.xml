@@ -179,6 +179,7 @@ reviewer.
       label="Pix code was copied in CCT with Gboard as the default IME"/>
   <int value="19" label="Static code was copied and is not supported"/>
   <int value="20" label="Pix code copied in a non-allowlisted iframe"/>
+  <int value="21" label="Payflow has already started"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
