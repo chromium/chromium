@@ -342,7 +342,9 @@ class ToolbarView : public views::AccessiblePaneView,
   void ShowGlicActorNudge(const std::u16string nudge_text);
   void ExecuteShowToolbarNudge(glic::GlicButtonInterface* button);
   void ExecuteHideToolbarNudge(glic::GlicButtonInterface* button);
+  void UpdateGlicActorVisibility();
   void UpdateGlicButtonVisibility();
+  void SetGlicActorShowState(bool show);
   void UpdateGlicActorButtonContainerBorders();
 
   std::unique_ptr<glic::ToolbarGlicActorTaskIcon> CreateGlicActorTaskIcon();
@@ -439,6 +441,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   bool should_display_vertical_tabs_ = false;
   bool should_show_glic_button_ = false;
+  bool should_show_glic_actor_ = false;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;
