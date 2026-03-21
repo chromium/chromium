@@ -437,15 +437,13 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
-  auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
-  int max_images = 0;
-  int max_pdfs = 0;
-  int max_files = 0;
+  int max_files = 10;
+  int max_images = max_files;
+  int max_pdfs = max_files;
   AimEligibilityService* service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   const omnibox::SearchboxConfig* config =
       service ? service->GetSearchboxConfig() : nullptr;
-
   if (config && config->has_rule_set()) {
     max_files = config->rule_set().max_total_inputs();
     for (const auto& rule : config->rule_set().input_type_rules()) {
@@ -457,30 +455,22 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
     }
   }
 
-  source->AddString(
-      "composeboxDragAndDropHint",
-      l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
-          max_files > 0 ? max_files
-                        : composebox_config.composebox().max_num_files()));
-  source->AddString(
-      "maxFilesReachedError",
-      l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
-          max_files > 0 ? max_files
-                        : composebox_config.composebox().max_num_files()));
-  source->AddString(
-      "maxImagesReachedError",
-      l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR,
-          max_images > 0 ? max_images
-                         : composebox_config.composebox().max_num_files()));
-  source->AddString(
-      "maxPdfsReachedError",
-      l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR,
-          max_pdfs > 0 ? max_pdfs
-                       : composebox_config.composebox().max_num_files()));
+  source->AddInteger("composeboxFileMaxCount", max_files);
+  source->AddString("composeboxDragAndDropHint",
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT, max_files));
+  source->AddString("maxFilesReachedError",
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR, max_files));
+  source->AddString("maxImagesReachedError",
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR, max_images));
+  source->AddString("maxPdfsReachedError",
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, max_pdfs));
+
+  // TODO(b/481663895): Remove "ConfigParam" from Next studies.
+  auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
   source->AddBoolean(
       "searchboxShowComposeAnimation",
       profile->GetPrefs()->GetInteger(

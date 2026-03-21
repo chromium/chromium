@@ -335,9 +335,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddInteger(
       "composeboxFileMaxSize",
       contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());
-  source->AddInteger(
-      "composeboxFileMaxCount",
-      contextual_tasks::kContextualTasksNextboxMaxFileCount.Get());
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   // Enable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", false);

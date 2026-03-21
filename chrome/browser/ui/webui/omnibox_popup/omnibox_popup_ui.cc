@@ -104,18 +104,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   const std::string attachment_mime_types =
       composebox_config.attachment_upload().mime_types_allowed();
   source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
-  source->AddInteger("composeboxFileMaxCount",
-                     composebox_config.max_num_files());
   source->AddInteger("composeboxFileMaxSize",
                      composebox_config.attachment_upload().max_size_bytes());
-  source->AddString(
-      "composeboxDragAndDropHint",
-      l10n_util::GetPluralStringFUTF16(IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
-                                       composebox_config.max_num_files()));
-  source->AddString(
-      "maxFilesReachedError",
-      l10n_util::GetPluralStringFUTF16(IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
-                                       composebox_config.max_num_files()));
   const std::string image_mime_types =
       composebox_config.image_upload().mime_types_allowed();
   source->AddString("composeboxImageFileTypes", image_mime_types);
