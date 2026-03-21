@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BASE_SHIM_H_
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "ui/color/color_id.h"
 #include "ui/views/view.h"
+
+namespace glic {
 
 // GlicBaseShim is used by Glic views that are required to be multiple types of
 // buttons (e.g. TabStripNudgeButton and ToolbarButton). GlicBaseShim provides
@@ -15,7 +18,7 @@
 // overridden by the subclass. These methods are often required for unified GLic
 // functionality, but are not necessary for all T views.
 template <typename T>
-class GlicBaseShim : public T {
+class GlicBaseShim : public T, public GlicButtonInterface {
  public:
   using T::T;
 
@@ -78,11 +81,31 @@ class GlicBaseShim : public T {
     }
   }
 
-  virtual void SetIsShowingNudge(bool is_showing) {
+  virtual bool GetIsShowingNudge() const {
+    if constexpr (requires { this->T::GetIsShowingNudge(); }) {
+      return T::GetIsShowingNudge();
+    }
+    return false;
+  }
+
+  void SetIsShowingNudge(bool is_showing) override {
     if constexpr (requires { this->T::SetIsShowingNudge(is_showing); }) {
       T::SetIsShowingNudge(is_showing);
     }
+    is_showing_nudge_ = is_showing;
   }
+
+  bool GetIsShowingNudge() { return is_showing_nudge_; }
+
+  bool GetVisible() override { return T::GetVisible(); }
+
+  ui::PropertyHandler* GetPropertyHandler() override { return this; }
+
+ private:
+  // True if the button is showing a nudge.
+  bool is_showing_nudge_ = false;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BASE_SHIM_H_

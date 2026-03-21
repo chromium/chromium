@@ -802,7 +802,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                 *browser_, browser_,
                 BrowserElementsViews::From(browser_view->browser())
                     ->GetViewAs<TabStripActionContainer>(
-                        kTabStripActionContainerElementId));
+                        kTabStripActionContainerElementId),
+                BrowserElementsViews::From(browser_view->browser())
+                    ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId));
       }
     }
 

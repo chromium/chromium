@@ -142,6 +142,10 @@ class ToolbarButton : public views::LabelButton,
   // button will have no accessible name.
   std::u16string GetAlternativeAccessibleName() const override;
 
+  ChromeColorIds GetDefaultBackgroundColorId() const {
+    return default_background_color_id_;
+  }
+
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
       View* source,
@@ -243,6 +247,11 @@ class ToolbarButton : public views::LabelButton,
 
   std::optional<SkColor> GetBackgroundColor() const;
 
+  // views::LabelButton:
+  // Callers should use SetHighlight() instead which sets an optional color as
+  // well.
+  void SetText(std::u16string_view text) override;
+
  private:
   friend test::ToolbarButtonTestApi;
 
@@ -306,11 +315,6 @@ class ToolbarButton : public views::LabelButton,
 
   // Callback for MenuModelAdapter.
   void OnMenuClosed();
-
-  // views::LabelButton:
-  // This is private to avoid a foot-shooter. Callers should use SetHighlight()
-  // instead which sets an optional color as well.
-  void SetText(std::u16string_view text) override;
 
   // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
   // property changes. When this button has an in product help promo, the button

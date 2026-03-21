@@ -120,12 +120,13 @@ class TabStripActionContainer : public views::View,
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
 
-  // UI Controls for the GlicActorTaskIcon:
   void ShowGlicActorTaskIcon();
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();
-  views::FlexLayoutView* glic_actor_button_container();
+  bool IsGlicAdded();
   void TriggerGlicActorNudge(const std::u16string nudge_text);
+
+  views::FlexLayoutView* glic_actor_button_container();
   void ShowGlicActorNudge(const std::u16string nudge_text);
 
   void UpdateButtonBorders(gfx::Insets button_insets);

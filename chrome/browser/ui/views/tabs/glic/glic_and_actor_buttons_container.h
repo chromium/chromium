@@ -14,10 +14,6 @@ class InkDropContainerView;
 class InkDropHost;
 }  // namespace views
 
-namespace glic {
-class TabStripGlicButton;
-}
-
 // Container view for GlicButton and GlicActorTaskIcon. It can have a background
 // and a highlight which change based on the state of the two buttons.
 class GlicAndActorButtonsContainer : public views::FlexLayoutView {
@@ -27,8 +23,11 @@ class GlicAndActorButtonsContainer : public views::FlexLayoutView {
   ~GlicAndActorButtonsContainer() override;
 
   // Remove glic_button from its parent and insert it as this view's child.
-  glic::TabStripGlicButton* InsertGlicButton(
-      glic::TabStripGlicButton* glic_button);
+  template <typename T>
+  T* InsertGlicButton(T* glic_button) {
+    // Insert after ink drop container.
+    return AddChildViewAt(glic_button, 1ul);
+  }
 
   // Set or clear the ink drop highlight drawn over the background.
   void SetHighlighted(bool highlighted);
