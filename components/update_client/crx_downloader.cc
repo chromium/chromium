@@ -19,6 +19,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
 #endif
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "components/update_client/network.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
@@ -52,7 +54,7 @@ CrxDownloader::download_metrics() const {
     return download_metrics_;
   }
 
-  std::vector<DownloadMetrics> retval(successor_->download_metrics());
+  std::vector<DownloadMetrics> retval = successor_->download_metrics();
   retval.insert(retval.begin(), download_metrics_.begin(),
                 download_metrics_.end());
   return retval;

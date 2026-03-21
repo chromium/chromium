@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -268,11 +269,8 @@ base::DictValue Component::MakeEventUpdateComplete() const {
 }
 
 std::vector<base::DictValue> Component::GetEvents() const {
-  std::vector<base::DictValue> events;
-  for (const auto& event : events_) {
-    events.push_back(event.Clone());
-  }
-  return events;
+  return base::ToVector(events_,
+                        [](const auto& event) { return event.Clone(); });
 }
 
 std::unique_ptr<CrxInstaller::InstallParams> Component::install_params() const {

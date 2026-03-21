@@ -16,6 +16,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -212,8 +214,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     }
 
     std::vector<std::string> cached_hashes;
-    auto range = cache_contents.equal_range(app_id);
-    for (auto i = range.first; i != range.second; i++) {
+    auto [first, last] = cache_contents.equal_range(app_id);
+    for (auto i = first; i != last; ++i) {
       cached_hashes.push_back(i->second);
     }
 
@@ -279,7 +281,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
                          ? std::optional<base::OnceClosure>(base::BindOnce(
                                &UpdateCheckerImpl::CheckForUpdatesHelper,
                                weak_factory_.GetWeakPtr(), context,
-                               std::vector<GURL>(urls.begin() + 1, urls.end()),
+                               base::ToVector(base::span(urls).subspan(1u)),
                                additional_attributes, cache_contents,
                                updater_state_attributes, active_ids))
                          : std::nullopt)));

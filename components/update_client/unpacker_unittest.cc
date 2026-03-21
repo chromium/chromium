@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -35,7 +36,7 @@ TEST_F(UnpackerTest, UnpackFullCrx) {
   base::RunLoop loop;
   Unpacker::Unpack(
       "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
-      std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
+      base::ToVector(jebg_hash),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       base::MakeRefCounted<update_client::UnzipChromiumFactory>(
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))
@@ -70,8 +71,7 @@ TEST_F(UnpackerTest, UnpackFileNotFound) {
   base::RunLoop loop;
   Unpacker::Unpack(
       "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
-      std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-      GetTestFilePath("file_not_found.crx"), nullptr,
+      base::ToVector(jebg_hash), GetTestFilePath("file_not_found.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting([&](const Unpacker::Result& result) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
@@ -92,7 +92,7 @@ TEST_F(UnpackerTest, UnpackFileHashMismatch) {
   base::RunLoop loop;
   Unpacker::Unpack(
       "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
-      std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
+      base::ToVector(abag_hash),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting([&](const Unpacker::Result& result) {

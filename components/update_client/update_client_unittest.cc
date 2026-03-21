@@ -605,7 +605,7 @@ void MockPingManagerImpl::SendPing(const std::string& session_id,
                                    const CrxComponent& component,
                                    std::vector<base::DictValue> events,
                                    base::OnceClosure callback) {
-  for (const base::DictValue& event : events) {
+  auto event_to_ping_data = [&](const base::DictValue& event) {
     PingData ping_data;
     ping_data.id = component.app_id;
     int event_type = event.FindInt("eventtype").value_or(0);
@@ -637,10 +637,14 @@ void MockPingManagerImpl::SendPing(const std::string& session_id,
     if (event_type != 0) {
       ping_data.event_type = event_type;
     }
-    ping_data_.push_back(ping_data);
-    if (event_type == protocol_request::kEventInstall ||
-        event_type == protocol_request::kEventUpdate ||
-        event_type == protocol_request::kEventUninstall) {
+    return ping_data;
+  };
+
+  ping_data_ = base::ToVector(events, event_to_ping_data);
+  for (const auto& ping_data : ping_data_) {
+    if (ping_data.event_type == protocol_request::kEventInstall ||
+        ping_data.event_type == protocol_request::kEventUpdate ||
+        ping_data.event_type == protocol_request::kEventUninstall) {
       terminal_ping_data_.push_back(ping_data);
     }
   }
@@ -4783,8 +4787,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 
     Unpacker::Unpack(
         "gjpmebpgbhcamgdgjcmnjfhggjpgcimm", "UpdateClientTest",
-        std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
-        GetTestFilePath("runaction_test_win.crx3"),
+        base::ToVector(gjpm_hash), GetTestFilePath("runaction_test_win.crx3"),
         base::MakeRefCounted<UnzipChromiumFactory>(
             base::BindRepeating(&unzip::LaunchInProcessUnzipper))
             ->Create(),
