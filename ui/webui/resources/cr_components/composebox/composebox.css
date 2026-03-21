@@ -636,7 +636,7 @@ search-animated-glow {
 #toolChipsContainer {
   padding-bottom: 4px;
   padding-inline-start: 16px;
-  padding-top: 8px;
+  padding-top: 14px;
 }
 
 :host(:not([file-uploads-complete])) .upload-button {
@@ -809,12 +809,8 @@ search-animated-glow {
 }
 
 :host([searchbox-next-enabled]) #carousel {
-  --context-non-top-carousel-bottom-margin: 10px;
-  --context-non-top-carousel-top-margin: 6px;
-}
-
-:host([searchbox-next-enabled]:not([in-tool-mode_])) #carousel {
   --context-non-top-carousel-bottom-margin: 4px;
+  --context-non-top-carousel-top-margin: 6px;
 }
 
 :host([is-omnibox-in-compact-mode_]) #carousel {
