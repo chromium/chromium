@@ -672,11 +672,9 @@ scoped_refptr<AudioBus> AudioBus::CreateBySampleRateConverting(
 
   // Sample-rate convert each channel.
   for (unsigned i = 0; i < number_of_destination_channels; ++i) {
-    const float* source = resampler_source_bus->Channel(i)->Data();
-    float* destination = destination_bus->Channel(i)->MutableData();
-
     SincResampler resampler(sample_rate_ratio);
-    resampler.Process(source, destination, source_length);
+    resampler.Process(resampler_source_bus->Channel(i)->Span(),
+                      destination_bus->Channel(i)->MutableSpan());
   }
 
   destination_bus->ClearSilentFlag();

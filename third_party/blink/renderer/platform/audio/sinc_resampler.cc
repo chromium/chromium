@@ -28,7 +28,8 @@
 
 #include "third_party/blink/renderer/platform/audio/sinc_resampler.h"
 
-#include "base/memory/raw_ptr.h"
+#include "base/bit_cast.h"
+#include "base/memory/raw_span.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -70,6 +71,14 @@
 
 namespace blink {
 
+namespace {
+
+// This is the number of destination frames we generate per processing pass on
+// the buffer.
+constexpr size_t kBlockSize = 512;
+
+}  // namespace
+
 SincResampler::SincResampler(double scale_factor,
                              unsigned kernel_size,
                              unsigned number_of_kernel_offsets)
@@ -78,11 +87,8 @@ SincResampler::SincResampler(double scale_factor,
       number_of_kernel_offsets_(number_of_kernel_offsets),
       kernel_storage_(kernel_size_ * (number_of_kernel_offsets_ + 1)),
       virtual_source_index_(0),
-      block_size_(512),
       // See input buffer layout above.
-      input_buffer_(block_size_ + kernel_size_),
-      source_(nullptr),
-      source_frames_available_(0),
+      input_buffer_(kBlockSize + kernel_size_),
       source_provider_(nullptr),
       is_buffer_primed_(false) {
   InitializeKernel();
@@ -135,16 +141,16 @@ void SincResampler::InitializeKernel() {
   }
 }
 
-void SincResampler::ConsumeSource(float* buffer,
-                                  unsigned number_of_source_frames) {
+void SincResampler::ConsumeSource(base::span<float> buffer) {
   DCHECK(source_provider_);
 
   // Wrap the provided buffer by an AudioBus for use by the source provider.
+  const size_t number_of_source_frames = buffer.size();
   scoped_refptr<AudioBus> bus =
       AudioBus::Create(1, number_of_source_frames, false);
 
   // FIXME: Find a way to make the following const-correct:
-  bus->SetChannelMemory(0, buffer, number_of_source_frames);
+  bus->SetChannelMemory(0, buffer.data(), number_of_source_frames);
 
   source_provider_->ProvideInput(
       bus.get(), base::checked_cast<int>(number_of_source_frames));
@@ -156,107 +162,103 @@ namespace {
 
 class BufferSourceProvider final : public AudioSourceProvider {
  public:
-  BufferSourceProvider(const float* source, int number_of_source_frames)
-      : source_(source), source_frames_available_(number_of_source_frames) {}
+  explicit BufferSourceProvider(base::span<const float> source)
+      : source_(source) {}
 
   // Consumes samples from the in-memory buffer.
   void ProvideInput(AudioBus* bus, int frames_to_process) override {
-    DCHECK(source_);
     DCHECK(bus);
-    if (!source_ || !bus) {
+    if (source_.empty() || !bus) {
       return;
     }
 
-    float* buffer = bus->Channel(0)->MutableData();
+    base::span<float> buffer = bus->Channel(0)->MutableSpan();
 
     // Clamp to number of frames available and zero-pad.
-    int frames_to_copy = std::min(source_frames_available_, frames_to_process);
-    UNSAFE_TODO(memcpy(buffer, source_, sizeof(float) * frames_to_copy));
+    size_t frames_to_copy =
+        std::min(source_.size(), static_cast<size_t>(frames_to_process));
+    buffer.first(frames_to_copy).copy_from(source_.take_first(frames_to_copy));
 
     // Zero-pad if necessary.
-    if (frames_to_copy < frames_to_process) {
-      UNSAFE_TODO(memset(buffer + frames_to_copy, 0,
-                         sizeof(float) * (frames_to_process - frames_to_copy)));
+    if (frames_to_copy < static_cast<size_t>(frames_to_process)) {
+      std::ranges::fill(buffer.subspan(frames_to_copy,
+                                       static_cast<size_t>(frames_to_process) -
+                                           frames_to_copy),
+                        0);
     }
-
-    source_frames_available_ -= frames_to_copy;
-    UNSAFE_TODO(source_ += frames_to_copy);
   }
 
   void SetClient(AudioSourceProviderClient*) override {}
 
  private:
-  raw_ptr<const float, AllowPtrArithmetic> source_;
-  int source_frames_available_;
+  base::raw_span<const float> source_;
 };
 
 }  // namespace
 
-void SincResampler::Process(const float* source,
-                            float* destination,
-                            int number_of_source_frames) {
-  // Resample an in-memory buffer using an AudioSourceProvider.
-  BufferSourceProvider source_provider(source, number_of_source_frames);
+void SincResampler::Process(base::span<const float> source,
+                            base::span<float> destination) {
+  const size_t number_of_source_frames = source.size();
 
-  unsigned number_of_destination_frames =
-      static_cast<unsigned>(number_of_source_frames / scale_factor_);
-  unsigned remaining = number_of_destination_frames;
+  // Resample an in-memory buffer using an AudioSourceProvider.
+  BufferSourceProvider source_provider(source);
+
+  const size_t number_of_destination_frames =
+      static_cast<size_t>(number_of_source_frames / scale_factor_);
+  size_t remaining = number_of_destination_frames;
 
   while (remaining) {
-    unsigned frames_this_time = std::min(remaining, block_size_);
-    Process(&source_provider, destination, frames_this_time);
-
-    UNSAFE_TODO(destination += frames_this_time);
+    size_t frames_this_time = std::min(remaining, kBlockSize);
+    Process(&source_provider, destination.take_first(frames_this_time));
     remaining -= frames_this_time;
   }
 }
 
 void SincResampler::Process(AudioSourceProvider* source_provider,
-                            float* destination,
-                            uint32_t frames_to_process) {
+                            base::span<float> destination) {
   DCHECK(source_provider);
-  DCHECK_GT(block_size_, kernel_size_);
-  DCHECK_GE(input_buffer_.size(), block_size_ + kernel_size_);
+  DCHECK_GT(kBlockSize, kernel_size_);
+  DCHECK_GE(input_buffer_.size(), kBlockSize + kernel_size_);
   DCHECK_EQ(kernel_size_ % 2, 0u);
 
   source_provider_ = source_provider;
 
-  unsigned number_of_destination_frames = frames_to_process;
+  size_t number_of_destination_frames = destination.size();
 
   // Setup various region pointers in the buffer (see diagram above).
-  float* r0 = UNSAFE_TODO(input_buffer_.Data() + kernel_size_ / 2);
-  float* r1 = input_buffer_.Data();
-  float* r2 = r0;
-  float* r3 = UNSAFE_TODO(r0 + block_size_ - kernel_size_ / 2);
-  float* r4 = UNSAFE_TODO(r0 + block_size_);
-  float* r5 = UNSAFE_TODO(r0 + kernel_size_ / 2);
+  base::span<float> r0 = input_buffer_.as_span().subspan(kernel_size_ / 2);
+  base::span<float> r1 = input_buffer_.as_span();
+  base::span<float> r2 = r0;
+  base::span<float> r3 = r0.subspan(kBlockSize - kernel_size_ / 2);
+  base::span<float> r4 = r0.subspan(kBlockSize);
+  base::span<float> r5 = r0.subspan(kernel_size_ / 2);
 
   // Step (1)
   // Prime the input buffer at the start of the input stream.
   if (!is_buffer_primed_) {
-    ConsumeSource(r0, block_size_ + kernel_size_ / 2);
+    ConsumeSource(r0.first(kBlockSize + kernel_size_ / 2));
     is_buffer_primed_ = true;
   }
 
   // Step (2)
 
   while (number_of_destination_frames) {
-    while (virtual_source_index_ < block_size_) {
-      // m_virtualSourceIndex lies in between two kernel offsets so figure out
-      // what they are.
-      int source_index_i = static_cast<int>(virtual_source_index_);
+    while (virtual_source_index_ < kBlockSize) {
+      // `virtual_source_index_` lies in between two kernel offsets so figure
+      // out what they are.
+      size_t source_index_i = static_cast<size_t>(virtual_source_index_);
       double subsample_remainder = virtual_source_index_ - source_index_i;
 
       double virtual_offset_index =
           subsample_remainder * number_of_kernel_offsets_;
       int offset_index = static_cast<int>(virtual_offset_index);
 
-      float* k1 =
-          UNSAFE_TODO(kernel_storage_.Data() + offset_index * kernel_size_);
-      float* k2 = UNSAFE_TODO(k1 + kernel_size_);
+      base::span<float> k1 =
+          kernel_storage_.as_span().subspan(offset_index * kernel_size_);
+      base::span<float> k2 = k1.subspan(kernel_size_);
 
-      // Initialize input pointer based on quantized m_virtualSourceIndex.
-      float* input_p = UNSAFE_TODO(r1 + source_index_i);
+      // Initialize input span based on quantized `virtual_source_index_`.
+      base::span<float> input_span = r1.subspan(source_index_i);
 
       // We'll compute "convolutions" for the two kernels which straddle
       // m_virtualSourceIndex
@@ -269,13 +271,11 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
       // Generate a single output sample.
       int n = kernel_size_;
 
-#define CONVOLVE_ONE_SAMPLE()        \
-  do {                               \
-    UNSAFE_TODO(input = *input_p++); \
-    sum1 += input * *k1;             \
-    sum2 += input * *k2;             \
-    UNSAFE_TODO(++k1);               \
-    UNSAFE_TODO(++k2);               \
+#define CONVOLVE_ONE_SAMPLE()             \
+  do {                                    \
+    input = input_span.take_first(1u)[0]; \
+    sum1 += input * k1.take_first(1u)[0]; \
+    sum2 += input * k2.take_first(1u)[0]; \
   } while (0)
 
       {
@@ -284,13 +284,13 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
 #if defined(ARCH_CPU_X86_FAMILY)
         // If the sourceP address is not 16-byte aligned, the first several
         // frames (at most three) should be processed seperately.
-        while ((reinterpret_cast<uintptr_t>(input_p) & 0x0F) && n) {
+        while ((reinterpret_cast<uintptr_t>(input_span.data()) & 0x0F) && n) {
           CONVOLVE_ONE_SAMPLE();
           n--;
         }
 
         // Now the inputP is aligned and start to apply SSE.
-        UNSAFE_TODO(float* end_p = input_p + n - n % 4);
+        size_t sse_frames = static_cast<size_t>(n - n % 4);
         __m128 m_input;
         __m128 m_k1;
         __m128 m_k2;
@@ -299,56 +299,55 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
 
         __m128 sums1 = _mm_setzero_ps();
         __m128 sums2 = _mm_setzero_ps();
-        bool k1_aligned = !(reinterpret_cast<uintptr_t>(k1) & 0x0F);
-        bool k2_aligned = !(reinterpret_cast<uintptr_t>(k2) & 0x0F);
+        bool k1_aligned = !(reinterpret_cast<uintptr_t>(k1.data()) & 0x0F);
+        bool k2_aligned = !(reinterpret_cast<uintptr_t>(k2.data()) & 0x0F);
 
-#define LOAD_DATA(l1, l2)           \
-  do {                              \
-    m_input = _mm_load_ps(input_p); \
-    m_k1 = _mm_##l1##_ps(k1);       \
-    m_k2 = _mm_##l2##_ps(k2);       \
+#define LOAD_DATA(l1, l2)                     \
+  do {                                        \
+    m_input = _mm_load_ps(input_span.data()); \
+    m_k1 = _mm_##l1##_ps(k1.data());          \
+    m_k2 = _mm_##l2##_ps(k2.data());          \
   } while (0)
 
-#define CONVOLVE_4_SAMPLES()          \
-  do {                                \
-    mul1 = _mm_mul_ps(m_input, m_k1); \
-    mul2 = _mm_mul_ps(m_input, m_k2); \
-    sums1 = _mm_add_ps(sums1, mul1);  \
-    sums2 = _mm_add_ps(sums2, mul2);  \
-    UNSAFE_TODO(input_p += 4);        \
-    UNSAFE_TODO(k1 += 4);             \
-    UNSAFE_TODO(k2 += 4);             \
+#define CONVOLVE_4_SAMPLES()             \
+  do {                                   \
+    mul1 = _mm_mul_ps(m_input, m_k1);    \
+    mul2 = _mm_mul_ps(m_input, m_k2);    \
+    sums1 = _mm_add_ps(sums1, mul1);     \
+    sums2 = _mm_add_ps(sums2, mul2);     \
+    input_span = input_span.subspan(4u); \
+    k1 = k1.subspan(4u);                 \
+    k2 = k2.subspan(4u);                 \
   } while (0)
 
         if (k1_aligned && k2_aligned) {  // both aligned
-          while (input_p < end_p) {
+          for (size_t i = 0; i < sse_frames; i += 4) {
             LOAD_DATA(load, load);
             CONVOLVE_4_SAMPLES();
           }
         } else if (!k1_aligned && k2_aligned) {  // only k2 aligned
-          while (input_p < end_p) {
+          for (size_t i = 0; i < sse_frames; i += 4) {
             LOAD_DATA(loadu, load);
             CONVOLVE_4_SAMPLES();
           }
         } else if (k1_aligned && !k2_aligned) {  // only k1 aligned
-          while (input_p < end_p) {
+          for (size_t i = 0; i < sse_frames; i += 4) {
             LOAD_DATA(load, loadu);
             CONVOLVE_4_SAMPLES();
           }
         } else {  // both non-aligned
-          while (input_p < end_p) {
+          for (size_t i = 0; i < sse_frames; i += 4) {
             LOAD_DATA(loadu, loadu);
             CONVOLVE_4_SAMPLES();
           }
         }
 
         // Summarize the SSE results to sum1 and sum2.
-        float* group_sum_p = reinterpret_cast<float*>(&sums1);
-        UNSAFE_TODO(sum1 += group_sum_p[0] + group_sum_p[1] + group_sum_p[2] +
-                            group_sum_p[3]);
-        group_sum_p = reinterpret_cast<float*>(&sums2);
-        UNSAFE_TODO(sum2 += group_sum_p[0] + group_sum_p[1] + group_sum_p[2] +
-                            group_sum_p[3]);
+        std::array<float, 4> group_sum =
+            base::bit_cast<std::array<float, 4>>(sums1);
+        sum1 += group_sum[0] + group_sum[1] + group_sum[2] + group_sum[3];
+        group_sum = base::bit_cast<std::array<float, 4>>(sums2);
+        sum2 += group_sum[0] + group_sum[1] + group_sum[2] + group_sum[3];
 
         n %= 4;
         while (n) {
@@ -475,7 +474,7 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
       double result = (1.0 - kernel_interpolation_factor) * sum1 +
                       kernel_interpolation_factor * sum2;
 
-      UNSAFE_TODO(*destination++ = result);
+      destination.take_first(1u)[0] = result;
 
       // Advance the virtual index.
       virtual_source_index_ += scale_factor_;
@@ -487,16 +486,16 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
     }
 
     // Wrap back around to the start.
-    virtual_source_index_ -= block_size_;
+    virtual_source_index_ -= kBlockSize;
 
     // Step (3) Copy r3 to r1 and r4 to r2.
     // This wraps the last input frames back to the start of the buffer.
-    UNSAFE_TODO(memcpy(r1, r3, sizeof(float) * (kernel_size_ / 2)));
-    UNSAFE_TODO(memcpy(r2, r4, sizeof(float) * (kernel_size_ / 2)));
+    r1.first(kernel_size_ / 2).copy_from(r3.first(kernel_size_ / 2));
+    r2.first(kernel_size_ / 2).copy_from(r4);
 
     // Step (4)
     // Refresh the buffer with more input.
-    ConsumeSource(r5, block_size_);
+    ConsumeSource(r5.first(kBlockSize));
   }
 }
 

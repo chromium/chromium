@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
@@ -53,24 +54,20 @@ class SincResampler final {
   SincResampler(const SincResampler&) = delete;
   SincResampler& operator=(const SincResampler&) = delete;
 
-  // Processes numberOfSourceFrames from source to produce numberOfSourceFrames
-  // / scaleFactor frames in destination.
-  void Process(const float* source,
-               float* destination,
-               int number_of_source_frames);
+  // Processes `source.size()` from `source` to produce `source.size()
+  // / scale_factor_` frames in `destination`.
+  void Process(base::span<const float> source, base::span<float> destination);
 
   // Process with input source callback function for streaming applications.
-  void Process(AudioSourceProvider*,
-               float* destination,
-               uint32_t frames_to_process);
+  void Process(AudioSourceProvider*, base::span<float> destination);
 
  protected:
   void InitializeKernel();
-  void ConsumeSource(float* buffer, unsigned number_of_source_frames);
+  void ConsumeSource(base::span<float> buffer);
 
-  double scale_factor_;
-  unsigned kernel_size_;
-  unsigned number_of_kernel_offsets_;
+  const double scale_factor_;
+  const unsigned kernel_size_;
+  const unsigned number_of_kernel_offsets_;
 
   // m_kernelStorage has m_numberOfKernelOffsets kernels back-to-back, each of
   // size m_kernelSize.  The kernel offsets are sub-sample shifts of a windowed
@@ -81,15 +78,8 @@ class SincResampler final {
   // precision.  It must be double precision to avoid drift.
   double virtual_source_index_;
 
-  // This is the number of destination frames we generate per processing pass on
-  // the buffer.
-  unsigned block_size_;
-
   // Source is copied into this buffer for each processing pass.
   AudioFloatArray input_buffer_;
-
-  raw_ptr<const float> source_;
-  unsigned source_frames_available_;
 
   // m_sourceProvider is used to provide the audio input stream to the
   // resampler.
