@@ -546,10 +546,21 @@ bool GlicEnabling::ShouldBypassFreUi(
 }
 
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
-  if (!IsTrustFirstOnboardingEnabledForProfile(profile)) {
+  if (!IsMultiInstanceEnabled() ||
+      !base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
     return false;
   }
-  return base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+
+  if (HasConsentedForProfile(profile)) {
+    return true;
+  }
+
+  // If the user has not consented and with onboarding is enabled, the auto open
+  // behavior is gated by the Trust First onboarding feature.
+  if (features::kAutoOpenGlicForPdfWithOnboarding.Get()) {
+    return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
+  }
+  return false;
 }
 
 bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
