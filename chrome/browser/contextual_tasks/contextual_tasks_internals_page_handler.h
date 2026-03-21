@@ -41,6 +41,9 @@ class ContextualTasksInternalsPageHandler
   void GetRelevantContext(
       contextual_tasks_internals::mojom::GetRelevantContextRequestPtr request,
       GetRelevantContextCallback callback) override;
+  void SetForcedEmbeddedPageHost(const GURL& host) override;
+  void GetForcedEmbeddedPageHost(
+      GetForcedEmbeddedPageHostCallback callback) override;
 
   // OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,
