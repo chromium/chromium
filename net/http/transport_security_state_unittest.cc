@@ -995,8 +995,10 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
                   ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
 
-  // If CT is not required, then regardless of the CT state for the host,
-  // it should indicate CT is not required.
+  // If the delegate overrides the CT requirement and returns that CT is not
+  // required for the specified cert, then any CT failure should instead be
+  // allowed and indicate CT is not required. If CT was successful, then it
+  // should indicate that CT requirements were met, regardless of the delegate.
   {
     TransportSecurityState state;
     const ct::CTRequirementsStatus original_status = state.CheckCTRequirements(
@@ -1016,6 +1018,10 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENTS_MET,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
     state.SetRequireCTDelegate(nullptr);
     EXPECT_EQ(original_status,

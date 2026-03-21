@@ -1307,9 +1307,9 @@ TEST_F(CertVerifyProcBuiltinTest, CtIsRequiredAndCtVerificationComplies) {
       /*additional_trust_anchors=*/{root->GetX509Certificate()});
   auto mock_require_ct_delegate = base::MakeRefCounted<MockRequireCTDelegate>();
   instance_params.require_ct_delegate = mock_require_ct_delegate;
+  // Since the CT policy complies, the delegate should not be called.
   EXPECT_CALL(*mock_require_ct_delegate, IsCTRequiredForHost(kHostname, _, _))
-      .WillRepeatedly(
-          testing::Return(RequireCTDelegate::CTRequirementLevel::REQUIRED));
+      .Times(0);
   InitializeVerifyProc(instance_params);
   net::ScopedTestKnownRoot scoped_known_root(root->GetX509Certificate().get());
 
