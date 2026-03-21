@@ -458,7 +458,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                              bool has_ua_visual_transition,
                              UserNavigationInvolvement involvement);
   void DispatchWindowLoadEvent();
-  void DocumentWasClosed();
+  // Dispatches the window load event and the non-persisted pageshow event
+  // after the document finishes loading.
+  void DispatchLoadAndPageshowEvents();
 
   void AcceptLanguagesChanged();
 

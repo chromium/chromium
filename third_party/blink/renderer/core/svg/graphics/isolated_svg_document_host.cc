@@ -216,9 +216,10 @@ void IsolatedSVGDocumentHost::LoadCompleted() {
 
     case kWaitingForAsyncLoadCompletion:
       // Because LoadCompleted() is called synchronously from
-      // Document::ImplicitClose(), we defer AsyncLoadCompleted() to avoid
-      // potential bugs and timing dependencies around ImplicitClose() and
-      // to make LoadEventFinished() true when AsyncLoadCompleted() is called.
+      // Document::DispatchLoadEventAndFinalize(), we defer AsyncLoadCompleted()
+      // to avoid potential bugs and timing dependencies around
+      // DispatchLoadEventAndFinalize() and to make LoadEventFinished() true
+      // when AsyncLoadCompleted() is called.
       async_load_task_handle_ = PostCancellableTask(
           *GetFrame()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
           BindOnce(&IsolatedSVGDocumentHost::AsyncLoadCompleted,

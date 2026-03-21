@@ -940,7 +940,7 @@ void LocalDOMWindow::DispatchWindowLoadEvent() {
   DispatchLoadEvent();
 }
 
-void LocalDOMWindow::DocumentWasClosed() {
+void LocalDOMWindow::DispatchLoadAndPageshowEvents() {
   DispatchWindowLoadEvent();
 
   // An extension to step 4.5. or a part of step 4.6.3. of

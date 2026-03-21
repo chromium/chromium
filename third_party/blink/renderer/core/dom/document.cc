@@ -4251,7 +4251,7 @@ bool NeedsStyleAndLayoutUpdateAtClose(Document& document) {
 }
 }  // namespace
 
-void Document::ImplicitClose() {
+void Document::DispatchLoadEventAndFinalize() {
   DCHECK(!InStyleRecalc());
 
   load_event_progress_ = kLoadEventInProgress;
@@ -4270,7 +4270,7 @@ void Document::ImplicitClose() {
     AccessSVGExtensions().DispatchSVGLoadEventToOutermostSVGElements();
 
   if (domWindow())
-    domWindow()->DocumentWasClosed();
+    domWindow()->DispatchLoadAndPageshowEvents();
 
   if (GetFrame() && GetFrame()->IsMainFrame())
     GetFrame()->GetLocalFrameHostRemote().DocumentOnLoadCompleted();
@@ -4384,7 +4384,7 @@ bool Document::CheckCompletedInternal() {
   SetReadyState(kComplete);
   const bool load_event_needed = LoadEventStillNeeded();
   if (load_event_needed) {
-    ImplicitClose();
+    DispatchLoadEventAndFinalize();
   }
 
   DCHECK(fetcher_);
