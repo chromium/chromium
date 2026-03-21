@@ -1800,10 +1800,18 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickNtpOmnibox) {
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
 
-  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
+  model()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/false);
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             controller()->popup_state_manager()->popup_state());
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualSearch.AiModeButtonClick.NtpOmnibox"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.AiModeButtonClick.NtpOmnibox", true, 1);
+
+  model()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
 
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualSearch.AiModeButtonClick.NtpOmnibox"),
@@ -1823,10 +1831,18 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickSrpOmnibox) {
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
 
-  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             controller()->popup_state_manager()->popup_state());
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualSearch.AiModeButtonClick.SrpOmnibox"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.AiModeButtonClick.SrpOmnibox", true, 1);
+
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
 
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualSearch.AiModeButtonClick.SrpOmnibox"),
@@ -1845,10 +1861,18 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickWebOmnibox) {
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
 
-  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             controller()->popup_state_manager()->popup_state());
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualSearch.AiModeButtonClick.WebOmnibox"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.AiModeButtonClick.WebOmnibox", true, 1);
+
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
 
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualSearch.AiModeButtonClick.WebOmnibox"),
