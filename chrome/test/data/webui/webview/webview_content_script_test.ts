@@ -599,15 +599,10 @@ suite('WebviewContentScriptTest', function() {
       {title: 'Service Worker script', event: 'onBeforeRequest'},
       {title: 'Fetch from Shared Worker', event: 'onBeforeRequest'},
       {title: 'Fetch from Service Worker', event: 'onBeforeRequest'},
-      {title: 'WebSocket', event: 'onBeforeRequest'},
-      {title: 'WebSocket in Dedicated Worker', event: 'onBeforeRequest'},
       {title: 'WebSocket in Shared Worker', event: 'onBeforeRequest'},
       {title: 'WebSocket in Service Worker', event: 'onBeforeRequest'},
-      {title: 'WebTransport', event: 'onBeforeRequest'},
-      {title: 'WebTransport in Dedicated Worker', event: 'onBeforeRequest'},
       {title: 'WebTransport in Shared Worker', event: 'onBeforeRequest'},
       {title: 'WebTransport in Service Worker', event: 'onBeforeRequest'},
-      {title: 'Auth request', event: 'onAuthRequired'},
     ];
     guestUrl.searchParams.set(
         'expected_failures', expectedFailures.map(f => f.title).join(','));

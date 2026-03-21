@@ -24,6 +24,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -363,6 +364,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
@@ -2254,8 +2256,12 @@ bool ChromeContentBrowserClient::HasWebRequestAPIProxy(
           browser_context);
   if (!web_request_api) {
     return false;
+  } else {
+    // TODO(crbug.com/362539771): Check if the request is from guest view and
+    // use HasWebRequestOrDeclarativeWebRequestExtension() instead of using
+    // MayHaveProxies().
+    return web_request_api->MayHaveProxies();
   }
-  return web_request_api && web_request_api->MayHaveProxies();
 #else
   return false;
 #endif
@@ -6633,10 +6639,9 @@ bool ChromeContentBrowserClient::WillInterceptWebSocket(
   // BrowserContextKeyedAPI factories for e.g. WebRequest.
   if (!web_request_api) {
     return false;
+  } else {
+    return web_request_api->MayHaveProxiesForFrame(frame);
   }
-
-  return (web_request_api->MayHaveProxies() ||
-          web_request_api->IsAvailableToWebViewEmbedderFrame(frame));
 #else
   return false;
 #endif
@@ -8304,8 +8309,8 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
   const auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
-  if (!web_request_api || web_request_api->MayHaveProxies() ||
-      web_request_api->IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
+  if (!web_request_api ||
+      web_request_api->MayHaveProxiesForFrame(render_frame_host)) {
     return false;
   }
 #endif

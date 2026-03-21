@@ -8703,10 +8703,36 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
 // 2. WebView embedded in an Extension
 // 3. WebView embedded in a WebUI
 // 4. Controlled Frame in an Isolated Web App
-using ExtensionWebRequestApiCoverageTest =
-    ExtensionWebRequestApiWebTransportTest;
+class ExtensionWebRequestApiCoverageTest
+    : public ExtensionWebRequestApiWebTransportTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+ public:
+  ExtensionWebRequestApiCoverageTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{extensions_features::kOptimizeWebRequestProxy,
+          testing::get<0>(GetParam())},
+         {extensions_features::kForceWebRequestProxyForTest,
+          testing::get<1>(GetParam())}});
+  }
+  ~ExtensionWebRequestApiCoverageTest() override = default;
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiCoverageTest,
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [optimization, force] = info.param;
+    return base::StrCat({"Optimization", optimization ? "Enabled" : "Disabled",
+                         "ForceProxy", force ? "Enabled" : "Disabled"});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ExtensionWebRequestApiCoverageTest,
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         ExtensionWebRequestApiCoverageTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiCoverageTest,
                        RequestInterceptionCoverage) {
   ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(RunTest("test_interception_coverage.html")) << message_;

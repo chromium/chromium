@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -663,7 +664,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       declarative_request_extension_count_, kMaxCount);
   base::UmaHistogramExactLinear(
       "Extensions.WebRequest.WebViewDependentExtensionCount",
-      web_view_extension_count_, kMaxCount);
+      web_view_extension_ids_.size(), kMaxCount);
 
   if (decision == ProxyDecision::kWillProxyForExtension &&
       !base::FeatureList::IsEnabled(
@@ -674,14 +675,14 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         ProxyDecisionDetailsForExtension::kForMixedReasons;
     if (web_request_extension_count_ == 0 &&
         declarative_request_extension_count_ == 0) {
-      CHECK_NE(web_view_extension_count_, 0);
+      CHECK_NE(web_view_extension_ids_.size(), 0u);
       details = ProxyDecisionDetailsForExtension::kOnlyForWebView;
-    } else if (web_view_extension_count_ == 0 &&
+    } else if (web_view_extension_ids_.size() == 0 &&
                declarative_request_extension_count_ == 0) {
       CHECK_NE(web_request_extension_count_, 0);
       details = ProxyDecisionDetailsForExtension::kOnlyForWebRequest;
     } else if (web_request_extension_count_ == 0 &&
-               web_view_extension_count_ == 0) {
+               web_view_extension_ids_.size() == 0) {
       CHECK_NE(declarative_request_extension_count_, 0);
       details = ProxyDecisionDetailsForExtension::kOnlyForDeclarativeRequest;
     }
@@ -704,39 +705,33 @@ WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProxyDecision decision = MayHaveProxies()
-                               ? ProxyDecision::kWillProxyForExtension
-                               : ProxyDecision::kWillNotProxy;
-  if (decision != ProxyDecision::kWillProxyForExtension) {
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-    // There are a few internal WebUIs that use WebView tag that are allowlisted
-    // for webRequest.
-    // TODO(crbug.com/40288053): Remove the scheme check once we're sure
-    // that WebUIs with WebView run in real WebUI processes and check the
-    // context type using |IsAvailableToWebViewEmbedderFrame()| below.
-    if (WebViewGuest::IsGuest(frame)) {
-      content::RenderFrameHost* embedder =
-          frame->GetOutermostMainFrameOrEmbedder();
-      const auto& embedder_url = embedder->GetLastCommittedURL();
-      if (embedder_url.SchemeIs(content::kChromeUIScheme)) {
-        auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
-        if (feature
-                ->IsAvailableToContext(
-                    nullptr, mojom::ContextType::kWebUi, embedder_url,
-                    util::GetBrowserContextId(browser_context),
-                    BrowserFrameContextData(frame))
-                .is_available()) {
-          decision = ProxyDecision::kWillProxyForWebUI;
-        }
-      } else {
-        if (IsAvailableToWebViewEmbedderFrame(frame)) {
-          decision = ProxyDecision::kWillProxyForEmbedderWebView;
-        }
-      }
-    }
-#endif
 
-    if (decision == ProxyDecision::kWillNotProxy) {
+  ProxyDecision decision = ProxyDecision::kWillNotProxy;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kOptimizeWebRequestProxy)) {
+    if (HasWebRequestOrDeclarativeWebRequestExtension()) {
+      decision = ProxyDecision::kWillProxyForExtension;
+    } else if (IsAvailableToWebViewEmbedderWebUIFrame(frame)) {
+      // There are a few internal WebUIs that use WebView tag that are
+      // allowlisted for webRequest.
+      decision = ProxyDecision::kWillProxyForWebUI;
+    } else if (IsAvailableToWebViewEmbedderWebPageFrame(frame)) {
+      decision = ProxyDecision::kWillProxyForEmbedderWebView;
+    } else if (IsAvailableToWebViewEmbedderExtensionFrame(frame)) {
+      decision = ProxyDecision::kWillProxyForEmbedderWebView;
+    } else {
+      return decision;
+    }
+  } else {
+    if (MayHaveProxies()) {
+      decision = ProxyDecision::kWillProxyForExtension;
+    } else if (IsAvailableToWebViewEmbedderWebUIFrame(frame)) {
+      // There are a few internal WebUIs that use WebView tag that are
+      // allowlisted for webRequest.
+      decision = ProxyDecision::kWillProxyForWebUI;
+    } else if (IsAvailableToWebViewEmbedderWebPageFrame(frame)) {
+      decision = ProxyDecision::kWillProxyForEmbedderWebView;
+    } else {
       return decision;
     }
   }
@@ -787,17 +782,16 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     bool is_request_for_navigation,
     AuthRequestCallback callback,
     WebViewGuest* web_view_guest) {
-  if (!MayHaveProxies()) {
-    bool needed_for_webview = false;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-    needed_for_webview =
-        web_view_guest &&
-        IsAvailableToWebViewEmbedderFrame(web_view_guest->GetGuestMainFrame());
-#endif
-    if (!needed_for_webview) {
-      return false;
-    }
+  if (!MayHaveProxiesForFrame(
+          web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr)) {
+    return false;
   }
+#else   // BUILDFLAG(ENABLE_GUEST_VIEW)
+  if (!MayHaveProxies()) {
+    return false;
+  }
+#endif  //  BUILDFLAG(ENABLE_GUEST_VIEW)
 
   content::GlobalRequestID proxied_request_id = request_id;
   // In MaybeProxyURLLoaderFactory, we use an invalid render_process_id for
@@ -828,7 +822,7 @@ void WebRequestAPI::ProxyWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(MayHaveProxies() || IsAvailableToWebViewEmbedderFrame(frame));
+  DCHECK(MayHaveProxiesForFrame(frame));
 
   content::BrowserContext* browser_context =
       frame->GetProcess()->GetBrowserContext();
@@ -856,13 +850,10 @@ void WebRequestAPI::ProxyWebTransport(
         handshake_client,
     content::ContentBrowserClient::WillCreateWebTransportCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!MayHaveProxies()) {
-    auto* render_frame_host = content::RenderFrameHost::FromID(
-        render_process_host.GetDeprecatedID(), frame_routing_id);
-    if (!IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
-      std::move(callback).Run(std::move(handshake_client), std::nullopt);
-      return;
-    }
+  if (!MayHaveProxiesForFrame(content::RenderFrameHost::FromID(
+          render_process_host.GetDeprecatedID(), frame_routing_id))) {
+    std::move(callback).Run(std::move(handshake_client), std::nullopt);
+    return;
   }
   DCHECK(proxies_);
   StartWebRequestProxyingWebTransport(
@@ -886,13 +877,89 @@ bool WebRequestAPI::MayHaveProxies() const {
 
   return (web_request_extension_count_ > 0) ||
          (declarative_request_extension_count_ > 0) ||
-         (web_view_extension_count_ > 0);
+         (web_view_extension_ids_.size() > 0);
 }
 
-bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
+bool WebRequestAPI::MayHaveProxiesForFrame(
+    content::RenderFrameHost* render_frame_host) const {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kOptimizeWebRequestProxy)) {
+    return HasWebRequestOrDeclarativeWebRequestExtension() ||
+           IsAvailableToWebViewEmbedderWebPageFrame(render_frame_host) ||
+           IsAvailableToWebViewEmbedderWebUIFrame(render_frame_host) ||
+           IsAvailableToWebViewEmbedderExtensionFrame(render_frame_host);
+  } else {
+    return MayHaveProxies() ||
+           IsAvailableToWebViewEmbedderWebPageFrame(render_frame_host) ||
+           IsAvailableToWebViewEmbedderWebUIFrame(render_frame_host);
+  }
+}
+
+bool WebRequestAPI::HasWebRequestOrDeclarativeWebRequestExtension() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    return true;
+  }
+
+  return (web_request_extension_count_ > 0) ||
+         (declarative_request_extension_count_ > 0);
+}
+
+bool WebRequestAPI::IsAvailableToWebViewEmbedderWebUIFrame(
     content::RenderFrameHost* render_frame_host) const {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-  if (!render_frame_host || !WebViewGuest::IsGuest(render_frame_host)) {
+  if (!render_frame_host ||
+      !WebViewGuest::FromRenderFrameHost(render_frame_host)) {
+    return false;
+  }
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
+  content::RenderFrameHost* embedder_frame =
+      render_frame_host->GetOutermostMainFrameOrEmbedder();
+  const auto& embedder_url = embedder_frame->GetLastCommittedURL();
+  // TODO(crbug.com/40288053): Remove the scheme check once we're sure
+  // that WebUIs with WebView run in real WebUI processes and check the
+  // context type using |IsAvailableToWebViewEmbedderWebPageFrame()| below.
+  if (!embedder_url.SchemeIs(content::kChromeUIScheme)) {
+    return false;
+  }
+  auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
+  return feature
+      ->IsAvailableToContext(nullptr, mojom::ContextType::kWebUi, embedder_url,
+                             util::GetBrowserContextId(browser_context),
+                             BrowserFrameContextData(render_frame_host))
+      .is_available();
+#else
+  return false;
+#endif
+}
+
+bool WebRequestAPI::IsAvailableToWebViewEmbedderExtensionFrame(
+    content::RenderFrameHost* render_frame_host) const {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  if (!render_frame_host ||
+      !WebViewGuest::FromRenderFrameHost(render_frame_host)) {
+    return false;
+  }
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
+  content::RenderFrameHost* embedder_frame =
+      render_frame_host->GetOutermostMainFrameOrEmbedder();
+  const Extension* extension =
+      ProcessManager::Get(browser_context)
+          ->GetExtensionForRenderFrameHost(embedder_frame);
+  return extension && web_view_extension_ids_.contains(extension->id());
+#else
+  return false;
+#endif
+}
+
+bool WebRequestAPI::IsAvailableToWebViewEmbedderWebPageFrame(
+    content::RenderFrameHost* render_frame_host) const {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  if (!render_frame_host ||
+      !WebViewGuest::FromRenderFrameHost(render_frame_host)) {
     return false;
   }
 
@@ -957,7 +1024,7 @@ void WebRequestAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
     update_may_have_proxies = true;
   }
   if (HasWebViewPermission(*extension)) {
-    ++web_view_extension_count_;
+    CHECK(web_view_extension_ids_.insert(extension->id()).second);
     update_may_have_proxies = true;
   }
   if (update_may_have_proxies) {
@@ -980,7 +1047,7 @@ void WebRequestAPI::OnExtensionUnloaded(
     update_may_have_proxies = true;
   }
   if (HasWebViewPermission(*extension)) {
-    --web_view_extension_count_;
+    CHECK_EQ(web_view_extension_ids_.erase(extension->id()), 1u);
     update_may_have_proxies = true;
   }
   if (update_may_have_proxies) {

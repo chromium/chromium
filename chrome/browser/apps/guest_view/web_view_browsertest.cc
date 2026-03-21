@@ -5116,9 +5116,17 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestWebRequestBlockedNavigation) {
 // 2. WebView embedded in an Extension  <<This test>>
 // 3. WebView embedded in a WebUI
 // 4. Controlled Frame in an Isolated Web App
-class WebViewInterceptionCoverageTest : public WebViewTestBase {
+class WebViewInterceptionCoverageTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
-  WebViewInterceptionCoverageTest() = default;
+  WebViewInterceptionCoverageTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{extensions_features::kOptimizeWebRequestProxy,
+          testing::get<0>(GetParam())},
+         {extensions_features::kForceWebRequestProxyForTest,
+          testing::get<1>(GetParam())}});
+  }
   ~WebViewInterceptionCoverageTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -5136,11 +5144,24 @@ class WebViewInterceptionCoverageTest : public WebViewTestBase {
     return webtransport_server_;
   }
 
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [optimization, force] = info.param;
+    return base::StrCat({"Optimization", optimization ? "Enabled" : "Disabled",
+                         "ForceProxy", force ? "Enabled" : "Disabled"});
+  }
+
  private:
   content::WebTransportSimpleTestServer webtransport_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebViewInterceptionCoverageTest,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         WebViewInterceptionCoverageTest,
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         WebViewInterceptionCoverageTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(WebViewInterceptionCoverageTest,
                        Shim_TestRequestInterceptionCoverage) {
   TestHelper("testRequestInterceptionCoverage", "web_view/shim",
              NEEDS_TEST_SERVER);

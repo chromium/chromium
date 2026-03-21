@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -44,6 +45,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/web_transport_simple_test_server.h"
+#include "extensions/common/extension_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 
@@ -215,9 +217,16 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
 // 3. WebView embedded in a WebUI  <<This test>>
 // 4. Controlled Frame in an Isolated Web App
 class WebUIWebViewBrowserInterceptionCoverageTest
-    : public WebUIWebViewBrowserTest {
+    : public WebUIWebViewBrowserTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
-  WebUIWebViewBrowserInterceptionCoverageTest() = default;
+  WebUIWebViewBrowserInterceptionCoverageTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{extensions_features::kOptimizeWebRequestProxy,
+          testing::get<0>(GetParam())},
+         {extensions_features::kForceWebRequestProxyForTest,
+          testing::get<1>(GetParam())}});
+  }
   ~WebUIWebViewBrowserInterceptionCoverageTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -239,13 +248,27 @@ class WebUIWebViewBrowserInterceptionCoverageTest
     return webtransport_server_;
   }
 
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [optimization, force] = info.param;
+    return base::StrCat({"Optimization", optimization ? "Enabled" : "Disabled",
+                         "ForceProxy", force ? "Enabled" : "Disabled"});
+  }
+
  private:
   net::EmbeddedTestServer websocket_test_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTP};
   content::WebTransportSimpleTestServer webtransport_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserInterceptionCoverageTest,
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebUIWebViewBrowserInterceptionCoverageTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    WebUIWebViewBrowserInterceptionCoverageTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(WebUIWebViewBrowserInterceptionCoverageTest,
                        RequestInterceptionCoverage) {
   ASSERT_TRUE(RunTestOnWebContents(
       GetWebContentsForTesting(), "webview/webview_content_script_test.js",

@@ -323,6 +323,14 @@ BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 // in WebRequestEventRouter.
 BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEventsViaEventRouter);
 
+// When enabled, optimizes WebRequest proxying by strictly limiting it to
+// requests that are subject to interception. This ensures that the 'webview'
+// permission only triggers proxying for its own guest frames (e.g., <webview>
+// or Controlled Frame), rather than globally proxying all requests. This
+// avoids unnecessary performance overhead and restores navigation
+// optimizations like preconnect.
+BASE_DECLARE_FEATURE(kOptimizeWebRequestProxy);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

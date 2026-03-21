@@ -40,6 +40,7 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
@@ -796,9 +797,16 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
 // 3. WebView embedded in a WebUI
 // 4. Controlled Frame in an Isolated Web App  <<This test>>
 class ControlledFrameApiInterceptionCoverageTest
-    : public ControlledFrameApiTest {
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
-  ControlledFrameApiInterceptionCoverageTest() = default;
+  ControlledFrameApiInterceptionCoverageTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{extensions_features::kOptimizeWebRequestProxy,
+          testing::get<0>(GetParam())},
+         {extensions_features::kForceWebRequestProxyForTest,
+          testing::get<1>(GetParam())}});
+  }
   ~ControlledFrameApiInterceptionCoverageTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -819,13 +827,27 @@ class ControlledFrameApiInterceptionCoverageTest
     return webtransport_server_;
   }
 
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [optimization, force] = info.param;
+    return base::StrCat({"Optimization", optimization ? "Enabled" : "Disabled",
+                         "ForceProxy", force ? "Enabled" : "Disabled"});
+  }
+
  private:
   net::EmbeddedTestServer websocket_test_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTP};
   content::WebTransportSimpleTestServer webtransport_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiInterceptionCoverageTest,
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ControlledFrameApiInterceptionCoverageTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    ControlledFrameApiInterceptionCoverageTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameApiInterceptionCoverageTest,
                        RequestInterceptionCoverage) {
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
