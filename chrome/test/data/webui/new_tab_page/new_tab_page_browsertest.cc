@@ -138,14 +138,24 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
           "mocha.run()");
 }
 
-// TODO(https://crbug.com/492773182): Fix the flakiness.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ComposeboxUpload DISABLED_ComposeboxUpload
-#else
-#define MAYBE_ComposeboxUpload ComposeboxUpload
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxUpload) {
-  RunTest("new_tab_page/composebox/composebox_upload_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadFileTest) {
+  RunTest("new_tab_page/composebox/composebox_upload_test.js",
+          "runMochaSuite('NewTabPageComposeboxUploadFileTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadPasteTest) {
+  RunTest("new_tab_page/composebox/composebox_upload_test.js",
+          "runMochaSuite('NewTabPageComposeboxUploadPasteTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadToolModeTest) {
+  RunTest("new_tab_page/composebox/composebox_upload_test.js",
+          "runMochaSuite('NewTabPageComposeboxUploadToolModeTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadContextTest) {
+  RunTest("new_tab_page/composebox/composebox_upload_test.js",
+          "runMochaSuite('NewTabPageComposeboxUploadContextTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileCarousel) {

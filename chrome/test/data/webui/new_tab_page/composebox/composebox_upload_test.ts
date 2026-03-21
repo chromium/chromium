@@ -14,38 +14,9 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 import {assertStyle} from '../test_support.js';
 
 import * as testSupport from './test_support.js';
-suite('NewTabPageComposeboxUploadTest', () => {
+
+suite('NewTabPageComposeboxUploadFileTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
-
-  test('upload image', async () => {
-    testSupport.createComposeboxElement(testProxy);
-    // Submit button is disabled without any input.
-    assertStyle(
-        testSupport.getSubmitContainer(testProxy), 'cursor', 'not-allowed');
-    await testSupport.uploadFileAndVerify(
-        testProxy, testSupport.FAKE_TOKEN_STRING,
-        new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        testSupport.FAKE_TOKEN_STRING,
-        ContextUploadStatus.kUploadSuccessful,
-        null,
-    );
-    await testProxy.element.updateComplete;
-    await microtasksFinished();
-
-    assertStyle(testSupport.getSubmitContainer(testProxy), 'cursor', 'pointer');
-  });
-
-  test(
-      'upload image works when config is set to wildcard image/*', async () => {
-        loadTimeData.overrideValues({
-          'composeboxImageFileTypes': 'image/*',
-        });
-        testSupport.createComposeboxElement(testProxy);
-        const token = {low: BigInt(1), high: BigInt(2)};
-        const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
-        await testSupport.uploadFileAndVerify(testProxy, token, file);
-      });
 
   test('uploading/deleting pdf file queries zps', async () => {
     loadTimeData.overrideValues(
@@ -140,6 +111,36 @@ suite('NewTabPageComposeboxUploadTest', () => {
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
   });
+
+  test('upload image', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    // Submit button is disabled without any input.
+    assertStyle(
+        testSupport.getSubmitContainer(testProxy), 'cursor', 'not-allowed');
+    await testSupport.uploadFileAndVerify(
+        testProxy, testSupport.FAKE_TOKEN_STRING,
+        new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        testSupport.FAKE_TOKEN_STRING,
+        ContextUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+
+    assertStyle(testSupport.getSubmitContainer(testProxy), 'cursor', 'pointer');
+  });
+
+  test(
+      'upload image works when config is set to wildcard image/*', async () => {
+        loadTimeData.overrideValues({
+          'composeboxImageFileTypes': 'image/*',
+        });
+        testSupport.createComposeboxElement(testProxy);
+        const token = {low: BigInt(1), high: BigInt(2)};
+        const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
+        await testSupport.uploadFileAndVerify(testProxy, token, file);
+      });
 
   [new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
    new File(['foo'], 'foo.pdf', {
@@ -536,6 +537,10 @@ suite('NewTabPageComposeboxUploadTest', () => {
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
       });
+});
+
+suite('NewTabPageComposeboxUploadPasteTest', () => {
+  const testProxy = testSupport.setupComposeboxTest();
 
   test('pasting valid files calls addFileContext', async () => {
     // Arrange.
@@ -703,9 +708,20 @@ suite('NewTabPageComposeboxUploadTest', () => {
         assertFalse(pasteEvent.defaultPrevented);
       });
 
-  test('pasting mixed files is processed correctly ', async () => {
+  test('pasting mixed files is processed correctly', async () => {
     // Arrange.
+    const testInputState = {
+      ...testSupport.mockInputState,
+      maxInstances: {
+        [InputType.kBrowserTab]: 2,
+        [InputType.kLensImage]: 2,
+        [InputType.kLensFile]: 2,
+      },
+      maxTotalInputs: 5,
+    };
     testSupport.createComposeboxElement(testProxy);
+    testProxy.searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+    await microtasksFinished();
     let i = 0;
     testProxy.searchboxHandler.setResultMapperFor(
         testSupport.ADD_FILE_CONTEXT_FN, () => {
@@ -920,6 +936,10 @@ suite('NewTabPageComposeboxUploadTest', () => {
             loadTimeData.getString('composeFileTypesAllowedError'),
             testProxy.element.$.errorScrim.errorMessage);
       });
+});
+
+suite('NewTabPageComposeboxUploadToolModeTest', () => {
+  const testProxy = testSupport.setupComposeboxTest();
 
   test('correctly sets create image mode', async () => {
     loadTimeData.overrideValues({
@@ -1048,6 +1068,10 @@ suite('NewTabPageComposeboxUploadTest', () => {
         loadTimeData.getString('composeboxFileUploadFailed'),
         testProxy.element.$.errorScrim.errorMessage);
   });
+});
+
+suite('NewTabPageComposeboxUploadContextTest', () => {
+  const testProxy = testSupport.setupComposeboxTest();
 
   test('when flag enabled, adds tab context of ghost file', async () => {
     testSupport.createComposeboxElement(testProxy);
