@@ -378,6 +378,12 @@ ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
     extension_action_->ClearBadgeText(tab_id_);
   }
 
+  // Log badge text length to determine future length limit.
+  // TODO(crbug.com/491158086): After determining suitable length limit, remove
+  // histogram and add special case handling of excessively long badges.
+  base::UmaHistogramCounts1000("Extensions.Action.SetBadgeTextLength",
+                               badge_text ? badge_text->length() : 0);
+
   NotifyChange();
   return RespondNow(NoArguments());
 }
