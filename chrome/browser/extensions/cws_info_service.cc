@@ -28,7 +28,6 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
@@ -328,12 +327,12 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
 
   base::TimeDelta elapsed_time =
       base::Time::Now() -
-      pref_service_->GetTime(prefs::kCWSInfoFetchErrorTimestamp);
+      pref_service_->GetTime(pref_names::kCWSInfoFetchErrorTimestamp);
   // If there was a previous fetch error, wait a full fetch interval before
   // retrying.
   if (elapsed_time >= base::Seconds(current_fetch_interval_secs_)) {
-    elapsed_time =
-        base::Time::Now() - pref_service_->GetTime(prefs::kCWSInfoTimestamp);
+    elapsed_time = base::Time::Now() -
+                   pref_service_->GetTime(pref_names::kCWSInfoTimestamp);
     // Enough time has elapsed since the last successful fetch.
     bool data_refresh_needed =
         elapsed_time >= base::Seconds(current_fetch_interval_secs_);
@@ -477,7 +476,7 @@ void CWSInfoService::OnResponseReceived(std::optional<std::string> response) {
     // Record the fetch error timestamp. This timestamp is used to
     // wait at least one fetch interval after an error before
     // attempting another fetch.
-    pref_service_->SetTime(prefs::kCWSInfoFetchErrorTimestamp,
+    pref_service_->SetTime(pref_names::kCWSInfoFetchErrorTimestamp,
                            base::Time::Now());
   } else {
     // Info response received without any errors. Remove the request object
@@ -491,7 +490,7 @@ void CWSInfoService::OnResponseReceived(std::optional<std::string> response) {
 
     // All requests completed. Store "freshness" timestamp in global extension
     // prefs.
-    pref_service_->SetTime(prefs::kCWSInfoTimestamp, base::Time::Now());
+    pref_service_->SetTime(pref_names::kCWSInfoTimestamp, base::Time::Now());
 
     RecordMetadataChanged(active_fetch_->metadata_changed);
     if (active_fetch_->metadata_changed) {
@@ -590,11 +589,11 @@ int CWSInfoService::GetCheckIntervalForTesting() const {
 }
 
 base::Time CWSInfoService::GetCWSInfoTimestampForTesting() const {
-  return pref_service_->GetTime(prefs::kCWSInfoTimestamp);
+  return pref_service_->GetTime(pref_names::kCWSInfoTimestamp);
 }
 
 base::Time CWSInfoService::GetCWSInfoFetchErrorTimestampForTesting() const {
-  return pref_service_->GetTime(prefs::kCWSInfoFetchErrorTimestamp);
+  return pref_service_->GetTime(pref_names::kCWSInfoFetchErrorTimestamp);
 }
 
 // static

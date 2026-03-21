@@ -2975,15 +2975,6 @@ inline constexpr char kCreatePasskeysInICloudKeychain[] =
     "webauthn.create_in_icloud_keychain";
 #endif
 
-// Records the last time the CWS Info Service downloaded information about
-// currently installed extensions from the Chrome Web Store, successfully
-// compared it with the information stored in extension_prefs and updated the
-// latter if necessary. The timestamp therefore represents the "freshness" of
-// the CWS information saved.
-inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
-inline constexpr char kCWSInfoFetchErrorTimestamp[] =
-    "extensions.cws_info_fetch_error_timestamp";
-
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =
     "storage_partitions.should_garbage_collect";
