@@ -1,0 +1,27 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#header {
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  margin-bottom: 28px;
+}
+
+#backButton {
+  --cr-icon-button-margin-end: 10px;
+  --cr-icon-button-margin-start: -10px;
+}
+
+certificate-list {
+  padding: 20px 0;
+}

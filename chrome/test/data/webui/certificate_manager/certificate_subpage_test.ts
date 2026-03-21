@@ -76,7 +76,7 @@ suite('CertificateSubpageV2Test', () => {
         2, testProxy.handler.getCallCount('getCertificates'),
         'getCertificates called incorrect amount of times');
 
-    const lists = certSubpage.shadowRoot!.querySelectorAll('certificate-list');
+    const lists = certSubpage.shadowRoot.querySelectorAll('certificate-list');
     assertEquals(2, lists.length, 'no lists displayed');
     assertEquals('CRS', lists[0]!.headerText, 'crs list header wrong');
     assertEquals(

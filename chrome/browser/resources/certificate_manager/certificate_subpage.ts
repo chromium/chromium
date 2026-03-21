@@ -17,15 +17,14 @@
 import '/strings.m.js';
 import './certificate_list.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CertificateSource} from './certificate_manager.mojom-webui.js';
-import {getTemplate} from './certificate_subpage.html.js';
+import {getCss} from './certificate_subpage.css.js';
+import {getHtml} from './certificate_subpage.html.js';
 import {Page, Router} from './navigation.js';
 
 export interface CertificateSubpageElement {
@@ -45,34 +44,35 @@ export class SubpageCertificateList {
   hideHeader?: boolean;
 }
 
-const CertificateSubpageElementBase = I18nMixin(PolymerElement);
+const CertificateSubpageElementBase = I18nMixinLit(CrLitElement);
 
 export class CertificateSubpageElement extends CertificateSubpageElementBase {
   static get is() {
     return 'certificate-subpage';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      subpageTitle: String,
+      subpageTitle: {type: String},
 
-      subpageCertLists: {
-        type: Array,
-        value: () => [],
-      },
+      subpageCertLists: {type: Array},
 
-      navigateBackTarget: Page,
+      navigateBackTarget: {type: String},
     };
   }
 
-  declare subpageTitle: string;
-  declare subpageCertLists: SubpageCertificateList[];
-  declare navigateBackTarget: Page;
-  navigateBackSource: Page;
+  accessor subpageTitle: string = '';
+  accessor subpageCertLists: SubpageCertificateList[] = [];
+  accessor navigateBackTarget: Page = Page.LOCAL_CERTS;
+  navigateBackSource: Page = Page.LOCAL_CERTS;
 
   // Sets initial keyboard focus of the subpage. Assumes that subpage elements
   // are visible.
@@ -80,7 +80,7 @@ export class CertificateSubpageElement extends CertificateSubpageElementBase {
     focusWithoutInk(this.$.backButton);
   }
 
-  private onBackButtonClick_(e: Event) {
+  protected onBackButtonClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(this.navigateBackTarget);
   }
