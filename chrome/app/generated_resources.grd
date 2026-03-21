@@ -7711,6 +7711,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their current page. The $1 is a placeholder for the page title.">
         Ask Google about this page: <ph name="PAGE_TITLE">$1</ph>
       </message>
+      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_OVERLAY"
+        desc="The name of the Lens overlay command in the content area context menu">
+        Search with Google Lens
+      </message>
+
 
       <!-- NTP -->
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">
