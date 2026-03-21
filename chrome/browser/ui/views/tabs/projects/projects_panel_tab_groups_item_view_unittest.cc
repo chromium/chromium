@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -14,9 +15,12 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+constexpr char16_t kTestGroupName[] = u"my_group";
 
 class ScopedAnimationDisabler {
  public:
@@ -28,33 +32,34 @@ class ScopedAnimationDisabler {
   }
 };
 
+tab_groups::SavedTabGroup& GetTestSavedTabGroup() {
+  static base::NoDestructor<tab_groups::SavedTabGroup> group(
+      kTestGroupName, tab_groups::TabGroupColorId::kGrey,
+      std::vector<tab_groups::SavedTabGroupTab>(), std::nullopt);
+  return *group;
+}
+
 }  // namespace
 
 class ProjectsPanelTabGroupsItemViewTest : public ChromeViewsTestBase {};
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestDisplay) {
-  tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
-                                  tab_groups::TabGroupColorId::kGrey, {},
-                                  std::nullopt);
   auto tab_groups_item =
-      std::make_unique<ProjectsPanelTabGroupsItemView>(group);
-  EXPECT_EQ(u"my_group", tab_groups_item->title_for_testing()->GetText());
+      std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup());
+  EXPECT_EQ(kTestGroupName, tab_groups_item->title_for_testing()->GetText());
 }
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupClosed) {
-  tab_groups::SavedTabGroup closed_group(std::u16string(u"my_group"),
-                                         tab_groups::TabGroupColorId::kGrey, {},
-                                         std::nullopt);
   auto tab_groups_closed_item =
-      std::make_unique<ProjectsPanelTabGroupsItemView>(closed_group);
+      std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup());
   EXPECT_EQ(&kTabGroupClosedIcon,
             &tab_groups_closed_item->tab_group_vector_icon_for_testing());
 }
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupOpen) {
   tab_groups::SavedTabGroup open_group(
-      std::u16string(u"my_group"), tab_groups::TabGroupColorId::kGrey, {},
-      std::nullopt, std::nullopt,
+      kTestGroupName, tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
+      std::nullopt,
       tab_groups::TabGroupId::FromRawToken(
           base::Token{0x12345678, 0x9ABCDEF0}));
   auto tab_groups_open_item =
@@ -64,18 +69,15 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupOpen) {
 }
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenNonSharedTabGroup) {
-  tab_groups::SavedTabGroup non_collaboration_group(
-      std::u16string(u"my_group"), tab_groups::TabGroupColorId::kGrey, {});
-
   auto non_collaboration_group_view =
-      std::make_unique<ProjectsPanelTabGroupsItemView>(non_collaboration_group);
+      std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup());
   // Title, icon, more button, and focus ring.
   EXPECT_EQ(4u, non_collaboration_group_view->children().size());
 }
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
   tab_groups::SavedTabGroup collaboration_group(
-      std::u16string(u"my_group"), tab_groups::TabGroupColorId::kGrey, {});
+      kTestGroupName, tab_groups::TabGroupColorId::kGrey, {});
   collaboration_group.SetCollaborationId(
       syncer::CollaborationId("collaboration_id"));
 
@@ -91,20 +93,41 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
             collaboration_view->GetImageModel().GetVectorIcon().vector_icon());
 }
 
-TEST_F(ProjectsPanelTabGroupsItemViewTest, HoverStateChanges) {
+class ProjectsPanelTabGroupsItemViewWidgetTest
+    : public ProjectsPanelTabGroupsItemViewTest {
+ public:
+  void SetUp() override {
+    ProjectsPanelTabGroupsItemViewTest::SetUp();
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    ProjectsPanelTabGroupsItemViewTest::TearDown();
+  }
+
+  views::Widget* widget() { return widget_.get(); }
+
+  ProjectsPanelTabGroupsItemView* CreateItemView(
+      ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
+          more_button_callback = base::DoNothing()) {
+    return widget_->SetContentsView(
+        std::make_unique<ProjectsPanelTabGroupsItemView>(
+            GetTestSavedTabGroup(), base::DoNothing(),
+            std::move(more_button_callback)));
+  }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+};
+
+TEST_F(ProjectsPanelTabGroupsItemViewWidgetTest, HoverStateChanges) {
   ScopedAnimationDisabler animation_disabler;
 
-  tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
-                                  tab_groups::TabGroupColorId::kGrey, {},
-                                  std::nullopt);
+  auto* item_view = CreateItemView();
 
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view = widget->SetContentsView(
-      std::make_unique<ProjectsPanelTabGroupsItemView>(group));
-  widget->Show();
-
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  ui::test::EventGenerator generator(GetContext(), widget()->GetNativeWindow());
 
   auto move_mouse_to = [&](bool inside_view) {
     if (inside_view) {
@@ -133,22 +156,14 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, HoverStateChanges) {
   check_more_button_visible(false);
 }
 
-TEST_F(ProjectsPanelTabGroupsItemViewTest, RightClickTriggersContextMenu) {
-  tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
-                                  tab_groups::TabGroupColorId::kGrey, {});
-
+TEST_F(ProjectsPanelTabGroupsItemViewWidgetTest,
+       RightClickTriggersContextMenu) {
   base::MockCallback<ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback>
       more_button_callback;
 
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view =
-      widget->SetContentsView(std::make_unique<ProjectsPanelTabGroupsItemView>(
-          group, /*pressed_callback=*/base::DoNothing(),
-          more_button_callback.Get()));
-  widget->Show();
+  auto* item_view = CreateItemView(more_button_callback.Get());
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  ui::test::EventGenerator generator(GetContext(), widget()->GetNativeWindow());
   generator.MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
 
   // Left click should not trigger context menu callback.
@@ -156,7 +171,68 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, RightClickTriggersContextMenu) {
   generator.ClickLeftButton();
 
   // Right click should trigger context menu callback.
-  EXPECT_CALL(more_button_callback, Run(group.saved_guid(), testing::_))
+  EXPECT_CALL(more_button_callback, Run(item_view->guid(), testing::_))
       .Times(1);
   generator.ClickRightButton();
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewWidgetTest,
+       ReverseFocusTraversalFocusesMoreButtonFirst) {
+  ScopedAnimationDisabler animation_disabler;
+
+  // Create a view for us to layout like
+  // [ Item view  ]
+  // [ Lower view ]
+  // so we can validate the behavior when performing reverse focus traversal.
+  views::View* root_view =
+      widget()->SetContentsView(std::make_unique<views::View>());
+  root_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  auto* item_view = root_view->AddChildView(
+      std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup()));
+  auto* lower_view = root_view->AddChildView(std::make_unique<views::View>());
+  lower_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  // Set explicit bounds to ensure lower_view is physically below item_view.
+  item_view->SetPreferredSize(gfx::Size(100, 20));
+  lower_view->SetPreferredSize(gfx::Size(100, 20));
+  widget()->LayoutRootViewIfNecessary();
+
+  // Initially, the more button is hidden.
+  EXPECT_FALSE(item_view->more_button_for_testing()->GetVisible());
+
+  // Focus lower_view first.
+  widget()->GetFocusManager()->SetFocusedView(lower_view);
+  EXPECT_TRUE(lower_view->HasFocus());
+
+  // Simulate Shift+Tab from lower_view, which should focus the more button.
+  widget()->GetFocusManager()->AdvanceFocus(true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(item_view->more_button_for_testing()->HasFocus());
+  EXPECT_TRUE(item_view->more_button_for_testing()->GetVisible());
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewWidgetTest, ShiftTabFromMoreButton) {
+  ScopedAnimationDisabler animation_disabler;
+
+  auto* item_view = CreateItemView();
+
+  // Focus the item view (makes more button visible).
+  widget()->GetFocusManager()->SetFocusedView(item_view);
+  EXPECT_TRUE(item_view->more_button_for_testing()->GetVisible());
+
+  // Focus the more button.
+  widget()->GetFocusManager()->SetFocusedView(
+      item_view->more_button_for_testing());
+  EXPECT_TRUE(item_view->more_button_for_testing()->HasFocus());
+
+  // Simulate Shift+Tab to traverse from more button to the parent item view.
+  widget()->GetFocusManager()->AdvanceFocus(/*reverse=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Focus should now be on the item view.
+  EXPECT_TRUE(item_view->HasFocus());
+  EXPECT_TRUE(item_view->more_button_for_testing()->GetVisible());
 }
