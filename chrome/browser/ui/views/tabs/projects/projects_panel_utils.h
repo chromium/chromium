@@ -12,7 +12,13 @@ namespace views {
 class Button;
 }  // namespace views
 
+class Profile;
+
 namespace projects_panel {
+
+// Returns whether the Projects Panel and its entrypoints should be visible in
+// the UI for the profile.
+bool IsProjectsPanelVisibleForProfile(Profile* profile);
 
 void ConfigureInkDropForButton(views::Button* view);
 

@@ -54,6 +54,7 @@ class BrowserViewLayoutDelegate {
       const gfx::Rect& available_titlebar_area) = 0;
   virtual bool ShouldLayoutTabStrip() const = 0;
   virtual int GetExtraInfobarOffset() const = 0;
+  virtual bool IsProjectsPanelVisible() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_

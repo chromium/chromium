@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/buildflags.h"
@@ -210,6 +211,11 @@ int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
   }
 #endif
   return 0;
+}
+
+bool BrowserViewLayoutDelegateImpl::IsProjectsPanelVisible() const {
+  return projects_panel::IsProjectsPanelVisibleForProfile(
+      browser_view_->GetProfile());
 }
 
 const BrowserFrameView* BrowserViewLayoutDelegateImpl::GetFrameView() const {
