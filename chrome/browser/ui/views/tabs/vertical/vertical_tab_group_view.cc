@@ -275,6 +275,11 @@ bool VerticalTabGroupView::ShouldAnimateOpacityForAddAndRemove(
   return views::IsViewClass<VerticalTabView>(&child_view);
 }
 
+bool VerticalTabGroupView::ShouldSnapToTarget(
+    const views::View& child_view) const {
+  return views::IsViewClass<VerticalSplitTabView>(&child_view);
+}
+
 void VerticalTabGroupView::OnAnimationEnded() {
   // For collapsed tab groups update child visibility only once animations have
   // completed. This allows tabs to remain visible as the group animates closed.

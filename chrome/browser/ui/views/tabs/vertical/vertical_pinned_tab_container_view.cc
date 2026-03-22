@@ -43,6 +43,9 @@ VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(base::to_address(layout_manager_))));
+  collection_node->set_attach_child_to_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::AnimateAndReparentView,
+      base::Unretained(&layout_manager_.get())));
 
   node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
       base::BindOnce(&VerticalPinnedTabContainerView::ResetCollectionNode,
@@ -192,6 +195,11 @@ bool VerticalPinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
   // Only animate opacity for tab views.
   return views::IsViewClass<VerticalTabView>(&child_view);
+}
+
+bool VerticalPinnedTabContainerView::ShouldSnapToTarget(
+    const views::View& child_view) const {
+  return views::IsViewClass<VerticalSplitTabView>(&child_view);
 }
 
 std::optional<BrowserRootView::DropIndex>
