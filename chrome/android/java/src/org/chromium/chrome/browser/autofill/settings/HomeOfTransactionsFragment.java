@@ -52,15 +52,17 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
 
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(
-                        preference ->
-                                SettingsNavigationHelper.showAutofillCreditCardSettings(
-                                        getActivity()));
+                        preference -> {
+                            // TODO(crbug.com/482990101): Launch payments settings.
+                            return true;
+                        });
 
         findPreference(PREF_AUTOFILL_ADDRESSES)
                 .setOnPreferenceClickListener(
-                        preference ->
-                                SettingsNavigationHelper.showAutofillProfileSettings(
-                                        getActivity()));
+                        preference -> {
+                            // TODO(crbug.com/482990101): Launch addresses settings.
+                            return true;
+                        });
 
         Preference identityDocsPref = findPreference(PREF_AUTOFILL_IDENTITY_DOCS);
         identityDocsPref.setVisible(shouldShowIdentityDocs());
