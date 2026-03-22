@@ -1708,8 +1708,7 @@ class PageContentProtoProviderBrowserTestMediaData
     metadata.artist = u"test artist";
     metadata.album = u"test album";
     metadata.source_title = base::ASCIIToUTF16(base::StringPrintf(
-        "%s:%u", https_server()->GetIPLiteralString().c_str(),
-        https_server()->port()));
+        "%s:%u", https_server()->GetIPLiteralString(), https_server()->port()));
     return metadata;
   }
 

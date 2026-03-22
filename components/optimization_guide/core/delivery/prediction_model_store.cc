@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -141,12 +142,13 @@ void RecordModelStorageMetrics(const base::FilePath& base_store_dir) {
       total_models++;
     }
     base::UmaHistogramCounts100(
-        "OptimizationGuide.PredictionModelStore.ModelCount." +
-            GetStringNameForOptimizationTarget(optimization_target),
+        base::StrCat({"OptimizationGuide.PredictionModelStore.ModelCount.",
+                      GetStringNameForOptimizationTarget(optimization_target)}),
         total_models);
     base::UmaHistogramMemoryMB(
-        "OptimizationGuide.PredictionModelStore.TotalDirectorySize." +
-            GetStringNameForOptimizationTarget(optimization_target),
+        base::StrCat(
+            {"OptimizationGuide.PredictionModelStore.TotalDirectorySize.",
+             GetStringNameForOptimizationTarget(optimization_target)}),
         base::ComputeDirectorySize(optimization_target_dir) /
             kBytesPerMegabyte);
   }

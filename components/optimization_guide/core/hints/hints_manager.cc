@@ -366,9 +366,8 @@ bool ShouldContextResponsePopulateHintCache(
 void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
                                     OptimizationFilterStatus status) {
   base::UmaHistogramExactLinear(
-      base::StringPrintf(
-          "OptimizationGuide.OptimizationFilterStatus.%s",
-          GetStringNameForOptimizationType(optimization_type).c_str()),
+      base::StrCat({"OptimizationGuide.OptimizationFilterStatus.",
+                    GetStringNameForOptimizationType(optimization_type)}),
       static_cast<int>(status),
       static_cast<int>(OptimizationFilterStatus::kMaxValue));
 }
@@ -1308,9 +1307,9 @@ void HintsManager::CanApplyOptimization(
         GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
 
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ApplyDecision." +
-            optimization_guide::GetStringNameForOptimizationType(
-                optimization_type),
+        base::StrCat({"OptimizationGuide.ApplyDecision.",
+                      optimization_guide::GetStringNameForOptimizationType(
+                          optimization_type)}),
         type_decision);
 
     std::move(callback).Run(decision, metadata);
@@ -1368,8 +1367,8 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
               type_decision);
       decisions[optimization_type] = {decision, metadata};
       base::UmaHistogramEnumeration(
-          "OptimizationGuide.ApplyDecision." +
-              GetStringNameForOptimizationType(optimization_type),
+          base::StrCat({"OptimizationGuide.ApplyDecision.",
+                        GetStringNameForOptimizationType(optimization_type)}),
           type_decision);
     }
     callback.Run(url, decisions);
@@ -1505,8 +1504,8 @@ void HintsManager::CanApplyOptimizationAsync(
       HasAllInformationForDecisionAvailable(navigation_url,
                                             optimization_type)) {
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ApplyDecision." +
-            GetStringNameForOptimizationType(optimization_type),
+        base::StrCat({"OptimizationGuide.ApplyDecision.",
+                      GetStringNameForOptimizationType(optimization_type)}),
         type_decision);
     std::move(callback).Run(decision, metadata);
     return;
@@ -1722,8 +1721,8 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
               type_decision);
       base::UmaHistogramEnumeration(
-          "OptimizationGuide.ApplyDecision." +
-              GetStringNameForOptimizationType(opt_type),
+          base::StrCat({"OptimizationGuide.ApplyDecision.",
+                        GetStringNameForOptimizationType(opt_type)}),
           type_decision);
       std::move(callback).Run(decision, metadata);
     }

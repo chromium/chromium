@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -97,9 +98,9 @@ void RecordPredictionModelDownloadState(
     proto::OptimizationTarget optimization_target,
     PredictionModelDownloadManager::PredictionModelDownloadState state) {
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.PredictionModelDownloadManager.State." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
+      base::StrCat({"OptimizationGuide.PredictionModelDownloadManager.State.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        optimization_target)}),
       state);
 }
 
@@ -247,10 +248,10 @@ void PredictionModelDownloadManager::OnDownloadStarted(
     pending_download_guids_.insert(guid);
     RecordPredictionModelDownloadState(optimization_target, kStarted);
     base::UmaHistogramLongTimes(
-        "OptimizationGuide.PredictionModelDownloadManager."
-        "DownloadStartLatency." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target),
+        base::StrCat({"OptimizationGuide.PredictionModelDownloadManager."
+                      "DownloadStartLatency.",
+                      optimization_guide::GetStringNameForOptimizationTarget(
+                          optimization_target)}),
         base::TimeTicks::Now() - download_requested_time);
     for (PredictionModelDownloadObserver& observer : observers_) {
       observer.OnModelDownloadStarted(optimization_target);

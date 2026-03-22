@@ -15,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -35,9 +36,9 @@ namespace {
 void RecordTaskExecutionLatency(proto::OptimizationTarget optimization_target,
                                 base::TimeDelta execution_time) {
   base::UmaHistogramMediumTimes(
-      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
+      base::StrCat({"OptimizationGuide.ModelExecutor.TaskExecutionLatency.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        optimization_target)}),
       execution_time);
 }
 
@@ -80,8 +81,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
               proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
     base::UmaHistogramBoolean(
-        "OptimizationGuide.ModelHandler.HandlerCreated." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelHandler.HandlerCreated.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         true);
 
     TRACE_EVENT("optimization_guide", "ModelHandler::ModelHandler", "target",
@@ -246,8 +248,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     if (handler_created_time_) {
       base::UmaHistogramMediumTimes(
-          "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable." +
-              GetStringNameForOptimizationTarget(optimization_target_),
+          base::StrCat(
+              {"OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable.",
+               GetStringNameForOptimizationTarget(optimization_target_)}),
           base::TimeTicks::Now() - *handler_created_time_);
       handler_created_time_ = std::nullopt;
       TRACE_EVENT("optimization_guide", "ModelHandler::OnModelUpdated",

@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -165,19 +166,19 @@ void PredictionModelFetcherImpl::HandleResponse(
     if (response_code >= 0 &&
         response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
       base::UmaHistogramEnumeration(
-          "OptimizationGuide.PredictionModelFetcher."
-          "GetModelsResponse.Status." +
-              optimization_guide::GetStringNameForOptimizationTarget(
-                  model_info.optimization_target()),
+          base::StrCat({"OptimizationGuide.PredictionModelFetcher."
+                        "GetModelsResponse.Status.",
+                        optimization_guide::GetStringNameForOptimizationTarget(
+                            model_info.optimization_target())}),
           static_cast<net::HttpStatusCode>(response_code),
           net::HTTP_VERSION_NOT_SUPPORTED);
     }
     // Net error codes are negative but histogram enums must be positive.
     base::UmaHistogramSparse(
-        "OptimizationGuide.PredictionModelFetcher."
-        "GetModelsResponse.NetErrorCode." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                model_info.optimization_target()),
+        base::StrCat({"OptimizationGuide.PredictionModelFetcher."
+                      "GetModelsResponse.NetErrorCode.",
+                      optimization_guide::GetStringNameForOptimizationTarget(
+                          model_info.optimization_target())}),
         -net_status);
   }
 

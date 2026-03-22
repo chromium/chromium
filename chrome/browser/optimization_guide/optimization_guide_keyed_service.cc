@@ -478,9 +478,9 @@ OptimizationGuideKeyedService::CanApplyOptimization(
       hints_manager_->CanApplyOptimization(url, optimization_type,
                                            optimization_metadata);
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.ApplyDecision." +
-          optimization_guide::GetStringNameForOptimizationType(
-              optimization_type),
+      base::StrCat({"OptimizationGuide.ApplyDecision.",
+                    optimization_guide::GetStringNameForOptimizationType(
+                        optimization_type)}),
       optimization_type_decision);
   return optimization_guide::ChromeHintsManager::
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(

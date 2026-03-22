@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace optimization_guide {
 
@@ -14,8 +15,8 @@ namespace {
 void RecordDidTimeoutHistogram(proto::OptimizationTarget optimization_target,
                                bool did_timeout) {
   base::UmaHistogramBoolean(
-      "OptimizationGuide.ModelExecutor.DidTimeout." +
-          GetStringNameForOptimizationTarget(optimization_target),
+      base::StrCat({"OptimizationGuide.ModelExecutor.DidTimeout.",
+                    GetStringNameForOptimizationTarget(optimization_target)}),
       did_timeout);
 }
 

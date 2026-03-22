@@ -18,7 +18,7 @@
 
 namespace optimization_guide {
 
-std::string GetStringNameForOptimizationType(
+std::string_view GetStringNameForOptimizationType(
     proto::OptimizationType optimization_type) {
   switch (optimization_type) {
     case proto::OptimizationType::TYPE_UNSPECIFIED:

@@ -79,7 +79,7 @@ TEST(PredictionModelOverridesTest, RelativeFilePathWithMetadata) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
-                         kTestRelativeFilePath, encoded_metadata.c_str()));
+                         kTestRelativeFilePath, encoded_metadata));
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
   EXPECT_EQ(0u, overrides.size());
@@ -95,12 +95,12 @@ TEST(PredictionModelOverridesTest, OneFilePath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD|%s|%s",
-                         kTestAbsoluteFilePath, encoded_metadata.c_str()));
+                         kTestAbsoluteFilePath, encoded_metadata));
 #else
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
-                         kTestAbsoluteFilePath, encoded_metadata.c_str()));
+                         kTestAbsoluteFilePath, encoded_metadata));
 #endif
 
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
@@ -125,14 +125,14 @@ TEST(PredictionModelOverridesTest, MultipleFilePath) {
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD|%s,"
                          "OPTIMIZATION_TARGET_PAGE_TOPICS|%s|%s",
                          kTestAbsoluteFilePath, kOtherAbsoluteFilePath,
-                         encoded_metadata.c_str()));
+                         encoded_metadata));
 #else
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s,"
                          "OPTIMIZATION_TARGET_PAGE_TOPICS:%s:%s",
                          kTestAbsoluteFilePath, kOtherAbsoluteFilePath,
-                         encoded_metadata.c_str()));
+                         encoded_metadata));
 #endif
 
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(

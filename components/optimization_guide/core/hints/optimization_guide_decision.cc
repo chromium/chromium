@@ -8,7 +8,7 @@
 
 namespace optimization_guide {
 
-std::string GetStringForOptimizationGuideDecision(
+std::string_view GetStringForOptimizationGuideDecision(
     OptimizationGuideDecision decision) {
   switch (decision) {
     case OptimizationGuideDecision::kUnknown:

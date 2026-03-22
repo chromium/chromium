@@ -183,7 +183,7 @@ void ModelExecutionManager::ExecuteModel(
         std::string tabs = "";
         for (const auto& tab : tab_request->tabs()) {
           tabs += base::StringPrintf("%s\"%s\"", tabs.empty() ? "" : ",",
-                                     tab.title().c_str());
+                                     tab.title());
         }
         OPTIMIZATION_GUIDE_LOGGER(
             optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -194,7 +194,7 @@ void ModelExecutionManager::ExecuteModel(
                    optimization_guide::proto::
                        TabOrganizationRequest_TabOrganizationModelStrategy_Name(
                            tab_request->model_strategy()),
-                   tabs.c_str());
+                   tabs);
 
         break;
       }
@@ -354,16 +354,14 @@ void ModelExecutionManager::OnModelExecuteResponse(
         for (const auto& tab_group : tab_response->tab_groups()) {
           std::string tab_titles = "";
           for (const auto& tab : tab_group.tabs()) {
-            tab_titles +=
-                base::StringPrintf("%s\" %s \"", tab_titles.empty() ? "" : ",",
-                                   tab.title().c_str());
+            tab_titles += base::StringPrintf(
+                "%s\" %s \"", tab_titles.empty() ? "" : ",", tab.title());
           }
           message += base::StringPrintf(
               "%s{"
               "\"label\": \"%s\", "
               "\"tabs\": [%s] }",
-              group_cnt > 0 ? "," : "", tab_group.label().c_str(),
-              tab_titles.c_str());
+              group_cnt > 0 ? "," : "", tab_group.label(), tab_titles);
           group_cnt += 1;
         }
         message += "]";

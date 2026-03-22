@@ -10,6 +10,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
+#import "base/strings/strcat.h"
 #import "base/system/sys_info.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
@@ -221,9 +222,9 @@ OptimizationGuideService::CanApplyOptimization(
       hints_manager_->CanApplyOptimization(url, optimization_type,
                                            optimization_metadata);
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.ApplyDecision." +
-          optimization_guide::GetStringNameForOptimizationType(
-              optimization_type),
+      base::StrCat({"OptimizationGuide.ApplyDecision.",
+                    optimization_guide::GetStringNameForOptimizationType(
+                        optimization_type)}),
       optimization_type_decision);
   return optimization_guide::HintsManager::
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(

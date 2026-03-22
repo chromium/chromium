@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,7 +24,7 @@
 namespace optimization_guide {
 
 // These names are persisted to histograms, so don't change them.
-std::string GetStringNameForOptimizationTarget(
+std::string_view GetStringNameForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   switch (optimization_target) {
     case proto::OPTIMIZATION_TARGET_UNKNOWN:
@@ -249,8 +250,9 @@ void RecordPredictionModelStoreModelRemovalVersionHistogram(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       model_removal_reason);
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.PredictionModelStore.ModelRemovalReason." +
-          GetStringNameForOptimizationTarget(optimization_target),
+      base::StrCat(
+          {"OptimizationGuide.PredictionModelStore.ModelRemovalReason.",
+           GetStringNameForOptimizationTarget(optimization_target)}),
       model_removal_reason);
 }
 

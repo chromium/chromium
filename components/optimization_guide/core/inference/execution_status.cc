@@ -6,7 +6,7 @@
 
 namespace optimization_guide {
 
-std::string ExecutionStatusToString(ExecutionStatus status) {
+std::string_view ExecutionStatusToString(ExecutionStatus status) {
   switch (status) {
     case ExecutionStatus::kUnknown:
       return "Unknown";

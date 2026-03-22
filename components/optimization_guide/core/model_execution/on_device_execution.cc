@@ -36,7 +36,7 @@ void LogRequest(OptimizationGuideLogger* logger,
                 : base::StringPrintf(
                       "with input context of %d tokens:\n%s\n",
                       logged_request.input_context_num_tokens_processed(),
-                      logged_request.input_context_string().c_str()))
+                      logged_request.input_context_string()))
         << "with string:\n"
         << logged_request.execution_string();
   }

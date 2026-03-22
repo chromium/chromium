@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_HINTS_PROCESSING_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "components/optimization_guide/proto/hints.pb.h"
 
@@ -14,7 +15,7 @@ class GURL;
 namespace optimization_guide {
 
 // Returns the string representation of the optimization type.
-std::string GetStringNameForOptimizationType(
+std::string_view GetStringNameForOptimizationType(
     proto::OptimizationType optimization_type);
 
 // Returns the matching PageHint for |gurl| if found in |hint|.

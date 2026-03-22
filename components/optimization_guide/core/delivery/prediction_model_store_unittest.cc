@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -548,12 +549,14 @@ TEST_F(PredictionModelStoreTest, InconsistentModelDirsRemoved) {
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       PredictionModelStoreModelRemovalReason::kInconsistentModelDir, 2);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelStore.ModelRemovalReason." +
-          GetStringNameForOptimizationTarget(kTestOptimizationTargetFoo),
+      base::StrCat(
+          {"OptimizationGuide.PredictionModelStore.ModelRemovalReason.",
+           GetStringNameForOptimizationTarget(kTestOptimizationTargetFoo)}),
       PredictionModelStoreModelRemovalReason::kInconsistentModelDir, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelStore.ModelRemovalReason." +
-          GetStringNameForOptimizationTarget(kTestOptimizationTargetBar),
+      base::StrCat(
+          {"OptimizationGuide.PredictionModelStore.ModelRemovalReason.",
+           GetStringNameForOptimizationTarget(kTestOptimizationTargetBar)}),
       PredictionModelStoreModelRemovalReason::kInconsistentModelDir, 1);
   EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_FALSE(
@@ -596,9 +599,10 @@ TEST_F(PredictionModelStoreTest, InconsistentOptTargetDirsRemoved) {
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       PredictionModelStoreModelRemovalReason::kInconsistentModelDir, 2);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelStore.ModelRemovalReason." +
-          GetStringNameForOptimizationTarget(
-              proto::OPTIMIZATION_TARGET_UNKNOWN),
+      base::StrCat(
+          {"OptimizationGuide.PredictionModelStore.ModelRemovalReason.",
+           GetStringNameForOptimizationTarget(
+               proto::OPTIMIZATION_TARGET_UNKNOWN)}),
       PredictionModelStoreModelRemovalReason::kInconsistentModelDir, 2);
   EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_FALSE(base::DirectoryExists(model_detail_unknown.base_model_dir));

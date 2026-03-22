@@ -72,7 +72,8 @@ TEST(PerformanceClassTest, GroupsAreUnique) {
   };
   std::set<std::string> outputs;
   for (auto mojo_val : inputs) {
-    outputs.insert(SyntheticTrialGroupForPerformanceClass(mojo_val));
+    outputs.insert(
+        std::string(SyntheticTrialGroupForPerformanceClass(mojo_val)));
   }
   EXPECT_EQ(outputs.size(), inputs.size());
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -239,9 +240,10 @@ TEST_F(ModelHandlerTest, Execute) {
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::StrCat({"OptimizationGuide.ModelExecutor.TaskExecutionLatency.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
       1);
 }
 
@@ -271,9 +273,10 @@ TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTracker) {
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::StrCat({"OptimizationGuide.ModelExecutor.TaskExecutionLatency.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
       1);
 }
 
@@ -300,9 +303,10 @@ TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTrackerCanceled) {
 
   ASSERT_FALSE(task_completed);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::StrCat({"OptimizationGuide.ModelExecutor.TaskExecutionLatency.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
       0);
 }
 
@@ -323,9 +327,10 @@ TEST_F(ModelHandlerTest, BatchExecuteModelWithInputSync) {
   }
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::StrCat({"OptimizationGuide.ModelExecutor.TaskExecutionLatency.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
       1);
 }
 

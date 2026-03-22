@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_PERFORMANCE_CLASS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_PERFORMANCE_CLASS_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -44,11 +46,11 @@ bool IsPerformanceClassCompatible(
     OnDeviceModelPerformanceClass performance_class);
 
 // Get the name of the synthetic trial group for this performance class.
-std::string SyntheticTrialGroupForPerformanceClass(
+std::string_view SyntheticTrialGroupForPerformanceClass(
     OnDeviceModelPerformanceClass performance_class);
 
 // Get the name of the synthetic trial group for this performance hint.
-std::string SyntheticTrialGroupForPerformanceHint(
+std::string_view SyntheticTrialGroupForPerformanceHint(
     proto::OnDeviceModelPerformanceHint performance_hint);
 
 // Computes performance class at most once, and allows observation of it's

@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +16,7 @@ namespace optimization_guide {
 
 namespace {
 
-std::string TextDumpEventToString(mojom::TextDumpEvent value) {
+std::string_view TextDumpEventToString(mojom::TextDumpEvent value) {
   switch (value) {
     case mojom::TextDumpEvent::kFirstLayout:
       return "kFirstLayout";
@@ -136,10 +137,10 @@ std::ostream& operator<<(std::ostream& os, const FrameTextDumpResult& frame) {
   return os << base::StringPrintf(
              "event:%s rfh_id:(%d,%d) amp_frame:%s unique_navigation_id:%d "
              "contents:%s",
-             TextDumpEventToString(frame.event()).c_str(),
+             TextDumpEventToString(frame.event()),
              frame.rfh_id().child_id.value(), frame.rfh_id().frame_routing_id,
              base::ToString(frame.amp_frame()), frame.unique_navigation_id(),
-             frame.utf8_contents().value_or("null").c_str());
+             frame.utf8_contents().value_or("null"));
 }
 
 std::ostream& operator<<(std::ostream& os, const PageTextDumpResult& page) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -47,7 +48,7 @@ namespace {
 //
 // Keep in sync with RequestContext variant list in
 // //tools/metrics/histograms/metadata/optimization/histograms.xml.
-std::string GetStringNameForRequestContext(
+std::string_view GetStringNameForRequestContext(
     proto::RequestContext request_context) {
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
@@ -83,8 +84,9 @@ void RecordRequestStatusHistogram(proto::RequestContext request_context,
                                   FetcherRequestStatus status) {
   DCHECK_NE(status, FetcherRequestStatus::kDeprecatedNetworkOffline);
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus." +
-          GetStringNameForRequestContext(request_context),
+      base::StrCat(
+          {"OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.",
+           GetStringNameForRequestContext(request_context)}),
       status);
 }
 
@@ -336,13 +338,13 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   // Record histogram variants based on request context.
   // Histogram macro doesn't allow dynamic string. Use function.
   base::UmaHistogramCounts100(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount." +
-          GetStringNameForRequestContext(request_context_),
+      base::StrCat({"OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount.",
+                    GetStringNameForRequestContext(request_context_)}),
       filtered_hosts.size());
 
   base::UmaHistogramCounts100(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount." +
-          GetStringNameForRequestContext(request_context_),
+      base::StrCat({"OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount.",
+                    GetStringNameForRequestContext(request_context_)}),
       valid_urls.size());
 
   // It's safe to use |base::Unretained(this)| here because |this| owns
@@ -382,8 +384,9 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
         "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount",
         get_hints_response->hints_size());
     base::UmaHistogramMediumTimes(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency." +
-            GetStringNameForRequestContext(request_context_),
+        base::StrCat(
+            {"OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency.",
+             GetStringNameForRequestContext(request_context_)}),
         base::TimeTicks::Now() - hints_fetch_start_time_);
     if (skip_cache) {
       RecordRequestStatusHistogram(request_context_,
@@ -494,8 +497,9 @@ std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
   for (size_t i = 0; i < urls.size(); i++) {
     if (valid_urls.size() >= kMaxUrls) {
       base::UmaHistogramCounts100(
-          "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls." +
-              GetStringNameForRequestContext(request_context_),
+          base::StrCat(
+              {"OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls.",
+               GetStringNameForRequestContext(request_context_)}),
           urls.size() - i);
       OPTIMIZATION_GUIDE_LOG(
           optimization_guide_common::mojom::LogSource::HINTS,
@@ -533,8 +537,9 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
   for (size_t i = 0; i < hosts.size(); i++) {
     if (target_hosts.size() >= kMaxHosts) {
       base::UmaHistogramCounts100(
-          "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts." +
-              GetStringNameForRequestContext(request_context_),
+          base::StrCat(
+              {"OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts.",
+               GetStringNameForRequestContext(request_context_)}),
           hosts.size() - i);
       break;
     }

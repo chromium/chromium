@@ -15,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -45,8 +46,9 @@ class ScopedExecutionStatusResultRecorder {
 
   ~ScopedExecutionStatusResultRecorder() {
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ModelExecutor.ExecutionStatus." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelExecutor.ExecutionStatus.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         status_);
   }
 
@@ -158,8 +160,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // crbug/1257189: Histogram enums can't use dynamically created histogram
     // names, so factory create the local histogram (used in testing).
     base::HistogramBase* histogram = base::BooleanHistogram::FactoryGet(
-        "OptimizationGuide.ModelExecutor.ModelFileUpdated." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelExecutor.ModelFileUpdated.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         base::Histogram::kNoFlags);
     histogram->Add(true);
 
@@ -245,8 +248,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     base::TimeDelta task_scheduling_latency =
         base::TimeTicks::Now() - start_time;
     base::UmaHistogramMediumTimes(
-        "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelExecutor.TaskSchedulingLatency.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         task_scheduling_latency);
 
     // Load the model file in the background thread if not loaded yet, and
@@ -337,8 +341,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     UnloadModel();
 
     base::UmaHistogramBoolean(
-        "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelExecutor.ModelAvailableToLoad.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         !!model_file_path_);
 
     // TODO(b/298673103): Multiple calls to LoadModelFile may trigger this
@@ -381,8 +386,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
     // We only want to record successful loading times.
     base::UmaHistogramTimes(
-        "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
-            GetStringNameForOptimizationTarget(optimization_target),
+        base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadingDuration2.",
+                      GetStringNameForOptimizationTarget(optimization_target)}),
         base::TimeTicks::Now() - loading_start_time);
 
     return std::move(model_fb);
@@ -413,8 +418,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
     // Local histogram used in integration testing.
     base::BooleanHistogram::FactoryGet(
-        "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
-            GetStringNameForOptimizationTarget(optimization_target_),
+        base::StrCat(
+            {"OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully.",
+             GetStringNameForOptimizationTarget(optimization_target_)}),
         base::Histogram::kNoFlags)
         ->Add(!!loaded_model_);
 
@@ -453,8 +459,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       // The max of this histogram is 3m since only the distribution and count
       // of smaller values is important.
       base::UmaHistogramMediumTimes(
-          "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
-              GetStringNameForOptimizationTarget(optimization_target_),
+          base::StrCat(
+              {"OptimizationGuide.ModelExecutor.TimeSincePreviousRun.",
+               GetStringNameForOptimizationTarget(optimization_target_)}),
           base::TimeTicks::Now() - *last_execution_time_);
     }
     last_execution_time_ = base::TimeTicks::Now();
@@ -480,16 +487,20 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         // The max of this histogram is 1 hour because we want to understand
         // tail behavior and catch long running model executions.
         base::UmaHistogramLongTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionLatency." +
-                GetStringNameForOptimizationTarget(optimization_target_),
+            base::StrCat(
+                {"OptimizationGuide.ModelExecutor.ExecutionLatency.",
+                 GetStringNameForOptimizationTarget(optimization_target_)}),
             elapsed_timer.Elapsed());
         base::UmaHistogramLongTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
-                GetStringNameForOptimizationTarget(optimization_target_),
+            base::StrCat(
+                {"OptimizationGuide.ModelExecutor.ExecutionThreadTime.",
+                 GetStringNameForOptimizationTarget(optimization_target_)}),
             execution_timer.Elapsed());
         base::UmaHistogramMicrosecondsTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds." +
-                GetStringNameForOptimizationTarget(optimization_target_),
+            base::StrCat(
+                {"OptimizationGuide.ModelExecutor."
+                 "ExecutionThreadTimeMicroseconds.",
+                 GetStringNameForOptimizationTarget(optimization_target_)}),
             execution_timer.Elapsed());
       }
       if (watchdog_) {

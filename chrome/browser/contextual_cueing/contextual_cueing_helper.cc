@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
@@ -65,9 +66,9 @@ class ScopedNudgeDecisionRecorder {
       : optimization_type_(optimization_type), source_id_(source_id) {}
   ~ScopedNudgeDecisionRecorder() {
     base::UmaHistogramEnumeration(
-        "ContextualCueing.NudgeDecision." +
-            optimization_guide::GetStringNameForOptimizationType(
-                optimization_type_),
+        base::StrCat({"ContextualCueing.NudgeDecision.",
+                      optimization_guide::GetStringNameForOptimizationType(
+                          optimization_type_)}),
         nudge_decision_);
 
     auto* ukm_recorder = ukm::UkmRecorder::Get();

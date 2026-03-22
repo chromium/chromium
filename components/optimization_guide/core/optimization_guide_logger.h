@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_LOGGER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -76,6 +77,7 @@ class OptimizationGuideLogger {
 
     LogMessageBuilder& operator<<(const char* message);
     LogMessageBuilder& operator<<(const std::string& message);
+    LogMessageBuilder& operator<<(std::string_view message);
     LogMessageBuilder& operator<<(const GURL& url);
     LogMessageBuilder& operator<<(
         optimization_guide::proto::RequestContext request_context);

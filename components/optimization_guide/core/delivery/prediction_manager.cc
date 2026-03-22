@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -58,8 +59,9 @@ namespace {
 
 void RecordModelUpdateVersion(const proto::ModelInfo& model_info) {
   base::UmaHistogramSparse(
-      "OptimizationGuide.PredictionModelUpdateVersion." +
-          GetStringNameForOptimizationTarget(model_info.optimization_target()),
+      base::StrCat({"OptimizationGuide.PredictionModelUpdateVersion.",
+                    GetStringNameForOptimizationTarget(
+                        model_info.optimization_target())}),
       model_info.version());
 }
 
@@ -67,8 +69,9 @@ void RecordModelAvailableAtRegistration(
     proto::OptimizationTarget optimization_target,
     bool model_available_at_registration) {
   base::UmaHistogramBoolean(
-      "OptimizationGuide.PredictionManager.ModelAvailableAtRegistration." +
-          GetStringNameForOptimizationTarget(optimization_target),
+      base::StrCat(
+          {"OptimizationGuide.PredictionManager.ModelAvailableAtRegistration.",
+           GetStringNameForOptimizationTarget(optimization_target)}),
       model_available_at_registration);
 }
 
@@ -126,8 +129,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   registry_.AddObserverForOptimizationTargetModel(
       optimization_target, model_metadata, model_task_runner, observer);
   base::UmaHistogramMediumTimes(
-      "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit." +
-          GetStringNameForOptimizationTarget(optimization_target),
+      base::StrCat({"OptimizationGuide.PredictionManager."
+                    "RegistrationTimeSinceServiceInit.",
+                    GetStringNameForOptimizationTarget(optimization_target)}),
       !init_time_.is_null() ? base::TimeTicks::Now() - init_time_
                             : base::TimeDelta());
 
@@ -514,9 +518,8 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
         optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
         optimization_guide_logger_)
         << "Model Files Downloaded target: "
-        << model.model_info().optimization_target()
-        << "\nNew Version: " +
-               base::NumberToString(model.model_info().version());
+        << model.model_info().optimization_target() << "\nNew Version: "
+        << base::NumberToString(model.model_info().version());
   }
 
   // Store the received model in the store.
@@ -678,10 +681,11 @@ void PredictionManager::OnProcessLoadedModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (success) {
-    base::UmaHistogramSparse("OptimizationGuide.PredictionModelLoadedVersion." +
-                                 GetStringNameForOptimizationTarget(
-                                     model.model_info().optimization_target()),
-                             model.model_info().version());
+    base::UmaHistogramSparse(
+        base::StrCat({"OptimizationGuide.PredictionModelLoadedVersion.",
+                      GetStringNameForOptimizationTarget(
+                          model.model_info().optimization_target())}),
+        model.model_info().version());
     return;
   }
   RemoveModelFromStore(
@@ -726,8 +730,8 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
   std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
 
   base::UmaHistogramBoolean(
-      "OptimizationGuide.IsPredictionModelValid." +
-          GetStringNameForOptimizationTarget(optimization_target),
+      base::StrCat({"OptimizationGuide.IsPredictionModelValid.",
+                    GetStringNameForOptimizationTarget(optimization_target)}),
       !!model_info);
 
   if (!model_info) {

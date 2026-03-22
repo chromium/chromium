@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_OPTIMIZATION_GUIDE_DECISION_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -49,7 +50,7 @@ using OnDemandOptimizationGuideDecisionRepeatingCallback =
                              OptimizationGuideDecisionWithMetadata>&)>;
 
 // Returns a debug string for OptimizationGuideDecision.
-std::string GetStringForOptimizationGuideDecision(
+std::string_view GetStringForOptimizationGuideDecision(
     OptimizationGuideDecision decision);
 
 }  // namespace optimization_guide

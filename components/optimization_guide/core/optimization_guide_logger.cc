@@ -57,6 +57,13 @@ OptimizationGuideLogger::LogMessageBuilder::operator<<(
 }
 
 OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    std::string_view message) {
+  messages_.emplace_back(message);
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
 OptimizationGuideLogger::LogMessageBuilder::operator<<(const GURL& url) {
   messages_.push_back(url.possibly_invalid_spec());
   return *this;

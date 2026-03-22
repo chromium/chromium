@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -107,7 +108,7 @@ OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
   }
 }
 
-std::string SyntheticTrialGroupForPerformanceClass(
+std::string_view SyntheticTrialGroupForPerformanceClass(
     OnDeviceModelPerformanceClass performance_class) {
   switch (performance_class) {
     case OnDeviceModelPerformanceClass::kUnknown:
@@ -133,7 +134,7 @@ std::string SyntheticTrialGroupForPerformanceClass(
   }
 }
 
-std::string SyntheticTrialGroupForPerformanceHint(
+std::string_view SyntheticTrialGroupForPerformanceHint(
     proto::OnDeviceModelPerformanceHint performance_hint) {
   switch (performance_hint) {
     case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED:

@@ -809,7 +809,7 @@ TEST_F(PredictionManagerTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
-                         fake_path.AsUTF8Unsafe(), encoded_metadata.c_str()));
+                         fake_path.AsUTF8Unsafe(), encoded_metadata));
 
   CreatePredictionManager();
 

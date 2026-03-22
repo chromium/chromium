@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -41,7 +42,7 @@ const char kTimeUntilCompleteHistogram[] =
 const char kFrameDumpLengthHistogram[] =
     "OptimizationGuide.PageTextDump.FrameDumpLength.";
 
-std::string TextDumpEventToString(mojom::TextDumpEvent event) {
+std::string_view TextDumpEventToString(mojom::TextDumpEvent event) {
   switch (event) {
     case mojom::TextDumpEvent::kFirstLayout:
       return "FirstLayout";
@@ -277,22 +278,24 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
                           const std::optional<std::u16string>& page_text) {
     DCHECK(on_frame_text_dump_complete_);
 
-    std::string event_suffix =
+    std::string_view event_suffix =
         TextDumpEventToString(preliminary_result.event());
 
     if (!page_text) {
       base::UmaHistogramMediumTimes(
-          kTimeUntilDisconnectHistogram + event_suffix,
+          base::StrCat({kTimeUntilDisconnectHistogram, event_suffix}),
           base::TimeTicks::Now() - requests_sent_time_);
       on_frame_text_dump_complete_.Run(std::nullopt);
       return;
     }
 
-    base::UmaHistogramMediumTimes(kTimeUntilCompleteHistogram + event_suffix,
-                                  base::TimeTicks::Now() - requests_sent_time_);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kTimeUntilCompleteHistogram, event_suffix}),
+        base::TimeTicks::Now() - requests_sent_time_);
 
-    base::UmaHistogramCounts10000(kFrameDumpLengthHistogram + event_suffix,
-                                  page_text->size());
+    base::UmaHistogramCounts10000(
+        base::StrCat({kFrameDumpLengthHistogram, event_suffix}),
+        page_text->size());
 
     on_frame_text_dump_complete_.Run(
         preliminary_result.CompleteWithContents(*page_text));

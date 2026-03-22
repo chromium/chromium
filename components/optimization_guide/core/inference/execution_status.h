@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_EXECUTION_STATUS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_EXECUTION_STATUS_H_
 
-#include <string>
+#include <string_view>
 
 namespace optimization_guide {
 
@@ -43,7 +43,7 @@ enum class ExecutionStatus {
 };
 
 // Returns a string representation of |status|.
-std::string ExecutionStatusToString(ExecutionStatus status);
+std::string_view ExecutionStatusToString(ExecutionStatus status);
 
 }  // namespace optimization_guide
 

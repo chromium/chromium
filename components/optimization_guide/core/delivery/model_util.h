@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,7 @@ namespace optimization_guide {
 // target. If adding a histogram to use the string or adding an optimization
 // target, update the OptimizationGuide.OptimizationTargets histogram suffixes
 // in histograms.xml.
-std::string GetStringNameForOptimizationTarget(
+std::string_view GetStringNameForOptimizationTarget(
     proto::OptimizationTarget optimization_target);
 
 // Returns the file path represented by the given string, handling platform
