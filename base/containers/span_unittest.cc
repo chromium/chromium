@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <concepts>
 #include <iterator>
 #include <memory>
@@ -28,6 +29,8 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/hash/hash_testing.h"
@@ -3408,6 +3411,92 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
 
     // Replace an unbounded pointer a span, though.
     two_byte_spans(span(array), byte_span_from_ref(val));
+  }
+}
+
+#if PA_BUILDFLAG(CHECKED_SPAN)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+TEST(SpanTest, CheckedSpanCrashes) {
+  // Storage is wrapped in `std::unique_ptr` to force heap allocation,
+  // as it would otherwise not be owned by PartitionAlloc.
+  auto storage = std::make_unique<std::array<char, 31u>>();
+  char* thirtyone_chars = storage->data();
+
+  const size_t usable_bytes =
+      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+
+  // Were this the same size, that would mean that the end of the
+  // allocation already touches the end of the slot, and this test case
+  // becomes bogus.
+  CHECK_GT(usable_bytes, 31u);
+
+  // SAFETY: This is not safe. PartitionAlloc should force a crash.
+  EXPECT_DEATH_IF_SUPPORTED(
+      UNSAFE_BUFFERS(base::span<char>(thirtyone_chars, usable_bytes + 1)), "");
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+TEST(SpanTest, CheckedSpanAllowsSlack) {
+  // Storage is wrapped in `std::unique_ptr` to force heap allocation,
+  // as it would otherwise not be owned by PartitionAlloc.
+  auto storage = std::make_unique<std::array<char, 31u>>();
+  char* thirtyone_chars = storage->data();
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // When PA-E is enabled, this test case can directly query how many
+  // bytes of slack space are available before overrunning the slot
+  // boundary.
+  const size_t usable_bytes =
+      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+
+  // Were this the same size, that would mean that the end of the
+  // allocation already touches the end of the slot, and this test case
+  // becomes bogus.
+  CHECK_GT(usable_bytes, 31u);
+#else
+  // When PA-E is disabled, there's nothing to check. Spans can be made
+  // arbitrarily big without triggering any crashing. Pick some random
+  // value and perfunctorily demonstrate that nothing will trigger a
+  // crash.
+  constexpr size_t usable_bytes = 62u;
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  for (size_t extent = 0u; extent <= usable_bytes; ++extent) {
+    // SAFETY: This is safe insofar as PartitionAlloc (when present via
+    // PA-E) guarantees that an extent of `usable_bytes` will not crash.
+    UNSAFE_BUFFERS(base::span<char>(thirtyone_chars, extent));
+  }
+}
+
+#endif  // PA_BUILDFLAG(CHECKED_SPAN)
+
+TEST(SpanTest, UncheckedSpanNeverCrashes) {
+  // Storage is wrapped in `std::unique_ptr` to force heap allocation,
+  // as it would otherwise not be owned by PartitionAlloc.
+  auto storage = std::make_unique<std::array<char, 31u>>();
+  char* thirtyone_chars = storage->data();
+
+  // Arbitrarily pick a bogus length and show that the span can be made
+  // this long without triggering a crash.
+  constexpr size_t bogus_extent_bytes = 62u;
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // When PA-E is enabled, this test case can directly query how many
+  // bytes of slack space are available before overrunning the slot
+  // boundary.
+  const size_t usable_bytes =
+      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+
+  // Were this the same size, that would mean that the end of the
+  // allocation already touches the end of the slot, and this test case
+  // becomes bogus.
+  CHECK_GT(bogus_extent_bytes, usable_bytes);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  for (size_t extent = 0u; extent <= bogus_extent_bytes; ++extent) {
+    // SAFETY: This is not safe, but the contents are never accessed.
+    // The test passes if this does not `CHECK()`.
+    UNSAFE_BUFFERS(base::span(base::unchecked, thirtyone_chars, extent));
   }
 }
 
