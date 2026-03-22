@@ -48,7 +48,7 @@ void ShowSingletonTab(Profile* profile, const GURL& url) {
   Navigate(&params);
 }
 
-void ShowSingletonTab(Browser* browser, const GURL& url) {
+void ShowSingletonTab(BrowserWindowInterface* browser, const GURL& url) {
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   Navigate(&params);
 }
@@ -65,7 +65,7 @@ void ShowSingletonTabOverwritingNTP(
 }
 
 void ShowSingletonTabOverwritingNTP(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     NavigateParams::PathBehavior path_behavior) {
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
@@ -75,9 +75,8 @@ void ShowSingletonTabOverwritingNTP(
 
 void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
   DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
-  content::WebContents* contents = params->browser->GetBrowserForMigrationOnly()
-                                       ->tab_strip_model()
-                                       ->GetActiveWebContents();
+  content::WebContents* contents =
+      params->browser->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::kChromeUINewTabURL ||
@@ -87,16 +86,14 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
         params->disposition = WindowOpenDisposition::CURRENT_TAB;
       } else {
         params->switch_to_singleton_tab =
-            params->browser->GetBrowserForMigrationOnly()
-                ->tab_strip_model()
-                ->GetWebContentsAt(tab_index);
+            params->browser->GetTabStripModel()->GetWebContentsAt(tab_index);
       }
     }
   }
   Navigate(params);
 }
 
-NavigateParams GetSingletonTabNavigateParams(Browser* browser,
+NavigateParams GetSingletonTabNavigateParams(BrowserWindowInterface* browser,
                                              const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;

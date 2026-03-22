@@ -101,8 +101,8 @@ namespace {
 
 const char kHashMark[] = "#";
 
-void FocusWebContents(Browser* browser) {
-  auto* const contents = browser->tab_strip_model()->GetActiveWebContents();
+void FocusWebContents(BrowserWindowInterface* browser) {
+  auto* const contents = browser->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     contents->Focus();
   }
@@ -111,12 +111,14 @@ void FocusWebContents(Browser* browser) {
 // Shows |url| in a tab in |browser|. If a tab is already open to |url|,
 // ignoring the URL path, then that tab becomes selected. Overwrites the new tab
 // page if it is open.
-void ShowSingletonTabIgnorePathOverwriteNTP(Browser* browser, const GURL& url) {
+void ShowSingletonTabIgnorePathOverwriteNTP(BrowserWindowInterface* browser,
+                                            const GURL& url) {
   ShowSingletonTabOverwritingNTP(browser, url,
                                  NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
-void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
+void OpenBookmarkManagerForNode(BrowserWindowInterface* browser,
+                                int64_t node_id) {
   GURL url = GURL(kChromeUIBookmarksURL)
                  .Resolve(base::StringPrintf(
                      "/?id=%s", base::NumberToString(node_id).c_str()));
@@ -142,7 +144,9 @@ void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
 // |browser| is NULL and the help page is used (vs the app), the help page is
 // shown in the last active browser. If there is no such browser, a new browser
 // is created.
-void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
+void ShowHelpImpl(BrowserWindowInterface* browser,
+                  Profile* profile,
+                  HelpSource source) {
   base::RecordAction(UserMetricsAction("ShowHelpTab"));
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto app_launch_source = apps::LaunchSource::kUnknown;
@@ -258,7 +262,9 @@ bool SiteGURLIsValid(const GURL& url) {
                                   );
 }
 
-void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
+void ShowSiteSettingsImpl(BrowserWindowInterface* browser,
+                          Profile* profile,
+                          const GURL& url) {
   // If a valid non-file origin, open a settings page specific to the current
   // origin of the page. Otherwise, open Content Settings.
   constexpr char kParamRequest[] = "site";
@@ -276,7 +282,7 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   Navigate(&params);
 }
 
-void ShowSiteSettingsFileSystemImpl(Browser* browser,
+void ShowSiteSettingsFileSystemImpl(BrowserWindowInterface* browser,
                                     Profile* profile,
                                     const GURL& url) {
   constexpr char kParamRequest[] = "site";
@@ -302,32 +308,36 @@ void ShowSiteSettingsFileSystemImpl(Browser* browser,
   Navigate(&params);
 }
 
-Browser* GetOrCreateBrowserForProfile(Profile* profile) {
+BrowserWindowInterface* GetOrCreateBrowserForProfile(Profile* profile) {
   BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   if (!browser) {
     return Browser::Create(Browser::CreateParams(profile, true));
   }
-  return browser->GetBrowserForMigrationOnly();
+  return browser;
 }
 
 }  // namespace
 
-void ShowBookmarkManager(Browser* browser) {
+void ShowBookmarkManager(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ShowBookmarkManager"));
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIBookmarksURL));
 }
 
-void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
+void ShowBookmarkManagerForNode(BrowserWindowInterface* browser,
+                                int64_t node_id) {
   base::RecordAction(UserMetricsAction("ShowBookmarkManager"));
   OpenBookmarkManagerForNode(browser, node_id);
 }
 
-void ShowHistory(Browser* browser, const std::string& host_name) {
+void ShowHistory(BrowserWindowInterface* browser,
+                 const std::string& host_name) {
   // History UI should not be shown in Incognito mode, instead history
   // disclaimer bubble should show up. This also updates the behavior of history
   // keyboard shortcts in Incognito.
-  if (browser->profile()->IsOffTheRecord()) {
-    browser->window()->ShowIncognitoHistoryDisclaimerDialog();
+  if (browser->GetProfile()->IsOffTheRecord()) {
+    browser->GetBrowserForMigrationOnly()
+        ->window()
+        ->ShowIncognitoHistoryDisclaimerDialog();
     return;
   }
 
@@ -344,25 +354,25 @@ void ShowHistory(Browser* browser, const std::string& host_name) {
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-void ShowHistory(Browser* browser) {
+void ShowHistory(BrowserWindowInterface* browser) {
   ShowHistory(browser, std::string());
 }
 
-void ShowHistorySubPage(Browser* browser, std::string_view sub_page) {
+void ShowHistorySubPage(BrowserWindowInterface* browser,
+                        std::string_view sub_page) {
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GetHistoryUrl(sub_page));
 }
 
-void ShowDownloads(Browser* browser) {
+void ShowDownloads(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ShowDownloads"));
 #if !BUILDFLAG(IS_CHROMEOS)
   // Hide the download bubble if it is showing, to avoid redundancy with the
   // chrome://downloads page we are about to open.
-  if (browser->window() && browser->window()->GetDownloadBubbleUIController() &&
-      browser->window()
-          ->GetDownloadBubbleUIController()
+  auto* browser_window = browser->GetBrowserForMigrationOnly()->window();
+  if (browser_window && browser_window->GetDownloadBubbleUIController() &&
+      browser_window->GetDownloadBubbleUIController()
           ->GetDownloadDisplayController()) {
-    browser->window()
-        ->GetDownloadBubbleUIController()
+    browser_window->GetDownloadBubbleUIController()
         ->GetDownloadDisplayController()
         ->HideBubble();
   }
@@ -370,7 +380,7 @@ void ShowDownloads(Browser* browser) {
   ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
 }
 
-void ShowExtensions(Browser* browser,
+void ShowExtensions(BrowserWindowInterface* browser,
                     const std::string& extension_to_highlight) {
   base::RecordAction(UserMetricsAction("ShowExtensions"));
   GURL url(kChromeUIExtensionsURL);
@@ -384,8 +394,8 @@ void ShowExtensions(Browser* browser,
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-void ShowHelp(Browser* browser, HelpSource source) {
-  ShowHelpImpl(browser, browser->profile(), source);
+void ShowHelp(BrowserWindowInterface* browser, HelpSource source) {
+  ShowHelpImpl(browser, browser->GetProfile(), source);
 }
 
 void ShowHelpForProfile(Profile* profile, HelpSource source) {
@@ -393,13 +403,13 @@ void ShowHelpForProfile(Profile* profile, HelpSource source) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void ShowChromeTips(Browser* browser) {
+void ShowChromeTips(BrowserWindowInterface* browser) {
   static const char kChromeTipsURL[] = "https://www.google.com/chrome/tips/";
   ShowSingletonTab(browser, GURL(kChromeTipsURL));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void ShowChromeWhatsNew(Browser* browser) {
+void ShowChromeWhatsNew(BrowserWindowInterface* browser) {
   ShowSingletonTab(browser, GURL(kChromeUIWhatsNewURL));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -411,11 +421,11 @@ void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source) {
 #endif
 }
 
-void ShowBetaForum(Browser* browser) {
+void ShowBetaForum(BrowserWindowInterface* browser) {
   ShowSingletonTab(browser, GURL(kChromeBetaForumURL));
 }
 
-void ShowSlow(Browser* browser) {
+void ShowSlow(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
   ShowSingletonTab(browser, GURL(ash::kChromeUISlowURL));
 #endif
@@ -429,16 +439,17 @@ GURL GetHistoryUrl(std::string_view sub_page) {
   return GURL(kChromeUIHistoryURL).Resolve(kChromeUIHistorySyncedTabs);
 }
 
-bool IsTrustedPopupWindowWithScheme(const Browser* browser,
+bool IsTrustedPopupWindowWithScheme(const BrowserWindowInterface* browser,
                                     const std::string& scheme) {
-  if (browser->is_type_normal() || !browser->is_trusted_source()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+      !browser->GetBrowserForMigrationOnly()->is_trusted_source()) {
     return false;
   }
   if (scheme.empty()) {  // Any trusted popup window
     return true;
   }
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetWebContentsAt(0);
+      browser->GetTabStripModel()->GetWebContentsAt(0);
   if (!web_contents) {
     return false;
   }
@@ -446,13 +457,14 @@ bool IsTrustedPopupWindowWithScheme(const Browser* browser,
   return url.SchemeIs(scheme);
 }
 
-void ShowSettings(Browser* browser) {
+void ShowSettings(BrowserWindowInterface* browser) {
   ShowSettingsSubPage(browser, std::string());
 }
 
-void ShowSettingsSubPage(Browser* browser, std::string_view sub_page) {
+void ShowSettingsSubPage(BrowserWindowInterface* browser,
+                         std::string_view sub_page) {
 #if BUILDFLAG(IS_CHROMEOS)
-  ShowSettingsSubPageForProfile(browser->profile(), sub_page);
+  ShowSettingsSubPageForProfile(browser->GetProfile(), sub_page);
 #else
   ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
 #endif
@@ -465,11 +477,11 @@ void ShowSettingsSubPageForProfile(Profile* profile,
   // encountered here.
   DCHECK(!chromeos::settings::IsOSSettingsSubPage(sub_page)) << sub_page;
 #endif
-  Browser* browser = GetOrCreateBrowserForProfile(profile);
+  BrowserWindowInterface* browser = GetOrCreateBrowserForProfile(profile);
   ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
 }
 
-void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
+void ShowSettingsSubPageInTabbedBrowser(BrowserWindowInterface* browser,
                                         std::string_view sub_page) {
   base::RecordAction(UserMetricsAction("ShowOptions"));
 
@@ -482,11 +494,12 @@ void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
 
 void ShowPageWithPromoForProfile(Profile* profile,
                                  ShowPromoInPage::Params promo_params) {
-  Browser* browser = GetOrCreateBrowserForProfile(profile);
-  ShowPromoInPage::Start(browser, std::move(promo_params));
+  BrowserWindowInterface* browser = GetOrCreateBrowserForProfile(profile);
+  ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
+                         std::move(promo_params));
 }
 
-void ShowContentSettingsExceptions(Browser* browser,
+void ShowContentSettingsExceptions(BrowserWindowInterface* browser,
                                    ContentSettingsType content_settings_type) {
   ShowSettingsSubPage(
       browser, GenerateContentSettingsExceptionsSubPage(content_settings_type));
@@ -499,8 +512,8 @@ void ShowContentSettingsExceptionsForProfile(
       profile, GenerateContentSettingsExceptionsSubPage(content_settings_type));
 }
 
-void ShowSiteSettings(Browser* browser, const GURL& url) {
-  ShowSiteSettingsImpl(browser, browser->profile(), url);
+void ShowSiteSettings(BrowserWindowInterface* browser, const GURL& url) {
+  ShowSiteSettingsImpl(browser, browser->GetProfile(), url);
 }
 
 void ShowSiteSettings(Profile* profile, const GURL& url) {
@@ -508,8 +521,9 @@ void ShowSiteSettings(Profile* profile, const GURL& url) {
   ShowSiteSettingsImpl(nullptr, profile, url);
 }
 
-void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url) {
-  ShowSiteSettingsFileSystemImpl(browser, browser->profile(), url);
+void ShowSiteSettingsFileSystem(BrowserWindowInterface* browser,
+                                const GURL& url) {
+  ShowSiteSettingsFileSystemImpl(browser, browser->GetProfile(), url);
 }
 
 void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url) {
@@ -517,7 +531,7 @@ void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url) {
   ShowSiteSettingsFileSystemImpl(nullptr, profile, url);
 }
 
-void ShowContentSettings(Browser* browser,
+void ShowContentSettings(BrowserWindowInterface* browser,
                          ContentSettingsType content_settings_type) {
   ShowSettingsSubPage(
       browser, base::StrCat({kContentSettingsSubPage, kHashMark,
@@ -525,7 +539,7 @@ void ShowContentSettings(Browser* browser,
                                  content_settings_type)}));
 }
 
-void ShowClearBrowsingDataDialog(Browser* browser) {
+void ShowClearBrowsingDataDialog(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ClearBrowsingData_ShowDlg"));
   ShowSettingsSubPage(browser, kClearBrowserDataSubPage);
 }
@@ -540,23 +554,21 @@ void ShowPasswordManager(BrowserWindowInterface* bwi) {
     auto* tutorial_service = &service->tutorial_service();
     if (tutorial_service &&
         tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
-      ShowSingletonTab(bwi->GetBrowserForMigrationOnly(),
-                       GURL(kChromeUIPasswordManagerSettingsURL));
+      ShowSingletonTab(bwi, GURL(kChromeUIPasswordManagerSettingsURL));
       return;
     }
   }
-  ShowSingletonTabIgnorePathOverwriteNTP(bwi->GetBrowserForMigrationOnly(),
+  ShowSingletonTabIgnorePathOverwriteNTP(bwi,
                                          GURL(kChromeUIPasswordManagerURL));
 }
 
 void ShowPasswordManagerSettings(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordManagerSettings"));
   ShowSingletonTabIgnorePathOverwriteNTP(
-      bwi->GetBrowserForMigrationOnly(),
-      GURL(kChromeUIPasswordManagerSettingsURL));
+      bwi, GURL(kChromeUIPasswordManagerSettingsURL));
 }
 
-void ShowPasswordDetailsPage(Browser* browser,
+void ShowPasswordDetailsPage(BrowserWindowInterface* browser,
                              const std::string& password_domain_name) {
   base::RecordAction(
       UserMetricsAction("Options_ShowPasswordDetailsInPasswordManager"));
@@ -565,19 +577,19 @@ void ShowPasswordDetailsPage(Browser* browser,
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(url));
 }
 
-void ShowPasswordCheck(Browser* browser) {
+void ShowPasswordCheck(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordCheck"));
   ShowSingletonTabIgnorePathOverwriteNTP(
       browser, GURL(kChromeUIPasswordManagerCheckupURL));
 }
 
-void ShowSafeBrowsingEnhancedProtection(Browser* browser) {
+void ShowSafeBrowsingEnhancedProtection(BrowserWindowInterface* browser) {
   safe_browsing::LogShowEnhancedProtectionAction();
   ShowSettingsSubPage(browser, kSafeBrowsingEnhancedProtectionSubPage);
 }
 
 void ShowSafeBrowsingEnhancedProtectionWithIph(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     safe_browsing::SafeBrowsingSettingReferralMethod referral_method) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   ShowPromoInPage::Params params;
@@ -592,68 +604,70 @@ void ShowSafeBrowsingEnhancedProtectionWithIph(
   base::UmaHistogramEnumeration("SafeBrowsing.EsbPromotionFlow.IphShown",
                                 referral_method);
   safe_browsing::LogShowEnhancedProtectionAction();
-  ShowPromoInPage::Start(browser, std::move(params));
+  ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
+                         std::move(params));
 #endif
 }
 
-void ShowImportDialog(Browser* browser) {
+void ShowImportDialog(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Import_ShowDlg"));
   ShowSettingsSubPage(browser, kImportDataSubPage);
 }
 
-void ShowAboutChrome(Browser* browser) {
+void ShowAboutChrome(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("AboutChrome"));
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIHelpURL));
 }
 
-void ShowSearchEngineSettings(Browser* browser) {
+void ShowSearchEngineSettings(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("EditSearchEngines"));
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowWebStore(Browser* browser, std::string_view utm_source_value) {
+void ShowWebStore(BrowserWindowInterface* browser,
+                  std::string_view utm_source_value) {
   GURL webstore_url = extension_urls::GetNewWebstoreLaunchURL();
   ShowSingletonTabIgnorePathOverwriteNTP(
       browser, extension_urls::AppendUtmSource(webstore_url, utm_source_value));
 }
 
-void ShowPrivacySandboxSettings(Browser* browser) {
+void ShowPrivacySandboxSettings(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
   ShowSettingsSubPage(browser, kAdPrivacySubPage);
 }
 
-void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
+void ShowPrivacySandboxAdMeasurementSettings(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
   ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
 }
 
 void ShowAddresses(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowAddresses"));
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kAddressesSubPage);
+  ShowSettingsSubPage(bwi, kAddressesSubPage);
 }
 
 void ShowContactInfo(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowContactInfo"));
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kContactInfoSubPage);
+  ShowSettingsSubPage(bwi, kContactInfoSubPage);
 }
 
 void ShowPaymentMethods(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowPaymentMethods"));
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kPaymentsSubPage);
+  ShowSettingsSubPage(bwi, kPaymentsSubPage);
 }
 
 void ShowIdentityDocs(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowIdentityDocs"));
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kIdentityDocsSubPage);
+  ShowSettingsSubPage(bwi, kIdentityDocsSubPage);
 }
 
 void ShowTravel(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowTravel"));
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kTravelSubPage);
+  ShowSettingsSubPage(bwi, kTravelSubPage);
 }
 
 void ShowAllSitesSettingsFilteredByRwsOwner(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& rws_owner_host_name) {
   GURL url = GetSettingsUrl(kAllSitesSettingsSubpage);
   if (!rws_owner_host_name.empty()) {
@@ -669,20 +683,21 @@ void ShowAllSitesSettingsFilteredByRwsOwner(
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
+void ShowEnterpriseManagementPageInTabbedBrowser(
+    BrowserWindowInterface* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
   // user to the Chrome browser about page, which is part of browser settings.
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIManagementURL));
 }
 
 void ShowSharedTabGroupActivity(Profile* profile) {
-  Browser* browser = GetOrCreateBrowserForProfile(profile);
+  auto* browser = GetOrCreateBrowserForProfile(profile);
   ShowSingletonTab(browser,
                    GURL(data_sharing::features::kActivityLogsURL.Get()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void ShowWebAppSettingsImpl(Browser* browser,
+void ShowWebAppSettingsImpl(BrowserWindowInterface* browser,
                             Profile* profile,
                             const std::string& app_id,
                             web_app::AppSettingsPageEntryPoint entry_point) {
@@ -696,10 +711,10 @@ void ShowWebAppSettingsImpl(Browser* browser,
   Navigate(&params);
 }
 
-void ShowWebAppSettings(Browser* browser,
+void ShowWebAppSettings(BrowserWindowInterface* browser,
                         const std::string& app_id,
                         web_app::AppSettingsPageEntryPoint entry_point) {
-  ShowWebAppSettingsImpl(browser, browser->profile(), app_id, entry_point);
+  ShowWebAppSettingsImpl(browser, browser->GetProfile(), app_id, entry_point);
 }
 
 void ShowWebAppSettings(Profile* profile,

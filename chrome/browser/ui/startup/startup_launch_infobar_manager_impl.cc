@@ -205,8 +205,7 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
       GlobalBrowserCollection::GetInstance()->ForEach(
           [this](BrowserWindowInterface* browser) {
             if (ShouldTrackBrowser(browser)) {
-              chrome::ShowSettingsSubPage(browser->GetBrowserForMigrationOnly(),
-                                          chrome::kOnStartupSubPage);
+              chrome::ShowSettingsSubPage(browser, chrome::kOnStartupSubPage);
               return false;
             }
             return true;

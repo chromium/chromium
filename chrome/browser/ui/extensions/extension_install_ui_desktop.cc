@@ -82,8 +82,7 @@ void ShowAppInstalledNotification(
       FindOrCreateVisibleBrowser(current_profile);
   CHECK(browser_window);
   NavigateParams params(GetSingletonTabNavigateParams(
-      browser_window->GetBrowserForMigrationOnly(),
-      GURL(chrome::kChromeUIAppsURL)));
+      browser_window, GURL(chrome::kChromeUIAppsURL)));
   Navigate(&params);
 #endif
 }
