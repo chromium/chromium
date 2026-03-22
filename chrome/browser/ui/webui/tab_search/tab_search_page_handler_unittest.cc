@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -287,8 +288,10 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     ASSERT_FALSE(handler_->IsWebContentsVisible());
   }
 
+ protected:
   testing::StrictMock<MockPage> page_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<content::WebContents> web_contents_;
 
  private:
   std::unique_ptr<Browser> CreateTestBrowser(Profile* profile, bool popup) {
@@ -296,7 +299,6 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     return CreateBrowser(profile, type, false);
   }
 
-  std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<Profile, DanglingUntriaged> profile2_;
@@ -982,6 +984,50 @@ TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
+TEST_F(TabSearchPageHandlerTest, RemoveSplit_NTP) {
+  EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
+
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents_.get(), GURL(chrome::kChromeUISplitViewNewTabPageURL));
+  webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
+  browser1()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
+                                                   true);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  EXPECT_CALL(page_, TabUnsplit()).Times(1);
+  tab_strip_model->RemoveSplit(split_id);
+}
+
+TEST_F(TabSearchPageHandlerTest, RemoveSplit_OtherPage) {
+  EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
+
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents_.get(), GURL(kTabUrl1));
+  webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
+  browser1()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
+                                                   true);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  EXPECT_CALL(page_, TabUnsplit()).Times(0);
+  tab_strip_model->RemoveSplit(split_id);
 }
 
 }  // namespace
