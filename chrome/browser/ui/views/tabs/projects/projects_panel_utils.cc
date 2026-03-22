@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
@@ -15,6 +16,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -64,6 +66,11 @@ const gfx::VectorIcon& GetIconForThreadType(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kChatSparkIcon;
+}
+
+bool IsFirstFocusableViewInPanel(views::View* view) {
+  return view->GetProperty(views::kElementIdentifierKey) ==
+         kProjectsPanelButtonElementId;
 }
 
 }  // namespace projects_panel

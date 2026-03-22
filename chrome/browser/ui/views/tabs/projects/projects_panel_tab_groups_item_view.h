@@ -23,7 +23,8 @@ class MenuButton;
 }  // namespace views
 
 // Contains the Tab Groups inside the Projects Panel.
-class ProjectsPanelTabGroupsItemView : public views::Button {
+class ProjectsPanelTabGroupsItemView : public views::Button,
+                                       public views::FocusChangeListener {
   METADATA_HEADER(ProjectsPanelTabGroupsItemView, views::Button)
 
  public:
@@ -51,6 +52,8 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   gfx::ImageSkia GetDragImage();
 
   // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -63,6 +66,12 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override;
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
 
   views::Label* title_for_testing() { return title_; }
   views::MenuButton* more_button_for_testing() { return more_button_; }
@@ -99,6 +108,8 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   raw_ptr<views::ImageView> shared_icon_ = nullptr;
   raw_ptr<views::MenuButton> more_button_ = nullptr;
   base::CallbackListSubscription more_button_state_subscription_;
+
+  base::WeakPtrFactory<ProjectsPanelTabGroupsItemView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_TAB_GROUPS_ITEM_VIEW_H_
