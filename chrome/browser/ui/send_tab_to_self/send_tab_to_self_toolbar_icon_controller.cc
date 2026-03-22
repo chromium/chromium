@@ -8,11 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -56,7 +51,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // Otherwise, we will store this entry and wait to show on the next active
   // appropriate browser.
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile_);
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
     ShowToolbarButton(*new_entry, browser);
     return;

@@ -69,6 +69,11 @@ void BrowserCollection::ForEach(
       .ForEach(on_browser);
 }
 
+BrowserWindowInterface* BrowserCollection::GetLastActiveBrowser() {
+  auto browsers = GetBrowsers(Order::kActivation);
+  return browsers.empty() ? nullptr : browsers.front();
+}
+
 void BrowserCollection::AddObserver(BrowserCollectionObserver* observer) {
   observers_.AddObserver(observer);
 }

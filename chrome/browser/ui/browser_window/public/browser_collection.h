@@ -55,6 +55,9 @@ class BrowserCollection {
   // Returns the number of BrowserWindowInterfaces belonging to this collection.
   virtual size_t GetSize() const = 0;
 
+  // Gets the last active browser for this collection.
+  BrowserWindowInterface* GetLastActiveBrowser();
+
  protected:
   BrowserCollection();
   virtual ~BrowserCollection();
