@@ -158,6 +158,8 @@ export class WebuiBrowserAppElement extends CrLitElement {
     BrowserProxy.getPageHandler().close();
   }
 
+  // TODO(webium): context menus on right-click/long-press for
+  // back/forward buttons to show navigation history list.
   protected onBackClick_(_: Event) {
     if (this.$.contentRegion.activeWebview) {
       this.$.contentRegion.activeWebview.goBack();
@@ -301,6 +303,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   protected setReloadStopState(isLoading: boolean) {
     this.reloadOrStopIcon_ = isLoading ? 'icon-clear' : 'icon-refresh';
+    this.updateToolbarButtons_();
   }
 
 
