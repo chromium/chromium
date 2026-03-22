@@ -528,8 +528,13 @@ void* ThreadLocalStorage::Slot::Get() const {
       g_native_tls_key.load(std::memory_order_relaxed), &tls_vector);
   // SAFETY: The span is either empty or points to `kThreadLocalStorageSize`
   // elements allocated in `ConstructTlsVector`.
-  base::span<TlsVectorEntry> UNSAFE_BUFFERS(
-      tls_data(tls_vector, tls_vector ? kThreadLocalStorageSize : 0));
+  //
+  // Constructing this span (repeatedly) shows up hot in Speedometer3
+  // profiling (by way of `blink::HarfBuzzGetNominalGlyph()`). To
+  // remedy, exempt from bounds checking. (N.B. this is only relevant
+  // when build support for Checked Span is actually enabled.)
+  base::span<TlsVectorEntry> UNSAFE_BUFFERS(tls_data(
+      base::unchecked, tls_vector, tls_vector ? kThreadLocalStorageSize : 0));
   DCHECK_NE(state, TlsVectorState::kDestroyed);
   if (tls_data.empty()) {
     return nullptr;
@@ -548,8 +553,13 @@ void ThreadLocalStorage::Slot::Set(void* value) {
       g_native_tls_key.load(std::memory_order_relaxed), &tls_vector);
   // SAFETY: The span is either empty or points to `kThreadLocalStorageSize`
   // elements allocated in `ConstructTlsVector`.
-  base::span<TlsVectorEntry> UNSAFE_BUFFERS(
-      tls_data(tls_vector, tls_vector ? kThreadLocalStorageSize : 0));
+  //
+  // Constructing this span (repeatedly) shows up hot in Speedometer3
+  // profiling (by way of `blink::HarfBuzzGetNominalGlyph()`). To
+  // remedy, exempt from bounds checking. (N.B. this is only relevant
+  // when build support for Checked Span is actually enabled.)
+  base::span<TlsVectorEntry> UNSAFE_BUFFERS(tls_data(
+      base::unchecked, tls_vector, tls_vector ? kThreadLocalStorageSize : 0));
   DCHECK_NE(state, TlsVectorState::kDestroyed);
   if (tls_data.empty()) [[unlikely]] {
     if (!value) {
