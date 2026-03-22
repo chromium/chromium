@@ -645,7 +645,7 @@ class ProfileManager : public Profile::Delegate {
   std::vector<raw_ptr<Profile, VectorExperimental>> active_profiles_;
   bool closing_all_browsers_ = false;
 
-  // Tracks whether the the list of last opened Profiles has been updated for
+  // Tracks whether the list of last opened Profiles has been updated for
   // the current session. If this is false `GetLastOpenedProfiles()` will return
   // the list of Profiles that were open the last time Chrome was running.
   bool has_updated_last_opened_profiles_ = false;
