@@ -716,7 +716,7 @@ class ExtensionPrefs : public KeyedService {
   // history is cleared.
   void ClearLastLaunchTimes();
 
-  static void RegisterBrowserPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   bool extensions_disabled() const { return extensions_disabled_; }

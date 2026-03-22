@@ -1544,8 +1544,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ExtensionPrefs::RegisterBrowserPrefs(registry);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::ExtensionPrefs::RegisterLocalStatePrefs(registry);
 #endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
