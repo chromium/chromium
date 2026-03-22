@@ -225,6 +225,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="114715166554490743">Kielekezi cha kichwa</translation>
 <translation id="114721135501989771">Pata Google mahiri kwenye Chrome</translation>
 <translation id="1147322039136785890">Sasa ni wakati wa <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1147867844630510586">Ingia katika akaunti ukitumia <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Ruhusu Hati za Mtumiaji</translation>
 <translation id="1148624853678088576">Uko tayari kutumia!</translation>
 <translation id="1148669835763563782">Unapata sasisho la hivi karibuni la programu kwa ajili ya ulinzi ulioimarishwa na vipengele vipya zaidi vya Chromebook. Sasisho hili hujumuisha hali ya uwekaji mipangilio iliyoboreshwa ili kukusaidia kuanza kwa wepesi kwenye Chromebook yako.</translation>
@@ -1002,6 +1003,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1674073353928166410">Fungua zote (<ph name="URL_COUNT" />) katika dirisha fiche</translation>
 <translation id="1674142805528405174">Kidhibiti cha Manenosiri cha Google kinaweza kusasisha akaunti yako kwa kuweka nenosiri thabiti litakalohifadhiwa katika akaunti yako <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Zima viboreshaji vya JavaScript kiotomatiki kwenye tovuti usizofahamu</translation>
+<translation id="1675964862374196038">Jisajli ukitumia <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Huruhusiwi kuweka <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Imeshindwa kuchanganua. Faili hii inaweza kuwa ni virusi au programu hasidi.</translation>

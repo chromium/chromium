@@ -225,6 +225,7 @@
 <translation id="114715166554490743">हेड पॉइंटर</translation>
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
+<translation id="1147867844630510586"><ph name="IDP_NAME" /> से साइन इन करें</translation>
 <translation id="1148464196693569530">यूज़र स्क्रिप्ट को चालू करें</translation>
 <translation id="1148624853678088576">आप बिलकुल तैयार हैं!</translation>
 <translation id="1148669835763563782">आपको बेहतर सुरक्षा और Chromebook की नई सुविधाओं के लिए, सबसे नया सॉफ़्टवेयर अपडेट मिल रहा है. इस अपडेट में सेटअप के अनुभव को बेहतर बनाया गया है. इसकी मदद से, Chromebook को आसानी से इस्तेमाल किया जा सकता है.</translation>
@@ -1006,6 +1007,7 @@
 <translation id="1674073353928166410">सभी (<ph name="URL_COUNT" />) यूआरएल गुप्त विंडो में खोलें</translation>
 <translation id="1674142805528405174">Google Password Manager, एक मज़बूत पासवर्ड जनरेट करके आपके मौजूदा पासवर्ड को अपडेट कर सकता है. नया पासवर्ड आपके खाते <ph name="EMAIL" /> में सेव हो जाएगा.</translation>
 <translation id="1674945585974615438">अनजान साइटों पर JavaScript ऑप्टिमाइज़र अपने-आप बंद हो जाते हैं</translation>
+<translation id="1675964862374196038"><ph name="IDP_NAME" /> से साइन अप करें</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> को जोड़ा नहीं जा सकता</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
 <translation id="1678849866171627536">स्कैन नहीं किया जा सका. यह फ़ाइल कोई वायरस या मैलवेयर हो सकती है.</translation>

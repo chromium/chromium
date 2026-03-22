@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1652197001188145583">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti NFC. Apabila dimatikan, laman tidak dapat menggunakan peranti NFC.</translation>
 <translation id="1660204651932907780">Benarkan tapak untuk memainkan bunyi (disyorkan)</translation>
+<translation id="1676590040242013349">"Sentiasa gunakan sambungan selamat" dihidupkan.</translation>
 <translation id="1677097821151855053">Kuki dan data tapak lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua tapak, lihat <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Laman boleh meminta untuk menggunakan peranti NFC</translation>
 <translation id="1686785653877010442">Biasanya laman menghantar pemberitahuan untuk memberitahu anda tentang berita mutakhir atau mesej sembang.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Sekat tapak daripada membaca teks dan imej daripada papan keratan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Laman yang anda lawati boleh menyimpan maklumat tentang perkara yang anda lakukan agar laman tersebut berfungsi seperti yang dijangkakan — contohnya, untuk memastikan anda terus dilog masuk ke laman atau untuk menyimpan item dalam troli beli-belah anda. Selalunya laman menyimpan maklumat ini pada peranti anda buat sementara waktu.</translation>
+<translation id="6964291282260073066">"WebGPU" dilumpuhkan.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Tema ros</translation>
 <translation id="6980861169612950611">Padamkan data laman? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti realiti maya. Apabila dimatikan, laman tidak dapat menggunakan peranti realiti maya.</translation>
 <translation id="7282197670900591579">Tema kuning sitron</translation>
 <translation id="728412880473384942">Laman lebih pantas tetapi kurang selamat</translation>
+<translation id="7352902948037373520">Urus dalam <ph name="BEGIN_LINK1" />tetapan Android<ph name="END_LINK1" />
+
+Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7368695150573390554">Mana-mana data luar talian akan dipadamkan</translation>
 <translation id="7369678931043226462">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian separuh</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah lapuk. Sila pasang semula apl.</translation>
 <translation id="847433688444405067">Semak imbas merentas peranti</translation>
+<translation id="8484556725636319115">"Pengoptimum JavaScript" dimatikan. <ph name="BEGIN_LINK2" />Urus pengecualian Laman<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="848952951823693243">Sentiasa minta laman mudah alih</translation>
 <translation id="8492822722330266509">Tapak boleh menghantar tetingkap timbul dan menggunakan ubah hala</translation>
