@@ -486,11 +486,6 @@ size_t GetIncognitoBrowserCount() {
   return incognito_browser_count;
 }
 
-size_t GetTabbedBrowserCount(Profile* profile) {
-  return GetBrowserCountImpl(
-      profile, kMatchNormal | kIncludeBrowsersScheduledForDeletion);
-}
-
 void CloseAllBrowsersWithProfile(Profile* profile) {
   ProfileBrowserCollection* browser_collection =
       ProfileBrowserCollection::GetForProfile(profile);

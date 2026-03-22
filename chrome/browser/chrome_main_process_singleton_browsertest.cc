@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -34,6 +36,22 @@
 #if !BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #error Not supported on this platform.
 #endif
+
+namespace {
+
+size_t GetTabbedBrowserCount(Profile* profile) {
+  size_t tabbed_browser_count = 0;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&tabbed_browser_count](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
+          tabbed_browser_count++;
+        }
+        return true;
+      });
+  return tabbed_browser_count;
+}
+
+}  // namespace
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
@@ -83,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   // We should start with one normal window.
-  ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->profile()));
 
   // Run with --incognito switch and an URL specified.
   base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
@@ -98,27 +116,27 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   Relaunch(new_command_line);
   ui_test_utils::WaitForBrowserToOpen();
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   Profile* const profile = browser()->profile();
 
   // We should start with one normal window.
-  ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(profile));
 
   // Create an incognito window.
   chrome::NewIncognitoWindow(profile);
 
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(profile));
 
   // Close the first window.
   CloseBrowserSynchronously(browser());
 
   // There should only be the incognito window open now.
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(0u, chrome::GetTabbedBrowserCount(profile));
+  ASSERT_EQ(0u, GetTabbedBrowserCount(profile));
 
   // Run with just an URL specified, no --incognito switch.
   base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
@@ -130,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
 
   // There should be one normal and one incognito window now.
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(profile));
 }
 
 // Multi-profile is not supported on ChromeOS.

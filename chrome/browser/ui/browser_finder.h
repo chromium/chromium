@@ -207,12 +207,6 @@ size_t GetBrowserCount(Profile* profile);
 // Returns the number of incognito browsers excluding devtools windows.
 size_t GetIncognitoBrowserCount();
 
-// Returns the number of tabbed browsers with the Profile `profile`.
-//
-// WARNING: this function includes browsers scheduled for deletion whereas
-// the majority of other functions do not.
-size_t GetTabbedBrowserCount(Profile* profile);
-
 // Closes all browsers whose original profile matches `profile`. Uses
 // BrowserCollection::Order::kCreation to mirror the prior BrowserList
 // behavior.
