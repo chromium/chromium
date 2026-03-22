@@ -323,6 +323,7 @@ std::unique_ptr<views::View> VerticalTabGroupView::DetachChildView(
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
+  HideHoverCard();
   attention_indicator_observation_.Reset();
   node_destroyed_subscription_ = {};
   data_changed_subscription_ = {};

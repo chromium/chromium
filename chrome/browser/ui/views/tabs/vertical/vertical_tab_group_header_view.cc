@@ -240,6 +240,9 @@ bool VerticalTabGroupHeaderView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
+  // Hide the group hovercard if it is currently showing.
+  delegate_->HideHoverCard();
+
   // Potentially start the drag for the mouse press.
   // Follow-up mouse-movement events will update the drag controller and
   // eventually kick off the drag-loop.
@@ -269,6 +272,8 @@ void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
+  delegate_->HideHoverCard();
+
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
       // Required to allow the touch system to know this is a gesture target
