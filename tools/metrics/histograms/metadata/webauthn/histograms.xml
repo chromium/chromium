@@ -323,6 +323,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.PinRenewalActionOutcome"
+    enum="EnclaveManagerActionOutcome" expires_after="2026-12-09">
+  <owner>agl@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>Records an outcome of the PIN renewal action.</summary>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.RenewingPinTransactionResult"
     enum="WebAuthenticationEnclaveTransactionResult" expires_after="2026-12-09">
   <owner>nsatragno@chromium.org</owner>
@@ -728,17 +738,6 @@ chromium-metrics-reviews@google.com.
   <owner>agl@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>Records events related to GPM PIN renewals</summary>
-</histogram>
-
-<histogram name="WebAuthentication.PinRenewalFailureCause"
-    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2026-08-09">
-  <owner>agl@google.com</owner>
-  <owner>kenrb@chromium.org</owner>
-  <summary>
-    Records the reason why a GPM PIN renewal attempt failed. (See the
-    &quot;Renewal failed&quot; case in
-    &quot;WebAuthentication.PinRenewalEvent&quot;.)
-  </summary>
 </histogram>
 
 <histogram

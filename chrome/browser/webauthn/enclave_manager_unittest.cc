@@ -1619,8 +1619,10 @@ TEST_P(EnclaveManagerRenewPINTest, RenewPINAfterSecurityDomainReset) {
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
   EXPECT_FALSE(manager_.IsRegistered());
   histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.PinRenewalFailureCause",
-      EnclaveManager::PinRenewalFailureCause::kSecurityDomainReset, 1);
+      "WebAuthentication.Enclave.PinRenewalActionOutcome",
+      EnclaveManager::ActionOutcome::
+          kDoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset,
+      1);
 }
 
 // Regression test for crbug.com/407171373.
@@ -1653,8 +1655,10 @@ TEST_P(EnclaveManagerRenewPINTest, RenewPINAfterSecurityDomainReportsNoPin) {
   EXPECT_FALSE(renew_future.Get());
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
   histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.PinRenewalFailureCause",
-      EnclaveManager::PinRenewalFailureCause::kSecurityDomainReportsNoPin, 1);
+      "WebAuthentication.Enclave.PinRenewalActionOutcome",
+      EnclaveManager::ActionOutcome::
+          kDoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsNoPin,
+      1);
 }
 
 // Tests attempting to renew a PIN that's stored in a Vault cohort that hasn't
@@ -1688,8 +1692,9 @@ TEST_P(EnclaveManagerRenewPINTest, NotYetDeprecated) {
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
   histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.PinRenewalFailureCause",
-      EnclaveManager::PinRenewalFailureCause::kCohortNotYetDeprecated, 1);
+      "WebAuthentication.Enclave.PinRenewalActionOutcome",
+      EnclaveManager::ActionOutcome::kDoRenewingPINFailedCohortNotYetDeprecated,
+      1);
 }
 
 // Tests attempting to renew a PIN with a cert.xml version that's older than the
@@ -1726,8 +1731,9 @@ TEST_P(EnclaveManagerRenewPINTest, NoKeyStoreDowngrade) {
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
   histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.PinRenewalFailureCause",
-      EnclaveManager::PinRenewalFailureCause::kRecoveryKeyStoreDowngrade, 1);
+      "WebAuthentication.Enclave.PinRenewalActionOutcome",
+      EnclaveManager::ActionOutcome::kDoRenewingPINFailedRecoveryStoreDowngrade,
+      1);
 }
 
 // Tests that a PIN is still usable for recovery if updating the security domain

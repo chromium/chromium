@@ -135,30 +135,6 @@ class EnclaveManager : public EnclaveManagerInterface {
     std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   };
 
-  // These values are detailed failure reasons. They are emitted whenever PIN
-  // renewal fails and give detailed information about why the attempt failed.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(PinRenewalFailureCause)
-  enum class PinRenewalFailureCause {
-    kDuringDownload = 1,
-    kGettingAccessToken = 2,
-    kEnclaveRequest1 = 3,
-    kEnclaveRequest2 = 4,
-    kEnclaveResponse1 = 5,
-    kEnclaveResponse2 = 6,
-    kRKSUpload = 7,
-    kJoiningToDomain = 8,
-    kSecurityDomainReportsNoPin = 9,
-    kSecurityDomainReset = 10,
-    kCohortNotYetDeprecated = 11,
-    kRecoveryKeyStoreDowngrade = 12,
-
-    kMaxValue = kRecoveryKeyStoreDowngrade,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationPinRenewalFailureCause)
-
   // LINT.IfChange(EnclaveManagerActionOutcome)
   enum class ActionOutcome {
     // This outcome indicates successful completion of the action executed by

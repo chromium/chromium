@@ -239,9 +239,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // valid protobuf, which is handy for debugging.
 static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
 
-static const char kPinRenewalFailureHistogram[] =
-    "WebAuthentication.PinRenewalFailureCause";
-
 // The parsed response to an enclave "recovery_key_store/wrap" command.
 struct EnclaveRecoveryKeyStoreWrapResponse {
   EnclaveRecoveryKeyStoreWrapResponse() = default;
@@ -2248,11 +2245,6 @@ class EnclaveManager::StateMachine {
       FIDO_LOG(ERROR) << "The security domain has been reset.";
       Stop(ActionOutcome::
                kDoSyncingWithSecurityDomainFailedSecurityDomainHasBeenReset);
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(
-            kPinRenewalFailureHistogram,
-            PinRenewalFailureCause::kSecurityDomainReset);
-      }
       return;
     }
 
@@ -2262,11 +2254,6 @@ class EnclaveManager::StateMachine {
       // there's a bug in the server, but also don't try renewing or updating it
       // as this risks joining to an out of date PIN.
       FIDO_LOG(ERROR) << "Tried to change the PIN, but SDS repots no PIN";
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(
-            kPinRenewalFailureHistogram,
-            PinRenewalFailureCause::kSecurityDomainReportsNoPin);
-      }
       Stop(
           ActionOutcome::
               kDoSyncingWithSecurityDomainFailedTriedToChangePinButSdsReportsNoPin);
@@ -2352,10 +2339,6 @@ class EnclaveManager::StateMachine {
       // One (or both) fetches failed.
       Stop(ActionOutcome::
                kDoDownloadingRecoveryKeyStoreKeysFailedFetchingCertXmlOrSigXml);
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
-                                      PinRenewalFailureCause::kDuringDownload);
-      }
       return;
     }
 
@@ -2369,11 +2352,6 @@ class EnclaveManager::StateMachine {
     access_token_fetcher_.reset();
     if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(
-            kPinRenewalFailureHistogram,
-            PinRenewalFailureCause::kGettingAccessToken);
-      }
       Stop(ActionOutcome::
                kDoWaitingForEnclaveTokenForPINWrappingFailedEventFailure);
       return;
@@ -2497,10 +2475,6 @@ class EnclaveManager::StateMachine {
     const auto* status =
         std::get_if<trusted_vault::RecoveryKeyStoreStatus>(&event);
     if (*status != trusted_vault::RecoveryKeyStoreStatus::kSuccess) {
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
-                                      PinRenewalFailureCause::kRKSUpload);
-      }
       FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
       Stop(ActionOutcome::
                kDoWaitingForRecoveryKeyStoreFailedToUploadToRecoveryKeyStore);
@@ -2611,10 +2585,6 @@ class EnclaveManager::StateMachine {
     if (status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess) {
       Stop(ActionOutcome::kSuccess);
     } else {
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
-                                      PinRenewalFailureCause::kJoiningToDomain);
-      }
       Stop(
           ActionOutcome::
               kDoJoiningUpdatedPINToDomainFailedTrustedVaultRegistrationStatusError);
@@ -2670,8 +2640,6 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (std::holds_alternative<Failure>(event)) {
-      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
-                                    PinRenewalFailureCause::kEnclaveRequest1);
       Stop(ActionOutcome::kDoRenewingPINFailedEventFailure);
       return;
     }
@@ -2683,9 +2651,6 @@ class EnclaveManager::StateMachine {
     if (error) {
       switch (*error) {
         case device::enclave::RequestError::kCohortNotYetDeprecated:
-          base::UmaHistogramEnumeration(
-              kPinRenewalFailureHistogram,
-              PinRenewalFailureCause::kCohortNotYetDeprecated);
           // This is the usual expected result of a PIN renewal.
           FIDO_LOG(EVENT) << "Not renewing PIN because the enclave reports the "
                              "cohort is not yet deprecated";
@@ -2695,9 +2660,6 @@ class EnclaveManager::StateMachine {
           Stop(ActionOutcome::kDoRenewingPINFailedCohortNotYetDeprecated);
           return;
         case device::enclave::RequestError::kRecoveryKeyStoreDowngrade:
-          base::UmaHistogramEnumeration(
-              kPinRenewalFailureHistogram,
-              PinRenewalFailureCause::kRecoveryKeyStoreDowngrade);
           FIDO_LOG(ERROR) << "Not renewing PIN because it would result in "
                              "downgrading the recovery store";
           Stop(ActionOutcome::kDoRenewingPINFailedRecoveryStoreDowngrade);
@@ -2709,8 +2671,6 @@ class EnclaveManager::StateMachine {
       }
     }
     if (!IsAllOk(response, 1)) {
-      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
-                                    PinRenewalFailureCause::kEnclaveRequest2);
       FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
       Stop(ActionOutcome::kDoRenewingPINFailedErrorResponse);
@@ -2786,11 +2746,6 @@ class EnclaveManager::StateMachine {
             .find(cbor::Value(enclave::kResponseSuccessKey))
             ->second;
     if (!response_value.is_map()) {
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(
-            kPinRenewalFailureHistogram,
-            PinRenewalFailureCause::kEnclaveResponse1);
-      }
       FIDO_LOG(ERROR) << "response was not a map";
       Stop(ActionOutcome::
                kUploadVaultAndMemberFromResponseFailedResponseWasNotMap);
@@ -2802,11 +2757,6 @@ class EnclaveManager::StateMachine {
         result = ParseVaultAndMemberResponse(key_version, pin_metadata,
                                              response_value.GetMap());
     if (!result) {
-      if (is_pin_renewal_) {
-        base::UmaHistogramEnumeration(
-            kPinRenewalFailureHistogram,
-            PinRenewalFailureCause::kEnclaveResponse2);
-      }
       Stop(ActionOutcome::
                kUploadVaultAndMemberFromResponseFailedToParseResponse);
       return;
@@ -3375,7 +3325,14 @@ void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
   CHECK(user_->has_wrapped_pin());
 
   auto action = std::make_unique<PendingAction>();
-  action->callback = ToActionOutcomeCallback(std::move(callback));
+  action->callback = base::BindOnce(
+      [](EnclaveManager::Callback callback, ActionOutcome action_outcome) {
+        base::UmaHistogramEnumeration(
+            "WebAuthentication.Enclave.PinRenewalActionOutcome",
+            action_outcome);
+        std::move(callback).Run(action_outcome == ActionOutcome::kSuccess);
+      },
+      std::move(callback));
   action->renew_pin = true;
   pending_actions_.emplace_back(std::move(action));
   Act();
