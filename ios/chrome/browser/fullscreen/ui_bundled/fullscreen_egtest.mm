@@ -11,8 +11,10 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -27,6 +29,7 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -92,6 +95,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   return config;
 }
 
@@ -502,6 +506,84 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
+// Tests that tapping on the collapsed primary toolbar exits force fullscreen
+// mode.
+- (void)testTapOnCollapsedToolbarExitsForceFullscreenMode {
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/tallpage") {
+          return CreateHttpResponse(base::StringPrintf(
+              "<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM));
+        }
+        return nullptr;
+      }));
+
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/tallpage");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Open the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+
+  // Tap on "Hide Toolbars" in the tools menu.
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuHideToolbars)];
+
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Scroll down and up to ensure we are in forced fullscreen mode and the
+  // toolbars stay hidden.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 250)];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionUp, 250)];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Tap on the primary toolbar (which is collapsed).
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::PrimaryToolbar()]
+      performAction:grey_tap()];
+
+  // Verify that it exits force fullscreen mode and the toolbar is visible.
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Long press on the omnibox to show the context menu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DefocusedLocationView(),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_longPress()];
+
+  // Tap on "Hide Toolbars" in the context menu.
+  id<GREYMatcher> hideToolbarsButton = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)),
+      grey_not(grey_kindOfClass([UILabel class])), grey_sufficientlyVisible(),
+      nil);
+  [[EarlGrey selectElementWithMatcher:hideToolbarsButton]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Scroll down and up to ensure we are in forced fullscreen mode and the
+  // toolbars stay hidden.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 250)];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionUp, 250)];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Tap on the primary toolbar (which is collapsed).
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::PrimaryToolbar()]
+      performAction:grey_tap()];
+
+  // Verify that it exits force fullscreen mode and the toolbar is visible.
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+}
+
 @end
 
 #pragma mark - Smooth scrolling enabled Tests
@@ -515,6 +597,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
+  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   config.features_disabled.push_back(
       web::features::kSmoothScrollingUseDelegate);
   return config;
@@ -583,6 +666,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
   config.features_enabled.push_back(web::features::kSmoothScrollingUseDelegate);
+  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   return config;
 }
 

@@ -157,7 +157,11 @@ using tab_groups::VersioningMessageController;
     (FullscreenModeTransitionTrigger)fullscreenTransitionTrigger {
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
-  fullscreenController->ExitFullscreen(fullscreenTransitionTrigger);
+  if (fullscreenController->IsForceFullscreenMode()) {
+    fullscreenController->ExitForceFullscreenMode(fullscreenTransitionTrigger);
+  } else {
+    fullscreenController->ExitFullscreen(fullscreenTransitionTrigger);
+  }
 
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
