@@ -191,7 +191,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   const std::optional<cc::PaintRecord>& LastRecordingForCanvas2D() {
     CHECK(IsCanvas2D());
-    return last_recording_;
+    return last_recording_for_canvas2d_;
   }
 
  protected:
@@ -305,7 +305,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t max_pinned_image_bytes_;
 
   bool clear_frame_ = true;
-  std::optional<cc::PaintRecord> last_recording_;
+  std::optional<cc::PaintRecord> last_recording_for_canvas2d_;
 };
 
 // Renders canvas2D ops to a Skia RAM-backed bitmap. Mailboxing is not

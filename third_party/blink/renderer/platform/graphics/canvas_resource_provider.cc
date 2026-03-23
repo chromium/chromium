@@ -809,16 +809,8 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
 
     EnsureSkiaCanvas();
 
-    bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
+    return GetSkSurface()->getCanvas()->writePixels(
         copy_rect_info, pixels.data(), dest_row_bytes, /*x=*/0, /*y=*/0);
-
-    if (wrote_pixels) {
-      // WritePixels content is not saved in recording. Calling WritePixels
-      // therefore invalidates `last_recording_` because it's now missing that
-      // information.
-      last_recording_ = std::nullopt;
-    }
-    return wrote_pixels;
   }
 
   TRACE_EVENT0("blink",
@@ -1893,8 +1885,11 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
-  last_recording_ =
-      preserve_recording ? std::optional(recording) : std::nullopt;
+
+  if (IsCanvas2D()) {
+    last_recording_for_canvas2d_ =
+        preserve_recording ? std::optional(recording) : std::nullopt;
+  }
 
   return recording;
 }
@@ -2008,9 +2003,9 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
 
   if (wrote_pixels) {
     // WritePixels content is not saved in recording. Calling WritePixels
-    // therefore invalidates `last_recording_` because it's now missing that
-    // information.
-    last_recording_ = std::nullopt;
+    // therefore invalidates `last_recording_for_canvas2d_` because it's now
+    // missing that information.
+    last_recording_for_canvas2d_ = std::nullopt;
   }
   return wrote_pixels;
 }
