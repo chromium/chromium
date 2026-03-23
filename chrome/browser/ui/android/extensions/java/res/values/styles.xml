@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Styles for the extensions menu -->
+    <style name="ExtensionsMenuFooterRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/extensions_menu_footer_min_height</item>
+        <item name="android:paddingStart">@dimen/extensions_menu_footer_horizontal_padding</item>
+        <item name="android:paddingEnd">@dimen/extensions_menu_footer_horizontal_padding</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="ExtensionsMenuFooterIcon">
+        <item name="android:layout_width">@dimen/extensions_menu_footer_icon_size</item>
+        <item name="android:layout_height">@dimen/extensions_menu_footer_icon_size</item>
+        <item name="tint">?android:attr/textColorPrimary</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+    <style name="ExtensionsMenuFooterText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">@dimen/extensions_menu_footer_horizontal_padding</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary.Baseline</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+</resources>

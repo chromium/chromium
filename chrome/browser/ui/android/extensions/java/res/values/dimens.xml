@@ -6,5 +6,10 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Extensions Menu dimensions -->
     <dimen name="extension_menu_max_width">400dp</dimen>
+    <dimen name="extensions_menu_horizontal_padding">24dp</dimen>
+    <dimen name="extensions_menu_footer_min_height">40dp</dimen>
+    <dimen name="extensions_menu_footer_horizontal_padding">16dp</dimen>
+    <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
 </resources>
