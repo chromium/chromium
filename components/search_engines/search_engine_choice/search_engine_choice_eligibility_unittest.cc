@@ -949,8 +949,14 @@ struct Spec {
     std::optional<ChoiceStatus> expect_choice_status_after;
   };
 
+  enum class RestoreFeatureState {
+    kDisabled,
+    kEnableJustInTime,
+    kEnabledRetroactive
+  };
+
   std::string test_name;
-  bool restore_feature_enabled;
+  RestoreFeatureState restore_feature_state;
   base::RepeatingCallback<bool()> check_should_skip;
   std::vector<Run> runs;
 };
@@ -1058,10 +1064,22 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates({
-      {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
-       param.restore_feature_enabled},
-  });
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  if (param.restore_feature_state == Spec::RestoreFeatureState::kDisabled) {
+    disabled_features.push_back(
+        switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+  } else {
+    enabled_features.push_back(
+        {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+         {{switches::kInvalidateChoiceOnRestoreIsRetroactive.name,
+           param.restore_feature_state ==
+                   Spec::RestoreFeatureState::kEnabledRetroactive
+               ? "true"
+               : "false"}}});
+  }
+  scoped_feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                                    disabled_features);
 
   latest_restore_time_ = std::nullopt;
   for (const auto& current_run : param.runs) {
@@ -1097,7 +1115,8 @@ INSTANTIATE_TEST_SUITE_P(
     SearchEngineChoiceEligibilityOnRestoreTest,
     ::testing::ValuesIn(
         {Spec{.test_name = "1p",
-              .restore_feature_enabled = true,
+              .restore_feature_state =
+                  Spec::RestoreFeatureState::kEnableJustInTime,
               .runs =
                   {
                       // Sets up Chrome as running in France, and having
@@ -1143,7 +1162,8 @@ INSTANTIATE_TEST_SUITE_P(
                   }},
 #if BUILDFLAG(IS_IOS)
          Spec{.test_name = "1pTaiyaki",
-              .restore_feature_enabled = true,
+              .restore_feature_state =
+                  Spec::RestoreFeatureState::kEnableJustInTime,
               .check_should_skip = base::BindRepeating([]() {
                 return !kPhoneFormFactors.Has(ui::GetDeviceFormFactor());
               }),
@@ -1192,7 +1212,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_IOS)
          Spec{
              .test_name = "1pNoRestoreDetection",
-             .restore_feature_enabled = false,
+             .restore_feature_state = Spec::RestoreFeatureState::kDisabled,
              .runs =
                  {
                      // Sets up Chrome as running in France, and having
@@ -1235,7 +1255,8 @@ INSTANTIATE_TEST_SUITE_P(
                  },
          },
          Spec{.test_name = "3p",
-              .restore_feature_enabled = true,
+              .restore_feature_state =
+                  Spec::RestoreFeatureState::kEnableJustInTime,
               .runs =
                   {
                       // Sets up Chrome as running in France, and having
@@ -1314,7 +1335,7 @@ INSTANTIATE_TEST_SUITE_P(
                   }},
          Spec{
              .test_name = "3pNoRestoreDetection",
-             .restore_feature_enabled = false,
+             .restore_feature_state = Spec::RestoreFeatureState::kDisabled,
              .runs =
                  {
                      // Sets up Chrome as running in France, and having
@@ -1370,7 +1391,8 @@ INSTANTIATE_TEST_SUITE_P(
          },
          Spec{
              .test_name = "custom",
-             .restore_feature_enabled = true,
+             .restore_feature_state =
+                 Spec::RestoreFeatureState::kEnableJustInTime,
              .runs =
                  {
                      // Sets up Chrome as running in France, and having selected
@@ -1480,7 +1502,8 @@ INSTANTIATE_TEST_SUITE_P(
          },
          Spec{
              .test_name = "customGoogle",
-             .restore_feature_enabled = true,
+             .restore_feature_state =
+                 Spec::RestoreFeatureState::kEnableJustInTime,
              .runs =
                  {
                      // Sets up Chrome as running in France, and having
