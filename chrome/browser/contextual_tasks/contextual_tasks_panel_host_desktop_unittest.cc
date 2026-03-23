@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop_impl.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
 
 #include <memory>
 
@@ -111,7 +111,7 @@ class MockContextualTasksPanelHostObserver
 
 }  // namespace
 
-class ContextualTasksPanelHostDesktopImplTest : public testing::Test {
+class ContextualTasksPanelHostDesktopTest : public testing::Test {
  public:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -129,7 +129,7 @@ class ContextualTasksPanelHostDesktopImplTest : public testing::Test {
     side_panel_registry_ =
         std::make_unique<SidePanelRegistry>(browser_window_.get());
 
-    panel_host_ = std::make_unique<ContextualTasksPanelHostDesktopImpl>(
+    panel_host_ = std::make_unique<ContextualTasksPanelHostDesktop>(
         browser_window_.get(), &mock_side_panel_ui_);
   }
 
@@ -149,10 +149,10 @@ class ContextualTasksPanelHostDesktopImplTest : public testing::Test {
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   NiceMock<MockSidePanelUI> mock_side_panel_ui_;
-  std::unique_ptr<ContextualTasksPanelHostDesktopImpl> panel_host_;
+  std::unique_ptr<ContextualTasksPanelHostDesktop> panel_host_;
 };
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowCallsSidePanelUI) {
+TEST_F(ContextualTasksPanelHostDesktopTest, ShowCallsSidePanelUI) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -166,7 +166,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowCallsSidePanelUI) {
   panel_host_->Show(ContextualTasksPanelHost::AnimationStyle::kStandard);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowNoAnimation) {
+TEST_F(ContextualTasksPanelHostDesktopTest, ShowNoAnimation) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -180,7 +180,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowNoAnimation) {
   panel_host_->Show(ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowAlreadyOpenDoesNothing) {
+TEST_F(ContextualTasksPanelHostDesktopTest, ShowAlreadyOpenDoesNothing) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -194,7 +194,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, ShowAlreadyOpenDoesNothing) {
   panel_host_->Show(ContextualTasksPanelHost::AnimationStyle::kStandard);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, CloseCallsSidePanelUI) {
+TEST_F(ContextualTasksPanelHostDesktopTest, CloseCallsSidePanelUI) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -206,7 +206,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, CloseCallsSidePanelUI) {
   panel_host_->Close(ContextualTasksPanelHost::AnimationStyle::kStandard);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, CloseNoAnimation) {
+TEST_F(ContextualTasksPanelHostDesktopTest, CloseNoAnimation) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -218,7 +218,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, CloseNoAnimation) {
   panel_host_->Close(ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, IsPanelOpenForContextualTask) {
+TEST_F(ContextualTasksPanelHostDesktopTest, IsPanelOpenForContextualTask) {
   EXPECT_CALL(mock_side_panel_ui_, IsSidePanelEntryShowing(SidePanelEntry::Key(
                                        SidePanelEntry::Id::kContextualTasks)))
       .WillOnce(Return(true))
@@ -228,7 +228,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, IsPanelOpenForContextualTask) {
   EXPECT_FALSE(panel_host_->IsPanelOpenForContextualTask());
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest,
+TEST_F(ContextualTasksPanelHostDesktopTest,
        IsContextualTasksPanelSuppressedByDefaultWhenGlicIsShowing) {
   // By default, it should check for SidePanelEntry::Id::kGlic.
   EXPECT_CALL(
@@ -239,7 +239,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest,
   EXPECT_TRUE(panel_host_->IsPanelSuppressed());
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, NotifyObserversOnEntryShown) {
+TEST_F(ContextualTasksPanelHostDesktopTest, NotifyObserversOnEntryShown) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -252,7 +252,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, NotifyObserversOnEntryShown) {
   panel_host_->OnEntryShown(nullptr);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, NotifyObserversOnEntryHidden) {
+TEST_F(ContextualTasksPanelHostDesktopTest, NotifyObserversOnEntryHidden) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
 
@@ -265,7 +265,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, NotifyObserversOnEntryHidden) {
   panel_host_->OnEntryHidden(nullptr);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest,
+TEST_F(ContextualTasksPanelHostDesktopTest,
        CreateSidePanelViewInitializesWebView) {
   NiceMock<MockContextualTasksPanelHostObserver> observer;
   panel_host_->AddObserver(&observer);
@@ -281,7 +281,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest,
   EXPECT_TRUE(view);
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, WebContentsManagement) {
+TEST_F(ContextualTasksPanelHostDesktopTest, WebContentsManagement) {
   std::unique_ptr<views::View> view =
       panel_host_->CreateSidePanelView(*side_panel_registry_);
   std::unique_ptr<content::WebContents> web_contents =
@@ -294,7 +294,7 @@ TEST_F(ContextualTasksPanelHostDesktopImplTest, WebContentsManagement) {
   EXPECT_EQ(panel_host_->GetWebContents(), web_contents.get());
 }
 
-TEST_F(ContextualTasksPanelHostDesktopImplTest, IsPanelInitialized) {
+TEST_F(ContextualTasksPanelHostDesktopTest, IsPanelInitialized) {
   EXPECT_FALSE(panel_host_->IsPanelInitialized());
 
   std::unique_ptr<views::View> view =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop_impl.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
@@ -28,18 +28,18 @@ namespace contextual_tasks {
 // static
 std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
     BrowserWindowInterface* browser_window) {
-  return std::make_unique<ContextualTasksPanelHostDesktopImpl>(
+  return std::make_unique<ContextualTasksPanelHostDesktop>(
       browser_window, browser_window->GetFeatures().side_panel_ui());
 }
 
-ContextualTasksPanelHostDesktopImpl::ContextualTasksPanelHostDesktopImpl(
+ContextualTasksPanelHostDesktop::ContextualTasksPanelHostDesktop(
     BrowserWindowInterface* browser_window,
     SidePanelUI* side_panel_ui)
     : browser_window_(browser_window), side_panel_ui_(side_panel_ui) {
   CreateAndRegisterEntry();
 }
 
-ContextualTasksPanelHostDesktopImpl::~ContextualTasksPanelHostDesktopImpl() {
+ContextualTasksPanelHostDesktop::~ContextualTasksPanelHostDesktop() {
   SidePanelRegistry* global_registry = SidePanelRegistry::From(browser_window_);
   if (global_registry) {
     auto* contextual_tasks_entry = global_registry->GetEntryForKey(
@@ -50,17 +50,17 @@ ContextualTasksPanelHostDesktopImpl::~ContextualTasksPanelHostDesktopImpl() {
   }
 }
 
-void ContextualTasksPanelHostDesktopImpl::AddObserver(
+void ContextualTasksPanelHostDesktop::AddObserver(
     ContextualTasksPanelHost::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void ContextualTasksPanelHostDesktopImpl::RemoveObserver(
+void ContextualTasksPanelHostDesktop::RemoveObserver(
     ContextualTasksPanelHost::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ContextualTasksPanelHostDesktopImpl::Show(
+void ContextualTasksPanelHostDesktop::Show(
     ContextualTasksPanelHost::AnimationStyle animation) {
   // Only show the side panel if it's closed.
   if (IsPanelOpenForContextualTask()) {
@@ -84,7 +84,7 @@ void ContextualTasksPanelHostDesktopImpl::Show(
   }
 }
 
-void ContextualTasksPanelHostDesktopImpl::Close(
+void ContextualTasksPanelHostDesktop::Close(
     ContextualTasksPanelHost::AnimationStyle animation) {
   // `kTransitionFromTab` is only supported for showing the panel.
   CHECK_NE(animation,
@@ -97,16 +97,16 @@ void ContextualTasksPanelHostDesktopImpl::Close(
           ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
 }
 
-bool ContextualTasksPanelHostDesktopImpl::IsPanelInitialized() {
+bool ContextualTasksPanelHostDesktop::IsPanelInitialized() {
   return web_view_ != nullptr;
 }
 
-bool ContextualTasksPanelHostDesktopImpl::IsPanelOpenForContextualTask() const {
+bool ContextualTasksPanelHostDesktop::IsPanelOpenForContextualTask() const {
   return side_panel_ui_->IsSidePanelEntryShowing(
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
-bool ContextualTasksPanelHostDesktopImpl::IsPanelSuppressed() const {
+bool ContextualTasksPanelHostDesktop::IsPanelSuppressed() const {
   if (suppressed_for_testing_) {
     return true;
   }
@@ -116,39 +116,39 @@ bool ContextualTasksPanelHostDesktopImpl::IsPanelSuppressed() const {
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic));
 }
 
-void ContextualTasksPanelHostDesktopImpl::SetPanelSuppressedForTesting(
+void ContextualTasksPanelHostDesktop::SetPanelSuppressedForTesting(  // IN-TEST
     bool suppressed) {
   suppressed_for_testing_ = suppressed;
 }
 
-content::WebContents* ContextualTasksPanelHostDesktopImpl::GetWebContents() {
+content::WebContents* ContextualTasksPanelHostDesktop::GetWebContents() {
   if (!IsPanelInitialized()) {
     return nullptr;
   }
   return web_view_->web_contents();
 }
 
-void ContextualTasksPanelHostDesktopImpl::SetWebContents(
+void ContextualTasksPanelHostDesktop::SetWebContents(
     content::WebContents* web_contents) {
   if (IsPanelInitialized()) {
     web_view_->SetWebContents(web_contents);
   }
 }
 
-void ContextualTasksPanelHostDesktopImpl::OnEntryShown(SidePanelEntry* entry) {
+void ContextualTasksPanelHostDesktop::OnEntryShown(SidePanelEntry* entry) {
   NotifySurfaceStateChanged(
       ContextualTasksPanelHost::SurfaceState::kVisible,
       ContextualTasksPanelHost::StateChangeReason::kUserAction);
 }
 
-void ContextualTasksPanelHostDesktopImpl::OnEntryHidden(SidePanelEntry* entry) {
+void ContextualTasksPanelHostDesktop::OnEntryHidden(SidePanelEntry* entry) {
   NotifySurfaceStateChanged(
       ContextualTasksPanelHost::SurfaceState::kClosed,
       ContextualTasksPanelHost::StateChangeReason::kUserAction);
 }
 
 std::unique_ptr<views::View>
-ContextualTasksPanelHostDesktopImpl::CreateSidePanelView(
+ContextualTasksPanelHostDesktop::CreateSidePanelView(
     SidePanelEntryScope& scope) {
   std::unique_ptr<ContextualTasksWebView> web_view =
       std::make_unique<ContextualTasksWebView>(browser_window_->GetProfile());
@@ -163,14 +163,14 @@ ContextualTasksPanelHostDesktopImpl::CreateSidePanelView(
   return web_view;
 }
 
-void ContextualTasksPanelHostDesktopImpl::NotifySurfaceStateChanged(
+void ContextualTasksPanelHostDesktop::NotifySurfaceStateChanged(
     ContextualTasksPanelHost::SurfaceState state,
     ContextualTasksPanelHost::StateChangeReason reason) {
   observers_.Notify(&ContextualTasksPanelHost::Observer::OnSurfaceStateChanged,
                     state, reason);
 }
 
-void ContextualTasksPanelHostDesktopImpl::CreateAndRegisterEntry() {
+void ContextualTasksPanelHostDesktop::CreateAndRegisterEntry() {
   auto* global_registry = SidePanelRegistry::From(browser_window_);
   CHECK(global_registry);
 
@@ -183,7 +183,7 @@ void ContextualTasksPanelHostDesktopImpl::CreateAndRegisterEntry() {
       SidePanelEntry::PanelType::kToolbar,
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks),
       base::BindRepeating(
-          [](base::WeakPtr<ContextualTasksPanelHostDesktopImpl> host,
+          [](base::WeakPtr<ContextualTasksPanelHostDesktop> host,
              SidePanelEntryScope& scope) -> std::unique_ptr<views::View> {
             return host ? host->CreateSidePanelView(scope) : nullptr;
           },
@@ -200,7 +200,7 @@ void ContextualTasksPanelHostDesktopImpl::CreateAndRegisterEntry() {
   registered_entry->AddObserver(this);
 }
 
-void ContextualTasksPanelHostDesktopImpl::ShowFromTab() {
+void ContextualTasksPanelHostDesktop::ShowFromTab() {
   views::View* content = BrowserElementsViews::From(browser_window_)
                              ->RetrieveView(kActiveContentsWebViewRetrievalId);
   gfx::Rect content_bounds_in_browser_coordinates =

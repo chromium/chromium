@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_IMPL_H_
-#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_IMPL_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,20 +29,20 @@ class ContextualTasksWebView;
 // This class manages the display of the contextual tasks UI within the
 // browser's side panel framework and coordinates with `SidePanelUI` and
 // `SidePanelRegistry` to handle visibility and lifecycle events.
-class ContextualTasksPanelHostDesktopImpl : public ContextualTasksPanelHost,
-                                            public SidePanelEntryObserver {
+class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
+                                        public SidePanelEntryObserver {
  public:
   // For testing only. Use static ContextualTasksPanelHost::Create to get an
   // instance rather than explicitly constructing.
-  ContextualTasksPanelHostDesktopImpl(BrowserWindowInterface* browser_window,
-                                      SidePanelUI* side_panel_ui);
+  ContextualTasksPanelHostDesktop(BrowserWindowInterface* browser_window,
+                                  SidePanelUI* side_panel_ui);
 
   // Disallow copy/assign.
-  ContextualTasksPanelHostDesktopImpl(
-      const ContextualTasksPanelHostDesktopImpl&) = delete;
-  ContextualTasksPanelHostDesktopImpl& operator=(
-      const ContextualTasksPanelHostDesktopImpl&) = delete;
-  ~ContextualTasksPanelHostDesktopImpl() override;
+  ContextualTasksPanelHostDesktop(const ContextualTasksPanelHostDesktop&) =
+      delete;
+  ContextualTasksPanelHostDesktop& operator=(
+      const ContextualTasksPanelHostDesktop&) = delete;
+  ~ContextualTasksPanelHostDesktop() override;
 
   // ContextualTasksPanelHost:
   void AddObserver(ContextualTasksPanelHost::Observer* observer) override;
@@ -93,9 +93,9 @@ class ContextualTasksPanelHostDesktopImpl : public ContextualTasksPanelHost,
   // True if the panel should be suppressed for testing.
   bool suppressed_for_testing_ = false;
 
-  base::WeakPtrFactory<ContextualTasksPanelHostDesktopImpl> weak_factory_{this};
+  base::WeakPtrFactory<ContextualTasksPanelHostDesktop> weak_factory_{this};
 };
 
 }  // namespace contextual_tasks
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_IMPL_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_H_
