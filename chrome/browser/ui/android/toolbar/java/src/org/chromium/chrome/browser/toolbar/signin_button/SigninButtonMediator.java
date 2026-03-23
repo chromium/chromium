@@ -195,7 +195,12 @@ final class SigninButtonMediator
             assert !mModel.get(SigninButtonProperties.SHOW_BUTTON);
             return;
         }
-        mIdentityError = assumeNonNull(mSyncService).getUserActionableError();
+
+        // TODO(crbug.com/89655527): Add mediator unit test case to cover this possibility.
+        mIdentityError =
+                mSyncService == null
+                        ? UserActionableError.NONE
+                        : mSyncService.getUserActionableError();
 
         CoreAccountInfo coreAccountInfo =
                 assumeNonNull(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SIGNIN);
