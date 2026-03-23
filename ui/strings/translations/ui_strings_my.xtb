@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{မဖတ်ရသေးသော အကြောင်းကြားချက် ၁ ခု}other{မဖတ်ရသေးသော အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲကို ဖွင့်ရန်-}other{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲများကို ဖွင့်ရန်-}}</translation>
+<translation id="4230098358142093034">ပင်မစာမျက်နှာ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ပြီးခံသည့် ၁ လ}other{ပြီးခဲ့သည့် # လ}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> ကော်လံကို ငယ်စဉ်ကြီးလိုက် စီထားသည်</translation>
 <translation id="4289300219472526559">စတင် စကားပြော</translation>

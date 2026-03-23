@@ -342,6 +342,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221024147024329929">PKCS #1 MD2 Dengan Penyulitan RSA</translation>
 <translation id="1221266967850882682">Selamat Kembali</translation>
 <translation id="1221825588892235038">Pemilihan sahaja</translation>
+<translation id="1222786882236067545">Muatkan Fail Sejarah</translation>
 <translation id="1222835797152767346">Tetapkan PIN untuk memudahkan log masuk</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> memerlukan lesen</translation>
 <translation id="1223498995510244364">Ringkaskan</translation>
@@ -1143,6 +1144,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1767043563165955993">Gunakan dengan apl Android</translation>
 <translation id="1767508543310534319">Gema tanda baca</translation>
 <translation id="1768212860412467516">Hantar maklum balas untuk <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="1768928167751703843">Lihat Data Setempat</translation>
 <translation id="1769104665586091481">Buka Pautan dalam Tetingkap &amp;Baharu</translation>
 <translation id="1769157454356586138">Imbasan gagal. Fail ini disekat oleh pentadbir anda</translation>
 <translation id="176920518817780870">Tukar kumpulan kepada folder penanda halaman</translation>
@@ -2407,6 +2409,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2628258844236035475">Alih keluar alamat rumah anda daripada autolengkap Chrome?</translation>
 <translation id="2628770867680720336">Tetapan semula kilang Chromebook ini diperlukan untuk mendayakan penyahpepijatan ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Mulakan Sembang Baharu dengan Gemini</translation>
+<translation id="2629058811622993283">Kongsi juga audio apl (daripada semua tetingkap apl dan apl yang berkaitan)</translation>
 <translation id="2629227353894235473">Bangunkan apl Android</translation>
 <translation id="2629437048544561682">Kosongkan Kanvas</translation>
 <translation id="2630703150574465936">Anda telah membenarkan Gemini untuk log anda masuk secara automatik ke laman dan apl ini menggunakan akaun anda</translation>
@@ -4732,6 +4735,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4241140145060464825">Kandungan Apl</translation>
 <translation id="4241224519481557898">Kategori</translation>
 <translation id="4242145785130247982">Sijil pelanggan berbilang tidak disokong</translation>
+<translation id="4242245038391716252">Dimuat turun oleh sambungan: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4242577469625748426">Gagal memasang tetapan dasar pada peranti: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Penyemak imbas dan profil anda diuruskan<ph name="END_LINK" /> oleh <ph name="DOMAIN" /></translation>
@@ -6105,6 +6109,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5200191131577845078">Pemberitahuan dibenarkan daripada <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Touch ID dikunci. Untuk meneruskan proses, masukkan kata laluan anda.</translation>
 <translation id="5201945335223486172">Untuk <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Melihat sejarah daripada 1 fail}other{Melihat sejarah daripada # fail}}</translation>
 <translation id="5203035663139409780">Boleh mengedit fail atau folder pada peranti anda</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik untuk melihat sambungan}other{Klik untuk melihat sambungan ini}}</translation>
 <translation id="5204282224596194174">Kata laluan pemulihan untuk <ph name="USER_EMAIL" /></translation>
@@ -7354,6 +7359,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6095696531220637741">Macaron</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Buka Dimaksimumkan</translation>
+<translation id="6096192567014958958">Selamat datang, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">X.500 Nama</translation>
 <translation id="6097480669505687979">Jika anda tidak mengosongkan ruang, pengguna dan data mungkin dialih keluar secara automatik.</translation>
 <translation id="6097600385983390082">Carian suara ditutup</translation>
@@ -9964,6 +9970,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7920715534283810633">Tidak dapat membuka <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Anda tidak boleh melihat pemberitahuan telefon anda pada akaun terurus ini. Cuba lagi dengan akaun lain. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Laman boleh menggunakan pengoptimuman JavaScript</translation>
+<translation id="7921782882718083488">Ringkaskan halaman ini</translation>
 <translation id="7921901223958867679">Sambungan ini boleh membaca dan menukar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 sambungan</translation>
 <translation id="7924075559900107275">calon sokongan jangka panjang</translation>
@@ -10011,6 +10018,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7947962633355574091">S&amp;alin Alamat Video</translation>
 <translation id="7947964080535614577">Laman biasanya memaparkan iklan agar dapat memberikan kandungan atau perkhidmatan percuma. Akan tetapi, sesetengah laman diketahui memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="7948407723851303488">Semua halaman <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">Gagal memuatkan sejarah. Pastikan fail mengandungi log pengemas kini yang sah.</translation>
 <translation id="7950629216186736592">Sebab: LBS hanya menyokong URL http://, https://, dan file://.</translation>
 <translation id="7950814699499457511">Hidup • Sambungan ini belum menerbitkan amalan privasi, seperti cara sambungan ini mengumpulkan dan menggunakan data</translation>
 <translation id="7951265006188088697">Untuk menambahkan atau mengurus kaedah pembayaran Google Pay, lawati <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> anda</translation>
@@ -10394,6 +10402,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8207404892907560325">Pilih kunci laluan</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" wujud tetapi tidak kelihatan seperti VM <ph name="VM_TYPE" /> yang sah. Sila hubungi pentadbir anda.</translation>
 <translation id="8207901006380134182">Ombak besar di lautan, dengan hutan belantara gelap di tepi pantai.</translation>
+<translation id="8208043093301544621">Laman Utama</translation>
 <translation id="8208216423136871611">Jangan simpan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Muat turun sedang berlangsung}other{Muat turun sedang berlangsung}}</translation>

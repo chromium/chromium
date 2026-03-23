@@ -342,6 +342,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1221024147024329929">PKCS #1 MD2 Na Usimbaji wa RSA</translation>
 <translation id="1221266967850882682">Ulikoachia</translation>
 <translation id="1221825588892235038">Kuchagua pekee</translation>
+<translation id="1222786882236067545">Pakia Faili za Historia</translation>
 <translation id="1222835797152767346">Weka PIN ili urahisishe zaidi mchakato wa kuingia katika akaunti</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> inahitaji leseni</translation>
 <translation id="1223498995510244364">Andaa muhtasari</translation>
@@ -1139,6 +1140,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1767043563165955993">Tumia kwenye programu za Android</translation>
 <translation id="1767508543310534319">Mwangwi wa uakifishaji</translation>
 <translation id="1768212860412467516">Tuma maoni kuhusu <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="1768928167751703843">Angalia Data ya Kifaa</translation>
 <translation id="1769104665586091481">Fungua Kiungo katika &amp;Dirisha Jipya</translation>
 <translation id="1769157454356586138">Imeshindwa kuchanganua. Faili hii imezuiwa na msimamizi wako</translation>
 <translation id="176920518817780870">Geuza kikundi kiwe folda ya alamisho</translation>
@@ -2402,6 +2404,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2628258844236035475">Ungependa kuondoa anwani yako ya nyumbani katika kipengele cha kujaza kiotomatiki kwenye Chrome?</translation>
 <translation id="2628770867680720336">Unahitaji kurejesha mipangilio ambayo Chromebook hii ilitoka nayo kiwandani ili uwashe utatuzi wa ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Anzisha Gumzo Jipya na Gemini</translation>
+<translation id="2629058811622993283">Pia, ruhusu sauti ya programu ifikiwe (kwenye madirisha yake yote na programu zinazohusiana)</translation>
 <translation id="2629227353894235473">Sanidi programu za Android</translation>
 <translation id="2629437048544561682">Futa Turubai</translation>
 <translation id="2630703150574465936">Umeruhusu Gemini ikuingize katika akaunti kiotomatiki kwenye tovuti na programu hizi ikitumia akaunti zako</translation>
@@ -4720,6 +4723,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4241140145060464825">Maudhui ya Programu</translation>
 <translation id="4241224519481557898">Aina</translation>
 <translation id="4242145785130247982">Vyeti vingi vya kiteja havitumiki</translation>
+<translation id="4242245038391716252">Imepakuliwa na kiendelezi: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4242577469625748426">Imeshindwa kusakinisha mipangilio ya sera kwenye kifaa: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Wasifu na kivinjari chako vinadhibitiwa<ph name="END_LINK" /> na <ph name="DOMAIN" /></translation>
@@ -6091,6 +6095,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5200191131577845078">Arifa zimeruhusiwa kutoka kwenye <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Kipengele cha Touch ID kimefungwa. Ili uendelee, weka nenosiri lako.</translation>
 <translation id="5201945335223486172">Wa <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Unaangalia kumbukumbu kwenye faili 1}other{Unaangalia kumbukumbu kwenye faili #}}</translation>
 <translation id="5203035663139409780">Zinaweza kubadilisha faili au folda kwenye kifaa chako</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Bofya ili uone kiendelezi}other{Bofya ili uone viendelezi}}</translation>
 <translation id="5204282224596194174">Nenosiri la kurejesha akaunti ya <ph name="USER_EMAIL" /></translation>
@@ -7340,6 +7345,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6095696531220637741">Biskuti</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Fungua iliyoongezwa</translation>
+<translation id="6096192567014958958">Karibu <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">Jina la X.500</translation>
 <translation id="6097480669505687979">Ikiwa hutafuta faili kwenye hifadhi, huenda watumiaji pamoja na data ikaondolewa kiotomatiki.</translation>
 <translation id="6097600385983390082">Kipengele cha kutafuta kwa kutamka kimefungwa</translation>
@@ -9948,6 +9954,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7920715534283810633">Huwezi kufungua <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Huwezi kutazama arifa za simu yako kwenye akaunti hii inayosimamiwa. Jaribu tena ukitumia akaunti tofauti. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Tovuti zinaweza kutumia uboreshaji wa JavaScript</translation>
+<translation id="7921782882718083488">Andaa muhtasari wa ukurasa huu</translation>
 <translation id="7921901223958867679">Kiendelezi hiki kinaweza kusoma na kubadilisha <ph name="HOST" /></translation>
 <translation id="7922606348470480702">Kiendelezi 1</translation>
 <translation id="7924075559900107275">toleo linaloweza kutumika kwa muda mrefu</translation>
@@ -9995,6 +10002,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7947962633355574091">Nakili Anwani ya Video</translation>
 <translation id="7947964080535614577">Kwa kawaida tovuti huonyesha matangazo ili ziweze kutoa maudhui au huduma bila malipo. Lakini, baadhi ya tovuti huonyesha matangazo yanayopotosha au yanayokatiza matumizi.</translation>
 <translation id="7948407723851303488">Kurasa zote za <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">Imeshindwa kupakia historia. Hakikisha kuwa faili zina kumbukumbu sahihi za kisasishaji.</translation>
 <translation id="7950629216186736592">Sababu: LBS inaweza kutumia URL za http://, https:// na file:// pekee.</translation>
 <translation id="7950814699499457511">Kimewashwa • Kiendelezi hiki hakijachapisha desturi za faragha, kama vile jinsi kinavyokusanya na kutumia data</translation>
 <translation id="7951265006188088697">Ili uongeze au uthibiti njia za kulipa za Google Pay, tembelea <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /></translation>
@@ -10378,6 +10386,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8207404892907560325">Chagua ufunguo wa siri</translation>
 <translation id="8207794858944505786">Tayari kuna Mashine Pepe ya "<ph name="DEFAULT_VM_NAME" />", lakini haionekani kuwa aina sahihi ya Mashine Pepe <ph name="VM_TYPE" />. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="8207901006380134182">Wimbi kubwa linafunika bahari, pamoja na msitu wenye giza ufukweni.</translation>
+<translation id="8208043093301544621">Mwanzo</translation>
 <translation id="8208216423136871611">Usihifadhi</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Inaendelea kupakua}other{Inaendelea kupakua}}</translation>

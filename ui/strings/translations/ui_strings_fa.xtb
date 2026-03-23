@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{۱ اعلان خوانده‌نشده}one{# اعلان خوانده‌نشده}other{# اعلان خوانده‌نشده}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{افزونه زیر را در «حالت ناشناس» روشن کنید:}one{افزونه زیر را در «حالت ناشناس» روشن کنید:}other{افزونه‌های زیر را در «حالت ناشناس» روشن کنید:}}</translation>
+<translation id="4230098358142093034">صفحه اصلی</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
 <translation id="4277033906326892359">ستون <ph name="COLUMN_NAME" /> به‌ترتیب صعودی مرتب شد</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>

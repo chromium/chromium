@@ -1080,7 +1080,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1714644264617423774">Aktivér hjælpefunktioner for at gøre din enhed nemmere at bruge. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Vil du slette websitedata og tilladelser for <ph name="SITE_NAME" /> samt websitets installerede apps?</translation>
 <translation id="171826447717908393">Isolerede webapps (beta)</translation>
-<translation id="1718835860248848330">Den seneste time</translation>
+<translation id="1718835860248848330">Seneste time</translation>
 <translation id="1719312230114180055">Bemærk! Adgang via fingeraftryk kan være mindre sikkert end adgang via en stærk adgangskode eller pinkode.</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
 <translation id="1720318856472900922">TLS WWW-servergodkendelse</translation>
@@ -9955,6 +9955,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> kan ikke åbnes</translation>
 <translation id="7921347341284348270">Du kan ikke se din telefons notifikationer på denne administrerede konto. Prøv igen med en anden konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Websites kan anvende JavaScript-optimering</translation>
+<translation id="7921782882718083488">Opsummer denne side</translation>
 <translation id="7921901223958867679">Denne udvidelse kan læse og ændre <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 udvidelse</translation>
 <translation id="7924075559900107275">kandidat til udvidet understøttelse</translation>

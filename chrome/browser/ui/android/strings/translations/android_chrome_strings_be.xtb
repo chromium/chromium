@@ -798,6 +798,7 @@
 <translation id="4384468725000734951">Выкарыстоўваецца пошукавая сістэма Sogou</translation>
 <translation id="4387647248986092471">Стварыць блакіроўку профілю для аўтамабіля</translation>
 <translation id="4387817230000841154">Адкрыць спампоўкі</translation>
+<translation id="4394049700291259645">Выключыць</translation>
 <translation id="4395046795145457714">Прапанова ўключыць Chrome Finds адкрыта на ўсю вышыню</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, выбраная і замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – ідзе спампоўванне…</translation>
@@ -822,7 +823,6 @@
 <translation id="4478161224666880173">Вы можаце выкарыстоўваць уліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на гэтым вэб-сайце. Каб працягнуць, увайдзіце ва ўліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4487967297491345095">Усе даныя праграмы Chrome будуць назаўсёды выдалены. Гэта датычыцца ўсіх файлаў, налад, уліковых запісаў, баз даных і г. д.</translation>
-<translation id="4494315997125191493">Каб праглядзець усе вокны, націсніце "Кіраваць"</translation>
 <translation id="4494806687727322324">Адміністратар уключыў магчымасць захоўваць паролі</translation>
 <translation id="4508528996305412043">Меню карткі стужкі адкрыта</translation>
 <translation id="4509741852167209430">Каб вымяраць эфектыўнасць рэкламы, сайты абагульваюць паміж сабой асобныя тыпы даных (напрыклад, пра тое, ці зрабілі вы куплю пасля наведвання сайта).</translation>
@@ -870,7 +870,6 @@
 <translation id="4673702426794876519">Акно ў рэжыме інкогніта</translation>
 <translation id="4675298276894277358">Мы больш не будзем паказваць гэты сайт</translation>
 <translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
-<translation id="4682306524980568490">Максімальная колькасць вокнаў, якую можна адкрыць: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4685741273709472646">Выбраць з выпаднога спіса</translation>
 <translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>

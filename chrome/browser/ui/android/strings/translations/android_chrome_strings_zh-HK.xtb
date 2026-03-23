@@ -798,6 +798,7 @@
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
 <translation id="4387647248986092471">建立汽車個人檔案鎖定</translation>
 <translation id="4387817230000841154">開啟下載檔案</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="4395046795145457714">Chrome「尋找」功能選用面板目前顯示於整個畫面</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />，揀咗錄緊媒體嘅固定無痕式分頁</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
@@ -822,7 +823,6 @@
 <translation id="4478161224666880173">你可在此網站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>
-<translation id="4494315997125191493">選取 [管理] 即可查看所有視窗</translation>
 <translation id="4494806687727322324">管理員已開啟密碼儲存功能</translation>
 <translation id="4508528996305412043">資訊提供卡選單開咗</translation>
 <translation id="4509741852167209430">網站之間會分享特定類型的資料，以評估廣告成效，例如使用者是否在瀏覽網站後購物</translation>
@@ -870,7 +870,6 @@
 <translation id="4673702426794876519">無痕式視窗</translation>
 <translation id="4675298276894277358">此網站不會再顯示</translation>
 <translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題</translation>
-<translation id="4682306524980568490">最多顯示 <ph name="MAX_INSTANCE_COUNT" /> 個視窗</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4685741273709472646">由下拉式選單入面揀</translation>
 <translation id="4687718960473379118">網站建議的廣告</translation>

@@ -225,6 +225,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="114715166554490743">Kazalec z glavo</translation>
 <translation id="114721135501989771">Prejmite Googlove pametne rešitve v Chromu</translation>
 <translation id="1147322039136785890">Zdaj je na vrsti <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1147867844630510586">Prijava s ponudnikom <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Dovoli uporabniške skripte</translation>
 <translation id="1148624853678088576">Pripravljeni ste!</translation>
 <translation id="1148669835763563782">Prejemate najnovejšo posodobitev programske opreme za večjo varnost in najnovejše funkcije Chromebooka. Ta posodobitev vključuje izboljšano izkušnjo nastavitve, ki vam olajša začetek uporabe Chromebooka.</translation>
@@ -1008,6 +1009,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1674073353928166410">Odpiranje vseh (<ph name="URL_COUNT" />) v anonimnem oknu.</translation>
 <translation id="1674142805528405174">Googlov upravitelj gesel lahko posodobi vaš račun z močnim geslom, ki je shranjeno v vašem računu <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Samodejno onemogočanje optimizatorjev za JavaScript na neznanih spletnih mestih</translation>
+<translation id="1675964862374196038">Registracija pri ponudniku <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Ni mogoče dodati tega: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Pregledovanje ni uspelo. Ta datoteka je morda virus ali zlonamerna programska oprema.</translation>
@@ -9960,6 +9962,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7920715534283810633">Datoteke <ph name="FILE_NAMES" /> ni mogoče odpreti</translation>
 <translation id="7921347341284348270">V tem upravljanem računu si ni mogoče ogledati obvestil telefona. Poskusite z drugim računom. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Spletna mesta lahko uporabljajo optimizacijo za JavaScript</translation>
+<translation id="7921782882718083488">Ustvari povzetek te strani</translation>
 <translation id="7921901223958867679">Ta razširitev lahko bere in spreminja spletno mesto <ph name="HOST" />.</translation>
 <translation id="7922606348470480702">1 razširitev</translation>
 <translation id="7924075559900107275">kandidat za dolgoročno podporo</translation>

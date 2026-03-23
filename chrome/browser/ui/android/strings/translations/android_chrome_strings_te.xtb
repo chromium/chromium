@@ -798,6 +798,7 @@
 <translation id="4384468725000734951">శోధన కోసం Sogouను ఉపయోగిస్తుంది</translation>
 <translation id="4387647248986092471">కారు ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4387817230000841154">డౌన్‌లోడ్‌లను తెరవండి</translation>
+<translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="4395046795145457714">Chrome Finds సమ్మతి ఫుల్ స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మీడియాను రికార్డింగ్ చేసే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - డౌన్‌లోడ్ చేస్తోంది…</translation>
@@ -822,7 +823,6 @@
 <translation id="4478161224666880173">మీరు ఈ సైట్‌లోని మీ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించవచ్చు. కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌కు సైన్ ఇన్ చేయండి.</translation>
 <translation id="4479972344484327217">Chromeలో <ph name="MODULE" /> ఇన్‌స్టాల్ చేయబడుతోంది…</translation>
 <translation id="4487967297491345095">Chrome యాప్‌ డేటా మొత్తం శాశ్వతంగా తొలగించబడుతుంది. డేటాలో అన్ని ఫైళ్లు, సెట్టింగ్‌లు, ఖాతాలు, డేటాబేస్‌లు మొదలైనవి ఉంటాయి.</translation>
-<translation id="4494315997125191493">అన్ని విండోలను చూడటానికి మేనేజ్ చేయండి అనే ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="4494806687727322324">మీ అడ్మినిస్ట్రేటర్, పాస్‌వర్డ్‌ను సేవ్ చేసే ఫీచర్‌ను ఆన్ చేశారు</translation>
 <translation id="4508528996305412043">ఫీడ్ కార్డ్ మెనూ తెరవబడింది</translation>
 <translation id="4509741852167209430">మీరు సైట్‌ను సందర్శించిన తర్వాత కొనుగోలు చేశారా లేదా అనే దానికి సంబంధించినటువంటి వాటి యాడ్‌ల పనితీరును కొలవడానికి సైట్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది</translation>
@@ -870,7 +870,6 @@
 <translation id="4673702426794876519">అజ్ఞాత విండో</translation>
 <translation id="4675298276894277358">ఈ సైట్ మళ్లీ కనిపించదు</translation>
 <translation id="4678082183394354975">Chromeలో సైట్‌ల కోసం డార్క్ థీమ్‌ ఆన్ చేసి ఉంది</translation>
-<translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> విండోలు మాత్రమే చూపబడతాయి</translation>
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
 <translation id="4685741273709472646">డ్రాప్‌డౌన్ లిస్ట్ నుండి ఎంచుకోండి</translation>
 <translation id="4687718960473379118">సైట్ సూచించిన యాడ్‌లు</translation>

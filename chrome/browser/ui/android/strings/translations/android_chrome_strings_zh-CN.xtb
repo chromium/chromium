@@ -798,6 +798,7 @@
 <translation id="4384468725000734951">目前使用的搜索引擎是搜狗</translation>
 <translation id="4387647248986092471">设置车载系统个人资料锁定方式</translation>
 <translation id="4387817230000841154">打开下载内容页面</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="4395046795145457714">已全屏打开 Chrome 查找功能选择启用底部动作条</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />，已选择的固定无痕式标签页，正在录制内容</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - 正在下载…</translation>
@@ -822,7 +823,6 @@
 <translation id="4478161224666880173">您可以在此网站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号。如需继续，请登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4479972344484327217">正在为 Chrome 安装<ph name="MODULE" />…</translation>
 <translation id="4487967297491345095">Chrome 的所有应用数据都将被永久删除，其中包括所有文件、设置、账号、数据库等。</translation>
-<translation id="4494315997125191493">选择“管理”即可查看所有窗口</translation>
 <translation id="4494806687727322324">您的管理员已开启密码保存功能</translation>
 <translation id="4508528996305412043">动态卡片上的菜单已打开</translation>
 <translation id="4509741852167209430">为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
@@ -870,7 +870,6 @@
 <translation id="4673702426794876519">无痕式窗口</translation>
 <translation id="4675298276894277358">此网站不会再显示</translation>
 <translation id="4678082183394354975">Chrome 中已为网站开启深色主题</translation>
-<translation id="4682306524980568490">只能显示 <ph name="MAX_INSTANCE_COUNT" /> 个窗口</translation>
 <translation id="4684427112815847243">同步所有数据</translation>
 <translation id="4685741273709472646">从下拉列表中选择</translation>
 <translation id="4687718960473379118">网站建议的广告</translation>

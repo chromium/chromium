@@ -225,6 +225,7 @@
 <translation id="114715166554490743">Толгойн чиглүүлэгч</translation>
 <translation id="114721135501989771">Chrome-д Google smarts авах</translation>
 <translation id="1147322039136785890">Одоо <ph name="SUPERVISED_USER_NAME" />-н ээлж</translation>
+<translation id="1147867844630510586"><ph name="IDP_NAME" />-р нэвтрэх</translation>
 <translation id="1148464196693569530">Хэрэглэгчийн скриптийг зөвшөөрөх</translation>
 <translation id="1148624853678088576">Бүх зүйл бэлэн боллоо!</translation>
 <translation id="1148669835763563782">Та сайжруулсан аюулгүй байдал болон Chromebook-н цоо шинэ онцлогуудын сүүлийн үеийн программ хангамжийн шинэчлэлтийг авч байна. Энэ шинэчлэлтэд танд Chromebook дээрээ саадгүй эхлэхэд туслах тохируулгын сайжруулсан хэрэглээ багтсан.</translation>
@@ -1002,6 +1003,7 @@
 <translation id="1674073353928166410">Бүгдийг (<ph name="URL_COUNT" />) Нууцлалтай цонхонд нээх</translation>
 <translation id="1674142805528405174">Google Нууц үгний менежер танд зориулж таны <ph name="EMAIL" /> бүртгэлд хадгалдаг сайн нууц үгээр бүртгэлийг тань шинэчлэх боломжтой.</translation>
 <translation id="1674945585974615438">Танихгүй сайт дээр JavaScript оновчтой болгогчийг автоматаар идэвхгүй болгох</translation>
+<translation id="1675964862374196038"><ph name="IDP_NAME" />-р бүртгүүлэх</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэх боломжгүй байна</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1678849866171627536">Скан амжилтгүй боллоо. Энэ файл вирус эсвэл хортой программ байж магадгүй.</translation>
@@ -9945,6 +9947,7 @@
 <translation id="7920715534283810633"><ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
 <translation id="7921347341284348270">Та энэ тохиргоо хийгдсэн бүртгэл дээр утасныхаа мэдэгдлийг харах боломжгүй. Өөр бүртгэлээр дахин оролдоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Сайт JavaScript-н оновчлолыг ашиглах боломжтой</translation>
+<translation id="7921782882718083488">Энэ хуудсыг хураангуйлах</translation>
 <translation id="7921901223958867679">Энэ өргөтгөл <ph name="HOST" />-г унших болон өөрчлөх боломжтой</translation>
 <translation id="7922606348470480702">1 өргөтгөл</translation>
 <translation id="7924075559900107275">урт хугацааны тусламж үзүүлэх нэр дэвшигч</translation>

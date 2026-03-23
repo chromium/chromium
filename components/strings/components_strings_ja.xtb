@@ -3377,6 +3377,7 @@
 <translation id="6326947323444967009">iOS 設定で Chrome をシステムの既定のブラウザとして設定します</translation>
 <translation id="6327065120806001832">ローカル ネットワークへのアクセス</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
+<translation id="6329742260390895689">情報を自動入力するには、ウォレットの設定で [Google の各種サービスでパスを使用する] をオンにしてください</translation>
 <translation id="6329815962353376655">&lt;質問を入力&gt;</translation>
 <translation id="6331597954316706229">最もパーソナライズされた回答を取得するには、開いている関連タブの参照をすべてのスレッドに許可してください。</translation>
 <translation id="633348045801643466">購入手続き時に<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />後払い<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />オプションを表示する</translation>
@@ -3464,6 +3465,7 @@
 <translation id="6436994298828707228">公開ページでローカル ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされました。</translation>
 <translation id="6437647869369934905">Google 図形描画</translation>
 <translation id="643917412048333145">ドレス</translation>
+<translation id="6440450906295708112">バリエーションのソース</translation>
 <translation id="6440503408713884761">除外されました</translation>
 <translation id="6443406338865242315">インストールした拡張機能とプラグイン</translation>
 <translation id="6444329331928531170">老後、年金</translation>

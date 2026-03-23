@@ -798,6 +798,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
 <translation id="4387647248986092471">자동차 프로필 잠금 만들기</translation>
 <translation id="4387817230000841154">다운로드 열기</translation>
+<translation id="4394049700291259645">사용 중지</translation>
 <translation id="4395046795145457714">Chrome Finds 선택이 전체 높이로 열림</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, 선택되고 고정되고 녹화 중인 시크릿 탭</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: 다운로드 중입니다…</translation>
@@ -822,7 +823,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4478161224666880173">이 사이트에서 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정을 사용할 수 있습니다. 계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에 로그인하세요.</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
-<translation id="4494315997125191493">모든 창을 보려면 관리를 선택하세요.</translation>
 <translation id="4494806687727322324">관리자가 비밀번호 저장을 사용 설정했습니다</translation>
 <translation id="4508528996305412043">피드 카드 메뉴가 열림</translation>
 <translation id="4509741852167209430">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
@@ -870,7 +870,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4673702426794876519">시크릿 창</translation>
 <translation id="4675298276894277358">이 사이트가 다시 표시되지 않습니다.</translation>
 <translation id="4678082183394354975">Chrome에서 사이트의 어두운 테마가 사용 설정되었습니다.</translation>
-<translation id="4682306524980568490">최대 <ph name="MAX_INSTANCE_COUNT" />개의 창만 표시할 수 있습니다</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
 <translation id="4685741273709472646">드롭다운 목록에서 선택</translation>
 <translation id="4687718960473379118">사이트 추천 광고</translation>

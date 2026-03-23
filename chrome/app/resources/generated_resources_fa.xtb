@@ -343,6 +343,7 @@
 <translation id="1221024147024329929">‏PKCS #1 MD2 با رمزگذاری RSA</translation>
 <translation id="1221266967850882682">کجا بودیم؟</translation>
 <translation id="1221825588892235038">فقط انتخاب</translation>
+<translation id="1222786882236067545">بار کردن فایل‌های سابقه</translation>
 <translation id="1222835797152767346">برای ورود راحت‌تر به سیستم، پین تنظیم کنید</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> به پروانه نیاز دارد</translation>
 <translation id="1223498995510244364">خلاصه کردن</translation>
@@ -1141,6 +1142,7 @@
 <translation id="1767043563165955993">‏در برنامه‌های Android استفاده شود</translation>
 <translation id="1767508543310534319">بازگویی نشانه‌های سجاوندی</translation>
 <translation id="1768212860412467516">برای <ph name="EXPERIMENT_NAME" />، بازخورد ارسال کنید.</translation>
+<translation id="1768928167751703843">مشاهده داده‌های محلی</translation>
 <translation id="1769104665586091481">باز کردن پیوند در &amp;پنجره جدید</translation>
 <translation id="1769157454356586138">اسکن انجام نشد. سرپرست این فایل را مسدود کرده است.</translation>
 <translation id="176920518817780870">تبدیل کردن گروه به پوشه نشانک</translation>
@@ -2404,6 +2406,7 @@
 <translation id="2628258844236035475">‏نشانی خانه‌تان از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="2628770867680720336">‏بازنشانی کارخانه برای این Chromebook لازم است تا اشکال‌زدایی ADB (پل اشکال‌زدایی Android) فعال شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">‏شروع کردن گپ جدید با Gemini</translation>
+<translation id="2629058811622993283">صدای برنامه نیز (از همه پنجره‌های آن و برنامه‌های مرتبط) هم‌رسانی شود</translation>
 <translation id="2629227353894235473">‏تولید برنامه‌های Android</translation>
 <translation id="2629437048544561682">پاک کردن بوم نقاشی</translation>
 <translation id="2630703150574465936">‏به Gemini اجازه داده‌اید بااستفاده از حساب‌هایتان شما را به‌طور خودکار به سیستم این سایت‌ها و برنامه‌ها وارد کند</translation>
@@ -4729,6 +4732,7 @@
 <translation id="4241140145060464825">محتوای برنامه</translation>
 <translation id="4241224519481557898">دسته</translation>
 <translation id="4242145785130247982">چند مورد از گواهینامه‌های کارخواه پشتیبانی نمی‌شوند</translation>
+<translation id="4242245038391716252">‏بارگیری‌شده توسط افزونه: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4242577469625748426">تنظیمات خط‌مشی روی دستگاه نصب نشد: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />مرورگر و نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="DOMAIN" /> هستند</translation>
@@ -6102,6 +6106,7 @@
 <translation id="5200191131577845078">اعلان‌های <ph name="DOMAIN" /> مجاز شدند</translation>
 <translation id="5200680225062692606">‏‫Touch ID قفل است. برای ادامه دادن، گذرواژه‌تان را وارد کنید.</translation>
 <translation id="5201945335223486172">برای <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{درحال مشاهده سابقه ۱ فایل}one{درحال مشاهده سابقه # فایل}other{درحال مشاهده سابقه # فایل}}</translation>
 <translation id="5203035663139409780">می‌تواند فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{برای دیدن این افزونه، کلیک کنید}one{برای دیدن این افزونه‌ها، کلیک کنید}other{برای دیدن این افزونه‌ها، کلیک کنید}}</translation>
 <translation id="5204282224596194174">گذرواژه بازیابی <ph name="USER_EMAIL" /></translation>
@@ -7351,6 +7356,7 @@
 <translation id="6095696531220637741">ماکارون</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">باز کردن در حداکثر اندازه</translation>
+<translation id="6096192567014958958">‏<ph name="USER_NAME" /> خوش آمدید!</translation>
 <translation id="6096326118418049043">‏نام X.500</translation>
 <translation id="6097480669505687979">اگر فضا را آزاد نکنید، ممکن است کاربران و داده‌ها به‌طور خودکار حذف شوند.</translation>
 <translation id="6097600385983390082">جستجوی گفتاری بسته شد</translation>
@@ -9963,6 +9969,7 @@
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> باز نمی‌شود</translation>
 <translation id="7921347341284348270">نمی‌توانید اعلان‌های تلفنتان را در این حساب مدیریت‌شده مشاهده کنید. با حساب دیگری دوباره امتحان کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">سایت‌ها می‌توانند از بهینه‌سازی جاوا اسکریپت استفاده کنند</translation>
+<translation id="7921782882718083488">خلاصه کردن این صفحه</translation>
 <translation id="7921901223958867679">این افزونه می‌تواند <ph name="HOST" /> را بخواند و تغییر دهد</translation>
 <translation id="7922606348470480702">یک افزونه</translation>
 <translation id="7924075559900107275">نامزد پشتیبانی بلندمدت</translation>
@@ -10010,6 +10017,7 @@
 <translation id="7947962633355574091">کپی آدرس ویدیو</translation>
 <translation id="7947964080535614577">سایت‌ها معمولاً آگهی نشان می‌دهند تا بتوانند محتوا یا سرویس‌ها را به‌طور رایگان ارائه دهند. اما برخی‌از سایت‌ها به‌عنوان سایت‌هایی شناخته شده‌اند که آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند.</translation>
 <translation id="7948407723851303488">همه صفحه‌های <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">سابقه بار نشد. مطمئن شوید فایل‌ها حاوی گزارش‌های به‌روزرسان معتبر باشند.</translation>
 <translation id="7950629216186736592">‏دلیل: LBS فقط از نشانی‌های وب http://‎،‏ https://‎، و file://‎ پشتیبانی می‌کند.</translation>
 <translation id="7950814699499457511">روشن • این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است.</translation>
 <translation id="7951265006188088697">‏برای افزودن یا مدیریت روش‌های پرداخت Google Pay، به<ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود بروید</translation>
@@ -10393,6 +10401,7 @@
 <translation id="8207404892907560325">گذرکلیدی را انتخاب کنید</translation>
 <translation id="8207794858944505786">ماشین مجازی «<ph name="DEFAULT_VM_NAME" />» وجود دارد، اما ظاهراً ماشین مجازی <ph name="VM_TYPE" /> معتبری نیست. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="8207901006380134182">موجی بزرگ اقیانوس را فرا می‌گیرد، و جنگلی تاریک در ساحل قرار دارد.</translation>
+<translation id="8208043093301544621">صفحه اصلی</translation>
 <translation id="8208216423136871611">ذخیره نشود</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{اعلان جدید}one{# اعلان جدید}other{# اعلان جدید}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{بارگیری درحال انجام است}one{بارگیری درحال انجام است}other{بارگیری درحال انجام است}}</translation>

@@ -491,6 +491,7 @@
 <translation id="2721190673959776287">Ապրանքի հետ կապված մանրամասն օգնության նմուշ Համատեքստային վահանակի համար, որը պետք է հայտնվի օրական մի քանի անգամ։</translation>
 <translation id="2739887572830526131">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> կայքը տեղափոխվել է դիրք <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Կատարված փոփոխությունները տեսանելի են խմբի բոլոր անդամներին</translation>
 <translation id="2755595981383829244">Այժմ դուք կստանաք բովանդակության վերաբերյալ ծանուցումներ</translation>
 <translation id="2761788987260570878">Լուսանկարեք այն, ինչ որոնում եք</translation>
@@ -2028,6 +2029,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> մոդելներ</translation>
 <translation id="8211030355252954494">Դուք <ph name="WEBSITE" /> կայքի համար գաղտնաբառեր եք ստացել</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
+<translation id="8213190397436801658">Գլխավոր էջ</translation>
 <translation id="8214293972734702249">Ամրացված է, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Դիտել անցանց տարբերակը նոր ներդիրում</translation>
 <translation id="8221665793629393739">Այցելության մասին հիշեցում</translation>

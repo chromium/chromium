@@ -342,6 +342,7 @@
 <translation id="1221024147024329929">PKCS #1 MD2` RSA գաղտնագրումով</translation>
 <translation id="1221266967850882682">Բարի վերադարձ</translation>
 <translation id="1221825588892235038">Միայն ընտրվածը</translation>
+<translation id="1222786882236067545">Բեռնել պատմության ֆայլերը</translation>
 <translation id="1222835797152767346">Ստեղծեք PIN կոդ, որպեսզի ավելի հեշտ մուտք գործեք</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
 <translation id="1223498995510244364">Ամփոփել</translation>
@@ -1133,6 +1134,7 @@
 <translation id="1767043563165955993">Օգտագործել Android-ի համար նախատեսված հավելվածների հետ</translation>
 <translation id="1767508543310534319">Կետադրական նշանների արձագանք</translation>
 <translation id="1768212860412467516">Կարծիք հայտնեք «<ph name="EXPERIMENT_NAME" />» գործառույթի մասին։</translation>
+<translation id="1768928167751703843">Դիտել լոկալ տվյալները</translation>
 <translation id="1769104665586091481">Բացել հղումը նոր &amp;պատուհանով</translation>
 <translation id="1769157454356586138">Չհաջողվեց սկանավորել։ Ադմինիստրատորն արգելափակել է այս ֆայլը։</translation>
 <translation id="176920518817780870">Խումբը դարձնել էջանիշների պանակ</translation>
@@ -2390,6 +2392,7 @@
 <translation id="2628258844236035475">Հեռացնե՞լ տան հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="2628770867680720336">ADB վրիպազերծումը միացնելու համար վերականգնեք Chromebook-ի գործարանային կարգավորումները։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Նոր զրույց սկսել Gemini-ի հետ</translation>
+<translation id="2629058811622993283">Նաև փոխանցել հավելվածի աուդիոն (բոլոր պատուհաններից և առնչվող հավելվածներից)</translation>
 <translation id="2629227353894235473">Android հավելվածների մշակում</translation>
 <translation id="2629437048544561682">Մաքրել կտավը</translation>
 <translation id="2630703150574465936">Դուք թույլատրել եք Gemini-ին ավտոմատ մուտք գործել այս կայքեր և հավելվածներ՝ օգտագործելով ձեր հաշիվները</translation>
@@ -4708,6 +4711,7 @@
 <translation id="4241140145060464825">Հավելվածի բովանդակություն</translation>
 <translation id="4241224519481557898">Կատեգորիա</translation>
 <translation id="4242145785130247982">Սպասառուների բազմակի վկայագրեր չեն աջակցվում</translation>
+<translation id="4242245038391716252">Ներբեռնվել է ընդլայնման կողմից՝ &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4242577469625748426">Չհաջողվեց քաղաքականության կարգավորումները կիրառել սարքի նկատմամբ՝ <ph name="VALIDATION_ERROR" />:</translation>
 <translation id="4242825475818569385">Ձեր <ph name="BEGIN_LINK" />դիտարկիչն ու պրոֆիլը<ph name="END_LINK" /> կառավարվում են <ph name="DOMAIN" /> տիրույթի կողմից</translation>
@@ -6079,6 +6083,7 @@
 <translation id="5200191131577845078"><ph name="DOMAIN" /> տիրույթից ուղարկվող ծանուցումները թույլատրված են</translation>
 <translation id="5200680225062692606">Touch ID-ն կողպված է։ Շարունակելու համար մուտքագրեք ձեր գաղտնաբառը։</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> կայքի համար</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Դիտվում է 1 ֆայլի պատմությունը}one{Դիտվում է # ֆայլի պատմությունը}other{Դիտվում է # ֆայլի պատմությունը}}</translation>
 <translation id="5203035663139409780">Կարող են ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Հպեք՝ ընդլայնումը տեսնելու համար}one{Հպեք՝ այս ընդլայնումները տեսնելու համար}other{Հպեք՝ այս ընդլայնումները տեսնելու համար}}</translation>
 <translation id="5204282224596194174">Վերականգնման գաղտնաբառ <ph name="USER_EMAIL" /> հասցեի համար</translation>
@@ -7324,6 +7329,7 @@
 <translation id="6095696531220637741">Մակարոն</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Բացել առավելացված</translation>
+<translation id="6096192567014958958">Բարի գալուստ, <ph name="USER_NAME" /></translation>
 <translation id="6096326118418049043">X.500 անուն</translation>
 <translation id="6097480669505687979">Եթե չազատեք տարածք, օգտատերերն ու տվյալները կարող են ավտոմատ ջնջվել:</translation>
 <translation id="6097600385983390082">Ձայնային որոնումը փակվեց</translation>
@@ -9933,6 +9939,7 @@
 <translation id="7920715534283810633">Հնարավոր չէ բացել <ph name="FILE_NAMES" /> ֆայլը</translation>
 <translation id="7921347341284348270">Դուք չեք կարող դիտել ձեր հեռախոսի ծանուցումները այս կառավարվող հաշվում։ Նորից փորձեք՝ օգտագործելով այլ հաշիվ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Կայքերը կարող են օգտագործել JavaScript-ի օպտիմալացումը</translation>
+<translation id="7921782882718083488">Ամփոփել այս էջը</translation>
 <translation id="7921901223958867679">Այս ընդլայնումը կարող է դիտել և փոխել <ph name="HOST" /> կայքը</translation>
 <translation id="7922606348470480702">1 ընդլայնում</translation>
 <translation id="7924075559900107275">երկարաժամկետ աջակցությամբ նախնական տարբերակ</translation>
@@ -9980,6 +9987,7 @@
 <translation id="7947962633355574091">Պատճենել տեսանյութի հասցեն</translation>
 <translation id="7947964080535614577">Կայքերը սովորաբար գովազդ են ցուցադրում, որպեսզի կարողանան անվճար բովանդակություն և ծառայություններ տրամադրել։ Սակայն որոշ կայքեր ցուցադրում են հոգնեցնող կամ մոլորեցնող գովազդ։</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> տիրույթի բոլոր էջերը</translation>
+<translation id="7949038991703929816">Չհաջողվեց բեռնել պատմությունը։ Համոզվեք, որ ֆայլերը պարունակում են թարմացման ծրագրի վավեր մատյաններ։</translation>
 <translation id="7950629216186736592">Պատճառը՝ LBS-ն աջակցում է միայն http://, https:// և file:// նախածանցներով սկսվող URL-ները։</translation>
 <translation id="7950814699499457511">Միացված է • Այս ընդլայնումը չի հրապարակել գաղտնիության քաղաքականություն, օրինակ՝ թե ինչպես է այն հավաքում և օգտագործում տվյալները</translation>
 <translation id="7951265006188088697">Google Pay-ում վճարման եղանակներ ավելացնելու կամ դրանք կառավարելու համար անցեք ձեր <ph name="BEGIN_LINK" />Google հաշիվ<ph name="END_LINK" /></translation>
@@ -10363,6 +10371,7 @@
 <translation id="8207404892907560325">Ընտրեք մուտքի բանալի</translation>
 <translation id="8207794858944505786"><ph name="DEFAULT_VM_NAME" /> վիրտուալ մեքենան գոյություն ունի, սակայն չի աջակցվում։ Վիրտուալ մեքենայի վավեր տեսակն է՝ <ph name="VM_TYPE" />։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="8207901006380134182">Մութ անտառի ափին մեծ ալիքները կուլ են գնում օվկիանոսում։</translation>
+<translation id="8208043093301544621">Գլխավոր էջ</translation>
 <translation id="8208216423136871611">Չպահել</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Նոր ծանուցում}one{# նոր ծանուցում}other{# նոր ծանուցում}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ներբեռնումն ընթացքում է}one{Ներբեռնումն ընթացքում է}other{Ներբեռնումներն ընթացքում են}}</translation>

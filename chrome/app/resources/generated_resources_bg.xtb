@@ -225,6 +225,7 @@
 <translation id="114715166554490743">Курсор, проследяващ движенията на главата</translation>
 <translation id="114721135501989771">Chrome с интелекта на Google</translation>
 <translation id="1147322039136785890">Сега е ред на <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1147867844630510586">Влизане чрез <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Разрешаване на потребителски скриптове</translation>
 <translation id="1148624853678088576">Готови сте!</translation>
 <translation id="1148669835763563782">Получавате най-новата софтуерна актуализация, включваща подобрения в сигурността и най-новите функции на Chromebook. Актуализацията подобрява процеса на настройване, за да улесни първите ви стъпки с вашия Chromebook.</translation>
@@ -1002,6 +1003,7 @@
 <translation id="1674073353928166410">Отваряне на всички (<ph name="URL_COUNT" />) в прозорец в режим „инкогнито“</translation>
 <translation id="1674142805528405174">Google Мениджър на пароли може да актуализира профила ви с надеждна парола, която ще бъде запазена за вас в(ъв) <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Автоматично деактивиране на оптимизаторите на JavaScript за непознати сайтове</translation>
+<translation id="1675964862374196038">Регистриране чрез <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Не може да се добави <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Сканирането не бе успешно. Този файл може да е вирус или злонамерен софтуер.</translation>
@@ -9949,6 +9951,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> не може да се отвори</translation>
 <translation id="7921347341284348270">Не можете да преглеждате известията от телефона си в този управляван профил. Опитайте отново с друг профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">Сайтовете могат да използват оптимизирането на JavaScript</translation>
+<translation id="7921782882718083488">Обобщаване на тази страница</translation>
 <translation id="7921901223958867679">Това разширение може да чете и променя <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 разширение</translation>
 <translation id="7924075559900107275">кандидат за дългосрочна поддръжка (LTC)</translation>

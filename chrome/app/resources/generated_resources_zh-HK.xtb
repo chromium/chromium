@@ -225,6 +225,7 @@
 <translation id="114715166554490743">頭部指標</translation>
 <translation id="114721135501989771">在 Chrome 中體驗 Google 的智能功能</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
+<translation id="1147867844630510586">使用 <ph name="IDP_NAME" /> 帳戶登入</translation>
 <translation id="1148464196693569530">允許使用者指令碼</translation>
 <translation id="1148624853678088576">您已完成全部設定！</translation>
 <translation id="1148669835763563782">你正在接收最新的軟件更新版本，享有加強安全保障和最新的 Chromebook 功能。此更新提升了設定體驗，有助順利開始使用 Chromebook。</translation>
@@ -1005,6 +1006,7 @@
 <translation id="1674073353928166410">在無痕式視窗中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
 <translation id="1674142805528405174">「Google 密碼管理工具」可以為帳戶改用安全度高的密碼，並儲存在 <ph name="EMAIL" /> 帳戶中。</translation>
 <translation id="1674945585974615438">在不熟悉的網站自動停用 JavaScript 優化工具</translation>
+<translation id="1675964862374196038">使用 <ph name="IDP_NAME" /> 帳戶註冊</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1678849866171627536">掃瞄失敗。此檔案可能是病毒或惡意軟件。</translation>
@@ -9940,6 +9942,7 @@
 <translation id="7920715534283810633">無法開啟 <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">您無法在此受管帳戶上查看手機的通知。請改用其他帳戶重試。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">網站可以使用 JavaScript 優化功能</translation>
+<translation id="7921782882718083488">撮要頁面內容</translation>
 <translation id="7921901223958867679">此擴充程式可讀取和變更 <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 個擴充程式</translation>
 <translation id="7924075559900107275">長期支援候選裝置</translation>

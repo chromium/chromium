@@ -225,6 +225,7 @@
 <translation id="114715166554490743">ヘッド ポインター</translation>
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
+<translation id="1147867844630510586"><ph name="IDP_NAME" /> でログイン</translation>
 <translation id="1148464196693569530">ユーザー スクリプトを許可する</translation>
 <translation id="1148624853678088576">設定完了。</translation>
 <translation id="1148669835763563782">セキュリティが強化され、Chromebook の最新機能を利用できるソフトウェア アップデートをダウンロードしています。このアップデートでは、Chromebook をスムーズに開始できるようセットアップ プロセスが改善されています。</translation>
@@ -1003,6 +1004,7 @@
 <translation id="1674073353928166410">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="1674142805528405174">Google パスワード マネージャーで、Google アカウント「<ph name="EMAIL" />」に保存されているこのアカウントのパスワードを安全なものに変更できます。</translation>
 <translation id="1674945585974615438">未知のサイトで JavaScript オプティマイザーを自動的に無効にする</translation>
+<translation id="1675964862374196038"><ph name="IDP_NAME" /> で登録</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1678849866171627536">スキャンに失敗しました。このファイルはウイルスや不正なソフトウェアの可能性があります。</translation>
@@ -9919,6 +9921,7 @@
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> を開けません</translation>
 <translation id="7921347341284348270">この管理対象アカウントではスマートフォンの通知を表示できません。別のアカウントでお試しください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7921395044508886182">サイトで JavaScript の最適化を使用できます</translation>
+<translation id="7921782882718083488">このページを要約</translation>
 <translation id="7921901223958867679">この拡張機能により <ph name="HOST" /> の読み取りと変更が可能です</translation>
 <translation id="7922606348470480702">1 つの拡張機能</translation>
 <translation id="7924075559900107275">長期サポート候補</translation>

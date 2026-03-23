@@ -798,6 +798,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4384468725000734951">A utilizar o Sogou para pesquisa</translation>
 <translation id="4387647248986092471">Criar bloqueio do perfil do carro</translation>
 <translation id="4387817230000841154">Abrir Transferências</translation>
+<translation id="4394049700291259645">Desactivar</translation>
 <translation id="4395046795145457714">Ativação do Chrome Finds aberta à altura total</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar fixado selecionado</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – A transferir…</translation>
@@ -822,7 +823,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4478161224666880173">Pode usar a sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> neste site. Para continuar, inicie sessão na conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">A instalar o módulo <ph name="MODULE" /> para o Chrome…</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
-<translation id="4494315997125191493">Selecione Gerir para ver todas as janelas</translation>
 <translation id="4494806687727322324">O seu administrador ativou a gravação de palavras-passe</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4509741852167209430">São partilhados tipos de dados limitados entre sites para medir o desempenho dos respetivos anúncios, por exemplo, se fez uma compra depois de visitar um site</translation>
@@ -870,7 +870,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4673702426794876519">Janela de navegação anónima</translation>
 <translation id="4675298276894277358">Este site não vai ser mostrado novamente</translation>
 <translation id="4678082183394354975">O tema escuro para os sites está ativado no Chrome</translation>
-<translation id="4682306524980568490">Apenas é possível apresentar <ph name="MAX_INSTANCE_COUNT" /> janelas</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
 <translation id="4685741273709472646">Selecione a partir da lista pendente</translation>
 <translation id="4687718960473379118">Anúncios sugeridos por sites</translation>

@@ -798,6 +798,7 @@
 <translation id="4384468725000734951">തിരയാൻ Sogou ഉപയോഗിക്കുന്നു</translation>
 <translation id="4387647248986092471">കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="4387817230000841154">ഡൗൺലോഡുകൾ തുറക്കുക</translation>
+<translation id="4394049700291259645">അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="4395046795145457714">Chrome Finds ഓപ്റ്റ് ഇൻ പൂർണ്ണ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
@@ -822,7 +823,6 @@
 <translation id="4478161224666880173">ഈ സൈറ്റിൽ നിങ്ങളുടെ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> അക്കൗണ്ട് ഉപയോഗിക്കാം. തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="4479972344484327217">Chrome-നുള്ള <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു…</translation>
 <translation id="4487967297491345095">Chrome-ന്റെ എല്ലാ ആപ്പ് വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കും. ഇതിൽ എല്ലാ ഫയലുകളും ക്രമീകരണവും അക്കൗണ്ടുകളും ഡാറ്റാബേസുകളും മറ്റും ഉൾപ്പെടുന്നു.</translation>
-<translation id="4494315997125191493">എല്ലാ വിൻഡോകളും കാണാൻ 'മാനേജ് ചെയ്യുക' തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4494806687727322324">പാസ്‌വേഡ് സംരക്ഷിക്കൽ നിങ്ങളുടെ അഡ്‌മിൻ ഓണാക്കി</translation>
 <translation id="4508528996305412043">ഫീഡ് കാർഡ് മെനു തുറന്നു</translation>
 <translation id="4509741852167209430">സൈറ്റുകളുടെ പരസ്യങ്ങളുടെ പ്രകടനം അളക്കുന്നതിന്, സൈറ്റ് സന്ദർശിച്ചതിന് ശേഷം നിങ്ങൾ ഒരു വാങ്ങൽ നടത്തിയോ ഇല്ലയോ എന്നത് പോലുള്ള പരിമിതമായ തരം ഡാറ്റ സൈറ്റുകൾക്കിടയിൽ പങ്കിടുന്നു</translation>
@@ -870,7 +870,6 @@
 <translation id="4673702426794876519">അദൃശ്യ വിൻഡോ</translation>
 <translation id="4675298276894277358">ഈ സൈറ്റ് വീണ്ടും കാണിക്കില്ല</translation>
 <translation id="4678082183394354975">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം Chrome-ൽ ഓണാണ്</translation>
-<translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> വിൻഡോകൾ മാത്രമേ കാണിക്കാൻ കഴിയൂ</translation>
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4685741273709472646">ഡ്രോപ്പ്ഡൗൺ ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4687718960473379118">സൈറ്റ് നിർദ്ദേശിത പരസ്യം</translation>
