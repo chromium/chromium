@@ -171,6 +171,12 @@ class TrayBackgroundViewTest : public AshTestBase,
     controller->dictation().SetEnabled(true);
   }
 
+  void TearDown() override {
+    persistent_bubble_test_tray_background_view_ = nullptr;
+    test_tray_background_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   // ui::LayerAnimationObserver:
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {
@@ -211,9 +217,8 @@ class TrayBackgroundViewTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<TestTrayBackgroundView, DanglingUntriaged>
-      test_tray_background_view_ = nullptr;
-  raw_ptr<PersistentBubbleTestTrayBackgroundView, DanglingUntriaged>
+  raw_ptr<TestTrayBackgroundView> test_tray_background_view_ = nullptr;
+  raw_ptr<PersistentBubbleTestTrayBackgroundView>
       persistent_bubble_test_tray_background_view_ = nullptr;
   int num_animations_scheduled_ = 0;
 };
