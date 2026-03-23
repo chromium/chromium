@@ -20,7 +20,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createInputState, installMock} from './composebox_test_utils.js';
+import {installMock, MockInputState} from './composebox_test_utils.js';
 
 suite('ComposeboxInputPlaceholder', () => {
   let composebox: ComposeboxElement;
@@ -65,8 +65,13 @@ suite('ComposeboxInputPlaceholder', () => {
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
 
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
-    searchboxHandler.setResultFor(
-        'getInputState', Promise.resolve({state: createInputState()}));
+    searchboxHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({
+        toolConfigs: [],
+        toolsSectionConfig: {header: ''},
+        modelSectionConfig: {header: ''},
+      }),
+    }));
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
@@ -104,7 +109,10 @@ suite('ComposeboxInputPlaceholder', () => {
 
   test('InputPlaceholderFromModelConfig', async () => {
     const modelHint = 'Ask a model';
-    const testInputState = createInputState({
+    const testInputState = new MockInputState({
+      toolConfigs: [],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
       activeModel: ModelMode.kGeminiRegular,
       modelConfigs: [{
         model: ModelMode.kGeminiRegular,
@@ -140,7 +148,9 @@ suite('ComposeboxInputPlaceholder', () => {
 
   toolConfigTestCases.forEach(({tool, hint, name}) => {
     test(`InputPlaceholderFromToolConfig_${name}`, async () => {
-      const mockInputState = createInputState({
+      await setupComposeboxWithInputState(new MockInputState({
+        toolsSectionConfig: {header: ''},
+        modelSectionConfig: {header: ''},
         hintText: defaultApiHint,
         toolConfigs:
             toolConfigTestCases.map(t => ({
@@ -151,9 +161,7 @@ suite('ComposeboxInputPlaceholder', () => {
                                       disableActiveModelSelection: false,
                                       aimUrlParams: [],
                                     })),
-      });
-
-      await setupComposeboxWithInputState(mockInputState);
+      }));
 
       // Initial placeholder check.
       assertEquals(defaultApiHint, composebox.$.input.placeholder);
@@ -169,7 +177,7 @@ suite('ComposeboxInputPlaceholder', () => {
       }));
       await microtasksFinished();
       searchboxPageRemote.onInputStateChanged({
-        ...mockInputState,
+        ...new MockInputState(),
         activeTool: tool,
       });
       await searchboxPageRemote.$.flushForTesting();
@@ -185,7 +193,7 @@ suite('ComposeboxInputPlaceholder', () => {
       }));
       await microtasksFinished();
       searchboxPageRemote.onInputStateChanged({
-        ...mockInputState,
+        ...new MockInputState(),
         activeTool: ComposeboxToolMode.kUnspecified,
       });
       await searchboxPageRemote.$.flushForTesting();
@@ -323,8 +331,13 @@ suite('ComposeboxScrollCaret', () => {
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
 
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
-    searchboxHandler.setResultFor(
-        'getInputState', Promise.resolve({state: createInputState()}));
+    searchboxHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({
+        toolConfigs: [],
+        toolsSectionConfig: {header: ''},
+        modelSectionConfig: {header: ''},
+      }),
+    }));
 
     const windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);

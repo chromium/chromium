@@ -10,14 +10,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-const SAMPLE_INPUT_STATE = createInputState({
+const SAMPLE_INPUT_STATE = new MockInputState({
   allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
   toolConfigs: [
     {
@@ -37,6 +37,7 @@ const SAMPLE_INPUT_STATE = createInputState({
       aimUrlParams: [],
     },
   ],
+  toolsSectionConfig: {header: ''},
   allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
   modelConfigs: [
     {
@@ -52,6 +53,7 @@ const SAMPLE_INPUT_STATE = createInputState({
       aimUrlParams: [],
     },
   ],
+  modelSectionConfig: {header: ''},
   allowedInputTypes:
       [InputType.kLensImage, InputType.kLensFile, InputType.kBrowserTab],
   maxTotalInputs: 10,

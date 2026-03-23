@@ -20,7 +20,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle} from './searchbox_test_utils.js';
+import {assertStyle, MockInputState} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
@@ -142,24 +142,11 @@ async function setupRealboxTest(): Promise<{
   const metrics = fakeMetricsPrivate();
 
   testProxy.handler.setResultFor('getInputState', {
-    state: {
-      allowedModels: [],
-      allowedTools: [],
-      allowedInputTypes: [],
-      activeModel: 0,
-      activeTool: 0,
-      disabledModels: [],
-      disabledTools: [],
-      disabledInputTypes: [],
-      inputTypeConfigs: [],
+    state: new MockInputState({
       toolConfigs: [],
-      modelConfigs: [],
-      toolsSectionConfig: null,
-      modelSectionConfig: null,
-      hintText: '',
-      maxInputsByType: {},
-      maxTotalInputs: 0,
-    },
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
+    }),
   });
   const realbox = await createAndAppendRealbox();
   return {realbox, testProxy, testMetricsReporterProxy, metrics};

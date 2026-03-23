@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ModelMode, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -13,7 +13,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, mockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, MockInputState, setupComposeboxTest} from './test_support.js';
 
 suite('NewTabPageComposeboxTest', () => {
   const testProxy = setupComposeboxTest();
@@ -35,8 +35,8 @@ suite('NewTabPageComposeboxTest', () => {
             0);
 
         // Change tool to Deep Search
-        const inputState = Object.assign({}, mockInputState, {
-          activeTool: ComposeboxToolMode.kDeepSearch,
+        const inputState = new MockInputState({
+          activeTool: ToolMode.kDeepSearch,
         });
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
@@ -60,7 +60,7 @@ suite('NewTabPageComposeboxTest', () => {
       text: 'hello world',
       files:
           [{file: new File(['test'], 'test.pdf', {type: 'application/pdf'})}],
-      mode: ComposeboxToolMode.kDeepSearch,
+      mode: ToolMode.kDeepSearch,
       model: ModelMode.kGeminiRegular,
     };
     await testProxy.searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
@@ -70,7 +70,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals('hello world', composebox.getText());
     const activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ComposeboxToolMode.kDeepSearch, activeTool);
+    assertEquals(ToolMode.kDeepSearch, activeTool);
     assertEquals(1, composebox.getNumOfFilesForTesting());
     const activeModel =
         await testProxy.searchboxHandler.whenCalled('setActiveModelMode');
@@ -826,7 +826,7 @@ suite('NewTabPageComposeboxTest', () => {
   test('setDefaultModel uses activeModel from backend', async () => {
     createComposeboxElement(testProxy);
 
-    const inputState = Object.assign({}, mockInputState, {
+    const inputState = new MockInputState({
       allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
       activeModel: ModelMode.kGeminiPro,
       modelConfigs: [
@@ -864,21 +864,21 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Set active tool mode to DeepSearch.
-    const inputState = Object.assign({}, mockInputState, {
-      activeTool: ComposeboxToolMode.kDeepSearch,
+    const inputState = new MockInputState({
+      activeTool: ToolMode.kDeepSearch,
     });
     testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
     await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
     // Click on the same tool mode to deselect/delete it.
-    testProxy.element['handleToolClick_'](ComposeboxToolMode.kDeepSearch);
+    testProxy.element['handleToolClick_'](ToolMode.kDeepSearch);
     await microtasksFinished();
 
     // Assert tool mode is reset.
     const activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ComposeboxToolMode.kUnspecified, activeTool);
+    assertEquals(ToolMode.kUnspecified, activeTool);
 
     const metricName =
         'ContextualSearch.UserAction.InputStateDeletion.Tool.NewTabPage';

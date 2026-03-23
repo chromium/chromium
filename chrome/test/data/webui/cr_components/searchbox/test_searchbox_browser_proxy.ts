@@ -14,6 +14,8 @@ import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/b
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+import {MockInputState} from './searchbox_test_utils.js';
+
 /**
  * Helps track realbox browser call arguments. A mocked page handler remote
  * resolves the browser call promises with the arguments as an array making the
@@ -174,24 +176,12 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     }
 
     return Promise.resolve({
-      state: {
-        allowedModels: [],
-        allowedTools: [],
-        allowedInputTypes: [],
-        activeModel: 0,
-        activeTool: 0,
-        disabledModels: [],
-        disabledTools: [],
-        disabledInputTypes: [],
+      state: new MockInputState({
         toolConfigs: [],
+        toolsSectionConfig: {header: ''},
         modelConfigs: [],
-        inputTypeConfigs: [],
-        toolsSectionConfig: null,
-        modelSectionConfig: null,
-        hintText: '',
-        maxInputsByType: {},
-        maxTotalInputs: 0,
-      },
+        modelSectionConfig: {header: ''},
+      }),
     });
   }
 

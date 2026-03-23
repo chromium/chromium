@@ -11,7 +11,7 @@ import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createInputState} from './composebox_test_utils.js';
+import {MockInputState} from './composebox_test_utils.js';
 
 suite('ContextualActionMenu', () => {
   let actionMenu: ContextualActionMenuElement;
@@ -56,7 +56,7 @@ suite('ContextualActionMenu', () => {
       });
 
   test('Shows all allowed tools and models', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
       toolConfigs: [
         {
@@ -76,6 +76,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
       modelConfigs: [
         {
@@ -91,6 +92,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -115,7 +117,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Hides tools and models not allowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kDeepSearch],
       toolConfigs: [
         {
@@ -135,6 +137,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular],
       modelConfigs: [
         {
@@ -150,6 +153,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -161,7 +165,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Disables disabled tools and models', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
       disabledTools: [ToolMode.kImageGen],
       toolConfigs: [
@@ -182,6 +186,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
       disabledModels: [ModelMode.kGeminiPro],
       modelConfigs: [
@@ -198,6 +203,7 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -222,7 +228,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Shows active model checkmark', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
       activeModel: ModelMode.kGeminiPro,
       modelConfigs: [
@@ -239,6 +245,8 @@ suite('ContextualActionMenu', () => {
           aimUrlParams: [],
         },
       ],
+      modelSectionConfig: {header: ''},
+      toolsSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -256,8 +264,10 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Shows image and file upload when allowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedInputTypes: [InputType.kLensImage, InputType.kLensFile],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -272,8 +282,10 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Hides image and file upload when not allowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedInputTypes: [],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -283,9 +295,11 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Disables image and file upload when disabled', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedInputTypes: [InputType.kLensImage, InputType.kLensFile],
       disabledInputTypes: [InputType.kLensImage, InputType.kLensFile],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -298,9 +312,10 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Shows models only when tools are disallowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [],
       toolConfigs: [],
+      toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular],
       modelConfigs: [{
         model: ModelMode.kGeminiRegular,
@@ -319,7 +334,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Shows tools only when models are disallowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kDeepSearch],
       toolConfigs: [{
         tool: ToolMode.kDeepSearch,
@@ -329,8 +344,10 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      toolsSectionConfig: {header: ''},
       allowedModels: [],
       modelConfigs: [],
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -342,11 +359,13 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Handles both tools and models disallowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [],
       toolConfigs: [],
+      toolsSectionConfig: {header: ''},
       allowedModels: [],
       modelConfigs: [],
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -371,7 +390,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Handles single tool allowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kCanvas],
       toolConfigs: [{
         tool: ToolMode.kCanvas,
@@ -381,6 +400,8 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -390,7 +411,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Handles single model allowed', async () => {
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedModels: [ModelMode.kGeminiProAutoroute],
       modelConfigs: [{
         model: ModelMode.kGeminiProAutoroute,
@@ -398,6 +419,8 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      modelSectionConfig: {header: ''},
+      toolsSectionConfig: {header: ''},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -420,8 +443,10 @@ suite('ContextualActionMenu', () => {
       lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedInputTypes: [],  // kBrowserTab is missing
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
 
     actionMenu.showAt(actionMenu);
@@ -444,8 +469,10 @@ suite('ContextualActionMenu', () => {
       lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedInputTypes: [InputType.kBrowserTab],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
     });
 
     actionMenu.showAt(actionMenu);
@@ -471,7 +498,7 @@ suite('ContextualActionMenu', () => {
     const geminiLabel = 'Custom Gemini Label';
     const imageUploadLabel = 'Custom Image Upload Label';
 
-    actionMenu.inputState = createInputState({
+    actionMenu.inputState = new MockInputState({
       allowedTools: [ToolMode.kDeepSearch],
       toolConfigs: [{
         tool: ToolMode.kDeepSearch,
@@ -481,6 +508,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular],
       modelConfigs: [{
         model: ModelMode.kGeminiRegular,
@@ -488,6 +516,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      modelSectionConfig: {header: ''},
       allowedInputTypes: [InputType.kLensImage],
       inputTypeConfigs: [{
         inputType: InputType.kLensImage,

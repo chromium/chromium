@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+export type {InputState};
 
 /**
  * Asserts the computed style value for an element.
@@ -48,25 +51,53 @@ export function waitForAttributeChange(
   });
 }
 
-export function createInputState(overrides?: Partial<InputState>): InputState {
-  return Object.assign(
-      {
-        allowedTools: [],
-        disabledTools: [],
-        toolConfigs: [],
-        toolsSectionConfig: {header: ''},
-        allowedModels: [],
-        disabledModels: [],
-        activeModel: 0,
-        activeTool: 0,
-        hintText: '',
-        modelConfigs: [],
-        modelSectionConfig: {header: ''},
-        allowedInputTypes: [],
-        disabledInputTypes: [],
-        inputTypeConfigs: [],
-        maxInputsByType: {},
-        maxTotalInputs: 0,
-      },
-      overrides);
+export class MockInputState implements InputState {
+  allowedTools: number[] = [];
+  disabledTools: number[] = [];
+  activeTool: number = 0;
+  toolConfigs: any[] = [
+    {
+      tool: ComposeboxToolMode.kDeepSearch,
+      hintText: 'Research anything',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kImageGen,
+      hintText: 'Describe your image',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kCanvas,
+      hintText: 'Create anything',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+  ];
+  toolsSectionConfig: any|null = null;
+
+  allowedModels: number[] = [];
+  disabledModels: number[] = [];
+  activeModel: number = 0;
+  modelConfigs: any[] = [];
+  modelSectionConfig: any|null = null;
+
+  allowedInputTypes: number[] = [];
+  disabledInputTypes: number[] = [];
+  inputTypeConfigs: any[] = [];
+  maxInputsByType: {[key: number]: number} = {};
+  maxTotalInputs: number = 0;
+
+  hintText: string = '';
+
+  constructor(overrides?: Partial<InputState>) {
+    Object.assign(this, overrides);
+  }
 }
