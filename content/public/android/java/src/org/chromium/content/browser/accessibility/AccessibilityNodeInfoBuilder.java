@@ -74,7 +74,6 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.ax.mojom.TextPosition;
 import org.chromium.ax.mojom.TextStyle;
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -708,9 +707,9 @@ public class AccessibilityNodeInfoBuilder {
                 .setColumnIndex(columnIndex)
                 .setColumnSpan(columnSpan);
 
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate != null) {
-            delegate.setCollectionItemSortDirection(builder, sortDirection);
+        if (sortDirection
+                != AccessibilityNodeInfoCompat.CollectionItemInfoCompat.SORT_DIRECTION_NONE) {
+            builder.setSortDirection(sortDirection);
         }
 
         node.setCollectionItemInfo(builder.build());
