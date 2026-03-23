@@ -47,16 +47,17 @@ static_assert(sizeof(skcms_Matrix3x3) ==
 bool MatricesEqualWithinTolerance(const skcms_Matrix3x3& lhs,
                                   const skcms_Matrix3x3& rhs,
                                   float tol) {
-  constexpr size_t kPrimaryMatrixRowCount = std::size(skcms_Matrix3x3{}.vals);
-  constexpr size_t kPrimaryMatrixColumnCount =
-      std::size(skcms_Matrix3x3{}.vals[0]);
-  // SAFETY: `skcms_Matrix3x3::vals` is a fixed-size `float[3][3]` array.
-  // `row` and `column` are both bounded by these compile-time dimensions, so
-  // each indexed access stays within the matrix storage.
-  for (size_t row = 0; row < kPrimaryMatrixRowCount; ++row) {
-    for (size_t column = 0; column < kPrimaryMatrixColumnCount; ++column) {
-      if (std::abs(UNSAFE_TODO(lhs.vals[row][column]) -
-                   UNSAFE_TODO(rhs.vals[row][column])) > tol) {
+  constexpr size_t kRowCount = std::size(skcms_Matrix3x3{}.vals);
+  constexpr size_t kColumnCount = std::size(skcms_Matrix3x3{}.vals[0]);
+
+  base::span<const float[kColumnCount], kRowCount> lhs_rows(lhs.vals);
+  base::span<const float[kColumnCount], kRowCount> rhs_rows(rhs.vals);
+
+  for (size_t row = 0; row < kRowCount; ++row) {
+    base::span<const float, kColumnCount> lhs_row_span(lhs_rows[row]);
+    base::span<const float, kColumnCount> rhs_row_span(rhs_rows[row]);
+    for (size_t column = 0; column < kColumnCount; ++column) {
+      if (std::abs(lhs_row_span[column] - rhs_row_span[column]) > tol) {
         return false;
       }
     }
