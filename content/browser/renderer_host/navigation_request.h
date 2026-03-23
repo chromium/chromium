@@ -1751,6 +1751,30 @@ class CONTENT_EXPORT NavigationRequest
   // navigation started.
   bool DidCookiesChangeAfterStart(bool exclude_http_only) const;
 
+  // Sets the closure that will be invoked to resume the navigation commit once
+  // all asynchronous beforeunload handlers have finished executing.
+  void SetAsyncBeforeUnloadCommitResumeClosure(
+      base::OnceClosure commit_resume_closure);
+
+  // Starts a timer to force the navigation to proceed if asynchronous
+  // beforeunload handlers take too long.
+  void StartAsyncBeforeUnloadTimer();
+
+  // Resume the navigation commit once all asynchronous beforeunload handlers
+  // have finished executing. `acked_rfh_id` is the ID of the RenderFrameHost
+  // that just finished its beforeunload handler, or nullopt if the timer
+  // expired.
+  void MaybeResumeAsyncBeforeUnloadCommit(
+      std::optional<GlobalRenderFrameHostId> acked_rfh_id);
+
+  // Returns true if the navigation is currently deferred waiting for
+  // asynchronous beforeunload handlers to complete.
+  bool IsWaitingForAsyncBeforeUnload() const;
+
+  std::set<GlobalRenderFrameHostId>& async_before_unload_pending_replies() {
+    return async_before_unload_pending_replies_;
+  }
+
   void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
     remove_extra_headers_on_cross_origin_redirect_ = value;
   }
@@ -3488,6 +3512,39 @@ class CONTENT_EXPORT NavigationRequest
   // stored in the DocumentAssociatedData at commit. Only used for
   // cross-document navigations.
   std::optional<base::UnguessableToken> network_restrictions_id_;
+
+  // Tracks frames in the navigating subtree that are running `beforeunload`
+  // handlers asynchronously.
+  //
+  // Similar to `RenderFrameHostImpl::beforeunload_pending_replies_`, this set
+  // includes the navigating frame and/or its descendants that serve as local
+  // frame roots for the beforeunload dispatch. When a beforeunload IPC is sent
+  // to a frame, the renderer dispatches it to that frame and all its local
+  // descendants.
+  //
+  // This state is kept here rather than in `RenderFrameHostImpl` because the
+  // async beforeunload optimization (crbug.com/475716933) is
+  // navigation-specific. This is in contrast to
+  // `RenderFrameHostImpl::beforeunload_pending_replies_`, which can be used for
+  // non-navigation cases like closing a tab. Currently, we decided not to
+  // interleave the sync/async beforeunload processing, though this decision
+  // could be revisited in the future.
+  std::set<GlobalRenderFrameHostId> async_before_unload_pending_replies_;
+
+  // The closure that will be run to resume the commit of the navigation once
+  // the asynchronous beforeunload replies are received from the renderer(s) or
+  // a timeout occurs.
+  base::OnceClosure async_before_unload_commit_resume_closure_;
+
+  // A timer to force the navigation to proceed if beforeunload handlers take
+  // too long in the asynchronous beforeunload code path, preventing the
+  // navigation from being hung indefinitely.
+  //
+  // This timer is mutually exclusive with the synchronous
+  // `beforeunload_timeout_` in `RenderFrameHostImpl`. When entering the
+  // AsyncBeforeUnload mode, the `beforeunload_timeout_` timer is explicitly
+  // stopped before this timer is started (see: https://crbug.com/475716933).
+  base::OneShotTimer async_before_unload_timeout_;
 
   // If true, any extra headers provided will be removed on a cross-origin
   // redirect.

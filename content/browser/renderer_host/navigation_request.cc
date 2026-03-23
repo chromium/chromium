@@ -12398,6 +12398,65 @@ PrerenderHostId NavigationRequest::GetPrerenderHostId() const {
   return prerender_host_id_;
 }
 
+void NavigationRequest::SetAsyncBeforeUnloadCommitResumeClosure(
+    base::OnceClosure commit_resume_closure) {
+  CHECK(!async_before_unload_pending_replies_.empty());
+  CHECK(!async_before_unload_commit_resume_closure_);
+  async_before_unload_commit_resume_closure_ = std::move(commit_resume_closure);
+}
+
+void NavigationRequest::StartAsyncBeforeUnloadTimer() {
+  CHECK(!async_before_unload_pending_replies_.empty());
+  async_before_unload_timeout_.Start(
+      FROM_HERE, features::kAsyncBeforeUnloadTimeout.Get(),
+      base::BindOnce(
+          [](base::WeakPtr<NavigationRequest> self) {
+            if (!self) {
+              return;
+            }
+            // If the timeout occurs, we proceed with the navigation commit
+            // regardless of any pending replies. We pass nullopt to indicate
+            // that the timer expired.
+            self->async_before_unload_pending_replies_.clear();
+            self->MaybeResumeAsyncBeforeUnloadCommit(std::nullopt);
+          },
+          weak_factory_.GetWeakPtr()));
+}
+
+void NavigationRequest::MaybeResumeAsyncBeforeUnloadCommit(
+    std::optional<GlobalRenderFrameHostId> acked_rfh_id) {
+  if (acked_rfh_id) {
+    // Remove the frame that just replied. (If `acked_rfh_id` is nullopt, it
+    // means the timer expired).
+    async_before_unload_pending_replies_.erase(*acked_rfh_id);
+  }
+
+  // All IDs remaining in the pending replies set must correspond to live
+  // frames, because RenderFrameHostImpl::~RenderFrameHostImpl handles
+  // removing destroyed frames from the set.
+  //
+  // Using DCHECK because this validation is computationally expensive as it
+  // iterates over all pending replies.
+  DCHECK(std::ranges::all_of(async_before_unload_pending_replies_,
+                             [](const GlobalRenderFrameHostId& id) -> bool {
+                               return RenderFrameHostImpl::FromID(id);
+                             }));
+
+  if (!async_before_unload_pending_replies_.empty()) {
+    // Wait for the remaining reply for beforeunload.
+    return;
+  }
+  // Proceed with navigation commit.
+  async_before_unload_timeout_.Stop();
+  if (async_before_unload_commit_resume_closure_) {
+    std::move(async_before_unload_commit_resume_closure_).Run();
+  }
+}
+
+bool NavigationRequest::IsWaitingForAsyncBeforeUnload() const {
+  return !async_before_unload_pending_replies_.empty();
+}
+
 bool NavigationRequest::IsInitialWebUISyncNavigation() {
   return IsInitialWebUINavigation() &&
          base::FeatureList::IsEnabled(

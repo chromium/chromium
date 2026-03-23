@@ -81,6 +81,7 @@ void FakeLocalFrame::ReportBlinkFeatureUsage(
 
 void FakeLocalFrame::RenderFallbackContent() {}
 void FakeLocalFrame::BeforeUnload(bool is_reload,
+                                  bool force_to_proceed,
                                   BeforeUnloadCallback callback) {
   base::TimeTicks now = base::TimeTicks::Now();
   std::move(callback).Run(

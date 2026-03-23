@@ -189,6 +189,7 @@ class CORE_EXPORT FrameLoader final {
   bool DetachDocument();
 
   bool ShouldClose(bool is_reload,
+                   bool force_to_proceed,
                    base::TimeTicks& out_before_unload_dialog_opened_time,
                    base::TimeTicks& out_before_unload_dialog_closed_time);
 

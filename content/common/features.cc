@@ -44,6 +44,16 @@ BASE_FEATURE(kAndroidDragDropOopif, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kArabicIndicDigitInput, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+// If enabled, runs beforeunload handlers asynchronously when the user
+// hasn't interacted with the frame. (See: https://crbug.com/475716933)
+BASE_FEATURE(kAsyncBeforeUnload, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAsyncBeforeUnloadTimeout,
+                   &kAsyncBeforeUnload,
+                   "AsyncBeforeUnloadTimeout",
+                   base::Milliseconds(500));
+
 // Synchronously continuing with navigation can lead to trying to start another
 // navigation synchronously while the first navigation is still being processed
 // on the stack. This results in re-entrancy which is unsafe and triggers a

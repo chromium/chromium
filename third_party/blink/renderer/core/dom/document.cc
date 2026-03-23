@@ -4465,6 +4465,7 @@ void RecordBeforeUnloadUse(Document::BeforeUnloadUse metric) {
 bool Document::DispatchBeforeUnloadEvent(
     ChromeClient* chrome_client,
     bool is_reload,
+    bool force_to_proceed,
     bool& did_allow_navigation,
     base::TimeTicks& out_before_unload_dialog_opened_time,
     base::TimeTicks& out_before_unload_dialog_closed_time) {
@@ -4528,7 +4529,7 @@ bool Document::DispatchBeforeUnloadEvent(
     return true;
   }
 
-  if (!GetFrame()->HasStickyUserActivation()) {
+  if (!GetFrame()->HasStickyUserActivation() || force_to_proceed) {
     RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogNoUserGesture);
     String message =
         "Blocked attempt to show a 'beforeunload' confirmation panel for a "

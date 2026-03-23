@@ -37,6 +37,7 @@
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -79,6 +80,7 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -713,9 +715,10 @@ class RenderFrameHostImplForBeforeUnloadInterceptor
   using RenderFrameHostImpl::RenderFrameHostImpl;
 
   void SendBeforeUnload(bool is_reload,
-                        base::WeakPtr<RenderFrameHostImpl> rfh,
-                        bool for_legacy) override {
-    rfh->GetAssociatedLocalFrame()->BeforeUnload(is_reload, base::DoNothing());
+                        bool should_run_before_unload_asynchronously,
+                        base::WeakPtr<RenderFrameHostImpl> rfh) override {
+    rfh->GetAssociatedLocalFrame()->BeforeUnload(
+        is_reload, /*force_to_proceed=*/false, base::DoNothing());
   }
 
  private:
@@ -1756,15 +1759,23 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
     SHOW_DIALOG = 1,
     SEND_PING = 2,
   };
-  void InstallBeforeUnloadHandler(FrameTreeNode* ftn,
-                                  int before_unload_options) {
+  void InstallBeforeUnloadHandler(
+      FrameTreeNode* ftn,
+      int before_unload_options,
+      int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+      const base::TimeDelta delay = base::TimeDelta()) {
     std::string script = "window.onbeforeunload = () => { ";
+    if (!delay.is_zero()) {
+      script += "const until = Date.now() + " +
+                base::NumberToString(delay.InMilliseconds()) + "; " +
+                "while (Date.now() < until); ";
+    }
     if (before_unload_options & SEND_PING)
       script += "domAutomationController.send('ping'); ";
     if (before_unload_options & SHOW_DIALOG)
       script += "return 'x'; ";
     script += " }";
-    EXPECT_TRUE(ExecJs(ftn, script));
+    EXPECT_TRUE(ExecJs(ftn, script, options));
   }
 
   int RetrievePingsFromMessageQueue(DOMMessageQueue* msg_queue) {
@@ -1778,6 +1789,16 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
         ++num_pings;
     }
     return num_pings;
+  }
+
+  void NotifyUserActivation(RenderFrameHostImpl* render_frame_host_impl) {
+    UpdateUserActivationStateInterceptor user_activation_interceptor(
+        render_frame_host_impl);
+    base::RunLoop run_loop;
+    user_activation_interceptor.set_quit_handler(run_loop.QuitClosure());
+    render_frame_host_impl->GetAssociatedLocalFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kTest);
+    run_loop.Run();
   }
 
  protected:
@@ -8175,6 +8196,449 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   CloseDialogAndProceed();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(cross_site_url, web_contents()->GetLastCommittedURL());
+}
+
+struct RenderFrameHostImplAsyncBeforeUnloadBrowserTestParam {
+  std::string test_name;
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
+const RenderFrameHostImplAsyncBeforeUnloadBrowserTestParam
+    kRenderFrameHostImplAsyncBeforeUnloadBrowserTestParams[]{
+        {
+            .test_name = "AsyncBeforeUnloadDisabled",
+            .enabled_features = {},
+            .disabled_features = {features::kAsyncBeforeUnload},
+        },
+        {
+            .test_name = "AsyncBeforeUnloadEnabled",
+            .enabled_features = {{features::kAsyncBeforeUnload,
+                                  {{features::kAsyncBeforeUnloadTimeout.name,
+                                    "1s"}}}},
+            .disabled_features = {},
+        },
+    };
+
+class RenderFrameHostImplAsyncBeforeUnloadBrowserTest
+    : public RenderFrameHostImplBeforeUnloadBrowserTest,
+      public testing::WithParamInterface<
+          RenderFrameHostImplAsyncBeforeUnloadBrowserTestParam> {
+ public:
+  class AsyncBeforeUnloadObserver : public WebContentsObserver {
+   public:
+    AsyncBeforeUnloadObserver(WebContents* contents, const GURL& target_url)
+        : WebContentsObserver(contents), target_url_(target_url) {}
+
+    void DidStartNavigation(NavigationHandle* handle) override {
+      if (handle->GetURL() != target_url_) {
+        return;
+      }
+
+      NavigationRequest* navigation_request = NavigationRequest::From(handle);
+      is_async_before_unload_detected_ =
+          navigation_request->IsWaitingForAsyncBeforeUnload();
+    }
+
+    bool is_async_before_unload_detected() const {
+      return is_async_before_unload_detected_;
+    }
+
+   private:
+    const GURL target_url_;
+    bool is_async_before_unload_detected_ = false;
+  };
+
+  RenderFrameHostImplAsyncBeforeUnloadBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        GetParam().enabled_features, GetParam().disabled_features);
+  }
+
+  bool IsAsyncBeforeUnloadEnabled() const {
+    return std::ranges::any_of(
+        GetParam().enabled_features, [](const auto& feature) {
+          return &feature.feature.get() == &features::kAsyncBeforeUnload;
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+    testing::ValuesIn(kRenderFrameHostImplAsyncBeforeUnloadBrowserTestParams),
+    [](const ::testing::TestParamInfo<
+        RenderFrameHostImplAsyncBeforeUnloadBrowserTestParam>& info) {
+      return info.param.test_name;
+    });
+
+// Tests that beforeunload handlers are executed asynchronously when no
+// beforeunload handler in the navigating subtree has sticky user activation.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       AsyncExecution) {
+  // Load a page with structure a(b, c).
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b,c)")));
+  FrameTreeNode* ftn_a = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+  FrameTreeNode* ftn_c = ftn_a->child_at(1);
+  RenderFrameHostImpl* rfh_a = ftn_a->current_frame_host();
+  RenderFrameHostImpl* rfh_b = ftn_b->current_frame_host();
+  RenderFrameHostImpl* rfh_c = ftn_c->current_frame_host();
+
+  // Grant user activation to frame A. Even though frame A has user activation,
+  // it doesn't have a beforeunload handler. Therefore, the AsyncBeforeUnload
+  // optimization should still be applicable to the frames that DO have
+  // handlers (B and C) as long as they don't have user activation themselves.
+  NotifyUserActivation(rfh_a);
+
+  // Install beforeunload handlers in frames b and c without user activation.
+  InstallBeforeUnloadHandler(ftn_b, SEND_PING | SHOW_DIALOG,
+                             EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             /*delay=*/base::Milliseconds(150));
+  InstallBeforeUnloadHandler(ftn_c, SEND_PING | SHOW_DIALOG,
+                             EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             /*delay=*/base::Milliseconds(100));
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  EXPECT_TRUE(rfh_a->HasStickyUserActivation());
+  EXPECT_FALSE(rfh_b->HasStickyUserActivation());
+  EXPECT_FALSE(rfh_c->HasStickyUserActivation());
+
+  // Start a navigation in the main frame.
+  const GURL target_url =
+      embedded_test_server()->GetURL("d.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  DOMMessageQueue msg_queue(web_contents());
+  shell()->LoadURL(target_url);
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(0, dialog_manager()->num_beforeunload_dialogs_seen());
+  EXPECT_EQ(IsAsyncBeforeUnloadEnabled(),
+            async_before_unload_observer.is_async_before_unload_detected());
+  // Verify that both beforeunload handlers from b and c were executed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 2; }));
+}
+
+// Tests that the AsyncBeforeUnload optimization is not triggered and falls back
+// to the synchronous (blocking) path if any frame in the navigating subtree has
+// both a beforeunload handler and sticky user activation.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       SyncFallbackWithUserActivation) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b,c)")));
+  FrameTreeNode* ftn_a = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+  FrameTreeNode* ftn_c = ftn_a->child_at(1);
+  RenderFrameHostImpl* rfh_a = ftn_a->current_frame_host();
+  RenderFrameHostImpl* rfh_b = ftn_b->current_frame_host();
+  RenderFrameHostImpl* rfh_c = ftn_c->current_frame_host();
+
+  // Install beforeunload handlers in frames b and c, and grant user activation
+  // to b only.
+  InstallBeforeUnloadHandler(ftn_b, SEND_PING | SHOW_DIALOG);
+  InstallBeforeUnloadHandler(ftn_c, SEND_PING | SHOW_DIALOG,
+                             EXECUTE_SCRIPT_NO_USER_GESTURE);
+  NotifyUserActivation(rfh_a);
+  NotifyUserActivation(rfh_b);
+
+  EXPECT_TRUE(rfh_a->HasStickyUserActivation());
+  EXPECT_TRUE(rfh_b->HasStickyUserActivation());
+  EXPECT_FALSE(rfh_c->HasStickyUserActivation());
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Start a navigation in the main frame.
+  const GURL target_url =
+      embedded_test_server()->GetURL("d.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  DOMMessageQueue msg_queue(web_contents());
+  shell()->LoadURL(target_url);
+
+  // Process the dialog (from frame b) and allow navigation to proceed.
+  dialog_manager()->Wait();
+
+  // Verify that the NavigationRequest is NOT in the async beforeunload state
+  // even if the feature is enabled, because frame b has user activation.
+  // The navigation should still be in the synchronous beforeunload phase.
+  NavigationRequest* navigation_request = ftn_a->navigation_request();
+  ASSERT_TRUE(navigation_request);
+  EXPECT_FALSE(navigation_request->IsWaitingForAsyncBeforeUnload());
+  EXPECT_LT(navigation_request->state(), NavigationRequest::WILL_START_REQUEST);
+
+  CloseDialogAndProceed();
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(1, dialog_manager()->num_beforeunload_dialogs_seen());
+  // Verify that the optimization is correctly disabled because frame b has both
+  // a beforeunload handler and user activation. Even if AsyncBeforeUnload is
+  // enabled.
+  EXPECT_FALSE(async_before_unload_observer.is_async_before_unload_detected());
+  // Verify that both beforeunload handlers from b and c were executed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 2; }));
+}
+
+// Tests that when asynchronous beforeunload handlers take too long, the
+// navigation eventually proceeds due to a timeout.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       AsyncExecutionTimeout) {
+  if (!IsAsyncBeforeUnloadEnabled()) {
+    GTEST_SKIP();
+  }
+
+  // Load a page with structure a(b).
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  FrameTreeNode* ftn_a = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+
+  // Install a very slow beforeunload handler in frame b (5 seconds).
+  // This is longer than the 1s timeout defined in the test parameters.
+  InstallBeforeUnloadHandler(ftn_b, SEND_PING, EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             /*delay=*/base::Seconds(5));
+
+  // This test intentionally does not call `PrepContentsForBeforeUnloadTest()`
+  // to verify the timeout behavior.
+
+  // Start a navigation in the main frame.
+  const GURL target_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  DOMMessageQueue msg_queue(web_contents());
+  shell()->LoadURL(target_url);
+
+  // The navigation should proceed and finish loading due to the 1s timeout.
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  // Verify that the optimization is triggered.
+  EXPECT_TRUE(async_before_unload_observer.is_async_before_unload_detected());
+  // The navigation must have finished before beforeunload completes to run.
+  EXPECT_EQ(0, RetrievePingsFromMessageQueue(&msg_queue));
+}
+
+// Tests that for renderer-initiated navigations, beforeunload handlers in the
+// initiator's renderer process are executed synchronously in the renderer
+// BEFORE the browser is notified, so the async beforeunload optimization
+// is not triggered for those.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       RendererInitiatedAsyncExecution) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  FrameTreeNode* ftn = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh = ftn->current_frame_host();
+
+  // Install a beforeunload handler without user activation.
+  InstallBeforeUnloadHandler(ftn, SEND_PING, EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_FALSE(rfh->HasStickyUserActivation());
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Start a renderer-initiated navigation in the main frame.
+  const GURL target_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  DOMMessageQueue msg_queue(web_contents());
+  EXPECT_TRUE(ExecJs(ftn, JsReplace("location.href = $1", target_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // For renderer-initiated navigations, beforeunload handlers in the
+  // initiator's renderer process are executed synchronously in the renderer
+  // BEFORE the browser is notified. Therefore, the async beforeunload
+  // optimization should not be triggered.
+  EXPECT_FALSE(async_before_unload_observer.is_async_before_unload_detected());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 1; }));
+}
+
+// Tests a scenario where a renderer-initiated navigation starts in frame A,
+// which runs its beforeunload handler synchronously in the renderer, while
+// the browser process runs the beforeunload handler for its cross-site
+// subframe B asynchronously.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       RendererInitiatedWithSubframeAsyncExecution) {
+  // This test requires site isolation to be enabled.
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"a.com", "b.com", "c.comq"});
+  // Load a page with structure a(b) where a and b are in different processes.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  FrameTreeNode* ftn_a = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+  RenderFrameHostImpl* rfh_a = ftn_a->current_frame_host();
+  RenderFrameHostImpl* rfh_b = ftn_b->current_frame_host();
+
+  // Ensure that frames A and B are hosted in different processes. If they were
+  // in the same process, the renderer would handle beforeunload for both frames
+  // synchronously, preventing the AsyncBeforeUnload optimization from
+  // triggering in the browser process.
+  ASSERT_NE(rfh_a->GetProcess(), rfh_b->GetProcess());
+
+  // Install beforeunload handlers in both frames without user activation.
+  InstallBeforeUnloadHandler(ftn_a, SEND_PING, EXECUTE_SCRIPT_NO_USER_GESTURE);
+  InstallBeforeUnloadHandler(ftn_b, SEND_PING, EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Start a renderer-initiated navigation from frame A.
+  const GURL target_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  DOMMessageQueue msg_queue(web_contents());
+
+  // Navigate A(B) -> C.
+  // Frame A will run its handler synchronously in the renderer before
+  // notifying the browser.
+  EXPECT_TRUE(ExecJs(ftn_a, JsReplace("location.href = $1", target_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The browser should have detected the async beforeunload for the subframe B.
+  EXPECT_EQ(IsAsyncBeforeUnloadEnabled(),
+            async_before_unload_observer.is_async_before_unload_detected());
+
+  // Both handlers from A and B should have executed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 2; }));
+}
+
+// Tests a race condition where an old RenderFrameHost for frame "A" (in pending
+// deletion state) is destroyed while a new navigation in the same FrameTreeNode
+// is waiting for an asynchronous beforeunload ACK. The destruction of the old
+// frame "A" should not incorrectly resume the navigation "B" to "C".
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       RaceConditionDuringOldFrameDestruction) {
+  if (!IsAsyncBeforeUnloadEnabled()) {
+    GTEST_SKIP();
+  }
+
+  // Disable BackForwardCache to make the old RFH enters the pending deletion
+  // state instead of being cached.
+  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
+      BackForwardCache::DisableForTestingReason::TEST_USES_UNLOAD_EVENT);
+
+  // 1. Navigate to A.com.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  // Use DoNotDeleteForTesting to keep A around.
+  rfh_a->DoNotDeleteForTesting();
+  rfh_a->DisableUnloadTimerForTesting();
+
+  // 2. Navigate A -> B.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  RenderFrameHostImpl* rfh_b = root_frame_host();
+
+  // At this point, rfh_a should be in pending deletion state.
+  ASSERT_TRUE(rfh_a->IsPendingDeletion());
+
+  // 3. Install a slow beforeunload handler on B.
+  InstallBeforeUnloadHandler(rfh_b->frame_tree_node(), SEND_PING,
+                             EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             /*delay=*/base::Milliseconds(500));
+
+  // 4. Start navigation B -> C.
+  DOMMessageQueue msg_queue(web_contents());
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  shell()->LoadURL(url_c);
+
+  // Wait until B's async beforeunload is kicked off.
+  NavigationRequest* navigation_request =
+      rfh_b->frame_tree_node()->navigation_request();
+  ASSERT_TRUE(navigation_request);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_request->IsWaitingForAsyncBeforeUnload(); }));
+
+  // 5. Destroy A.
+  {
+    RenderFrameDeletedObserver destruction_observer(rfh_a);
+    rfh_a->ResumeDeletionForTesting();
+    // This triggers ~RenderFrameHostImpl() for A.
+    rfh_a->OnUnloadACK();
+    destruction_observer.WaitUntilDeleted();
+  }
+
+  // 6. Verify that navigation B -> C is STILL waiting.
+  // If `rfh_a` was incorrectly included in the pending replies for the B->C
+  // navigation, the navigation B -> C would have been resumed incorrectly.
+  EXPECT_TRUE(navigation_request->IsWaitingForAsyncBeforeUnload());
+
+  // 7. Finally, wait for B -> C to complete.
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_c, web_contents()->GetLastCommittedURL());
+
+  // Verify that the beforeunload handler was executed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 1; }));
+}
+
+// Tests that the AsyncBeforeUnload optimization is only for navigations
+// and does not apply to tab closure (TAB_CLOSE).
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       TabCloseDoesNotUseOptimization) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  FrameTreeNode* ftn = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh = ftn->current_frame_host();
+
+  // Install a beforeunload handler without user activation.
+  InstallBeforeUnloadHandler(ftn, SEND_PING, EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             base::Milliseconds(100));
+
+  // Prevent the RFH from being deleted immediately during the close sequence
+  // so that we can safely inspect its state and receive messages.
+  rfh->DoNotDeleteForTesting();
+
+  // Disable the sync beforeunload hang timer to ensure the test is
+  // deterministic.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Ensure the frame has no sticky user activation. This is the condition under
+  // which a navigation would trigger the AsyncBeforeUnload optimization.
+  EXPECT_FALSE(rfh->HasStickyUserActivation());
+
+  // Start the beforeunload sequence for a tab closure. This should NOT use the
+  // AsyncBeforeUnload optimization because it is a tab close operation, not a
+  // navigation.
+  DOMMessageQueue msg_queue(web_contents());
+  rfh->DispatchBeforeUnload(RenderFrameHostImpl::BeforeUnloadType::TAB_CLOSE,
+                            /*is_reload=*/false);
+
+  // The AsyncBeforeUnload optimization is strictly for navigations and does not
+  // apply to tab closure (TAB_CLOSE). Since tab close handlers are always
+  // handled in synchronous mode (blocking the close process), the RFH must
+  // stay in the `is_waiting_for_beforeunload_completion()` state.
+  // If the optimization were incorrectly applied, this would be false as the
+  // browser would have immediately moved to the background execution phase.
+  EXPECT_TRUE(rfh->is_waiting_for_beforeunload_completion());
+
+  // Verify that the beforeunload handler was executed. Note that while a dialog
+  // is suppressed without activation, the handler script itself still runs.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 1; }));
 }
 
 class RenderFrameHostImplBrowserTestWithStoragePartitioning

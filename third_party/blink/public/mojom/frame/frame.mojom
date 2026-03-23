@@ -961,6 +961,12 @@ interface LocalFrame {
 
   // Instructs the frame to invoke the beforeunload event handler.
   //
+  // If `force_to_proceed` is true, the renderer must not show a confirmation
+  // dialog or allow the handler to cancel the navigation. This is used when
+  // the browser process has already decided the navigation should proceed,
+  // for example, when beforeunload handlers are being run asynchronously
+  // (see https://crbug.com/475716933).
+  //
   // The closure callback is invoked to acknowledge the browser that
   // the beforeunload event is handled. |proceed| matches the return value
   // of the frame's beforeunload handler: true if the user decided to proceed
@@ -972,7 +978,7 @@ interface LocalFrame {
   // pending, which increases their priority while maintaining ordering
   // guarantees. See also mojo/public/tools/bindings/README.md.
   [SupportsUrgent]
-  BeforeUnload(bool is_reload)
+  BeforeUnload(bool is_reload, bool force_to_proceed)
       => (bool proceed, mojo_base.mojom.TimeTicks before_unload_start_time,
           mojo_base.mojom.TimeTicks before_unload_end_time,
           mojo_base.mojom.TimeTicks before_unload_dialog_opened_time,

@@ -518,7 +518,9 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
   }
 
   // FakeLocalFrame:
-  void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override {
+  void BeforeUnload(bool is_reload,
+                    bool force_to_proceed,
+                    BeforeUnloadCallback callback) override {
     was_before_unload_sent_to_renderer_ = true;
   }
 

@@ -75,7 +75,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ReportBlinkFeatureUsage(
       const std::vector<blink::mojom::WebFeature>&) override;
   void RenderFallbackContent() override;
-  void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override;
+  void BeforeUnload(bool is_reload,
+                    bool force_to_proceed,
+                    BeforeUnloadCallback callback) override;
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
   void RequestVideoFrameAtWithBoundsHint(

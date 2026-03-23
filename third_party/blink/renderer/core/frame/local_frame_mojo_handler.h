@@ -125,7 +125,9 @@ class LocalFrameMojoHandler
   void SaveImageAt(const gfx::Point& window_point) final;
   void ReportBlinkFeatureUsage(const Vector<mojom::blink::WebFeature>&) final;
   void RenderFallbackContent() final;
-  void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
+  void BeforeUnload(bool is_reload,
+                    bool force_to_proceed,
+                    BeforeUnloadCallback callback) final;
   void MediaPlayerActionAt(const gfx::Point& window_point,
                            mojom::blink::MediaPlayerActionPtr action) final;
   void RequestVideoFrameAtWithBoundsHint(

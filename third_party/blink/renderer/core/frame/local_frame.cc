@@ -962,7 +962,7 @@ bool LocalFrame::ShouldClose() {
   // events to both local and remote frames.
   base::TimeTicks before_unload_dialog_opened_time;
   base::TimeTicks before_unload_dialog_closed_time;
-  return loader_.ShouldClose(/*is_reload=*/false,
+  return loader_.ShouldClose(/*is_reload=*/false, /*force_to_proceed=*/false,
                              before_unload_dialog_opened_time,
                              before_unload_dialog_closed_time);
 }

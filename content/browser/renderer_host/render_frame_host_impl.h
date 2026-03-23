@@ -3424,16 +3424,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   BuildCommitFailedNavigationCallback(NavigationRequest* navigation_request);
 
   // Protected / virtual so it can be overridden by tests.
-  // If `for_legacy` is true, the beforeunload handler is not actually present,
-  // nor required to run. In this case the renderer is not notified, but
-  // PostTask() is used. PostTask() is used because synchronously proceeding
-  // with navigation could lead to reentrancy problems. In particular, there
-  // are tests and android WebView using NavigationThrottles to navigate from
-  // WillStartRequest(). If PostTask() is not used, then CHECKs would trigger
-  // in a NavigationController. See https://crbug.com/365039 for more details.
   virtual void SendBeforeUnload(bool is_reload,
-                                base::WeakPtr<RenderFrameHostImpl> impl,
-                                bool for_legacy);
+                                bool should_run_before_unload_asynchronously,
+                                base::WeakPtr<RenderFrameHostImpl> impl);
 
  private:
   friend class CommitNavigationPauser;
@@ -3904,19 +3897,51 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_same_document_history_api_navigation,
       base::TimeTicks actual_navigation_start);
 
+  // Execution mode for the beforeunload handling.
+  enum class BeforeUnloadExecutionMode {
+    // Normal beforeunload check. The browser process waits for the renderer's
+    // response before proceeding with the navigation. This mode is used when
+    // there are beforeunload handlers that have sticky user activation,
+    // potentially allowing them to show a confirmation dialog or cancel the
+    // navigation.
+    kDefault,
+    // Used for navigations when beforeunload handler is not actually present.
+    // In this case, the renderer is not notified, but potentially PostTask() is
+    // used. PostTask() is used because synchronously proceeding with navigation
+    // could lead to reentrancy problems. In particular, some tests and Android
+    // WebView assume they can synchronously navigate from WillStartRequest().
+    // If PostTask() is not used, then CHECKs would trigger in a
+    // NavigationController. See https://crbug.com/365039 for more details. This
+    // was previously managed as a `for_legacy` boolean, which is still used in
+    // some parts of the codebase.
+    kForLegacy,
+    // Asynchronous beforeunload optimization (AsyncBeforeUnload). The browser
+    // process runs beforeunload handlers in the background without blocking the
+    // navigation. This is only used when no handlers in the affected subtree
+    // have sticky user activation, meaning they are guaranteed not to show a
+    // dialog or cancel the navigation. The navigation commit will still be
+    // deferred by AsyncBeforeUnloadCommitDeferringCondition until these
+    // handlers complete or timeout.
+    kAsync,
+  };
+
+  // Continue navigation without waiting for the renderer's beforeunload
+  // response.
+  void ContinueNavigationAfterBeforeUnloadCheck(
+      BeforeUnloadExecutionMode execution_mode);
+
   // Helper to process the beforeunload completion callback. |proceed| indicates
   // whether the navigation or tab close should be allowed to proceed.  If
   // |treat_as_final_completion_callback| is true, the frame should stop waiting
   // for any further completion callbacks from subframes. Completion callbacks
   // invoked from the renderer set |treat_as_final_completion_callback| to
-  // false, whereas a beforeunload timeout sets it to true. See
-  // SendBeforeUnload() for details on `for_legacy`.
+  // false, whereas a beforeunload timeout sets it to true.
   void ProcessBeforeUnloadCompleted(
       bool proceed,
       bool treat_as_final_completion_callback,
       const base::TimeTicks& renderer_before_unload_start_time,
       const base::TimeTicks& renderer_before_unload_end_time,
-      bool for_legacy);
+      BeforeUnloadExecutionMode execution_mode);
 
   // Called when a particular frame finishes running a beforeunload handler,
   // possibly as part of processing beforeunload for an ancestor frame. In
@@ -3925,7 +3950,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // been invoked on. If a beforeunload timeout occurred,
   // |treat_as_final_completion_callback| is set to true.
   // |is_frame_being_destroyed| is set to true if this was called as part of
-  // destroying |frame|. See SendBeforeUnload() for details on `for_legacy`.
+  // destroying |frame|.
   void ProcessBeforeUnloadCompletedFromFrame(
       bool proceed,
       bool treat_as_final_completion_callback,
@@ -3933,7 +3958,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_frame_being_destroyed,
       const base::TimeTicks& renderer_before_unload_start_time,
       const base::TimeTicks& renderer_before_unload_end_time,
-      bool for_legacy);
+      BeforeUnloadExecutionMode execution_mode);
 
   // Helper function to check whether the current frame and its subframes need
   // to run beforeunload and, if |send_ipc| is true, send all the necessary
@@ -3951,9 +3976,27 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool subframes_only,
       bool send_ipc,
       bool is_reload,
+      bool should_run_before_unload_asynchronously,
+      std::set<GlobalRenderFrameHostId>& beforeunload_pending_replies,
       bool* found_beforeunload,
       bool* run_beforeunload_for_legacy,
       RenderFrameHostImpl* rfh);
+
+  // Returns true if it's safe to run beforeunload handlers in the background
+  // while the navigation proceeds. This is only possible if no frame (the frame
+  // that is navigating and its descendants) with a beforeunload handler has
+  // sticky user activation, which guarantees that the renderer will not attempt
+  // to cancel navigation (i.e., the browser will not show a beforeunload
+  // dialog).
+  //
+  // If `subframes_only` is true, skip this frame and its same-SiteInstanceGroup
+  // descendants, which share a renderer-side frame tree. This happens for
+  // renderer-initiated navigations, where these frames have already run
+  // beforeunload.
+  //
+  // If `send_ipc` is false, return false, because beforeunload does not run in
+  // such case.
+  bool ShouldRunBeforeUnloadAsynchronously(bool subframes_only, bool send_ipc);
 
   // Called by |beforeunload_timeout_| when the beforeunload timeout fires.
   void BeforeUnloadTimeout();

@@ -258,9 +258,9 @@ void TestRenderFrameHost::SimulateRedirect(const GURL& new_url) {
 
 void TestRenderFrameHost::SimulateBeforeUnloadCompleted(bool proceed) {
   base::TimeTicks now = base::TimeTicks::Now();
-  ProcessBeforeUnloadCompleted(
-      proceed, /* treat_as_final_completion_callback= */ false, now, now,
-      /*for_legacy=*/false);
+  ProcessBeforeUnloadCompleted(proceed,
+                               /* treat_as_final_completion_callback= */ false,
+                               now, now, BeforeUnloadExecutionMode::kDefault);
 }
 
 void TestRenderFrameHost::SimulateUnloadACK() {
