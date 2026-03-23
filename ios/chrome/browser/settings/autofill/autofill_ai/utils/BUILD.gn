@@ -6,18 +6,29 @@ source_set("utils") {
   sources = [
     "autofill_ai_date_util.h",
     "autofill_ai_date_util.mm",
+    "autofill_ai_entity_instance_builder.h",
+    "autofill_ai_entity_instance_builder.mm",
   ]
   deps = [ "//components/autofill/core/browser" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_ai_date_util_unittest.mm" ]
+  sources = [
+    "autofill_ai_date_util_unittest.mm",
+    "autofill_ai_entity_instance_builder_unittest.mm",
+  ]
+
   deps = [
     ":utils",
     "//base",
+    "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
