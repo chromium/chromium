@@ -320,18 +320,24 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
-                       UpdatePageActionVisibility_ShowsPageAction) {
+                       UpdatePageActionVisibility_ShowsAndHidesPageAction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/long_text_page.html");
   RegisterPageActionObserver();
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+      ->AddHintForTesting(
+          url, optimization_guide::proto::READER_MODE_ELIGIBLE,
+          std::optional<optimization_guide::OptimizationMetadata>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   VerifyPageActionIsShowing(true);
-}
+  VerifyChipIsShowing(true);
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
-                       UpdatePageActionVisibility_ShowsChip) {
-  RegisterPageActionObserver();
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
+  VerifyPageActionIsShowing(false);
+  VerifyChipIsShowing(false);
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
-
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(true);
 }
@@ -358,23 +364,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), user_education::FeaturePromoResult::Success());
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
-                       UpdatePageActionVisibility_HidesPageAction) {
-  RegisterPageActionObserver();
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->page_action_controller()
-      ->Show(kActionSidePanelShowReadAnything);
-  VerifyPageActionIsShowing(true);
-
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
-
-  VerifyPageActionIsShowing(false);
-  VerifyChipIsShowing(false);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
