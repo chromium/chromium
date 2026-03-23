@@ -1,7 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+components/certificate_model/x509_certificate_model_base.h",
-  "+third_party/boringssl/src/include",
-  "+third_party/boringssl/src/pki",
-  # keep-sorted end
-]
