@@ -20,7 +20,6 @@
     await getIframeResults('iframe_1', 'https://{{host}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
     await getIframeResults('iframe_2', 'https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
     await waitForRender();
-    resetCounters();
 
     if ((new URLSearchParams(window.location.search)).has('filter')) {
       document.getElementById('iframe_1').className = 'svg-blur';

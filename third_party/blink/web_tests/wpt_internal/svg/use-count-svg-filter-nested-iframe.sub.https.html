@@ -41,7 +41,7 @@
     await waitForRender();
     document.getElementById('nested_iframe').className = 'svg-blur';
     message = await getIframeResults('nested_iframe', 'resources/nested.sub.html');
-    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Filtered nested load.');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Filtered nested load.');
     expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'Filtered load.');
   }, 'SVG filter applied to nested, but internally unfiltered, local iframe');
 

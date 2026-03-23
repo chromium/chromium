@@ -490,19 +490,20 @@ void LayoutEmbeddedContent::CountSvgFilterPaint() const {
   if (!GetEmbeddedContentView()) {
     return;
   }
-  // This is an iteration of all parents on every paint, but embedded content
-  // are rare enough that we do not expect this to be a problem.
+  // This is an iteration of all (local) parents on every paint, but embedded
+  // content is rare enough that we do not expect this to be a problem.
   const LayoutObject* target = this;
   while (target) {
     if (target->StyleRef().HasReferenceFilter()) {
       UseCounter::Count(GetDocument(),
                         GetEmbeddedContentView()->SvgFilterPaintedCounter());
-      // TODO(crbug.com/476646486): Add a UMA histogram to track more detailed
-      // info about the type of frame (cross-origin, sandbox, plugin, etc.) as
-      // well as the SVG filters applied (blur, color matrix, offset, etc.).
       return;
     }
-    target = target->Parent();
+    if (IsA<LayoutView>(*target)) {
+      target = target->GetFrame()->OwnerLayoutObject();
+    } else {
+      target = target->Parent();
+    }
   }
 }
 
