@@ -133,11 +133,11 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
@@ -2264,15 +2264,16 @@ void ProfileManager::UnblockAsyncLoading() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ProfileManager::OnBrowserOpened(Browser* browser) {
+void ProfileManager::OnBrowserOpened(BrowserWindowInterface* browser) {
   DCHECK(browser);
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   DCHECK(profile);
 
   if (!profile->IsOffTheRecord() &&
       !IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
                                profile->GetPath()) &&
-      !browser->is_type_app() && ++browser_counts_[profile] == 1) {
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_APP &&
+      ++browser_counts_[profile] == 1) {
     active_profiles_.push_back(profile);
     SaveActiveProfiles();
   }
@@ -2283,10 +2284,11 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
   closing_all_browsers_ = false;
 }
 
-void ProfileManager::OnBrowserClosed(Browser* browser) {
-  Profile* profile = browser->profile();
+void ProfileManager::OnBrowserClosed(BrowserWindowInterface* browser) {
+  Profile* profile = browser->GetProfile();
   DCHECK(profile);
-  if (!profile->IsOffTheRecord() && !browser->is_type_app() &&
+  if (!profile->IsOffTheRecord() &&
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_APP &&
       --browser_counts_[profile] == 0) {
     active_profiles_.erase(std::ranges::find(active_profiles_, profile));
     if (!closing_all_browsers_)
@@ -2337,26 +2339,27 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   }
 }
 
-ProfileManager::BrowserListObserver::BrowserListObserver(
+ProfileManager::BrowserCollectionObserver::BrowserCollectionObserver(
     ProfileManager* manager)
     : profile_manager_(manager) {
-  BrowserList::AddObserver(this);
+  browser_collection_observer_.Observe(GlobalBrowserCollection::GetInstance());
 }
 
-ProfileManager::BrowserListObserver::~BrowserListObserver() {
-  BrowserList::RemoveObserver(this);
-}
+ProfileManager::BrowserCollectionObserver::~BrowserCollectionObserver() =
+    default;
 
-void ProfileManager::BrowserListObserver::OnBrowserAdded(Browser* browser) {
+void ProfileManager::BrowserCollectionObserver::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   profile_manager_->OnBrowserOpened(browser);
 }
 
-void ProfileManager::BrowserListObserver::OnBrowserRemoved(Browser* browser) {
+void ProfileManager::BrowserCollectionObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   profile_manager_->OnBrowserClosed(browser);
 }
 
-void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
-    Browser* browser) {
+void ProfileManager::BrowserCollectionObserver::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   // If all browsers are being closed (e.g. the user is in the process of
   // shutting down), this event will be fired after each browser is
   // closed. This does not represent a user intention to change the active
@@ -2365,7 +2368,7 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
     return;
   }
 
-  profile_manager_->SetProfileAsLastUsed(browser->profile());
+  profile_manager_->SetProfileAsLastUsed(browser->GetProfile());
 }
 
 void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {

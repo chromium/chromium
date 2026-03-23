@@ -33,8 +33,11 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+
+class GlobalBrowserCollection;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -568,23 +571,27 @@ class ProfileManager : public Profile::Delegate {
   void OnProfileDestructionComplete(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_ANDROID)
-  void OnBrowserOpened(Browser* browser);
-  void OnBrowserClosed(Browser* browser);
+  void OnBrowserOpened(BrowserWindowInterface* browser);
+  void OnBrowserClosed(BrowserWindowInterface* browser);
 
-  class BrowserListObserver : public ::BrowserListObserver {
+  class BrowserCollectionObserver : public ::BrowserCollectionObserver {
    public:
-    explicit BrowserListObserver(ProfileManager* manager);
-    BrowserListObserver(const BrowserListObserver&) = delete;
-    BrowserListObserver& operator=(const BrowserListObserver&) = delete;
-    ~BrowserListObserver() override;
+    explicit BrowserCollectionObserver(ProfileManager* manager);
+    BrowserCollectionObserver(const BrowserCollectionObserver&) = delete;
+    BrowserCollectionObserver& operator=(const BrowserCollectionObserver&) =
+        delete;
+    ~BrowserCollectionObserver() override;
 
-    // ::BrowserListObserver implementation.
-    void OnBrowserAdded(Browser* browser) override;
-    void OnBrowserRemoved(Browser* browser) override;
-    void OnBrowserSetLastActive(Browser* browser) override;
+    // ::BrowserCollectionObserver implementation.
+    void OnBrowserCreated(BrowserWindowInterface* browser) override;
+    void OnBrowserClosed(BrowserWindowInterface* browser) override;
+    void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
    private:
     raw_ptr<ProfileManager> profile_manager_;
+    base::ScopedObservation<GlobalBrowserCollection,
+                            ::BrowserCollectionObserver>
+        browser_collection_observer_{this};
   };
 
   void OnClosingAllBrowsersChanged(bool closing);
@@ -623,7 +630,7 @@ class ProfileManager : public Profile::Delegate {
   bool logged_in_ = false;
 
 #if !BUILDFLAG(IS_ANDROID)
-  BrowserListObserver browser_list_observer_{this};
+  BrowserCollectionObserver browser_collection_observer_{this};
 
   std::unique_ptr<DeleteProfileHelper> delete_profile_helper_;
 #endif  // !BUILDFLAG(IS_ANDROID)

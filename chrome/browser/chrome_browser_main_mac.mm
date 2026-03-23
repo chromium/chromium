@@ -126,17 +126,6 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   }
 #endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
-  // Create the app delegate by requesting the shared AppController.
-  CHECK_EQ(nil, NSApp.delegate);
-  AppController* app_controller = AppController.sharedController;
-  CHECK_NE(nil, NSApp.delegate);
-
-  chrome::BuildMainMenu(NSApp, app_controller,
-                        l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-                        /*is_pwa=*/false,
-                        /*is_rtl=*/base::i18n::IsRTL());
-  [app_controller mainMenuCreated];
-
   ui::WarmScreenCapture();
 
   metrics_ = std::make_unique<mac_metrics::Metrics>();
@@ -158,6 +147,26 @@ void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 
   net::InitializeTrustStoreMacCache();
+}
+
+int ChromeBrowserMainPartsMac::PreCreateThreads() {
+  if (int ret = ChromeBrowserMainPartsPosix::PreCreateThreads();
+      ret != content::RESULT_CODE_NORMAL_EXIT) {
+    return ret;
+  }
+
+  // Create the app delegate by requesting the shared AppController.
+  CHECK_EQ(nil, NSApp.delegate);
+  AppController* app_controller = AppController.sharedController;
+  CHECK_NE(nil, NSApp.delegate);
+
+  chrome::BuildMainMenu(NSApp, app_controller,
+                        l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+                        /*is_pwa=*/false,
+                        /*is_rtl=*/base::i18n::IsRTL());
+  [app_controller mainMenuCreated];
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void ChromeBrowserMainPartsMac::PreProfileInit() {

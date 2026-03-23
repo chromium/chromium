@@ -29,6 +29,7 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   int PreEarlyInitialization() override;
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
+  int PreCreateThreads() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 
