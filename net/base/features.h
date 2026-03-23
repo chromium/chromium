@@ -814,6 +814,10 @@ NET_EXPORT extern const base::FeatureParam<bool>
 // If enabled, the error code will be propagated for preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableErrorCodePropagationForPreconnect);
 
+// If enabled, TransportClientSocketPool can retry stalled connections.
+// See crbug.com/481934003 to track efforts to disable this by default.
+NET_EXPORT BASE_DECLARE_FEATURE(kPermitTcpSocketPoolConnectBackupJobs);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

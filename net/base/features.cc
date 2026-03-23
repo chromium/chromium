@@ -785,4 +785,8 @@ const base::FeatureParam<bool> kSQLitePersistentCookieStoreEarlyInitCheckDisk{
 
 BASE_FEATURE(kEnableErrorCodePropagationForPreconnect,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermitTcpSocketPoolConnectBackupJobs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

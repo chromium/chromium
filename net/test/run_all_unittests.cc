@@ -49,7 +49,6 @@ int main(int argc, char** argv) {
     return 1;
 
   NetTestSuite test_suite(argc, argv);
-  net::TransportClientSocketPool::set_connect_backup_jobs_enabled(false);
 
   return base::LaunchUnitTests(
       argc, argv,

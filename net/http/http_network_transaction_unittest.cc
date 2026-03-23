@@ -8335,9 +8335,9 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
 // to complete.
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxySpdyConnectHttpsNoBackupJob) {
-  bool connect_backup_jobs_enabled =
-      TransportClientSocketPool::connect_backup_jobs_enabled();
-  TransportClientSocketPool::set_connect_backup_jobs_enabled(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPermitTcpSocketPoolConnectBackupJobs);
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.test/");
@@ -8472,9 +8472,6 @@ TEST_P(HttpNetworkTransactionTest,
 
   spdy_data.ExpectAllReadDataConsumed();
   spdy_data.ExpectAllWriteDataConsumed();
-
-  TransportClientSocketPool::set_connect_backup_jobs_enabled(
-      connect_backup_jobs_enabled);
 }
 
 // Test that a backup job is not created for an HTTPS (non-SPDY) request through
@@ -8484,9 +8481,9 @@ TEST_P(HttpNetworkTransactionTest,
 // fix for crbug.com/448445046.
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxySpdyConnectHttpsNoBackupJobUsingExistingSocket) {
-  bool connect_backup_jobs_enabled =
-      TransportClientSocketPool::connect_backup_jobs_enabled();
-  TransportClientSocketPool::set_connect_backup_jobs_enabled(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPermitTcpSocketPoolConnectBackupJobs);
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.test/");
@@ -8679,9 +8676,6 @@ TEST_P(HttpNetworkTransactionTest,
 
   spdy_data.ExpectAllReadDataConsumed();
   spdy_data.ExpectAllWriteDataConsumed();
-
-  TransportClientSocketPool::set_connect_backup_jobs_enabled(
-      connect_backup_jobs_enabled);
 }
 
 // Test a SPDY CONNECT through an HTTPS Proxy to a SPDY server (SPDY -> SPDY).

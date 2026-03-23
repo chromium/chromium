@@ -39,10 +39,6 @@ namespace net {
 
 namespace {
 
-// Indicate whether or not we should establish a new transport layer connection
-// after a certain timeout has passed without receiving an ACK.
-bool g_connect_backup_jobs_enabled = true;
-
 base::DictValue NetLogCreateConnectJobParams(
     bool backup_job,
     const ClientSocketPool::GroupId* group_id) {
@@ -819,8 +815,10 @@ TransportClientSocketPool::TransportClientSocketPool(
       unused_idle_socket_timeout_(unused_idle_socket_timeout),
       used_idle_socket_timeout_(used_idle_socket_timeout),
       cleanup_on_ip_address_change_(cleanup_on_ip_address_change),
-      connect_backup_jobs_enabled_(connect_backup_jobs_enabled &&
-                                   g_connect_backup_jobs_enabled),
+      connect_backup_jobs_enabled_(
+          connect_backup_jobs_enabled &&
+          base::FeatureList::IsEnabled(
+              net::features::kPermitTcpSocketPoolConnectBackupJobs)),
       ssl_client_context_(ssl_client_context) {
   DCHECK_LE(max_sockets_per_group, socket_soft_cap);
 
@@ -1003,18 +1001,6 @@ TransportClientSocketPool::GroupMap::iterator
 TransportClientSocketPool::RemoveGroup(GroupMap::iterator it) {
   delete it->second;
   return group_map_.erase(it);
-}
-
-// static
-bool TransportClientSocketPool::connect_backup_jobs_enabled() {
-  return g_connect_backup_jobs_enabled;
-}
-
-// static
-bool TransportClientSocketPool::set_connect_backup_jobs_enabled(bool enabled) {
-  bool old_value = g_connect_backup_jobs_enabled;
-  g_connect_backup_jobs_enabled = enabled;
-  return old_value;
 }
 
 void TransportClientSocketPool::IncrementIdleCount() {

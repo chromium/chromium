@@ -9310,6 +9310,8 @@ class HTTPSRequestTest : public TestWithTaskEnvironment {
   HTTPSRequestTest() {
     auto context_builder = CreateTestURLRequestContextBuilder();
     default_context_ = context_builder->Build();
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPermitTcpSocketPoolConnectBackupJobs);
   }
   ~HTTPSRequestTest() override {
     SetTransportSecurityStateSourceForTesting(nullptr);
@@ -9319,6 +9321,7 @@ class HTTPSRequestTest : public TestWithTaskEnvironment {
 
  private:
   std::unique_ptr<URLRequestContext> default_context_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HTTPSRequestTest, HTTPSGetTest) {

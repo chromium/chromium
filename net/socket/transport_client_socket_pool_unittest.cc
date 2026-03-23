@@ -111,20 +111,22 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
  protected:
   // Constructor that allows mocking of the time.
   explicit TransportClientSocketPoolTestBase(bool use_happy_eyeballs_v2)
-      : connect_backup_jobs_enabled_(
-            TransportClientSocketPool::set_connect_backup_jobs_enabled(true)),
-        group_id_(url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
+      : group_id_(url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkAnonymizationKey(),
                   SecureDnsPolicy::kAllow,
                   /*disable_cert_network_fetches=*/false),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         client_socket_factory_(NetLog::Get()) {
+    std::vector<base::test::FeatureRef> enabled_features(
+        {features::kPermitTcpSocketPoolConnectBackupJobs});
+    std::vector<base::test::FeatureRef> disabled_features;
     if (use_happy_eyeballs_v2) {
-      scoped_feature_list_.InitAndEnableFeature(features::kHappyEyeballsV2);
+      enabled_features.emplace_back(features::kHappyEyeballsV2);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kHappyEyeballsV2);
+      disabled_features.emplace_back(features::kHappyEyeballsV2);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     std::unique_ptr<MockCertVerifier> cert_verifier =
         std::make_unique<MockCertVerifier>();
     cert_verifier->set_default_result(OK);
@@ -166,11 +168,6 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
         common_connect_job_params_for_real_sockets_.get());
   }
 
-  ~TransportClientSocketPoolTestBase() override {
-    TransportClientSocketPool::set_connect_backup_jobs_enabled(
-        connect_backup_jobs_enabled_);
-  }
-
   int StartRequest(const std::string& host_name,
                    RequestPriority priority,
                    TransportClientSocketPool* non_default_pool = nullptr) {
@@ -202,8 +199,6 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
   size_t completion_count() const { return test_base_.completion_count(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  bool connect_backup_jobs_enabled_;
 
   // |group_id_| and |params_| correspond to the same group.
   const ClientSocketPool::GroupId group_id_;

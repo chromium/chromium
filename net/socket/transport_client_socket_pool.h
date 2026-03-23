@@ -263,9 +263,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     return HasGroup(group_id);
   }
 
-  static bool connect_backup_jobs_enabled();
-  static bool set_connect_backup_jobs_enabled(bool enabled);
-
   // NetworkChangeNotifier::IPAddressObserver methods:
   void OnIPAddressChanged(
       NetworkChangeNotifier::IPAddressChangeType change_type) override;

@@ -333,11 +333,11 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
  public:
   explicit HttpStreamFactoryJobControllerTestBase(
       bool happy_eyeballs_v3_enabled,
-      std::vector<base::test::FeatureRef> enabled_features = {})
+      std::vector<base::test::FeatureRef> enabled_features = {},
+      std::vector<base::test::FeatureRef> disabled_features = {})
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         happy_eyeballs_v3_enabled_(happy_eyeballs_v3_enabled) {
-    std::vector<base::test::FeatureRef> disabled_features;
     if (happy_eyeballs_v3_enabled_) {
       enabled_features.emplace_back(features::kHappyEyeballsV3);
     } else {
@@ -5927,11 +5927,12 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
 class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
     : public HttpStreamFactoryJobControllerTestBase {
  protected:
-  explicit HttpStreamFactoryJobControllerDnsHttpsAlpnTest(
-      std::vector<base::test::FeatureRef> enabled_features = {})
+  explicit HttpStreamFactoryJobControllerDnsHttpsAlpnTest()
       : HttpStreamFactoryJobControllerTestBase(
             /*happy_eyeballs_v3_enabled=*/false,
-            std::move(enabled_features)) {}
+            /*enabled_features=*/{},
+            /*disabled_features=*/
+            {features::kPermitTcpSocketPoolConnectBackupJobs}) {}
 
   void SetUp() override { SkipCreatingJobController(); }
 
