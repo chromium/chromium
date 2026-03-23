@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/printing/usb_printer_notification.h"
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -42,7 +42,7 @@ UsbPrinterNotification::UsbPrinterNotification(
       type_(type),
       profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kNotificationPrintingIcon;
+  rich_notification_data.vector_small_image = &ash::kNotificationPrintingIcon;
   rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,

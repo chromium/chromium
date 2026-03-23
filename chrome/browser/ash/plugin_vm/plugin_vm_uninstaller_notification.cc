@@ -8,10 +8,10 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,7 +42,7 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
     Profile* profile)
     : profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kNotificationPluginVmIcon;
+  rich_notification_data.vector_small_image = &ash::kNotificationPluginVmIcon;
   rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   rich_notification_data.pinned = true;
   rich_notification_data.never_timeout = true;

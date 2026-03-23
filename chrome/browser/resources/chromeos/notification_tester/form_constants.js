@@ -119,7 +119,7 @@ export const FormSelectOptions = {
   ],
   SMALL_IMAGE_OPTIONS: [
     {displayText: 'Default Icon', value: 'kProductIcon'},
-    {displayText: 'Terminal Icon', value: 'kTerminalSshIcon'},
+    {displayText: 'Terminal Icon', value: 'ash::kTerminalSshIcon'},
     {displayText: 'Credit Card Icon', value: 'kCreditCardIcon'},
     {displayText: 'Smartphone Icon', value: 'kSmartphoneIcon'},
   ],

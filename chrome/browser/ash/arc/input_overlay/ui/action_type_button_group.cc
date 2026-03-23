@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -80,13 +81,13 @@ void ActionTypeButtonGroup::Init() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL),
-      kGameControlsSingleButtonIcon);
+      ash::kGameControlsSingleButtonIcon);
   auto* move_button = AddActionTypeButton(
       base::BindRepeating(&ActionTypeButtonGroup::OnActionMoveButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL),
-      kGameControlsDpadKeyboardIcon);
+      ash::kGameControlsDpadKeyboardIcon);
 
   selected_action_type_ = action_->GetType();
   switch (selected_action_type_) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -88,9 +89,9 @@ INSTANTIATE_TEST_SUITE_P(
         TransitionNotificationParams(ArcManagementTransition::NO_TRANSITION,
                                      nullptr),
         TransitionNotificationParams(ArcManagementTransition::CHILD_TO_REGULAR,
-                                     &kNotificationFamilyLinkIcon),
+                                     &ash::kNotificationFamilyLinkIcon),
         TransitionNotificationParams(ArcManagementTransition::REGULAR_TO_CHILD,
-                                     &kNotificationFamilyLinkIcon),
+                                     &ash::kNotificationFamilyLinkIcon),
         TransitionNotificationParams(
             ArcManagementTransition::UNMANAGED_TO_MANAGED,
             &chromeos::kEnterpriseIcon)));

@@ -11,12 +11,12 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
@@ -363,7 +363,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     DCHECK(color_provider);
     gfx::ImageSkia icon =
         ui::ThemedVectorIcon(
-            ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+            ui::ImageModel::FromVectorIcon(ash::kIncognitoProfileIcon,
                                            ui::kColorAvatarIconIncognito)
                 .GetVectorIcon())
             .GetImageSkia(color_provider);

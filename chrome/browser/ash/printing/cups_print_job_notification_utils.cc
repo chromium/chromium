@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
@@ -193,16 +193,17 @@ void UpdateNotificationIcon(message_center::Notification* notification,
     case CupsPrintJob::State::STATE_SUSPENDED:
     case CupsPrintJob::State::STATE_RESUMED:
       notification->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-      notification->set_vector_small_image(kNotificationPrintingIcon);
+      notification->set_vector_small_image(ash::kNotificationPrintingIcon);
       break;
     case CupsPrintJob::State::STATE_DOCUMENT_DONE:
       notification->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-      notification->set_vector_small_image(kNotificationPrintingDoneIcon);
+      notification->set_vector_small_image(ash::kNotificationPrintingDoneIcon);
       break;
     case CupsPrintJob::State::STATE_FAILED:
     case CupsPrintJob::State::STATE_ERROR:
       notification->set_accent_color_id(cros_tokens::kCrosSysError);
-      notification->set_vector_small_image(kNotificationPrintingWarningIcon);
+      notification->set_vector_small_image(
+          ash::kNotificationPrintingWarningIcon);
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
       NOTREACHED();

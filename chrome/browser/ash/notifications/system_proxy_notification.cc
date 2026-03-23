@@ -8,9 +8,9 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -64,7 +64,7 @@ void SystemProxyNotification::Show() {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&SystemProxyNotification::OnClick,
                               weak_ptr_factory_.GetWeakPtr())),
-      kNotificationWifiIcon,
+      ash::kNotificationWifiIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
   notification->set_pinned(true);

@@ -13,6 +13,7 @@ static_library("notification_tester") {
   ]
 
   public_deps = [
+    "//ash/resources/vector_icons",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",

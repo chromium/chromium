@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -164,8 +165,8 @@ const gfx::Image NotificationTesterHandler::GetRichDataImageFromString(
 const gfx::VectorIcon&
 NotificationTesterHandler::GetRichDataSmallImageFromString(
     const std::string& small_image_name) {
-  if (small_image_name == "kTerminalSshIcon") {
-    return kTerminalSshIcon;
+  if (small_image_name == "ash::kTerminalSshIcon") {
+    return ash::kTerminalSshIcon;
   } else if (small_image_name == "kCreditCardIcon") {
     return kCreditCardIcon;
   } else if (small_image_name == "kSmartphoneIcon") {

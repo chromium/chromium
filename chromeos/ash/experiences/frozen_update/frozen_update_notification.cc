@@ -9,13 +9,13 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/frozen_update/frozen_update_gpu_list_autogen.h"
 #include "chromeos/constants/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -115,7 +115,7 @@ void FrozenUpdateNotification::ShowNotification() {
   notification_builder.SetTitleId(IDS_FROZEN_UPDATE_NOTIFICATION_TITLE)
       .SetMessageId(IDS_FROZEN_UPDATE_NOTIFICATION_FROZEN_UPDATE)
       .SetCatalogName(NotificationCatalogName::kFrozenUpdateNotification)
-      .SetSmallImage(vector_icons::kNotificationEndOfSupportIcon);
+      .SetSmallImage(ash::kNotificationEndOfSupportIcon);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(

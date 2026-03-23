@@ -89,7 +89,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "download_toolbar_button_touch.icon",
     "download_warning.icon",
     "draft_spark.icon",
-    "drag_handle.icon",
     "drive_shortcut_chrome_refresh.icon",
     "edit_chrome_refresh.icon",
     "exit_menu.icon",
@@ -112,7 +111,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "history.icon",
     "hourglass.icon",
     "incognito.icon",
-    "incognito_profile.icon",
     "incognito_refresh_menu.icon",
     "info.icon",
     "input.icon",
@@ -123,7 +121,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "key.icon",
     "keyboard_arrow_down.icon",
     "keyboard_arrow_down_chrome_refresh.icon",
-    "keyboard_arrow_right.icon",
     "keyboard_arrow_up.icon",
     "keyboard_arrow_up_chrome_refresh.icon",
     "laptop.icon",
@@ -295,47 +292,18 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_chromeos) {
     sources += [
-      "autocorrect_undo.icon",
-      "crostini_mascot.icon",
       "floating_workspace_notification.icon",
-      "game_controls_add.icon",
-      "game_controls_delete.icon",
       "game_controls_done.icon",
-      "game_controls_dpad_keyboard.icon",
-      "game_controls_edit_pen.icon",
-      "game_controls_single_button.icon",
       "mouse_left_click_edit.icon",
-      "mouse_left_click_view.icon",
       "mouse_right_click_edit.icon",
-      "mouse_right_click_view.icon",
       "notification_battery.icon",
-      "notification_captive_portal.icon",
-      "notification_cellular_alert.icon",
-      "notification_family_link.icon",
       "notification_google.icon",
       "notification_image.icon",
       "notification_installed.icon",
       "notification_messages.icon",
-      "notification_mobile_data.icon",
-      "notification_mobile_data_off.icon",
-      "notification_plugin_vm.icon",
-      "notification_printing.icon",
-      "notification_printing_done.icon",
-      "notification_printing_warning.icon",
-      "notification_storage_full.icon",
-      "notification_vpn.icon",
-      "notification_wifi.icon",
-      "notification_wifi_off.icon",
       "person_add.icon",
-      "sharesheet_share_with_others.icon",
-      "shutdown_guest_os.icon",
-      "terminal_ssh.icon",
       "tip.icon",
     ]
-  }
-
-  if (!is_android) {
-    sources += [ "nearby_share.icon" ]
   }
 
   if (enable_webui_tab_strip) {

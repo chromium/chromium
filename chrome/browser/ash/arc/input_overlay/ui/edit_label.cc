@@ -6,12 +6,12 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
@@ -176,8 +176,8 @@ void EditLabel::SetLabelContent() {
   // Clear icon if it is a valid key for new action.
   SetImageModel(views::Button::STATE_NORMAL,
                 output_string.empty()
-                    ? ui::ImageModel::FromVectorIcon(kGameControlsEditPenIcon,
-                                                     kPenIconColor)
+                    ? ui::ImageModel::FromVectorIcon(
+                          ash::kGameControlsEditPenIcon, kPenIconColor)
                     : ui::ImageModel());
   // Set text label by `output_string` even it is empty to clear the text label.
   SetTextLabel(output_string);
@@ -299,7 +299,7 @@ void EditLabel::OnBlur() {
 
   if (action_->is_new() && GetText().empty()) {
     SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(kGameControlsEditPenIcon,
+                  ui::ImageModel::FromVectorIcon(ash::kGameControlsEditPenIcon,
                                                  kPenIconColor));
   }
   SetToDefault();

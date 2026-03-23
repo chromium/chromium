@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/input_method/completion_suggestion_view.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ash/input_method/colors.h"
@@ -190,7 +191,7 @@ void CompletionSuggestionView::OnThemeChanged() {
   down_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kKeyboardArrowDownIcon, ui::kColorIcon, kDownIconSize));
   arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kKeyboardArrowRightIcon, ui::kColorIcon, kArrowIconSize));
+      ash::kKeyboardArrowRightIcon, ui::kColorIcon, kArrowIconSize));
   views::View::OnThemeChanged();
 }
 

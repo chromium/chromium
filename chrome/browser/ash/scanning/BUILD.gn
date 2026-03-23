@@ -33,6 +33,7 @@ static_library("scanning") {
   ]
 
   public_deps = [
+    "//ash/resources/vector_icons",
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
     "//base",

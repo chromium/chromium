@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -33,7 +33,7 @@ const std::u16string DriveShareAction::GetActionName() {
 }
 
 const gfx::VectorIcon& DriveShareAction::GetActionIcon() {
-  return kSharesheetShareWithOthersIcon;
+  return ash::kSharesheetShareWithOthersIcon;
 }
 
 void DriveShareAction::LaunchAction(

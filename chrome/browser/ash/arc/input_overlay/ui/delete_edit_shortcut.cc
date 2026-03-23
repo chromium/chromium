@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -79,14 +79,14 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
   edit_button_ = AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&DeleteEditShortcut::OnEditButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsEditPenIcon, u"",
+      ash::IconButton::Type::kMedium, &ash::kGameControlsEditPenIcon, u"",
       /*is_togglable=*/false, /*has_border=*/false));
   edit_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   delete_button_ = AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&DeleteEditShortcut::OnDeleteButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon, u"",
+      ash::IconButton::Type::kMedium, &ash::kGameControlsDeleteIcon, u"",
       /*is_togglable=*/false, /*has_border=*/false));
   delete_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 

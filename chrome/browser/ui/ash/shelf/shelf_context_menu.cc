@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -239,9 +240,9 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
                       "added to the model by NotificationMenuController.";
     case ash::SHUTDOWN_GUEST_OS:
-      return kShutdownGuestOsIcon;
+      return ash::kShutdownGuestOsIcon;
     case ash::SHUTDOWN_BRUSCHETTA_OS:
-      return kShutdownGuestOsIcon;
+      return ash::kShutdownGuestOsIcon;
     case ash::CROSTINI_USE_HIGH_DENSITY:
       return views::kLinuxHighDensityIcon;
     case ash::CROSTINI_USE_LOW_DENSITY:

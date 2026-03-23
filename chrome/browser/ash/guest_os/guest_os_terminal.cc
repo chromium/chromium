@@ -8,6 +8,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -569,8 +569,8 @@ void AddTerminalMenuShortcuts(
                                           apps::kAppShortcutIconSizeDip)
         .Rasterize(color_provider);
   };
-  gfx::ImageSkia terminal_ssh_icon = icon(kTerminalSshIcon);
-  gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
+  gfx::ImageSkia terminal_ssh_icon = icon(ash::kTerminalSshIcon);
+  gfx::ImageSkia crostini_mascot_icon = icon(ash::kCrostiniMascotIcon);
   std::vector<std::pair<std::string, std::string>> connections =
       GetSSHConnections(profile);
   auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile)

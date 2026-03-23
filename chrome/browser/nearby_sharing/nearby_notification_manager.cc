@@ -9,6 +9,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -97,10 +98,10 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
   if (features::IsNameEnabled()) {
     notification.set_vector_small_image(kNearbyShareInternalIcon);
   } else {
-    notification.set_vector_small_image(kNearbyShareIcon);
+    notification.set_vector_small_image(ash::kNearbyShareIcon);
   }
 #else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  notification.set_vector_small_image(kNearbyShareIcon);
+  notification.set_vector_small_image(ash::kNearbyShareIcon);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   notification.set_settings_button_handler(

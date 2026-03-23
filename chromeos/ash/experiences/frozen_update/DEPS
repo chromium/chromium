@@ -3,6 +3,7 @@ include_rules = [
   # details.
   "-chrome",
 
+  "+ash/resources/vector_icons",
   "+ash/public/cpp",
   "+ash/test",
   "+components/strings/grit",

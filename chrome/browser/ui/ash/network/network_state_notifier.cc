@@ -10,11 +10,11 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
@@ -95,12 +95,12 @@ std::u16string GetConnectErrorString(const std::string& error_name) {
 const gfx::VectorIcon& GetErrorNotificationVectorIcon(
     const std::string& network_type) {
   if (network_type == shill::kTypeVPN) {
-    return kNotificationVpnIcon;
+    return ash::kNotificationVpnIcon;
   }
   if (network_type == shill::kTypeCellular) {
-    return kNotificationMobileDataOffIcon;
+    return ash::kNotificationMobileDataOffIcon;
   }
-  return kNotificationWifiOffIcon;
+  return ash::kNotificationWifiOffIcon;
 }
 
 // |identifier| may be a service path or guid.
@@ -424,7 +424,7 @@ void NetworkStateNotifier::UpdateCellularActivating(
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
                               weak_ptr_factory_.GetWeakPtr(), cellular_guid)),
-      kNotificationMobileDataIcon,
+      ash::kNotificationMobileDataIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   SystemNotificationHelper::GetInstance()->Display(notification);
 }
@@ -467,7 +467,7 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &NetworkStateNotifier::ShowNetworkSettings,
           weak_ptr_factory_.GetWeakPtr(), cellular->guid())),
-      kNotificationMobileDataOffIcon,
+      ash::kNotificationMobileDataOffIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   SystemNotificationHelper::GetInstance()->Display(notification);
 }

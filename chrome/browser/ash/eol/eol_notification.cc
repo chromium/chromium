@@ -13,6 +13,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -151,7 +152,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     notification_builder.SetTitleId(IDS_EOL_NOTIFICATION_TITLE)
         .SetMessageWithArgs(IDS_EOL_NOTIFICATION_EOL,
                             {ui::GetChromeOSDeviceName()})
-        .SetSmallImage(vector_icons::kNotificationEndOfSupportIcon);
+        .SetSmallImage(ash::kNotificationEndOfSupportIcon);
     catalog_name = NotificationCatalogName::kEOL;
   }
 

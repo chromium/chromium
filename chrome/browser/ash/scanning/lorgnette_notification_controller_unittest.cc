@@ -8,8 +8,8 @@
 #include <optional>
 #include <utility>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -114,7 +114,8 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstalling) {
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
-  EXPECT_EQ(&kNotificationPrintingIcon, &Notification()->vector_small_image());
+  EXPECT_EQ(&ash::kNotificationPrintingIcon,
+            &Notification()->vector_small_image());
 }
 
 TEST_F(LorgnetteNotificationControllerTest, TestDlcInstallFailed) {
@@ -132,7 +133,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstallFailed) {
   EXPECT_EQ(u"Unplug the scanner's USB cable and re-plug it to retry",
             Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysError, Notification()->accent_color_id());
-  EXPECT_EQ(&kNotificationPrintingWarningIcon,
+  EXPECT_EQ(&ash::kNotificationPrintingWarningIcon,
             &Notification()->vector_small_image());
 }
 
@@ -162,7 +163,8 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
-  EXPECT_EQ(&kNotificationPrintingIcon, &Notification()->vector_small_image());
+  EXPECT_EQ(&ash::kNotificationPrintingIcon,
+            &Notification()->vector_small_image());
 
   InstallDlcWithState(CreateInstalledState());
   ASSERT_TRUE(notification_controller_
@@ -176,7 +178,8 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
   EXPECT_EQ(u"Scanner software installed", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
-  EXPECT_EQ(&kNotificationPrintingIcon, &Notification()->vector_small_image());
+  EXPECT_EQ(&ash::kNotificationPrintingIcon,
+            &Notification()->vector_small_image());
 
   // If Install Called again, change back to Idle state and remove notification
   InstallDlcWithState(CreateInstalledState());

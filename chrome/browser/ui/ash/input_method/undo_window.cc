@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ui/ash/input_method/border_factory.h"
@@ -89,10 +90,10 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
 }
 
 void UndoWindow::OnThemeChanged() {
-  undo_button_->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          kAutocorrectUndoIcon, cros_tokens::kIconColorPrimary, kIconSize));
+  undo_button_->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                              ui::ImageModel::FromVectorIcon(
+                                  ash::kAutocorrectUndoIcon,
+                                  cros_tokens::kIconColorPrimary, kIconSize));
   undo_button_->SetEnabledTextColors(cros_tokens::kTextColorSecondary);
 
   const auto* const color_provider = GetColorProvider();

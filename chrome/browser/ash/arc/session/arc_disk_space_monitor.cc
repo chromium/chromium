@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -170,7 +170,7 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
       /*optional_fields=*/message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](std::optional<int> button_index) {})),
-      kNotificationStorageFullIcon,
+      ash::kNotificationStorageFullIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   Profile* profile = arc::ArcSessionManager::Get()->profile();

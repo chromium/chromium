@@ -536,13 +536,14 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
         views::Builder<views::BoxLayoutView>()
             .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
             .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
-            .AddChild(views::Builder<views::ImageView>()
-                          .SetID(mahi_constants::ViewId::kDragHandleIcon)
-                          .SetImage(ui::ImageModel::FromVectorIcon(
-                              kDragHandleIcon, cros_tokens::kCrosSysSecondary,
-                              kDragHandleIconSize))
-                          .SetBorder(
-                              views::CreateEmptyBorder(kDragHandleIconPadding)))
+            .AddChild(
+                views::Builder<views::ImageView>()
+                    .SetID(mahi_constants::ViewId::kDragHandleIcon)
+                    .SetImage(ui::ImageModel::FromVectorIcon(
+                        ash::kDragHandleIcon, cros_tokens::kCrosSysSecondary,
+                        kDragHandleIconSize))
+                    .SetBorder(
+                        views::CreateEmptyBorder(kDragHandleIconPadding)))
             .Build());
   }
 
