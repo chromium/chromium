@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/multistep_filter/core/annotation_index:test_support",
+    "//components/multistep_filter/core/annotation_index:unit_tests",
     "//components/multistep_filter/core/data_models:unit_tests",
     "//components/multistep_filter/core/extraction",
     "//components/multistep_filter/core/extraction:unit_tests",

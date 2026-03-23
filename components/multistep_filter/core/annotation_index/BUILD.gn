@@ -1,9 +1,13 @@
 static_library("annotation_index") {
-  public = [ "annotation_index_client.h" ]
+  public = [
+    "annotation_index_client.h",
+    "annotation_index_conversion_util.h",
+  ]
 
   sources = [
     "annotation_index_client_impl.cc",
     "annotation_index_client_impl.h",
+    "annotation_index_conversion_util.cc",
   ]
 
   public_deps = [
@@ -24,5 +28,19 @@ source_set("test_support") {
   public_deps = [
     ":annotation_index",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "annotation_index_conversion_util_unittest.cc" ]
+
+  deps = [
+    ":annotation_index",
+    "//base",
+    "//components/multistep_filter/core/annotation_index/proto",
+    "//components/multistep_filter/core/data_models",
+    "//testing/gtest",
+    "//url",
   ]
 }
