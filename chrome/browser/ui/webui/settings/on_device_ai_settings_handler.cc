@@ -7,6 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/prefs/pref_service.h"
@@ -37,6 +40,10 @@ void OnDeviceAiSettingsHandler::RegisterMessages() {
       base::BindRepeating(
           &OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openOnDeviceAiFeedbackDialog",
+      base::BindRepeating(&OnDeviceAiSettingsHandler::HandleOpenFeedbackDialog,
+                          base::Unretained(this)));
 }
 
 void OnDeviceAiSettingsHandler::OnJavascriptAllowed() {
@@ -85,6 +92,18 @@ void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
   bool enabled = args[0].GetBool();
   g_browser_process->local_state()->SetBoolean(kOnDeviceAiUserSettingsEnabled,
                                                enabled);
+}
+
+void OnDeviceAiSettingsHandler::HandleOpenFeedbackDialog(
+    const base::ListValue& args) {
+  CHECK_EQ(0U, args.size());
+
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  DCHECK(browser);
+  std::string unused;
+  chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceOnDeviceAI, unused,
+                           unused, "on_device_ai", unused);
 }
 
 void OnDeviceAiSettingsHandler::SendOnDeviceAiEnabledChange() {

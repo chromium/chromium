@@ -3904,6 +3904,7 @@ Called by update_net_error_codes.py.-->
   <int value="46" label="DEPRECATED: Tracking Protections"/>
   <int value="47" label="Split View"/>
   <int value="48" label="Vertical Tabs"/>
+  <int value="49" label="On-Device AI"/>
 </enum>
 
 <!--LINT.ThenChange(//chrome/browser/feedback/public/feedback_source.h:FeedbackSource) -->

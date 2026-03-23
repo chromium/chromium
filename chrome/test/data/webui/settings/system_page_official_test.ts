@@ -19,7 +19,11 @@ class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
   };
 
   constructor() {
-    super(['getOnDeviceAiEnabled', 'setOnDeviceAiEnabled']);
+    super([
+      'getOnDeviceAiEnabled',
+      'setOnDeviceAiEnabled',
+      'openFeedbackDialog',
+    ]);
   }
 
   getOnDeviceAiEnabled() {
@@ -33,6 +37,10 @@ class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
 
   setOnDeviceAiEnabled(enabled: boolean) {
     this.methodCalled('setOnDeviceAiEnabled', enabled);
+  }
+
+  openFeedbackDialog() {
+    this.methodCalled('openFeedbackDialog');
   }
 }
 
@@ -119,6 +127,27 @@ suite('settings system page official', function() {
         toggle.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertTrue(!!policyIndicator);
     assertTrue(isVisible(policyIndicator));
+  });
+
+  test('onDeviceAi send feedback', async function() {
+    loadTimeData.overrideValues({
+      showOnDeviceAiSettings: true,
+    });
+    createPage();
+    await flushTasks();
+
+    const toggle = queryOnDeviceAiToggle();
+    assertTrue(!!toggle);
+
+    const section = toggle.closest('settings-section');
+    assertTrue(!!section);
+
+    const feedbackButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#feedback');
+    assertTrue(!!feedbackButton);
+
+    feedbackButton.click();
+    await testBrowserProxy.whenCalled('openFeedbackDialog');
   });
 
   test('hide onDeviceAi toggle by default', function() {

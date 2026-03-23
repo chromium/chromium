@@ -39,6 +39,10 @@ class OnDeviceAiSettingsHandler : public SettingsPageUIHandler {
   // testing.
   void HandleSetOnDeviceAiEnabled(const base::ListValue& args);
 
+  // Handles the "openOnDeviceAiFeedbackDialog" message from the UI. Protected
+  // for testing.
+  void HandleOpenFeedbackDialog(const base::ListValue& args);
+
  private:
   // Returns the current state of the on-device AI setting.
   base::DictValue GetOnDeviceAiState();
