@@ -25,11 +25,14 @@ export class PageContextManager {
   }
 
   updateCurrentPageContext(url: string, title: string, content: string) {
+    console.info(
+        'PageContextManager: Update', url, title, content.substring(0, 200));
     this.context = {url, title, content};
     this.isStale = false;
   }
 
   invalidatePageContext() {
+    console.info('PageContextManager: Invalidate');
     this.isStale = true;
   }
 }

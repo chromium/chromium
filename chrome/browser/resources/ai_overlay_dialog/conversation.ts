@@ -88,6 +88,11 @@ export class Conversation implements ApiSessionDelegate {
   }
 
   bindMojoHandlers(router: PageCallbackRouter) {
+    // TODO(bokan): Unlike the bindings in C++, it seems the listeners aren't
+    // fired for messages sent before they were registered. We'll need to notify
+    // the host that we've finished binding and need to receive a new page
+    // context.
+    console.info('Conversation: Bind Mojo');
     router.invalidatePageContext.addListener(
         () => this.pageContextManager.invalidatePageContext());
     router.updateCurrentPageContext.addListener(

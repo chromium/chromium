@@ -4,6 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
+const kLogWebSocketMessages = false;
 
 /**
  * API session WebSocket protocol types.
@@ -89,7 +90,7 @@ export class ApiSession {
         const response = await fetch('api_config.json');
         this.config_ = await response.json();
       } catch (e) {
-        console.error('Failed to load api_config.json', e);
+        console.error('ApiSession failed to load api_config.json', e);
         this.stop();
         return;
       }
@@ -111,7 +112,7 @@ export class ApiSession {
           const text = await event.data.text();
           jsonPayload = JSON.parse(text);
         } catch (e) {
-          console.error('Failed message decode: ', e);
+          console.error('WebSocket Failed message decode: ', e);
           return;
         }
       } else if (typeof event.data === 'string') {
@@ -119,6 +120,17 @@ export class ApiSession {
       }
 
       if (jsonPayload) {
+        // Seeing all messages in the socket can be useful but is very verbose
+        // so it's behind a bool to avoid flooding the console during normal
+        // usage.
+        if (kLogWebSocketMessages) {
+          console.info(JSON.stringify(jsonPayload, (key, value) => {
+            // Don't print the audio data so that the output is more easily
+            // readable.
+            return key === 'data' ? '<data>' : value;
+          }, 2));
+        }
+
         this.handleMessage(jsonPayload);
       }
     };
@@ -130,14 +142,14 @@ export class ApiSession {
     };
 
     this.ws.onerror = (error) => {
-      console.error('API WebSocket error:', error);
+      console.error('WebSocket Error:', error);
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
   }
 
   stop() {
-    console.info('stop()');
+    console.info('ApiSession: stop');
     this.ws?.close();
     this.ws = null;
   }
