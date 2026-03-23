@@ -41,12 +41,18 @@ bool ExitedCleanly(int exit_status) {
 #define MAYBE_CrashInErrorCallback DISABLED_CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly DISABLED_ShouldExitCleanly
 #define MAYBE_TaskTraceCallback DISABLED_TaskTraceCallback
-#define MAYBE_ShouldAbort DISABLED_ShouldAbort
 #else
 #define MAYBE_ErrorCallback ErrorCallback
 #define MAYBE_CrashInErrorCallback CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly ShouldExitCleanly
 #define MAYBE_TaskTraceCallback TaskTraceCallback
+#endif
+
+// TODO(crbug.com/447520906): Fix the test on Mac-ASan and merge this back with
+// the Fuchsia issue above.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldAbort DISABLED_ShouldAbort
+#else
 #define MAYBE_ShouldAbort ShouldAbort
 #endif
 
