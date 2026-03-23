@@ -373,6 +373,14 @@ config("asan_flags") {
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
 
+    # `!is_lsan` is required to avoid tests' timeouts caused by leak
+    # detection. Since `sanitize-recover=address` changes leak detection
+    # behavior, browser_tests with asan&lsan will report lots of memory leaks
+    # when using `-fsanitize-recover=address`. Symbolizing all the direct
+    # and indirect leaks takes lots of time, and browser_tests will fail.
+    if (is_linux && !is_lsan) {
+      cflags += [ "-fsanitize-recover=address" ]
+    }
     rustflags += [ "-Zsanitizer=address" ]
     if (!is_win && !is_apple && !is_fuchsia) {
       # TODO(crbug.com/1459233, crbug.com/1462248): This causes asan

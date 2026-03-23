@@ -15,6 +15,9 @@
 //   // http://crbug.com/178677
 //   "interceptor_via_lib:libsqlite3.so\n"
 char kASanDefaultSuppressions[] =
+    // RawPtrAsanService requires free() with ignoring alloc-dealloc-mismatch.
+    "alloc_dealloc_mismatch:base::RawPtrAsanService::ReleaseInternal\n"
+
     // End of suppressions.
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
     "";  // Please keep this semicolon.

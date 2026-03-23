@@ -41,9 +41,15 @@ SANITIZER_HOOK_ATTRIBUTE void _sanitizer_options_link_helper() {}
 //   symbolize=1 - enable in-process symbolization.
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
 //     relative to the main executable
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) | BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 const char kAsanDefaultOptions[] =
     "strip_path_prefix=/../../ fast_unwind_on_fatal=1 "
+// `halt_on_error` depends on `-fsanitize-recover=address`, but
+// currently `-fsanitize-recover=address` doesn't work with is_lsan=true.
+// Because it will make lsan behavior to report tons of memory leaks.
+#if !defined(LEAK_SANITIZER)
+    "halt_on_error=0 "
+#endif  // !defined(LEAK_SANITIZER)
     "detect_stack_use_after_return=1 symbolize=1 detect_leaks=0 "
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer";

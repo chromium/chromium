@@ -8,6 +8,9 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+#if defined(LEAK_SANITIZER)
+#include <sanitizer/lsan_interface.h>
+#endif
 
 #include "partition_alloc/partition_alloc.h"
 
@@ -35,12 +38,25 @@ struct RawPtrAsanAllocator {
   value_type* allocate(std::size_t count) {
     PA_CHECK(count <=
              std::numeric_limits<std::size_t>::max() / sizeof(value_type));
-    return static_cast<value_type*>(
-        GetRawPtrAsanInternalAllocator().Alloc<alloc_flags>(
-            count * sizeof(value_type)));
+    size_t size = count * sizeof(value_type);
+    void* allocated_ptr =
+        GetRawPtrAsanInternalAllocator().Alloc<alloc_flags>(size);
+#if defined(LEAK_SANITIZER)
+    // Register the allocated memory as a root region. Since root regions are
+    // not considered as reachable, we have to register the regions which
+    // point to quarantined allocations and early allocations.
+    // So lsan_do_check_leak() will not detect quarantined allocations and
+    // early allocations as direct leaks.
+    __lsan_register_root_region(allocated_ptr, size);
+#endif  // defined(LEAK_SANITIZER)
+    return static_cast<value_type*>(allocated_ptr);
   }
 
   void deallocate(value_type* p, [[maybe_unused]] std::size_t n) {
+#if defined(LEAK_SANITIZER)
+    size_t size = n * sizeof(value_type);
+    __lsan_unregister_root_region(p, size);
+#endif  // defined(LEAK_SANITIZER)
     GetRawPtrAsanInternalAllocator().Free<free_flags>(p);
   }
 };

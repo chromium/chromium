@@ -1116,6 +1116,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // current platform. Note that CastOS is not protected by BackupRefPtr
   // a the moment, so they are excluded.
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+  base::RawPtrAsanService::GetInstance().Configure(
+      ShouldEnableFeatureOnProcess(
+          base::features::kBackupRefPtrEnabledProcessesParam.Get(),
+          process_type),
+      {.enable_data_race_check = RawPtrAsanServiceOptions::kDisabled,
+       .enable_free_after_quarantined_check =
+           RawPtrAsanServiceOptions::kDisabled});
+#else
   if (ShouldEnableFeatureOnProcess(
           base::features::kBackupRefPtrEnabledProcessesParam.Get(),
           process_type)) {
@@ -1131,6 +1140,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                                EnableExtractionCheck(false),
                                                EnableInstantiationCheck(false));
   }
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
