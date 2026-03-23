@@ -903,7 +903,8 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     buffers.push_back(
         {encoded_data->id(),
          {encoded_data->type(), encoded_data->size(),
-          data.data() + decrypt_config->subsamples()[0].clear_bytes}});
+          UNSAFE_TODO(data.data() +
+                      decrypt_config->subsamples()[0].clear_bytes)}});
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,

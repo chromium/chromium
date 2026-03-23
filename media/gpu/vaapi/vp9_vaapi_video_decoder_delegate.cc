@@ -227,8 +227,9 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     // it directly here.
     constexpr uint32_t dp_iv_offset = sizeof(uint32_t);
     amd_decrypt_params = decrypt_config->key_id();
-    memcpy(&amd_decrypt_params[dp_iv_offset], decrypt_config->iv().data(),
-           DecryptConfig::kDecryptionKeySize);
+    UNSAFE_TODO(memcpy(&amd_decrypt_params[dp_iv_offset],
+                       decrypt_config->iv().data(),
+                       DecryptConfig::kDecryptionKeySize));
     buffers.push_back({protected_params_->id(),
                        {protected_params_->type(), protected_params_->size(),
                         amd_decrypt_params.data()}});
@@ -249,13 +250,14 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     protected_vp9_data =
         std::make_unique<uint8_t[]>(protected_data_size.ValueOrDie());
     // Copy the UCH.
-    memcpy(protected_vp9_data.get(), frame_hdr->data.data(),
-           frame_hdr->uncompressed_header_size);
+    UNSAFE_TODO(memcpy(protected_vp9_data.get(), frame_hdr->data.data(),
+                       frame_hdr->uncompressed_header_size));
     // Copy the transcrypted data.
-    memcpy(protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
-           frame_hdr->data.data() + decrypt_config->subsamples()[0].clear_bytes,
-           base::strict_cast<size_t>(
-               decrypt_config->subsamples()[0].cypher_bytes));
+    UNSAFE_TODO(memcpy(
+        protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
+        frame_hdr->data.data() + decrypt_config->subsamples()[0].clear_bytes,
+        base::strict_cast<size_t>(
+            decrypt_config->subsamples()[0].cypher_bytes)));
     buffers.push_back({encoded_data->id(),
                        {encoded_data->type(), encoded_data->size(),
                         protected_vp9_data.get()}});

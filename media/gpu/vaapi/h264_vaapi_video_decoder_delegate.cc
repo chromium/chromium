@@ -133,7 +133,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   VAPictureParameterBufferH264 pic_param;
   UNSAFE_TODO(memset(&pic_param, 0, sizeof(pic_param)));
 #if BUILDFLAG(IS_CHROMEOS)
-  memset(&crypto_params_, 0, sizeof(crypto_params_));
+  UNSAFE_TODO(memset(&crypto_params_, 0, sizeof(crypto_params_)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   full_sample_ = false;
 
@@ -262,7 +262,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     }
     const AMD_SLICE_PARAMS* amd_slice_params =
         reinterpret_cast<const AMD_SLICE_PARAMS*>(
-            data.back().data() + subsamples.back().clear_bytes);
+            UNSAFE_TODO(data.back().data() + subsamples.back().clear_bytes));
     // Fill in the AMD specific params.
     slice_header_out->bottom_field_flag =
         amd_slice_params->va_param.bottom_field_flag;
@@ -271,8 +271,8 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     slice_header_out->num_ref_idx_l1_active_minus1 =
         amd_slice_params->va_param.num_ref_idx_l1_active_minus1;
     // Copy the common parameters that we will fill in below.
-    memcpy(slice_param_buf.get(), &amd_slice_params->cenc_param,
-           sizeof(VACencSliceParameterBufferH264));
+    UNSAFE_TODO(memcpy(slice_param_buf.get(), &amd_slice_params->cenc_param,
+                       sizeof(VACencSliceParameterBufferH264)));
   } else {
     // For Intel, this is done by sending in the encryption parameters and the
     // encrypted slice header. Then the vaEndPicture call is blocking while it
@@ -425,18 +425,20 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     DVLOG(1) << "Invalid number of dec_ref_pics: " << num_dec_ref_pics;
     return DecodeStatus::kFail;
   }
-  for (size_t i = 0; i < num_dec_ref_pics; ++i) {
-    slice_header_out->ref_pic_marking[i].memory_mgmnt_control_operation =
-        slice_param_buf->memory_management_control_operation[i];
-    slice_header_out->ref_pic_marking[i].difference_of_pic_nums_minus1 =
-        slice_param_buf->difference_of_pic_nums_minus1[i];
-    slice_header_out->ref_pic_marking[i].long_term_pic_num =
-        slice_param_buf->long_term_pic_num[i];
-    slice_header_out->ref_pic_marking[i].long_term_frame_idx =
-        slice_param_buf->long_term_frame_idx[i];
-    slice_header_out->ref_pic_marking[i].max_long_term_frame_idx_plus1 =
-        slice_param_buf->max_long_term_frame_idx_plus1[i];
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < num_dec_ref_pics; ++i) {
+      slice_header_out->ref_pic_marking[i].memory_mgmnt_control_operation =
+          slice_param_buf->memory_management_control_operation[i];
+      slice_header_out->ref_pic_marking[i].difference_of_pic_nums_minus1 =
+          slice_param_buf->difference_of_pic_nums_minus1[i];
+      slice_header_out->ref_pic_marking[i].long_term_pic_num =
+          slice_param_buf->long_term_pic_num[i];
+      slice_header_out->ref_pic_marking[i].long_term_frame_idx =
+          slice_param_buf->long_term_frame_idx[i];
+      slice_header_out->ref_pic_marking[i].max_long_term_frame_idx_plus1 =
+          slice_param_buf->max_long_term_frame_idx_plus1[i];
+    }
+  });
   slice_header_out->full_sample_encryption = true;
   return DecodeStatus::kOk;
 #else  // BUILDFLAG(IS_CHROMEOS)

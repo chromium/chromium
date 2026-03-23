@@ -2314,8 +2314,9 @@ bool VaapiWrapper::CreateProtectedSession(
       return false;
     }
     hw_identifier_out->resize(hw_update_buf_out->output.data_size);
-    memcpy(hw_identifier_out->data(), hw_update_buf_out->output.data,
-           hw_update_buf_out->output.data_size);
+    UNSAFE_TODO(memcpy(hw_identifier_out->data(),
+                       hw_update_buf_out->output.data,
+                       hw_update_buf_out->output.data_size));
 
     // If the decoding context is created, attach the protected session.
     // Otherwise this is done in CreateContext when the decoding context is

@@ -357,55 +357,58 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  uint8_t* frame_content = output_memory + output_offset;
-  const size_t max_frame_size = output_size - output_offset;
-  if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
-                                            va_surface_id_, frame_content,
-                                            max_frame_size, &encoded_size)) {
-    VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
-    notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-    return;
-  }
-  CHECK_LE(encoded_size, max_frame_size);
-
-  if (exif_buffer_size > 0) {
-    // Check the output header is 2+2+14 bytes APP0 as expected.
-    constexpr uint8_t kJpegSoiAndApp0Header[] = {
-        0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
-    };
-    if (encoded_size < std::size(kJpegSoiAndApp0Header)) {
-      VLOGF(1) << "Unexpected JPEG data size received from encoder";
+  UNSAFE_TODO({
+    uint8_t* frame_content = output_memory + output_offset;
+    const size_t max_frame_size = output_size - output_offset;
+    if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
+                                              va_surface_id_, frame_content,
+                                              max_frame_size, &encoded_size)) {
+      VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
-    for (size_t i = 0; i < std::size(kJpegSoiAndApp0Header); ++i) {
-      if (frame_content[i] != kJpegSoiAndApp0Header[i]) {
-        VLOGF(1) << "Unexpected JPEG header received from encoder";
+    CHECK_LE(encoded_size, max_frame_size);
+
+    if (exif_buffer_size > 0) {
+      // Check the output header is 2+2+14 bytes APP0 as expected.
+      constexpr uint8_t kJpegSoiAndApp0Header[] = {
+          0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
+      };
+      if (encoded_size < std::size(kJpegSoiAndApp0Header)) {
+        VLOGF(1) << "Unexpected JPEG data size received from encoder";
         notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
         return;
       }
+      for (size_t i = 0; i < std::size(kJpegSoiAndApp0Header); ++i) {
+        if (frame_content[i] != kJpegSoiAndApp0Header[i]) {
+          VLOGF(1) << "Unexpected JPEG header received from encoder";
+          notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+          return;
+        }
+      }
+      // Copy the EXIF data into preserved space.
+      const uint8_t jpeg_soi_and_app1_header[] = {
+          0xFF,
+          JPEG_SOI,
+          0xFF,
+          JPEG_APP1,
+          static_cast<uint8_t>((exif_buffer_size + 2) / 256),
+          static_cast<uint8_t>((exif_buffer_size + 2) % 256),
+      };
+      CHECK_GE(output_size, std::size(jpeg_soi_and_app1_header));
+      if (exif_buffer_size >
+          output_size - std::size(jpeg_soi_and_app1_header)) {
+        VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
+        notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+        return;
+      }
+      memcpy(output_memory, jpeg_soi_and_app1_header,
+             std::size(jpeg_soi_and_app1_header));
+      memcpy(output_memory + std::size(jpeg_soi_and_app1_header), exif_buffer,
+             exif_buffer_size);
+      encoded_size += output_offset;
     }
-    // Copy the EXIF data into preserved space.
-    const uint8_t jpeg_soi_and_app1_header[] = {
-        0xFF,
-        JPEG_SOI,
-        0xFF,
-        JPEG_APP1,
-        static_cast<uint8_t>((exif_buffer_size + 2) / 256),
-        static_cast<uint8_t>((exif_buffer_size + 2) % 256),
-    };
-    CHECK_GE(output_size, std::size(jpeg_soi_and_app1_header));
-    if (exif_buffer_size > output_size - std::size(jpeg_soi_and_app1_header)) {
-      VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
-      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-      return;
-    }
-    memcpy(output_memory, jpeg_soi_and_app1_header,
-           std::size(jpeg_soi_and_app1_header));
-    memcpy(output_memory + std::size(jpeg_soi_and_app1_header), exif_buffer,
-           exif_buffer_size);
-    encoded_size += output_offset;
-  }
+  });
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
 }
@@ -499,8 +502,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   }
 
   // Copy the real exif buffer into preserved space.
-  memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
-         exif_buffer, exif_buffer_size);
+  UNSAFE_TODO(
+      memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
+             exif_buffer, exif_buffer_size));
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
 }
