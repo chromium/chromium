@@ -8,9 +8,11 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -398,6 +400,12 @@ void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
 
 void TabContentManager::RemoveTabThumbnail(JNIEnv* env, int32_t tab_id) {
   NativeRemoveTabThumbnail(tab_id);
+}
+
+void TabContentManager::RemoveAllTabThumbnailsExceptForIds(
+    JNIEnv* env,
+    std::vector<int> tab_ids) {
+  thumbnail_cache_.RemoveAllTabThumbnailsExceptForIds(tab_ids);
 }
 
 void TabContentManager::WaitForJpegTabThumbnail(

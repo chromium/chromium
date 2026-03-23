@@ -206,6 +206,18 @@ public class TabContentManager {
         }
     }
 
+    /**
+     * Removes all tab thumbnails except for the ones with the given IDs.
+     *
+     * @param tabIds The IDs of the tabs whose thumbnails should not be removed.
+     */
+    public void removeAllTabThumbnailsExceptForIds(int[] tabIds) {
+        if (mNativeTabContentManager != 0) {
+            TabContentManagerJni.get()
+                    .removeAllTabThumbnailsExceptForIds(mNativeTabContentManager, tabIds);
+        }
+    }
+
     @CalledByNative
     private @Nullable Tab getTabById(int tabId) {
         if (mTabFinder == null) return null;
@@ -714,6 +726,11 @@ public class TabContentManager {
                 .isTabCaptureInFlightForTesting(mNativeTabContentManager, tabId);
     }
 
+    /** Returns whether the tab content manager is destroyed. */
+    public boolean isDestroyed() {
+        return mNativeTabContentManager == 0;
+    }
+
     @CalledByNative
     protected void notifyListenersOfThumbnailChange(int tabId) {
         for (ThumbnailChangeListener listener : mListeners) {
@@ -754,6 +771,9 @@ public class TabContentManager {
         void updateVisibleIds(long nativeTabContentManager, int[] priority, int primaryTabId);
 
         void removeTabThumbnail(long nativeTabContentManager, int tabId);
+
+        void removeAllTabThumbnailsExceptForIds(
+                long nativeTabContentManager, @JniType("std::vector<int>") int[] tabIds);
 
         void waitForJpegTabThumbnail(
                 long nativeTabContentManager, int tabId, Callback<Boolean> callback);

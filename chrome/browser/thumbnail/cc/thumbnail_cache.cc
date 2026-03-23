@@ -163,6 +163,12 @@ void ThumbnailCache::Remove(TabId tab_id) {
   RemoveFromReadQueue(tab_id);
 }
 
+void ThumbnailCache::RemoveAllTabThumbnailsExceptForIds(
+    std::vector<int> tab_ids) {
+  jpeg_helper_.DeleteAllExceptForIds(tab_ids);
+  etc1_helper_.DeleteAllExceptForIds(tab_ids);
+}
+
 Thumbnail* ThumbnailCache::Get(TabId tab_id, bool force_disk_read) {
   Thumbnail* thumbnail = cache_.Get(tab_id);
   if (thumbnail) {

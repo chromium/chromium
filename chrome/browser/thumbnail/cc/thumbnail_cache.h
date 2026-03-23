@@ -71,6 +71,7 @@ class ThumbnailCache : ThumbnailDelegate {
            const SkBitmap& bitmap,
            float thumbnail_scale);
   void Remove(TabId tab_id);
+  void RemoveAllTabThumbnailsExceptForIds(std::vector<int> tab_ids);
   Thumbnail* Get(TabId tab_id, bool force_disk_read);
 
   void InvalidateThumbnailIfChanged(TabId tab_id, const GURL& url);

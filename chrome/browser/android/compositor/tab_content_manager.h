@@ -87,6 +87,8 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                         int32_t primary_tab_id);
   void NativeRemoveTabThumbnail(int tab_id);
   void RemoveTabThumbnail(JNIEnv* env, int32_t tab_id);
+  void RemoveAllTabThumbnailsExceptForIds(JNIEnv* env,
+                                          std::vector<int32_t> tab_ids);
   void OnUIResourcesWereEvicted();
   void WaitForJpegTabThumbnail(
       JNIEnv* env,
