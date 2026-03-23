@@ -7485,6 +7485,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "optimize-web-request-proxy",
+    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "organic-repeatable-queries",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 150

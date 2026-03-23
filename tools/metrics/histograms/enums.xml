@@ -11257,6 +11257,7 @@ from previous Chrome versions.
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-939519091" label="TabStateFlatBuffer:disabled"/>
+  <int value="-939149005" label="OptimizeWebRequestProxy:enabled"/>
   <int value="-938463322" label="DrawChromePagesEdgeToEdge:enabled"/>
   <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
@@ -18205,6 +18206,7 @@ from previous Chrome versions.
   <int value="1409625676" label="CpaSpecUpdate:disabled"/>
   <int value="1409653883"
       label="GetUserMediaDeferredDeviceSettingsSelection:disabled"/>
+  <int value="1410376867" label="OptimizeWebRequestProxy:disabled"/>
   <int value="1410697724" label="mediadrm-enable-non-compositing"/>
   <int value="1410846840"
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>

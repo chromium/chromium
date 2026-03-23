@@ -1917,6 +1917,12 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
     "When enabled, Chrome will attempt to connect to the system tracing "
     "service";
 
+inline constexpr char kOptimizeWebRequestProxyName[] =
+    "Optimize WebRequest proxying";
+inline constexpr char kOptimizeWebRequestProxyDescription[] =
+    "Enables optimization for WebRequest proxying by skipping "
+    "unnecessary proxy evaluations when possible.";
+
 inline constexpr char kWebRequestSecurityInfoName[] =
     "Enable SecurityInfo in WebRequest API";
 inline constexpr char kWebRequestSecurityInfoDescription[] =
