@@ -20,7 +20,6 @@ static_library("test_support") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",

@@ -48,7 +48,6 @@ static_library("desks") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/web_applications",
     "//chrome/common",
-    "//chromeos/crosapi/mojom",
     "//components/app_constants",
     "//components/app_restore",
     "//components/desks_storage",

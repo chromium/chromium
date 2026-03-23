@@ -22,7 +22,6 @@ source_set("utils") {
   deps = [
     "//base",
     "//chromeos/ash/components/editor_menu/public/cpp",
-    "//chromeos/crosapi/mojom",
     "//ui/aura",
     "//ui/display",
     "//ui/events",
@@ -58,7 +57,6 @@ source_set("editor_menu") {
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//ui/gfx",
     "//ui/views",
