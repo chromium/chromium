@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/features.h"
@@ -24,8 +25,11 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
@@ -891,6 +895,12 @@ bool ViewTransitionStyleTracker::HasContainmentBoundary(
   if (!node) {
     return false;
   }
+  // The search for "view-transition-scope: all" is done using flat-tree
+  // traversal rather than layout objects as the containment boundary could
+  // be on an element without a layout object (e.g. "display: contents").
+  // There are several discrepancies between the element hierarchy and
+  // layout hierarchy that need to be taken into account to ensure that we
+  // properly scan the correct range.
   Node* root_node = root_object.GetNode();
   while (node != root_node) {
     if (Element* element = DynamicTo<Element>(node)) {
@@ -899,8 +909,55 @@ bool ViewTransitionStyleTracker::HasContainmentBoundary(
               EViewTransitionScope::kAll) {
         return true;
       }
+
+      // No need to search inside the VT-pseudo tree. The ultimate
+      // originating element is already marked as a containment boundary while
+      // the view-transition is active.
+      if (IsTransitionPseudoElement(element->GetPseudoId())) {
+        return true;
+      }
+
+      // See LayoutTreeBuilderTraversal::ParentLayoutObject
+      if (element->IsScrollMarkerPseudoElement()) {
+        node = static_cast<ScrollMarkerPseudoElement*>(element)
+                   ->ScrollMarkerGroup();
+        continue;
+      }
+
+      // ::first-letter's originating element can be outside of a nested div.
+      // In the following example:
+      // <div id="a">
+      //   <div id="b">A</div>
+      // <div>
+      // #a::first-letter is associated with a LayoutText object inside #b.
+      // If #a::first-letter and #b both have paint layers, the pseudo's
+      // paint layer will be a descendant of #b, but the traversal
+      // through the pseudo's ancestors will bypass #b.
+      // Though we could drill down to the text node for the first letter and
+      // resume the search from there, we can abort since a text node cannot
+      // contain a VT participant.
+      if (element->GetPseudoId() == PseudoId::kPseudoIdFirstLetter) {
+        // TODO(crbug.com/434891109): Currently, inline elements are not
+        // supported. Should this change, we'll need to change this return to
+        // traverse from the associated layout text box.
+        return true;
+      }
     }
     node = FlatTreeTraversal::Parent(*node);
+    // Sanity check in case we have missed anything.
+    if (!node) {
+      StringBuilder sb;
+      sb.Append(child_object.GetNode()->nodeName());
+      sb.Append(" / ");
+      sb.Append(!!root_node ? root_node->nodeName() : "<null>");
+      String message = sb.ReleaseString();
+      DCHECK(false) << "Failed traversal: " << message;
+      auto* key = base::debug::AllocateCrashKeyString(
+          "Bug493082131-view-transition", base::debug::CrashKeySize::Size1024);
+      base::debug::SetCrashKeyString(key, message.Ascii().c_str());
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
   }
   return false;
 }
