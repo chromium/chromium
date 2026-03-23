@@ -877,6 +877,7 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
   completion_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(src_access));
   resource()->EndAccess(std::move(dst_access));
+  is_cleared_ = true;
   return true;
 }
 
