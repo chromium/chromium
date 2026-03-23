@@ -1210,6 +1210,9 @@ void TabStrip::SetTabStripObserver(TabStripObserver* observer) {
 }
 
 bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
+  if (!tab_container_) {
+    return true;
+  }
   // `rect` is in the window caption if it doesn't hit any content area.
   return !tab_container_->IsRectInContentArea(rect);
 }
