@@ -87,6 +87,7 @@ source_set("browser_tests") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading:test_support",
+    "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",

@@ -503,6 +503,7 @@ if (!is_android) {
       "//chrome/browser/indigo",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/preloading/bookmarkbar_preload",
+      "//chrome/browser/preloading/new_tab_page_preload",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search",

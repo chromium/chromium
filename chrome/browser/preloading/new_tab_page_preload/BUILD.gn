@@ -2,12 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("new_tab_page_preload") {
+  sources = [
+    "new_tab_page_preload_pipeline.h",
+    "new_tab_page_preload_pipeline_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "new_tab_page_preload_pipeline.cc",
+    "new_tab_page_preload_pipeline_manager.cc",
+  ]
+
+  deps = [
+    ":new_tab_page_preload",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading/prerender",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/page_load_metrics/browser",
+    "//components/search_engines",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [ "new_tab_page_preload_unittest.cc" ]
 
   deps = [
+    ":new_tab_page_preload",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prerender",
     "//chrome/test:test_support",

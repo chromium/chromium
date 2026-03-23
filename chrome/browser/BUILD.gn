@@ -876,10 +876,6 @@ static_library("browser") {
     "policy/value_provider/value_provider_util.h",
     "policy/webusb_allow_devices_for_urls_policy_handler.cc",
     "policy/webusb_allow_devices_for_urls_policy_handler.h",
-    "preloading/new_tab_page_preload/new_tab_page_preload_pipeline.cc",
-    "preloading/new_tab_page_preload/new_tab_page_preload_pipeline.h",
-    "preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.cc",
-    "preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h",
     "preloading/prefetch/chrome_prefetch_manager.cc",
     "preloading/prefetch/chrome_prefetch_manager.h",
     "preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.cc",
@@ -1319,6 +1315,7 @@ static_library("browser") {
     # - c/b/browser_features.h
     "//chrome/browser/predictors:impl",
     "//chrome/browser/preloading/bookmarkbar_preload:impl",
+    "//chrome/browser/preloading/new_tab_page_preload:impl",
     "//chrome/browser/preloading/prerender:impl",
 
     # TODO(crbug.com/487357837): Remove this circular dependency when the
@@ -1656,6 +1653,8 @@ static_library("browser") {
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading/bookmarkbar_preload",
     "//chrome/browser/preloading/bookmarkbar_preload:impl",
+    "//chrome/browser/preloading/new_tab_page_preload",
+    "//chrome/browser/preloading/new_tab_page_preload:impl",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
