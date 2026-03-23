@@ -115,6 +115,7 @@ import java.io.IOException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 public class IdentityDiscControllerTest {
 
     private final FreshCtaTransitTestRule mActivityTestRule =

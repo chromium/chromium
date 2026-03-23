@@ -103,6 +103,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -784,12 +785,19 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     public void testRecordHistogramProfileButtonClick_Ntp() {
-        // Identity Disc should be shown on sign-in state.
+        // Identity Disc or Signin Button should be shown on sign-in state.
+        // TODO(crbug.com/475816843): Use only signin_button once migration is complete.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
-        onView(withId(R.id.optional_toolbar_button)).perform(click());
+
+        int profileButtonId =
+                SigninFeatureMap.sSigninLevelUpButton.isEnabled()
+                        ? R.id.signin_button
+                        : R.id.optional_toolbar_button;
+        onView(withId(profileButtonId)).perform(click());
+
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
                         + " is not recorded correctly when click on the profile button.");

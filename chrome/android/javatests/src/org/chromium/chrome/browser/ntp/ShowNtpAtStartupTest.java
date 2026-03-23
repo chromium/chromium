@@ -55,7 +55,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -83,6 +83,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -95,7 +96,7 @@ import java.util.concurrent.TimeoutException;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, DeviceFormFactor.PHONE_OR_TABLET})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
 // TODO(https://crbug.com/454091341): Enable this feature on this test suite.
-@Features.DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE})
+@DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(reason = "This test suite tests startup behaviors.")
 public class ShowNtpAtStartupTest {
@@ -567,6 +568,8 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
+    @DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
     public void testToolbar_defaultBackground() throws IOException {
         mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -585,6 +588,8 @@ public class ShowNtpAtStartupTest {
     @RequiresApi(Build.VERSION_CODES.R)
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
+    @DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
     public void testToolbar_customizedColorBackground() throws IOException {
         assumeTrue(
                 NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(/* isTablet= */ false));

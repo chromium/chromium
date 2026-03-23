@@ -32,7 +32,10 @@ public final class SigninFeatureMap extends FeatureMap {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sSigninLevelUpButton =
             new CachedFlag(
-                    sInstance, SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, /* defaultValue= */ false);
+                    sInstance,
+                    SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSupportForcedSigninPolicy =
             new CachedFlag(
                     sInstance,
