@@ -80,7 +80,7 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(isEligibleToTipsOptIn()));
                 return inputContext;
             default:
-                assert false : "Card type not supported!";
+                // TODO(crbug.com/469425754): Setup list modules should be omitted from ranking
                 return inputContext;
         }
     }
