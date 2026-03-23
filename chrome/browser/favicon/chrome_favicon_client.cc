@@ -20,7 +20,7 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif
 
@@ -42,7 +42,7 @@ ChromeFaviconClient::ChromeFaviconClient(Profile* profile) : profile_(profile) {
 ChromeFaviconClient::~ChromeFaviconClient() = default;
 
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (url.SchemeIs(extensions::kExtensionScheme))
     return true;
 #endif
