@@ -53,6 +53,11 @@
   padding-bottom: 12px;
 }
 
+.aria-hidden-container {
+  /* Ignore container for visual layout. */
+  display: contents;
+}
+
 :host([has-action]) .container {
   height: 38px;
   padding-top: 3px;
