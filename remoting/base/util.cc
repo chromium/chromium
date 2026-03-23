@@ -15,13 +15,6 @@
 
 namespace remoting {
 
-// Do not write LOG messages in this routine since it is called from within
-// our LOG message handler. Bad things will happen.
-std::string GetTimestampString() {
-  return base::UnlocalizedTimeFormatWithPattern(base::Time::NowFromSystemTime(),
-                                                "MMdd/HHmmss:");
-}
-
 int RoundToTwosMultiple(int x) {
   return x & (~1);
 }

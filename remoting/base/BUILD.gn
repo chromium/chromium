@@ -136,8 +136,6 @@ source_set("base") {
     "session_authz_service_client_factory.h",
     "session_options.cc",
     "session_options.h",
-    "socket_reader.cc",
-    "socket_reader.h",
     "source_location.cc",
     "source_location.h",
     "task_util.h",

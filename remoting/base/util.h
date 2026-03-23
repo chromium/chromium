@@ -12,9 +12,6 @@
 
 namespace remoting {
 
-// Return a string that contains the current date formatted as 'MMDD/HHMMSS:'.
-std::string GetTimestampString();
-
 int RoundToTwosMultiple(int x);
 
 // Align the sides of the rectangle to multiples of 2 (expanding outwards).
