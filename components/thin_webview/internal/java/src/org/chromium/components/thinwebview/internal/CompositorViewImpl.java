@@ -32,6 +32,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class CompositorViewImpl implements CompositorView {
     private final Context mContext;
     private final View mView;
+    private final WindowAndroid mWindowAndroid;
     private final ThinWebViewConstraints mViewConstraints;
     private long mNativeCompositorViewImpl;
 
@@ -51,6 +52,7 @@ public class CompositorViewImpl implements CompositorView {
         mNativeCompositorViewImpl =
                 CompositorViewImplJni.get().init(this, windowAndroid, constraints.backgroundColor);
         mView = useSurfaceView() ? createSurfaceView() : createTextureView();
+        mWindowAndroid = windowAndroid;
     }
 
     @Override
@@ -60,6 +62,11 @@ public class CompositorViewImpl implements CompositorView {
 
     @Override
     public void destroy() {
+        RuntimeException windowAndroidDestroy = mWindowAndroid.getDestroyStack();
+        if (windowAndroidDestroy != null) {
+            throw new IllegalStateException(
+                    "WindowAndroid destroyed before CompositorViewImpl", windowAndroidDestroy);
+        }
         if (mNativeCompositorViewImpl != 0) {
             CompositorViewImplJni.get().destroy(mNativeCompositorViewImpl);
             mNativeCompositorViewImpl = 0;

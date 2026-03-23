@@ -121,7 +121,8 @@ public class WindowAndroid
     // Error code returned when an Intent fails to start an Activity.
     public static final int START_INTENT_FAILURE = -1;
 
-    private boolean mIsDestroyed;
+    // Set in `destroy()` call to record the stack the call.
+    private @Nullable RuntimeException mDestroyStack;
 
     // We use a weak reference here to prevent this from leaking in WebView.
     private final ImmutableWeakReference<Context> mContextRef;
@@ -928,14 +929,23 @@ public class WindowAndroid
      * @return Whether this instance is destroyed.
      */
     public boolean isDestroyed() {
-        return mIsDestroyed;
+        return mDestroyStack != null;
+    }
+
+    /**
+     * @return Null if not destroyed, or the exception containing the stack of the destroy call.
+     */
+    public @Nullable RuntimeException getDestroyStack() {
+        return mDestroyStack;
     }
 
     @CalledByNative
     @Override
     public void destroy() {
         LifetimeAssert.destroy(mLifetimeAssert);
-        mIsDestroyed = true;
+        if (mDestroyStack == null) {
+            mDestroyStack = new RuntimeException("WindowAndroid.destroy");
+        }
         mDisplayAndroid.removeObserver(this);
         // Destroys the c++ WindowAndroid object if one has been created.
         if (mNativeWindowAndroid != 0) {
