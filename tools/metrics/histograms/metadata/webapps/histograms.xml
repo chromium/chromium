@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.AddValidatedOriginAssociations"
-    units="AddValidatedOriginAssociations" expires_after="2026-11-12">
+    enum="AddValidatedOriginAssociationsResult" expires_after="2026-11-12">
   <owner>vkrot@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

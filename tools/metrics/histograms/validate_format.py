@@ -158,10 +158,6 @@ def main():
       default=histogram_paths.ALL_XMLS,
       help='An optional list of paths to XML files to validate passed as'
       ' consecutive arguments. Production XML files are validated by default.')
-  parser.add_argument(
-      '--check_no_unused_enums',
-      action='store_true',
-      help='Whether to check that all enums are referenced by any metric.')
   paths_to_check = parser.parse_args().xml_paths
 
   doc = merge_xml.MergeFiles(paths_to_check,
@@ -169,8 +165,7 @@ def main():
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces(paths_to_check)
   errors = errors or _CheckVariantsRegistered(paths_to_check)
-  if parser.parse_args().check_no_unused_enums:
-    errors = errors or _CheckNoUnusedEnums(paths_to_check)
+  errors = errors or _CheckNoUnusedEnums(paths_to_check)
   sys.exit(bool(errors))
 
 

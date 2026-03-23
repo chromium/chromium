@@ -316,10 +316,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="True"/>
 </enum>
 
-<enum name="PersistentAllocatorErrors">
-  <int value="1" label="Allocator memory is corrupt (set only once)"/>
-</enum>
-
 <enum name="PersistentHistogramsInitResult">
   <int value="0" label="Local-Memory Success"/>
   <int value="1" label="Local-Memory Failure"/>
