@@ -154,7 +154,9 @@ class PolicyGenerationTest(unittest.TestCase):
           },
           "supported_on": ["chrome_os:1-", "chrome.*:1-", "android:1-"],
           "id": 10,
-          "uses_machine_and_user_values": True,
+          "features": {
+              "uses_machine_and_user_values": True,
+          },
           "tags": [],
           "caption": "ExampleConflictingPolicy caption",
           "desc": "ExampleConflictingPolicy desc",

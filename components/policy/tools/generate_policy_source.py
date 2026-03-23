@@ -87,8 +87,9 @@ class PolicyDetails:
     features = policy.get('features', {})
     self.can_be_recommended = features.get('can_be_recommended', False)
     self.can_be_mandatory = features.get('can_be_mandatory', True)
-    self.uses_local_state_and_profile_prefs = policy.get(
-        'uses_machine_and_user_values', False)
+    self.uses_local_state_and_profile_prefs = features.get(
+        'uses_machine_and_user_values',
+        features.get('uses_machine_and_user_values', False))
     self.internal_only = features.get('internal_only', False)
     self.metapolicy_type = features.get('metapolicy_type', '')
     self.is_deprecated = policy.get('deprecated', False)
