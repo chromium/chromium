@@ -7,6 +7,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
@@ -88,6 +90,8 @@ class ActorLoginDelegateImpl
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
+  void OnActorTaskStateChanged(actor::ActorTask& task);
+
   // Helper methods for recording metrics.
   void RecordGetCredentialsMetricsAndResetHelper(
       const CredentialsOrError& result);
@@ -122,6 +126,13 @@ class ActorLoginDelegateImpl
   // Scoped to one `AttemptLogin` request.
   // TODO(crbug.com/479505793): Implement the click without heuristics.
   std::unique_ptr<ActorLoginSiwgController> siwg_controller_;
+
+  // Track the currently acting task to know when we can remove the
+  // FederatedEmbedderLoginRequest from the `WebContents`. This is needed to
+  // ensure that the request is removed in cases such as the task being stopped
+  // by user action, which can happen before the login flow completes.
+  actor::TaskId acting_task_id_;
+  base::CallbackListSubscription actor_task_state_subscription_;
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
 

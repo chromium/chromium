@@ -184,6 +184,7 @@ source_set("impl") {
     "//chrome/browser/lookalikes",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/password_manager/actor_login:service_impl",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/safe_browsing",

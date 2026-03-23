@@ -39,6 +39,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "url/origin.h"
 
@@ -215,6 +216,18 @@ void ActorLoginDelegateImpl::AttemptLogin(
   RecordAttemptLoginMetrics(credential);
 
   if (credential.type == CredentialType::kFederated) {
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(GetWebContents().GetBrowserContext());
+    CHECK(actor_service);
+    actor_task_state_subscription_ = actor_service->AddTaskStateChangedCallback(
+        base::BindRepeating(&ActorLoginDelegateImpl::OnActorTaskStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+    const actor::ActorTask* acting_task =
+        actor_service->GetActingActorTaskForWebContents(&GetWebContents());
+    CHECK(acting_task);
+    CHECK(acting_task->IsUnderActorControl());
+    acting_task_id_ = acting_task->id();
+
     siwg_controller_ = std::make_unique<ActorLoginSiwgController>(
         &GetWebContents(),
         base::BindPostTaskToCurrentDefault(
@@ -297,6 +310,18 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   metrics_helper_.reset();
 
   std::move(pending_attempt_login_done_callback_).Run(std::move(result));
+}
+
+void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {
+  if (acting_task_id_ != task.id()) {
+    return;
+  }
+
+  if (!task.IsUnderActorControl()) {
+    acting_task_id_ = actor::TaskId();
+    content::webid::FederatedEmbedderLoginRequest::Remove(web_contents());
+    actor_task_state_subscription_ = {};
+  }
 }
 
 void ActorLoginDelegateImpl::RecordGetCredentialsMetricsAndResetHelper(

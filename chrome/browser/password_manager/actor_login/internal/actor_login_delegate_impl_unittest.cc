@@ -11,6 +11,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
@@ -704,6 +707,24 @@ TEST_F(ActorLoginDelegateImplTest,
 
   SetUpActorCredentialFillerDeps();
 
+  // Create a task and associate it with the tab. Avoids hitting a CHECK when
+  // invoking GetCredentials
+  actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<actor::ActorKeyedServiceFake>(
+            Profile::FromBrowserContext(context));
+      }));
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile()));
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               base::BindLambdaForTesting(
+                   [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+  loop.Run();
+
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(credential, false, mqls_logger(),
                           base::TimeTicks::Now(), future.GetCallback(),
@@ -828,6 +849,65 @@ TEST_F(ActorLoginDelegateImplTest,
                             mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
+}
+
+TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+
+  SetUpGetCredentialsDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillRepeatedly(Return(base::span(form_managers_)));
+
+  SetUpActorCredentialFillerDeps();
+  actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<actor::ActorKeyedServiceFake>(
+            Profile::FromBrowserContext(context));
+      }));
+
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile()));
+
+  // Create a task and associate it with the tab.
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               base::BindLambdaForTesting(
+                   [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+  loop.Run();
+
+  // Invoke AttemptLogin with a federated credential
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
+  credential.type = CredentialType::kFederated;
+  FederationDetail& federation_detail = credential.federation_detail.emplace();
+  federation_detail.idp_origin =
+      url::Origin::Create(GURL("https://accounts.google.com"));
+  federation_detail.account_id = "12345";
+
+  base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/false,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          attempt_login_future.GetCallback(),
+                          base::NullCallback());
+
+  // Check that a FederatedEmbedderLoginRequest was set.
+  EXPECT_NE(nullptr,
+            content::webid::FederatedEmbedderLoginRequest::Get(test_contents));
+
+  // Stop the task, which should invoke the callback.
+  actor_service->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+  ASSERT_TRUE(attempt_login_future.Wait());
+
+  // Verify that the FederatedEmbedderLoginRequest is no longer set.
+  EXPECT_EQ(nullptr,
+            content::webid::FederatedEmbedderLoginRequest::Get(test_contents));
 }
 
 }  // namespace actor_login

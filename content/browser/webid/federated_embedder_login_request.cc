@@ -63,6 +63,13 @@ void FederatedEmbedderLoginRequest::Unset() {
 }
 
 // static
+void FederatedEmbedderLoginRequest::Remove(WebContents* web_contents) {
+  if (web_contents) {
+    web_contents->RemoveUserData(UserDataKey());
+  }
+}
+
+// static
 FederatedEmbedderLoginRequest* FederatedEmbedderLoginRequest::Get(
     WebContents* web_contents) {
   if (!web_contents) {

@@ -53,6 +53,9 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
   // opener chain if not found in the given WebContents.
   static FederatedEmbedderLoginRequest* Get(WebContents* web_contents);
 
+  // Removes the embedder login request for the given WebContents.
+  static void Remove(WebContents* web_contents);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
