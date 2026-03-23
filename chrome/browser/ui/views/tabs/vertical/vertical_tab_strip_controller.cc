@@ -377,6 +377,10 @@ VerticalTabStripController::GetStateController() {
   return tabs::VerticalTabStripStateController::From(browser_view_->browser());
 }
 
+const tabs::TabInterface* VerticalTabStripController::GetActiveTab() const {
+  return model_->GetActiveTab();
+}
+
 bool VerticalTabStripController::IsContextMenuCommandChecked(
     TabStripModel::ContextMenuCommand command_id) {
   return false;

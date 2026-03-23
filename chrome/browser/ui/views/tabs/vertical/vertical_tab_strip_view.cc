@@ -247,9 +247,11 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
 }
 
 void VerticalTabStripView::AddedToWidget() {
+  views::Widget* const widget = GetWidget();
   paint_as_active_subscription_ =
-      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+      widget->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalTabStripView::UpdateColors, base::Unretained(this)));
+  widget_observation_.Observe(widget);
 }
 
 void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -267,6 +269,15 @@ void VerticalTabStripView::OnMouseExited(const ui::MouseEvent& event) {
       hover_card_controller) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kHover);
+  }
+}
+
+void VerticalTabStripView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                     bool visible) {
+  if (collection_node_ && visible) {
+    // Only scroll-in the active tab for the first window presentation.
+    widget_observation_.Reset();
+    OnActiveTabChanged(collection_node_->GetController()->GetActiveTab());
   }
 }
 

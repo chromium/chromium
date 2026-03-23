@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_observer.h"
 
 class TabCollectionNode;
 class VerticalPinnedTabContainerView;
@@ -25,7 +27,8 @@ class View;
 // regions and associates them to their scroll views. It also is responsible for
 // scrolling to the active tab view when the active tab changes.
 class VerticalTabStripView final : public views::View,
-                                   public views::LayoutDelegate {
+                                   public views::LayoutDelegate,
+                                   public views::WidgetObserver {
   METADATA_HEADER(VerticalTabStripView, views::View)
 
  public:
@@ -56,6 +59,9 @@ class VerticalTabStripView final : public views::View,
   void AddedToWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void OnActiveTabChanged(const tabs::TabInterface* active_tab);
   void RecordMousePressedInTab();
@@ -106,6 +112,9 @@ class VerticalTabStripView final : public views::View,
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_
