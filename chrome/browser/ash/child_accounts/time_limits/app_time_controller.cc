@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -224,7 +224,8 @@ AppTimeController::AppTimeController(
                                                 this,
                                                 profile->GetPrefs())),
       on_policy_updated_callback_(on_policy_updated_callback) {
-  if (base::FeatureList::IsEnabled(features::kUnicornChromeActivityReporting)) {
+  if (base::FeatureList::IsEnabled(
+          ash::features::kUnicornChromeActivityReporting)) {
     web_time_activity_provider_ = std::make_unique<WebTimeActivityProvider>(
         this, app_service_wrapper_.get());
   }

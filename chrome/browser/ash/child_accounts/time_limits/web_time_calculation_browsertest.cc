@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -87,7 +87,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
 void WebTimeCalculationBrowserTest::SetUp() {
   scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {features::kUnicornChromeActivityReporting},
+      /* enabled_features */ {ash::features::kUnicornChromeActivityReporting},
       /* disabled_features */ {});
 
   builder_.SetUp();

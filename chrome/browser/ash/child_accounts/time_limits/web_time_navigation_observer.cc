@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -22,7 +22,7 @@ void WebTimeNavigationObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (!base::FeatureList::IsEnabled(
-          features::kUnicornChromeActivityReporting)) {
+          ash::features::kUnicornChromeActivityReporting)) {
     return;
   }
 
