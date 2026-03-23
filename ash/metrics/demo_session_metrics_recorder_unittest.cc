@@ -72,6 +72,9 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   }
 
   void TearDown() override {
+    histogram_tester_.reset();
+    // mock_timer owned by metrics_recorder_
+    mock_timer_ = nullptr;
     metrics_recorder_.reset();
     AshTestBase::TearDown();
   }
@@ -205,7 +208,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
 
   // Owned by metics_recorder_.
-  raw_ptr<base::MockRepeatingTimer, DanglingUntriaged> mock_timer_ = nullptr;
+  raw_ptr<base::MockRepeatingTimer> mock_timer_ = nullptr;
 };
 
 // Verify samples are correct when one app window is active.
