@@ -31,6 +31,7 @@ blink_core_sources_exported = [
   "web_history_item.cc",
   "web_hit_test_result.cc",
   "web_image.cc",
+  "web_image_replacement.cc",
   "web_image_cache.cc",
   "web_input_element.cc",
   "web_input_method_controller_impl.cc",

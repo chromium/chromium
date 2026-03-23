@@ -42,6 +42,7 @@ class MockIndigoAgent : public chrome::mojom::IndigoAgent {
               (const std::string&,
                const GURL&,
                const url::Origin&,
+               mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost>,
                InjectScriptCallback),
               (override));
   MOCK_METHOD(void, Invoke, (InvokeCallback), (override));
@@ -92,8 +93,8 @@ TEST_F(IndigoAgentHostTest, AutomaticInjectionOnFirstInvoke) {
       url::Origin::Create(GURL("chrome-untrusted://indigo"));
   EXPECT_CALL(mock_agent_,
               InjectScript(std::string(kScriptContent), expected_script_url,
-                           expected_origin, _))
-      .WillOnce(RunOnceCallback<3>());
+                           expected_origin, _, _))
+      .WillOnce(RunOnceCallback<4>());
 
   base::test::TestFuture<void> invoke_future;
   EXPECT_CALL(mock_agent_, Invoke(_))
@@ -114,12 +115,14 @@ TEST_F(IndigoAgentHostTest, MultipleInvokesDuringInjectionAreQueued) {
 
   chrome::mojom::IndigoAgent::InjectScriptCallback saved_inject_callback;
   base::test::TestFuture<void> inject_called_future;
-  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _))
-      .WillOnce([&](const std::string&, const GURL&, const url::Origin&,
-                    chrome::mojom::IndigoAgent::InjectScriptCallback callback) {
-        saved_inject_callback = std::move(callback);
-        inject_called_future.SetValue();
-      });
+  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _, _))
+      .WillOnce(
+          [&](const std::string&, const GURL&, const url::Origin&,
+              mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost>,
+              chrome::mojom::IndigoAgent::InjectScriptCallback callback) {
+            saved_inject_callback = std::move(callback);
+            inject_called_future.SetValue();
+          });
 
   base::test::TestFuture<void> invokes_future;
   // Set up expectation for Invoke calls BEFORE they are dispatched.
@@ -151,8 +154,8 @@ TEST_F(IndigoAgentHostTest, StateIsClearedOnCrossDocumentNavigation) {
   content::Page& page1 = main_rfh()->GetPage();
   IndigoAgentHost* host1 = IndigoAgentHost::GetOrCreateForPage(page1);
 
-  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _, _))
+      .WillOnce(RunOnceCallback<4>());
 
   base::test::TestFuture<void> invoke1_future;
   EXPECT_CALL(mock_agent_, Invoke(_))
@@ -173,8 +176,8 @@ TEST_F(IndigoAgentHostTest, StateIsClearedOnCrossDocumentNavigation) {
   EXPECT_NE(host1, host2);
 
   // New page should trigger injection again.
-  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _, _))
+      .WillOnce(RunOnceCallback<4>());
 
   base::test::TestFuture<void> invoke2_future;
   EXPECT_CALL(mock_agent_, Invoke(_))

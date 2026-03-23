@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_features.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_image_replacement.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "v8/include/cppgc/allocation.h"
@@ -96,7 +98,17 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
       return;
     }
 
-    NOTIMPLEMENTED();
+    auto result = blink::WebImageReplacement::CreateAndBindReceiver(element);
+    if (!result.has_value()) {
+      isolate->ThrowException(v8::Exception::Error(
+          gin::StringToV8(isolate, blink::WebString(result.error()).Utf8())));
+      return;
+    }
+
+    if (indigo_agent_) {
+      indigo_agent_->GetHost().StartImageReplacement(std::move(result.value()),
+                                                     base::DoNothing());
+    }
   }
 
   const base::WeakPtr<IndigoAgent> indigo_agent_;
@@ -126,10 +138,14 @@ IndigoAgent::IndigoAgent(content::RenderFrame* render_frame,
 
 IndigoAgent::~IndigoAgent() = default;
 
-void IndigoAgent::InjectScript(const std::string& script_content,
-                               const GURL& script_url,
-                               const url::Origin& origin,
-                               base::OnceClosure done) {
+void IndigoAgent::InjectScript(
+    const std::string& script_content,
+    const GURL& script_url,
+    const url::Origin& origin,
+    mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost> host,
+    base::OnceClosure done) {
+  host_.Bind(std::move(host));
+
   // Associate the isolated world with the provided origin.
   blink::WebIsolatedWorldInfo info;
   info.human_readable_name = "Indigo";

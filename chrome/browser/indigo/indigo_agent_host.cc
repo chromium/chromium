@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_script_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/page.h"
@@ -83,13 +84,21 @@ void IndigoAgentHost::OnScriptLoaded(
   GetAgent().InjectScript(
       script_content.value(), script_url,
       url::Origin::Create(GURL("chrome-untrusted://indigo")),
-      base::DoNothing());
+      receiver_.BindNewEndpointAndPassRemote(), base::DoNothing());
 
   injection_state_ = InjectionState::kInjected;
   while (pending_invoke_count_ > 0) {
     GetAgent().Invoke(base::DoNothing());
     pending_invoke_count_--;
   }
+}
+
+void IndigoAgentHost::StartImageReplacement(
+    mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+    StartImageReplacementCallback callback) {
+  auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(page());
+  manager->RegisterImageReplacement(std::move(replacement));
+  std::move(callback).Run();
 }
 
 chrome::mojom::IndigoAgent& IndigoAgentHost::GetAgent() {

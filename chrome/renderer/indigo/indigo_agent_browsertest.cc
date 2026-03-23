@@ -16,9 +16,13 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -27,8 +31,40 @@
 namespace indigo {
 namespace {
 
+class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
+ public:
+  MockIndigoAgentHost() = default;
+  ~MockIndigoAgentHost() override = default;
+
+  mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost>
+  BindAndPassRemote() {
+    return receiver_.BindNewEndpointAndPassRemote();
+  }
+
+  bool WaitForReplacementStarted() { return replacement_started_.Wait(); }
+
+  // chrome::mojom::IndigoAgentHost:
+  void StartImageReplacement(
+      mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+      StartImageReplacementCallback callback) override {
+    replacements_.Add(std::move(replacement));
+    replacement_started_.SetValue();
+    std::move(callback).Run();
+  }
+
+ private:
+  mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
+  mojo::RemoteSet<blink::mojom::ImageReplacement> replacements_;
+  base::test::TestFuture<void> replacement_started_;
+};
+
 class IndigoAgentBrowserTest : public ChromeRenderViewTest {
  protected:
+  IndigoAgentBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kIndigo, blink::features::kImageReplacement}, {});
+  }
+
   mojo::AssociatedRemote<chrome::mojom::IndigoAgent> BindIndigoAgent() {
     // Because this is all done in process without a true browser process,
     // this doesn't end up associated with the same IPC channel as other frame
@@ -71,8 +107,11 @@ class IndigoAgentBrowserTest : public ChromeRenderViewTest {
     return std::nullopt;
   }
 
+ protected:
+  MockIndigoAgentHost host_;
+
  private:
-  base::test::ScopedFeatureList feature_list_{features::kIndigo};
+  base::test::ScopedFeatureList feature_list_;
   blink::AssociatedInterfaceRegistry interface_registry_;
 };
 
@@ -84,7 +123,8 @@ TEST_F(IndigoAgentBrowserTest, InjectScriptInIsolatedWorld) {
   const url::Origin kOrigin = url::Origin::Create(kUrl);
 
   base::test::TestFuture<void> done;
-  remote->InjectScript(kScript, kUrl, kOrigin, done.GetCallback());
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       done.GetCallback());
   ASSERT_TRUE(done.Wait());
 
   // Verify that the script was executed in the isolated world.
@@ -120,7 +160,8 @@ TEST_F(IndigoAgentBrowserTest, SetupAndInvoke) {
   const url::Origin kOrigin = url::Origin::Create(kUrl);
 
   base::test::TestFuture<void> inject_done;
-  remote->InjectScript(kScript, kUrl, kOrigin, inject_done.GetCallback());
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
   ASSERT_TRUE(inject_done.Wait());
 
   // Now trigger invoke from the native side.
@@ -158,7 +199,8 @@ TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithNullThrows) {
   const url::Origin kOrigin = url::Origin::Create(kUrl);
 
   base::test::TestFuture<void> inject_done;
-  remote->InjectScript(kScript, kUrl, kOrigin, inject_done.GetCallback());
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
   ASSERT_TRUE(inject_done.Wait());
 
   base::test::TestFuture<void> invoke_done;
@@ -168,6 +210,35 @@ TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithNullThrows) {
   EXPECT_EQ("TypeError", EvaluateAs<std::string>("window.exception_name"));
   EXPECT_EQ("Invalid element wrapper.",
             EvaluateAs<std::string>("window.exception_message"));
+}
+
+TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithValidElement) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        const img = document.createElement('img');
+        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+        document.body.appendChild(img);
+        window.indigo.startImageReplacement(img);
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  // Verify that the host received the replacement start request.
+  ASSERT_TRUE(host_.WaitForReplacementStarted());
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "v8/include/cppgc/persistent.h"
 
@@ -44,11 +45,15 @@ class IndigoAgent : public content::RenderFrameObserver,
   ~IndigoAgent() override;
 
   // chrome::mojom::IndigoAgent:
-  void InjectScript(const std::string& script_content,
-                    const GURL& script_url,
-                    const url::Origin& origin,
-                    base::OnceClosure done) override;
+  void InjectScript(
+      const std::string& script_content,
+      const GURL& script_url,
+      const url::Origin& origin,
+      mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost> host,
+      base::OnceClosure done) override;
   void Invoke(base::OnceClosure done) override;
+
+  chrome::mojom::IndigoAgentHost& GetHost() { return *host_.get(); }
 
  private:
   // content::RenderFrameObserver:
@@ -64,6 +69,7 @@ class IndigoAgent : public content::RenderFrameObserver,
                         pending_receiver);
 
   mojo::AssociatedReceiverSet<chrome::mojom::IndigoAgent> receivers_;
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgentHost> host_;
   cppgc::Persistent<IndigoContext> indigo_context_;
   base::WeakPtrFactory<IndigoAgent> weak_factory_{this};
 };

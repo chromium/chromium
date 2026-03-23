@@ -5,16 +5,27 @@
 module chrome.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
+import "third_party/blink/public/mojom/image_replacement/image_replacement.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+
+// Renderer -> browser interface for Indigo. This exists on the main frame only.
+interface IndigoAgentHost {
+  // Asks the browser to start an image replacement on the given element.
+  StartImageReplacement(
+      pending_remote<blink.mojom.ImageReplacement> replacement) => ();
+};
 
 // Browser -> renderer interface for Indigo. This exists on the main frame only.
 interface IndigoAgent {
   // Injects the Indigo content script, which can analyze page content to
   // determine which elements ought to be replaced by Indigo.
+  // This only happens once per page (and it is an error for the caller to do
+  // otherwise).
   InjectScript(mojo_base.mojom.BigString script_content,
                url.mojom.Url script_url,
-               url.mojom.Origin origin) => ();
+               url.mojom.Origin origin,
+               pending_associated_remote<IndigoAgentHost> host) => ();
 
   // Invokes the Indigo feature on the page. This will rely on the content
   // script having already been injected and having invoked
