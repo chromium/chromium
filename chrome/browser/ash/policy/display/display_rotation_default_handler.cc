@@ -16,40 +16,40 @@ namespace policy {
 namespace {
 
 display::Display::Rotation DisplayRotationFromRotationOptions(
-    crosapi::mojom::DisplayRotationOptions option) {
+    ash::DisplayRotationOptions option) {
   switch (option) {
-    case crosapi::mojom::DisplayRotationOptions::kAutoRotate:
+    case ash::DisplayRotationOptions::kAutoRotate:
       // Auto rotation is ignored and considered as a 0-degrees rotation.
       return display::Display::ROTATE_0;
 
-    case crosapi::mojom::DisplayRotationOptions::kZeroDegrees:
+    case ash::DisplayRotationOptions::kZeroDegrees:
       return display::Display::ROTATE_0;
 
-    case crosapi::mojom::DisplayRotationOptions::k90Degrees:
+    case ash::DisplayRotationOptions::k90Degrees:
       return display::Display::ROTATE_90;
 
-    case crosapi::mojom::DisplayRotationOptions::k180Degrees:
+    case ash::DisplayRotationOptions::k180Degrees:
       return display::Display::ROTATE_180;
 
-    case crosapi::mojom::DisplayRotationOptions::k270Degrees:
+    case ash::DisplayRotationOptions::k270Degrees:
       return display::Display::ROTATE_270;
   }
 }
 
-crosapi::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
+ash::DisplayRotationOptions RotationOptionsFromDisplayRotation(
     display::Display::Rotation rotation) {
   switch (rotation) {
     case display::Display::ROTATE_0:
-      return crosapi::mojom::DisplayRotationOptions::kZeroDegrees;
+      return ash::DisplayRotationOptions::kZeroDegrees;
 
     case display::Display::ROTATE_90:
-      return crosapi::mojom::DisplayRotationOptions::k90Degrees;
+      return ash::DisplayRotationOptions::k90Degrees;
 
     case display::Display::ROTATE_180:
-      return crosapi::mojom::DisplayRotationOptions::k180Degrees;
+      return ash::DisplayRotationOptions::k180Degrees;
 
     case display::Display::ROTATE_270:
-      return crosapi::mojom::DisplayRotationOptions::k270Degrees;
+      return ash::DisplayRotationOptions::k270Degrees;
   }
 }
 
@@ -116,7 +116,7 @@ void DisplayRotationDefaultHandler::ApplyChanges(
         RotationOptionsFromDisplayRotation(display_rotation_default_);
     cros_display_config.SetDisplayProperties(
         base::NumberToString(display_unit_info.id), config_properties,
-        crosapi::mojom::DisplayConfigSource::kPolicy);
+        ash::DisplayConfigSource::kPolicy);
   }
 }
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/display/overscan_calibrator.h"
-#include "ash/display/cros_display_config.h"
 
+#include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
@@ -23,8 +23,7 @@ class OverscanCalibratorTest : public AshTestBase {
 
   OverscanCalibrator* StartCalibration(const std::string& id) {
     Shell::Get()->cros_display_config()->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kStart,
-        gfx::Insets() /* not used */);
+        id, DisplayCalibrationOperation::kStart, gfx::Insets() /* not used */);
     return Shell::Get()->cros_display_config()->GetOverscanCalibrator(id);
   }
 };

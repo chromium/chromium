@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/display/display_change_dialog.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -63,7 +63,7 @@ class ASH_EXPORT ResolutionNotificationController
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
-      crosapi::mojom::DisplayConfigSource source,
+      DisplayConfigSource source,
       base::OnceClosure accept_callback);
 
   DisplayChangeDialog* dialog_for_testing() const {

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_UTILS_H_
 
 #include "ash/display/cros_display_config.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/touch_device_manager.h"
@@ -32,14 +31,6 @@ display::DisplayPlacement::Position GetDisplayLayoutPosition(
 
 // Converts system display `insets` to gfx type.
 gfx::Insets GetInsets(const api::system_display::Insets& insets);
-
-// Converts int `rotation_value` to crosapi type.
-crosapi::mojom::DisplayRotationOptions GetMojomDisplayRotationOptions(
-    int rotation_value);
-
-// Converts crosapi `rotation_options` to int.
-int GetRotationFromMojomDisplayRotationInfo(
-    crosapi::mojom::DisplayRotationOptions rotation_options);
 
 // Validates the DisplayProperties input. Does not perform any tests with
 // DisplayManager dependencies. Returns an error string on failure or nullopt

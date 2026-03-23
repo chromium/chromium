@@ -15,9 +15,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefService;

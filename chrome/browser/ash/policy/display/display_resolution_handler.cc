@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace policy {
 
@@ -214,7 +213,7 @@ void DisplayResolutionHandler::ApplyChanges(
     resized_display_ids_.insert(display_unit_info.id);
     ash::DisplayConfigResult result = cros_display_config.SetDisplayProperties(
         base::NumberToString(display_unit_info.id), *new_config,
-        crosapi::mojom::DisplayConfigSource::kPolicy);
+        ash::DisplayConfigSource::kPolicy);
     if (result == ash::DisplayConfigResult::kSuccess) {
       VLOG(1) << "Successfully changed display mode.";
     } else {

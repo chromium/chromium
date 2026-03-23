@@ -20,7 +20,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/config/gpu_info.h"
@@ -108,19 +107,19 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   ash::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const ash::DisplayConfigProperties& properties,
-      crosapi::mojom::DisplayConfigSource source) override {
+      ash::DisplayConfigSource source) override {
     NOTREACHED();
   }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   ash::DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      ash::DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) override {
     NOTREACHED();
   }
   void TouchCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      ash::DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) override {
     NOTREACHED();

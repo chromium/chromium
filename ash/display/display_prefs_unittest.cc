@@ -676,8 +676,7 @@ TEST_F(DisplayPrefsTest, PreventStore) {
   display::ManagedDisplayMode new_mode(gfx::Size(500, 400), 60.0f, false, true);
   EXPECT_TRUE(shell->resolution_notification_controller()
                   ->PrepareNotificationAndSetDisplayMode(
-                      id, old_mode, new_mode,
-                      crosapi::mojom::DisplayConfigSource::kUser,
+                      id, old_mode, new_mode, DisplayConfigSource::kUser,
                       base::OnceClosure()));
   UpdateDisplay("500x400#500x400|400x300|300x200");
 

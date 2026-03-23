@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "extensions/common/api/system_display.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_switches.h"

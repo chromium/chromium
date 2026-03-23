@@ -13,7 +13,6 @@ static_library("testapi") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chromeos/crosapi/mojom",
   ]
 
   deps = [

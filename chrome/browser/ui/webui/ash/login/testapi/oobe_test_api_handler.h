@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 
 namespace ash {
 

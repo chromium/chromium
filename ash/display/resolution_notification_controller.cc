@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/display/cros_display_config.h"
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -76,11 +77,11 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
     int64_t display_id,
     const display::ManagedDisplayMode& old_resolution,
     const display::ManagedDisplayMode& new_resolution,
-    crosapi::mojom::DisplayConfigSource source,
+    DisplayConfigSource source,
     base::OnceClosure accept_callback) {
   display::DisplayManager* const display_manager =
       Shell::Get()->display_manager();
-  if (source == crosapi::mojom::DisplayConfigSource::kPolicy ||
+  if (source == DisplayConfigSource::kPolicy ||
       display::IsInternalDisplayId(display_id)) {
     // We don't show notifications to confirm/revert the resolution change in
     // the case of an internal display or policy-forced changes.

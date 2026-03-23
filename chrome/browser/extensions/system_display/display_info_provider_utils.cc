@@ -7,7 +7,6 @@
 #include "ash/display/cros_display_config.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/screen.h"
@@ -16,7 +15,26 @@
 namespace extensions {
 
 namespace {
+
 namespace system_display = api::system_display;
+
+int GetRotationFromDisplayRotationOptions(
+    ash::DisplayRotationOptions rotation_options) {
+  switch (rotation_options) {
+    case ash::DisplayRotationOptions::kAutoRotate:
+      return -1;
+    case ash::DisplayRotationOptions::kZeroDegrees:
+      return 0;
+    case ash::DisplayRotationOptions::k90Degrees:
+      return 90;
+    case ash::DisplayRotationOptions::k180Degrees:
+      return 180;
+    case ash::DisplayRotationOptions::k270Degrees:
+      return 270;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 int64_t GetDisplayId(const std::string& display_id_str) {
@@ -58,42 +76,6 @@ gfx::Insets GetInsets(const system_display::Insets& insets) {
 bool IsValidRotation(int rotation) {
   return rotation == -1 || rotation == 0 || rotation == 90 || rotation == 180 ||
          rotation == 270;
-}
-
-crosapi::mojom::DisplayRotationOptions GetMojomDisplayRotationOptions(
-    int rotation_value) {
-  DCHECK(IsValidRotation(rotation_value));
-
-  switch (rotation_value) {
-    case -1:
-      return crosapi::mojom::DisplayRotationOptions::kAutoRotate;
-    case 0:
-      return crosapi::mojom::DisplayRotationOptions::kZeroDegrees;
-    case 90:
-      return crosapi::mojom::DisplayRotationOptions::k90Degrees;
-    case 180:
-      return crosapi::mojom::DisplayRotationOptions::k180Degrees;
-    case 270:
-      return crosapi::mojom::DisplayRotationOptions::k270Degrees;
-    default:
-      NOTREACHED();
-  }
-}
-
-int GetRotationFromMojomDisplayRotationInfo(
-    crosapi::mojom::DisplayRotationOptions rotation_options) {
-  switch (rotation_options) {
-    case crosapi::mojom::DisplayRotationOptions::kAutoRotate:
-      return -1;
-    case crosapi::mojom::DisplayRotationOptions::kZeroDegrees:
-      return 0;
-    case crosapi::mojom::DisplayRotationOptions::k90Degrees:
-      return 90;
-    case crosapi::mojom::DisplayRotationOptions::k180Degrees:
-      return 180;
-    case crosapi::mojom::DisplayRotationOptions::k270Degrees:
-      return 270;
-  }
 }
 
 std::optional<std::string> ValidateDisplayPropertiesInput(
@@ -178,7 +160,7 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromAsh(
   info.dpi_x = ash_info.dpi_x;
   info.dpi_y = ash_info.dpi_y;
   info.rotation =
-      GetRotationFromMojomDisplayRotationInfo(ash_info.rotation_options);
+      GetRotationFromDisplayRotationOptions(ash_info.rotation_options);
   const gfx::Rect& bounds = ash_info.bounds;
   info.bounds.left = bounds.x();
   info.bounds.top = bounds.y();

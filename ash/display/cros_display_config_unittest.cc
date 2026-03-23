@@ -21,9 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
@@ -124,11 +121,11 @@ class CrosDisplayConfigTest : public AshTestBase {
       const std::string& id,
       const DisplayConfigProperties& properties) {
     return cros_display_config_->SetDisplayProperties(
-        id, properties, crosapi::mojom::DisplayConfigSource::kUser);
+        id, properties, DisplayConfigSource::kUser);
   }
 
   bool OverscanCalibration(int64_t id,
-                           crosapi::mojom::DisplayConfigOperation op,
+                           DisplayCalibrationOperation op,
                            const std::optional<gfx::Insets>& delta) {
     return cros_display_config()->OverscanCalibration(base::NumberToString(id),
                                                       op, delta) ==
@@ -142,8 +139,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   }
 
   bool StartTouchCalibration(const std::string& display_id) {
-    return CallTouchCalibration(display_id,
-                                crosapi::mojom::DisplayConfigOperation::kStart,
+    return CallTouchCalibration(display_id, DisplayCalibrationOperation::kStart,
                                 std::nullopt);
   }
 
@@ -151,13 +147,12 @@ class CrosDisplayConfigTest : public AshTestBase {
       const std::string& display_id,
       const display::TouchCalibrationData& calibration) {
     return CallTouchCalibration(
-        display_id, crosapi::mojom::DisplayConfigOperation::kComplete,
-        calibration);
+        display_id, DisplayCalibrationOperation::kComplete, calibration);
   }
 
   bool CallTouchCalibration(
       const std::string& id,
-      crosapi::mojom::DisplayConfigOperation op,
+      DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration) {
     DisplayConfigResult result;
     base::RunLoop run_loop;
@@ -413,8 +408,7 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   EXPECT_FALSE(result[0].has_accelerometer_support);
   EXPECT_EQ(96, result[0].dpi_x);
   EXPECT_EQ(96, result[0].dpi_y);
-  EXPECT_EQ(crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
-            result[0].rotation_options);
+  EXPECT_EQ(DisplayRotationOptions::kZeroDegrees, result[0].rotation_options);
   EXPECT_EQ(gfx::Rect(0, 0, 500, 600), result[0].bounds);
   EXPECT_EQ(gfx::Insets(), result[0].overscan);
 
@@ -424,8 +418,7 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   // Second display is left of the primary display whose width 500.
   EXPECT_EQ(gfx::Rect(500, 0, 400, 520), result[1].bounds);
   EXPECT_EQ(gfx::Insets(), result[1].overscan);
-  EXPECT_EQ(crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
-            result[1].rotation_options);
+  EXPECT_EQ(DisplayRotationOptions::kZeroDegrees, result[1].rotation_options);
   EXPECT_FALSE(result[1].is_primary);
   EXPECT_FALSE(result[1].is_internal);
   EXPECT_TRUE(result[1].is_enabled);
@@ -500,7 +493,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
 
   {
     DisplayConfigProperties properties;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::k90Degrees;
+    properties.rotation = DisplayRotationOptions::k90Degrees;
     auto result =
         SetDisplayProperties(base::NumberToString(secondary.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
@@ -510,7 +503,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
 
   {
     DisplayConfigProperties properties;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::k270Degrees;
+    properties.rotation = DisplayRotationOptions::k270Degrees;
     auto result =
         SetDisplayProperties(base::NumberToString(secondary.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
@@ -522,7 +515,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   {
     DisplayConfigProperties properties;
     properties.set_primary = true;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::k180Degrees;
+    properties.rotation = DisplayRotationOptions::k180Degrees;
     auto result =
         SetDisplayProperties(base::NumberToString(secondary.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
@@ -671,18 +664,18 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   ASSERT_NE(display::kInvalidDisplayId, id);
 
   // Test that kAdjust succeeds after kComplete call.
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt));
+  EXPECT_TRUE(OverscanCalibration(id, DisplayCalibrationOperation::kStart,
+                                  std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   gfx::Insets insets(10);
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kAdjust, insets));
+  EXPECT_TRUE(
+      OverscanCalibration(id, DisplayCalibrationOperation::kAdjust, insets));
   // Adjust has no effect until Complete.
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
+  EXPECT_TRUE(OverscanCalibration(id, DisplayCalibrationOperation::kComplete,
+                                  std::nullopt));
   gfx::Insets overscan = display_manager()->GetOverscanInsets(id);
   EXPECT_EQ(insets, overscan)
       << "Overscan: " << overscan.ToString() << " != " << insets.ToString();
@@ -690,21 +683,21 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   // Test that kReset clears restores previous insets.
 
   // Start clears any overscan values.
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt));
+  EXPECT_TRUE(OverscanCalibration(id, DisplayCalibrationOperation::kStart,
+                                  std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   // Reset + Complete restores previously set insets.
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt));
+  EXPECT_TRUE(OverscanCalibration(id, DisplayCalibrationOperation::kReset,
+                                  std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
-  EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
+  EXPECT_TRUE(OverscanCalibration(id, DisplayCalibrationOperation::kComplete,
+                                  std::nullopt));
   EXPECT_EQ(insets, display_manager()->GetOverscanInsets(id));
 
   // Additional complete call should fail.
-  EXPECT_FALSE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
+  EXPECT_FALSE(OverscanCalibration(id, DisplayCalibrationOperation::kComplete,
+                                   std::nullopt));
 }
 
 TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInternal) {
@@ -857,7 +850,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   // is treated as a request to set the rotation to 0.
   {
     DisplayConfigProperties properties;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+    properties.rotation = DisplayRotationOptions::kAutoRotate;
     auto result =
         SetDisplayProperties(base::NumberToString(display.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
@@ -876,7 +869,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
 
   {
     DisplayConfigProperties properties;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::k90Degrees;
+    properties.rotation = DisplayRotationOptions::k90Degrees;
     auto result =
         SetDisplayProperties(base::NumberToString(display.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
@@ -903,7 +896,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
 
   {
     DisplayConfigProperties properties;
-    properties.rotation = crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+    properties.rotation = DisplayRotationOptions::kAutoRotate;
     auto result =
         SetDisplayProperties(base::NumberToString(display.id()), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);

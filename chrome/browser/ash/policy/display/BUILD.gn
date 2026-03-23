@@ -20,9 +20,6 @@ static_library("display") {
     "//ash",
     "//base",
     "//chromeos/ash/components/settings",
-    "//chromeos/crosapi/mojom",
-    "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/bindings:bindings_base",
     "//ui/display",
   ]
 }

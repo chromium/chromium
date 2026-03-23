@@ -14,7 +14,6 @@
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
 #include "base/types/optional_ref.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/touch_device_manager.h"
@@ -26,6 +25,56 @@ namespace ash {
 
 class OverscanCalibrator;
 class TouchCalibratorController;
+
+// All points, bounds, and insets are in display pixels unless otherwise
+// specified.
+
+// Describes an overscan or touch calibration operation.
+enum class DisplayCalibrationOperation {
+  // Start a calibration procedure.
+  kStart,
+  // Adjusts the current overscan insets for a display.
+  kAdjust,
+  // Resets the overscan insets for a display to the last saved value.
+  kReset,
+  // Finish calibration procedure. Save current values and hide the overlay.
+  kComplete,
+  // Displays the native touch calibration.
+  kShowNative,
+  // Displays the native touch screen mapping experience which goes through each
+  // connected external display and allows you to map the touch device to the
+  // corresponding display.
+  kShowNativeMappingDisplays,
+};
+
+// Describes who initiated configuration change.
+enum class DisplayConfigSource {
+  // Display configuration change was requested by the user.
+  kUser,
+  // Display configuration change was requested by the policy.
+  // Don't show notifications to confirm/revert the change.
+  kPolicy
+};
+
+// Describes the options the DisplayConfigProperties::rotation and
+// DisplayUnitInfo::rotation_options can be set to.
+enum class DisplayRotationOptions {
+  // In physical tablet state, enables auto-rotation and clears the user
+  // rotation lock. Otherwise, it behaves the same as kZeroDegrees.
+  kAutoRotate,
+  // In physical tablet state, Sets the user rotation lock to 0 degrees.
+  // Otherwise, it sets the display rotation to 0.
+  kZeroDegrees,
+  // In physical tablet state, Sets the user rotation lock to 90 degrees.
+  // Otherwise, it sets the display rotation 90.
+  k90Degrees,
+  // In physical tablet state, Sets the user rotation lock to 180 degrees.
+  // Otherwise, it sets the display rotation 180.
+  k180Degrees,
+  // In physical tablet state, Sets the user rotation lock to 270 degrees.
+  // Otherwise, it sets the display rotation 270.
+  k270Degrees,
+};
 
 // Describes how the displays are laid out.
 enum class DisplayLayoutMode {
@@ -92,7 +141,7 @@ struct ASH_EXPORT DisplayConfigProperties {
   // If provided, updates the display's rotation, or if the auto-rotation is
   // allowed in the device, it can be used to set or clear the user rotation
   // lock, enabling or disabling auto-rotation.
-  std::optional<crosapi::mojom::DisplayRotationOptions> rotation;
+  std::optional<DisplayRotationOptions> rotation;
 
   // If provided, updates the display's logical bounds origin. Note: when
   // updating the display origin, some constraints will be applied. so the final
@@ -211,8 +260,7 @@ struct ASH_EXPORT DisplayUnitInfo {
   double dpi_y = 0.0;
 
   // The display rotation options.
-  crosapi::mojom::DisplayRotationOptions rotation_options =
-      crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+  DisplayRotationOptions rotation_options = DisplayRotationOptions::kAutoRotate;
 
   // The display's logical bounds.
   gfx::Rect bounds;
@@ -275,7 +323,7 @@ class CrosDisplayConfig {
   virtual DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const DisplayConfigProperties& properties,
-      crosapi::mojom::DisplayConfigSource source) = 0;
+      DisplayConfigSource source) = 0;
 
   // Enables or disables unified desktop mode. If the current display mode is
   // kMirrored the mode will not be changed, if it is kNormal then the mode will
@@ -287,7 +335,7 @@ class CrosDisplayConfig {
   // amount to change the overscan value.
   virtual DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) = 0;
 
   // Starts, completes, or resets touch calibration for the display with
@@ -296,7 +344,7 @@ class CrosDisplayConfig {
   // error.
   virtual void TouchCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) = 0;
 
@@ -336,15 +384,15 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const DisplayConfigProperties& properties,
-      crosapi::mojom::DisplayConfigSource source) override;
+      DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) override;
   void TouchCalibration(
       const std::string& display_id,
-      crosapi::mojom::DisplayConfigOperation op,
+      DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) override;
   void HighlightDisplay(int64_t display_id) override;

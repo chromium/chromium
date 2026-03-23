@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/device_configuration.pb.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

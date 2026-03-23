@@ -35,8 +35,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
@@ -942,11 +940,11 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
 
   // Try all possible rotations. Changing display rotation should *not* unhide
   // top chrome.
-  const std::vector<crosapi::mojom::DisplayRotationOptions> rotations_to_try = {
-      crosapi::mojom::DisplayRotationOptions::k90Degrees,
-      crosapi::mojom::DisplayRotationOptions::k180Degrees,
-      crosapi::mojom::DisplayRotationOptions::k270Degrees,
-      crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
+  const std::vector<ash::DisplayRotationOptions> rotations_to_try = {
+      ash::DisplayRotationOptions::k90Degrees,
+      ash::DisplayRotationOptions::k180Degrees,
+      ash::DisplayRotationOptions::k270Degrees,
+      ash::DisplayRotationOptions::kZeroDegrees,
   };
 
   ash::CrosDisplayConfig* cros_display_config =
@@ -961,8 +959,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
       config_properties.rotation = rotation;
       ash::DisplayConfigResult result =
           cros_display_config->SetDisplayProperties(
-              display_id, config_properties,
-              crosapi::mojom::DisplayConfigSource::kUser);
+              display_id, config_properties, ash::DisplayConfigSource::kUser);
       EXPECT_EQ(result, ash::DisplayConfigResult::kSuccess);
 
       // Wait for the browser view to change its bounds as a result of display

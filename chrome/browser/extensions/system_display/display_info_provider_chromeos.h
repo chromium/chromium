@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/display_info_provider_base.h"
 #include "ui/display/manager/touch_device_manager.h"
 
@@ -73,7 +72,7 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
  private:
   void CallTouchCalibration(
       const std::string& id,
-      crosapi::mojom::DisplayConfigOperation op,
+      ash::DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       ErrorCallback callback);
 

@@ -31,7 +31,6 @@ static_library("device") {
     "//chrome/browser/ui/webui/ash/settings/pages/power",
     "//chrome/browser/ui/webui/ash/settings/pages/printing",
     "//chrome/browser/ui/webui/settings",
-    "//chromeos/crosapi/mojom",
     "//components/prefs",
     "//mojo/public/cpp/bindings",
     "//ui/base/ime/ash",

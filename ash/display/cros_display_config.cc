@@ -24,7 +24,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -199,26 +198,26 @@ DisplayConfigResult SetDisplayLayoutMode(const DisplayLayoutInfo& info) {
 }
 
 display::Display::Rotation DisplayRotationFromRotationOptions(
-    crosapi::mojom::DisplayRotationOptions option) {
+    DisplayRotationOptions option) {
   switch (option) {
-    case crosapi::mojom::DisplayRotationOptions::kAutoRotate:
+    case DisplayRotationOptions::kAutoRotate:
       return display::Display::ROTATE_0;
 
-    case crosapi::mojom::DisplayRotationOptions::kZeroDegrees:
+    case DisplayRotationOptions::kZeroDegrees:
       return display::Display::ROTATE_0;
 
-    case crosapi::mojom::DisplayRotationOptions::k90Degrees:
+    case DisplayRotationOptions::k90Degrees:
       return display::Display::ROTATE_90;
 
-    case crosapi::mojom::DisplayRotationOptions::k180Degrees:
+    case DisplayRotationOptions::k180Degrees:
       return display::Display::ROTATE_180;
 
-    case crosapi::mojom::DisplayRotationOptions::k270Degrees:
+    case DisplayRotationOptions::k270Degrees:
       return display::Display::ROTATE_270;
   }
 }
 
-crosapi::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
+DisplayRotationOptions RotationOptionsFromDisplayRotation(
     display::Display::Rotation rotation,
     bool is_internal) {
   auto* screen_orientation_controller =
@@ -228,21 +227,21 @@ crosapi::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
   const bool is_auto_rotate_enabled =
       !screen_orientation_controller->user_rotation_locked();
   if (is_auto_rotation_allowed && is_auto_rotate_enabled && is_internal) {
-    return crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+    return DisplayRotationOptions::kAutoRotate;
   }
 
   switch (rotation) {
     case display::Display::ROTATE_0:
-      return crosapi::mojom::DisplayRotationOptions::kZeroDegrees;
+      return DisplayRotationOptions::kZeroDegrees;
 
     case display::Display::ROTATE_90:
-      return crosapi::mojom::DisplayRotationOptions::k90Degrees;
+      return DisplayRotationOptions::k90Degrees;
 
     case display::Display::ROTATE_180:
-      return crosapi::mojom::DisplayRotationOptions::k180Degrees;
+      return DisplayRotationOptions::k180Degrees;
 
     case display::Display::ROTATE_270:
-      return crosapi::mojom::DisplayRotationOptions::k270Degrees;
+      return DisplayRotationOptions::k270Degrees;
   }
 }
 
@@ -448,7 +447,7 @@ void SetDisplayLayoutFromBounds(const gfx::Rect& primary_display_bounds,
 DisplayConfigResult SetDisplayMode(
     int64_t id,
     const display::ManagedDisplayMode& display_mode,
-    crosapi::mojom::DisplayConfigSource source) {
+    DisplayConfigSource source) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
   display::ManagedDisplayMode current_mode;
@@ -727,7 +726,7 @@ std::vector<DisplayUnitInfo> CrosDisplayConfigImpl::GetDisplayUnitInfoList(
 DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
     const std::string& id,
     const DisplayConfigProperties& properties,
-    crosapi::mojom::DisplayConfigSource source) {
+    DisplayConfigSource source) {
   const display::Display display = GetDisplay(id);
   DisplayConfigResult result = ValidateDisplayProperties(properties, display);
   if (result != DisplayConfigResult::kSuccess) {
@@ -749,14 +748,13 @@ DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
   }
 
   if (properties.rotation.has_value()) {
-    const crosapi::mojom::DisplayRotationOptions rotation_options =
-        *properties.rotation;
+    const DisplayRotationOptions rotation_options = *properties.rotation;
     auto* screen_orientation_controller =
         Shell::Get()->screen_orientation_controller();
     const bool is_auto_rotation_allowed =
         screen_orientation_controller->IsAutoRotationAllowed();
     const bool auto_rotate_requested =
-        rotation_options == crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+        rotation_options == DisplayRotationOptions::kAutoRotate;
     display::Display::Rotation rotation =
         DisplayRotationFromRotationOptions(rotation_options);
 
@@ -807,7 +805,7 @@ void CrosDisplayConfigImpl::SetUnifiedDesktopEnabled(bool enabled) {
 
 DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
     const std::string& display_id,
-    crosapi::mojom::DisplayConfigOperation op,
+    DisplayCalibrationOperation op,
     const std::optional<gfx::Insets>& delta) {
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
@@ -815,12 +813,14 @@ DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
   }
 
   OverscanCalibrator* calibrator = GetOverscanCalibrator(display_id);
-  if (!calibrator && op != crosapi::mojom::DisplayConfigOperation::kStart) {
-    DISPLAY_LOG(ERROR) << "Calibrator does not exist for op=" << op;
+  if (!calibrator && op != DisplayCalibrationOperation::kStart) {
+    DISPLAY_LOG(ERROR) << "Calibrator does not exist for op="
+                       << static_cast<int>(op);
     return DisplayConfigResult::kCalibrationNotAvailableError;
   }
+
   switch (op) {
-    case crosapi::mojom::DisplayConfigOperation::kStart: {
+    case DisplayCalibrationOperation::kStart: {
       DVLOG(1) << "OverscanCalibrationStart: " << display_id;
       gfx::Insets insets =
           Shell::Get()->display_manager()->GetOverscanInsets(display.id());
@@ -831,7 +831,7 @@ DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
           std::make_unique<OverscanCalibrator>(display, insets);
       break;
     }
-    case crosapi::mojom::DisplayConfigOperation::kAdjust:
+    case DisplayCalibrationOperation::kAdjust:
       DVLOG(1) << "OverscanCalibrationAdjust: " << display_id;
       if (!delta) {
         DISPLAY_LOG(ERROR) << "Delta not provided for for adjust: "
@@ -840,20 +840,18 @@ DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
       }
       calibrator->UpdateInsets(calibrator->insets() + *delta);
       break;
-    case crosapi::mojom::DisplayConfigOperation::kReset:
+    case DisplayCalibrationOperation::kReset:
       DVLOG(1) << "OverscanCalibrationReset: " << display_id;
       calibrator->Reset();
       break;
-    case crosapi::mojom::DisplayConfigOperation::kComplete:
+    case DisplayCalibrationOperation::kComplete:
       DVLOG(1) << "OverscanCalibrationComplete: " << display_id;
       calibrator->Commit();
       overscan_calibrators_[display_id].reset();
       break;
-    case crosapi::mojom::DisplayConfigOperation::kShowNative:
-      DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
-      return DisplayConfigResult::kInvalidOperationError;
-    case crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays:
-      DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
+    case DisplayCalibrationOperation::kShowNative:
+    case DisplayCalibrationOperation::kShowNativeMappingDisplays:
+      DISPLAY_LOG(ERROR) << "Operation not supported: " << static_cast<int>(op);
       return DisplayConfigResult::kInvalidOperationError;
   }
   return DisplayConfigResult::kSuccess;
@@ -861,12 +859,11 @@ DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
 
 void CrosDisplayConfigImpl::TouchCalibration(
     const std::string& display_id,
-    crosapi::mojom::DisplayConfigOperation op,
+    DisplayCalibrationOperation op,
     base::optional_ref<const display::TouchCalibrationData> calibration,
     TouchCalibrationCallback callback) {
   // For native touch display mapping.
-  if (op ==
-      crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays) {
+  if (op == DisplayCalibrationOperation::kShowNativeMappingDisplays) {
     if (touch_calibrator_ && touch_calibrator_->IsCalibrating()) {
       DISPLAY_LOG(ERROR) << "Touch calibration already active.";
       std::move(callback).Run(DisplayConfigResult::kCalibrationInProgressError);
@@ -905,8 +902,8 @@ void CrosDisplayConfigImpl::TouchCalibration(
     return;
   }
 
-  if (op == crosapi::mojom::DisplayConfigOperation::kStart ||
-      op == crosapi::mojom::DisplayConfigOperation::kShowNative) {
+  if (op == DisplayCalibrationOperation::kStart ||
+      op == DisplayCalibrationOperation::kShowNative) {
     if (touch_calibrator_ && touch_calibrator_->IsCalibrating()) {
       DISPLAY_LOG(ERROR) << "Touch calibration already active.";
       std::move(callback).Run(DisplayConfigResult::kCalibrationInProgressError);
@@ -915,7 +912,7 @@ void CrosDisplayConfigImpl::TouchCalibration(
     if (!touch_calibrator_) {
       touch_calibrator_ = std::make_unique<TouchCalibratorController>();
     }
-    if (op == crosapi::mojom::DisplayConfigOperation::kShowNative) {
+    if (op == DisplayCalibrationOperation::kShowNative) {
       // For native calibration, |callback| is not run until calibration
       // completes.
       touch_calibrator_->StartCalibration(
@@ -936,15 +933,15 @@ void CrosDisplayConfigImpl::TouchCalibration(
     return;
   }
 
-  if (op == crosapi::mojom::DisplayConfigOperation::kReset) {
+  if (op == DisplayCalibrationOperation::kReset) {
     Shell::Get()->display_manager()->ClearTouchCalibrationData(display.id(),
                                                                std::nullopt);
     std::move(callback).Run(DisplayConfigResult::kSuccess);
     return;
   }
 
-  if (op != crosapi::mojom::DisplayConfigOperation::kComplete) {
-    DISPLAY_LOG(ERROR) << "Unknown operation: " << op;
+  if (op != DisplayCalibrationOperation::kComplete) {
+    DISPLAY_LOG(ERROR) << "Unknown operation: " << static_cast<int>(op);
     std::move(callback).Run(DisplayConfigResult::kCalibrationNotStartedError);
     return;
   }

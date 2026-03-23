@@ -100,6 +100,23 @@ system_display::LayoutPosition GetLayoutPositionFromUi(
   NOTREACHED();
 }
 
+ash::DisplayRotationOptions GetDisplayRotationOptions(int rotation_value) {
+  switch (rotation_value) {
+    case -1:
+      return ash::DisplayRotationOptions::kAutoRotate;
+    case 0:
+      return ash::DisplayRotationOptions::kZeroDegrees;
+    case 90:
+      return ash::DisplayRotationOptions::k90Degrees;
+    case 180:
+      return ash::DisplayRotationOptions::k180Degrees;
+    case 270:
+      return ash::DisplayRotationOptions::k270Degrees;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 DisplayInfoProviderChromeOS::DisplayInfoProviderChromeOS()
@@ -174,7 +191,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
   if (properties.rotation.has_value()) {
     config_properties.rotation =
-        GetMojomDisplayRotationOptions(*properties.rotation);
+        GetDisplayRotationOptions(*properties.rotation);
   }
   if (properties.bounds_origin_x || properties.bounds_origin_y) {
     gfx::Point bounds_origin;
@@ -214,7 +231,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     ash::DisplayConfigResult result =
         cros_display_config_->SetDisplayProperties(
             display_id_str, std::move(config_properties),
-            crosapi::mojom::DisplayConfigSource::kUser);
+            ash::DisplayConfigSource::kUser);
     std::move(callback).Run(GetStringResult(std::move(result)));
   }
 }
@@ -299,7 +316,7 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationStart(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt);
+        id, ash::DisplayCalibrationOperation::kStart, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -310,7 +327,7 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
     const system_display::Insets& delta) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kAdjust, GetInsets(delta));
+        id, ash::DisplayCalibrationOperation::kAdjust, GetInsets(delta));
     LogErrorResult(result);
   }
   return true;
@@ -320,7 +337,7 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt);
+        id, ash::DisplayCalibrationOperation::kReset, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -330,7 +347,7 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt);
+        id, ash::DisplayCalibrationOperation::kComplete, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -339,14 +356,14 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
 void DisplayInfoProviderChromeOS::ShowNativeTouchCalibration(
     const std::string& id,
     ErrorCallback callback) {
-  CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kShowNative,
+  CallTouchCalibration(id, ash::DisplayCalibrationOperation::kShowNative,
                        std::nullopt, std::move(callback));
 }
 
 bool DisplayInfoProviderChromeOS::StartCustomTouchCalibration(
     const std::string& id) {
   touch_calibration_target_id_ = id;
-  CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kStart,
+  CallTouchCalibration(id, ash::DisplayCalibrationOperation::kStart,
                        std::nullopt, ErrorCallback());
   return true;
 }
@@ -361,20 +378,20 @@ bool DisplayInfoProviderChromeOS::CompleteCustomTouchCalibration(
   calibration.point_pairs[3] = GetTouchCalibrationPair(pairs.pair4);
   calibration.bounds = gfx::Size(bounds.width, bounds.height);
   CallTouchCalibration(touch_calibration_target_id_,
-                       crosapi::mojom::DisplayConfigOperation::kComplete,
-                       calibration, ErrorCallback());
+                       ash::DisplayCalibrationOperation::kComplete, calibration,
+                       ErrorCallback());
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::ClearTouchCalibration(const std::string& id) {
-  CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kReset,
+  CallTouchCalibration(id, ash::DisplayCalibrationOperation::kReset,
                        std::nullopt, ErrorCallback());
   return true;
 }
 
 void DisplayInfoProviderChromeOS::CallTouchCalibration(
     const std::string& id,
-    crosapi::mojom::DisplayConfigOperation op,
+    ash::DisplayCalibrationOperation op,
     base::optional_ref<const display::TouchCalibrationData> calibration,
     ErrorCallback callback) {
   if (cros_display_config_) {

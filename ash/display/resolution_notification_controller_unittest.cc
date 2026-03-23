@@ -83,8 +83,7 @@ class ResolutionNotificationControllerTest : public AshTestBase {
       float new_refresh_rate,
       bool old_is_native,
       bool new_is_native,
-      crosapi::mojom::DisplayConfigSource source =
-          crosapi::mojom::DisplayConfigSource::kUser) {
+      DisplayConfigSource source = DisplayConfigSource::kUser) {
     {
       const display::ManagedDisplayInfo& info =
           display_manager()->GetDisplayInfo(display.id());
@@ -126,8 +125,7 @@ class ResolutionNotificationControllerTest : public AshTestBase {
       float refresh_rate,
       bool old_is_native,
       bool new_is_native,
-      crosapi::mojom::DisplayConfigSource source =
-          crosapi::mojom::DisplayConfigSource::kUser) {
+      DisplayConfigSource source = DisplayConfigSource::kUser) {
     SetDisplayResolutionAndNotifyWithResolution(
         display, new_resolution, new_resolution, refresh_rate, old_is_native,
         new_is_native, source);
@@ -220,7 +218,7 @@ TEST_F(ResolutionNotificationControllerTest, ForcedByPolicy) {
   SetDisplayResolutionAndNotify(display_manager_test.GetSecondaryDisplay(),
                                 gfx::Size(300, 200), 60, /*old_is_native=*/true,
                                 /*new_is_native=*/false,
-                                crosapi::mojom::DisplayConfigSource::kPolicy);
+                                DisplayConfigSource::kPolicy);
   EXPECT_FALSE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
