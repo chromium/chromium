@@ -249,6 +249,7 @@ void AuthFactorConfig::IsConfiguredWithContext(
         if (!user) {
           LOG(ERROR) << "No logged in user";
           std::move(callback).Run(false);
+          return;
         }
         const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
         if (!prefs) {
