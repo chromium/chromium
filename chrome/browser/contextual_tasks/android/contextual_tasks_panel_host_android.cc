@@ -4,10 +4,13 @@
 
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
 
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 
-// TODO(shobiz): Implement the methods in this file. See crrev.com/c/7630475.
 namespace contextual_tasks {
 
 // static
@@ -17,38 +20,107 @@ std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
 }
 
 ContextualTasksPanelHostAndroid::ContextualTasksPanelHostAndroid(
-    BrowserWindowInterface* browser_window) {}
+    BrowserWindowInterface* browser_window)
+    : browser_window_(browser_window) {}
 
 ContextualTasksPanelHostAndroid::~ContextualTasksPanelHostAndroid() = default;
 
-void ContextualTasksPanelHostAndroid::AddObserver(Observer* observer) {}
+void ContextualTasksPanelHostAndroid::AddObserver(
+    ContextualTasksPanelHost::Observer* observer) {
+  observers_.AddObserver(observer);
+}
 
-void ContextualTasksPanelHostAndroid::RemoveObserver(Observer* observer) {}
+void ContextualTasksPanelHostAndroid::RemoveObserver(
+    ContextualTasksPanelHost::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
-void ContextualTasksPanelHostAndroid::Show(AnimationStyle animation) {}
+void ContextualTasksPanelHostAndroid::Show(AnimationStyle animation_style) {
+  if (auto* bridge = GetOrCreateBridge()) {
+    if (bridge->Show(/*animate=*/false, /*starts_expanded=*/true)) {
+      is_open_ = true;
+      observers_.Notify(
+          &ContextualTasksPanelHost::Observer::OnSurfaceStateChanged,
+          SurfaceState::kVisible, StateChangeReason::kSystemAction);
+    }
+  }
+}
 
-void ContextualTasksPanelHostAndroid::Close(AnimationStyle animation) {}
+void ContextualTasksPanelHostAndroid::Close(AnimationStyle animation_style) {
+  if (!is_open_) {
+    return;
+  }
+  if (auto* bridge = GetOrCreateBridge()) {
+    bridge->Close();
+  }
+}
 
 bool ContextualTasksPanelHostAndroid::IsPanelInitialized() {
-  return false;
+  return true;
 }
 
 bool ContextualTasksPanelHostAndroid::IsPanelOpenForContextualTask() const {
-  return false;
+  return is_open_;
 }
 
 bool ContextualTasksPanelHostAndroid::IsPanelSuppressed() const {
-  return false;
+  return suppressed_for_testing_;
 }
 
 void ContextualTasksPanelHostAndroid::SetPanelSuppressedForTesting(
-    bool suppressed) {}
+    bool suppressed) {
+  suppressed_for_testing_ = suppressed;
+}
 
 content::WebContents* ContextualTasksPanelHostAndroid::GetWebContents() {
-  return nullptr;
+  return web_contents_.get();
 }
 
 void ContextualTasksPanelHostAndroid::SetWebContents(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents) {
+  if (web_contents_ == web_contents) {
+    return;
+  }
+
+  web_contents_ = web_contents;
+  if (auto* bridge = GetOrCreateBridge()) {
+    bridge->SetWebContents(web_contents);
+
+    if (is_open_ && web_contents) {
+      bridge->Show(/*animate=*/false, /*starts_expanded=*/true);
+    }
+  }
+}
+
+void ContextualTasksPanelHostAndroid::OnClose() {
+  is_open_ = false;
+  observers_.Notify(&ContextualTasksPanelHost::Observer::OnSurfaceStateChanged,
+                    SurfaceState::kClosed, StateChangeReason::kUserAction);
+}
+
+context_sharing::TabBottomSheetBridge*
+ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
+  if (!bridge_) {
+    TabAndroid* tab_android = GetTabAndroid();
+    if (!tab_android) {
+      return nullptr;
+    }
+    bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
+        this, tab_android);
+  }
+  return bridge_.get();
+}
+
+TabAndroid* ContextualTasksPanelHostAndroid::GetTabAndroid() const {
+  TabListInterface* tab_list = TabListInterface::From(browser_window_);
+  if (!tab_list) {
+    return nullptr;
+  }
+  tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+  if (!active_tab) {
+    return nullptr;
+  }
+  return TabAndroid::FromTabHandle(active_tab->GetHandle());
+}
 
 }  // namespace contextual_tasks

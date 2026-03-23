@@ -176,6 +176,11 @@ source_set("ui") {
     "//ui/webui",
   ]
 
+  if (is_android) {
+    public_deps +=
+        [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
+  }
+
   if (!is_android) {
     public_deps += [
       "//chrome/browser/autocomplete:aim_eligibility_service",
@@ -269,6 +274,14 @@ source_set("ui_impl") {
     "//google_apis",
     "//net",
   ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android",
+    ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/resources/contextual_tasks:resources",
