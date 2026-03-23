@@ -318,10 +318,9 @@ void UpdateLoadFlagsWithCacheFlags(int* load_flags,
 }
 
 // This should match blink::ResourceRequest::needsHTTPOrigin.
-bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
-                     const std::string& method) {
+bool NeedsHTTPOrigin(const std::string& method) {
   // Blink version of this function checks if the Origin header might have
-  // already been added to |headers|.  This check is not replicated below
+  // already been added to the headers.  This check is not replicated below
   // because:
   // 1. We want to overwrite the old (renderer-provided) header value
   //    with a new, trustworthy (browser-provided) value.
@@ -403,7 +402,7 @@ void AddAdditionalRequestHeaders(
   // Next, set the HTTP Origin if needed.
   std::optional<std::string> existing_origin =
       headers->GetHeader(net::HttpRequestHeaders::kOrigin);
-  if (NeedsHTTPOrigin(headers, method)) {
+  if (NeedsHTTPOrigin(method)) {
     // TODO(https://crbug.com/491783215): investigate whether it is possible to
     // set Origin headers (at least on navigation requests) exclusively in the
     // browser process and kill any renderer that provides Origin itself.
