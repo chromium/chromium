@@ -54,7 +54,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       bool supports_ephemeral_only,
-      base::RepeatingCallback<size_t()> get_active_task_count_callback);
+      base::RepeatingCallback<size_t()> get_active_task_count_callback,
+      base::RepeatingCallback<bool()> is_gemini_threads_enabled);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -113,6 +114,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   GetAiThreadControllerDelegate() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetGeminiThreadControllerDelegate() override;
+  bool IsGeminiThreadsEligible() override;
 
   size_t GetTabIdMapSizeForTesting() const;
 
@@ -186,6 +188,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   // Callback to retrieve the number of active tasks.
   base::RepeatingCallback<size_t()> get_active_task_count_callback_;
+
+  // Callback to determine if the profile is eligible for Gemini threads.
+  base::RepeatingCallback<bool()> is_gemini_threads_enabled_callback_;
 
   // Whether the service is initialized.
   bool is_initialized_ = false;

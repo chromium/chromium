@@ -126,6 +126,7 @@ class MockContextualTasksService : public ContextualTasksService {
                omnibox::ChromeAimEntryPoint entry_point,
                base::OnceCallback<void(GURL)> callback),
               (override));
+  MOCK_METHOD(bool, IsGeminiThreadsEligible, (), (override));
 };
 
 }  // namespace contextual_tasks
