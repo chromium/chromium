@@ -78,7 +78,7 @@
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_service_factory.h"
-#include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
@@ -200,7 +200,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   LockScreenReauthManagerFactory::GetInstance();
   LockedSessionWindowTrackerFactory::GetInstance();
   login::SecurityTokenSessionControllerFactory::GetInstance();
-  login::SigninPartitionManager::Factory::GetInstance();
+  login::SigninPartitionManagerFactory::GetInstance();
   LoginScreenExtensionsContentScriptManagerFactory::GetInstance();
   LoginScreenExtensionsLifetimeManagerFactory::GetInstance();
   multidevice_setup::AuthTokenValidatorFactory::GetInstance();

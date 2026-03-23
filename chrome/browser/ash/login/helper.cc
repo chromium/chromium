@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
@@ -167,7 +168,7 @@ void NetworkStateHelper::OnCreateConfiguration(
 content::StoragePartition* GetSigninPartition() {
   Profile* signin_profile = ProfileHelper::GetSigninProfile();
   SigninPartitionManager* signin_partition_manager =
-      SigninPartitionManager::Factory::GetForBrowserContext(signin_profile);
+      SigninPartitionManagerFactory::GetForBrowserContext(signin_profile);
   if (!signin_partition_manager->IsInSigninSession())
     return nullptr;
   return signin_partition_manager->GetCurrentStoragePartition();
@@ -179,8 +180,7 @@ content::StoragePartition* GetLockScreenPartition() {
   // refactored after we clarify when and how do we clear data from the lock
   // screen profile.
   SigninPartitionManager* partition_manager =
-      SigninPartitionManager::Factory::GetForBrowserContext(
-          lock_screen_profile);
+      SigninPartitionManagerFactory::GetForBrowserContext(lock_screen_profile);
   if (!partition_manager->IsInSigninSession())
     return nullptr;
   return partition_manager->GetCurrentStoragePartition();

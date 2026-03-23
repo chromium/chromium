@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -123,7 +124,7 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
 
   // Close the current session with SigninPartitionManager. This clears cached
   // data from the last-used sign-in StoragePartition.
-  login::SigninPartitionManager::Factory::GetForBrowserContext(signin_profile)
+  login::SigninPartitionManagerFactory::GetForBrowserContext(signin_profile)
       ->CloseCurrentSigninSession(on_clear_profile_stage_finished_);
 
   chrome::CloseAllBrowsersWithProfile(

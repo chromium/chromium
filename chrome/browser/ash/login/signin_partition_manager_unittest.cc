@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
@@ -145,7 +146,7 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   SigninPartitionManager* GetSigninPartitionManager() {
-    return SigninPartitionManager::Factory::GetForBrowserContext(
+    return SigninPartitionManagerFactory::GetForBrowserContext(
         GetSigninProfile());
   }
 

@@ -9,8 +9,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -151,41 +149,6 @@ SigninPartitionManager::GetCurrentStoragePartition() {
 bool SigninPartitionManager::IsCurrentSigninStoragePartition(
     const content::StoragePartition* storage_partition) const {
   return IsInSigninSession() && storage_partition == current_storage_partition_;
-}
-
-SigninPartitionManager::Factory::Factory()
-    : ProfileKeyedServiceFactory(
-          "SigninPartitionManager",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOwnInstance)
-              .Build()) {}
-
-SigninPartitionManager::Factory::~Factory() = default;
-
-// static
-SigninPartitionManager* SigninPartitionManager::Factory::GetForBrowserContext(
-    content::BrowserContext* browser_context) {
-  return static_cast<SigninPartitionManager*>(
-      GetInstance()->GetServiceForBrowserContext(browser_context,
-                                                 true /* create */));
-}
-
-// static
-SigninPartitionManager::Factory*
-SigninPartitionManager::Factory::GetInstance() {
-  return base::Singleton<SigninPartitionManager::Factory>::get();
-}
-
-std::unique_ptr<KeyedService>
-SigninPartitionManager::Factory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  return std::make_unique<SigninPartitionManager>(context);
 }
 
 }  // namespace login

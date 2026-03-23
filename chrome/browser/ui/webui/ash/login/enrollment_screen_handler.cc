@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
@@ -667,7 +668,7 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
   // CookieManager.
   login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
+      login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
 
   // Validity check that partition did not change during enrollment flow.
@@ -796,7 +797,7 @@ void EnrollmentScreenHandler::DoShow() {
   // Start a new session with SigninPartitionManager, generating a unique
   // StoragePartition.
   login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
+      login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   signin_partition_manager->StartSigninSession(
       web_ui()->GetWebContents(),

@@ -471,6 +471,7 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/mtp_file_system_backend_delegate.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
@@ -4310,7 +4311,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     content::StoragePartition* storage_partition =
         profile->GetStoragePartition(web_contents->GetSiteInstance());
     auto* signin_partition_manager =
-        ash::login::SigninPartitionManager::Factory::GetForBrowserContext(
+        ash::login::SigninPartitionManagerFactory::GetForBrowserContext(
             profile);
     if (!signin_partition_manager->IsCurrentSigninStoragePartition(
             storage_partition)) {

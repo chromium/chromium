@@ -16,6 +16,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
+#include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -442,7 +444,7 @@ void LockScreenStartReauthDialog::RemoveObserver(
 void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
   CHECK(profile_);
   content::StoragePartition* webview_storage_partition =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(profile_)
+      login::SigninPartitionManagerFactory::GetForBrowserContext(profile_)
           ->GetCurrentStoragePartition();
   if (webview_storage_partition) {
     // Transfer auth cache to system network context. This allows to preserve

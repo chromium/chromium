@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -183,7 +184,7 @@ void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context,
   // Start a new session with SigninPartitionManager, generating a unique
   // StoragePartition.
   login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
+      login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
 
   // TODO(http://crbug/1348126): we should also close signin session after the
@@ -212,7 +213,7 @@ void LockScreenReauthHandler::LoadGaiaWithPartition(
   // modification of the cookie header. So manually write the GAPS cookie into
   // the CookieManager.
   login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
+      login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
 
   login::SetCookieForPartition(context, signin_partition_manager,
@@ -349,7 +350,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
 
   // Create GaiaCookiesRetriever.
   login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
+      login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
       signin_partition_name_, signin_partition_manager,

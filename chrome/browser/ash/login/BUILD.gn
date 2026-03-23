@@ -73,6 +73,8 @@ static_library("login") {
     "security_token_session_controller_factory.h",
     "signin_partition_manager.cc",
     "signin_partition_manager.h",
+    "signin_partition_manager_factory.cc",
+    "signin_partition_manager_factory.h",
     "signin_specifics.h",
     "startup_utils.cc",
     "startup_utils.h",

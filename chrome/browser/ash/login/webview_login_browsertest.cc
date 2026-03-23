@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -453,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
       login::GetSigninPartition();
 
   EXPECT_FALSE(signin_frame_partition_name_1.empty());
-  EXPECT_EQ(login::SigninPartitionManager::Factory::GetForBrowserContext(
+  EXPECT_EQ(login::SigninPartitionManagerFactory::GetForBrowserContext(
                 browser_context)
                 ->GetCurrentStoragePartitionName(),
             signin_frame_partition_name_1);
@@ -479,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
       login::GetSigninPartition();
 
   EXPECT_FALSE(signin_frame_partition_name_2.empty());
-  EXPECT_EQ(login::SigninPartitionManager::Factory::GetForBrowserContext(
+  EXPECT_EQ(login::SigninPartitionManagerFactory::GetForBrowserContext(
                 browser_context)
                 ->GetCurrentStoragePartitionName(),
             signin_frame_partition_name_2);

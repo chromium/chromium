@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/network_context_getter.h"
@@ -85,27 +84,6 @@ class SigninPartitionManager : public KeyedService {
       network::NetworkContextGetter get_system_network_context_task);
   void SetOnCreateNewStoragePartitionForTesting(
       OnCreateNewStoragePartition on_create_new_storage_partition);
-
-  class Factory : public ProfileKeyedServiceFactory {
-   public:
-    static SigninPartitionManager* GetForBrowserContext(
-        content::BrowserContext* browser_context);
-
-    static Factory* GetInstance();
-
-    Factory(const Factory&) = delete;
-    Factory& operator=(const Factory&) = delete;
-
-   private:
-    friend struct base::DefaultSingletonTraits<Factory>;
-
-    Factory();
-    ~Factory() override;
-
-    // BrowserContextKeyedServiceFactory:
-    std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-        content::BrowserContext* context) const override;
-  };
 
  private:
   const raw_ptr<content::BrowserContext> browser_context_;
