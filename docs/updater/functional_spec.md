@@ -95,7 +95,7 @@ preferred language on the current system. Every string shown in the UI is
 translated.
 
 ### Bundle Installer
-TODO(crbug.com/40664480): Implement bundle installers.
+TODO(crbug.com/40149046): Implement bundle installers.
 
 The bundle installer allows installation of more than one application. The
 bundle installer is typically used in software distribution scenarios.
