@@ -29,7 +29,8 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
   ActorKeyMetricsRecorder& operator=(const ActorKeyMetricsRecorder&) = delete;
   ~ActorKeyMetricsRecorder() override;
 
-  // Adds `form_id` to the list of forms that are currently being filled by the actor.
+  // Adds `form_id` to the list of forms that are currently being filled by the
+  // actor.
   void RecordFormToFill(FormGlobalId form_id);
 
   // Tracks that suggestions were generated for `products` on a form.
@@ -50,10 +51,9 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
       const FillingPayload& filling_payload) override;
 
  private:
-  // Records the key metrics for a `form_structure` if they haven't been
+  // Records the key metrics for a `form` if they haven't been
   // recorded yet.
-  void RecordKeyMetrics(AutofillManager& manager,
-                        const FormStructure& form_structure);
+  void RecordKeyMetrics(AutofillManager& manager, const FormStructure& form);
 
   // Tracks the state of a specific filling product (e.g. Address or Credit
   // Card) for the purpose of metrics recording.
@@ -77,17 +77,17 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
         actor_filled_fields;
   };
 
-  // Records the "FillingAssistance" metric for a `form_structure`.
-  void RecordFillingAssistance(const FormStructure& form_structure,
+  // Records the "FillingAssistance" metric for a `form`.
+  void RecordFillingAssistance(const FormStructure& form,
                                const ProductState& state,
                                std::string_view product_str);
-  void RecordFillingCorrectness(const FormStructure& form_structure,
+  void RecordFillingCorrectness(const FormStructure& form,
                                 const ProductState& state,
                                 std::string_view product_str);
-  void RecordFillingReadiness(const FormStructure& form_structure,
+  void RecordFillingReadiness(const FormStructure& form,
                               const ProductState& state,
                               std::string_view product_str);
-  void RecordPerfectFillingMetric(const FormStructure& form_structure,
+  void RecordPerfectFillingMetric(const FormStructure& form,
                                   const ProductState& state,
                                   std::string_view product_str);
 
