@@ -121,6 +121,10 @@ const CGFloat kDividerWidth = 1.0;
 
   // Horizontal stack view containing the side-by-side small buttons.
   UIStackView* _smallButtonsStackView;
+
+  // Tracks the last resolved content height to prevent infinite layout loops
+  // when invalidating detents for empty or minimal content.
+  CGFloat _lastResolvedContentHeight;
 }
 
 - (void)viewDidLoad {
@@ -137,10 +141,18 @@ const CGFloat kDividerWidth = 1.0;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  __weak __typeof(self) weakSelf = self;
-  [weakSelf.sheetPresentationController animateChanges:^{
-    [weakSelf.sheetPresentationController invalidateDetents];
-  }];
+
+  CGFloat currentHeight =
+      [_contentStackView
+          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
+  if (currentHeight != _lastResolvedContentHeight) {
+    _lastResolvedContentHeight = currentHeight;
+    __weak __typeof(self) weakSelf = self;
+    [weakSelf.sheetPresentationController animateChanges:^{
+      [weakSelf.sheetPresentationController invalidateDetents];
+    }];
+  }
 }
 
 #pragma mark - Public
