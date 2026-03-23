@@ -5,34 +5,67 @@ Instructions for working in `//remoting/signaling`.
 ## Architecture Overview
 
 Remoting signaling handles the initial connection setup (handshake) between a
-client and a host. It uses Jingle (XMPP-based) for session negotiation.
+client and a host. It uses Jingle (XMPP-based) concepts for session negotiation,
+though the actual transport mechanisms have evolved.
 
-### SignalStrategy
+### SignalStrategy & Transports
 
-The `SignalStrategy` interface is the core of signaling. It abstracts the
-underlying transport (XMPP, FTL).
-- `FtlSignalStrategy`: The modern signaling strategy used in production.
-- `FakeSignalStrategy`: Used in tests to simulate signaling.
+The `SignalStrategy` interface is the core of signaling. We currently support
+two primary transport backends:
 
-### FTL (Faster Than Light)
+1.  **FTL (Faster Than Light)**
+    *   The standard proprietary signaling protocol.
+    *   Uses `FtlMessagingClient`, `FtlRegistrationManager`, and
+        `FtlSignalStrategy`.
 
-FTL is the proprietary signaling protocol used by Chrome Remote Desktop.
-- `FtlMessagingClient`: Handles sending/receiving FTL messages.
-- `FtlRegistrationManager`: Handles registering the host/client with the FTL
-  backend.
+2.  **Corp Signaling**
+    *   A newer messaging service used for enterprise/internal connections.
+    *   Uses `CorpMessagingClient`, `CorpMessageChannelStrategy`, and
+        `CorpSignalStrategy`.
+    *   **IMPORTANT (Internal Protos):** Corp signaling relies on protobufs from
+        `//remoting/internal/` which are **not publicly accessible** (requires
+        `src-internal` access to build).
+    *   To bridge the gap between public and internal builds, the codebase uses
+        `//remoting/base/internal_headers.h`. This header determines whether to
+        use the real internal implementation or a stubbed-out public
+        implementation. **Always** use the wrapper structs defined in this
+        header (e.g., `internal::PeerMessageStruct`, `internal::IqStanzaStruct`)
+        rather than trying to directly include the internal protos.
 
-### Jingle and Session Negotiation
+### Jingle, XML, and Struct Conversions
 
-Even when using FTL as a transport, the actual session negotiation (ICE,
-SDP, authentication) is still based on Jingle logic.
-- `JingleMessage`: The data structure for Jingle messages.
-- `SessionConfig`: Defines the negotiated session parameters (codecs,
-  transports).
+Historically, CRD signaling was entirely XMPP/XML-based.
+
+*   Currently, the signal strategies might receive serialized XML stanzas or
+    structured protobufs. They immediately convert these into a
+    strategy-agnostic C++ struct (`JingleMessage` or `JingleMessageReply`).
+*   The rest of the Jingle-related classes (in `//remoting/protocol`) operate
+    entirely on these structs.
+*   **Migration in progress:** The codebase is moving away from raw XML to
+    structured payloads. When adding new signaling fields, ensure they are added
+    to the C++ structs (`jingle_data_structures.h`) and their respective struct
+    converters (`jingle_message_struct_converter.cc`), not just the legacy XML
+    converters.
+
+### Message Channel
+
+*   `MessageChannel` handles the lifetime, reconnect logic, and exponential
+    backoff of the server-side stream.
+*   Transport-specific logic is injected via the `MessageChannelStrategy`
+    interface (`FtlMessageChannelStrategy` or `CorpMessageChannelStrategy`).
+
+### SignalingAddress
+
+*   Represents an endpoint and its routing channel (`FTL`, `CORP`, or `XMPP`).
 
 ## Key Files to Read
 
-- `remoting/signaling/signal_strategy.h`: The base interface.
-- `remoting/signaling/ftl_signal_strategy.h`: FTL implementation.
-- `remoting/signaling/jingle_message.h`: Jingle message structure.
-- `remoting/signaling/session_config.h`: Session negotiation parameters.
-
+*   `remoting/signaling/signal_strategy.h`: The base signaling interface.
+*   `remoting/signaling/corp_signal_strategy.h` / `ftl_signal_strategy.h`:
+    The transport implementations.
+*   `remoting/signaling/jingle_data_structures.h`: The C++ structs
+    representing Jingle messages.
+*   `remoting/signaling/jingle_message_struct_converter.h`: Conversions
+    between structured payloads and Jingle messages.
+*   `remoting/signaling/message_channel.h`: Stream lifecycle and reconnect
+    logic.
