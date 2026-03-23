@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.webid;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
-import android.credentials.GetCredentialException;
-import android.os.Build;
-
 import androidx.annotation.VisibleForTesting;
+import androidx.credentials.exceptions.CreateCredentialCancellationException;
+import androidx.credentials.exceptions.CreateCredentialInterruptedException;
+import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
+import androidx.credentials.exceptions.GetCredentialInterruptedException;
+import androidx.credentials.exceptions.NoCredentialException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -39,22 +41,16 @@ public class DigitalIdentityProvider {
     }
 
     @VisibleForTesting
-    @SuppressLint("NewApi") // GetCredentialException requires API level 34.
     public static @DigitalIdentityRequestStatusForMetrics int computeStatusForMetricsFromException(
             Exception e) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;
-        }
-
-        // Exception is passed down from Android OS call so cannot assume type of exception.
-        if (!(e instanceof GetCredentialException)) {
-            return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;
-        }
-        String credentialExceptionType = ((GetCredentialException) e).getType();
-        if (GetCredentialException.TYPE_USER_CANCELED.equals(credentialExceptionType)) {
+        if (e instanceof GetCredentialCancellationException
+                || e instanceof CreateCredentialCancellationException
+                || e instanceof GetCredentialInterruptedException
+                || e instanceof CreateCredentialInterruptedException) {
             return DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED;
         }
-        if (GetCredentialException.TYPE_NO_CREDENTIAL.equals(credentialExceptionType)) {
+        if (e instanceof NoCredentialException
+                || e instanceof CreateCredentialNoCreateOptionException) {
             return DigitalIdentityRequestStatusForMetrics.ERROR_NO_CREDENTIAL;
         }
         return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;

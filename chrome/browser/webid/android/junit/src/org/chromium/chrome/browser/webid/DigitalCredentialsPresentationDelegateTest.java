@@ -8,12 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.provider.PendingIntentHandler;
@@ -45,21 +41,14 @@ public class DigitalCredentialsPresentationDelegateTest {
                 new GetCredentialResponse(new androidx.credentials.DigitalCredential(json)));
     }
 
-    private Bundle packageIntentInResponseBundle(Intent intent) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_KEY_PROVIDER_DATA, intent);
-        return bundle;
-    }
-
     @Test
-    public void testExtractDigitalCredentialFromGetResponse() throws JSONException {
+    public void testExtractDigitalCredentialFromGetResponse()
+            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
         Intent intent = new Intent();
         packageResponseJson(JSON_WITH_PROTOCOL, intent);
-        Bundle bundle = packageIntentInResponseBundle(intent);
 
         DigitalCredential extractedCredential =
-                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromResponseBundle(
-                        Activity.RESULT_OK, bundle);
+                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(intent);
 
         assertNotNull(extractedCredential);
         assertEquals(JSON_PROTOCOL, extractedCredential.mProtocol);
@@ -67,16 +56,31 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     @Test
-    public void testExtractDigitalCredentialFromGetResponse_NoProtocol() throws JSONException {
+    public void testExtractDigitalCredentialFromGetResponse_NoProtocol()
+            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
         Intent intent = new Intent();
         packageResponseJson(JSON_WITHOUT_PROTOCOL, intent);
-        Bundle bundle = packageIntentInResponseBundle(intent);
 
         assertThrows(
                 JSONException.class,
                 () -> {
-                    DigitalCredentialsPresentationDelegate
-                            .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
+                    DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
+                            intent);
+                });
+    }
+
+    @Test
+    public void testExtractDigitalCredentialFromGetResponse_Exception() {
+        Intent intent = new Intent();
+        PendingIntentHandler.setGetCredentialException(
+                intent,
+                new androidx.credentials.exceptions.GetCredentialUnknownException("test error"));
+
+        assertThrows(
+                androidx.credentials.exceptions.GetCredentialException.class,
+                () -> {
+                    DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
+                            intent);
                 });
     }
 }

@@ -6,26 +6,32 @@ package org.chromium.chrome.browser.webid;
 
 import static org.junit.Assert.assertEquals;
 
-import android.credentials.GetCredentialException;
+import androidx.credentials.exceptions.CreateCredentialCancellationException;
+import androidx.credentials.exceptions.CreateCredentialInterruptedException;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
+import androidx.credentials.exceptions.GetCredentialInterruptedException;
+import androidx.credentials.exceptions.GetCredentialUnknownException;
+import androidx.credentials.exceptions.NoCredentialException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 
 /** Tests for {@link DigitalIdentityProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 34)
 public class DigitalIdentityProviderUnitTest {
     @Test
     public void testUserDeclined() {
         assertEquals(
                 DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED,
                 DigitalIdentityProvider.computeStatusForMetricsFromException(
-                        new GetCredentialException(
-                                GetCredentialException.TYPE_USER_CANCELED, "message")));
+                        new GetCredentialCancellationException()));
+        assertEquals(
+                DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED,
+                DigitalIdentityProvider.computeStatusForMetricsFromException(
+                        new GetCredentialInterruptedException()));
     }
 
     @Test
@@ -33,8 +39,7 @@ public class DigitalIdentityProviderUnitTest {
         assertEquals(
                 DigitalIdentityRequestStatusForMetrics.ERROR_NO_CREDENTIAL,
                 DigitalIdentityProvider.computeStatusForMetricsFromException(
-                        new GetCredentialException(
-                                GetCredentialException.TYPE_NO_CREDENTIAL, "message")));
+                        new NoCredentialException()));
     }
 
     @Test
@@ -42,7 +47,26 @@ public class DigitalIdentityProviderUnitTest {
         assertEquals(
                 DigitalIdentityRequestStatusForMetrics.ERROR_OTHER,
                 DigitalIdentityProvider.computeStatusForMetricsFromException(
-                        new GetCredentialException(
-                                GetCredentialException.TYPE_UNKNOWN, "message")));
+                        new GetCredentialUnknownException("message")));
+    }
+
+    @Test
+    public void testCreateUserDeclined() {
+        assertEquals(
+                DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED,
+                DigitalIdentityProvider.computeStatusForMetricsFromException(
+                        new CreateCredentialCancellationException()));
+        assertEquals(
+                DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED,
+                DigitalIdentityProvider.computeStatusForMetricsFromException(
+                        new CreateCredentialInterruptedException()));
+    }
+
+    @Test
+    public void testGenericException() {
+        assertEquals(
+                DigitalIdentityRequestStatusForMetrics.ERROR_OTHER,
+                DigitalIdentityProvider.computeStatusForMetricsFromException(
+                        new Exception("message")));
     }
 }
