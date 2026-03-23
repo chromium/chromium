@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
@@ -40,7 +39,6 @@ public class WebApkActivityLifecycleUmaTracker
     private final Activity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<SplashController> mSplashController;
-    private final LegacyTabStartupMetricsTracker mLegacyTabStartupMetricsTracker;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
@@ -56,7 +54,6 @@ public class WebApkActivityLifecycleUmaTracker
             Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             Supplier<SplashController> splashController,
-            LegacyTabStartupMetricsTracker legacyTabStartupMetricsTracker,
             StartupMetricsTracker startupMetricsTracker,
             Supplier<Bundle> savedInstanceStateSupplier,
             WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
@@ -64,7 +61,6 @@ public class WebApkActivityLifecycleUmaTracker
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
         mSplashController = splashController;
-        mLegacyTabStartupMetricsTracker = legacyTabStartupMetricsTracker;
         mStartupMetricsTracker = startupMetricsTracker;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
@@ -88,7 +84,6 @@ public class WebApkActivityLifecycleUmaTracker
         // Decide whether to record startup UMA histograms. This is a similar check to the one done
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
         if (isColdStart()) {
-            mLegacyTabStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             mStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             // If there is a saved instance state, then the intent (and its stored timestamp) might
             // be stale (Android replays intents if there is a recents entry for the activity).

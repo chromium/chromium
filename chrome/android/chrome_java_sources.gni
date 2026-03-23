@@ -790,7 +790,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/messages/MessageContainerCoordinator.java",
   "java/src/org/chromium/chrome/browser/messages/MessageContainerObserver.java",
   "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
-  "java/src/org/chromium/chrome/browser/metrics/LegacyTabStartupMetricsTracker.java",
   "java/src/org/chromium/chrome/browser/metrics/StartupMetricsTracker.java",
   "java/src/org/chromium/chrome/browser/metrics/StorageSystem.java",
   "java/src/org/chromium/chrome/browser/metrics/UmaActivityObserver.java",

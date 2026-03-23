@@ -60,20 +60,10 @@ public class StartupLoadingMetricsTest {
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
     private static final String ERROR_PAGE = "/close-socket";
     private static final String SLOW_PAGE = "/slow?2";
-    private static final String FIRST_COMMIT_HISTOGRAM =
-            "Startup.Android.Cold.TimeToFirstNavigationCommit";
-    private static final String FIRST_COMMIT_HISTOGRAM2 =
-            "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed";
-    private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
-            "Startup.Android.Cold.TimeToFirstContentfulPaint";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstContentfulPaint3";
-    private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
-            "Startup.Android.Cold.TimeToFirstVisibleContent2";
     private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4 =
             "Startup.Android.Cold.TimeToFirstVisibleContent4";
-    private static final String VISIBLE_CONTENT_HISTOGRAM =
-            "Startup.Android.Cold.TimeToVisibleContent";
     private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
             "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
@@ -179,13 +169,6 @@ public class StartupLoadingMetricsTest {
     }
 
     private void assertHistogramsRecordedAsExpected(int expectedCount, String histogramSuffix) {
-        boolean isTabbedSuffix = histogramSuffix.equals(TABBED_SUFFIX);
-
-        // Check that the new first navigation commit events are recorded for the tabbed activity.
-        Assert.assertEquals(
-                isTabbedSuffix ? expectedCount : 0,
-                RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
-
         int coldStartFirstCommit4Samples =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_HISTOGRAM3 + histogramSuffix);
@@ -196,46 +179,14 @@ public class StartupLoadingMetricsTest {
                         FIRST_CONTENTFUL_PAINT_HISTOGRAM3 + histogramSuffix);
         Assert.assertTrue(coldStartFirstContentfulPaintSamples < 2);
 
-        int firstCommitSamples =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_COMMIT_HISTOGRAM + histogramSuffix);
-        Assert.assertTrue(firstCommitSamples < 2);
-
-        int firstContentfulPaintSamples =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix);
-        Assert.assertTrue(firstContentfulPaintSamples < 2);
-
-        int visibleContentSamples =
-                RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM);
         int timeToStartupFcpOrPaintPreviewSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM);
-        Assert.assertTrue(visibleContentSamples < 2);
         Assert.assertTrue(timeToStartupFcpOrPaintPreviewSamples < 2);
 
-        if (expectedCount == 1 && firstCommitSamples == 0) {
-            // The startup FCP and 'visible content' also record their samples depending on how fast
-            // they happen in relation to the post-native initialization.
-            Assert.assertTrue(firstCommitSamples <= firstContentfulPaintSamples);
-            Assert.assertTrue(firstCommitSamples <= visibleContentSamples);
-        } else {
-            // Once the racy commit case is excluded, the histograms should record the expected
-            // number of samples.
-            Assert.assertEquals(expectedCount, firstCommitSamples);
-            Assert.assertEquals(expectedCount, firstContentfulPaintSamples);
-            if (isTabbedSuffix) {
-                Assert.assertEquals(expectedCount, visibleContentSamples);
-            }
-        }
-
-        if (isTabbedSuffix) {
+        if (histogramSuffix.equals(TABBED_SUFFIX)) {
             // These tests only exercise the cases when the first visible content is calculated as
             // the first navigation commit.
-            Assert.assertEquals(
-                    expectedCount,
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            FIRST_VISIBLE_CONTENT_HISTOGRAM2));
             Assert.assertEquals(
                     coldStartFirstCommit4Samples,
                     RecordHistogram.getHistogramTotalCountForTesting(
@@ -547,22 +498,14 @@ public class StartupLoadingMetricsTest {
 
         // Startup metrics should not have been recorded since the browser does not know it is in
         // the foreground.
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
         assertMainIntentLaunchColdStartHistogramRecorded(0);
 
         // The metric based on early foreground notification should be recorded.
-        Assert.assertEquals(
-                1, RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_HISTOGRAM3 + TABBED_SUFFIX));
         // The startup time is not zero.
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramValueCountForTesting(FIRST_COMMIT_HISTOGRAM2, 0));
         Assert.assertEquals(
                 0,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -570,12 +513,6 @@ public class StartupLoadingMetricsTest {
 
         // Trigger the come-to-foreground event. This time it should not be skipped.
         ThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
-
-        // Startup metrics should still not have been recorded...
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
     }
 
     @Test

@@ -131,7 +131,6 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
         @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
         @Override
         public void handleOnBackPressed() {
-            if (mOnBackPressed != null) mOnBackPressed.run();
             mLastCalledHandlerType = -1;
             if (ChromeFeatureList.sLockBackPressHandlerAtStart.isEnabled()
                     && mActiveHandler != null) {
@@ -209,7 +208,6 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private @Nullable OnBackInvokedCallback mOnSystemNavigationCallback;
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
-    private @Nullable Runnable mOnBackPressed;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
     private final ObserverList<OnSystemNavigationObserver> mOnSystemNavigationObservers =
             new ObserverList<>();
@@ -347,16 +345,9 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     }
 
     /**
-     * Set a callback fired when a back press is triggered. This is introduced to investigate data
-     * inconsistency between experimental groups. and is not intended to be re-used.
-     */
-    public void setOnBackPressedListener(Runnable callback) {
-        mOnBackPressed = callback;
-    }
-
-    /**
      * Turn on more checks if a system back arm is available, such as when running on tabbed
      * activity.
+     *
      * @param hasSystemBackArm True if system back arm is feasible.
      */
     public void setHasSystemBackArm(boolean hasSystemBackArm) {

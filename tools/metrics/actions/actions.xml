@@ -14235,6 +14235,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="FirstVisibleContentAfterBackPress">
+  <obsolete>Deprecated 03/2025</obsolete>
   <owner>lazzzis@google.com</owner>
   <description>
     Record that the first visible content is drawn (i.e. at the moment when
@@ -49635,6 +49636,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SystemBackBeforeFirstVisibleContent2">
+  <obsolete>Deprecated 03/2025</obsolete>
   <owner>lazzzis@google.com</owner>
   <description>
     Records that a back press occurs before the first visible content is drawn

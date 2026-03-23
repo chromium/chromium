@@ -2140,14 +2140,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
-        assert getLegacyTabStartupMetricsTracker() != null;
         assert getStartupMetricsTracker() != null;
 
         if (shouldTrackColdStartupMetrics) {
-            getLegacyTabStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
             getStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
-        } else {
-            getLegacyTabStartupMetricsTracker().cancelTrackingStartupMetrics();
         }
     }
 
@@ -3239,7 +3235,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         TabGroupUsageTracker.initialize(
                 this.getLifecycleDispatcher(), tabModelSelector, this::isWarmOnResume);
 
-        assert getLegacyTabStartupMetricsTracker() != null;
         assert getStartupMetricsTracker() != null;
         StartupPaintPreviewHelper paintPreviewHelper =
                 new StartupPaintPreviewHelper(
@@ -3253,7 +3248,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     : getToolbarManager().getProgressBarCoordinator();
                         });
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
-        getLegacyTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
         getStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
         maybeRegisterHomeModules();
     }

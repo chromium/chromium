@@ -46,12 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Records UMA page load metrics for the first navigation on a cold start.
- *
- * <p>Uses different cold start heuristics from {@link LegacyTabStartupMetricsTracker}. These
- * heuristics aim to replace a few metrics from Startup.Android.Cold.*.
- */
+/** Records various Chrome Android cold start metrics. */
 @NullMarked
 public class StartupMetricsTracker {
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;

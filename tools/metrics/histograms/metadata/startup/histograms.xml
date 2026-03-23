@@ -150,17 +150,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
-    enum="Boolean" expires_after="2026-07-26">
-  <owner>blundell@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records whether the first paint of StartupPaintPreview after a cold start
-    occurred before UmaUtils.hasComeToForegroundWithNative() became true.
-    Recorded only for startups in which startup metrics were being tracked.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed"
     units="ms" expires_after="2026-08-11">
   <owner>xinghuilu@chromium.org</owner>
@@ -211,21 +200,6 @@ chromium-metrics-reviews@google.com.
 
     Recorded only when a mismatch occurs during startup. Only available starting
     with API Level 36.
-  </summary>
-</histogram>
-
-<histogram
-    name="Startup.Android.Cold.TimeToFirstContentfulPaint.{StartActivityType}"
-    units="ms" expires_after="2026-08-09">
-  <owner>pasko@chromium.org</owner>
-  <owner>alexilin@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Android: The time from the activity creation point to the first contentful
-    paint of the first loaded page. It's not recorded when the first loaded page
-    is non http(s) page like a chrome error page, a new tab page, a blank page.
-    It's also not recorded if the application wasn't in the foreground since the
-    start till the end of event. {StartActivityType}
   </summary>
 </histogram>
 
@@ -289,46 +263,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Startup.Android.Cold.TimeToFirstNavigationCommit.{StartActivityType}"
-    units="ms" expires_after="2026-08-09">
-  <owner>pasko@chromium.org</owner>
-  <owner>alexilin@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Android: The time from the activity creation point to the moment the first
-    navigation is committed, i.e. when renderer gets the first byte of the
-    document. It's not recorded when the first loaded page is non http(s) page
-    like a chrome error page, a new tab page, a blank page. It's also not
-    recorded if the application wasn't in the foreground since the start till
-    the end of event. {StartActivityType}
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed"
-    units="ms" expires_after="2026-03-22">
-  <owner>pasko@chromium.org</owner>
-  <owner>agrieve@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Same as Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed with two
-    modifications. Aims to replace the original metric.
-
-    The first difference is to record navigation commits happening before
-    post-native initialization. The second modifications is not to record
-    samples when FRE is shown.
-
-    This metric was replaced by the
-    Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed. The differences
-    are:
-
-    - The new metric utilizes the ColdStartTracker to record 5x more valid
-    samples than the current one.
-
-    - The new metric adds back the .WebApk variant
-  </summary>
-</histogram>
-
-<histogram
     name="Startup.Android.Cold.TimeToFirstNavigationCommit3.{StartActivityType}"
     units="ms" expires_after="never">
 <!-- expires-never: used for a guiding metric: TimeToFirstVisibleContent4 -->
@@ -362,26 +296,6 @@ chromium-metrics-reviews@google.com.
     NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
     due to an issue with the recording of BrowserProcessCreationReason affecting
     ColdStartTracker downstream.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent2" units="ms"
-    expires_after="2026-09-13">
-  <owner>yfriedman@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    This histogram (the v2) will soon stop being recorded. It is superceded by
-    the v4: Startup.Android.Cold.TimeToFirstVisibleContent4. Compared to v2 the
-    new histogram fixes a few issues:
-
-    - v2 relies on Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed as
-    its submetric, and v4 takes the updated
-    Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed as the source
-
-    - v2 marks the startup as Cold if during creation of the first Activity the
-    native library was not loaded
   </summary>
 </histogram>
 
@@ -467,25 +381,6 @@ chromium-metrics-reviews@google.com.
     cold starts. TimeToFirstContentfulPaint3.Tabbed utilizes ColdStartTracker
     which is only reliable starting with Android P as ProcessCreationReason is
     used to determine cold starts.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
-    expires_after="2026-07-26">
-  <owner>ckitagawa@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Android: The time from the activity creation point to the moment the content
-    may first appear ready to a user. The intent is to capture readiness of
-    Chrome regardless of whether Chrome is launched into native UI or a web
-    page. The recorded value is the minimum of
-    'Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed' and
-    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metric values.
-
-    Not to be mistaken with the Startup.Android.Cold.TimeToFirstVisibleContent
-    histogram, as this metric is intended for the use of the Paint Preview
-    owners and the other is intended to track Clank's perceived cold start
-    performance.
   </summary>
 </histogram>
 

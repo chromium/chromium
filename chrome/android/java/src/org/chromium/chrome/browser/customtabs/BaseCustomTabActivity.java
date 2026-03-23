@@ -499,7 +499,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 this,
                 getIntentDataProvider(),
                 getSplashControllerSupplier(),
-                getLegacyTabStartupMetricsTracker(),
                 getStartupMetricsTracker(),
                 this::getSavedInstanceState,
                 getWebappDeferredStartupWithStorageHandler(),
