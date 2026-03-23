@@ -167,10 +167,16 @@ void RunReadabilityHeuristic(content::WebContents* contents,
 }
 
 void OnOptimizationGuideDecision(
-    content::WebContents* contents,
+    base::WeakPtr<content::WebContents> contents_weak,
     base::OnceCallback<void(bool)> result_callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  content::WebContents* contents = contents_weak.get();
+  if (!contents) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
   // This check is already done in CheckIfShouldSuggestReadingMode but it's
   // possible that the page was not detected as a PDF yet so check again.
   if (auto* pdf_helper = GetPdf(contents)) {
@@ -205,7 +211,7 @@ void RunOptimizationGuide(
       bwi->GetActiveTabInterface()->GetContents()->GetLastCommittedURL(),
       optimization_guide::proto::READER_MODE_ELIGIBLE,
       base::BindOnce(&OnOptimizationGuideDecision,
-                     bwi->GetActiveTabInterface()->GetContents(),
+                     bwi->GetActiveTabInterface()->GetContents()->GetWeakPtr(),
                      std::move(result_callback)));
 }
 
