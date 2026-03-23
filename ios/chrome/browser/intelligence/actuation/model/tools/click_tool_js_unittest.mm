@@ -42,8 +42,6 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
  public:
   static constexpr int kButtonX = 50;
   static constexpr int kButtonY = 50;
-  static constexpr int kIframeX = 50;
-  static constexpr int kIframeY = 200;
   static constexpr int kEmptyX = 10;
   static constexpr int kEmptyY = 10;
   static constexpr int kDevicePixelRatio = 2;
@@ -64,6 +62,7 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
     ASSERT_TRUE(test_server_.Start());
 
     AddGCrWebScript();
+    AddUserScript(@"dom_node_ids_test");
     AddUserScript(@"click_tool");
 
     ASSERT_TRUE(
@@ -90,16 +89,26 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
     return events;
   }
 
-  NSDictionary* PerformClick(int x,
-                             int y,
-                             int clickType,
-                             int clickCount,
-                             int pixelType) {
-    NSString* script =
-        [NSString stringWithFormat:
-                      @"__gCrWeb.getRegisteredApi('click_tool').getFunction('"
-                      @"clickByCoordinate')(%d, %d, %d, %d, %d)",
-                      x, y, clickType, clickCount, pixelType];
+  NSDictionary* ClickByCoordinate(int x,
+                                  int y,
+                                  int clickType,
+                                  int clickCount,
+                                  int pixelType) {
+    NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
+        R"(__gCrWeb.getRegisteredApi('click_tool').getFunction()"
+        R"('clickByCoordinate')(%d, %d, %d, %d, %d))",
+        x, y, clickType, clickCount, pixelType));
+
+    id result = web::test::ExecuteJavaScript(web_view(), script);
+    NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+    return resultDict;
+  }
+
+  NSDictionary* ClickByNodeId(int nodeId, int clickType, int clickCount) {
+    NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
+        R"(__gCrWeb.getRegisteredApi('click_tool').getFunction()"
+        R"('clickByNodeId')(%d, %d, %d))",
+        nodeId, clickType, clickCount));
 
     id result = web::test::ExecuteJavaScript(web_view(), script);
     NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
@@ -139,9 +148,10 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
   net::EmbeddedTestServer test_server_;
 };
 
-TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_SingleClick_OnButton) {
-  NSDictionary* result = PerformClick(kButtonX, kButtonY, /*clickType=*/1,
-                                      /*clickCount=*/1, /*pixelType=*/1);
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_DensityIndependentPixels_SingleClick_OnButton) {
+  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
+                                           /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -151,9 +161,10 @@ TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_SingleClick_OnButton) {
   EXPECT_EQ(GetButtonText(), "Clicked");
 }
 
-TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_DoubleClick_OnButton) {
-  NSDictionary* result = PerformClick(kButtonX, kButtonY, /*clickType=*/1,
-                                      /*clickCount=*/2, /*pixelType=*/1);
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_DensityIndependentPixels_DoubleClick_OnButton) {
+  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
+                                           /*clickCount=*/2, /*pixelType=*/1);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -169,9 +180,10 @@ TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_DoubleClick_OnButton) {
   EXPECT_EQ(GetButtonText(), "Clicked");
 }
 
-TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_RightClick_OnButton) {
-  NSDictionary* result = PerformClick(kButtonX, kButtonY, /*clickType=*/2,
-                                      /*clickCount=*/1, /*pixelType=*/1);
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_DensityIndependentPixels_RightClick_OnButton) {
+  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/2,
+                                           /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -181,18 +193,9 @@ TEST_F(ClickToolJavascriptTest, DensityIndependentPixels_RightClick_OnButton) {
 }
 
 TEST_F(ClickToolJavascriptTest,
-       DensityIndependentPixels_SingleClick_OnIframe_Fails) {
-  NSDictionary* result = PerformClick(kIframeX, kIframeY, /*clickType=*/1,
-                                      /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_FALSE([result[@"success"] boolValue]);
-  EXPECT_TRUE([result[@"message"]
-      containsString:@"iframe found at the target coordinates."]);
-}
-
-TEST_F(ClickToolJavascriptTest,
-       DensityIndependentPixels_SingleClick_OnEmptySpace) {
-  NSDictionary* result = PerformClick(kEmptyX, kEmptyY, /*clickType=*/1,
-                                      /*clickCount=*/1, /*pixelType=*/1);
+       ClickByCoordinate_DensityIndependentPixels_SingleClick_OnEmptySpace) {
+  NSDictionary* result = ClickByCoordinate(kEmptyX, kEmptyY, /*clickType=*/1,
+                                           /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -202,18 +205,19 @@ TEST_F(ClickToolJavascriptTest,
 }
 
 TEST_F(ClickToolJavascriptTest,
-       DensityIndependentPixels_Click_NegativeCoordinates_Fails) {
-  NSDictionary* result = PerformClick(-50, -50, /*clickType=*/1,
-                                      /*clickCount=*/1, /*pixelType=*/1);
+       ClickByCoordinate_DensityIndependentPixels_NegativeCoordinates_Fails) {
+  NSDictionary* result = ClickByCoordinate(-50, -50, /*clickType=*/1,
+                                           /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_FALSE([result[@"success"] boolValue]);
   EXPECT_TRUE([result[@"message"]
       containsString:@"No element found at the target coordinates."]);
 }
 
-TEST_F(ClickToolJavascriptTest,
-       DensityIndependentPixels_UnknownClickType_DefaultsToLeft) {
-  NSDictionary* result = PerformClick(kButtonX, kButtonY, /*clickType=*/99,
-                                      /*clickCount=*/1, /*pixelType=*/1);
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_DensityIndependentPixels_UnknownClickType_DefaultsToLeft) {
+  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/99,
+                                           /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -222,15 +226,16 @@ TEST_F(ClickToolJavascriptTest,
   EXPECT_EQ(expected, actual);
 }
 
-TEST_F(ClickToolJavascriptTest, PhysicalPixels_SingleClick_OnButton) {
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_PhysicalPixels_SingleClick_OnButton) {
   (void)web::test::ExecuteJavaScript(
-      web_view(), [NSString stringWithFormat:@"window.devicePixelRatio = %d;",
-                                             kDevicePixelRatio]);
+      web_view(), base::SysUTF8ToNSString(base::StringPrintf(
+                      R"(window.devicePixelRatio = %d;)", kDevicePixelRatio)));
 
   int x = kButtonX * kDevicePixelRatio;
   int y = kButtonY * kDevicePixelRatio;
-  NSDictionary* result = PerformClick(x, y, /*clickType=*/1,
-                                      /*clickCount=*/1, /*pixelType=*/2);
+  NSDictionary* result = ClickByCoordinate(x, y, /*clickType=*/1,
+                                           /*clickCount=*/1, /*pixelType=*/2);
   EXPECT_TRUE([result[@"success"] boolValue]);
 
   std::vector<EventInfo> expected =
@@ -238,6 +243,72 @@ TEST_F(ClickToolJavascriptTest, PhysicalPixels_SingleClick_OnButton) {
   std::vector<EventInfo> actual = GetCapturedEvents();
   EXPECT_EQ(expected, actual);
   EXPECT_EQ(GetButtonText(), "Clicked");
+}
+
+TEST_F(ClickToolJavascriptTest, ClickByNodeId_NotFound) {
+  NSDictionary* result = ClickByNodeId(999, /*clickType=*/1, /*clickCount=*/1);
+  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_TRUE(
+      [result[@"message"] containsString:@"No element found with id 999."]);
+}
+
+TEST_F(ClickToolJavascriptTest, ClickByNodeId_Success) {
+  id nodeIdResult =
+      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+        var el = document.getElementById('target_button');
+        __gCrWeb.getRegisteredApi('dom_node_ids_test')
+                .getFunction('getOrCreateNodeId')(el);
+      )"));
+  int nodeId = [nodeIdResult intValue];
+  ASSERT_GT(nodeId, 0);
+
+  NSDictionary* result =
+      ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
+  EXPECT_TRUE([result[@"success"] boolValue]);
+
+  std::vector<EventInfo> expected =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
+  std::vector<EventInfo> actual = GetCapturedEvents();
+  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(GetButtonText(), "Clicked");
+}
+
+TEST_F(ClickToolJavascriptTest, ClickByNodeId_TextNode_Success) {
+  id nodeIdResult =
+      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+        var el = document.getElementById('target_button').firstChild;
+        __gCrWeb.getRegisteredApi('dom_node_ids_test')
+                .getFunction('getOrCreateNodeId')(el);
+      )"));
+  int nodeId = [nodeIdResult intValue];
+  ASSERT_GT(nodeId, 0);
+
+  NSDictionary* result =
+      ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
+  EXPECT_TRUE([result[@"success"] boolValue]);
+
+  std::vector<EventInfo> expected =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
+  std::vector<EventInfo> actual = GetCapturedEvents();
+  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(GetButtonText(), "Clicked");
+}
+
+TEST_F(ClickToolJavascriptTest, ClickByNodeId_UnclickableNode_Fails) {
+  id nodeIdResult =
+      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('dom_node_ids_test')
+                .getFunction('getOrCreateNodeId')(document);
+      )"));
+  int nodeId = [nodeIdResult intValue];
+  ASSERT_GT(nodeId, 0);
+
+  NSDictionary* result =
+      ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
+  EXPECT_FALSE([result[@"success"] boolValue]);
+  NSString* expectedMessage =
+      [NSString stringWithFormat:@"Node with id %d is not clickable.", nodeId];
+  EXPECT_TRUE([result[@"message"] containsString:expectedMessage]);
 }
 
 }  // namespace

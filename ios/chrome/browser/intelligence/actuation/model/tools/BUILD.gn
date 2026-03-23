@@ -77,6 +77,7 @@ optimize_ts("click_tool_ts") {
 
   deps = [
     ":actuation_utils_ts",
+    "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }

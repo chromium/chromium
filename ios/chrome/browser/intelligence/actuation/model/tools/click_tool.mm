@@ -33,10 +33,17 @@ base::expected<std::unique_ptr<ClickTool>, ActuationError> ClickTool::Create(
         ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
   }
 
-  if (!action.has_target() || !action.target().has_coordinate()) {
-    // Bling currently only uses the Coordinate field of the ActionTarget.
-    // TODO(crbug.com/476461762): add support for (document_identifier,
-    // dom_node_id).
+  if (!action.has_target()) {
+    return base::unexpected(
+        ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
+  }
+
+  const auto& target = action.target();
+  bool can_target_by_coordinate = target.has_coordinate();
+  bool can_target_by_node_id =
+      target.has_content_node_id() && target.has_document_identifier();
+
+  if (!can_target_by_coordinate && !can_target_by_node_id) {
     return base::unexpected(
         ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
   }

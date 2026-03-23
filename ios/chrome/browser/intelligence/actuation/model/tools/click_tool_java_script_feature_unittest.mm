@@ -60,6 +60,19 @@ class ClickToolJavaScriptFeatureTest : public IOSChromeTestWithWebState {
         optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS);
     return action;
   }
+
+  ClickAction CreateClickActionWithNodeId() {
+    ClickAction action;
+    // Use arbitrary values since the JS function is mocked.
+    action.mutable_target()->set_content_node_id(123);
+    action.mutable_target()
+        ->mutable_document_identifier()
+        ->set_serialized_token("doc_id");
+    action.set_click_type(ClickAction::LEFT);
+    action.set_click_count(ClickAction::SINGLE);
+    return action;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -138,21 +151,32 @@ TEST_F(ClickToolJavaScriptFeatureTest,
   EXPECT_EQ(result.error().message, "Unknown error in JS.");
 }
 
-TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
-  int kIframeSize = 100;
-  // Load HTML with an iframe at specific coordinates.
-  NSString* html =
-      [NSString stringWithFormat:@"<html><body>"
-                                 @"<iframe style='position:absolute; left:0px; "
-                                 @"top:0px; width:%dpx; height:%dpx;'></iframe>"
-                                 @"</body></html>",
-                                 kIframeSize, kIframeSize];
-  web::test::LoadHtml(html, web_state());
+TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
+  ClickAction action = CreateClickActionWithCoordinates();
+
+  base::test::TestFuture<ActuationTool::ActuationResult> future;
+  feature()->Click(main_frame, action, future.GetCallback());
+
+  auto result = future.Get();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_JsReturnsError) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
-  ClickAction action =
-      CreateClickActionWithCoordinates(kIframeSize / 2, kIframeSize / 2);
+  // Override the JS function to return an error dictionary.
+  web::test::ExecuteJavaScriptForFeature(web_state(),
+                                         base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('click_tool').addFunction('clickByNodeId',
+          function() { return {success: false, message: 'Custom JS Error'}; }
+        ); true;
+      )"),
+                                         feature());
+
+  ClickAction action = CreateClickActionWithNodeId();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
@@ -161,13 +185,23 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code,
             ActuationErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(result.error().message, "iframe found at the target coordinates.");
+  EXPECT_EQ(result.error().message, "Custom JS Error");
 }
 
-TEST_F(ClickToolJavaScriptFeatureTest, ClickSuccess) {
+TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
-  ClickAction action = CreateClickActionWithCoordinates();
+
+  // Override the JS function to return a success dictionary.
+  web::test::ExecuteJavaScriptForFeature(web_state(),
+                                         base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('click_tool').addFunction('clickByNodeId',
+          function() { return {success: true}; }
+        ); true;
+      )"),
+                                         feature());
+
+  ClickAction action = CreateClickActionWithNodeId();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());

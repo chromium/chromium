@@ -7,6 +7,7 @@
  */
 
 import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actuation/model/tools/resources/actuation_utils.js';
+import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -29,6 +30,7 @@ function dispatchClickEvents(
     button = 2;
   }
 
+  const elementWindow = element.ownerDocument?.defaultView ?? window;
   const touch = new Touch({
     identifier: 0,
     target: element,
@@ -39,7 +41,7 @@ function dispatchClickEvents(
   const touchEventInit: TouchEventInit = {
     bubbles: true,
     cancelable: false,
-    view: window,
+    view: elementWindow,
     touches: [touch],
     targetTouches: [touch],
     changedTouches: [touch],
@@ -49,7 +51,7 @@ function dispatchClickEvents(
     const mouseEventInit: MouseEventInit = {
       bubbles: true,
       cancelable: false,
-      view: window,
+      view: elementWindow,
       detail: detail,
       clientX: clientX,
       clientY: clientY,
@@ -84,7 +86,7 @@ function dispatchClickEvents(
     const dblClickInit: MouseEventInit = {
       bubbles: true,
       cancelable: false,
-      view: window,
+      view: elementWindow,
       detail: 2,
       clientX: clientX,
       clientY: clientY,
@@ -118,16 +120,48 @@ function clickByCoordinate(
       message: 'No element found at the target coordinates.',
     };
   }
-  if (element.tagName.toUpperCase() === 'IFRAME') {
+  return dispatchClickEvents(element, clientX, clientY, clickType, clickCount);
+}
+
+/**
+ * Simulates a click on an element specified by its DOM node ID.
+ * @param clickType The type of click (0=UNKNOWN, 1=LEFT, 2=RIGHT).
+ * @param clickCount The number of clicks (0=UNKNOWN, 1=SINGLE, 2=DOUBLE).
+ * @return an object containing the result of the click attempt.
+ */
+function clickByNodeId(nodeId: number, clickType: number, clickCount: number): {
+  success: boolean,
+  message?: string,
+} {
+  const node = getNodeById(nodeId, window);
+  if (!node) {
     return {
       success: false,
-      message: 'iframe found at the target coordinates.',
+      message: `No element found with id ${nodeId}.`,
     };
   }
+
+  let element: Element;
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    element = node as Element;
+  } else if (node.nodeType === Node.TEXT_NODE && node.parentElement) {
+    element = node.parentElement;
+  } else {
+    return {
+      success: false,
+      message: `Node with id ${nodeId} is not clickable.`,
+    };
+  }
+
+  // Click at the center of the element.
+  const rect = element.getBoundingClientRect();
+  const clientX = rect.x + (rect.width / 2);
+  const clientY = rect.y + (rect.height / 2);
 
   return dispatchClickEvents(element, clientX, clientY, clickType, clickCount);
 }
 
 const clickToolApi = new CrWebApi('click_tool');
 clickToolApi.addFunction('clickByCoordinate', clickByCoordinate);
+clickToolApi.addFunction('clickByNodeId', clickByNodeId);
 gCrWeb.registerApi(clickToolApi);
