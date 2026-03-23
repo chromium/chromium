@@ -22,26 +22,22 @@ ClickToolJavaScriptFeature* ClickToolJavaScriptFeature::GetInstance() {
   return instance.get();
 }
 
-// Note: Error strings in this file are for debugging purposes and are not
-// displayed to the user.
 ClickToolJavaScriptFeature::ClickToolJavaScriptFeature()
     : web::JavaScriptFeature(
           web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
-              // TODO(crbug.com/476090817) - Inject in all frames once we can
-              // reliably identify iframes in JS and native code.
-              FeatureScript::TargetFrames::kMainFrame,
+              FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 ClickToolJavaScriptFeature::~ClickToolJavaScriptFeature() = default;
 
 void ClickToolJavaScriptFeature::Click(
-    web::WebFrame* web_frame,
+    web::WebFrame* target_frame,
     const optimization_guide::proto::ClickAction& action,
     ActuationTool::ActuationCallback callback) {
-  CHECK(web_frame);
+  CHECK(target_frame);
   CHECK(action.has_target() && action.target().has_coordinate());
   CHECK(action.has_click_count() && action.has_click_type());
 
@@ -55,7 +51,7 @@ void ClickToolJavaScriptFeature::Click(
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
-      web_frame, "click_tool.clickByCoordinate", parameters,
+      target_frame, "click_tool.clickByCoordinate", parameters,
       base::BindOnce(&ClickToolJavaScriptFeature::ProcessClickResult,
                      base::Unretained(GetInstance()), std::move(cb_for_js)),
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));

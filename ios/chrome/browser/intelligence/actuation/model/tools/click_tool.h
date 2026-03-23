@@ -7,8 +7,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_target_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/web_actuation_tool.h"
 
 class ProfileIOS;
 class ClickToolJavaScriptFeature;
@@ -18,7 +20,7 @@ class WebState;
 }  // namespace web
 
 // Tool to click an element on a page.
-class ClickTool : public ActuationTool {
+class ClickTool : public WebActuationTool {
  public:
   ~ClickTool() override;
 
@@ -30,12 +32,19 @@ class ClickTool : public ActuationTool {
   void Execute(ActuationCallback callback) override;
 
  private:
+  void OnTargetFrameResolved(
+      const optimization_guide::proto::ClickAction& action,
+      ActuationCallback callback,
+      base::expected<ActuationTargetJavaScriptFeature::TargetFrameResult,
+                     ActuationError> result);
+
   ClickTool(const optimization_guide::proto::ClickAction& action,
             base::WeakPtr<web::WebState> web_state);
 
   optimization_guide::proto::ClickAction action_;
   base::WeakPtr<web::WebState> web_state_;
   raw_ptr<ClickToolJavaScriptFeature> js_feature_ = nullptr;
+  base::WeakPtrFactory<ClickTool> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_TOOLS_CLICK_TOOL_H_

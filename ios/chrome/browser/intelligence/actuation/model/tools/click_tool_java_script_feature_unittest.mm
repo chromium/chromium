@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool_java_script_feature.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -12,7 +13,6 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -49,7 +49,8 @@ class ClickToolJavaScriptFeatureTest : public IOSChromeTestWithWebState {
     return ClickToolJavaScriptFeature::GetInstance();
   }
 
-  ClickAction CreateClickAction(int x = kMidPointX, int y = kMidPointY) {
+  ClickAction CreateClickActionWithCoordinates(int x = kMidPointX,
+                                               int y = kMidPointY) {
     ClickAction action;
     action.mutable_target()->mutable_coordinate()->set_x(x);
     action.mutable_target()->mutable_coordinate()->set_y(y);
@@ -62,20 +63,20 @@ class ClickToolJavaScriptFeatureTest : public IOSChromeTestWithWebState {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
+TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_JsReturnsNonDict) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
   // Override the JS function to return a string.
-  web::test::ExecuteJavaScriptForFeature(
-      web_state(),
-      @"__gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate'"
-      @", "
-      @"  function() { return 'unexpected type'; }"
-      @"); true;",
-      feature());
+  web::test::ExecuteJavaScriptForFeature(web_state(),
+                                         base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate',
+          function() { return 'unexpected type'; }
+        ); true;
+      )"),
+                                         feature());
 
-  ClickAction action = CreateClickAction();
+  ClickAction action = CreateClickActionWithCoordinates();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
@@ -86,20 +87,20 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
             ActuationErrorCode::kJavascriptFeatureGotInvalidResult);
 }
 
-TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
+TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_JsReturnsError) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
   // Override the JS function to return an error dictionary.
-  web::test::ExecuteJavaScriptForFeature(
-      web_state(),
-      @"__gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate'"
-      @", "
-      @"  function() { return {success: false, message: 'Custom JS Error'}; }"
-      @"); true;",
-      feature());
+  web::test::ExecuteJavaScriptForFeature(web_state(),
+                                         base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate',
+          function() { return {success: false, message: 'Custom JS Error'}; }
+        ); true;
+      )"),
+                                         feature());
 
-  ClickAction action = CreateClickAction();
+  ClickAction action = CreateClickActionWithCoordinates();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
@@ -111,20 +112,21 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
   EXPECT_EQ(result.error().message, "Custom JS Error");
 }
 
-TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
+TEST_F(ClickToolJavaScriptFeatureTest,
+       ClickByCoordinate_JsReturnsErrorWithoutMessage) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
   // Override the JS function to return an error dictionary without message.
-  web::test::ExecuteJavaScriptForFeature(
-      web_state(),
-      @"__gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate'"
-      @", "
-      @"  function() { return {success: false}; }"
-      @"); true;",
-      feature());
+  web::test::ExecuteJavaScriptForFeature(web_state(),
+                                         base::SysUTF8ToNSString(R"(
+        __gCrWeb.getRegisteredApi('click_tool').addFunction('clickByCoordinate',
+          function() { return {success: false}; }
+        ); true;
+      )"),
+                                         feature());
 
-  ClickAction action = CreateClickAction();
+  ClickAction action = CreateClickActionWithCoordinates();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
@@ -149,7 +151,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
-  ClickAction action = CreateClickAction(kIframeSize / 2, kIframeSize / 2);
+  ClickAction action =
+      CreateClickActionWithCoordinates(kIframeSize / 2, kIframeSize / 2);
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
@@ -164,7 +167,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
 TEST_F(ClickToolJavaScriptFeatureTest, ClickSuccess) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
-  ClickAction action = CreateClickAction();
+  ClickAction action = CreateClickActionWithCoordinates();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;
   feature()->Click(main_frame, action, future.GetCallback());

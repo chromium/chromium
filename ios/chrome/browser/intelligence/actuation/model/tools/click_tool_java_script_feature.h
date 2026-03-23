@@ -25,13 +25,13 @@ class ClickAction;
 }  // namespace proto
 }  // namespace optimization_guide
 
-// A feature that provides methods to execute various actions in the web page.
+// A feature that provides methods to execute a click action in the web page.
 class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static ClickToolJavaScriptFeature* GetInstance();
 
   // Executes the click action on the given WebFrame.
-  void Click(web::WebFrame* web_frame,
+  void Click(web::WebFrame* target_frame,
              const optimization_guide::proto::ClickAction& action,
              ActuationTool::ActuationCallback callback);
 

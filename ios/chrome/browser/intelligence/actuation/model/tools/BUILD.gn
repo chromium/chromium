@@ -22,6 +22,20 @@ source_set("actuation_interface") {
   ]
 }
 
+source_set("web_actuation_interface") {
+  sources = [
+    "web_actuation_tool.h",
+    "web_actuation_tool.mm",
+  ]
+  deps = [
+    ":actuation_interface",
+    ":java_script_features",
+    "//base",
+    "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
+    "//ios/web/public",
+  ]
+}
+
 source_set("navigate_tool") {
   sources = [
     "navigate_tool.h",
@@ -76,6 +90,7 @@ source_set("click_tool") {
   deps = [
     ":actuation_interface",
     ":java_script_features",
+    ":web_actuation_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/shared/model/browser",
