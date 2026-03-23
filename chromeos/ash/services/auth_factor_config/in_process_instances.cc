@@ -109,6 +109,12 @@ void BindToPasswordFactorEditor(
       .BindReceiver(std::move(receiver));
 }
 
+mojom::PinFactorEditor& GetPinFactorEditor(QuickUnlockStorageDelegate& storage,
+                                           PrefService* local_state,
+                                           PinBackendDelegate& pin_backend) {
+  return GetPinFactorEditorImpl(storage, local_state, pin_backend);
+}
+
 mojom::PasswordFactorEditor& GetPasswordFactorEditor(
     QuickUnlockStorageDelegate& delegate,
     PrefService* local_state) {

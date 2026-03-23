@@ -49,6 +49,10 @@ void BindToPasswordFactorEditor(
     QuickUnlockStorageDelegate&,
     PrefService* local_state);
 
+mojom::PinFactorEditor& GetPinFactorEditor(QuickUnlockStorageDelegate& storage,
+                                           PrefService* local_state,
+                                           PinBackendDelegate& pin_backend);
+
 mojom::PasswordFactorEditor& GetPasswordFactorEditor(
     QuickUnlockStorageDelegate& delegate,
     PrefService* local_state);
