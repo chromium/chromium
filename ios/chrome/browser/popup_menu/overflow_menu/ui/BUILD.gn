@@ -33,6 +33,7 @@ swift_source_set("ui_swift") {
     "overflow_menu_ui_configuration.swift",
     "overflow_menu_view.swift",
     "overflow_menu_view_provider.swift",
+    "ui_menu_element_view.swift",
   ]
 
   deps = [
