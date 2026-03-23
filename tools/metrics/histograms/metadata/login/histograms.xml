@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Login.AllowlistCOILFallback" enum="Boolean"
-    expires_after="2026-10-24">
+    expires_after="2027-03-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.CryptohomePasswordlessRecoveryResult"
-    enum="CryptohomeRecoveryResult" expires_after="2026-03-08">
+    enum="CryptohomeRecoveryResult" expires_after="2027-03-31">
   <owner>iscsi@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.CryptohomeRecoveryDuration.{Result}" units="ms"
-    expires_after="2026-11-09">
+    expires_after="2027-03-31">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.CryptohomeRecoveryResult"
-    enum="CryptohomeRecoveryResult" expires_after="2026-07-12">
+    enum="CryptohomeRecoveryResult" expires_after="2027-03-31">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -111,14 +111,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
-    expires_after="2026-09-13">
+    expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>Chrome OS login failure reason.</summary>
 </histogram>
 
 <histogram name="Login.Flow.{UserVisibility}.{UserCount}"
-    enum="LoginFlowUserLoginType" expires_after="2026-03-29">
+    enum="LoginFlowUserLoginType" expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
-    enum="AllowedUsersPoliciesInvalidState" expires_after="2026-10-25">
+    enum="AllowedUsersPoliciesInvalidState" expires_after="2027-03-31">
   <owner>emaamari@google.com</owner>
   <owner>src/chromeos/ash/components/policy/OWNERS</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.IsTokenHandleInSyncWithRefreshToken" enum="Boolean"
-    expires_after="2026-07-26">
+    expires_after="2027-03-31">
   <owner>sinhak@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.IsTokenHandleInSyncWithRefreshTokenPostRefactoring"
-    enum="Boolean" expires_after="2025-12-31">
+    enum="Boolean" expires_after="2027-03-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -179,19 +179,20 @@ chromium-metrics-reviews@google.com.
     session. This histogram replaces the
     Login.IsTokenHandleInSyncWithRefreshToken histogram after launching the
     UseTokenHandleStore ash feature, which changes the way we manage token
-    handles.
+    handles. Warning: this histogram was expired from 2025-12-31 to 2026-03-19;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Login.NewUserPriorityPrefsSyncResult"
-    enum="NewUserPriorityPrefsSyncResult" expires_after="2026-10-01">
+    enum="NewUserPriorityPrefsSyncResult" expires_after="2027-03-31">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>Records whether a new user's priority prefs sync timed out.</summary>
 </histogram>
 
 <histogram name="Login.NewUserPriorityPrefsSyncTime" units="ms"
-    expires_after="2026-10-01">
+    expires_after="2027-03-31">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -201,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
-    expires_after="2026-07-26">
+    expires_after="2027-03-31">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -212,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.OfflineLoginWithHiddenUserPods"
-    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="2026-08-09">
+    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="2027-03-31">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -235,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
-    expires_after="2026-07-12">
+    expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -245,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PasswordNotChanged.ReauthReason"
-    enum="LoginReauthReasons" expires_after="2026-07-12">
+    enum="LoginReauthReasons" expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -267,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PromptToCompleteLoginTime" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -277,7 +278,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2026-07-12">
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2027-03-31">
   <owner>khmel@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -288,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ReauthToken.FetchDuration.{Result}" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2027-03-31">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -296,8 +297,8 @@ chromium-metrics-reviews@google.com.
     service when it {Result}. This is recorded on the GAIA reauth screen when
     Cryptohome recovery is deemed to be needed in high probablity.
 
-    Warning: this histogram was expired from 2022-06-02 to 2022-08-18; data may
-    be missing.
+    Warning: this histogram was expired from 2022-06-02 to 2022-08-18 and from
+    2025-12-28 to 2026-03-19; data may be missing.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="fails to fetch"/>
@@ -332,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.SuccessReason" enum="LoginSuccessReason"
-    expires_after="2026-09-13">
+    expires_after="2027-03-31">
   <owner>achuith@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -353,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.TokenCheckResponseTime" units="ms"
-    expires_after="2026-10-14">
+    expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -366,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.TokenObtainResponseTime" units="ms"
-    expires_after="2026-10-24">
+    expires_after="2027-03-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

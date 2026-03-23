@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Auth.ActiveSessionAuthPinAttempt" units="attempts"
-    expires_after="2026-04-26">
+    expires_after="2026-10-26">
   <owner>iscsi@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -4772,12 +4772,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.UserClicks" enum="LockScreenUserClickTarget"
-    expires_after="2026-01-04">
+    expires_after="2026-07-04">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The numbers of times that users click on the shelf buttons, trays and lock
-    screen note on the ChromeOS lock screen.
+    screen note on the ChromeOS lock screen. Warning: this histogram was expired
+    from 2026-01-04 to 2026-03-19; data may be missing.
   </summary>
 </histogram>
 
@@ -6046,7 +6047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.OSAuth.Login.ConfiguredAuthFactors.{AuthFactor}"
-    enum="Boolean" expires_after="2026-03-15">
+    enum="Boolean" expires_after="2026-09-15">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -6096,14 +6097,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
-    units="attempts" expires_after="2026-01-11">
+    units="attempts" expires_after="2026-07-11">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The number of incorrect passwords entered in Chrome OS
     {AuthenticationSurface} screen until the &quot;{AuthenticationOutcome}&quot;
     outcome. For previous data (grouped for login and lock screen together) see
-    &quot;Ash.Login.Lock.NbPasswordAttempts.*&quot;.
+    &quot;Ash.Login.Lock.NbPasswordAttempts.*&quot;. Warning: this histogram was
+    expired from 2026-01-11 to 2026-03-19; data may be missing.
   </summary>
   <token key="AuthenticationSurface">
     <variant name="Lock"/>
