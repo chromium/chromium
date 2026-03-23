@@ -596,11 +596,10 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CSPEmbeddedEnforcement) {
 
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
                        SameDocumentNavigationWhileLoading) {
-  if (ShouldCreateNewHostForAllFrames() &&
-      ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    GTEST_SKIP() << "When RenderDocument + navigation queueing is enabled, the "
+  if (ShouldCreateNewHostForAllFrames()) {
+    GTEST_SKIP() << "When RenderDocument is enabled, the "
                     "same-document navigation won't cancel the cross-document "
-                    "navigation";
+                    "navigation due to navigation queueing";
   }
 
   // Load a MHTML archive normally so there's a renderer process for file://.

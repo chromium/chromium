@@ -145,41 +145,6 @@ bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
   return skip_early_commit_pending_for_crashed_frame;
 }
 
-static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
-    kNavigationQueueingFeatureLevels[] = {
-        {NavigationQueueingFeatureLevel::kNone, "none"},
-        {NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
-         "avoid-redundant"},
-        {NavigationQueueingFeatureLevel::kFull, "full"}};
-const base::FeatureParam<NavigationQueueingFeatureLevel>
-    kNavigationQueueingFeatureLevelParam{
-        &features::kQueueNavigationsWhileWaitingForCommit, "queueing_level",
-        NavigationQueueingFeatureLevel::kFull,
-        &kNavigationQueueingFeatureLevels};
-
-NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
-  if (GetRenderDocumentLevel() >= RenderDocumentLevel::kNonLocalRootSubframe) {
-    // When RenderDocument is enabled with a level of "non-local-root-subframe"
-    // or more, navigation queueing needs to be enabled too, to avoid crashes.
-    return NavigationQueueingFeatureLevel::kFull;
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kQueueNavigationsWhileWaitingForCommit)) {
-    return kNavigationQueueingFeatureLevelParam.Get();
-  }
-  return NavigationQueueingFeatureLevel::kNone;
-}
-
-bool ShouldAvoidRedundantNavigationCancellations() {
-  return GetNavigationQueueingFeatureLevel() >=
-         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
-}
-
-bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
-  return GetNavigationQueueingFeatureLevel() ==
-         NavigationQueueingFeatureLevel::kFull;
-}
-
 bool ShouldCreateSiteInstanceForDataUrls() {
   return base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls);
 }

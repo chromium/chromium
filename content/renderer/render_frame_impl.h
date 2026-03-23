@@ -889,13 +889,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const std::optional<base::UnguessableToken>& devtools_frame_token)
       override;
   void Delete(mojom::FrameDeleteIntention intent) override;
-  void UndoCommitNavigation(
-      bool is_loading,
-      blink::mojom::FrameReplicationStatePtr replicated_frame_state,
-      const blink::RemoteFrameToken& frame_token,
-      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
-      override;
   void GetInterfaceProvider(
       mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
       override;

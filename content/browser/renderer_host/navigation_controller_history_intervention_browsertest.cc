@@ -63,10 +63,6 @@ class NavigationControllerHistoryInterventionBrowserTest
                      bool /* enable_back_forward_cache*/>> {
  public:
   NavigationControllerHistoryInterventionBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kQueueNavigationsWhileWaitingForCommit,
-          {{"queueing_level", "full"}}}},
-        {});
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
                                        std::get<0>(GetParam()));
     InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,

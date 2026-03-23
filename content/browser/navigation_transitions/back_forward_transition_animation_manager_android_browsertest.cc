@@ -3528,13 +3528,6 @@ class BackForwardTransitionAnimationManagerBrowserTestWithNavigationQueueing
 
   void SetUp() override {
     BackForwardTransitionAnimationManagerBrowserTest::SetUp();
-
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kQueueNavigationsWhileWaitingForCommit,
-         {{"queueing_level", "full"}}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

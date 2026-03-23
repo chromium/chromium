@@ -11585,7 +11585,6 @@ void NavigationRequest::RecordMetricsForBlockedGetFrameHostAttempt(
 }
 
 void NavigationRequest::PostResumeCommitTask() {
-  DCHECK(ShouldAvoidRedundantNavigationCancellations());
   DCHECK(!ShouldQueueDueToExistingPendingCommitRFH());
   // TODO(crbug.com/40186427): Add some metrics for how often:
   // - this is run

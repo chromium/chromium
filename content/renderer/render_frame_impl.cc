@@ -2246,30 +2246,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   frame_->Detach();
 }
 
-void RenderFrameImpl::UndoCommitNavigation(
-    bool is_loading,
-    blink::mojom::FrameReplicationStatePtr replicated_frame_state,
-    const blink::RemoteFrameToken& proxy_frame_token,
-    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  // The browser process asked `this` to commit a navigation but has now decided
-  // to discard the speculative RenderFrameHostImpl instead, since the
-  // associated navigation was cancelled or replaced. However, the browser
-  // process hasn't heard the `DidCommitNavigation()` yet, so pretend that the
-  // commit never happened by immediately swapping `this` back to a proxy.
-  //
-  // This means that any state changes triggered by the already-swapped in
-  // RenderFrame will simply be ignored, but that can't be helped: the
-  // browser-side RFH will be gone before any outgoing IPCs from the renderer
-  // for this RenderFrame (which by definition, are still in-flight) will be
-  // processed by the browser process (as it has not yet seen the
-  // `DidCommitNavigation()`).
-  SwapOutAndDeleteThis(is_loading, std::move(replicated_frame_state),
-                       proxy_frame_token, std::move(remote_frame_interfaces),
-                       std::move(remote_main_frame_interfaces),
-                       /*devtools_frame_token=*/std::nullopt);
-}
-
 void RenderFrameImpl::SnapshotAccessibilityTree(
     mojom::SnapshotAccessibilityTreeParamsPtr params,
     SnapshotAccessibilityTreeCallback callback) {
@@ -3778,8 +3754,7 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
 
 void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
   if (detach_reason == blink::DetachReason::kNavigation) {
-    if (navigation_client_impl_ &&
-        ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    if (navigation_client_impl_) {
       navigation_client_impl_->ResetWithoutCancelling();
     }
   }

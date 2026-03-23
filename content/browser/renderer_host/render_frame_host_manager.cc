@@ -1003,38 +1003,28 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
                   allow_paint_holding, view_transition_commit_info,
                   navigation_request_url, is_backward_navigation);
 
-    if (GetNavigationQueueingFeatureLevel() >=
-        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
-      // When avoiding redundant navigation cancellations, if there are other
-      // navigation requests that are ongoing, set their "associated
-      // RenderFrameHost type" NONE, as the old type may no longer be accurate:
-      // - If it was previously set to CURRENT, the current RenderFrameHost
-      // had already changed to the previously-speculative RenderFrameHost. It
-      // most likely will commit to a new speculative RenderFrameHost, but that
-      // doesn't exist yet and so we shouldn't change the type to SPECULATIVE.
-      // - If it was previously set to SPECULATIVE, the previously-speculative
-      // RenderFrameHost is no longer speculative. However we can't just set the
-      // type to CURRENT, as the navigation might actually want to create a new
-      // speculative RenderFrameHost too and not reuse the now-current RFH
-      // (e.g., with RenderDocument).
-      // A new "associated RenderFrameHost" type value will be recalculated when
-      // the navigation recalculates its RenderFrameHost either at
-      // StartNavigation (if it hasn't reached that stage yet) or ReadyToCommit
-      // time. Note that we don't update this value for pending commit
-      // navigations (and hence we only check the FrameTreeNode's
-      // NavigationRequest), as the value is only used until before the
-      // navigation gets to the "pending commit" stage.
-      if (frame_tree_node_->navigation_request()) {
-        frame_tree_node_->navigation_request()->SetAssociatedRFHType(
-            NavigationRequest::AssociatedRenderFrameHostType::NONE);
-      }
-    } else {
-      // Otherwise, if not attempting to avoid redundant cancellations, cancel
-      // any other navigations that are ongoing if they're not pending commit.
-      // Note that the pending commit navigations that are in the old RFH will
-      // get deleted when the old RFH gets unloaded.
-      frame_tree_node_->ResetNavigationRequest(
-          NavigationDiscardReason::kCommittedNavigation);
+    // If there are other navigation requests that are ongoing, set their
+    // "associated RenderFrameHost type" NONE, as the old type may no longer be
+    // accurate:
+    // - If it was previously set to CURRENT, the current RenderFrameHost
+    //   had already changed to the previously-speculative RenderFrameHost. It
+    //   most likely will commit to a new speculative RenderFrameHost, but that
+    //   doesn't exist yet and so we shouldn't change the type to SPECULATIVE.
+    // - If it was previously set to SPECULATIVE, the previously-speculative
+    //   RenderFrameHost is no longer speculative. However we can't just set the
+    //   type to CURRENT, as the navigation might actually want to create a new
+    //   speculative RenderFrameHost too and not reuse the now-current RFH
+    //   (e.g., with RenderDocument).
+    // A new "associated RenderFrameHost" type value will be recalculated when
+    // the navigation recalculates its RenderFrameHost either at
+    // StartNavigation (if it hasn't reached that stage yet) or ReadyToCommit
+    // time. Note that we don't update this value for pending commit
+    // navigations (and hence we only check the FrameTreeNode's
+    // NavigationRequest), as the value is only used until before the
+    // navigation gets to the "pending commit" stage.
+    if (frame_tree_node_->navigation_request()) {
+      frame_tree_node_->navigation_request()->SetAssociatedRFHType(
+          NavigationRequest::AssociatedRenderFrameHostType::NONE);
     }
     return;
   }
@@ -1594,22 +1584,13 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
-    // Cleanup existing speculative RenderFrameHost. This corresponds to
-    // what is done inside GetFrameHostForNavigation(request), but we avoid
-    // calling that method for navigations which will be forced into the current
-    // document.
-    if (ShouldAvoidRedundantNavigationCancellations()) {
-      // When avoiding redundant navigation cancellations, only delete the
-      // speculative RFH if it is unused. In particular, this means that a
-      // speculative RFH with a pending-commit navigation won't be deleted
-      // anymore.
-      DiscardSpeculativeRFHIfUnused(
-          request->GetTypeForNavigationDiscardReason());
-    } else {
-      // When the flag is disabled, always delete the speculative RFH, even if
-      // it means cancelling a pending commit navigation in that RFH.
-      DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
-    }
+    // Cleanup existing speculative RenderFrameHost, but only if it is unused
+    // to avoid redundant navigation cancellations. This means that a
+    // speculative RFH with a pending-commit navigation won't be deleted. This
+    // corresponds to what is done inside GetFrameHostForNavigation(request),
+    // but we avoid calling that method for navigations which will be forced
+    // into the current document.
+    DiscardSpeculativeRFHIfUnused(request->GetTypeForNavigationDiscardReason());
   } else {
     base::ElapsedTimer timer;
     BrowsingContextGroupSwap ignored_bcg_swap_info =
@@ -1978,20 +1959,14 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                                    use_current_rfh);
   bool notify_webui_of_rf_creation = request->HasWebUI();
 
-  // For navigation queueing, if the speculative RFH is already committing a
-  // cross-document navigation, avoid discarding it here: the commit needs to
-  // complete in order for the browser and the renderer state to remain in
-  // sync. See https://crbug.com/838348.
+  // If the speculative RFH is already committing a cross-document navigation,
+  // the speculative RFH must not be discarded here: the commit in the
+  // speculative RFH needs to complete in order for the browser and the
+  // renderer state to remain in sync. See https://crbug.com/838348.
   //
-  // In theory, it would be possible to simply avoid discarding it (see the
-  // later branch for avoiding redundant cancellations: however, this
-  // navigation race should be fairly rare, so for navigation queueing, do the
-  // simple thing and give up trying to assign a RenderFrameHost for the
-  // navigation.
   // TODO: crbug.com/345382623 Verify if deferring the creation for WebUI pages
   // is safe.
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-      request->ShouldQueueDueToExistingPendingCommitRFH()) {
+  if (request->ShouldQueueDueToExistingPendingCommitRFH()) {
     AppendReason(reason, "GetFrameHostForNavigation / navigation-queuing");
     TRACE_EVENT_INSTANT("navigation",
                         "RenderFrameHostManager::GetFrameHostForNavigation",
@@ -2079,24 +2054,18 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     AppendReason(reason, "GetFrameHostForNavigation / use-current-rfh");
     navigation_rfh = render_frame_host_.get();
 
-    // Set the associated RenderFrameHost type for the navigation, and discard
-    // existing speculative RenderFrameHost. This can exist when the navigation
+    // Discard the existing speculative RenderFrameHost, but only if it is
+    // unused, e.g. it does not have a pending-commit navigation, to avoid
+    // redundant navigation cancellations. This can exist when the navigation
     // initially used a speculative RenderFrameHost but got redirected and now
-    // uses the current RenderFrameHost. Note that we need to update the
-    // associated RenderFrameHost type first so that
-    // `DiscardSpeculativeRFHIfUnused()` can work correctly.
+    // uses the current RenderFrameHost.
+    //
+    // Update the associated RenderFrameHost type first; otherwise,
+    // `DiscardSpeculativeRFHIfUnused()` will incorrectly always consider the
+    // speculative RFH as in-use.
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
-    if (ShouldAvoidRedundantNavigationCancellations()) {
-      // When avoiding redundant navigation cancellations, only delete the
-      // speculative RFH if it is unused.
-      DiscardSpeculativeRFHIfUnused(
-          request->GetTypeForNavigationDiscardReason());
-    } else {
-      // When the flag is disabled, always delete the speculative RFH, even if
-      // it means cancelling a pending commit navigation in that RFH.
-      DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
-    }
+    DiscardSpeculativeRFHIfUnused(request->GetTypeForNavigationDiscardReason());
   } else {
     // If the current RenderFrameHost cannot be used a speculative one is
     // created with the SiteInstance for the current URL. If a speculative
@@ -2412,9 +2381,6 @@ void RenderFrameHostManager::DiscardSpeculativeRFH(
     SCOPED_CRASH_KEY_BOOL("Bug1450023", "is_main_frame",
                           frame_tree_node_->IsMainFrame());
     SCOPED_CRASH_KEY_NUMBER(
-        "Bug1450023", "queueing_level",
-        static_cast<int>(GetNavigationQueueingFeatureLevel()));
-    SCOPED_CRASH_KEY_NUMBER(
         "Bug1450023", "current_rfh_si",
         static_cast<int>(current_frame_host()->GetSiteInstance()->GetId()));
     SCOPED_CRASH_KEY_NUMBER(
@@ -2475,90 +2441,63 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
     DCHECK_EQ(speculative_render_frame_host_->lifecycle_state(),
               LifecycleStateImpl::kPendingCommit);
 
-    if (!ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-      // The browser process already asked the renderer to commit the
-      // navigation. The renderer is guaranteed to commit the navigation and
-      // swap in the provisional `RenderFrame` to replace the current
-      // `blink::RemoteFrame` unless the frame is detached: see
-      // `AssertNavigationCommits` in `RenderFrameImpl` for more details about
-      // this enforcement.
-      //
-      // Instead of simply deleting the `RenderFrame`, the browser process must
-      // unwind the renderer's state by sending it another IPC to "undo" the
-      // commit by immediately swapping it out for a proxy again.
+    // A reasonable person might wonder: shouldn't a RenderFrameHostImpl in
+    // kPendingCommit always have a... pending commit?
+    //
+    // The surprising answer is no! When the browser process handles the
+    // renderer's commit navigation ack:
+    // - the NavigationRequest is unconditionally removed from
+    //   `RenderFrameHostImpl::navigation_requests_`.
+    // - but if the IPC fails validation, the browser process reports a bad
+    //   message (which kills the renderer process) and returns immediately.
+    //
+    // However, the kill is async and observing process termination (which is
+    // what cleans up the speculative RenderFrameHostImpl) is also async.
+    // Between reporting the bad message and the actual cleanup, the user can
+    // begin a new navigation, which will discard any speculative RFHs rather
+    // than blocking (since `HasPendingCommitForCrossDocumentNavigation()` now
+    // returns `false`!) for a reason other than `kRenderProcessGone` or
+    // `kWillRemoveFrame`.
+    //
+    // TODO(crbug.com/335790757): it might help make state easier to reason
+    // about if the speculative RFH is proactively discarded rather than just
+    // leaving it around to be asynchronously cleaned up.
+    if (speculative_render_frame_host_
+            ->HasPendingCommitForCrossDocumentNavigation()) {
+      // Due to navigation queueing, pending commit navigations in speculative
+      // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
+      // renderer process is gone/will be gone soon.
+      CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+            reason == NavigationDiscardReason::kWillRemoveFrame);
+    }
 
-      // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
-      // `RenderFrameProxyHost` should still be alive. Reuse it.
-      RenderFrameProxyHost* proxy =
-          speculative_render_frame_host_->browsing_context_state()
-              ->GetRenderFrameProxyHost(
-                  speculative_render_frame_host_->GetSiteInstance()->group());
+    // TODO(dcheng): `CHECK(render_frame_host_->IsPendingDeletion())` would be
+    // a nice precondition to enforce here. However, this turns out to be
+    // Hard: `StartPendingDeletionOnSubtree()` performs its work in two
+    // phases: it resets all navigation requests first (which might delete
+    // speculative RFHs—even ones in pending commit), before doing a complex
+    // dance to invoke `DeleteRenderFrame()` a minimal number of times. In the
+    // future, it would be nice to refactor the code so this precondition can
+    // be enforced.
 
-      SCOPED_CRASH_KEY_BOOL("Bug1450023", "proxy_exists", !!proxy);
-      DCHECK(proxy);
-      // Note: this advances the RenderFrameHost's lifecycle state to
-      // kReadyToBeDeleted.
-      speculative_render_frame_host_->UndoCommitNavigation(
-          *proxy, frame_tree_node_->IsLoading());
+    // A pending commit RFH is assumed/expected to have committed already in
+    // the renderer process. If the FrameTreeNode is going away, explicitly
+    // tear down the RenderFrame in the renderer process to keep the frame
+    // tree in sync.
+    if (frame_tree_node_->parent()) {
+      speculative_render_frame_host_->DeleteRenderFrame(
+          mojom::FrameDeleteIntention::kNotMainFrame);
     } else {
-      // A reasonable person might wonder: shouldn't a RenderFrameHostImpl in
-      // kPendingCommit always have a... pending commit?
+      // But for main frames, just advance the lifecycle state instead. In
+      // Blink, a live WebView must always have a live main frame; violating
+      // this invariant by destroying the already-committed (from the
+      // perspective of the renderer process) frame with `DeleteRenderFrame()`
+      // results in bugs like crbug.com/40091257.
       //
-      // The surprising answer is no! When the browser process handles the
-      // renderer's commit navigation ack:
-      // - the NavigationRequest is unconditionally removed from
-      //   `RenderFrameHostImpl::navigation_requests_`.
-      // - but if the IPC fails validation, the browser process reports a bad
-      //   message (which kills the renderer process) and returns immediately.
-      //
-      // However, the kill is async and observing process termination (which is
-      // what cleans up the speculative RenderFrameHostImpl) is also async.
-      // Between reporting the bad message and the actual cleanup, the user can
-      // begin a new navigation, which will discard any speculative RFHs rather
-      // than blocking (since `HasPendingCommitForCrossDocumentNavigation()` now
-      // returns `false`!) for a reason other than `kRenderProcessGone` or
-      // `kWillRemoveFrame`.
-      //
-      // TODO(crbug.com/335790757): it might help make state easier to reason
-      // about if the speculative RFH is proactively discarded rather than just
-      // leaving it around to be asynchronously cleaned up.
-      if (speculative_render_frame_host_
-              ->HasPendingCommitForCrossDocumentNavigation()) {
-        // With navigation queueing, pending commit navigations in speculative
-        // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
-        // renderer process is gone/will be gone soon.
-        CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
-              reason == NavigationDiscardReason::kWillRemoveFrame);
-      }
-
-      // TODO(dcheng): `CHECK(render_frame_host_->IsPendingDeletion())` would be
-      // a nice precondition to enforce here. However, this turns out to be
-      // Hard: `StartPendingDeletionOnSubtree()` performs its work in two
-      // phases: it resets all navigation requests first (which might delete
-      // speculative RFHs—even ones in pending commit), before doing a complex
-      // dance to invoke `DeleteRenderFrame()` a minimal number of times. In the
-      // future, it would be nice to refactor the code so this precondition can
-      // be enforced.
-
-      // A pending commit RFH is assumed/expected to have committed already in
-      // the renderer process. If the FrameTreeNode is going away, explicitly
-      // tear down the RenderFrame in the renderer process to keep the frame
-      // tree in sync.
-      if (frame_tree_node_->parent()) {
-        speculative_render_frame_host_->DeleteRenderFrame(
-            mojom::FrameDeleteIntention::kNotMainFrame);
-      } else {
-        // But for main frames, just advance the lifecycle state instead. In
-        // Blink, a live WebView must always have a live main frame; violating
-        // this invariant by destroying the already-committed (from the
-        // perspective of the renderer process) frame with `DeleteRenderFrame()`
-        // results in bugs like crbug.com/40091257.
-        //
-        // The main RenderFrame will be implicitly torn down later when the
-        // corresponding RenderViewHost/WebView are torn down.
-        speculative_render_frame_host_->SetLifecycleState(
-            LifecycleStateImpl::kReadyToBeDeleted);
-      }
+      // The main RenderFrame will be implicitly torn down later when the
+      // corresponding RenderViewHost/WebView are torn down.
+      speculative_render_frame_host_->SetLifecycleState(
+          LifecycleStateImpl::kReadyToBeDeleted);
     }
   }
 

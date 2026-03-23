@@ -173,10 +173,8 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
   AddCondition(
       ViewTransitionCommitDeferringCondition::MaybeCreate(navigation_request));
 
-  if (ShouldAvoidRedundantNavigationCancellations()) {
-    AddCondition(ConcurrentNavigationsCommitDeferringCondition::MaybeCreate(
-        navigation_request, navigation_type_));
-  }
+  AddCondition(ConcurrentNavigationsCommitDeferringCondition::MaybeCreate(
+      navigation_request, navigation_type_));
 
   // The BFCache deferring condition should run after all other conditions
   // since it'll disable eviction on a cached renderer.

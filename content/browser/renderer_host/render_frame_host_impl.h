@@ -1200,16 +1200,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // deleted or deferred depending on its children's unload status.
   void Unload(RenderFrameProxyHost* proxy, bool is_loading);
 
-  // Sent to a renderer when the browser needs to cancel a navigation associated
-  // with a speculative RenderFrameHost that has already been asked to commit
-  // via `CommitNavigation()`. The renderer will swap out the already-committed
-  // RenderFrame, replacing it with a `blink::RemoteFrame` for `proxy`.
-  //
-  // TODO(crbug.com/40186427): This method is fundamentally incompatible
-  // with RenderDocument, as there is no `blink::RemoteFrame` to restore for a
-  // local<->local swap.
-  void UndoCommitNavigation(RenderFrameProxyHost& proxy, bool is_loading);
-
   // Unload this frame for the proxy. Similar to `Unload()` but without
   // managing the lifecycle of this object.
   void SwapOuterDelegateFrame(

@@ -230,7 +230,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSelectionDeferringConditions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kOriginKeyedProcessesByDefault);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnInvalidation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnResubscribe);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceSubresourceResponseStartedIPC);
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureOfOtherTabs);

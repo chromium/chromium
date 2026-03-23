@@ -582,10 +582,6 @@ public final class ProductionSupportedFlagList {
                 "Deprecates old external file picker function."),
         Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
-                ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
-                "If enabled, allows navigations to be queued when there is "
-                        + "an existing pending commit navigation in progress."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_RENDER_DOCUMENT,
                 "If enabled, same-site navigations will change RenderFrameHosts"),
         Flag.baseFeature(

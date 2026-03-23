@@ -3342,14 +3342,6 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs2) {
 }
 
 TEST_P(RenderFrameHostManagerTest, CanCommitOrigin) {
-  if (ShouldCreateNewHostForAllFrames() &&
-      !ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // This test involves starting multiple navigations consecutively, which
-    // might lead to deletion of a pending commit RFH, which will crash when
-    // RenderDocument is enabled. Skip the test if so, unless navigation
-    // queueing is enabled.
-    return;
-  }
   const GURL kUrl("http://a.com/");
   const GURL kUrlBar("http://a.com/bar");
 

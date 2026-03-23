@@ -238,10 +238,6 @@ bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
   return IsBackForwardCacheEnabled();
 }
 
-bool IsNavigationQueueingEnabled() {
-  return ShouldQueueNavigationsWhenPendingCommitRFHExists();
-}
-
 void DisableProactiveBrowsingInstanceSwapFor(RenderFrameHost* rfh) {
   if (!CanSameSiteMainFrameNavigationsChangeSiteInstances())
     return;

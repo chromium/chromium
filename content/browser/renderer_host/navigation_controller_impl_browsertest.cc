@@ -145,14 +145,6 @@ class DataURLOriginToCommitObserver : public WebContentsObserver {
 }  // namespace
 
 class NavigationControllerBrowserTestBase : public ContentBrowserTest {
- public:
-  NavigationControllerBrowserTestBase() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kQueueNavigationsWhileWaitingForCommit,
-          {{"queueing_level", "full"}}}},
-        {});
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -15113,27 +15105,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
     // committed.
     EXPECT_TRUE(trigger.did_trigger_history_navigation());
 
-    if (ShouldCreateNewHostForAllFrames()) {
-      // When RenderDocument is enabled, the cross-document navigation used a
-      // new RenderFrameHost to commit the navigation, causing the previous
-      // RenderFrameHost to be deleted and the same-document navigation to be
-      // cancelled. Since there are no navigations left, just return early.
-      // TODO(crbug.com/40615943): When
-      // ShouldAvoidRedundantNavigationCancellations() returns true, we won't
-      // actually cancel the same-document navigation as it still lives in the
-      // FrameTreeNode (instead of owned by the swapped out RenderFrameHost),
-      // but apparently there is a bug with same-document history navigations
-      // that happen while there are pending cross-document commits, where we
-      // will still try to trigger beforeunload, causing the same-document
-      // history navigation to get stalled forever. After fixing that bug, we
-      // should be able to continue running the test when RenderDocument is
-      // enabled and ShouldAvoidRedundantNavigationCancellations() is true.
-      EXPECT_EQ(ShouldAvoidRedundantNavigationCancellations(),
-                !!root->navigation_request());
-      return;
-    }
-
-    // Otherwise, the same-document back navigation had to be converted to a
+    // The same-document back navigation had to be converted to a
     // cross-document navigation because it was racing with, and will complete
     // after, the cross-document navigation. It is still waiting to complete.
     EXPECT_TRUE(root->navigation_request());
@@ -22991,50 +22963,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
 
-  if (ShouldAvoidRedundantNavigationCancellations()) {
-    // Assert that the navigation to B1 didn't get cancelled, and finish
-    // committing B1. This shouldn't cancel the navigation to A3.
-    ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(b1_navigation.was_successful());
+  // Assert that the navigation to B1 didn't get cancelled, and finish
+  // committing B1. This shouldn't cancel the navigation to A3.
+  ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(b1_navigation.was_successful());
 
-    // B1's navigation commit didn't cancel A3's navigation.
-    EXPECT_TRUE(a3_navigation.WaitForResponse());
-    EXPECT_TRUE(a3_navigation.GetNavigationHandle());
-    ASSERT_TRUE(a3_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(a3_navigation.was_successful());
-  } else {
-    EXPECT_TRUE(a3_navigation.WaitForResponse());
-    EXPECT_EQ(url_a3, a3_navigation.GetNavigationHandle()->GetURL());
-    EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
-
-    // Assert that the navigation to B1 gets cancelled.
-    EXPECT_TRUE(b1_navigation.WaitForNavigationFinished());
-    EXPECT_FALSE(b1_navigation.was_committed());
-
-    // 5) Start a cross-RFH navigation to B2 after A3 gets to "pending commit"
-    // stage, which will cancel the previous same-RFH navigation to A3 when B2
-    // commits first, because when the previous RFH gets unloaded it will
-    // cancel all ongoing navigations in the pending deletion RFH.
-    TestNavigationManager b2_navigation(shell()->web_contents(), url_b2);
-    // Ignore A3's commit so that B2's navigation can start and finish
-    // committing before A3 finishes committing.
-    DidCommitNavigationCanceller ignore_a3_commit(
-        shell()->web_contents(), url_a3,
-        base::BindLambdaForTesting([&]() { shell()->LoadURL(url_b2); }));
-    // Continue the A3 navigation, but its commit will be dropped.
-    a3_navigation.ResumeNavigation();
-    // The navigation to B2 will start, but won't cancel A3's navigation just
-    // yet.
-    EXPECT_TRUE(b2_navigation.WaitForResponse());
-    EXPECT_TRUE(a3_navigation.GetNavigationHandle());
-
-    // The navigation to B2 finished committing, and cancels A3's navigation.
-    EXPECT_TRUE(b2_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(b2_navigation.was_successful());
-    // Assert A3's navigation finished but didn't get committed.
-    EXPECT_TRUE(a3_navigation.WaitForNavigationFinished());
-    EXPECT_FALSE(a3_navigation.was_committed());
-  }
+  // B1's navigation commit didn't cancel A3's navigation.
+  EXPECT_TRUE(a3_navigation.WaitForResponse());
+  EXPECT_TRUE(a3_navigation.GetNavigationHandle());
+  ASSERT_TRUE(a3_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(a3_navigation.was_successful());
 }
 
 // Tests that calling FrameTreeNode::ResetNavigationRequest() cancels the
@@ -23100,9 +23038,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // cancel other navigations happening in the same FrameTreeNode.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UnloadingPreviousRFHOnCommitWontCancelNavigation) {
-  if (!ShouldAvoidRedundantNavigationCancellations()) {
-    return;
-  }
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -23174,8 +23109,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // restore navigations as long as there is a pending commit RenderFrameHost.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        BFCacheRestoreDeferredWhenPendingCommitRFHExists) {
-  if (!ShouldAvoidRedundantNavigationCancellations() ||
-      !IsBackForwardCacheEnabled()) {
+  if (!IsBackForwardCacheEnabled()) {
     return;
   }
 
@@ -23265,8 +23199,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     BFCacheRestoreDeferredAndEvictedWhenPendingCommitRFHExists) {
-  if (!ShouldAvoidRedundantNavigationCancellations() ||
-      !IsBackForwardCacheEnabled()) {
+  if (!IsBackForwardCacheEnabled()) {
     return;
   }
 

@@ -741,12 +741,6 @@ BASE_FEATURE(kPushSubscriptionChangeEventOnInvalidation,
 BASE_FEATURE(kPushSubscriptionChangeEventOnResubscribe,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, queues navigations instead of cancelling the previous
-// navigation if the previous navigation is already waiting for commit.
-// See https://crbug.com/838348 and https://crbug.com/1220337.
-BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
 // allowed any HTTPS-related warning exceptions. From field data, ~100% of
 // subresource notifications are not required, since allowing certificate

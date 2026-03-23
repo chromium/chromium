@@ -6631,8 +6631,7 @@ void RenderFrameHostImpl::ResetOwnedNavigationRequests(
     // yet.
     DCHECK(same_document_navigation_requests_.empty());
 
-    if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-        HasPendingCommitForCrossDocumentNavigation()) {
+    if (HasPendingCommitForCrossDocumentNavigation()) {
       // With navigation queueing, pending commit navigations shouldn't get
       // canceled, unless the FrameTreeNode or renderer process
       // is gone/will be gone soon.
@@ -6748,31 +6747,6 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // deletion. Cut the dead branches now.
   PendingDeletionCheckCompletedOnSubtreeNowOrLater();  // Can delete |this|.
   // |this| is potentially deleted. Do not add code after this.
-}
-
-void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
-                                               bool is_loading) {
-  TRACE_EVENT("navigation", "RenderFrameHostImpl::UndoCommitNavigation",
-              "render_frame_host", this);
-
-  DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kPendingCommit);
-
-  if (IsRenderFrameLive()) {
-    // By definition, the browser process has not received the
-    // `DidCommitNavgation()`, so the RenderFrameProxyHost endpoints are still
-    // bound. Resetting now means any queued IPCs that are still in-flight will
-    // be dropped. This is a bit problematic, but it is still less problematic
-    // than just crashing the renderer for being in an inconsistent state.
-    proxy.TearDownMojoConnection();
-
-    GetMojomFrameInRenderer()->UndoCommitNavigation(
-        is_loading,
-        proxy.frame_tree_node()->current_replication_state().Clone(),
-        proxy.GetFrameToken(), proxy.CreateAndBindRemoteFrameInterfaces(),
-        proxy.CreateAndBindRemoteMainFrameInterfaces());
-  }
-
-  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
 }
 
 void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
@@ -12436,12 +12410,9 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
       {"Navigation.StartPendingDeletionOnSubtree.", histogram_suffix}));
   DCHECK(IsPendingDeletion());
 
-  if (pending_deletion_reason == PendingDeletionReason::kFrameDetach ||
-      !ShouldAvoidRedundantNavigationCancellations()) {
-    // Reset all navigations happening in the FrameTreeNode only when entering
-    // "pending deletion" state due to frame detach if the
-    // kStopCancellingNavigationsOnCommitAndNewNavigation flag is enabled, or
-    // for all pending deletion cases otherwise.
+  if (pending_deletion_reason == PendingDeletionReason::kFrameDetach) {
+    // When a frame is detached, all navigations associated with its
+    // FrameTreeNode should be cancelled because it will no longer exist.
     NavigationDiscardReason reason = NavigationDiscardReason::kWillRemoveFrame;
     GetFrameTreeNodeForUnload()->CancelNavigation(reason);
     GetFrameTreeNodeForUnload()
@@ -12449,8 +12420,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
         .DiscardSpeculativeRFH(reason);
     ResetOwnedNavigationRequests(reason);
   } else {
-    CHECK(pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
-          ShouldAvoidRedundantNavigationCancellations());
+    CHECK_EQ(pending_deletion_reason, PendingDeletionReason::kSwappedOut);
     // The pending deletion state is caused by swapping out the RFH. Reset only
     // the navigations that are owned by or will be using the swapped out RFH,
     // and also reset all navigations happening in the descendant frames.

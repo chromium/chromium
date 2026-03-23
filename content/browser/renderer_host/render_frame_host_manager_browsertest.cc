@@ -1728,13 +1728,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(kAttackInitialURL, shell()->web_contents()->GetVisibleURL());
 }
 
-// Ensures that deleting a speculative RenderFrameHost trying to commit a
-// navigation to the pending NavigationEntry will not crash if it happens
-// because a new navigation to the same pending NavigationEntry started. This is
-// a regression test for crbug.com/796135.
-IN_PROC_BROWSER_TEST_P(
-    RenderFrameHostManagerTest,
-    DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted1) {
+// If a navigation to a pending NavigationEntry is in pending commit, starting
+// a new navigation to the same pending NavigationEntry should not crash. This
+// is a regression test for crbug.com/796135.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       TwoNavigationsToSamePendingNavigationEntry) {
   if (!AreAllSitesIsolatedForTesting()) {
     GTEST_SKIP() << "This test requires speculative RenderFrameHosts, so skip "
                     "it when site isolation is turned off";
@@ -1818,8 +1816,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The user requests a new reload while the previous reload hasn't committed
   // yet. This second reload starts immediately after pausing the commit of the
-  // first reload. It might delete the speculative RenderFrameHost that was
-  // supposed to commit the first reload. This should not crash.
+  // first reload.
   TestNavigationManager second_reload(shell()->web_contents(), kOriginalURL);
   CommitNavigationPauser commit_pauser(first_speculative_rfh.get());
   first_reload.ResumeNavigation();
@@ -1831,16 +1828,10 @@ IN_PROC_BROWSER_TEST_P(
       root->render_manager()->speculative_frame_host());
 
   EXPECT_TRUE(second_speculative_rfh.get());
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // When navigation queueing is enabled, the first speculative RFH is still
-    // kept around as it is pending commit.
-    EXPECT_TRUE(first_speculative_rfh.get());
-    EXPECT_EQ(first_speculative_rfh.get(), second_speculative_rfh.get());
-  } else {
-    // Otherwise, the first speculative RFH will be deleted and replaced by a
-    // new speculative RFH.
-    EXPECT_FALSE(first_speculative_rfh.get());
-  }
+  // Navigation queueing means the first speculative RFH will be kept around as
+  // it is pending commit.
+  EXPECT_TRUE(first_speculative_rfh.get());
+  EXPECT_EQ(first_speculative_rfh.get(), second_speculative_rfh.get());
 
   // The second reload results in a 204.
   second_reload.ResumeNavigation();
@@ -1851,166 +1842,9 @@ IN_PROC_BROWSER_TEST_P(
       "\r\n");
   ASSERT_TRUE(second_reload.WaitForNavigationFinished());
 
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // If navigation queuing is enabled, the first reload's speculative RFH
-    // will be kept.
-    EXPECT_TRUE(root->render_manager()->speculative_frame_host());
-  } else {
-    // If navigation queueing is turned off, the second reload will delete the
-    // first reload's speculative RFH, and we end up with no speculative RFH
-    // after the second reload commits.
-    EXPECT_FALSE(root->render_manager()->speculative_frame_host());
-  }
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2 \
-  DISABLED_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2
-#else
-#define MAYBE_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2 \
-  DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2
-#endif
-// Ensures that deleting a speculative RenderFrameHost trying to commit a
-// navigation to the pending NavigationEntry will not crash if it happens
-// because a new navigation to the same pending NavigationEntry started.  This
-// is a variant of the previous test, where we destroy the speculative
-// RenderFrameHost to create another speculative RenderFrameHost. This is a
-// regression test for crbug.com/796135.
-IN_PROC_BROWSER_TEST_P(
-    RenderFrameHostManagerTest,
-    MAYBE_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2) {
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // When navigation queueing is enabled, starting a new navigation won't
-    // delete an existing pending commit RFH, so this test can't run as
-    // intended.
-    return;
-  }
-  const std::string kOriginalPath = "/original.html";
-  const std::string kRedirectPath = "/redirect.html";
-  net::test_server::ControllableHttpResponse original_response1(
-      embedded_test_server(), kOriginalPath);
-  net::test_server::ControllableHttpResponse original_response2(
-      embedded_test_server(), kOriginalPath);
-  net::test_server::ControllableHttpResponse redirect_response(
-      embedded_test_server(), kRedirectPath);
-  EXPECT_TRUE(embedded_test_server()->Start());
-
-  const GURL kOriginalURL =
-      embedded_test_server()->GetURL("a.com", kOriginalPath);
-  const GURL kRedirectURL =
-      embedded_test_server()->GetURL("b.com", kRedirectPath);
-  const GURL kCrossSiteURL =
-      embedded_test_server()->GetURL("c.com", "/title1.html");
-
-  IsolationContext isolation_context(
-      shell()->web_contents()->GetBrowserContext());
-  const auto kOriginalSiteInfo =
-      SiteInfo::CreateForTesting(isolation_context, kOriginalURL);
-  const auto kRedirectSiteInfo =
-      SiteInfo::CreateForTesting(isolation_context, kRedirectURL);
-
-  // First navigate to the initial URL.
-  shell()->LoadURL(kOriginalURL);
-  original_response1.WaitForRequest();
-  original_response1.Send(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=utf-8\r\n"
-      "Cache-Control: no-cache, no-store, must-revalidate\r\n"
-      "Pragma: no-cache\r\n"
-      "\r\n");
-  original_response1.Send(
-      "<html>"
-      "<body></body>"
-      "</html>");
-  original_response1.Done();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(kOriginalURL, shell()->web_contents()->GetLastCommittedURL());
-
-  // Navigate cross-site.
-  EXPECT_TRUE(NavigateToURL(shell(), kCrossSiteURL));
-
-  // Now go back to the original request, which will do a cross-site redirect.
-  TestNavigationManager first_back(shell()->web_contents(), kOriginalURL);
-  shell()->GoBackOrForward(-1);
-  EXPECT_TRUE(first_back.WaitForRequestStart());
-  first_back.ResumeNavigation();
-
-  original_response2.WaitForRequest();
-  original_response2.Send(
-      "HTTP/1.1 302 FOUND\r\n"
-      "Location: " +
-      kRedirectURL.spec() +
-      "\r\n"
-      "\r\n");
-  original_response2.Done();
-  redirect_response.WaitForRequest();
-  redirect_response.Send(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=utf-8\r\n"
-      "\r\n");
-  EXPECT_TRUE(first_back.WaitForResponse());
-  first_back.ResumeNavigation();
-
-  // The navigation is ready to commit: it has been handed to the speculative
-  // RenderFrameHost for commit.
-  RenderFrameHostImpl* speculative_rfh =
-      static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetPrimaryFrameTree()
-          .root()
-          ->render_manager()
-          ->speculative_frame_host();
-  CHECK(speculative_rfh);
-  EXPECT_TRUE(speculative_rfh->is_loading());
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(kRedirectSiteInfo,
-              speculative_rfh->GetSiteInstance()->GetSiteInfo());
-  } else {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  }
-  auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
-
-  // The user starts a navigation towards the redirected URL, for which we have
-  // a speculative RenderFrameHost. This shouldn't delete the speculative
-  // RenderFrameHost.
-  TestNavigationManager navigation_to_redirect(shell()->web_contents(),
-                                               kRedirectURL);
-  shell()->LoadURL(kRedirectURL);
-  EXPECT_TRUE(navigation_to_redirect.WaitForRequestStart());
-  speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
-                        ->GetPrimaryFrameTree()
-                        .root()
-                        ->render_manager()
-                        ->speculative_frame_host();
-  CHECK(speculative_rfh);
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(kRedirectSiteInfo,
-              speculative_rfh->GetSiteInstance()->GetSiteInfo());
-    EXPECT_EQ(site_instance_id, speculative_rfh->GetSiteInstance()->GetId());
-  } else {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  }
-
-  // The user requests to go back again while the previous back hasn't committed
-  // yet. This should delete the speculative RenderFrameHost trying to commit
-  // the back, and re-create a new speculative RenderFrameHost. This shouldn't
-  // crash.
-  TestNavigationManager second_back(shell()->web_contents(), kOriginalURL);
-  shell()->GoBackOrForward(-1);
-  EXPECT_TRUE(second_back.WaitForRequestStart());
-  speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
-                        ->GetPrimaryFrameTree()
-                        .root()
-                        ->render_manager()
-                        ->speculative_frame_host();
-  CHECK(speculative_rfh);
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(kOriginalSiteInfo,
-              speculative_rfh->GetSiteInstance()->GetSiteInfo());
-    EXPECT_NE(site_instance_id, speculative_rfh->GetSiteInstance()->GetId());
-  } else {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  }
+  // Because of navigation queueing, the first reload's speculative RFH will be
+  // kept.
+  EXPECT_TRUE(root->render_manager()->speculative_frame_host());
 }
 
 // Test for crbug.com/9682.  We should not show the URL for a pending renderer-

@@ -117,8 +117,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   EXPECT_TRUE(observer_b.WaitForResponse());  // Headers are received.
   observer_b.ResumeNavigation();  // ReadyToCommitNavigation is called.
   EXPECT_EQ(speculative_rfh_b, rfh_devtools_agent->GetFrameHostForTesting());
-  auto speculative_rfh_b_site_id =
-      speculative_rfh_b->GetSiteInstance()->GetId();
   if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(speculative_rfh_b->GetSiteInstance()->IsDefaultSiteInstance());
   }
@@ -134,35 +132,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
 
   RenderFrameHostImpl* speculative_rfh_c = nullptr;
 
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // When navigation queueing is enabled, starting a new navigation won't
-    // cancel an existing pending commit navigation, so wait for the first
-    // navigation to finish first before continuing.
-    EXPECT_EQ(speculative_rfh_b,
-              root->render_manager()->speculative_frame_host());
-    EXPECT_EQ(speculative_rfh_b, rfh_devtools_agent->GetFrameHostForTesting());
-    ASSERT_TRUE(observer_b.WaitForNavigationFinished());
-  } else {
-    speculative_rfh_c = root->render_manager()->speculative_frame_host();
-    EXPECT_TRUE(speculative_rfh_c);
-    auto speculative_rfh_c_site_id =
-        speculative_rfh_c->GetSiteInstance()->GetId();
-    if (AreAllSitesIsolatedForTesting()) {
-      // Verify that the RenderFrameHost is restored because the new URL
-      // required a new SiteInstance.
-      EXPECT_EQ(current_rfh, rfh_devtools_agent->GetFrameHostForTesting());
-      EXPECT_NE(speculative_rfh_b_site_id, speculative_rfh_c_site_id);
-    } else {
-      // Verify that this new URL also belongs to the default SiteInstance and
-      // therefore the RenderFrameHost from the previous navigation could be
-      // reused.
-      EXPECT_TRUE(
-          speculative_rfh_c->GetSiteInstance()->IsDefaultSiteInstance());
-      EXPECT_EQ(speculative_rfh_c,
-                rfh_devtools_agent->GetFrameHostForTesting());
-      EXPECT_EQ(speculative_rfh_b_site_id, speculative_rfh_c_site_id);
-    }
-  }
+  // With navigation queueing, starting a new navigation won't cancel an
+  // existing pending commit navigation, so wait for the first navigation to
+  // finish first before continuing.
+  EXPECT_EQ(speculative_rfh_b,
+            root->render_manager()->speculative_frame_host());
+  EXPECT_EQ(speculative_rfh_b, rfh_devtools_agent->GetFrameHostForTesting());
+  ASSERT_TRUE(observer_b.WaitForNavigationFinished());
 
   // 4.b) Navigation: ReadyToCommit.
   observer_c.ResumeNavigation();  // Send the request.
