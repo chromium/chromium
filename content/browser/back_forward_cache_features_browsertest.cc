@@ -243,38 +243,6 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryFrameTree().root()->navigation_request());
 }
 
-// Confirms that a page using a dedicated worker with WebTransport is not
-// cached.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       DoNotCacheWithDedicatedWorkerWithWebTransport) {
-  CreateHttpsServer();
-  ASSERT_TRUE(https_server()->Start());
-
-  EXPECT_TRUE(NavigateToURL(
-      shell(), https_server()->GetURL(
-                   "a.test",
-                   "/back_forward_cache/"
-                   "page_with_dedicated_worker_and_webtransport.html")));
-  // Open a WebTransport.
-  EXPECT_EQ("opened",
-            EvalJs(current_frame_host(),
-                   JsReplace("window.testOpenWebTransport($1);", port())));
-  RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
-
-  // Navigate away.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
-  delete_observer_rfh.WaitUntilDeleted();
-
-  // Go back to the original page. The page was not cached as the worker used
-  // WebTransport.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
-      FROM_HERE);
-}
-
 // Confirms that a page using a dedicated worker with a closed WebTransport is
 // cached as WebTransport is not a sticky feature.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
@@ -303,61 +271,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // not sticky.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
-}
-
-// TODO(crbug.com/40823301): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature \
-  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature
-#else
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature \
-  DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature
-#endif
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheWithDedicatedWorkerBrowserTest,
-    MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature) {
-  CreateHttpsServer();
-  ASSERT_TRUE(https_server()->Start());
-
-  EXPECT_TRUE(NavigateToURL(
-      shell(), https_server()->GetURL(
-                   "a.test",
-                   "/back_forward_cache/"
-                   "page_with_dedicated_worker_and_webtransport.html")));
-
-  // Open a WebTransport in the dedicated worker.
-  EXPECT_EQ("opened",
-            EvalJs(current_frame_host(),
-                   JsReplace("window.testOpenWebTransport($1);", port())));
-  // testOpenWebTransport sends the IPC (BackForwardCacheController.
-  // DidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a script
-  // to wait for the IPC reaching to the browser.
-  EXPECT_EQ(42, EvalJs(current_frame_host(), "42;"));
-  EXPECT_TRUE(
-      DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
-          current_frame_host())
-          ->GetBackForwardCacheDisablingFeatures()
-          .HasAll(
-              {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}));
-
-  // Use a blocking feature in the frame.
-  EXPECT_TRUE(ExecJs(current_frame_host(), kBlockingScript));
-  RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
-
-  // Navigate away.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
-  delete_observer_rfh.WaitUntilDeleted();
-
-  // Go back to the original page. The page was not cached due to WebTransport
-  // and a broadcast channel, which came from the dedicated worker and the frame
-  // respectively. Confirm both are recorded.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport,
-       kBlockingReasonEnum},
-      {}, {}, {}, FROM_HERE);
 }
 
 // TODO(crbug.com/40821593): Disabled due to being flaky.
@@ -3231,41 +3144,6 @@ class WebTransportBackForwardCacheBrowserTest
  private:
   WebTransportSimpleTestServer server_;
 };
-
-// Pages with active WebTransport should not be cached.
-// TODO(yhirano): Update this test once
-// https://github.com/w3c/webtransport/issues/326 is resolved.
-IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
-                       ActiveWebTransportEvictsPage) {
-  CreateHttpsServer();
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
-
-  // 1) Navigate to A.
-  ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImplWrapper rfh_a(current_frame_host());
-
-  // Establish a WebTransport session.
-  const char script[] = R"(
-      let transport = new WebTransport('https://localhost:$1/echo');
-      )";
-  ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace(script, port())));
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-
-  // Confirm A is evicted.
-  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-
-  // 3) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
-      FROM_HERE);
-}
 
 // Pages with inactive WebTransport should be cached.
 IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
