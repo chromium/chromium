@@ -314,6 +314,8 @@ suite('ComposeboxInputPlaceholder', () => {
   });
 });
 
+// TODO(crbug.com/486706313): Remove this suite test once the
+// cr-composebox-input element is integrated into cr-composebox.
 suite('ComposeboxScrollCaret', () => {
   let composebox: ComposeboxElement;
 

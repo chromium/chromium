@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/composebox_input.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ComposeboxInputTest', () => {
   let inputElement: ComposeboxInputElement;
@@ -67,36 +68,6 @@ suite('ComposeboxInputTest', () => {
         assertEquals('auto', window.getComputedStyle(cancelIcon).pointerEvents);
       });
 
-  test('Input scroll syncs with smart compose', async () => {
-    inputElement.smartComposeInlineHint = 'some hint';
-    await inputElement.updateComplete;
-
-    const smartCompose =
-        inputElement.shadowRoot.querySelector<HTMLElement>('#smartCompose');
-    assertTrue(!!smartCompose);
-
-    const textArea = inputElement.$.input;
-
-    // Mock the scrollTop properties since the elements might not be scrollable
-    // in the test environment.
-    let smartComposeScrollTop = 0;
-    Object.defineProperty(smartCompose, 'scrollTop', {
-      get: () => smartComposeScrollTop,
-      set: (v) => {
-        smartComposeScrollTop = v;
-      },
-    });
-
-    Object.defineProperty(textArea, 'scrollTop', {
-      get: () => 50,
-      set: () => {},
-    });
-
-    textArea.dispatchEvent(new Event('scroll'));
-
-    assertEquals(50, smartCompose.scrollTop);
-  });
-
   test('Events are forwarded from input', () => {
     const textArea = inputElement.$.input;
 
@@ -123,5 +94,90 @@ suite('ComposeboxInputTest', () => {
     });
     textArea.dispatchEvent(new MouseEvent('click'));
     assertTrue(clickFired);
+  });
+});
+
+suite('ComposeboxScrollCaret', () => {
+  let inputElement: ComposeboxInputElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    inputElement = document.createElement('cr-composebox-input');
+    inputElement.style.setProperty('--text-input-max-height', '100px');
+    inputElement.style.setProperty('--text-input-top-spacing', '8px');
+    document.body.appendChild(inputElement);
+    await inputElement.updateComplete;
+  });
+
+  test('InputWrapperIsScrollContainer', () => {
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!inputWrapper);
+
+    const overflowY = window.getComputedStyle(inputWrapper).overflowY;
+    assertEquals('auto', overflowY);
+  });
+
+  test('TextareaDoesNotScrollInternally', () => {
+    const input = inputElement.$.input;
+    assertTrue(!!input);
+
+    const maxHeight = window.getComputedStyle(input).maxHeight;
+    assertEquals('none', maxHeight);
+  });
+
+  test('CaretTransformStableDuringScroll', async () => {
+    const input = inputElement.$.input as HTMLTextAreaElement;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!input);
+    assertTrue(!!caret);
+    assertTrue(!!inputWrapper);
+
+    // Type enough texts to cause scrolling.
+    const longText = Array(100).fill('Let\'s keep typing longer...').join('\n');
+    input.value = longText;
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    // Place caret at the end.
+    input.setSelectionRange(longText.length, longText.length);
+    input.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    // Verify that the wrapper has scrollable content.
+    assertTrue(inputWrapper.scrollHeight > inputWrapper.clientHeight);
+
+    // Record the caret transform before scrolling.
+    const caretTransformBeforeScroll = caret.style.transform;
+    assertTrue(caretTransformBeforeScroll.length > 0);
+
+    // Scroll the wrapper to the top.
+    inputWrapper.scrollTop = 0;
+    await microtasksFinished();
+
+    // Verify that the caret transform is the same before and after scrolling.
+    assertEquals(caretTransformBeforeScroll, caret.style.transform);
+  });
+
+  test('MaskImageOnWrapper', () => {
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!inputWrapper);
+
+    // The mask-image should be on the input wrapper.
+    const wrapperMask =
+        window.getComputedStyle(inputWrapper).getPropertyValue('mask-image');
+    assertTrue(wrapperMask.length > 0 && wrapperMask !== 'none');
+  });
+
+  test('TextareaUsesFieldSizingContent', () => {
+    const input = inputElement.$.input;
+    assertTrue(!!input);
+
+    const fieldSizing =
+        window.getComputedStyle(input).getPropertyValue('field-sizing');
+    assertEquals('content', fieldSizing);
   });
 });

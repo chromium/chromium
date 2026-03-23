@@ -67,6 +67,11 @@
 }
 
 #inputWrapper {
+  mask-image: linear-gradient(transparent 7px, black var(--text-input-top-spacing));
+  max-height: var(--text-input-max-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
   position: relative;
   width: 100%;
 }
@@ -85,7 +90,6 @@
 
 #mirror {
   color: transparent;
-  height: 100%;
   left: 0;
   overflow: hidden;
   pointer-events: none;
@@ -102,12 +106,6 @@
   padding-inline-start: 0;
 }
 
-#input,
-#smartCompose {
-  max-height: var(--text-input-max-height);
-  scrollbar-width: none;
-}
-
 :host-context(:not([searchbox-next-enabled])) #input {
   transition: padding var(--height-expand-duration) var(--standard-curve);
 }
@@ -117,8 +115,7 @@
   border: none;
   color: var(--color-composebox-font-light);
   field-sizing: content;
-  mask-image: linear-gradient(transparent 7px, black var(--text-input-top-spacing));
-  height: calc-size(fit-content, min(size + 4px, var(--text-input-max-height)));
+  padding-bottom: 4px;
   outline: none;
   position: relative;
   resize: none;
@@ -196,7 +193,7 @@
 #smartCompose {
   pointer-events: none;
   position: absolute;
-  overflow: scroll;
+  overflow: hidden;
   top: 0;
   left: 0;
 }
