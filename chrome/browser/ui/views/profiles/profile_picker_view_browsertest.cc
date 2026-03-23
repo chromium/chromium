@@ -525,6 +525,12 @@ void WaitForBrowserUrl(const GURL& url, content::WebContents* target) {
   EXPECT_EQ(target->GetLastCommittedURL(), url);
 }
 
+GURL GetManagedUserProfileNoticeUrl() {
+  return base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+             ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+             : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl);
+}
+
 // Browser extra part used to be notified early enough to track the
 // `ProfileManager` in `g_browser_process` before any profile creation.
 class ProfileManagerInitializationInterceptExtraParts
@@ -3280,7 +3286,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      SignInForNewProfile(GetManagedUserProfileNoticeUrl(),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
@@ -3550,7 +3556,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       kTwoFactorIntersitialUrl, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
@@ -3622,7 +3628,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
 
   BrowserAddedWaiter browser_waiter(2u);
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
@@ -3679,12 +3685,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      SignInForNewProfile(GetManagedUserProfileNoticeUrl(),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
@@ -3734,13 +3740,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      SignInForNewProfile(GetManagedUserProfileNoticeUrl(),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
@@ -3773,14 +3779,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      SignInForNewProfile(GetManagedUserProfileNoticeUrl(),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com",
                           /*start_on_management_page=*/true);
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(

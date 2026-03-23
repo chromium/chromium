@@ -10082,6 +10082,27 @@
             ]
         }
     ],
+    "FirstRunDesktopRefresh": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "sign-in-promo-variation": "default"
+                    },
+                    "enable_features": [
+                        "FirstRunDesktopChoiceScreenRefresh",
+                        "FirstRunDesktopRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "FixStaticIpForTwoManagedEthPorts": [
         {
             "platforms": [

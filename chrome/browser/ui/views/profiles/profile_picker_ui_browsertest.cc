@@ -297,6 +297,7 @@ class ProfilePickerUIPixelTest
   ProfilePickerUIPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (!GetParam().text_variation_feature_param.empty()) {
       enabled_features.push_back({switches::kProfilePickerTextVariations,
                                   {{"profile-picker-variation",
@@ -308,9 +309,12 @@ class ProfilePickerUIPixelTest
     }
     if (GetParam().use_refreshed_ui) {
       enabled_features.push_back({switches::kFirstRunDesktopRefresh, {}});
+    } else {
+      disabled_features.push_back(switches::kFirstRunDesktopRefresh);
     }
 
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   ForceSigninUIError GetForceSigninUIError() {
