@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This header defines symbols to override the same functions in the Visual C++
 // CRT implementation.
 
@@ -20,6 +15,7 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
@@ -209,8 +205,8 @@ __declspec(restrict) void* _recalloc_base(void* block,
   void* const new_block = realloc(block, new_block_size);
 
   if (new_block != nullptr && old_block_size < new_block_size) {
-    memset(static_cast<char*>(new_block) + old_block_size, 0,
-           new_block_size - old_block_size);
+    PA_UNSAFE_TODO(memset(static_cast<char*>(new_block) + old_block_size, 0,
+                          new_block_size - old_block_size));
   }
 
   return new_block;
@@ -285,16 +281,17 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
 // will free().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 char* _strdup(const char* strSource) {
-  char* dest = static_cast<char*>(malloc(strlen(strSource) + 1));
-  strcpy(dest, strSource);
+  char* dest =
+      static_cast<char*>(malloc(PA_UNSAFE_TODO(strlen(strSource)) + 1));
+  PA_UNSAFE_TODO(strcpy(dest, strSource));
   return dest;
 }
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 wchar_t* _wcsdup(const wchar_t* strSource) {
-  wchar_t* dest =
-      static_cast<wchar_t*>(malloc(sizeof(wchar_t) * (wcslen(strSource) + 1)));
-  wcscpy(dest, strSource);
+  wchar_t* dest = static_cast<wchar_t*>(
+      malloc(sizeof(wchar_t) * (PA_UNSAFE_TODO(wcslen(strSource)) + 1)));
+  PA_UNSAFE_TODO(wcscpy(dest, strSource));
   return dest;
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/allocator_shim.h"
 
 #include <malloc/malloc.h>
@@ -15,6 +10,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_interception_apple.h"
 
@@ -49,7 +45,8 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
   // implementation in libmalloc/src/malloc.c for details.
   // https://github.com/apple-oss-distributions/libmalloc/blob/main/src/malloc.c
   for (unsigned int i = 0; i < zone_count; ++i) {
-    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+    malloc_zone_t* zone =
+        reinterpret_cast<malloc_zone_t*>(PA_UNSAFE_TODO(zones[i]));
     if (size_t size = zone->size(zone, ptr)) {
       if (zone->version >= 6 && zone->free_definite_size) {
         zone->free_definite_size(zone, ptr, size);

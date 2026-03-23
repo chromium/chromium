@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_
 #define PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_
 
@@ -17,6 +12,7 @@
 
 #include <cstddef>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/third_party/apple_apsl/malloc.h"
@@ -110,8 +106,8 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void ClearAllMallocZonesForTesting();
 
 inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   for (unsigned int i = 0; i < kMaxZoneCount; ++i) {
-    if (g_malloc_zones[i].context == zone) {
-      return g_malloc_zones[i];
+    if (PA_UNSAFE_TODO(g_malloc_zones[i]).context == zone) {
+      return PA_UNSAFE_TODO(g_malloc_zones[i]);
     }
   }
   PA_IMMEDIATE_CRASH();

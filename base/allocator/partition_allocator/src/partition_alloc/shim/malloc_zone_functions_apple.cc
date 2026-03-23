@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
 #include <atomic>
 #include <type_traits>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_lock.h"
 
 namespace allocator_shim {
@@ -24,7 +20,7 @@ static_assert(std::is_trivial_v<MallocZoneFunctions> &&
 
 void StoreZoneFunctions(const ChromeMallocZone* zone,
                         MallocZoneFunctions* functions) {
-  memset(functions, 0, sizeof(MallocZoneFunctions));
+  PA_UNSAFE_TODO(memset(functions, 0, sizeof(MallocZoneFunctions)));
   functions->malloc = zone->malloc;
   functions->calloc = zone->calloc;
   functions->valloc = zone->valloc;
@@ -80,7 +76,8 @@ int g_zone_count = 0;
 bool IsMallocZoneAlreadyStoredLocked(ChromeMallocZone* zone) {
   EnsureMallocZonesInitializedLocked();
   for (int i = 0; i < g_zone_count; ++i) {
-    if (g_malloc_zones[i].context == reinterpret_cast<void*>(zone)) {
+    if (PA_UNSAFE_TODO(g_malloc_zones[i]).context ==
+        reinterpret_cast<void*>(zone)) {
       return true;
     }
   }
@@ -99,7 +96,7 @@ bool StoreMallocZone(ChromeMallocZone* zone) {
     return false;
   }
 
-  StoreZoneFunctions(zone, &g_malloc_zones[g_zone_count]);
+  StoreZoneFunctions(zone, PA_UNSAFE_TODO(&g_malloc_zones[g_zone_count]));
   ++g_zone_count;
 
   // No other thread can possibly see these stores at this point. The code that
@@ -126,7 +123,8 @@ int GetMallocZoneCountForTesting() {
 
 void ClearAllMallocZonesForTesting() {
   partition_alloc::internal::ScopedGuard guard(GetLock());
-  memset(g_malloc_zones, 0, kMaxZoneCount * sizeof(MallocZoneFunctions));
+  PA_UNSAFE_TODO(
+      memset(g_malloc_zones, 0, kMaxZoneCount * sizeof(MallocZoneFunctions)));
   g_zone_count = 0;
 }
 
