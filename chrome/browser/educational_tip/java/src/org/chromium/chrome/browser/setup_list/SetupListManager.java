@@ -130,6 +130,13 @@ public class SetupListManager
     /** The current UI layout phase of the Setup List. */
     private @SetupListActiveLayout int mActiveLayout = SetupListActiveLayout.SINGLE_CELL;
 
+    /**
+     * Whether the Setup List was active at the start of the session. This is used to maintain a
+     * consistent set of "Setup List modules" for ranking purposes, even if the feature becomes
+     * inactive during the session (e.g., after a celebration).
+     */
+    private final boolean mIsActiveAtStart;
+
     private static final @ModuleType int TWO_CELL_CONTAINER_MODULE_TYPE =
             ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
 
@@ -159,8 +166,9 @@ public class SetupListManager
     SetupListManager() {
         initializePrefMapping();
         reconcileState();
+        mIsActiveAtStart = mActiveLayout != SetupListActiveLayout.INACTIVE;
 
-        if (mActiveLayout != SetupListActiveLayout.INACTIVE) {
+        if (mIsActiveAtStart) {
             ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
             DefaultBrowserPromoUtils.setDelegate(this);
         }
@@ -389,7 +397,7 @@ public class SetupListManager
 
     /** Returns whether a given module type is a setup list module. */
     public boolean isSetupListModule(@ModuleType int moduleType) {
-        if (!isSetupListActive()) {
+        if (!mIsActiveAtStart) {
             return false;
         }
         return moduleType == TWO_CELL_CONTAINER_MODULE_TYPE
