@@ -567,14 +567,16 @@ function createPublicKeyCredential(
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
       return extensionOutputs;
     },
-    toJSON(): Record<string, unknown> {
+    // TODO(crbug.com/487338357): Update returned object to match expected type
+    // and remove casting through `any`.
+    toJSON() {
       return {
         id: this.id,
         type: this.type,
         authenticatorAttachment: this.authenticatorAttachment,
         rawId: this.rawId,
         response: this.response,
-      };
+      } as unknown as any;
     },
   };
 }
