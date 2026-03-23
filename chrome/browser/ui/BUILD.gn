@@ -4814,6 +4814,7 @@ static_library("ui") {
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/digital_credentials",
       "//chrome/browser/infobars",
+      "//chrome/browser/preloading/bookmarkbar_preload",
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui/actions",
