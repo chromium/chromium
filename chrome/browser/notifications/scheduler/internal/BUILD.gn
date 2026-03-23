@@ -76,6 +76,7 @@ source_set("lib") {
     "//skia",
     "//ui/base",
     "//ui/gfx/codec",
+    "//url",
   ]
 }
 
@@ -83,6 +84,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "background_task_coordinator_unittest.cc",
+    "clients/finds_client_unittest.cc",
     "display_decider_unittest.cc",
     "icon_converter_unittest.cc",
     "icon_store_unittest.cc",
@@ -112,6 +114,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

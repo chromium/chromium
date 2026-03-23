@@ -2890,6 +2890,8 @@ static_library("browser") {
       "notifications/notification_trigger_scheduler_android.h",
       "notifications/scheduler/display_agent_android.cc",
       "notifications/scheduler/display_agent_android.h",
+      "notifications/scheduler/finds_agent_android.cc",
+      "notifications/scheduler/finds_agent_android.h",
       "notifications/scheduler/notification_background_task_scheduler_android.cc",
       "notifications/scheduler/notification_background_task_scheduler_android.h",
       "notifications/scheduler/tips_agent_android.cc",

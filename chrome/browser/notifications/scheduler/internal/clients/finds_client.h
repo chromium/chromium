@@ -11,13 +11,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
+#include "components/prefs/pref_service.h"
 
 namespace notifications {
+
+class FindsAgent;
 
 // The client used for Chrome Finds notifications.
 class FindsClient : public NotificationSchedulerClient {
  public:
-  FindsClient();
+  explicit FindsClient(std::unique_ptr<FindsAgent> finds_agent,
+                       PrefService* pref_service);
   FindsClient(const FindsClient&) = delete;
   FindsClient& operator=(const FindsClient&) = delete;
   ~FindsClient() override;
@@ -33,6 +37,11 @@ class FindsClient : public NotificationSchedulerClient {
                               std::set<std::string> guids) override;
   void OnUserAction(const UserActionData& action_data) override;
   void GetThrottleConfig(ThrottleConfigCallback callback) override;
+
+  void OpenNotificationAction(const UserActionData& action_data);
+
+  std::unique_ptr<FindsAgent> finds_agent_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace notifications

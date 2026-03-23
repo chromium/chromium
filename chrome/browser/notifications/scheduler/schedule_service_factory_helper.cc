@@ -26,6 +26,7 @@
 #include "chrome/browser/notifications/scheduler/internal/webui_client.h"
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
+#include "chrome/browser/notifications/scheduler/public/finds_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client_registrar.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
@@ -47,6 +48,7 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
         background_task_scheduler,
     std::unique_ptr<DisplayAgent> display_agent,
     std::unique_ptr<TipsAgent> tips_agent,
+    std::unique_ptr<FindsAgent> finds_agent,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& storage_dir,
     bool off_the_record,
@@ -63,8 +65,9 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
   client_registrar->RegisterClient(
       SchedulerClientType::kTips,
       std::make_unique<TipsClient>(std::move(tips_agent), pref_service));
-  client_registrar->RegisterClient(SchedulerClientType::kChromeFinds,
-                                   std::make_unique<FindsClient>());
+  client_registrar->RegisterClient(
+      SchedulerClientType::kChromeFinds,
+      std::make_unique<FindsClient>(std::move(finds_agent), pref_service));
 
   // Build icon store.
   base::FilePath icon_store_dir = storage_dir.Append(kIconDBName);

@@ -6,14 +6,22 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/notifications/scheduler/internal/stats.h"
+#include "chrome/browser/notifications/scheduler/public/finds_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "url/gurl.h"
 
 namespace notifications {
 
-FindsClient::FindsClient() = default;
+FindsClient::FindsClient(std::unique_ptr<FindsAgent> finds_agent,
+                         PrefService* pref_service)
+    : finds_agent_(std::move(finds_agent)), pref_service_(pref_service) {}
 
 FindsClient::~FindsClient() = default;
 
@@ -33,8 +41,34 @@ void FindsClient::OnSchedulerInitialized(bool success,
   NOTIMPLEMENTED();
 }
 
+void FindsClient::OpenNotificationAction(const UserActionData& action_data) {
+  // Finds the notification URL in the notification data and opens the link
+  // with Intent created by FindsAgent.
+  auto url_it = action_data.custom_data.find(kChromeFindsNotificationsUrl);
+  if (url_it != action_data.custom_data.end()) {
+    std::string finds_url_string = url_it->second;
+    GURL finds_gurl = GURL(finds_url_string);
+    DCHECK(finds_gurl.is_valid());
+    finds_agent_->OpenNotificationUrl(finds_gurl);
+  }
+}
+
 void FindsClient::OnUserAction(const UserActionData& action_data) {
-  NOTIMPLEMENTED();
+  switch (action_data.action_type) {
+    case UserActionType::kClick: {
+      OpenNotificationAction(action_data);
+      break;
+    }
+    case UserActionType::kDismiss:
+      NOTIMPLEMENTED();
+      break;
+    case UserActionType::kButtonClick:
+      // TODO(crbug.com/483104552): Add notification button click logic.
+      NOTIMPLEMENTED();
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void FindsClient::GetThrottleConfig(ThrottleConfigCallback callback) {

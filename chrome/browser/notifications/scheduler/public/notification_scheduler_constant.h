@@ -7,6 +7,8 @@
 
 namespace notifications {
 
+inline constexpr char kChromeFindsNotificationsUrl[] =
+    "CHROME_FINDS_NOTIFICATIONS_URL";
 inline constexpr char kDefaultHelpfulButtonId[] =
     "NOTIFICATION_SCHEDULER_DEFAULT_HELPFUL_BUTTON_ID";
 inline constexpr char kDefaultUnhelpfulButtonId[] =
