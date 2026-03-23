@@ -304,13 +304,14 @@ android_library("cronet_shared_java") {
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
   # Please add to cronet_shared_java_deps_to_package instead.
   deps = [
-           "//base:log_java",
            "//third_party/android_deps:protobuf_lite_runtime_java",
            "//third_party/androidx:androidx_annotation_annotation_java",
          ] + cronet_shared_java_deps_to_package
 
   proguard_configs =
       [ "//components/cronet/android/cronet_shared_proguard.cfg" ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # cronet_api_java.jar defines Cronet API.
@@ -361,6 +362,8 @@ android_library("cronet_api_java") {
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 android_library("cronet_api_helpers_java") {
@@ -385,6 +388,8 @@ android_library("cronet_api_helpers_java") {
     ":cronet_api_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # CronetStatsLog uses `android.util.StatsLog` which is not in the public SDK,
@@ -394,6 +399,7 @@ android_library("cronet_stats_log_java") {
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # CronetStatsLog uses `android.os.SystemProperties` which is not in the public
@@ -403,6 +409,7 @@ android_library("cronet_android_os_system_properties_java") {
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 cronet_impl_common_java_srcjar_deps = [
@@ -454,7 +461,6 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
-    "//base:log_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -464,6 +470,8 @@ android_library("cronet_impl_common_java") {
 
   srcjar_deps = cronet_impl_common_java_srcjar_deps
   proguard_configs = [ "cronet_impl_common_proguard.cfg" ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # cronet_impl_java_util_java.jar - Classes shared between Java Cronet implementations.
@@ -479,6 +487,8 @@ android_library("cronet_impl_java_util_java") {
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # cronet_impl_platform_java.jar - Java platform based implementation of the Cronet engine.
@@ -497,12 +507,13 @@ android_library("cronet_impl_platform_java") {
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
     ":httpengine_native_provider_java",
-    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//net/android:net_thread_stats_uid_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # cronet_impl_fake_java.jar - Fake implementation of Cronet.
@@ -523,9 +534,10 @@ android_library("cronet_impl_fake_java") {
     ":cronet_impl_common_java",
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
-    "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 android_library("cronet_urlconnection_impl_java") {
@@ -542,10 +554,11 @@ android_library("cronet_urlconnection_impl_java") {
   ]
   deps = [
     ":cronet_api_java",
-    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 cronet_impl_native_java_srcjar_deps = [
@@ -668,12 +681,13 @@ android_library("httpengine_native_provider_java") {
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
-    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # Groups all Cronet code (API and impl) into a single Java dependency.
@@ -1613,6 +1627,7 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
     ":cronet_jni_registration",
     ":cronet_tests_jni_registration",
   ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 instrumentation_test_apk(
@@ -1633,7 +1648,6 @@ instrumentation_test_apk(
            ":cronet_test_apk_resources",
            ":httpengine_native_provider_java",
            "//base:base_java_test_support",
-           "//base:log_java",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
@@ -1651,6 +1665,8 @@ instrumentation_test_apk(
   }
 
   srcjar_deps = [ ":cronet_jni_registration" ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 instrumentation_test_apk(
@@ -1692,6 +1708,8 @@ instrumentation_test_apk(
     ":cronet_jni_registration",
     ":cronet_tests_jni_registration",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # The smoketests included in this test target are already included in
@@ -1737,6 +1755,8 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
     ":cronet_jni_registration",
     ":cronet_tests_jni_registration",
   ]
+
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 cronet_test("cronet_unittests_android") {

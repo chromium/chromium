@@ -5,10 +5,10 @@
 package org.chromium.net.impl;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ExperimentalBidirectionalStream;

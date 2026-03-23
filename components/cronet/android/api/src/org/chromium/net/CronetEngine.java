@@ -8,13 +8,13 @@ import android.content.Context;
 import android.net.http.HttpResponseCache;
 import android.os.Process;
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONObject;
 
-import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.net.impl.CronetLogger;

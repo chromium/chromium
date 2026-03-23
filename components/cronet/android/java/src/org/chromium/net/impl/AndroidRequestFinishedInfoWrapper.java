@@ -7,11 +7,12 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
-import org.chromium.base.Log;
 import org.chromium.net.CronetException;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UrlResponseInfo;
