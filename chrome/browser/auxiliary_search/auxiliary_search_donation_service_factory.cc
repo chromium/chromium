@@ -4,12 +4,16 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_factory.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 

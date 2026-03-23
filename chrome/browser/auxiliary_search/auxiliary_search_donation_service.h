@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_DONATION_SERVICE_H_
 #define CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_DONATION_SERVICE_H_
 
-#include <optional>
+#include <jni.h>
+
+#include <memory>
+#include <vector>
 
 #include "base/android/application_status_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 class PrefService;
 class PrefRegistrySimple;

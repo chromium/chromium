@@ -5,13 +5,17 @@
 #ifndef CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_DONATION_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_DONATION_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
 class NoDestructor;
 }  // namespace base
-
+namespace content {
+class BrowserContext;
+}  // namespace content
 class KeyedService;
 class Profile;
 

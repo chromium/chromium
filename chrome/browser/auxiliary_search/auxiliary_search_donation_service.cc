@@ -4,9 +4,16 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
+#include <jni.h>
+
 #include <algorithm>
+#include <optional>
+#include <vector>
 
 #include "base/android/application_status_listener.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
@@ -17,7 +24,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "url/gurl.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace {
 

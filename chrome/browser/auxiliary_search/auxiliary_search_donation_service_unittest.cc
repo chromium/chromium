@@ -5,8 +5,10 @@
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/android/application_status_listener.h"
+#include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -14,10 +16,12 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
+#include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
