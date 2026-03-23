@@ -739,56 +739,26 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
              enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
-
-    // Handle force save to cloud if the feature is enabled.
-    if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
-        download_result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
-      const auto& force_save_to_cloud_feature =
-          download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
-              ? enterprise_data_protection::kEnableForceDownloadToCloud
-              : enterprise_data_protection::kEnableForceDownloadToOneDrive;
-
-      if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
-        download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-      } else if (web_contents()) {
-        // `web_contents()` may be nullptr in several cases, if the tab owning
-        // the download was opened by a download link, a restored page, or an
-        // external application. For those cases, download to drive directly.
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-        // ProcessEnterpriseDownloadResult will run via
-        // dialog callback.
-        base::OnceClosure keep_closure = base::BindOnce(
-            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
-            weak_ptr_factory_.GetWeakPtr(), download_result);
-        base::OnceClosure discard_closure = base::BindOnce(
-            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
-            weak_ptr_factory_.GetWeakPtr(),
-            DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
-
-        new enterprise_connectors::ContentAnalysisDialogController(
-            std::make_unique<
-                enterprise_connectors::ContentAnalysisDownloadsDelegate>(
-                metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
-                GURL(), false, std::move(keep_closure),
-                std::move(discard_closure), nullptr,
-                enterprise_connectors::ContentAnalysisResponse::Result::
-                    TriggeredRule::CustomRuleMessage()),
-            true,  // Downloads are always cloud-based for now.
-            web_contents(),
-            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-            /* file_count */ 1,
-            enterprise_connectors::FinalContentAnalysisResult::
-                FORCE_SAVE_TO_CLOUD,
-            nullptr);
-        return;
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-      }
-    }
   } else if (enterprise_connectors::ResultIsFailClosed(result) &&
              analysis_settings_.default_action ==
                  enterprise_connectors::DefaultAction::kBlock) {
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
+  }
+
+  bool should_show_force_save_dialog = false;
+  // Handle force save to cloud if the feature is enabled.
+  if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
+      download_result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
+    const auto& force_save_to_cloud_feature =
+        download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
+            ? enterprise_data_protection::kEnableForceDownloadToCloud
+            : enterprise_data_protection::kEnableForceDownloadToOneDrive;
+
+    if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
+      download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+    } else if (web_contents()) {
+      should_show_force_save_dialog = true;
+    }
   }
 
   // Reporting happens unconditionally and does not depend on
@@ -811,6 +781,41 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         file_metadata.size, result, file_metadata.scan_response));
 
     metadata_->AddScanResultMetadata(file_metadata);
+  }
+
+  if (should_show_force_save_dialog) {
+    // `web_contents()` may be nullptr in several cases, if the tab owning
+    // the download was opened by a download link, a restored page, or an
+    // external application. For those cases, download to drive directly.
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+    // ProcessEnterpriseDownloadResult will run via
+    // dialog callback.
+    base::OnceClosure keep_closure = base::BindOnce(
+        &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+        weak_ptr_factory_.GetWeakPtr(), download_result);
+    base::OnceClosure discard_closure = base::BindOnce(
+        &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+        weak_ptr_factory_.GetWeakPtr(),
+        DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+
+    new enterprise_connectors::ContentAnalysisDialogController(
+        std::make_unique<
+            enterprise_connectors::ContentAnalysisDownloadsDelegate>(
+            metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
+            GURL(), false, std::move(keep_closure),
+            std::move(discard_closure), nullptr,
+            enterprise_connectors::ContentAnalysisResponse::Result::
+                TriggeredRule::CustomRuleMessage()),
+        true,  // Downloads are always cloud-based for now.
+        web_contents(),
+        enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+        /* file_count */ 1,
+        enterprise_connectors::FinalContentAnalysisResult::
+            FORCE_SAVE_TO_CLOUD,
+        nullptr);
+    return;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   }
 
   ProcessEnterpriseDownloadResult(download_result);
