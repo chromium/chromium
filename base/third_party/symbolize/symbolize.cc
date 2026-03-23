@@ -505,6 +505,7 @@ static char *GetHex(const char *start, const char *end, uint64_t *hex) {
 static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
     uint64_t pc,
     uint64_t& start_address,
+    uint64_t& end_address,
     uint64_t& base_address,
     char* out_file_name,
     size_t out_file_name_size) {
@@ -552,7 +553,6 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
     ++cursor;  // Skip '-'.
 
     // Read end address.
-    uint64_t end_address;
     cursor = GetHex(cursor, eol, &end_address);
     if (cursor == eol || *cursor != ' ') {
       return -1;  // Malformed line.
@@ -659,15 +659,18 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
 
 int OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
                                                  uint64_t& start_address,
+                                                 uint64_t& end_address,
                                                  uint64_t& base_address,
                                                  char* out_file_name,
                                                  size_t out_file_name_size) {
   if (g_symbolize_open_object_file_callback) {
-    return g_symbolize_open_object_file_callback(
-        pc, start_address, base_address, out_file_name, out_file_name_size);
+    return g_symbolize_open_object_file_callback(pc, start_address, end_address,
+                                                 base_address, out_file_name,
+                                                 out_file_name_size);
   }
   return OpenObjectFileContainingPcAndGetStartAddressNoHook(
-      pc, start_address, base_address, out_file_name, out_file_name_size);
+      pc, start_address, end_address, base_address, out_file_name,
+      out_file_name_size);
 }
 
 // POSIX doesn't define any async-signal safe function for converting
@@ -763,6 +766,7 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void* pc,
                                                     size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uintptr_t>(pc);
   uint64_t start_address = 0;
+  uint64_t ignored_end_address;
   uint64_t base_address = 0;
 
   if (out_size < 1) {
@@ -772,7 +776,8 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void* pc,
   SafeAppendString("(", out, out_size);
 
   int object_fd = OpenObjectFileContainingPcAndGetStartAddress(
-      pc0, start_address, base_address, out + 1, out_size - 1);
+      pc0, start_address, ignored_end_address, base_address, out + 1,
+      out_size - 1);
 
   FileDescriptor wrapped_object_fd(object_fd);
 

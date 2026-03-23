@@ -724,17 +724,18 @@ class SandboxSymbolizeHelper {
     return fd;
   }
 
-  // Searches for the object file (from /proc/self/maps) that contains
-  // the specified pc.  If found, sets |start_address| to the start address
-  // of where this object file is mapped in memory, sets the module base
-  // address into |base_address|, copies the object file name into
-  // |out_file_name|, and attempts to open the object file.  If the object
+  // Searches for the object file (from /proc/self/maps) that contains the
+  // specified pc.  If found, sets `start_address` and `end_address` to the
+  // start and end address of where this object file is mapped in memory, sets
+  // the module base address into `base_address`, copies the object file name
+  // into `out_file_name`, and attempts to open the object file.  If the object
   // file is opened successfully, returns the file descriptor.  Otherwise,
   // returns -1.
   // IMPORTANT: This function must be async-signal-safe because it can be
   // called from a signal handler (symbolizing stack frames for a crash).
   static int OpenObjectFileContainingPc(uint64_t pc,
                                         uint64_t& start_address,
+                                        uint64_t& end_address,
                                         uint64_t& base_address,
                                         char* file_path_ptr,
                                         size_t file_path_size) {
@@ -766,6 +767,7 @@ class SandboxSymbolizeHelper {
       if (region.start <= pc && pc < region.end) {
         start_address = region.start;
         base_address = region.base;
+        end_address = region.end;
         if (!file_path.empty()) {
           strlcpy(file_path, region.path);
         }

@@ -1323,11 +1323,13 @@ bool GetDwarfSourceLineNumber(const void* pc,
                               size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uint64_t>(pc);
   uint64_t object_start_address = 0;
+  uint64_t ignored_object_end_address;
   uint64_t object_base_address = 0;
 
   google::FileDescriptor object_fd(google::FileDescriptor(
       google::OpenObjectFileContainingPcAndGetStartAddress(
-          pc0, object_start_address, object_base_address, nullptr, 0)));
+          pc0, object_start_address, ignored_object_end_address,
+          object_base_address, nullptr, 0)));
 
   if (!object_fd.get()) {
     return false;
@@ -1357,34 +1359,39 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
   };
 
   // Use heapsort to avoid recursion in a signal handler.
-  std::make_heap(&frame_info[0], &frame_info[num_frames - 1], pc_comparator);
-  std::sort_heap(&frame_info[0], &frame_info[num_frames - 1], pc_comparator);
+  std::make_heap(frame_info.begin(), frame_info.begin() + num_frames,
+                 pc_comparator);
+  std::sort_heap(frame_info.begin(), frame_info.begin() + num_frames,
+                 pc_comparator);
 
   // Walk the frame_info one compilation unit at a time.
-  for (size_t cur_frame = 0; cur_frame < num_frames; ++cur_frame) {
+  for (size_t cur_frame = 0; cur_frame < num_frames;) {
     uint64_t object_start_address = 0;
     uint64_t object_base_address = 0;
+    uint64_t object_end_address = 0;
     google::FileDescriptor object_fd(google::FileDescriptor(
         google::OpenObjectFileContainingPcAndGetStartAddress(
-            frame_info[cur_frame].pc, object_start_address, object_base_address,
-            nullptr, 0)));
+            frame_info[cur_frame].pc, object_start_address, object_end_address,
+            object_base_address, nullptr, 0)));
 
     // Some stack frames may not have a corresponding object file, e.g. a call
     // frame inside the Linux kernel's vdso. Just skip over these stack frames,
     // as this is done on a best-effort basis.
     if (object_fd.get() < 0) {
+      ++cur_frame;
       continue;
     }
 
-    // TODO(crbug.com/40228616): Consider exposing the end address so a
-    // range of frames can be bulk-populated. This was originally implemented,
-    // but line number symbolization is currently broken by default (and also
-    // broken in sandboxed processes). The various issues will be addressed
-    // incrementally in follow-up patches, and the optimization here restored if
-    // needed.
+    size_t batch_size = 1;
+    while (cur_frame + batch_size < num_frames &&
+           frame_info[cur_frame + batch_size].pc >= object_start_address &&
+           frame_info[cur_frame + batch_size].pc < object_end_address) {
+      ++batch_size;
+    }
 
-    PopulateCompileUnitOffsets(object_fd.get(), &frame_info[cur_frame], 1,
-                               object_base_address);
+    PopulateCompileUnitOffsets(object_fd.get(), &frame_info[cur_frame],
+                               batch_size, object_base_address);
+    cur_frame += batch_size;
   }
 }
 

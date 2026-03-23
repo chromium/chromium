@@ -110,17 +110,18 @@ ssize_t ReadFromOffset(const int fd,
 bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
                             ElfW(Shdr) *out);
 
-// Searches for the object file (from /proc/self/maps) that contains
-// the specified pc.  If found, sets |start_address| to the start address
-// of where this object file is mapped in memory, sets the module base
-// address into |base_address|, copies the object file name into
-// |out_file_name|, and attempts to open the object file.  If the object
+// Searches for the object file (from /proc/self/maps) that contains the
+// specified pc.  If found, sets `start_address` and `end_address` to the start
+// address and end address of where this object file is mapped in memory, sets
+// the module base address into `base_address`, copies the object file name
+// into `out_file_name`, and attempts to open the object file.  If the object
 // file is opened successfully, returns the file descriptor.  Otherwise,
-// returns -1.  |out_file_name_size| is the size of the file name buffer
-// (including the null-terminator).
+// returns -1.  `out_file_name_size` is the size of the file name buffer
+// (including the NUL-terminator).
 ATTRIBUTE_NOINLINE int OpenObjectFileContainingPcAndGetStartAddress(
     uint64_t pc,
     uint64_t& start_address,
+    uint64_t& end_address,
     uint64_t& base_address,
     char* out_file_name,
     size_t out_file_name_size);
@@ -164,17 +165,18 @@ GLOG_EXPORT
 void InstallSymbolizeCallback(SymbolizeCallback callback);
 
 // Installs a callback function, which will be called instead of
-// OpenObjectFileContainingPcAndGetStartAddress.  The callback is expected
+// OpenObjectFileContainingPcAndGetStartAddress. The callback is expected
 // to searches for the object file (from /proc/self/maps) that contains
-// the specified pc.  If found, sets |start_address| to the start address
-// of where this object file is mapped in memory, sets the module base
-// address into |base_address|, copies the object file name into
-// |out_file_name|, and attempts to open the object file.  If the object
-// file is opened successfully, returns the file descriptor.  Otherwise,
-// returns -1.  |out_file_name_size| is the size of the file name buffer
-// (including the null-terminator).
+// the specified pc. If found, sets `start_address` and `end_address` to the
+// start address and end address of where this object file is mapped in memory,
+// sets the module base address into `base_address`, copies the object file
+// name into `out_file_name`, and attempts to open the object file. If the
+// object file is opened successfully, returns the file descriptor. Otherwise,
+// returns -1. `out_file_name_size` is the size of the file name buffer
+// (including the NUL-terminator).
 typedef int (*SymbolizeOpenObjectFileCallback)(uint64_t pc,
                                                uint64_t& start_address,
+                                               uint64_t& end_address,
                                                uint64_t& base_address,
                                                char* out_file_name,
                                                size_t out_file_name_size);
