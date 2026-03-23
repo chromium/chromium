@@ -46,7 +46,7 @@ void GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(
 }
 
 GlicFocusedBrowserManagerImpl::GlicFocusedBrowserManagerImpl(
-    GlicInstance::UIDelegate* window_controller,
+    GlicInstance::UiDelegate* window_controller,
     Profile* profile)
     : window_controller_(*window_controller), profile_(profile) {
   if (!GlicEnabling::IsMultiInstanceEnabled()) {

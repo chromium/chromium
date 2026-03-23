@@ -21,7 +21,7 @@ namespace glic {
 
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
-    GlicInstance::UIDelegate* ui_delegate,
+    GlicInstance::UiDelegate* ui_delegate,
     GlicMetrics* metrics)
     : GlicSharingManagerCoordinator(
           profile,
@@ -38,7 +38,7 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
 
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
-    GlicInstance::UIDelegate* ui_delegate,
+    GlicInstance::UiDelegate* ui_delegate,
     GlicMetrics* metrics,
 #if !BUILDFLAG(IS_ANDROID)
     GlicFocusedBrowserManager* detached_mode_focused_browser_manager,

@@ -46,9 +46,9 @@ class PanelStateObserver : public base::CheckedObserver {
 namespace glic_instance_internal {
 
 // Interface for UI methods that can be called on the instance.
-class UIDelegate {
+class UiDelegate {
  public:
-  virtual ~UIDelegate() = default;
+  virtual ~UiDelegate() = default;
 
   virtual bool IsShowing() const = 0;
 
@@ -72,10 +72,10 @@ class UIDelegate {
 }  // namespace glic_instance_internal
 
 // Public interface for one instance of the glic web client.
-class GlicInstance : public glic_instance_internal::UIDelegate {
+class GlicInstance : public glic_instance_internal::UiDelegate {
  public:
-  // Exposes the UIDelegate interface on GlicInstance::UIDelegate.
-  using UIDelegate = glic_instance_internal::UIDelegate;
+  // Exposes the UiDelegate interface on GlicInstance::UiDelegate.
+  using UiDelegate = glic_instance_internal::UiDelegate;
 
   // Get this instance's Host which manages the chrome://glic WebContents.
   virtual Host& host() = 0;

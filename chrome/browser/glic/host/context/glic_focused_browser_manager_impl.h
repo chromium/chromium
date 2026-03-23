@@ -37,7 +37,7 @@ class GlicFocusedBrowserManagerImpl
       public GlicWindowController::StateObserver {
  public:
   explicit GlicFocusedBrowserManagerImpl(
-      GlicInstance::UIDelegate* window_controller,
+      GlicInstance::UiDelegate* window_controller,
       Profile* profile);
   ~GlicFocusedBrowserManagerImpl() override;
 
@@ -131,7 +131,7 @@ class GlicFocusedBrowserManagerImpl
 
   bool is_initialized_ = false;
 
-  raw_ref<GlicInstance::UIDelegate> window_controller_;
+  raw_ref<GlicInstance::UiDelegate> window_controller_;
 
   BrowserState browser_state_;
 

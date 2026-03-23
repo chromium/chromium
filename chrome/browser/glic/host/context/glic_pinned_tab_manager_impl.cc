@@ -289,7 +289,7 @@ class GlicPinnedTabManagerImpl::UpdateThrottler {
 
 GlicPinnedTabManagerImpl::GlicPinnedTabManagerImpl(
     Profile* profile,
-    GlicInstance::UIDelegate* ui_delegate,
+    GlicInstance::UiDelegate* ui_delegate,
     GlicMetrics* metrics)
     : profile_(profile),
       ui_delegate_(ui_delegate),

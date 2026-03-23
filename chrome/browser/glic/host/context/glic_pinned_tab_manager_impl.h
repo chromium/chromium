@@ -26,7 +26,7 @@ class GlicMetrics;
 class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
  public:
   explicit GlicPinnedTabManagerImpl(Profile* profile,
-                                    GlicInstance::UIDelegate* ui_delegate,
+                                    GlicInstance::UiDelegate* ui_delegate,
                                     GlicMetrics* metrics);
   ~GlicPinnedTabManagerImpl() override;
 
@@ -154,7 +154,7 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
   // Enables searching for pin_candidates.
   raw_ptr<Profile> profile_;
 
-  raw_ptr<GlicInstance::UIDelegate> ui_delegate_;
+  raw_ptr<GlicInstance::UiDelegate> ui_delegate_;
 
   // Enables providing pin-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
