@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.util.Pair;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -43,6 +45,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -54,6 +57,7 @@ import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -330,5 +334,71 @@ public class BookmarkBarMediatorTest {
                 "New item should have the baseline background",
                 R.drawable.bookmark_bar_ripple_baseline,
                 itemModel.get(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkItemClick_MiddleClick() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+
+        mMediator.onBookmarkItemAdded(
+                BookmarkBarItemsProvider.ObservationId.LOCAL, bookmarkItem, 0);
+
+        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
+        PropertyModel itemModel = listItemCaptor.getValue().model;
+
+        ClickWithMetaStateCallback clickCallback =
+                itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
+        assertNotNull(clickCallback);
+
+        // Simulate middle click
+        clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_TERTIARY);
+
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(List.of(bookmarkId)),
+                        eq(false),
+                        eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testPopupMenuItemTouchListener_MiddleClick() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        assertEquals(1, modelList.size());
+
+        ListItem listItem = modelList.get(0);
+        View.OnTouchListener touchListener =
+                listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
+        assertNotNull(touchListener);
+
+        View placeholderView = new View(mActivity);
+
+        // Simulate ACTION_DOWN
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        assertTrue(touchListener.onTouch(placeholderView, downEvent));
+
+        // Simulate ACTION_BUTTON_RELEASE with BUTTON_TERTIARY
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        assertTrue(touchListener.onTouch(placeholderView, releaseEvent));
+
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(List.of(bookmarkId)),
+                        eq(false),
+                        eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
     }
 }

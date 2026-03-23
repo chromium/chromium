@@ -84,6 +84,11 @@ import java.util.function.Supplier;
 @NullMarked
 class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
+    @FunctionalInterface
+    private interface BookmarkItemClickCallback {
+        void onClick(BookmarkItem item, int metaState, int buttonState);
+    }
+
     private static final int INVALID_INDEX = -1;
     @VisibleForTesting static @Nullable Bitmap sFolderIconBitmap;
     private final Activity mActivity;
@@ -306,7 +311,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     }
 
     // TODO(crbug.com/394614166): Handle shift-click to open in new window.
-    private void onBookmarkItemClick(BookmarkItem item, int metaState) {
+    private void onBookmarkItemClick(BookmarkItem item, int metaState, int buttonState) {
         final Profile profile = assumeNonNull(mProfileSupplier.get());
 
         if (item.isFolder()) {
@@ -327,7 +332,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
         BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_URL);
         final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
-        if (isCtrlPressed) {
+        final boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
+        if (isCtrlPressed || isMiddleClick) {
             mBookmarkOpener.openBookmarksInNewTabs(
                     List.of(item.getId()),
                     profile.isOffTheRecord(),
@@ -739,20 +745,33 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     @SuppressLint("ClickableViewAccessibility")
     private ListItem createListItemForBookmarkLeaf(BookmarkItem bookmarkItem) {
         // Handles all pointer-based input (mouse clicks, touch taps) to support both
-        // simple clicks and Ctrl+clicks in one place. Because this listener handles the
-        // action directly, a separate OnClickListener is not needed.
+        // simple clicks and Ctrl+clicks in one place.
         // We return true to consume the event, which prevents any other listeners from
         // firing and allows us to suppress the "performClick" lint warning.
         View.OnTouchListener touchListener =
                 (v, event) -> {
-                    // We only act when the user lifts their finger/mouse button.
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int action = event.getActionMasked();
+
+                    // Consume the initial press to ensure we receive subsequent motion events (like
+                    // release).
+                    if (action == MotionEvent.ACTION_DOWN
+                            || action == MotionEvent.ACTION_BUTTON_PRESS) {
+                        return true;
+                    }
+
+                    // We only act when the user lifts their finger or releases a mouse button.
+                    boolean isLeftClickRelease = (action == MotionEvent.ACTION_UP);
+                    boolean isMiddleClick =
+                            (action == MotionEvent.ACTION_BUTTON_RELEASE
+                                    && event.getActionButton() == MotionEvent.BUTTON_TERTIARY);
+
+                    if (isLeftClickRelease || isMiddleClick) {
                         boolean isCtrlPressed = (event.getMetaState() & KeyEvent.META_CTRL_ON) != 0;
 
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
                         boolean isOffTheRecord =
                                 assumeNonNull(mProfileSupplier.get()).isOffTheRecord();
-                        if (isCtrlPressed) {
+                        if (isCtrlPressed || isMiddleClick) {
                             // Open in new tab.
                             mBookmarkOpener.openBookmarksInNewTabs(
                                     List.of(bookmarkItem.getId()),
@@ -768,8 +787,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
                         // It is critical that this listener returns true to consume the event. This
                         // prevents the BasicListMenu's generic click handler from firing, which
-                        // would cause a crash because this item's model no longer has a
-                        // CLICK_LISTENER.
+                        // would cause a double navigation because this item also has a
+                        // CLICK_LISTENER for accessibility.
                         return true;
                     }
                     return false;
@@ -1020,7 +1039,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
      * @return The created list item to render in the bookmark bar.
      */
     private ListItem createListItemFor(
-            BiConsumer<BookmarkItem, Integer> clickCallback,
+            BookmarkItemClickCallback clickCallback,
             @Nullable BookmarkImageFetcher imageFetcher,
             BookmarkItem item,
             @ColorRes int iconTintRes,
@@ -1034,7 +1053,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             && keyCode == KeyEvent.KEYCODE_ENTER) {
                         // clickCallback is an object that represents
                         // BookmarkBarMediator#onBookmarkItemClick.
-                        clickCallback.accept(item, event.getMetaState());
+                        clickCallback.onClick(item, event.getMetaState(), /* buttonState= */ 0);
                         // Returning true handles the event, avoids triggering a normal click
                         // (double action).
                         return true;
@@ -1047,7 +1066,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
-                                (metaState, buttonState) -> clickCallback.accept(item, metaState))
+                                (metaState, buttonState) ->
+                                        clickCallback.onClick(item, metaState, buttonState))
                         .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
                         .with(
                                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
