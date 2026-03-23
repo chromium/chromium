@@ -441,7 +441,20 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 }
 
 // Tests that a POST followed by a redirect does not show the popup.
-- (void)testRepostFormCancellingAfterRedirect {
+// TODO(crbug.com/495387290): Flaky on iPad simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRepostFormCancellingAfterRedirect \
+  FLAKY_testRepostFormCancellingAfterRedirect
+#else
+#define MAYBE_testRepostFormCancellingAfterRedirect \
+  testRepostFormCancellingAfterRedirect
+#endif
+- (void)MAYBE_testRepostFormCancellingAfterRedirect {
+#if TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
+  }
+#endif
   web::test::SetUpHttpServer(std::make_unique<TestFormResponseProvider>());
   const GURL destinationURL = GetDestinationUrl();
 
