@@ -51,7 +51,7 @@ struct GlicInvokeOptions {
 
   // Additional context (e.g., image data, Annotated Page Content) to be
   // included with the invocation.
-  std::vector<glic::mojom::AdditionalContextPtr> additional_context;
+  glic::mojom::AdditionalContextPtr additional_context;
 
   // Defines the conversation this invocation targets: either a specific
   // conversation ID, or a general selection mode.
