@@ -171,6 +171,17 @@ NET_EXPORT_PRIVATE void RegisterQuicConnectionClosePayload(
 // previously registered by RegisterQuicConnectionClosePayload
 NET_EXPORT_PRIVATE void UnregisterQuicConnectionClosePayload(int fd);
 
+// Temporary enum until the NDK rolls out and we can use the one from
+// <android/multinetwork.h>
+enum class NetworkBlockedReason {
+  kNone = 0,
+  kLnp = 1,
+};
+
+// Returns the reason why the network request was blocked.
+// Returns kNone if not blocked or if the API is not available.
+NET_EXPORT_PRIVATE NetworkBlockedReason GetNetworkBlockedReason(int fd);
+
 }  // namespace net::android
 
 #endif  // NET_ANDROID_NETWORK_LIBRARY_H_

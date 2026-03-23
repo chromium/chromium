@@ -342,6 +342,35 @@ void UnregisterQuicConnectionClosePayload(int fd) {
   Java_AndroidNetworkLibrary_unregisterQuicConnectionClosePayload(env, fd);
 }
 
+namespace {
+
+using AndroidGetNetworkBlockedReason = int (*)(int fd);
+
+AndroidGetNetworkBlockedReason GetAndroidGetNetworkBlockedReason() {
+  base::FilePath file(base::GetNativeLibraryName("android"));
+  void* dl = dlopen(file.value().c_str(), RTLD_NOW);
+  if (!dl) {
+    return nullptr;
+  }
+  return reinterpret_cast<AndroidGetNetworkBlockedReason>(
+      dlsym(dl, "android_getnetworkblockedreason"));
+}
+
+}  // namespace
+
+NetworkBlockedReason GetNetworkBlockedReason(int fd) {
+  static AndroidGetNetworkBlockedReason get_network_blocked_reason =
+      GetAndroidGetNetworkBlockedReason();
+  if (!get_network_blocked_reason) {
+    return NetworkBlockedReason::kNone;
+  }
+  int reason = get_network_blocked_reason(fd);
+  if (reason == static_cast<int>(NetworkBlockedReason::kLnp)) {
+    return NetworkBlockedReason::kLnp;
+  }
+  return NetworkBlockedReason::kNone;
+}
+
 }  // namespace net::android
 
 DEFINE_JNI(AndroidNetworkLibrary)
