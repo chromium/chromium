@@ -328,7 +328,6 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
 
 void RecommendAppsFetcherImpl::PopulateDisplaySettings() {
   if (!cros_display_config_) {
-    // TODO(neis): Do CHECK_IS_TEST() here and get rid of ShellObserver.
     return;
   }
 
