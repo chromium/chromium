@@ -1480,11 +1480,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return false;
   }
 
-  if (!scope->GetLayoutObject()) {
-    // If we have any view transition elements, while having no
-    // scope->GetLayoutObject(), we should abort. Target elements are
-    // only set on the current phase of the animation, so it means that the
-    // scope's layout object disappeared in this phase.
+  if (!DynamicTo<LayoutBox>(scope->GetLayoutObject())) {
+    // If we have any view transition elements, while not having a layout box
+    // for the scoped element, we should abort. Target elements are only set
+    // on the current phase of the animation, so it means that the scope's
+    // layout object changed in this phase.
     for (auto& entry : element_data_map_) {
       auto& element_data = entry.value;
       if (element_data->target_element) {
