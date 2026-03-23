@@ -19,6 +19,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_dispatcher_on_device.h"
 #include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -61,6 +62,11 @@ MockLiveTranslateController::MockLiveTranslateController(
     content::BrowserContext* browser_context)
     : LiveTranslateController(
           profile_prefs,
+          std::make_unique<TranslationDispatcherOnDevice>(
+              std::make_unique<
+                  on_device_translation::OnDeviceTranslationServiceController>(
+                  profile_prefs,
+                  "")),
           std::make_unique<GoogleApiTranslationDispatcher>("dummy_api_key",
                                                            browser_context)) {}
 

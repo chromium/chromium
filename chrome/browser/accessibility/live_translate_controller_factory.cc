@@ -12,6 +12,7 @@
 #include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/translation_dispatcher_on_device.h"
+#include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
 #include "google_apis/google_api_keys.h"
@@ -56,21 +57,23 @@ std::unique_ptr<KeyedService>
 LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<TranslationDispatcher> dispatcher;
+  std::unique_ptr<TranslationDispatcher> on_device_dispatcher;
+  std::unique_ptr<TranslationDispatcher> google_api_dispatcher;
 
-  // Use the correct dispatcher based on the feature flag
+  // Only set on_device_dispatcher if feature flag is set.
   if (base::FeatureList::IsEnabled(
           live_caption::kLiveCaptionOnDeviceTranslation)) {
-    dispatcher = std::make_unique<TranslationDispatcherOnDevice>(
+    on_device_dispatcher = std::make_unique<TranslationDispatcherOnDevice>(
         std::make_unique<
             on_device_translation::OnDeviceTranslationServiceController>(
             profile->GetPrefs(), ""));
-  } else {
-    dispatcher = std::make_unique<GoogleApiTranslationDispatcher>(
-        google_apis::GetAPIKey(), context);
   }
-  return std::make_unique<LiveTranslateController>(profile->GetPrefs(),
-                                                   std::move(dispatcher));
+  google_api_dispatcher = std::make_unique<GoogleApiTranslationDispatcher>(
+      google_apis::GetAPIKey(), context);
+
+  return std::make_unique<LiveTranslateController>(
+      profile->GetPrefs(), std::move(on_device_dispatcher),
+      std::move(google_api_dispatcher));
 }
 
 }  // namespace captions

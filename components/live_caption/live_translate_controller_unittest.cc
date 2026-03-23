@@ -55,16 +55,19 @@ TEST_F(LiveTranslateControllerTest,
       live_caption::kLiveCaptionOnDeviceTranslation);
 
   base::HistogramTester histogram_tester;
-  auto mock_translation_dispatcher =
+  auto mock_on_device_dispatcher =
       std::make_unique<testing::StrictMock<MockTranslationDispatcher>>();
-  auto* translation_dispatcher_ptr = mock_translation_dispatcher.get();
+  auto mock_google_api_dispatcher =
+      std::make_unique<testing::StrictMock<MockTranslationDispatcher>>();
+  auto* google_api_dispatcher_ptr = mock_google_api_dispatcher.get();
   LiveTranslateController controller(&prefs_,
-                                     std::move(mock_translation_dispatcher));
+                                     std::move(mock_on_device_dispatcher),
+                                     std::move(mock_google_api_dispatcher));
 
   // Verify that the controller forwards translation requests to the underlying
   // dispatcher and successfully records true (success) in the Google API UMA
   // histogram.
-  EXPECT_CALL(*translation_dispatcher_ptr,
+  EXPECT_CALL(*google_api_dispatcher_ptr,
               GetTranslation("hello", "en", "es", testing::_))
       .WillOnce([](absl::string_view result, absl::string_view source_language,
                    absl::string_view target_language,
@@ -82,37 +85,48 @@ TEST_F(LiveTranslateControllerTest,
       /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
-TEST_F(LiveTranslateControllerTest,
-       GetTranslationRecordsMetrics_OnDevice_Failure) {
+TEST_F(LiveTranslateControllerTest, GetTranslation_FallsBackToGoogleApi) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       live_caption::kLiveCaptionOnDeviceTranslation);
 
   base::HistogramTester histogram_tester;
-  auto mock_translation_dispatcher =
-      std::make_unique<testing::StrictMock<MockTranslationDispatcher>>();
-  auto* translation_dispatcher_ptr = mock_translation_dispatcher.get();
-  LiveTranslateController controller(&prefs_,
-                                     std::move(mock_translation_dispatcher));
+  auto mock_on_device_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
+  auto mock_google_api_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
 
-  // Controller calls dispatcher and successfully records false (failure) in the
-  // On-Device UMA histogram.
-  EXPECT_CALL(*translation_dispatcher_ptr,
-              GetTranslation("hello", "en", "es", testing::_))
+  auto* on_device_ptr = mock_on_device_dispatcher.get();
+  auto* google_api_ptr = mock_google_api_dispatcher.get();
+
+  LiveTranslateController controller(&prefs_,
+                                     std::move(mock_on_device_dispatcher),
+                                     std::move(mock_google_api_dispatcher));
+  // 1. On-device fails
+  EXPECT_CALL(*on_device_ptr, GetTranslation("hello", "en", "fr", testing::_))
       .WillOnce([](absl::string_view result, absl::string_view source_language,
                    absl::string_view target_language,
                    TranslateEventCallback callback) {
-        std::move(callback).Run(base::unexpected("translation failed"));
+        std::move(callback).Run(base::unexpected("on-device failed"));
+      });
+
+  // 2. Google API is called as fallback
+  EXPECT_CALL(*google_api_ptr, GetTranslation("hello", "en", "fr", testing::_))
+      .WillOnce([](absl::string_view result, absl::string_view source_language,
+                   absl::string_view target_language,
+                   TranslateEventCallback callback) {
+        std::move(callback).Run(base::ok("bonjour"));
       });
 
   base::MockCallback<TranslateEventCallback> translate_callback;
   EXPECT_CALL(translate_callback, Run(testing::_)).Times(1);
 
-  controller.GetTranslation("hello", "en", "es", translate_callback.Get());
+  controller.GetTranslation("hello", "en", "fr", translate_callback.Get());
 
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.LiveTranslate.OnDeviceTranslation.Result",
-      /*sample=*/false, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.Result", false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.LiveTranslate.GoogleApiTranslation.Result", true, 1);
 }
 
 }  // namespace captions
