@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -39,9 +40,13 @@ ContentAnnotationValidator::Create() {
   std::optional<base::DictValue> parsed_json =
       base::JSONReader::ReadDict(schema_json, base::JSON_PARSE_RFC);
 
-  return parsed_json.has_value() ? std::make_unique<ContentAnnotationValidator>(
-                                       std::move(*parsed_json))
-                                 : nullptr;
+  if (!parsed_json.has_value()) {
+    // Invalid JSON schema indicates a malformed flag value.
+    base::debug::DumpWithoutCrashing();
+    return nullptr;
+  }
+
+  return std::make_unique<ContentAnnotationValidator>(std::move(*parsed_json));
 }
 
 ContentAnnotationValidator::ContentAnnotationValidator(base::DictValue schema)
