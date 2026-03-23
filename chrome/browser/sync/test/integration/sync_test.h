@@ -152,6 +152,7 @@ class SyncTest : public PlatformBrowserTest,
   void TearDown() override;
   void PostRunTestOnMainThread() override;
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
+  void SetUpLocalStatePrefService(PrefService* local_state) override;
 
   // Sets up command line flags required for sync tests.
   void SetUpCommandLine(base::CommandLine* cl) override;

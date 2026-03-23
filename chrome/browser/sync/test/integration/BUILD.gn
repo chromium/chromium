@@ -621,6 +621,8 @@ source_set("sync_integration_test_support") {
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/printing",
+      "//components/account_id",
+      "//components/account_id:test_support",
       "//components/desks_storage",
       "//components/user_manager:test_support",
     ]

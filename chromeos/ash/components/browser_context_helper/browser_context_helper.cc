@@ -73,7 +73,14 @@ std::string BrowserContextHelper::GetUserIdHashFromBrowserContext(
     return std::string();
   }
 
-  const std::string dir = browser_context->GetPath().BaseName().value();
+  return GetUsernameHashFromBrowserContextDirName(
+      browser_context->GetPath().BaseName());
+}
+
+// static
+std::string BrowserContextHelper::GetUsernameHashFromBrowserContextDirName(
+    const base::FilePath& dir_name) {
+  const std::string dir = dir_name.value();
 
   // Don't strip prefix if the dir is not supposed to be prefixed.
   if (!ShouldAddBrowserContextDirPrefix(dir)) {

@@ -92,6 +92,12 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   static std::string GetUserIdHashFromBrowserContext(
       content::BrowserContext* browser_context);
 
+  // Returns user id hash for the browser context, whose path is `dir_name`.
+  // Returns empty string if the hash could not be extracted from
+  // the directory name.
+  static std::string GetUsernameHashFromBrowserContextDirName(
+      const base::FilePath& dir_name);
+
   // Returns BrowserContext instance of the user associated with |account_id|
   // if it is created and fully initialized. Otherwise, returns nullptr.
   content::BrowserContext* GetBrowserContextByAccountId(

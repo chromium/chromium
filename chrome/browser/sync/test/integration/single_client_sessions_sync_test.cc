@@ -371,6 +371,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
     }
   }
   EXPECT_TRUE(found_header);
+
+  // Opened browser is carried over into the following test, so close it
+  // explicitly just before the completion of the preparation.
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, SessionStartTime) {
