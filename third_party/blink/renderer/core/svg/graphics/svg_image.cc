@@ -569,6 +569,15 @@ bool SVGImage::MaybeAnimated() {
   return HasSmilAnimations(document) || document.Timeline().HasPendingUpdates();
 }
 
+bool SVGImage::HasSVGForeignObject() const {
+  SVGSVGElement* root_element = RootElement();
+  if (!root_element) {
+    return false;
+  }
+  return root_element->GetDocument().IsUseCounted(
+      WebFeature::kSVGForeignObjectElement);
+}
+
 void SVGImage::ServiceAnimations(
     base::TimeTicks monotonic_animation_start_time) {
   if (!GetImageObserver())
@@ -644,6 +653,10 @@ void SVGImage::UpdateUseCountersAfterLoad(const Document& document) const {
     document.CountUse(WebFeature::kSVGImage);
     if (HasSmilAnimations(root_element->GetDocument())) {
       document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
+    }
+    if (root_element->GetDocument().IsUseCounted(
+            WebFeature::kSVGForeignObjectElement)) {
+      document.CountUse(WebFeature::kSVGForeignObjectInImage);
     }
   }
 

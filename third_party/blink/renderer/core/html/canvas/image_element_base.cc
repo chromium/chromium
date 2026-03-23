@@ -69,6 +69,10 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
 
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
+    if (svg_image->HasSVGForeignObject()) {
+      UseCounter::Count(GetElement().GetDocument(),
+                        WebFeature::kSVGForeignObjectDrawnIntoCanvas);
+    }
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, GetElement());
     const gfx::SizeF image_size = SVGImageForContainer::ConcreteObjectSize(

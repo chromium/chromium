@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG foreignObject in image UseCounters</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<canvas id="canvas" width="100" height="100"></canvas>
+<script>
+
+const kSVGForeignObjectInImage = 5844;
+const kSVGForeignObjectDrawnIntoCanvas = 5845;
+
+const svgDataUrlWithFO = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><foreignObject></foreignObject></svg>';
+const svgDataUrlWithoutFO = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="green"/></svg>';
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kSVGForeignObjectInImage);
+
+  let img = new Image();
+  let imgPromise = new Promise(resolve => img.onload = resolve);
+  img.src = svgDataUrlWithFO;
+  await imgPromise;
+
+  assert_true(internals.isUseCounted(document, kSVGForeignObjectInImage));
+}, "SVGForeignObjectInImage UseCounter should be triggered when a data URL SVG image containing foreignObject is loaded.");
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kSVGForeignObjectInImage);
+
+  let img = new Image();
+  let imgPromise = new Promise(resolve => img.onload = resolve);
+  img.src = svgDataUrlWithoutFO;
+  await imgPromise;
+
+  assert_false(internals.isUseCounted(document, kSVGForeignObjectInImage));
+}, "SVGForeignObjectInImage UseCounter should NOT be triggered for an SVG image without foreignObject.");
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kSVGForeignObjectDrawnIntoCanvas);
+
+  let img = new Image();
+  let imgPromise = new Promise(resolve => img.onload = resolve);
+  img.src = svgDataUrlWithFO;
+  await imgPromise;
+
+  let ctx = document.getElementById('canvas').getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  assert_true(internals.isUseCounted(document, kSVGForeignObjectDrawnIntoCanvas));
+}, "SVGForeignObjectDrawnIntoCanvas UseCounter should be triggered when drawing a foreignObject-containing SVG image into a 2D canvas.");
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kSVGForeignObjectDrawnIntoCanvas);
+
+  let img = new Image();
+  let imgPromise = new Promise(resolve => img.onload = resolve);
+  img.src = svgDataUrlWithoutFO;
+  await imgPromise;
+
+  let ctx = document.getElementById('canvas').getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  assert_false(internals.isUseCounted(document, kSVGForeignObjectDrawnIntoCanvas));
+}, "SVGForeignObjectDrawnIntoCanvas UseCounter should NOT be triggered when drawing an SVG image without foreignObject into a 2D canvas.");
+
+</script>
+</body>

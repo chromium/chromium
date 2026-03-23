@@ -111,6 +111,8 @@ class CORE_EXPORT SVGImage final : public Image {
   // Does the SVG image/document contain any animations?
   bool MaybeAnimated() override;
 
+  bool HasSVGForeignObject() const;
+
   // Advances an animated image. This will trigger an animation update for CSS
   // and advance the SMIL timeline by one frame.
   void AdvanceAnimationForTesting() override;
