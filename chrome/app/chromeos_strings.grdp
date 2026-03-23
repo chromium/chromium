@@ -2261,9 +2261,6 @@
   <message name="IDS_STATUSBAR_DISABLE_SPOKEN_FEEDBACK" desc="The menu option to disable spoken feedback accessibility feature.">
     Disable ChromeVox (spoken feedback)
   </message>
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_ETHERNET" desc="Label for an ethernet network device.">
-    Ethernet
-  </message>
 
   <!-- Status bar -->
   <message name="IDS_STATUSBAR_NO_NETWORKS_MESSAGE" desc="No networks are available">

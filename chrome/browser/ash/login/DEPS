@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/strings",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.

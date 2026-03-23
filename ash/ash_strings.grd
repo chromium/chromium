@@ -9798,6 +9798,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_FLOATING_WORKSPACE_ERROR_DIALOG_BUTTON" desc="Button for floating workspace error dialog that disables floating workspace and closes the dialog after the error screen is shown.">
         Continue to new session
       </message>
+
+      <!-- Status bar -->
+      <message name="IDS_STATUSBAR_NETWORK_DEVICE_ETHERNET" desc="Label for an ethernet network device.">
+        Ethernet
+      </message>
     </messages>
   </release>
 </grit>

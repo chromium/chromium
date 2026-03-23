@@ -133,6 +133,7 @@ static_library("login") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//build:branding_buildflags",
     "//cc/base",
     "//chrome/app/vector_icons",
