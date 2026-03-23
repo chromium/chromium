@@ -308,6 +308,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _hasText;
   // Whether a successful navigation has started.
   BOOL _inNavigation;
+  // Whether the omnibox is focused.
+  BOOL _omniboxFocused;
   // Used to count the number of images added in the session.
   int _imageUploadCount;
   // The currrent choice of model.
@@ -731,6 +733,14 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   [self commitUIUpdates];
+}
+
+- (void)setOmniboxFocused:(bool)focused {
+  if (_omniboxFocused == focused) {
+    return;
+  }
+  _omniboxFocused = focused;
+  [self requestUIRefresh];
 }
 
 - (void)changeModeForInputState:
@@ -2008,6 +2018,13 @@ CreateInputDataFromAnnotatedPageContent(
   if (!IsComposeboxCompactModeEnabled()) {
     return NO;
   }
+
+  BOOL forceExpansionOnFocus =
+      _entrypoint == ComposeboxEntrypoint::kCobrowse && _omniboxFocused;
+  if (forceExpansionOnFocus) {
+    return NO;
+  }
+
   BOOL requiresExpansion =
       _isMultiline || _modeHolder.mode != ComposeboxMode::kRegularSearch;
   return !requiresExpansion;

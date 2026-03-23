@@ -56,6 +56,9 @@ class WebStateID;
 /// Sets the searchbox configuration to use.
 - (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig;
 
+/// Whether the omnibox is focused.
+- (void)setOmniboxFocused:(bool)focused;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_

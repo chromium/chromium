@@ -686,9 +686,11 @@ const CGFloat kSnackbarBottomMargin = 10;
     [_omniboxCoordinator insertTextToOmnibox:_query];
     _query = nil;
   }
+  [_mediator setOmniboxFocused:YES];
 }
 
 - (void)omniboxDidResignFirstResponder {
+  [_mediator setOmniboxFocused:NO];
 }
 
 - (void)omniboxDidEndEditing {
