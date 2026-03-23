@@ -591,8 +591,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       on_device_translation_internals::mojom::PageHandlerFactory,
       OnDeviceTranslationInternalsUI>(map);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);
   }
