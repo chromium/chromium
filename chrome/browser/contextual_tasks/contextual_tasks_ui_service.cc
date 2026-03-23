@@ -191,9 +191,20 @@ ContextualTasksUiService::ContextualTasksUiService(
 ContextualTasksUiService::~ContextualTasksUiService() = default;
 
 void ContextualTasksUiService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnContextualTasksUiServiceShutdown(this);
+  }
   weak_ptr_factory_.InvalidateWeakPtrs();
   access_token_fetcher_.reset();
   token_refresh_timer_.Stop();
+}
+
+void ContextualTasksUiService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ContextualTasksUiService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -58,6 +59,12 @@ class ContextualTasksUiService : public KeyedService {
                            IsAllowedHost_WithOverride);
 
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnContextualTasksUiServiceShutdown(
+        ContextualTasksUiService* service) {}
+  };
+
   ContextualTasksUiService(
       Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
@@ -69,6 +76,9 @@ class ContextualTasksUiService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // A notification that the browser attempted to navigate to the AI page. If
   // this method is being called, it means the navigation was blocked and it
@@ -308,6 +318,8 @@ class ContextualTasksUiService : public KeyedService {
 
   // Checks if the provided URL matches any of the allowed hosts.
   static bool IsAllowedHost(const GURL& url);
+
+  base::ObserverList<Observer> observers_;
 
   const raw_ptr<Profile> profile_;
 
