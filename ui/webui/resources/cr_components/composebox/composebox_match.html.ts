@@ -16,10 +16,12 @@ export function getHtml(this: ComposeboxMatchElement) {
         style="-webkit-mask-image: url(${this.iconPath_()});">
     </div>
   </div>
-  <div id="textContainer" part="match-text-container"></div>
+  <div id="textContainer" part="match-text-container">
+    ${this.match.contents}
+  </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
     part="match-remove-button"
-    aria-label="${this.computeRemoveButtonAriaLabel_()}"
+    aria-label="${this.match.removeButtonA11yLabel}"
     @click="${this.onRemoveButtonClick_}"
     @mousedown="${this.onRemoveButtonMousedown_}"
     title="${this.removeButtonTitle_}"

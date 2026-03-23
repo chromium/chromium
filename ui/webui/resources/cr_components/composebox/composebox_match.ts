@@ -6,16 +6,12 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.js';
-
-const LINE_HEIGHT_PX = 24;
-const MAX_DEEP_SEARCH_LINES = 2;
 
 export interface ComposeboxMatchElement {
   $: {
@@ -74,9 +70,6 @@ export class ComposeboxMatchElement extends CrLitElement {
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
 
-  // Used for text clamping.
-  private resizeObserver_: ResizeObserver|null = null;
-
   constructor() {
     super();
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
@@ -92,83 +85,9 @@ export class ComposeboxMatchElement extends CrLitElement {
     // that could interfere with click events, especially for ZPS suggestions.
     this.addEventListener('mousedown', (event) => event.preventDefault());
 
-    // Set up observer for responsive clamping.
-    this.resizeObserver_ =
-        new ResizeObserver(() => this.clampDeepSearchContents_());
-    this.resizeObserver_.observe(this.$.textContainer);
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.resizeObserver_) {
-      this.resizeObserver_.unobserve(this.$.textContainer);
-    }
-  }
-
-  // Cannot render match content by modifying DOM until after `updated`.
-  // Previously, `computeContent` was called in the `textContainer`
-  // `html` file. This caused several Lit rendering errors, as logged by the
-  // console.
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('match')) {
-      this.computeContents_();
-    }
-  }
-
-  // This is needed since --webkit-box is deprecated and line-clamp does not
-  // work in CSS without it.
-  private clampDeepSearchContents_() {
-    if (this.overrideClampLineNum > 0 &&
-        this.toolMode !== ToolMode.kDeepSearch) {
-      return;
-    }
-
-    // Get the suggestion textbox and update its contents
-    // to be the full match text at first.
-    const textContainer = this.$.textContainer;
-    textContainer.textContent = this.match.contents;
-
-    const clampLineNum = this.overrideClampLineNum > 0 ?
-        this.overrideClampLineNum :
-        MAX_DEEP_SEARCH_LINES;
-
-    // See padding in window text container.
-    const style = window.getComputedStyle(textContainer);
-    const padding =
-        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-
-    // Max height must include padding since scrollHeight might.
-    const textMaxHeight = LINE_HEIGHT_PX * clampLineNum + padding;
-
-    // Exit if no need to elide text since is within max height
-    // for x lines.
-    if (textContainer.scrollHeight <= textMaxHeight) {
-      return;
-    }
-
-    const words = this.match.contents.split(' ');
-    while (words.length > 0) {
-      words.pop();
-      // Update the html textbox to the new truncated version.
-      textContainer.textContent = words.join(' ') + '...';
-
-      // Check against the height that includes padding.
-      // Exit if no need to elide text since is within max height
-      // for x lines.
-      if (textContainer.scrollHeight <= textMaxHeight) {
-        break;
-      }
-    }
-  }
-
-  protected computeContents_(): void {
-    const textContainer = this.$.textContainer;
-    textContainer.textContent = this.match.contents;
-  }
-
-  protected computeRemoveButtonAriaLabel_(): string {
-    return this.match.removeButtonA11yLabel;
+    this.style.setProperty(
+        '--clamp-line-num',
+        `${this.overrideClampLineNum > -1 ? this.overrideClampLineNum : 2}`);
   }
 
   protected iconPath_(): string {
