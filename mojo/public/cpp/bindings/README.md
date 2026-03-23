@@ -1602,7 +1602,10 @@ In general, it's better to just use the Mojom enum directly. However, in some ci
 is impractical: perhaps the native enum is from a third-party library, or the value must be used
 by code that is not aware of Mojo (such as Cronet).
 
-A specialization typically uses simple `switch` statements to convert between the two enums:
+A specialization typically uses simple `switch` statements to convert between
+the two enums. Modern implementations should return the converted value directly
+(for infallible conversions) or wrapped in a `std::optional` (for fallible
+conversions):
 
 ```cpp
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -1610,7 +1613,12 @@ A specialization typically uses simple `switch` statements to convert between th
 template <>
 struct EnumTraits<mojom::MyEnum, MyEnum> {
   static mojom::MyEnum ToMojom(MyEnum input);
-  static bool FromMojom(mojom::MyEnum input, MyEnum* output);
+
+  // Infallible conversion (non-extensible enums or enums with defaults):
+  static MyEnum FromMojom(mojom::MyEnum input);
+
+  // Or for fallible conversion:
+  // static std::optional<MyEnum> FromMojom(mojom::MyEnum input);
 };
 ```
 
@@ -1631,17 +1639,16 @@ EnumTraits<mojom::MyEnum, MyEnum>::ToMojom(MyEnum input) {
 }
 
 // static
-bool EnumTraits<mojom::MyEnum, MyEnum>::FromMojom(mojom::MyEnum input, MyEnum* output) {
+MyEnum
+EnumTraits<mojom::MyEnum, MyEnum>::FromMojom(mojom::MyEnum input) {
   switch (input) {
     case mojom::MyEnum::VALUE_0:
-      *output = MyEnum::CUSTOM_VALUE_0;
-      return true;
+      return MyEnum::CUSTOM_VALUE_0;
     case mojom::MyEnum::VALUE_1:
-      *output = MyEnum::CUSTOM_VALUE_1;
-      return true;
+      return MyEnum::CUSTOM_VALUE_1;
   };
 
-  return false;
+  NOTREACHED();
 }
 ```
 
