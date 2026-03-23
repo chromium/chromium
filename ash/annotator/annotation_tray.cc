@@ -96,10 +96,13 @@ const gfx::VectorIcon& GetIconForTool(AnnotatorToolType tool, SkColor color) {
 }  // namespace
 
 AnnotationTray::AnnotationTray(Shelf* shelf)
-    : TrayBackgroundView(shelf,
-                         TrayBackgroundViewCatalogName::kProjectorAnnotation),
-      image_view_(
-          tray_container()->AddChildView(std::make_unique<views::ImageView>())),
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel::FromVectorIcon(kPaletteTrayIconProjectorIcon,
+                                         cros_tokens::kCrosSysOnSurface),
+          /*tooltip=*/std::u16string(),
+          /*accessibility_name=*/std::u16string(),
+          TrayBackgroundViewCatalogName::kProjectorAnnotation),
       pen_view_(nullptr) {
   SetCallback(base::BindRepeating(&AnnotationTray::OnTrayButtonPressed,
                                   base::Unretained(this)));
@@ -111,12 +114,9 @@ AnnotationTray::AnnotationTray(Shelf* shelf)
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
 
-  image_view_->SetTooltipText(GetTooltip());
-  image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   ResetTray();
 
+  SetTooltip(GetTooltip());
   UpdateAccessibleName(IsAnnotatorEnabled());
 
   session_observer_.Observe(Shell::Get()->session_controller());
@@ -266,9 +266,9 @@ void AnnotationTray::SetTrayEnabled(bool enabled) {
   // For disabled state, set icon color to kIconColorPrimary with 30% opacity.
   SkColor disabled_icon_color = SkColorSetA(
       GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary), 0x4D);
-  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       kPaletteTrayIconProjectorIcon, disabled_icon_color));
-  image_view_->SetTooltipText(l10n_util::GetStringUTF16(
+  SetTooltip(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_UNAVAILABLE));
 }
 
@@ -289,7 +289,7 @@ void AnnotationTray::UpdateAccessibleName(bool is_annotator_enabled) {
       is_annotator_enabled
           ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE
           : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE);
-  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+  SetAccessibilityName(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
       enabled_state));
 }
@@ -321,7 +321,7 @@ void AnnotationTray::UpdateIcon() {
   if (!annotator_toggled) {
     SetIconImage(is_active());
   }
-  image_view_->SetTooltipText(GetTooltip());
+  SetTooltip(GetTooltip());
 }
 
 void AnnotationTray::OnPenColorPressed(SkColor color) {
@@ -360,7 +360,7 @@ std::u16string AnnotationTray::GetTooltip() {
 }
 
 void AnnotationTray::SetIconImage(bool is_active) {
-  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       GetIconForTool(GetCurrentTool(), current_pen_color_),
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface));

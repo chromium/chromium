@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -18,7 +18,6 @@ class GestureEvent;
 }  // namespace ui
 
 namespace views {
-class ImageView;
 class Widget;
 }  // namespace views
 
@@ -36,9 +35,8 @@ constexpr SkColor kAnnotatorBluePenColor = SkColorSetRGB(0x42, 0x85, 0xF4);
 constexpr SkColor kAnnotatorDefaultPenColor = kAnnotatorMagentaPenColor;
 
 // Status area tray which allows you to access the annotation tools.
-class AnnotationTray : public TrayBackgroundView,
-                                public SessionObserver {
-  METADATA_HEADER(AnnotationTray, TrayBackgroundView)
+class AnnotationTray : public ImagedTrayIcon, public SessionObserver {
+  METADATA_HEADER(AnnotationTray, ImagedTrayIcon)
 
  public:
   explicit AnnotationTray(Shelf* shelf);
@@ -75,7 +73,7 @@ class AnnotationTray : public TrayBackgroundView,
   // UI.
   void DeactivateActiveTool();
 
-  // Updates the icon and tooltip of `image_view_` in the status area.
+  // Updates the icon and tooltip of the tray icon in the status area.
   void UpdateIcon();
 
   void OnPenColorPressed(SkColor color);
@@ -90,9 +88,6 @@ class AnnotationTray : public TrayBackgroundView,
 
   // Sets the image with the color that corresponds to the active state.
   void SetIconImage(bool is_active);
-
-  // Image view of the tray icon.
-  const raw_ptr<views::ImageView> image_view_;
 
   raw_ptr<HoverHighlightView> pen_view_;
 
