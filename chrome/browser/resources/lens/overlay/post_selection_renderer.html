@@ -163,10 +163,6 @@
 
   .static-region {
     position: absolute;
-    /* Uses the exact same Houdini paint worklet as the active Lens region.
-    This ensures the borders and corner handles look visually identical. */
-    background-image: paint(post-selection);
-    forced-color-adjust: none;
     /* Enable pointer events so the user can click this static box to
        re-activate it. */
     pointer-events: auto;

@@ -376,15 +376,14 @@ export class PostSelectionRendererElement extends
     const rightOffset = 100 - (leftPercent + widthPercent);
     const bottomOffset = 100 - (topPercent + heightPercent);
 
-    const cornerWidth = 'var(--post-selection-corner-width)';
     const cornerRadius = 'var(--post-selection-cutout-corner-radius, 8px)';
 
     return {
       id: region.id,
-      left: `calc(${leftPercent}% - ${cornerWidth})`,
-      top: `calc(${topPercent}% - ${cornerWidth})`,
-      width: `calc(${widthPercent}% + (2 * ${cornerWidth}))`,
-      height: `calc(${heightPercent}% + (2 * ${cornerWidth}))`,
+      left: `${leftPercent}%`,
+      top: `${topPercent}%`,
+      width: `${widthPercent}%`,
+      height: `${heightPercent}%`,
       clipPath: `inset(${topPercent}% ${rightOffset}% ${bottomOffset}% ${
           leftPercent}% round ${cornerRadius})`,
     };
