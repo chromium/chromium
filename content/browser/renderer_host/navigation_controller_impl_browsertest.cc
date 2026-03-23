@@ -19161,50 +19161,88 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
 // When running OpenURL to an invalid URL on a frame proxy it should not spoof
 // the url by canceling a main frame navigation.
 // See https://crbug.com/966914.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                        CrossProcessIframeToInvalidURLCancelsRedirectSpoof) {
   // This tests something that can only happened with out of process iframes.
   if (!AreAllSitesIsolatedForTesting()) {
     return;
   }
 
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    // If navigation queueing is enabled, the first navigation will be stuck at
-    // the "pending commit" stage forever, causing the second navigation to be
-    // queued indefinitely, and the test will timeout.
-    // TODO(crbug.com/40186427): Rewrite the test to defer the first
-    // navigation instead, so that it won't cause the second navigation to be
-    // stuck.
-    return;
-  }
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL main_frame_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
-  const GURL main_frame_url_2(embedded_test_server()->GetURL("/title2.html"));
+  const GURL main_frame_url_2(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   // Load the initial page, containing a fully scriptable cross-site iframe.
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  FrameTreeNode* iframe = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetPrimaryFrameTree()
-                              .root()
-                              ->child_at(0);
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameTreeNode* iframe = root->child_at(0);
 
-  DidCommitNavigationCanceller canceller(
-      shell()->web_contents(), main_frame_url_2,
-      base::BindLambdaForTesting([iframe]() {
-        EXPECT_TRUE(ExecJs(
-            iframe, "parent.location.href = 'chrome-untrusted://1234';"));
-      }));
+  // Now navigate the main frame to another same-site document, but defer its
+  // JS task completion using a synchronous XHR request that we can control.
+  TestNavigationManager nav_manager(shell()->web_contents(), main_frame_url_2);
+  ExecuteScriptAsync(root, R"(
+      location.href = '/title1.html';
+      var request = new XMLHttpRequest();
+      request.open("GET", "/fetch", /*async=*/false);
+      request.send("");
+    )");
 
-  // This navigation will be raced by a navigation started in the iframe.
-  // The NavigationRequest for the first navigation will already be in the
-  // RenderFrameHost at this point, and the iframe proxy navigation will
-  // proceed because we don't have a FrameTreeNode ongoing navigation.
-  // So the main navigation will be cancelled first, by the iframe navigation
-  // taking precedence, and the iframe navigation will not get passed network
-  // because of the invalid url, getting cancelled as well.
-  EXPECT_FALSE(NavigateToURL(shell(), main_frame_url_2));
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.ResumeNavigation();
+
+  NavigationRequest* request = root->navigation_request();
+
+  // The navigation should be able to reach the WillProcessResponse stage,
+  // and gets deferred by RendererCancellationThrottle after that. Wait for the
+  // first NavigationThrottle deferral.
+  base::RunLoop run_loop;
+  request->GetNavigationThrottleRegistryForTesting()
+      ->SetFirstDeferralCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the deferral is caused by RendererCancellationThrottle.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(request->GetNavigationThrottleRegistryForTesting()
+                ->GetDeferringThrottles()
+                .size(),
+            1u);
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    EXPECT_STREQ("RendererCancellationThrottle",
+                 (*request->GetNavigationThrottleRegistryForTesting()
+                       ->GetDeferringThrottles()
+                       .begin())
+                     ->GetNameForLogging());
+  }
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  // Now trigger a navigation in the main frame from the iframe to an invalid
+  // URL. The NavigationRequest for the ongoing navigation is deferred by the
+  // sync XHR, so the iframe proxy navigation will proceed because we don't
+  // have a FrameTreeNode ongoing navigation. The iframe navigation takes
+  // precedence over the original, still-deferred navigation, cancelling it;
+  // then the iframe navigation will also be cancelled since the url is
+  // invalid.
+  EXPECT_TRUE(
+      ExecJs(iframe, "parent.location.href = 'chrome-untrusted://1234';"));
+
+  // Unblock the JS task in the renderer by sending the response for the sync
+  // XHR request.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "foo");
+  fetch_response.Done();
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav_manager.was_successful());
 
   // Check that no spoof happened.
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
