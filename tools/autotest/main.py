@@ -157,10 +157,10 @@ def main(ctx, **kwargs) -> int:
 
   assert targets
 
+  build_ok: bool = True
   if not config.no_build:
-    build_ok: bool = test_executor.BuildTestTargets(out_dir, targets,
-                                                    config.dry_run,
-                                                    config.quiet, False)
+    build_ok = test_executor.BuildTestTargets(out_dir, targets, config.dry_run,
+                                              config.quiet, False)
 
     # If we used the target cache, it's possible we chose the wrong target
     # because a gn file was changed. The build step above will check for gn
@@ -179,11 +179,12 @@ def main(ctx, **kwargs) -> int:
         build_ok = test_executor.BuildTestTargets(out_dir, targets,
                                                   config.dry_run, config.quiet,
                                                   True)
-    telemetry.RecordMainAttributes(targets, current_gtest_filter, used_cache,
-                                   out_dir)
 
-    if not build_ok:
-      return 1
+  telemetry.RecordMainAttributes(targets, current_gtest_filter, used_cache,
+                                 out_dir)
+
+  if not build_ok:
+    return 1
 
   return test_executor.RunTestTargets(out_dir, targets, current_gtest_filter,
                                       pref_mapping_filter, config.extras,

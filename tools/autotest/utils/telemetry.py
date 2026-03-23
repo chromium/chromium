@@ -4,9 +4,11 @@
 
 import os
 import sys
+import json
 
 from . import constants
 
+from .test_summary import TestSummary
 from opentelemetry import trace
 
 sys.path.append(str(constants.DEPOT_TOOLS_DIR / 'infra_lib'))
@@ -26,7 +28,7 @@ def RecordMainAttributes(targets: list[str], gtest_filter: str,
   """Records main attributes to the current span.
 
   Attributes recorded:
-      * main.is_gemini_cli: Indicates if the process is running via the Gemini CLI.
+      * main.is_gemini_cli: Indicates if autotest is running via the Gemini CLI.
       * main.targets: The list of targets selected for build/run.
       * main.filter: The filter string generated from user input.
       * gn.target_cache_used: Whether the target search utilized the cache.
@@ -60,12 +62,15 @@ def RecordBuildAttributes(is_retry: str, is_successful: bool):
   span.set_attribute('build.is_successful', is_successful)
 
 
-def RecordRunAttributes(cmd: list[str], is_successful: bool):
+def RecordRunAttributes(cmd: list[str], is_successful: bool,
+                        test_summary: TestSummary):
   """Records attributes related to the command execution.
 
   Attributes recorded:
       * run.bin: The specific binary name extracted from the full command path.
       * run.is_successful: Indicates return code of subprocess run
+      * run.test_count: Number of tests executed
+      * run.failed_tests: Name and stacktrace of failed tests on this run
   """
   span = trace.get_current_span()
   if not span.is_recording():
@@ -74,5 +79,16 @@ def RecordRunAttributes(cmd: list[str], is_successful: bool):
   run_bin = os.path.basename(cmd[0])
   span.set_attribute('run.bin', run_bin)
   span.set_attribute('run.is_successful', is_successful)
+  span.set_attribute('run.test_count', test_summary.test_count)
+
+  # TODO: b/494592883 - Upload results to rdb instead of telemetry.
+  # This can be done once RDB has wipeout support.
+
+  failed_names = [name for name, _ in test_summary.failed_tests[:50]]
+  span.set_attribute('run.failed_tests', json.dumps(failed_names))
+
+  if test_summary.parse_error:
+    span.set_attribute('run.parse_error', test_summary.parse_error)
+
   if not is_successful:
     span.set_status(trace.StatusCode.ERROR)
