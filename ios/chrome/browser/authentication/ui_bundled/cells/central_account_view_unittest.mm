@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -95,4 +96,54 @@ TEST_F(CentralAccountViewTest,
   EXPECT_NSEQ(accountView.subtitle, detailText);
   EXPECT_EQ(accountView.managed, true);
   EXPECT_NSEQ([accountView managementDescription], managementDescription);
+}
+
+// Tests that the UIImageView and UILabels are set properly in the view if the
+// account given name is missing.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingGivenName) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity fakeIdentityWithMissingGivenName];
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                           name:identity.userFullName
+                                          email:identity.userEmail
+                          managementDescription:nil
+                                useLargeMargins:YES];
+
+  EXPECT_NSEQ(accountView.avatarImage, image);
+  EXPECT_NSEQ(accountView.title, identity.userFullName);
+  EXPECT_NSEQ(accountView.subtitle, identity.userEmail);
+  EXPECT_EQ(accountView.managed, false);
+}
+
+// Tests that the UIImageView and UILabels are set properly in the view if both
+// names are missing.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingNames) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity fakeIdentityWithMissingNames];
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                           name:identity.userFullName
+                                          email:identity.userEmail
+                          managementDescription:nil
+                                useLargeMargins:YES];
+
+  EXPECT_NSEQ(accountView.avatarImage, image);
+  EXPECT_NSEQ(accountView.title, identity.userEmail);
+  EXPECT_NSEQ(accountView.subtitle, nil);
+  EXPECT_EQ(accountView.managed, false);
 }

@@ -428,10 +428,20 @@ TEST_F(SigninPromoViewMediatorTest, SigninWithAccountConfigureSigninPromoView) {
 }
 
 // Tests signin promo view and its configurator with an identity
-// without full name.
+// with given name as nil.
 TEST_F(SigninPromoViewMediatorTest,
-       SigninWithAccountConfigureSigninPromoViewWithoutName) {
+       SigninWithAccountConfigureSigninPromoViewWithMissingGivenName) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
+  identity_ = [FakeSystemIdentity fakeIdentityWithMissingGivenName];
+  TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
+}
+
+// Tests signin promo view and its configurator with an identity
+// with both names as nil.
+TEST_F(SigninPromoViewMediatorTest,
+       SigninWithAccountConfigureSigninPromoViewWithMissingNames) {
+  CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
+  identity_ = [FakeSystemIdentity fakeIdentityWithMissingNames];
   TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
 }
 

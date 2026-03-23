@@ -66,6 +66,24 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   return [FakeSystemIdentity identityWithEmail:@"foo@google.com"];
 }
 
++ (instancetype)fakeIdentityWithMissingGivenName {
+  NSString* email = @"missing_given@gmail.com";
+  GaiaId gaiaID = GaiaId("missing_given_GAIAID");
+  return [[FakeSystemIdentity alloc] initWithEmail:email
+                                            gaiaID:gaiaID
+                                          fullName:@"Missing Given"
+                                         givenName:nil];
+}
+
++ (instancetype)fakeIdentityWithMissingNames {
+  NSString* email = @"missing_names@gmail.com";
+  GaiaId gaiaID = GaiaId("missing_names_GAIAID");
+  return [[FakeSystemIdentity alloc] initWithEmail:email
+                                            gaiaID:gaiaID
+                                          fullName:nil
+                                         givenName:nil];
+}
+
 + (instancetype)identityWithEmail:(NSString*)email {
   // GaiaID cannot look like an email address.
   NSString* withoutAtSign = [email stringByReplacingOccurrencesOfString:@"@"
@@ -81,14 +99,24 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 }
 
 - (instancetype)initWithEmail:(NSString*)email gaiaID:(const GaiaId&)gaiaID {
+  NSArray* split = [email componentsSeparatedByString:@"@"];
+  CHECK_EQ(split.count, 2ul);
+  return [self initWithEmail:email
+                      gaiaID:gaiaID
+                    fullName:split[0]
+                   givenName:split[0]];
+}
+
+- (instancetype)initWithEmail:(NSString*)email
+                       gaiaID:(const GaiaId&)gaiaID
+                     fullName:(NSString*)fullName
+                    givenName:(NSString*)givenName {
   if ((self = [super init])) {
     CHECK(!gaiaID.empty());
     _gaiaID = gaiaID;
     _userEmail = [email copy];
-    NSArray* split = [email componentsSeparatedByString:@"@"];
-    CHECK_EQ(split.count, 2ul);
-    _userFullName = split[0];
-    _userGivenName = split[0];
+    _userFullName = [fullName copy];
+    _userGivenName = [givenName copy];
     _hasValidAuth = YES;
   }
   return self;

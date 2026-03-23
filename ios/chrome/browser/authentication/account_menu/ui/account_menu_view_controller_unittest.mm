@@ -56,6 +56,10 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 @interface FakeAccountMenuDataSource : NSObject <AccountMenuDataSource>
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 @property(nonatomic, strong) AccountErrorUIInfo* accountErrorUIInfo;
+
+// Redeclare properties as readwrite for testing.
+@property(nonatomic, strong, readwrite) NSString* primaryAccountEmail;
+@property(nonatomic, strong, readwrite) NSString* primaryAccountUserFullName;
 @end
 
 @implementation FakeAccountMenuDataSource {
@@ -399,4 +403,52 @@ TEST_F(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
   // Sign Out
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+}
+
+// Test the account menu with an identity with missing given name.
+TEST_F(AccountMenuViewControllerTest, TestMissingGivenName) {
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity fakeIdentityWithMissingGivenName];
+  fake_system_identity_manager_->AddIdentity(identity);
+
+  data_source_.primaryAccountEmail = identity.userEmail;
+  data_source_.primaryAccountUserFullName = identity.userFullName;
+
+  AccountMenuViewController* viewController =
+      [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO];
+  viewController.dataSource = data_source_;
+  viewController.mutator = mutator_;
+  [viewController view];
+
+  UITableView* tableView = viewController.view.subviews[0];
+  UIView* header = tableView.tableHeaderView;
+  EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
+  CentralAccountView* centralAccountView =
+      static_cast<CentralAccountView*>(header);
+  EXPECT_NSEQ(centralAccountView.title, identity.userFullName);
+  EXPECT_NSEQ(centralAccountView.subtitle, identity.userEmail);
+}
+
+// Test the account menu with an identity with missing names.
+TEST_F(AccountMenuViewControllerTest, TestMissingNames) {
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity fakeIdentityWithMissingNames];
+  fake_system_identity_manager_->AddIdentity(identity);
+
+  data_source_.primaryAccountEmail = identity.userEmail;
+  data_source_.primaryAccountUserFullName = identity.userFullName;
+
+  AccountMenuViewController* viewController =
+      [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO];
+  viewController.dataSource = data_source_;
+  viewController.mutator = mutator_;
+  [viewController view];
+
+  UITableView* tableView = viewController.view.subviews[0];
+  UIView* header = tableView.tableHeaderView;
+  EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
+  CentralAccountView* centralAccountView =
+      static_cast<CentralAccountView*>(header);
+  EXPECT_NSEQ(centralAccountView.title, identity.userEmail);
+  EXPECT_NSEQ(centralAccountView.subtitle, nil);
 }
