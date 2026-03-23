@@ -46,7 +46,7 @@ export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
  */
 @customElement('xf-bulk-pinning-dialog')
 export class XfBulkPinningDialog extends XfBase {
-  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  // TODO(crbug.com/493886981): Fix members asserted as non-null.
   /* eslint-disable no-restricted-syntax */
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#continue-button') private $button_!: CrButtonElement;

@@ -183,7 +183,7 @@ export class XfTreeItem extends XfBase {
    */
   @state() private level_ = 1;
 
-  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  // TODO(crbug.com/493886981): Fix members asserted as non-null.
   /* eslint-disable no-restricted-syntax */
   @query('li') private $treeItem_!: HTMLLIElement;
   @query('.tree-row') private $treeRow_!: HTMLElement;
