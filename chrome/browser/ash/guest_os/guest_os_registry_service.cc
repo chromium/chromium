@@ -424,28 +424,6 @@ std::string GuestOsRegistryService::Registration::PackageId() const {
   return GetString(guest_os::prefs::kAppPackageIdKey);
 }
 
-bool GuestOsRegistryService::Registration::CanUninstall() const {
-  if (!pref_.is_dict()) {
-    return false;
-  }
-  // We can uninstall if and only if there is a package that owns the
-  // application. If no package owns the application, we don't know how to
-  // uninstall the app.
-  //
-  // We don't check other things that might prevent us from uninstalling the
-  // app. In particular, we don't check if there are other packages which
-  // depend on the owning package. This should be rare for packages that have
-  // desktop files, and it's better to show an error message (which the user can
-  // then Google to learn more) than to just not have an uninstall option at
-  // all.
-  const std::string* package_id =
-      pref_.GetDict().FindString(guest_os::prefs::kAppPackageIdKey);
-  if (package_id) {
-    return !package_id->empty();
-  }
-  return false;
-}
-
 guest_os::GuestId GuestOsRegistryService::Registration::ToGuestId() const {
   return guest_os::GuestId(VmType(), VmName(), ContainerName());
 }

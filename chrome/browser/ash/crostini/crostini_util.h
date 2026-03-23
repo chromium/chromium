@@ -67,9 +67,6 @@ enum class CrostiniAppLaunchAppType {
   kMaxValue = kRegisteredApp,
 };
 
-// Checks if user profile is able to a crostini app with a given app_id.
-bool IsUninstallable(Profile* profile, const std::string& app_id);
-
 // Returns whether the default Crostini VM is running for the user.
 bool IsCrostiniRunning(Profile* profile);
 

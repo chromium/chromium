@@ -168,20 +168,6 @@ void LaunchApplication(
 
 }  // namespace
 
-bool IsUninstallable(Profile* profile, const std::string& app_id) {
-  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
-    return false;
-  }
-  auto* registry_service =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
-      registry_service->GetRegistration(app_id);
-  if (registration) {
-    return registration->CanUninstall();
-  }
-  return false;
-}
-
 bool IsCrostiniRunning(Profile* profile) {
   auto* manager = crostini::CrostiniManager::GetForProfile(profile);
   return manager && manager->IsVmRunning(kCrostiniDefaultVmName);

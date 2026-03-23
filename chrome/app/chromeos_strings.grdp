@@ -4115,41 +4115,6 @@
     Force close
   </message>
 
-  <!-- Linux application uninstaller messages -->
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_TITLE" desc="Title of the Crostini application uninstaller, a confirmation dialog for uninstalling a Linux application.">
-    Uninstall app?
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Description for the Crostini application uninstaller, a confirmation dialog for uninstalling a Linux application.">
-    Data associated with this app may be removed from this device.
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_UNINSTALL_BUTTON" desc="Label for the button in the Linux application uninstaller dialog to uninstall the application">
-    Uninstall
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_DISPLAY_SOURCE" desc="Source of the Notification for Linux application uninstallation.">
-    Linux uninstaller
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_QUEUED_TITLE" desc="Title of the Notification when an Linux application is queued waiting for other operations to finish.">
-    <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph>
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_QUEUED_MESSAGE" desc="Message of the Notification when an Linux application is queued waiting for other operations to finish.">
-    Uninstall pending
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_IN_PROGRESS_TITLE" desc="Title of the Notification for an in-progress Linux application uninstallation.">
-    Uninstalling <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph>...
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_COMPLETED_TITLE" desc="Title of the Notification for Linux application uninstallation once uninstallation has completed successfully.">
-    <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph>
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_COMPLETED_MESSAGE" desc="Message of the Notification for Linux application uninstallation once uninstallation has completed successfully.">
-    Uninstall complete
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_ERROR_TITLE" desc="Title of the Notification for Linux application uninstallation when there is an error during uninstallation.">
-    <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph>
-  </message>
-  <message name="IDS_CROSTINI_APPLICATION_UNINSTALL_NOTIFICATION_ERROR_MESSAGE" desc="Message in the Notification for Linux application uninstallation when there is an error during uninstallation.">
-    An error occurred during uninstallation. Please uninstall through the Terminal.
-  </message>
-
   <!-- Crostini export and import notification -->
   <message name="IDS_CROSTINI_NOTIFICATION_OPERATION_STARTING" desc="Message to display in a notification when the operation is starting and we don't yet have an estimate for how long it will take">
     Starting...

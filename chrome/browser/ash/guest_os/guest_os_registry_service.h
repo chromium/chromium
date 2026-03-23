@@ -114,7 +114,6 @@ class GuestOsRegistryService : public KeyedService {
 
     // Whether this app should scale up when displayed.
     bool IsScaled() const;
-    bool CanUninstall() const;
 
     guest_os::GuestId ToGuestId() const;
 

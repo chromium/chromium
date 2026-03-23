@@ -102,10 +102,6 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
                    menu_items);
   }
 
-  if (crostini::IsUninstallable(profile(), app_id)) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
-  }
-
   if (ShouldAddOpenItem(app_id, menu_type, profile())) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    menu_items);
@@ -142,9 +138,6 @@ void CrostiniApps::CreateAppOverrides(
   // Per crbug.com/40624403, Crostini apps aren't going to be added in App
   // Management.
   app->show_in_management = false;
-
-  app->allow_uninstall =
-      crostini::IsUninstallable(profile(), registration.app_id());
 }
 
 }  // namespace apps

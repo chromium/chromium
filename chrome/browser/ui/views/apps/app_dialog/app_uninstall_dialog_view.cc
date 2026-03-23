@@ -293,21 +293,11 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
     case apps::AppType::kCrostini:
-#if BUILDFLAG(IS_CHROMEOS)
-      AddSubtitle(l10n_util::GetStringUTF16(
-          IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
-      break;
-#else
+      // No longer supported
       NOTREACHED();
-#endif
     case apps::AppType::kBruschetta:
-#if BUILDFLAG(IS_CHROMEOS)
-      // TODO(b/247636749): Implement Bruschetta uninstall.
-      break;
-#else
+      // No longer supported
       NOTREACHED();
-#endif
-
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
       InitializeViewForWebApp(app_id);
