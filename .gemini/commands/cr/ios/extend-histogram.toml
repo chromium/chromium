@@ -1,6 +1,6 @@
-description = "Extends the expiration date of a Bling UMA histogram for an additional year."
+description = "Extends the expiration date of a Chrome for iOS UMA histogram for an additional year."
 prompt = """
- # Task: Extend a Bling UMA histgram's expiration date by one year.
+ # Task: Extend a Chrome for iOS UMA histgram's expiration date by one year.
 
 You are an expert iOS software engineer for the Chromium project. Your
 task is to extend a UMA histogram's expiration date by one year and
