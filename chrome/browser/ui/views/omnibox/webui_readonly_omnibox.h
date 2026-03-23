@@ -13,18 +13,17 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/gfx/range/range.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
-
-class WebUILocationBar;
 
 // WebUI-implementation of OmniboxView, which happens to be readonly,
 // as it counts on the popup to handle the editing.
@@ -32,8 +31,16 @@ class WebUILocationBar;
 // classes here.
 class WebUIReadOnlyOmnibox : public OmniboxView {
  public:
+  class UpdatePropagator {
+   public:
+    virtual ~UpdatePropagator();
+    virtual void PropagateOmniboxUpdate(
+        toolbar_ui_api::mojom::OmniboxViewStatePtr update) = 0;
+  };
+
+  // Both parameters must outlive `this`.
   WebUIReadOnlyOmnibox(OmniboxController* controller,
-                       WebUILocationBar* location_bar);
+                       UpdatePropagator& update_propagator);
   WebUIReadOnlyOmnibox(const WebUIReadOnlyOmnibox&) = delete;
   WebUIReadOnlyOmnibox& operator=(const WebUIReadOnlyOmnibox&) = delete;
   ~WebUIReadOnlyOmnibox() override;
@@ -77,7 +84,13 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   void SetEmphasis(bool emphasize, const gfx::Range& range) override;
   void UpdateSchemeStyle(const gfx::Range& range) override;
 
+  toolbar_ui_api::mojom::OmniboxViewStatePtr ComputeMojoState() const;
+
  private:
+  void RequestUpdateWebUI();
+
+  raw_ref<UpdatePropagator> update_propagator_;
+
   // Text and selection (or caret) we were asked to display (e.g. via
   // SetWindowTextAndCaretPos()) by either the base class or OmniboxEditModel.
   std::u16string text_;

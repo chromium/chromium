@@ -24,7 +24,11 @@ build_webui("build") {
     "home_button.html.ts",
     "home_button.ts",
     "home_button_icon.html.ts",
+    "location_bar.ts",
+    "location_bar.html.ts",
     "metrics_recorder.ts",
+    "readonly_omnibox.ts",
+    "readonly_omnibox.html.ts",
     "reload_button.html.ts",
     "reload_button.ts",
     "split_tabs_button.html.ts",
@@ -36,11 +40,15 @@ build_webui("build") {
     "app.css",
     "back_forward_button.css",
     "home_button.css",
+    "location_bar.css",
+    "readonly_omnibox.css",
     "reload_button.css",
     "split_tabs_button.css",
     "toolbar_button.css",
   ]
 
+  # ts_composite is needed for JS tests to depend on this.
+  ts_composite = true
   webui_context_type = "trusted"
   optimize = optimize_webui
   generate_code_cache = enable_webui_generate_code_cache

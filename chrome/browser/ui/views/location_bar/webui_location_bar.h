@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class Browser;
@@ -17,17 +19,21 @@ class OmniboxController;
 class PermissionDashboardController;
 class PermissionDashboardView;
 class Profile;
-class WebUIReadOnlyOmnibox;
 class WebUIToolbarWebView;
 
 // A LocationBar implementation using WebUI.
 class WebUILocationBar : public LocationBar,
-                         public ContentSettingImageViewDelegate {
+                         public ContentSettingImageViewDelegate,
+                         public WebUIReadOnlyOmnibox::UpdatePropagator {
  public:
   WebUILocationBar(Browser* browser, LocationBarView::Delegate* delegate);
   ~WebUILocationBar() override;
 
   void Init(WebUIToolbarWebView* toolbar_view);
+
+  // WebUIReadOnlyOmnibox::UpdatePropagator:
+  void PropagateOmniboxUpdate(
+      toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,

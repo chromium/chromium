@@ -11,6 +11,8 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -36,9 +38,13 @@ OmniboxState::~OmniboxState() = default;
 
 }  // namespace
 
+WebUIReadOnlyOmnibox::UpdatePropagator::~UpdatePropagator() = default;
+
 WebUIReadOnlyOmnibox::WebUIReadOnlyOmnibox(OmniboxController* controller,
-                                           WebUILocationBar* location_bar)
-    : OmniboxView(controller), selection_(gfx::Range::InvalidRange()) {}
+                                           UpdatePropagator& update_propagator)
+    : OmniboxView(controller),
+      update_propagator_(update_propagator),
+      selection_(gfx::Range::InvalidRange()) {}
 
 WebUIReadOnlyOmnibox::~WebUIReadOnlyOmnibox() = default;
 
@@ -59,7 +65,7 @@ void WebUIReadOnlyOmnibox::OnTabChanged(
     selection_ = state->selection;
   }
 
-  // TODO: Update WebUI.
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::ResetTabState(content::WebContents* web_contents) {
@@ -100,13 +106,13 @@ void WebUIReadOnlyOmnibox::SetWindowTextAndCaretPos(const std::u16string& text,
     TextChanged();
   }
 
-  // TODO: Update WebUI.
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::SetCaretPos(size_t caret_pos) {
   selection_ = gfx::Range(caret_pos);
 
-  // TODO: Update WebUI.
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::SetAdditionalText(
@@ -133,7 +139,7 @@ gfx::Range WebUIReadOnlyOmnibox::GetSelectionBounds() const {
 void WebUIReadOnlyOmnibox::SelectAll(bool reversed) {
   size_t length = text_.size();
   selection_ = reversed ? gfx::Range(length, 0) : gfx::Range(0, length);
-  // TODO: Update WebUI.
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::UpdatePopup() {
@@ -201,4 +207,18 @@ void WebUIReadOnlyOmnibox::SetEmphasis(bool emphasize,
 
 void WebUIReadOnlyOmnibox::UpdateSchemeStyle(const gfx::Range& range) {
   NOTIMPLEMENTED();
+}
+
+toolbar_ui_api::mojom::OmniboxViewStatePtr
+WebUIReadOnlyOmnibox::ComputeMojoState() const {
+  auto state = toolbar_ui_api::mojom::OmniboxViewState::New();
+  if (selection_.IsValid()) {
+    state->selection = selection_;
+  }
+  state->text = base::UTF16ToUTF8(text_);
+  return state;
+}
+
+void WebUIReadOnlyOmnibox::RequestUpdateWebUI() {
+  update_propagator_->PropagateOmniboxUpdate(ComputeMojoState());
 }

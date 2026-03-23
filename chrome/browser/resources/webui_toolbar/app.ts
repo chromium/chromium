@@ -4,6 +4,7 @@
 
 import './back_forward_button.js';
 import './reload_button.js';
+import './location_bar.js';
 import './split_tabs_button.js';
 import './home_button.js';
 
@@ -74,6 +75,10 @@ export class ToolbarAppElement extends CrLitElement {
     homeControlState: {
       isPinned: false,
       isContextMenuVisible: false,
+    },
+    omniboxViewState: {
+      text: '',
+      selection: null,
     },
     layoutConstantsVersion: 0,
     contentSettingState: {

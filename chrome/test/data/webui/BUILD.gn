@@ -94,6 +94,7 @@ source_set("browser_tests") {
       "tab_group_home/tab_group_home_browsertest.cc",
       "tab_search/tab_search_browsertest.cc",
       "webnn_internals/webnn_internals_browsertest.cc",
+      "webui_toolbar/webui_toolbar_js_browsertest.cc",
       "webview/webui_webview_browsertest.cc",
     ]
 
@@ -354,6 +355,7 @@ source_set("interactive_ui_tests") {
       "support_tool/support_tool_focus_test.cc",
       "tab_search/split_new_tab_page_interactive_uitest.cc",
       "tab_search/tab_search_focus_test.cc",
+      "webui_toolbar/webui_toolbar_js_interactive_uitest.cc",
     ]
 
     deps += [ "//chrome/test/data/webui:composebox_pixel_test_support" ]
@@ -614,6 +616,7 @@ generate_grd("build_grd") {
       "tab_group_home:build_grdp",
       "tab_search:build_grdp",
       "webnn_internals:build_grdp",
+      "webui_toolbar:build_grdp",
       "webview:build_grdp",
     ]
 
@@ -670,6 +673,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/tab_group_home/resources.grdp",
       "$target_gen_dir/tab_search/resources.grdp",
       "$target_gen_dir/webnn_internals/resources.grdp",
+      "$target_gen_dir/webui_toolbar/resources.grdp",
     ]
 
     if (!is_chromeos) {

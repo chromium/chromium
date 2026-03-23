@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  cc_test_files = [
+    "webui_toolbar_js_browsertest.cc",
+    "webui_toolbar_js_interactive_uitest.cc",
+  ]
+
+  files = [
+    "readonly_omnibox_test.ts",
+    "readonly_omnibox_focus_test.ts",
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/webui_toolbar:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://webui-toolbar.top-chrome*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/webui_toolbar/tsc/*",
+            target_gen_dir) ]
+}

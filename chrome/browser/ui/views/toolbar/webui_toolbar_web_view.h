@@ -125,6 +125,7 @@ class WebUIToolbarWebView
   friend WebUIBackForwardControl;
   friend WebUIHomeControl;
   friend WebUIPinnedToolbarActions;
+  friend WebUILocationBar;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();
@@ -157,6 +158,8 @@ class WebUIToolbarWebView
   void OnBackForwardStateChanged();
   void OnHomeControlStateChanged(
       toolbar_ui_api::mojom::HomeControlStatePtr state);
+  void OnOmniboxViewStateChanged(
+      toolbar_ui_api::mojom::OmniboxViewStatePtr state);
 
   void OnTouchUiChanged();
   void PostPushNavigationState();

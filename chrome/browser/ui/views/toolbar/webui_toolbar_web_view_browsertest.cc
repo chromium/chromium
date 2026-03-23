@@ -234,7 +234,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
          features::kWebUIHomeButton, features::kWebUIPinnedToolbarActions,
-         tabs::kHorizontalTabStripComboButton,
+         tabs::kHorizontalTabStripComboButton, features::kWebUILocationBar,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
          features::kInitialWebUISyncNavStartToCommit},
@@ -286,7 +286,9 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(*element_out);
     }
 
-    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
+    // WebUILocationBar for now has PermissionDashboardView as a child,
+    // but that will go away once that's ported.
+    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 2u);
     *web_view_out = views::AsViewClass<views::WebView>(
         (*webui_toolbar_view_out)->children()[0].get());
     ASSERT_TRUE(*web_view_out);

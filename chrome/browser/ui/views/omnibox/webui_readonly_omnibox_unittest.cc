@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -18,6 +19,24 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace {
+
+class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
+ public:
+  ~TestUpdatePropagator() override = default;
+  void PropagateOmniboxUpdate(
+      toolbar_ui_api::mojom::OmniboxViewStatePtr update) override {
+    state_ = std::move(update);
+  }
+
+  toolbar_ui_api::mojom::OmniboxViewStatePtr TakeState() {
+    return std::move(state_);
+  }
+
+ private:
+  toolbar_ui_api::mojom::OmniboxViewStatePtr state_;
+};
 
 class WebUIReadOnlyOmniboxTest : public testing::Test {
  protected:
@@ -33,6 +52,7 @@ class WebUIReadOnlyOmniboxTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
+  TestUpdatePropagator update_propagator_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
 
   content::TestWebContentsFactory web_contents_factory_;
@@ -49,7 +69,7 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
       std::make_unique<OmniboxController>(std::move(omnibox_client));
 
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
-      omnibox_controller_.get(), /*location_bar=*/nullptr);
+      omnibox_controller_.get(), update_propagator_);
 
   wc1_ = web_contents_factory_.CreateWebContents(profile_.get());
   wc2_ = web_contents_factory_.CreateWebContents(profile_.get());
@@ -68,6 +88,11 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
   EXPECT_EQ(partial, omnibox_view_->GetText());
   omnibox_view_->SaveStateToTab(wc1_);
 
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(partial), mojo_state->text);
+  EXPECT_EQ(gfx::Range(partial.size()), mojo_state->selection);
+
   std::u16string complete = u"https://chromium.org";
   omnibox_view_->SetUserText(complete);
   omnibox_view_->SelectAll(/*reversed=*/false);
@@ -75,11 +100,21 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
   EXPECT_EQ(complete, omnibox_view_->GetText());
   omnibox_view_->SaveStateToTab(wc2_);
 
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(complete), mojo_state->text);
+  EXPECT_EQ(gfx::Range(0, complete.size()), mojo_state->selection);
+
   // Emulate switching back to wc1.
   omnibox_view_->OnTabChanged(wc1_);
   EXPECT_FALSE(omnibox_view_->IsSelectAll());
   EXPECT_EQ(partial, omnibox_view_->GetText());
   EXPECT_EQ(omnibox_view_->GetSelectionBounds(), gfx::Range(partial.size()));
+
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(partial), mojo_state->text);
+  EXPECT_EQ(gfx::Range(partial.size()), mojo_state->selection);
 
   // Switch back to wc2.
   omnibox_view_->OnTabChanged(wc2_);
@@ -87,6 +122,11 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
   EXPECT_EQ(complete, omnibox_view_->GetText());
   EXPECT_EQ(omnibox_view_->GetSelectionBounds(),
             gfx::Range(0, complete.size()));
+
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(complete), mojo_state->text);
+  EXPECT_EQ(gfx::Range(0, complete.size()), mojo_state->selection);
 
   // If no saved state, pulls from the location bar model.
   std::u16string navigated_to = u"https://developer.mozilla.org/";
@@ -96,11 +136,21 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
   EXPECT_EQ(navigated_to, omnibox_view_->GetText());
   EXPECT_EQ(gfx::Range(), omnibox_view_->GetSelectionBounds());
 
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(navigated_to), mojo_state->text);
+  EXPECT_EQ(gfx::Range(0, 0), mojo_state->selection);
+
   // Update() can pull further changes.
   std::u16string navigated_to2 = u"https://developer.mozilla.org/en-US";
   location_bar_model()->set_url_for_display(navigated_to2);
   omnibox_view_->Update();
   EXPECT_EQ(navigated_to2, omnibox_view_->GetText());
+
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(base::UTF16ToUTF8(navigated_to2), mojo_state->text);
+  EXPECT_EQ(gfx::Range(0, 0), mojo_state->selection);
 }
 
 TEST_F(WebUIReadOnlyOmniboxTest, GetOmniboxTextLength) {
@@ -109,3 +159,5 @@ TEST_F(WebUIReadOnlyOmniboxTest, GetOmniboxTextLength) {
   EXPECT_EQ(partial.size(),
             static_cast<size_t>(omnibox_view_->GetOmniboxTextLength()));
 }
+
+}  // namespace

@@ -1,0 +1,90 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --border-radius: calc(var(--location-bar-height)/2);
+  align-self: center;
+  align-items: center;
+  background-color: var(--color-location-bar-background);
+  border: none;
+  border-radius: var(--border-radius);
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  height: var(--location-bar-height);
+  margin: 0 calc(var(--location-bar-margin) -
+                 var(--toolbar-icon-default-margin));
+  /* Note: this works differently from how LocationBarView does things.
+   * It basically lays out first and then clips the omnibox area to this;
+   * so it normally doesn't do anything since the chips take up the space
+   * anyway. We may need to compensate in chip positioning (or change the
+   * approach once they exist
+   */
+  padding-inline: var(--border-radius);
+  transition-property: background-color;
+  transition-duration: 200ms;
+  transition-timing-function: linear;
+
+  user-select: contain;
+
+  /* TODO(crbug.com/474060468): Hardcoded width needs fixing */
+  width: 400px;
+}
+
+:host:hover {
+  background-color: var(--color-location-bar-background-hovered);
+}
+
+/* The location bar acts focused when the omnibox within it is
+   (but not if, say, the page icon is), hence the :has() use here and below */
+:host:has(> readonly-omnibox:focus-within) {
+  background-color: var(--color-omnibox-results-background);
+
+  /* TODO: Focus ring should go away when popup is open */
+  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
+      var(--cr-focus-outline-color));
+
+  transition-property: none;
+}
+
+/* TODO: input_in_progress and not high-contrast gets different colors*/
+
+@media (prefers-contrast: more) {
+  :host {
+    border: 1px solid var(--color-location-bar-border);
+  }
+
+  :host:has(> readonly-omnibox:focus-within) {
+    border: 1px solid var(--color-omnibox-results-background);
+  }
+}
+
+/* TODO: non-high-contrast !is_caret_visible and input_in_progress border */
+
+/* Below are sketches of what the various LHS chips might look like,
+ * to have the layout have roughly sensible for the middle portions.
+ * Real ones will not hardcode their dimensions, but likely will need to
+ * have similar flex behavior and margin adjustment for the curve handling.
+ */
+#permissions-dashboard {
+  border: 1px solid red;
+  display: none;
+  flex-shrink: 0;
+  height: 32px;
+  width: 40px;
+}
+
+#location-icon {
+  border: 1px solid red;
+  flex-shrink: 0;
+  height: 24px;
+  margin: 4px;
+  margin-inline-start: calc(4px - var(--border-radius));
+  width: 24px;
+}

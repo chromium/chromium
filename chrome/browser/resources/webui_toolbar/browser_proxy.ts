@@ -15,7 +15,7 @@ import type {ToolbarUIServiceInterface} from './toolbar_ui_api.mojom-webui.js';
 import {
   ContextMenuType,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {ButtonState, NavigationControlsState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {ButtonState, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export {
   ClickDispositionFlag,
@@ -24,6 +24,7 @@ export {
 export type {
   ButtonState,
   NavigationControlsState,
+  OmniboxViewState,
   ReloadControlState,
 };
 

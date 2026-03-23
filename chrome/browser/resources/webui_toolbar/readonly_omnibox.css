@@ -1,0 +1,52 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-self: center;
+  background-color: transparent;
+  border: none;
+  color: var(--color-omnibox-text);
+  display: flex;
+  flex: 1;
+  font-family: var(--omnibox-primary-font-family);
+  font-size: var(--omnibox-primary-font-size);
+  font-weight: var(--omnibox-primary-font-weight);
+}
+
+#textContainer {
+  flex: 1;
+  outline: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  /* Giving this a width makes flex shrink it to fit available space when this
+   * is too long. The exact value will get replaced by whatever flex computes
+   */
+  width: 200px;
+}
+
+/* Need to consider document focus here as well, hence :focus-visible */
+#textContainer:focus-visible {
+  text-overflow: clip;
+  overflow: hidden;
+}
+
+#textContainer::selection {
+  background-color: var(--color-omnibox-selection-background);
+  color: var(--color-omnibox-selection-foreground);
+}
+
+/* We don't want URLs spellchecked */
+#textContainer::spelling-error {
+  text-decoration: none;
+}
+
+#textContainer::grammar-error {
+  text-decoration: none;
+}

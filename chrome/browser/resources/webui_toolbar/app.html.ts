@@ -39,11 +39,9 @@ ${this.isBackForwardButtonEnabled_ ? html`
     </split-tabs-button>
   ` : ''}
   ${this.isLocationBarEnabled_ ? html`
-    <div id="location-bar">
-      <div id="WebUILocationBar::kWebUIDashboardElementId"></div>
-      <div id="WebUILocationBar::kWebUILocationIconElementId"></div>
-      <div id="omnibox-view" contenteditable>https://example.org/</div>
-    </div>
+    <location-bar id="location-bar"
+        .omniboxViewState="${this.navigationControlsState_.omniboxViewState}">
+    </location-bar>
   ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on

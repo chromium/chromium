@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -85,21 +86,8 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
   std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override {
     return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
-        base::BindLambdaForTesting([]() {
-          auto back_forward_state =
-              toolbar_ui_api::mojom::BackForwardControlState::New();
-          back_forward_state->back_button_state =
-              toolbar_ui_api::mojom::ButtonState::New();
-          back_forward_state->forward_button_state =
-              toolbar_ui_api::mojom::ButtonState::New();
-          return toolbar_ui_api::mojom::NavigationControlsState::New(
-              toolbar_ui_api::mojom::ReloadControlState::New(),
-              toolbar_ui_api::mojom::SplitTabsControlState::New(),
-              std::move(back_forward_state),
-              toolbar_ui_api::mojom::HomeControlState::New(),
-              toolbar_ui_api::mojom::ContentSettingState::New(),
-              /*layout_constants_version=*/0);
-        }));
+        base::BindLambdaForTesting(
+            []() { return CreateValidNavigationControlsState(); }));
   }
 };
 

@@ -12,6 +12,7 @@ mojom("mojom_data_model") {
   public_deps = [
     "//components/content_settings/core/common:content_settings_types",
     "//mojo/public/mojom/base",
+    "//ui/gfx/range/mojom",
   ]
 
   # Generate TypeScript bindings for WebUI.

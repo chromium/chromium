@@ -43,6 +43,7 @@ CreateValidNavigationControlsState() {
       std::move(back_forward_state),
       toolbar_ui_api::mojom::HomeControlState::New(),
       toolbar_ui_api::mojom::ContentSettingState::New(),
+      toolbar_ui_api::mojom::OmniboxViewState::New(),
       /*layout_constants_version=*/0);
 }
 

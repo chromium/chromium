@@ -6,6 +6,7 @@ module toolbar_ui_api.mojom;
 
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 // The context menu types that can be opened with ToolbarUIService's
 // ShowContextMenu.
@@ -117,12 +118,22 @@ struct ContentSettingImageState {
   // and `is_blocked`.
 };
 
+struct OmniboxViewState {
+  // Text to display in the omnibox view.
+  // TODO(crbug.com/474060468): This should have formatting info.
+  string text;
+
+  // Selection or caret (if start == end) to set on the omnibox view, if any.
+  gfx.mojom.Range? selection;
+};
+
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
   HomeControlState home_control_state;
   ContentSettingState content_setting_state;
+  OmniboxViewState omnibox_view_state;
   // This is incremented every time a settings change may change the layout
   // constants.
   int32 layout_constants_version = 0;

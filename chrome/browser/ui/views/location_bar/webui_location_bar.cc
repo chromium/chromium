@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/views/bubble/bubble_border.h"
 
@@ -43,7 +45,7 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
           /*location_bar=*/this, browser_, browser_->profile()));
   omnibox_view_ =
-      std::make_unique<WebUIReadOnlyOmnibox>(omnibox_controller_.get(), this);
+      std::make_unique<WebUIReadOnlyOmnibox>(omnibox_controller_.get(), *this);
 
   // Unretained is safe because `this` owns `moved_subscription_`.
   moved_subscription_ =
@@ -54,6 +56,11 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
                               base::Unretained(this)));
 
   is_initialized_ = true;
+}
+
+void WebUILocationBar::PropagateOmniboxUpdate(
+    toolbar_ui_api::mojom::OmniboxViewStatePtr omnibox_state) {
+  toolbar_view_->OnOmniboxViewStateChanged(std::move(omnibox_state));
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
