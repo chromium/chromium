@@ -573,7 +573,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // `location_bar_` is only forwarding the call to the BVC. This should only
   // happen when the omnibox is being focused and it starts showing the popup;
   // if the popup was already open, no need to call this.
-  if (!popupOpenBeforeEdit) {
+  if (!popupOpenBeforeEdit ||
+      _presentationContext == OmniboxPresentationContext::kCobrowse) {
     [self.focusDelegate omniboxDidBecomeFirstResponder];
   }
 }
