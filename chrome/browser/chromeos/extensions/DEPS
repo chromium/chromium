@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/app_mode",
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",

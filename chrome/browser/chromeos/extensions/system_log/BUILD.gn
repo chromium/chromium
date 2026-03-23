@@ -23,7 +23,6 @@ static_library("system_log") {
     "//chromeos/ash/components/settings",
     "//chromeos/components/kiosk",
     "//chromeos/components/mgs",
-    "//chromeos/crosapi/mojom",
     "//components/device_event_log",
     "//extensions/common",
   ]

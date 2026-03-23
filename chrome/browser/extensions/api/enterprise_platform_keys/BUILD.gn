@@ -18,13 +18,11 @@ source_set("enterprise_platform_keys") {
 
   public_deps = [
     "//build:chromeos_buildflags",
-    "//chromeos/crosapi/mojom",
     "//extensions/browser",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/platform_keys:keystore_service",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/extensions",

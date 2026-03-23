@@ -27,7 +27,6 @@ source_set("wm") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
-    "//chromeos/crosapi/mojom",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",

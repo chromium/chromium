@@ -57,7 +57,6 @@ static_library("auto_screen_brightness") {
     "//chrome/common",
     "//chromeos/components/sensors",
     "//chromeos/components/sensors/mojom",
-    "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/metrics",

@@ -16,7 +16,6 @@ static_library("preferences") {
     "//base",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/language_preferences",
-    "//chromeos/crosapi/mojom",
     "//components/prefs",
     "//components/sync_preferences",
     "//components/user_manager",

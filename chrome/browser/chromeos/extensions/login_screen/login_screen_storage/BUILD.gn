@@ -36,7 +36,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
     "//components/policy/core/browser",
     "//components/policy/core/common:test_support",
     "//content/test:test_support",

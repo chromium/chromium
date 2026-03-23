@@ -341,7 +341,6 @@ source_set("sync_integration_tests_impl") {
         "//chrome/browser/ash/app_list",
         "//chrome/browser/ash/app_list/arc",
         "//chrome/browser/ash/app_list/test:test_support",
-        "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/floating_sso",
         "//chrome/browser/ash/floating_sso:test_support",
         "//chrome/browser/ash/printing",

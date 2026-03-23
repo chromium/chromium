@@ -16,7 +16,6 @@ static_library("network_change_manager") {
     "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/network",
-    "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

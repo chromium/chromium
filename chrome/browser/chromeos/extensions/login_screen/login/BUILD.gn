@@ -23,7 +23,6 @@ static_library("login") {
 
   public_deps = [
     "//base",
-    "//chromeos/crosapi/mojom",
     "//extensions/browser",
   ]
 

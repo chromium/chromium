@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/cert_provisioning",
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/concierge_helper",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/data_migration",
   "+chrome/browser/ash/early_prefs",

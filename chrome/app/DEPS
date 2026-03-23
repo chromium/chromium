@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/utility/chrome_content_utility_client.h",
   "+chromeos/ash/components/memory",
   "+chromeos/ash/experiences/arc/arc_util.h",
-  "+chromeos/crosapi",
   "+chromeos/dbus/constants",
   "+chromeos/lacros",
   "+chromeos/startup",

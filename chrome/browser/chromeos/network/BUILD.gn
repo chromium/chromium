@@ -20,7 +20,6 @@ static_library("network") {
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common:constants",
     "//chromeos/ash/components/network",
-    "//chromeos/crosapi/mojom",
     "//components/device_event_log",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

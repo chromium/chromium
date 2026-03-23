@@ -64,7 +64,6 @@ static_library("help_app") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//chromeos/strings",
     "//components/language/core/browser",
     "//components/prefs",

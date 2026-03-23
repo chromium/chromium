@@ -73,7 +73,6 @@ static_library("app_mode") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
-    "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",
     "//components/prefs",
     "//components/services/app_service",
