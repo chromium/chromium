@@ -13577,24 +13577,6 @@
             ]
         }
     ],
-    "InvalidateSearchEngineChoiceOnDeviceRestoreDetection": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledRetroactive",
-                    "params": {
-                        "is_retroactive": "true"
-                    },
-                    "enable_features": [
-                        "InvalidateSearchEngineChoiceOnDeviceRestoreDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolatesPriorityUseProcessPriority": [
         {
             "platforms": [

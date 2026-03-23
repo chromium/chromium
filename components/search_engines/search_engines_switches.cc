@@ -38,7 +38,13 @@ BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
 
 const base::FeatureParam<bool> kInvalidateChoiceOnRestoreIsRetroactive{
     /*feature=*/&kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
-    /*name=*/"is_retroactive", /*default_value=*/false};
+    /*name=*/"is_retroactive",
+#if BUILDFLAG(IS_IOS)
+    /*default_value=*/true
+#else
+    /*default_value=*/false
+#endif
+};
 
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users
 // who saw the choice screen in M121.
