@@ -284,8 +284,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       gpu::raster::RasterInterface*,
       const scoped_refptr<gpu::ClientSharedImage>& dst_shared_image,
       const gpu::SyncToken& dst_sync_token,
-      const gfx::Rect& src_sub_rectangle,
-      SourceDrawingBuffer);
+      SourceDrawingBuffer src_buffer);
 
   bool CopyToVideoFrame(
       WebGraphicsContext3DVideoFramePool* frame_pool,
