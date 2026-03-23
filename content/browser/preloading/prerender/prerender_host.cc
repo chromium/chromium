@@ -390,6 +390,8 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   potential_activation_headers.RemoveHeader("RTT");
   prerender_headers.RemoveHeader("Downlink");
   potential_activation_headers.RemoveHeader("Downlink");
+  prerender_headers.RemoveHeader("ECT");
+  potential_activation_headers.RemoveHeader("ECT");
 
   // TODO(crbug.com/40244149): Instead of handling headers added by
   // embedders specifically, prerender should expose an interface to embedders
