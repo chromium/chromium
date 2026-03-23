@@ -7,8 +7,8 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/strcat.h"
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -138,7 +138,7 @@ class TesterImpl : public TabUnderlineView::Tester {
 
 class TestUnderlineView : public TabUnderlineView {
  public:
-  TestUnderlineView(std::unique_ptr<TabUnderlineViewController> controller,
+  TestUnderlineView(std::unique_ptr<TabUnderlineController> controller,
                     BrowserWindowInterface* browser_window_interface,
                     tabs::TabHandle handle,
                     std::unique_ptr<Tester> tester)
@@ -156,7 +156,7 @@ class TestFactory : public TabUnderlineView::Factory {
 
  protected:
   std::unique_ptr<TabUnderlineView> CreateUnderlineView(
-      std::unique_ptr<TabUnderlineViewController> controller,
+      std::unique_ptr<TabUnderlineController> controller,
       BrowserWindowInterface* browser_window_interface,
       tabs::TabHandle handle) override {
     TabUnderlineView* new_underline =

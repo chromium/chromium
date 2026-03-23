@@ -13,8 +13,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -162,7 +162,8 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(
             glic::TabUnderlineView::Factory::Create(
-                std::make_unique<glic::TabUnderlineViewControllerImpl>(),
+                std::make_unique<glic::TabUnderlineController>(
+                    tab->GetHandle()),
                 browser_window->GetBrowserForMigrationOnly(), tab->GetHandle()))
             .Build());
     glic_tab_underline_view_->SetOrientation(

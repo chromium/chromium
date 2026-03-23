@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_CONTROLLER_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_CONTROLLER_H_
 
 #include <list>
 #include <optional>
@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/tabs/public/tab_interface.h"
@@ -29,24 +28,28 @@ class WebContents;
 
 namespace glic {
 
-class TabUnderlineView;
-
-class TabUnderlineViewControllerImpl
-    : public TabUnderlineViewController,
-      public GlicWindowController::StateObserver,
+class TabUnderlineController
+    : public GlicWindowController::StateObserver,
       public contextual_tasks::ActiveTaskContextProvider::Observer {
  public:
-  TabUnderlineViewControllerImpl();
-  TabUnderlineViewControllerImpl(const TabUnderlineViewControllerImpl&) =
-      delete;
-  TabUnderlineViewControllerImpl& operator=(
-      const TabUnderlineViewControllerImpl&) = delete;
-  ~TabUnderlineViewControllerImpl() override;
+  class UiDelegate {
+   public:
+    virtual ~UiDelegate() = default;
+    virtual void Show() = 0;
+    virtual void StopShowing() = 0;
+    virtual void ResetAnimationCycle() = 0;
+    virtual void StartRampingDown() = 0;
+    virtual bool IsShowing() const = 0;
+  };
 
-  // TabUnderlineViewController overrides:
-  void Initialize(TabUnderlineView* underline_view,
-                  BrowserWindowInterface* browser_window_interface) override;
-  void OnViewAddedToWidget() override;
+  explicit TabUnderlineController(tabs::TabHandle tab_handle);
+  TabUnderlineController(const TabUnderlineController&) = delete;
+  TabUnderlineController& operator=(const TabUnderlineController&) = delete;
+  ~TabUnderlineController() override;
+
+  void Initialize(UiDelegate* ui_delegate,
+                  BrowserWindowInterface* browser_window_interface);
+  void OnUiReady();
 
   // contextual_tasks::ActiveTaskContextProvider::Observer overrides:
   // Handles updates from the contextual Tasks backend.
@@ -144,8 +147,6 @@ class TabUnderlineViewControllerImpl
 
   bool IsGlicWindowShowing() const;
 
-  bool IsTabInCurrentWindow(const content::WebContents* tab) const;
-
   std::string UpdateReasonToString(UpdateUnderlineReason reason);
 
   void AddReasonForDebugging(UpdateUnderlineReason reason);
@@ -157,7 +158,8 @@ class TabUnderlineViewControllerImpl
   std::string UpdateReasonsToString() const;
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
-  raw_ptr<TabUnderlineView> underline_view_;
+  raw_ptr<UiDelegate> ui_delegate_;
+  tabs::TabHandle tab_handle_;
 
   // The pointer to the browser in which the underline view lives. Outlives the
   // underline view.
@@ -191,4 +193,4 @@ class TabUnderlineViewControllerImpl
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_CONTROLLER_H_

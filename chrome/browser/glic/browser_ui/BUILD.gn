@@ -29,7 +29,9 @@ source_set("browser_ui") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/contextual_tasks",
     "//components/keyed_service/core",
+    "//components/tabs:public",
   ]
 }
 
@@ -51,8 +53,10 @@ source_set("impl") {
 
   deps = [
     ":browser_ui",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/call_to_action",
+    "//components/contextual_tasks/public:feature_list",
     "//components/feature_engagement/public",
   ]
 
@@ -72,10 +76,7 @@ source_set("impl") {
 
 if (!is_android) {
   source_set("glow_controller") {
-    sources = [
-      "context_sharing_border_view_controller_impl.h",
-      "tab_underline_view_controller_impl.h",
-    ]
+    sources = [ "context_sharing_border_view_controller_impl.h" ]
     deps = [
       ":glow",
       "//chrome/browser/actor/ui",
@@ -89,10 +90,7 @@ if (!is_android) {
   }
 
   source_set("glow_controller_impl") {
-    sources = [
-      "context_sharing_border_view_controller_impl.cc",
-      "tab_underline_view_controller_impl.cc",
-    ]
+    sources = [ "context_sharing_border_view_controller_impl.cc" ]
     deps = [
       ":glow",
       ":glow_controller",
@@ -105,29 +103,45 @@ if (!is_android) {
       "//components/feature_engagement/public",
     ]
   }
+}
 
-  source_set("glow") {
-    sources = [
+source_set("glow") {
+  sources = [ "tab_underline_controller.h" ]
+  deps = [
+    ":browser_ui",
+    "//base",
+    "//chrome/browser/contextual_tasks",
+    "//components/tabs:public",
+  ]
+  if (!is_android) {
+    sources += [
       "animated_effect_view.h",
       "context_sharing_border_view.h",
       "context_sharing_border_view_controller.h",
       "tab_underline_view.h",
-      "tab_underline_view_controller.h",
     ]
-    deps = [
+    deps += [
       "//chrome/browser/themes",
       "//chrome/browser/ui/tabs:tab_strip",
     ]
   }
+}
 
-  source_set("glow_impl") {
-    sources = [
+source_set("glow_impl") {
+  sources = [ "tab_underline_controller.cc" ]
+  deps = [
+    ":browser_ui",
+    ":glow",
+    "//chrome/browser/contextual_tasks",
+    "//components/contextual_tasks/public:feature_list",
+  ]
+  if (!is_android) {
+    sources += [
       "animated_effect_view.cc",
       "context_sharing_border_view.cc",
       "tab_underline_view.cc",
     ]
-    deps = [
-      ":glow",
+    deps += [
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",
@@ -135,7 +149,9 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
     ]
   }
+}
 
+if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "glic_button_controller_unittest.cc" ]
