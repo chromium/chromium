@@ -495,7 +495,11 @@ class ShapeInterpolationReader {
   }
 
  private:
-  LengthPoint ReadPoint() { return LengthPoint(ReadLength(), ReadLength()); }
+  LengthPoint ReadPoint() {
+    Length x = ReadLength();
+    Length y = ReadLength();
+    return LengthPoint(x, y);
+  }
 
   size_t index_ = 0;
   const InterpolableList& value_list_;

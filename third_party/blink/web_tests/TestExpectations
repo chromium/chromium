@@ -2634,9 +2634,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
-# An unexplained failure on headless shell, opened an infra bug.
-crbug.com/410400550 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-008.html [ Failure ]
-
 # Inheritance of zoom on non-inherited properties
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
 
