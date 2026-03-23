@@ -29,8 +29,9 @@ bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {
   if (metrics_manager_) {
     metrics_manager_->OnBrowserWindowShowRequested(base::TimeTicks::Now());
   }
-  if (!base::FeatureList::IsEnabled(features::kWebUIReloadButton) &&
+  if (!base::FeatureList::IsEnabled(features::kWebUIReloadButton) ||
       !features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
+    // Do not defer if the experiment is disabled or the param is false.
     return false;
   }
   if (is_initial_web_ui_pending_) {
