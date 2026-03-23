@@ -223,9 +223,8 @@ void DualLayerUserPrefStore::SetValue(std::string_view key,
   DoSetValue(key, std::move(value), flags, /*notify=*/true);
 
   if (should_notify) {
-    for (PrefStore::Observer& observer : observers_) {
-      observer.OnPrefValueChanged(key);
-    }
+    observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                     key);
   }
 }
 

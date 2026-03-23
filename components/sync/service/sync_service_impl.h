@@ -508,8 +508,12 @@ class SyncServiceImpl : public SyncService,
 
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
-  std::optional<base::ObserverList<SyncServiceObserver,
-                                   /*check_empty=*/true>>
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  std::optional<base::ObserverList<
+      SyncServiceObserver,
+      /*check_empty=*/true,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>>
       observers_;
 
   base::ObserverList<ProtocolEventObserver> protocol_event_observers_;

@@ -300,7 +300,12 @@ class SyncPrefs {
   // Never null.
   const raw_ptr<PrefService> pref_service_;
 
-  base::ObserverList<SyncPrefObserver> sync_pref_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SyncPrefObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      sync_pref_observers_;
 
   // The preference that controls whether sync is under control by
   // configuration management (aka policy).
