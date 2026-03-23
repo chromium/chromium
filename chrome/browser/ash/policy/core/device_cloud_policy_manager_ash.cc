@@ -381,9 +381,9 @@ void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
 }
 
 void DeviceCloudPolicyManagerAsh::NotifyConnected() {
-  for (auto& observer : observers_) {
-    observer.OnDeviceCloudPolicyManagerConnected();
-  }
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  observers_.NotifyAllowReentrancyUntriaged(
+      &Observer::OnDeviceCloudPolicyManagerConnected);
 }
 
 void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {

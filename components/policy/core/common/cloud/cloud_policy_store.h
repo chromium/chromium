@@ -224,7 +224,13 @@ class POLICY_EXPORT CloudPolicyStore {
 
   std::unique_ptr<enterprise_management::PolicyData> policy_;
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*allow_reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace policy
