@@ -62,10 +62,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ShadowRoot(Document&,
-             ShadowRootMode,
-             SlotAssignmentMode,
-             const AtomicString& marker);
+  ShadowRoot(Document&, ShadowRootMode, SlotAssignmentMode);
   ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
@@ -143,8 +140,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
   void setHTML(const String& html, TrustedParserOptions*, ExceptionState&);
-
-  const AtomicString& marker() const { return marker_; }
 
   Node* Clone(Document& factory,
               NodeCloningData& data,
@@ -247,7 +242,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   }
 
   Member<SlotAssignment> slot_assignment_;
-  AtomicString marker_;
   Member<ReferenceTargetIdObserver> reference_target_id_observer_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;

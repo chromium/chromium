@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 
+#include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -12,114 +13,94 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
-Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& target) {
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() || target.IsNull() ||
-      target.empty()) {
+
+namespace {
+
+class NodeRemovalScope {
+  STACK_ALLOCATED();
+
+ public:
+  void Remove(Node* node) { nodes_to_remove.push_back(node); }
+
+  ~NodeRemovalScope() {
+    for (Node* node : nodes_to_remove) {
+      node->remove();
+    }
+  }
+
+ private:
+  HeapVector<Member<Node>> nodes_to_remove;
+};
+
+}  // namespace
+
+Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& marker_name) {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
+      marker_name.IsNull() || marker_name.empty()) {
     return nullptr;
   }
-
-  AtomicString host_name = target;
-  AtomicString marker_name = g_empty_atom;
-
-  auto index_of_hash = target.find('#');
-  if (index_of_hash != AtomicString::npos) {
-    const String as_string = target.GetString();
-    host_name = AtomicString(as_string.Left(index_of_hash));
-    marker_name = AtomicString(as_string.Substring(index_of_hash + 1));
-  }
-
-  Document& document = scope->GetDocument();
 
   if (auto* parent_template = DynamicTo<HTMLTemplateElement>(scope)) {
-    // TODO(nrosenthal): <template for> inside <template for>.
     scope = parent_template->InsertionTarget();
-  } else if (scope == document.body()) {
-    scope = document.documentElement();
+  } else if (scope == scope->GetDocument().body()) {
+    scope = scope->GetDocument().documentElement();
   }
 
-  ContainerNode* host = nullptr;
-
-  if (ShadowRoot* as_shadow = DynamicTo<ShadowRoot>(scope)) {
-    if (as_shadow->marker() == host_name) {
-      host = as_shadow;
+  DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
+  for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
+    auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
+    if (!processing_instruction ||
+        (processing_instruction->GetAttributeValue(
+             kNamePseudoAttr, g_empty_atom) != marker_name)) {
+      continue;
     }
-  }
-
-  if (!host) {
-    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*scope)) {
-      if (Element* element = DynamicTo<Element>(descendant)) {
-        if (element->marker() == host_name) {
-          host = element;
-          break;
-        }
-      }
+    if (EqualIgnoringAsciiCase(processing_instruction->target(), "marker")) {
+      return MakeGarbageCollected<Patch>(
+          base::PassKey<Patch>(), processing_instruction->parentNode(),
+          processing_instruction, processing_instruction);
     }
-  }
 
-  if (!host) {
-    return nullptr;
-  }
-
-  int marker_depth = 0;
-  ProcessingInstruction* start_marker = nullptr;
-  ProcessingInstruction* end_marker = nullptr;
-  for (Node& child : NodeTraversal::ChildrenOf(*host)) {
-    auto* processing_instruction = DynamicTo<ProcessingInstruction>(child);
-    if (!processing_instruction) {
+    if (!EqualIgnoringAsciiCase(processing_instruction->target(), "start")) {
       continue;
     }
 
-    AtomicString current_target(
-        processing_instruction->target().ToAsciiLower());
-    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
-    DEFINE_STATIC_LOCAL(AtomicString, kStart, ("start"));
-    DEFINE_STATIC_LOCAL(AtomicString, kEnd, ("end"));
-    DEFINE_STATIC_LOCAL(AtomicString, kMarker, ("marker"));
+    ContainerNode* parent = processing_instruction->parentNode();
+    int marker_depth = 0;
+    NodeRemovalScope remove_scope;
 
-    auto is_name_matching = [&]() {
-      return processing_instruction->GetAttributeValue(
-                 kNamePseudoAttr, g_empty_atom) == marker_name;
-    };
+    for (Node* node = processing_instruction->nextSibling(); node;
+         node = node->nextSibling()) {
+      if (ProcessingInstruction* next_processing_instruction =
+              DynamicTo<ProcessingInstruction>(*node)) {
+        if (EqualIgnoringAsciiCase(next_processing_instruction->target(),
+                                   "start")) {
+          marker_depth++;
+        } else if (EqualIgnoringAsciiCase(next_processing_instruction->target(),
+                                          "end")) {
+          if (marker_depth == 0) {
+            return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
+                                               processing_instruction,
+                                               next_processing_instruction);
+          }
+          marker_depth--;
+        }
+      }
 
-    if (current_target == kMarker && !start_marker && is_name_matching()) {
-      return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), host,
-                                         processing_instruction,
-                                         processing_instruction);
+      remove_scope.Remove(node);
     }
 
-    if (current_target == kStart) {
-      if (start_marker) {
-        marker_depth++;
-      } else if (is_name_matching()) {
-        start_marker = processing_instruction;
-      }
-    } else if (current_target == kEnd && start_marker) {
-      if (marker_depth == 0) {
-        end_marker = processing_instruction;
-        break;
-      }
-      marker_depth--;
-    }
+    // No end PI found.
+    return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
+                                       processing_instruction, nullptr);
   }
 
-  if (!start_marker) {
-    return nullptr;
-  }
-
-  DCHECK(EqualIgnoringAsciiCase(start_marker->target(), "start"));
-  DCHECK(!end_marker || EqualIgnoringAsciiCase(end_marker->target(), "end"));
-
-  for (Node* child = start_marker->nextSibling();
-       child && (child != end_marker); child = start_marker->nextSibling()) {
-    host->RemoveChild(child);
-  }
-
-  return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), host, start_marker,
-                                     end_marker);
+  // No start/marker PI found.
+  return nullptr;
 }
 
 void Patch::Apply(HTMLConstructionSiteTask& task) {

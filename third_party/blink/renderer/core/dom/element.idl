@@ -120,9 +120,6 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
     [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, TrustedParserOptions options);
 
-    // https://github.com/whatwg/html/issues/11542
-    [RuntimeEnabled=DocumentPatching] attribute DOMString marker;
-
     // https://github.com/whatwg/html/issues/11669
     [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
     [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});

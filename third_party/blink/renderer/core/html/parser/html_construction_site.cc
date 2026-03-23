@@ -1014,8 +1014,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
         slot_assignment_mode, serializable, clonable, adopted_stylesheets,
-        reference_target, waiting_for_scoped_registry,
-        template_element->marker());
+        reference_target, waiting_for_scoped_registry);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.

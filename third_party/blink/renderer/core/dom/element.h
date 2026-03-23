@@ -1043,8 +1043,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                    bool clonable,
                                    const AtomicString& adopted_stylesheets,
                                    const AtomicString& reference_target,
-                                   const bool waiting_for_scoped_registry,
-                                   const AtomicString& marker);
+                                   const bool waiting_for_scoped_registry);
 
   ShadowRoot& CreateUserAgentShadowRoot(
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
@@ -1054,8 +1053,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                        CustomElementRegistry*,
                                        bool serializable,
                                        bool clonable,
-                                       const AtomicString& reference_target,
-                                       const AtomicString& marker);
+                                       const AtomicString& reference_target);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
   ShadowRoot& AttachShadowRootForTesting(ShadowRootMode type);
@@ -1662,13 +1660,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // IDL method.
   // Returns the list of part names, creating it if it doesn't exist.
   DOMTokenList& part();
-
-  const AtomicString& marker() const {
-    return FastGetAttribute(html_names::kMarkerAttr);
-  }
-  void setMarker(const AtomicString& marker) {
-    setAttribute(html_names::kMarkerAttr, marker);
-  }
 
   bool HasPartNamesMap() const;
   const NamesMap* PartNamesMap() const;
@@ -2420,8 +2411,7 @@ class CORE_EXPORT Element : public ContainerNode {
 
   ShadowRoot& CreateAndAttachShadowRoot(
       ShadowRootMode,
-      SlotAssignmentMode = SlotAssignmentMode::kNamed,
-      const AtomicString& marker = g_null_atom);
+      SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
   virtual void DidAddUserAgentShadowRoot(ShadowRoot&) {}
   virtual bool AlwaysCreateUserAgentShadowRoot() const { return false; }
