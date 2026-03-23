@@ -35,6 +35,10 @@
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/shared_image/dawn_copy_strategy.h"
+#endif
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
@@ -169,6 +173,9 @@ SharedImageFactory::SharedImageFactory(
   copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
   copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
   copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
+#if BUILDFLAG(USE_DAWN)
+  copy_manager_->AddStrategy(std::make_unique<DawnCopyStrategy>());
+#endif
 
   auto shared_memory_backing_factory =
       std::make_unique<SharedMemoryImageBackingFactory>();

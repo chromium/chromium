@@ -363,6 +363,12 @@ bool WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
         params.context_state->IsUsingGL()) {
       return false;
     }
+    // For Dawn access, we want CompoundImageBacking to allocate a
+    // DawnImageBacking which provides native Dawn support instead of using the
+    // fallback path in this backing.
+    if (stream == SharedImageAccessStream::kDawn) {
+      return false;
+    }
   }
   return true;
 }
@@ -463,6 +469,11 @@ WrappedGraphiteTextureBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
+  // If kUseDynamicBackingAllocations is enabled, we don't support Dawn access
+  // directly in this backing. Instead, we want CompoundImageBacking to
+  // allocate a DawnImageBacking which provides native Dawn support.
+  CHECK(!base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations));
+
   CHECK(context_state_->IsGraphiteDawnVulkan());
   if (context_state_->context_lost()) {
     return nullptr;
