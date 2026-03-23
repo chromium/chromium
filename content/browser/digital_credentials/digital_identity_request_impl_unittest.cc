@@ -1065,6 +1065,19 @@ class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
     return mock_digital_identity_provider_;
   }
 
+  void SetMockDigitalIdentityProvider(
+      std::unique_ptr<MockDigitalIdentityProvider> provider) {
+    mock_digital_identity_provider_ = provider.get();
+    content_browser_client_.SetDigitalIdentityProvider(std::move(provider));
+  }
+
+  void RecreateService() {
+    request_remote_.reset();
+    digital_identity_request_impl_ = DigitalIdentityRequestImpl::CreateInstance(
+        *web_contents()->GetPrimaryMainFrame(),
+        request_remote_.BindNewPipeAndPassReceiver());
+  }
+
   void reset_provider_pointer() { mock_digital_identity_provider_ = nullptr; }
 
  private:
@@ -1233,6 +1246,94 @@ TEST_F(DigitalIdentityRequestImplTest,
                                        mock_callback.Get());
 
   run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ShouldReturnUserDeclinedWhenUserDeclined) {
+  const std::string kProtocol = "protocol";
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  base::DictValue request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data = base::Value(std::move(request_data));
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
+        // Running the `callback` will destroy the provider, reset the
+        // pointer to avoid dangling pointers after invoking the callback.
+        reset_provider_pointer();
+
+        std::move(callback).Run(
+            base::unexpected(RequestStatusForMetrics::kErrorUserDeclined));
+      }));
+
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorUserDeclined,
+                  testing::Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       mock_callback.Get());
+
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ShouldReturnSameErrorForNoCredentialAndUserDeclined) {
+  const std::string kProtocol = "protocol";
+
+  auto get_status_for_provider_error =
+      [&](RequestStatusForMetrics provider_error) {
+        SetMockDigitalIdentityProvider(
+            std::make_unique<MockDigitalIdentityProvider>());
+
+        RecreateService();
+
+        DigitalCredentialGetRequestPtr digital_credential_request =
+            DigitalCredentialGetRequest::New();
+        digital_credential_request->protocol = kProtocol;
+        base::DictValue request_data;
+        request_data.Set("data", "request data");
+        digital_credential_request->data = base::Value(std::move(request_data));
+
+        std::vector<DigitalCredentialGetRequestPtr> requests;
+        requests.push_back(std::move(digital_credential_request));
+
+        base::RunLoop run_loop;
+        RequestDigitalIdentityStatus status_out;
+
+        EXPECT_CALL(*mock_digital_identity_provider(), Get)
+            .WillOnce(WithArg<3>([&](DigitalIdentityCallback callback) {
+              reset_provider_pointer();
+              std::move(callback).Run(base::unexpected(provider_error));
+            }));
+
+        base::MockCallback<GetCallback> mock_callback;
+        EXPECT_CALL(mock_callback, Run)
+            .WillOnce(
+                ([&](RequestDigitalIdentityStatus status,
+                     std::optional<std::string> protocol, base::Value token) {
+                  status_out = status;
+                  run_loop.Quit();
+                }));
+
+        digital_identity_request_impl()->Get(std::move(requests),
+                                             mock_callback.Get());
+        run_loop.Run();
+        return status_out;
+      };
+
+  EXPECT_EQ(get_status_for_provider_error(
+                RequestStatusForMetrics::kErrorNoCredential),
+            get_status_for_provider_error(
+                RequestStatusForMetrics::kErrorUserDeclined));
 }
 
 // Tests for browser-side Permissions Policy enforcement.
