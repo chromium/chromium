@@ -249,12 +249,13 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
       is_new_password_local != is_old_password_local;
 
   if (is_label_update_required) {
+    auto allowed_local_auth_factors =
+        AuthParts::Get()->GetAuthPolicyConnector()->AllowedLocalAuthFactors(
+            context->GetAccountId());
     bool policy_does_not_force_online_password =
         !features::IsManagedLocalPinAndPasswordEnabled() ||
-        AuthParts::Get()
-                ->GetAuthPolicyConnector()
-                ->AllowedLocalAuthFactors(context->GetAccountId())
-                ->size() > 0;
+        !allowed_local_auth_factors.has_value() ||
+        allowed_local_auth_factors->size() > 0;
     // Only allow switching from local password to online password if the policy
     // doesn't allow local auth factors anymore. Note: For unmanaged user there
     // will always be allowed local auth factors.
