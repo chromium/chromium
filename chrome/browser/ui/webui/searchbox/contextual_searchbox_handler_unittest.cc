@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
@@ -1604,32 +1605,54 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   auto* about_blank_tab = AddTab(GURL("about:blank"));
   AddTab(GURL("chrome://webui-is-ignored"));
 
-  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future1;
-  handler().GetRecentTabs(future1.GetCallback());
-  auto tabs = future1.Take();
-  ASSERT_EQ(tabs.size(), 1u);
-  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+  {
+    // Add only 1 valid tab, and ensure it is the only one returned.
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+  }
 
-  // Add more tabs, and ensure no more than the max allowed tabs are returned.
+  auto* contextual_tasks_tab = AddTab(GURL(chrome::kChromeUIContextualTasksURL));
+  tab_strip_model()->ActivateTabAt(tab_strip_model()->GetIndexOfWebContents(
+      contextual_tasks_tab->GetContents()));
+
+  {
+    // Add a contextual tasks tab and ensure it is not returned when it is the
+    // active tab.
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+  }
+
   AddTab(GURL("https://www.google.com"));
   auto* youtube_tab = AddTab(GURL("https://www.youtube.com"));
   auto* gmail_tab = AddTab(GURL("https://www.gmail.com"));
 
-  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future2;
-  handler().GetRecentTabs(future2.GetCallback());
-  tabs = future2.Take();
-  ASSERT_EQ(tabs.size(), 2u);
-  EXPECT_EQ(tabs[0]->tab_id, gmail_tab->GetHandle().raw_value());
-  EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
+  {
+    // Add more tabs, and ensure no more than the max allowed tabs are returned.
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 2u);
+    EXPECT_EQ(tabs[0]->tab_id, gmail_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
+  }
 
-  // Activate an older tab, and ensure it is returned first.
   content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
       ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
-  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future3;
-  handler().GetRecentTabs(future3.GetCallback());
-  tabs = future3.Take();
-  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
-  EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
+
+  {
+    // Activate an older tab, and ensure it is returned first.
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
+  }
 }
 
 class ContextualSearchboxHandlerSignedInTestTabsTest

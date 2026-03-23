@@ -110,16 +110,22 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     base::TimeTicks time;
   };
   std::vector<TabTime> tab_times;
+  content::WebContents* active_web_contents =
+    tab_strip_model->GetActiveWebContents();
   for (tabs::TabInterface* tab : *tab_strip_model) {
     content::WebContents* web_contents = tab->GetContents();
     const GURL& url = web_contents->GetLastCommittedURL();
-    // Skip tabs that are still loading, and skip webui (internal pages)
-    // except contextual tasks webui.
-    // Skip tabs that are still loading, and skip webui (internal pages).
-    if (url.is_valid() &&
-        ((!url.SchemeIs(content::kChromeUIScheme) &&
-          !url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
-         url.spec().starts_with(chrome::kChromeUIContextualTasksURL))) {
+    if (!url.is_valid()) {
+      continue;
+    }
+    bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
+                            url.SchemeIs(content::kChromeUIUntrustedScheme);
+    bool is_different_contextual_task_thread =
+        url.spec().starts_with(chrome::kChromeUIContextualTasksURL) &&
+        (!active_web_contents ||
+         url != active_web_contents->GetLastCommittedURL());
+
+    if (!is_internal_page || is_different_contextual_task_thread) {
       tab_times.push_back({
           .tab = tab,
           .time = std::max(web_contents->GetLastActiveTimeTicks(),
