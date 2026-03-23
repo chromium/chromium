@@ -1269,6 +1269,11 @@ const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
 
+const char kOpenEditGroupViewByTappingTitleName[] =
+    "OpenEditGroupViewByTappingTitle";
+const char kOpenEditGroupViewByTappingTitleDescription[] =
+    "Enables the OpenEditGroupViewByTappingTitle feature.";
+
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

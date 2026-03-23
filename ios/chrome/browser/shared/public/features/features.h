@@ -994,4 +994,10 @@ BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageIos);
 // Returns true if the YourSavedInfoSettingsPageIos feature is enabled.
 bool IsYourSavedInfoSettingsPageIosEnabled();
 
+// Enables the OpenEditGroupViewByTappingTitle feature.
+BASE_DECLARE_FEATURE(kOpenEditGroupViewByTappingTitle);
+
+// Returns true if the OpenEditGroupViewByTappingTitle feature is enabled.
+bool IsOpenEditGroupViewByTappingTitleEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -781,6 +781,9 @@ extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
 
+extern const char kOpenEditGroupViewByTappingTitleName[];
+extern const char kOpenEditGroupViewByTappingTitleDescription[];
+
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

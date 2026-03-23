@@ -2696,6 +2696,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kYourSavedInfoSettingsPageIosName,
      flag_descriptions::kYourSavedInfoSettingsPageIosDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kYourSavedInfoSettingsPageIos)},
+    {"open-edit-group-view-by-tapping-title",
+     flag_descriptions::kOpenEditGroupViewByTappingTitleName,
+     flag_descriptions::kOpenEditGroupViewByTappingTitleDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOpenEditGroupViewByTappingTitle)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

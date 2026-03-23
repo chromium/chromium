@@ -7457,6 +7457,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "open-edit-group-view-by-tapping-title",
+    "owners": [ "achara@google.com", "bling-meridian@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "openxr-spatial-entities",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
     "expiry_milestone": 150
