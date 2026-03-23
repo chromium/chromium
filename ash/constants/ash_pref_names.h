@@ -318,6 +318,10 @@ inline constexpr char kInputVoiceIsolationEnabled[] =
 inline constexpr char kInputVoiceIsolationPreferredEffect[] =
     "ash.input_voice_isolation_preferred_effect";
 
+// A boolean pref that controls whether Krisp noise cancellation is enabled.
+inline constexpr char kInputKrispNoiseCancellationEnabled[] =
+    "ash.input_krisp_noise_cancellation_enabled";
+
 // A boolean pref that controls whether input noise cancellation is enabled.
 inline constexpr char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";
