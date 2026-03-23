@@ -14,6 +14,8 @@ BASE_DECLARE_FEATURE(kWalletApiPrivatePassesEnabled);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kWalletSaveUrl);
 
+BASE_DECLARE_FEATURE(kWalletApiPrivatePassesConsent);
+
 BASE_DECLARE_FEATURE(kWalletablePassDetection);
 
 BASE_DECLARE_FEATURE_PARAM(std::string,

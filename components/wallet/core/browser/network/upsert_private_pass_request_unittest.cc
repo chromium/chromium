@@ -5,12 +5,14 @@
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/version_info/version_info.h"
 #include "components/wallet/core/browser/proto/api_v1.pb.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace wallet {
@@ -20,6 +22,8 @@ namespace {
 class UpsertPrivatePassRequestTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_{
+      features::kWalletApiPrivatePassesConsent};
 };
 
 using UpsertPrivatePassCallback = base::test::TestFuture<

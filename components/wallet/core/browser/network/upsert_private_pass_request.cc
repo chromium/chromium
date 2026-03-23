@@ -5,6 +5,7 @@
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -16,6 +17,7 @@
 #include "components/wallet/core/browser/proto/api_v1.pb.h"
 #include "components/wallet/core/browser/proto/client_info.pb.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -85,7 +87,8 @@ std::string UpsertPrivatePassRequest::GetRequestUrlPath() const {
 std::string UpsertPrivatePassRequest::GetRequestContent() const {
   api::UpsertPrivatePassRequest request;
   *request.mutable_private_pass() = pass_;
-  if (session_id_.has_value()) {
+  if (session_id_.has_value() &&
+      base::FeatureList::IsEnabled(features::kWalletApiPrivatePassesConsent)) {
     api::UpsertPrivatePassRequest::SessionId::UUID& uuid =
         *request.mutable_session_id()->mutable_uuid();
     absl::uint128 session_id_int = session_id_->AsInteger();
