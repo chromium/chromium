@@ -149,20 +149,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
-                       DidStopLoadingIsDebounced) {
+                       PrimaryPageChangedIsDebounced) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   controller_ = CreateController();
 
   // Ensure the check does not run immediately on load.
-  controller_->DidStopLoading();
+  controller_->PrimaryPageChanged(
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryPage());
   EXPECT_EQ(controller_->CheckCount(), 0);
 
   // Fast forward less than the delay and ensure the check has not run.
   mocked_task_runner->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(controller_->CheckCount(), 0);
 
-  // The timer should restart when DidStopLoading is called again.
-  controller_->DidStopLoading();
+  // The timer should restart when PrimaryPageChanged is called again.
+  controller_->PrimaryPageChanged(
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryPage());
   mocked_task_runner->FastForwardBy(base::Milliseconds(900));
   EXPECT_EQ(controller_->CheckCount(), 0);
 
