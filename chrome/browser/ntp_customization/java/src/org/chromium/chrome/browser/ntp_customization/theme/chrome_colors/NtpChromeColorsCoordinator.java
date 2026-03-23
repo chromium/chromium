@@ -40,6 +40,7 @@ import java.util.List;
 public class NtpChromeColorsCoordinator {
     private static final String TAG = "NtpChromeColor";
     private static final int MAX_NUMBER_OF_COLORS_PER_ROW = 7;
+    static final int DAILY_REFRESH_DEFAULT_COLOR_POSITION = 0;
 
     private final List<NtpThemeColorInfo> mChromeColorsList = new ArrayList<>();
     private final Context mContext;
@@ -165,7 +166,9 @@ public class NtpChromeColorsCoordinator {
                         != NtpBackgroundType.CHROME_COLOR) {
             // If the current background type isn't Chrome color and user turns on daily refresh,
             // highlights the first color info.
-            mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 0);
+            mPropertyModel.set(
+                    NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX,
+                    DAILY_REFRESH_DEFAULT_COLOR_POSITION);
         }
     }
 

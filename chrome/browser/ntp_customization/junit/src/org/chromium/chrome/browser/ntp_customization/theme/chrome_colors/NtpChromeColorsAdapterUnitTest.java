@@ -160,23 +160,31 @@ public class NtpChromeColorsAdapterUnitTest {
         assertEquals(0, mAdapter.getSelectedPositionForTesting());
 
         int selectedPosition = 2;
-        mAdapter.setSelectedPosition(selectedPosition);
+        mAdapter.setSelectedPosition(selectedPosition, /* isFromClick= */ true);
 
         // Verify the new selected position and that the callback was invoked.
         assertEquals(selectedPosition, mAdapter.getSelectedPositionForTesting());
         verify(mOnItemClickCallback).onResult(mColorInfoList.get(selectedPosition));
+
+        // Verify the new selected position and that the callback was not invoke if the selected
+        // position is not from a click event.
+        clearInvocations(mOnItemClickCallback);
+        mAdapter.setSelectedPosition(selectedPosition, /* isFromClick= */ false);
+
+        assertEquals(selectedPosition, mAdapter.getSelectedPositionForTesting());
+        verify(mOnItemClickCallback, never()).onResult(mColorInfoList.get(selectedPosition));
     }
 
     @Test
     public void testSetSelectedPosition_invalidPosition() {
         // Set invalid selected position.
-        mAdapter.setSelectedPosition(mColorInfoList.size() + 1);
+        mAdapter.setSelectedPosition(mColorInfoList.size() + 1, /* isFromClick= */ false);
         // Verify the selected position is RecyclerView.NO_POSITION and no callback.
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());
         verify(mOnItemClickCallback, never()).onResult(any());
 
         // Set another invalid position (negative).
-        mAdapter.setSelectedPosition(-5);
+        mAdapter.setSelectedPosition(-5, /* isFromClick= */ false);
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());
         verify(mOnItemClickCallback, never()).onResult(any());
     }
@@ -187,7 +195,7 @@ public class NtpChromeColorsAdapterUnitTest {
         assertEquals(0, mAdapter.getSelectedPositionForTesting());
 
         // Set selected position to NO_POSITION.
-        mAdapter.setSelectedPosition(RecyclerView.NO_POSITION);
+        mAdapter.setSelectedPosition(RecyclerView.NO_POSITION, /* isFromClick= */ false);
 
         // Verify the selected position is NO_POSITION and callback is not invoked.
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());

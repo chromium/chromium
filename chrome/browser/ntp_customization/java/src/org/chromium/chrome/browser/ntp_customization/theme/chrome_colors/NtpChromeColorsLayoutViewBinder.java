@@ -95,7 +95,8 @@ public class NtpChromeColorsLayoutViewBinder {
             var adapter = model.get(RECYCLER_VIEW_ADAPTER);
             if (adapter != null
                     && adapter instanceof NtpChromeColorsAdapter ntpChromeColorsAdapter) {
-                ntpChromeColorsAdapter.setSelectedPosition(model.get(HIGHLIGHTED_ITEM_INDEX));
+                ntpChromeColorsAdapter.setSelectedPosition(
+                        model.get(HIGHLIGHTED_ITEM_INDEX), /* isFromClick= */ false);
             }
         }
     }
