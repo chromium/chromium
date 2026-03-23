@@ -45,19 +45,26 @@ double Tween::CalculateValue(Tween::Type type, double state) {
         return pow(state * 2, 2) / 2.0;
       return 1.0 - (pow((state - 1.0) * 2, 2) / 2.0);
 
-    case EASE_IN_OUT_EMPHASIZED:
-      return gfx::ThreePointCubicBezier(0.05, 0, 0.133333, 0.06, 0.166666, 0.4,
-                                        0.208333, 0.82, 0.25, 1)
-          .Solve(state);
+    case EASE_IN_OUT_EMPHASIZED: {
+      static const gfx::ThreePointCubicBezier bezier(
+          0.05, 0, 0.133333, 0.06, 0.166666, 0.4, 0.208333, 0.82, 0.25, 1);
+      return bezier.Solve(state);
+    }
 
-    case EASE_IN_OUT_2:
-      return gfx::CubicBezier(0.33, 0, 0.67, 1).Solve(state);
+    case EASE_IN_OUT_2: {
+      static const gfx::CubicBezier bezier(0.33, 0, 0.67, 1);
+      return bezier.Solve(state);
+    }
 
-    case EASE_OUT_3:
-      return gfx::CubicBezier(0.6, 0, 0, 1).Solve(state);
+    case EASE_OUT_3: {
+      static const gfx::CubicBezier bezier(0.6, 0, 0, 1);
+      return bezier.Solve(state);
+    }
 
-    case EASE_OUT_4:
-      return gfx::CubicBezier(1, 0, 0.8, 1).Solve(state);
+    case EASE_OUT_4: {
+      static const gfx::CubicBezier bezier(1, 0, 0.8, 1);
+      return bezier.Solve(state);
+    }
 
     case LINEAR:
       return state;
@@ -65,74 +72,116 @@ double Tween::CalculateValue(Tween::Type type, double state) {
     case EASE_OUT:
       return 1.0 - pow(1.0 - state, 2);
 
-    case EASE_OUT_2:
-      return gfx::CubicBezier(0.4, 0, 0, 1).Solve(state);
+    case EASE_OUT_2: {
+      static const gfx::CubicBezier bezier(0.4, 0, 0, 1);
+      return bezier.Solve(state);
+    }
 
     case SMOOTH_IN_OUT:
       return sin(state);
 
-    case FAST_OUT_SLOW_IN:
-      return gfx::CubicBezier(0.4, 0, 0.2, 1).Solve(state);
+    case FAST_OUT_SLOW_IN: {
+      static const gfx::CubicBezier bezier(0.4, 0, 0.2, 1);
+      return bezier.Solve(state);
+    }
 
-    case FAST_OUT_SLOW_IN_2:
-      return gfx::CubicBezier(0.2, 0, 0.2, 1).Solve(state);
+    case FAST_OUT_SLOW_IN_2: {
+      static const gfx::CubicBezier bezier(0.2, 0, 0.2, 1);
+      return bezier.Solve(state);
+    }
 
-    case FAST_OUT_SLOW_IN_3:
-      return gfx::CubicBezier(0.2, 0, 0, 1).Solve(state);
+    case FAST_OUT_SLOW_IN_3: {
+      static const gfx::CubicBezier bezier(0.2, 0, 0, 1);
+      return bezier.Solve(state);
+    }
 
-    case LINEAR_OUT_SLOW_IN:
-      return gfx::CubicBezier(0, 0, .2, 1).Solve(state);
+    case LINEAR_OUT_SLOW_IN: {
+      static const gfx::CubicBezier bezier(0, 0, .2, 1);
+      return bezier.Solve(state);
+    }
 
-    case SLOW_OUT_LINEAR_IN:
-      return gfx::CubicBezier(0, 0, 1, .2).Solve(state);
+    case SLOW_OUT_LINEAR_IN: {
+      static const gfx::CubicBezier bezier(0, 0, 1, .2);
+      return bezier.Solve(state);
+    }
 
-    case FAST_OUT_LINEAR_IN:
-      return gfx::CubicBezier(0.4, 0, 1, 1).Solve(state);
+    case FAST_OUT_LINEAR_IN: {
+      static const gfx::CubicBezier bezier(0.4, 0, 1, 1);
+      return bezier.Solve(state);
+    }
 
     case ZERO:
       return 0;
 
-    case ACCEL_LIN_DECEL_60:
-      return gfx::CubicBezier(0, 0, 0.4, 1).Solve(state);
+    case ACCEL_LIN_DECEL_60: {
+      static const gfx::CubicBezier bezier(0, 0, 0.4, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_LIN_DECEL_100:
-      return gfx::CubicBezier(0, 0, 0, 1).Solve(state);
+    case ACCEL_LIN_DECEL_100: {
+      static const gfx::CubicBezier bezier(0, 0, 0, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_LIN_DECEL_100_3:
-      return gfx::CubicBezier(0, 0, 0, 0.97).Solve(state);
+    case ACCEL_LIN_DECEL_100_3: {
+      static const gfx::CubicBezier bezier(0, 0, 0, 0.97);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_20_DECEL_60:
-      return gfx::CubicBezier(0.2, 0, 0.4, 1).Solve(state);
+    case ACCEL_20_DECEL_60: {
+      static const gfx::CubicBezier bezier(0.2, 0, 0.4, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_20_DECEL_100:
-      return gfx::CubicBezier(0.2, 0, 0, 1).Solve(state);
+    case ACCEL_20_DECEL_100: {
+      static const gfx::CubicBezier bezier(0.2, 0, 0, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_30_DECEL_20_85:
-      return gfx::CubicBezier(0.3, 0, 0.8, 0.15).Solve(state);
+    case ACCEL_30_DECEL_20_85: {
+      static const gfx::CubicBezier bezier(0.3, 0, 0.8, 0.15);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_40_DECEL_20:
-      return gfx::CubicBezier(0.4, 0, 0.8, 1).Solve(state);
+    case ACCEL_40_DECEL_20: {
+      static const gfx::CubicBezier bezier(0.4, 0, 0.8, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_45_DECEL_88:
-      return gfx::CubicBezier(0.45, 0.00, 0.12, 1.00).Solve(state);
+    case ACCEL_45_DECEL_88: {
+      static const gfx::CubicBezier bezier(0.45, 0.00, 0.12, 1.00);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_80_DECEL_20:
-      return gfx::CubicBezier(0.8, 0, 0.8, 1).Solve(state);
+    case ACCEL_80_DECEL_20: {
+      static const gfx::CubicBezier bezier(0.8, 0, 0.8, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_0_40_DECEL_100:
-      return gfx::CubicBezier(0, 0.4, 0, 1).Solve(state);
+    case ACCEL_0_40_DECEL_100: {
+      static const gfx::CubicBezier bezier(0, 0.4, 0, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_40_DECEL_100_3:
-      return gfx::CubicBezier(0.40, 0, 0, 0.97).Solve(state);
+    case ACCEL_40_DECEL_100_3: {
+      static const gfx::CubicBezier bezier(0.40, 0, 0, 0.97);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_0_80_DECEL_80:
-      return gfx::CubicBezier(0, 0.8, 0.2, 1).Solve(state);
+    case ACCEL_0_80_DECEL_80: {
+      static const gfx::CubicBezier bezier(0, 0.8, 0.2, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_0_100_DECEL_80:
-      return gfx::CubicBezier(0, 1, 0.2, 1).Solve(state);
+    case ACCEL_0_100_DECEL_80: {
+      static const gfx::CubicBezier bezier(0, 1, 0.2, 1);
+      return bezier.Solve(state);
+    }
 
-    case ACCEL_5_70_DECEL_90:
-      return gfx::CubicBezier(0.05, 0.7, 0.1, 1).Solve(state);
+    case ACCEL_5_70_DECEL_90: {
+      static const gfx::CubicBezier bezier(0.05, 0.7, 0.1, 1);
+      return bezier.Solve(state);
+    }
   }
 
   NOTREACHED();
