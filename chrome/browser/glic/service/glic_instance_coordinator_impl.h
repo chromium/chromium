@@ -47,10 +47,9 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
-namespace contextual_cueing {
-class ContextualCueingService;
-}
 namespace glic {
+
+class ContextualCueingService;
 
 BASE_DECLARE_FEATURE(kGlicHibernateAllOnMemoryPressure);
 
@@ -77,7 +76,7 @@ class GlicInstanceCoordinatorImpl
       signin::IdentityManager* identity_manager,
       GlicKeyedService* service,
       GlicEnabling* enabling,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service);
+      ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceCoordinatorImpl() override;
 
   GlicKeyedService* service() { return service_; }
@@ -265,8 +264,7 @@ class GlicInstanceCoordinatorImpl
 
   const raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;
-  raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_cueing_service_;
+  raw_ptr<ContextualCueingService> contextual_cueing_service_;
 
   std::map<InstanceId, std::unique_ptr<GlicInstanceImpl>> instances_;
 

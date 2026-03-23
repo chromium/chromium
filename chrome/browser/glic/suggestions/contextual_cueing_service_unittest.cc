@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 using ::testing::_;
 using ::testing::An;
@@ -55,7 +55,7 @@ class ContextualCueingServiceTest : public testing::Test {
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"BackoffTime", "24h"},
            {"BackoffMultiplierBase", "2.0"},
            {"NudgeCapTime", "24h"},
@@ -63,7 +63,7 @@ class ContextualCueingServiceTest : public testing::Test {
            {"MinPageCountBetweenNudges", "0"},
            {"MinTimeBetweenNudges", "30s"}}}},
         /*disabled_features=*/
-        {contextual_cueing::kGlicZeroStateSuggestions,
+        {glic::kGlicZeroStateSuggestions,
          features::kGlicDefaultTabContextSetting});
   }
 
@@ -109,11 +109,11 @@ class ContextualCueingServiceTestCapCountAndMinPageCount
     : public ContextualCueingServiceTest {
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"NudgeCapCount", "3"},
            {"MinPageCountBetweenNudges", "3"},
            {"MinTimeBetweenNudges", "0h"}}}},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        {glic::kGlicZeroStateSuggestions});
   }
 };
 
@@ -281,13 +281,13 @@ class ContextualCueingServiceTestMinPageCountBetweenNudges
     : public ContextualCueingServiceTest {
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"BackoffTime", "0h"},
            {"BackoffMultiplierBase", "0"},
            {"NudgeCapTime", "0h"},
            {"MinPageCountBetweenNudges", "3"},
            {"MinTimeBetweenNudges", "0h"}}}},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        {glic::kGlicZeroStateSuggestions});
   }
 };
 
@@ -318,7 +318,7 @@ class ContextualCueingServiceTestPerDomainLimits
     : public ContextualCueingServiceTest {
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"BackoffTime", "0h"},
            {"BackoffMultiplierBase", "0"},
            {"NudgeCapTime", "100h"},
@@ -327,7 +327,7 @@ class ContextualCueingServiceTestPerDomainLimits
            {"MinTimeBetweenNudges", "0h"},
            {"NudgeCapTimePerDomain", "24h"},
            {"NudgeCapCountPerDomain", "1"}}}},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        {glic::kGlicZeroStateSuggestions});
   }
 };
 
@@ -424,7 +424,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     glic::prefs::RegisterProfilePrefs(pref_service_->registry());
-    prefs::RegisterProfilePrefs(pref_service_->registry());
+    contextual_cueing::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
   void TearDown() override { loading_predictor_->Shutdown(); }
@@ -652,8 +652,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
       web_contents(), /*is_fre=*/false, std::vector<std::string>({"tool"}),
       future.GetCallback());
 
-  const base::ListValue& pref_value =
-      pref_service()->GetList(prefs::kZeroStateSuggestionsSupportedTools);
+  const base::ListValue& pref_value = pref_service()->GetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools);
   EXPECT_EQ(pref_value.size(), 1u);
   EXPECT_EQ(base::Value::Type::STRING, pref_value[0].type());
   EXPECT_EQ("tool", pref_value[0].GetString());
@@ -677,8 +677,9 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   base::ListValue tools_pref;
   tools_pref.Append("tool");
-  pref_service()->SetList(prefs::kZeroStateSuggestionsSupportedTools,
-                          std::move(tools_pref));
+  pref_service()->SetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
+      std::move(tools_pref));
 
   base::test::TestFuture<std::vector<std::string>> future;
   service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
@@ -692,4 +693,4 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   EXPECT_EQ("tool", pending_request->supported_tools(0));
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

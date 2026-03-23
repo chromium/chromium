@@ -24,8 +24,6 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
@@ -51,6 +49,8 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,7 +124,7 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     signin::IdentityManager* identity_manager,
     GlicKeyedService* glic_service,
     GlicEnabling* glic_enabling,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service) {
+    ContextualCueingService* contextual_cueing_service) {
 #if !BUILDFLAG(IS_ANDROID)
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicWindowControllerImpl>(
@@ -182,7 +182,7 @@ GlicKeyedService::GlicKeyedService(
     signin::IdentityManager* identity_manager,
     ProfileManager* profile_manager,
     GlicProfileManager* glic_profile_manager,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service,
+    ContextualCueingService* contextual_cueing_service,
     actor::ActorKeyedService* actor_keyed_service)
     : profile_(profile),
       actor_policy_checker_(

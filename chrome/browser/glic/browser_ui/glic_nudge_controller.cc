@@ -4,11 +4,11 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
@@ -84,8 +84,7 @@ void GlicNudgeController::UpdateNudgeLabel(
     if (delegate) {
       if (nudge_label.empty() && delegate->GetIsShowingGlicNudge()) {
         delegate->OnHideGlicNudgeUI();
-      } else if (base::FeatureList::IsEnabled(
-                     contextual_cueing::kUseAnchoredMessage) &&
+      } else if (base::FeatureList::IsEnabled(kUseAnchoredMessage) &&
                  !anchored_message_text.empty()) {
         delegate->OnTriggerAnchoredMessage(nudge_label, anchored_message_text,
                                            prompt_suggestion);

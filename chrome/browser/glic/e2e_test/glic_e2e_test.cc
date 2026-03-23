@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -86,8 +86,7 @@ GlicE2ETest::GlicE2ETest() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic,
                             features::kGlicKeyboardShortcutNewBadge,
-                            features::kGlicRollout,
-                            contextual_cueing::kContextualCueing,
+                            features::kGlicRollout, kContextualCueing,
                             mojom::features::kZeroStateSuggestionsV2},
       /*disabled_features=*/{
           syncer::kReplaceSyncPromosWithSignInPromos,

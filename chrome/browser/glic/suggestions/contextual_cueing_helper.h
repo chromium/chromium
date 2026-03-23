@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_HELPER_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_HELPER_H_
 
 #include <optional>
 
@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -22,7 +22,7 @@ namespace glic {
 class GlicNudgeController;
 }  // namespace glic
 
-namespace contextual_cueing {
+namespace glic {
 
 class ContextualCueingService;
 class ScopedNudgeDecisionRecorder;
@@ -98,6 +98,6 @@ class ContextualCueingHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_HELPER_H_

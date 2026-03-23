@@ -16,8 +16,6 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -39,6 +37,8 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -233,7 +233,7 @@ GlicInstanceImpl::GlicInstanceImpl(
     InstanceId instance_id,
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
@@ -674,9 +674,8 @@ void GlicInstanceImpl::PrepareForOpen() {
       sharing_manager().GetFocusedTabData().focus()
           ? sharing_manager().GetFocusedTabData().focus()->GetContents()
           : nullptr;
-  contextual_cueing::ContextualCueingService* contextual_cueing_service =
-      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-          profile_);
+  ContextualCueingService* contextual_cueing_service =
+      ContextualCueingServiceFactory::GetForProfile(profile_);
   if (contextual_cueing_service && active_web_contents &&
       GlicEnabling::HasConsentedForProfile(profile_)) {
     contextual_cueing_service->PrepareToFetchContextualGlicZeroStateSuggestions(
@@ -776,9 +775,8 @@ void GlicInstanceImpl::FetchZeroStateSuggestions(
           ? sharing_manager().GetFocusedTabData().focus()->GetContents()
           : nullptr;
 
-  contextual_cueing::ContextualCueingService* contextual_cueing_service =
-      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-          profile_);
+  ContextualCueingService* contextual_cueing_service =
+      ContextualCueingServiceFactory::GetForProfile(profile_);
 
   if (contextual_cueing_service && active_web_contents && IsShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();

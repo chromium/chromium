@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +56,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
-namespace contextual_cueing {
+namespace glic {
 
 class ScopedNudgeDecisionRecorder {
  public:
@@ -489,4 +489,4 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualCueingHelper);
 
-}  // namespace contextual_cueing
+}  // namespace glic

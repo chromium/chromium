@@ -14,13 +14,13 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -63,13 +63,12 @@ namespace {
 
 class MockGlicKeyedService : public GlicKeyedService {
  public:
-  MockGlicKeyedService(
-      content::BrowserContext* browser_context,
-      signin::IdentityManager* identity_manager,
-      ProfileManager* profile_manager,
-      GlicProfileManager* glic_profile_manager,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service,
-      actor::ActorKeyedService* actor_keyed_service)
+  MockGlicKeyedService(content::BrowserContext* browser_context,
+                       signin::IdentityManager* identity_manager,
+                       ProfileManager* profile_manager,
+                       GlicProfileManager* glic_profile_manager,
+                       ContextualCueingService* contextual_cueing_service,
+                       actor::ActorKeyedService* actor_keyed_service)
       : GlicKeyedService(Profile::FromBrowserContext(browser_context),
                          identity_manager,
                          profile_manager,

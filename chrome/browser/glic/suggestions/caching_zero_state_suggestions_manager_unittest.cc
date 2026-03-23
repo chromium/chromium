@@ -7,8 +7,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -25,14 +25,13 @@ void NavigateAndCommitContents(content::WebContents* contents,
   tester->NavigateAndCommit(url);
 }
 
-class TestContextualCueingService
-    : public contextual_cueing::MockContextualCueingService {
+class TestContextualCueingService : public MockContextualCueingService {
  public:
   void GetContextualGlicZeroStateSuggestionsForFocusedTab(
       content::WebContents* web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
-      contextual_cueing::GlicSuggestionsCallback callback) override {
+      GlicSuggestionsCallback callback) override {
     if (last_callback_) {
       pending_callbacks_.push_back(std::move(last_callback_));
     }
@@ -44,7 +43,7 @@ class TestContextualCueingService
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,
-      contextual_cueing::GlicSuggestionsCallback callback) override {
+      GlicSuggestionsCallback callback) override {
     if (last_callback_) {
       pending_callbacks_.push_back(std::move(last_callback_));
     }
@@ -53,8 +52,8 @@ class TestContextualCueingService
   }
 
   bool will_generate_pinned_tab_suggestions_ = false;
-  contextual_cueing::GlicSuggestionsCallback last_callback_;
-  std::vector<contextual_cueing::GlicSuggestionsCallback> pending_callbacks_;
+  GlicSuggestionsCallback last_callback_;
+  std::vector<GlicSuggestionsCallback> pending_callbacks_;
 };
 
 class CachingContextualCueingServiceTest : public testing::Test {

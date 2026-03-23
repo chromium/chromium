@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
+#include "chrome/browser/glic/suggestions/nudge_cap_tracker.h"
 
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 class ContextualCueingNudgeCapTracker : public testing::Test {
  protected:
@@ -53,4 +53,4 @@ TEST_F(ContextualCueingNudgeCapTracker, GetMostRecentTime) {
   EXPECT_EQ(tracker.GetMostRecentNudgeTime(), base::TimeTicks::Now());
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

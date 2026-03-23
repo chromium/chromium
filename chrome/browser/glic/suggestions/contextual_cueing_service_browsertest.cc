@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
 #include <optional>
 #include <string>
@@ -10,10 +10,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -36,7 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 using ::testing::_;
 using ::testing::An;
@@ -435,4 +435,4 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestDisabledFeatures,
                          browser()->profile()));
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
-#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -34,7 +34,7 @@
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace contextual_cueing {
+namespace glic {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -62,8 +62,8 @@ std::unique_ptr<KeyedService> CreateContextualCueingService(
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   ContextualCueingHelperTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {kContextualCueing}, {contextual_cueing::kGlicZeroStateSuggestions});
+    scoped_feature_list_.InitWithFeatures({kContextualCueing},
+                                          {glic::kGlicZeroStateSuggestions});
   }
 
   void SetUp() override {
@@ -156,7 +156,7 @@ class ContextualCueingHelperResponseCodeTest
   ContextualCueingHelperResponseCodeTest() {
     std::vector<base::test::FeatureRef> enabled_features = {kContextualCueing};
     std::vector<base::test::FeatureRef> disabled_features = {
-        contextual_cueing::kGlicZeroStateSuggestions};
+        glic::kGlicZeroStateSuggestions};
 
     const bool are_404_navigations_saved_to_history = GetParam();
     if (are_404_navigations_saved_to_history) {
@@ -219,4 +219,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-}  // namespace contextual_cueing
+}  // namespace glic

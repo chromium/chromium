@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,7 +17,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 class ContextualCueingPageDataTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -45,8 +45,7 @@ class ContextualCueingPageDataTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ContextualCueingPageDataTest, Basic) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -64,8 +63,7 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
 }
 
 TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -90,8 +88,7 @@ TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
 }
 
 TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -106,8 +103,7 @@ TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get().error(),
-            contextual_cueing::NudgeDecision::kClientConditionsUnmet);
+  EXPECT_EQ(future.Get().error(), glic::NudgeDecision::kClientConditionsUnmet);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -115,8 +111,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountFails) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -135,16 +130,14 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountFails) {
   InvokePdfPageCountReceived(1);
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get().error(),
-            contextual_cueing::NudgeDecision::kClientConditionsUnmet);
+  EXPECT_EQ(future.Get().error(), glic::NudgeDecision::kClientConditionsUnmet);
 }
 
 TEST_F(ContextualCueingPageDataTest, PdfPageCountPasses) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -173,8 +166,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -216,8 +208,7 @@ class ContextualCueingPageDataTestDynamicCue
 };
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -233,8 +224,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -251,8 +241,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, UseDynamicCueWithoutStaticCue) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -267,8 +256,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, UseDynamicCueWithoutStaticCue) {
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -287,8 +275,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
 
 TEST_F(ContextualCueingPageDataTestDynamicCue,
        ReturnsAnchoredMessageTextFromDynamicCue) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -307,8 +294,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue,
 
 TEST_F(ContextualCueingPageDataTestDynamicCue,
        AnchoredMessageTextEmptyWhenNotSet) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -325,8 +311,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue,
 }
 
 TEST_F(ContextualCueingPageDataTest, StaticCueHasNoAnchoredMessageText) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -341,8 +326,7 @@ TEST_F(ContextualCueingPageDataTest, StaticCueHasNoAnchoredMessageText) {
 }
 
 TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesEmpty_MatchesAnyType) {
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -360,8 +344,7 @@ TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesMatch_Succeeds) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType("text/html");
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -379,8 +362,7 @@ TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesNoMatch_Skipped) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType("text/html");
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -391,16 +373,14 @@ TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesNoMatch_Skipped) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get().error(),
-            contextual_cueing::NudgeDecision::kClientConditionsUnmet);
+  EXPECT_EQ(future.Get().error(), glic::NudgeDecision::kClientConditionsUnmet);
 }
 
 TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesFallbackToSecondConfig) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType("text/html");
 
-  base::test::TestFuture<
-      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+  base::test::TestFuture<base::expected<CueingResult, glic::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
 
@@ -423,4 +403,4 @@ TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesFallbackToSecondConfig) {
             future.Get().value().cue_label);
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/browser_process.h"
@@ -11,7 +11,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/variations/service/variations_service.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 BASE_FEATURE(kContextualCueing, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -146,4 +146,4 @@ const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
     "ZSSMaxPinnedPagesForTriggeringSuggestions",
     10);
 
-}  // namespace contextual_cueing
+}  // namespace glic

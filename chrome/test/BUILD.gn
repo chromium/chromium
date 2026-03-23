@@ -3546,8 +3546,6 @@ if (!is_android) {
       "../browser/chrome_web_platform_security_metrics_browsertest.cc",
       "../browser/chrome_worker_browsertest.cc",
       "../browser/component_updater/pki_metadata_component_installer_browsertest.cc",
-      "../browser/contextual_cueing/contextual_cueing_service_browsertest.cc",
-      "../browser/contextual_cueing/zero_state_suggestions_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",
       "../browser/data_saver/data_saver_browsertest.cc",
@@ -3579,6 +3577,8 @@ if (!is_android) {
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/feedback/report_unsafe_site_dialog_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
+      "../browser/glic/suggestions/contextual_cueing_service_browsertest.cc",
+      "../browser/glic/suggestions/zero_state_suggestions_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
       "../browser/hid/hid_browsertest.cc",
       "../browser/history/history_browsertest.cc",
@@ -4218,10 +4218,10 @@ if (!is_android) {
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/collaboration/messaging",
-      "//chrome/browser/contextual_cueing",
-      "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/contextual_tasks:browser_tests",
       "//chrome/browser/data_sharing",
+      "//chrome/browser/glic/suggestions",
+      "//chrome/browser/glic/suggestions:impl",
       "//chrome/browser/history",
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/metrics",
@@ -8586,7 +8586,6 @@ test("unit_tests") {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/bluetooth",
-      "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/contextual_search",
       "//chrome/browser/device_api:unit_tests",
       "//chrome/browser/device_identity:unit_tests",
@@ -8595,6 +8594,7 @@ test("unit_tests") {
       "//chrome/browser/engagement:unit_tests",
       "//chrome/browser/geolocation",
       "//chrome/browser/geolocation:unit_tests",
+      "//chrome/browser/glic/suggestions:unit_tests",
       "//chrome/browser/indigo:unit_tests",
       "//chrome/browser/lookalikes:unit_tests",
       "//chrome/browser/media:access_handler",
@@ -11684,7 +11684,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/bookmarks",
       "//chrome/browser/bookmarks:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:interactive_ui_tests",
       "//chrome/browser/data_sharing",
       "//chrome/browser/desktop_to_mobile_promos:utils",
@@ -11694,6 +11693,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/file_system_access",
       "//chrome/browser/gcm",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/suggestions",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/webrtc",
@@ -12572,7 +12572,7 @@ if (!is_android && !is_chromeos_device) {
       ]
     }
 
-    sources += [ "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc" ]
+    sources += [ "../browser/glic/suggestions/contextual_cueing_helper_interactive_uitest.cc" ]
 
     deps += [
       "//chrome/browser/actor:interactive_ui_tests",

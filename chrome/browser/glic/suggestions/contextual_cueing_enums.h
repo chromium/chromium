@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_ENUMS_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_ENUMS_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_ENUMS_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_ENUMS_H_
 
-namespace contextual_cueing {
+namespace glic {
 
 // LINT.IfChange(NudgeDecision)
 enum class NudgeDecision {
@@ -87,8 +87,6 @@ enum class NudgeInteraction {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeInteraction)
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-// namespace contextual_cueing
-
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_ENUMS_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_ENUMS_H_

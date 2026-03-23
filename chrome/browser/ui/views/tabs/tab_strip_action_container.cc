@@ -61,7 +61,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "base/types/expected.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -93,8 +93,7 @@ void EstablishPrivateAiConnection(Profile* profile) {
     return;
   }
   if (base::FeatureList::IsEnabled(private_ai::kPrivateAi) &&
-      base::FeatureList::IsEnabled(
-          contextual_cueing::kZeroStateSuggestionsUsePrivateAi)) {
+      base::FeatureList::IsEnabled(glic::kZeroStateSuggestionsUsePrivateAi)) {
     private_ai::PrivateAiService* private_ai_service =
         private_ai::PrivateAiServiceFactory::GetForProfile(profile);
     if (private_ai_service) {

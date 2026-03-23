@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_REQUEST_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_REQUEST_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_REQUEST_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_REQUEST_H_
 
 #include <string>
 #include <vector>
@@ -29,7 +29,7 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace contextual_cueing {
+namespace glic {
 
 enum class PageContextIneligibilityType;
 class ZeroStateSuggestionsPageData;
@@ -104,6 +104,6 @@ class ZeroStateSuggestionsRequest {
   base::WeakPtrFactory<ZeroStateSuggestionsRequest> weak_ptr_factory_{this};
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_REQUEST_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_REQUEST_H_

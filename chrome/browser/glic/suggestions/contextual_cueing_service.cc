@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
 #include <cmath>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_request.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_request.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/common/buildflags.h"
@@ -35,7 +35,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
-namespace contextual_cueing {
+namespace glic {
 namespace {
 
 void LogNudgeInteractionHistogram(NudgeInteraction interaction,
@@ -121,11 +121,11 @@ void PopulateSupportedToolsForRequest(
   if (tools_from_request) {
     req_supported_tools = *tools_from_request;
     pref_service->SetList(
-        prefs::kZeroStateSuggestionsSupportedTools,
+        contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
         ConvertSupportedToolsToPrefValue(*tools_from_request));
   } else {
-    req_supported_tools = GetSupportedToolsFromPref(
-        pref_service->GetList(prefs::kZeroStateSuggestionsSupportedTools));
+    req_supported_tools = GetSupportedToolsFromPref(pref_service->GetList(
+        contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools));
   }
   *out_request->mutable_supported_tools() = {req_supported_tools.begin(),
                                              req_supported_tools.end()};
@@ -506,4 +506,4 @@ void ContextualCueingService::OnPageContentExtracted(
   cueing_page_data->OnPageContentExtracted(page_content->data);
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

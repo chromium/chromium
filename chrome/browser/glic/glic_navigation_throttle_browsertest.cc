@@ -10,12 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -69,7 +69,7 @@ class MockGlicKeyedService : public GlicKeyedService {
                 Profile::FromBrowserContext(context)),
             g_browser_process->profile_manager(),
             GlicProfileManager::GetInstance(),
-            contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+            ContextualCueingServiceFactory::GetForProfile(
                 Profile::FromBrowserContext(context)),
             actor::ActorKeyedServiceFactory::GetActorKeyedService(context)) {}
   MOCK_METHOD(void, Invoke, (tabs::TabInterface*, GlicInvokeOptions), ());

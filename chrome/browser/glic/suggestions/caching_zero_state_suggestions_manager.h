@@ -16,11 +16,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace contextual_cueing {
-class ContextualCueingService;
-}  // namespace contextual_cueing
 
 namespace glic {
+
+class ContextualCueingService;
 
 class CachingZeroStateSuggestionsManager {
  public:
@@ -46,8 +45,7 @@ class CachingZeroStateSuggestionsManager {
 };
 
 std::unique_ptr<CachingZeroStateSuggestionsManager>
-CreateCachingZeroStateSuggestionsManager(
-    contextual_cueing::ContextualCueingService* service);
+CreateCachingZeroStateSuggestionsManager(ContextualCueingService* service);
 
 }  // namespace glic
 

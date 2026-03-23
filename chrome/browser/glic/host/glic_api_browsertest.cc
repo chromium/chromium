@@ -39,10 +39,6 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
-#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -64,6 +60,10 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -261,7 +261,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         /*disabled_features=*/
         {
             features::kGlicWarming,
-            contextual_cueing::kGlicZeroStateSuggestions,
+            kGlicZeroStateSuggestions,
             features::kGlicDaisyChainNewTabs,
         });
     SetUseElementIdentifiers(false);
@@ -516,7 +516,7 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
               {features::kGlicMinLoadingTimeMs.name, "40"},
           }},
          {features::kGlicApiActivationGating, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, {}},
+         {kGlicZeroStateSuggestions, {}},
          {mojom::features::kZeroStateSuggestionsV2, {}}},
         /*disabled_features=*/
         {
@@ -533,16 +533,16 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
       return;
     }
 #endif
-    mock_cueing_service_ = static_cast<
-        testing::NiceMock<contextual_cueing::MockContextualCueingService>*>(
-        contextual_cueing::ContextualCueingServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                browser_context,
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<testing::NiceMock<
-                      contextual_cueing::MockContextualCueingService>>();
-                })));
+    mock_cueing_service_ =
+        static_cast<testing::NiceMock<MockContextualCueingService>*>(
+            ContextualCueingServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    browser_context,
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<
+                          testing::NiceMock<MockContextualCueingService>>();
+                    })));
 
     GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(browser_context);
   }
@@ -552,14 +552,13 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
     GlicApiTestWithOneTab::TearDownOnMainThread();
   }
 
-  contextual_cueing::MockContextualCueingService* mock_cueing_service() {
+  MockContextualCueingService* mock_cueing_service() {
     return mock_cueing_service_.get();
   }
 
  private:
   base::CallbackListSubscription active_instance_subscription_;
-  raw_ptr<testing::NiceMock<contextual_cueing::MockContextualCueingService>>
-      mock_cueing_service_;
+  raw_ptr<testing::NiceMock<MockContextualCueingService>> mock_cueing_service_;
   base::test::ScopedFeatureList contextual_cueing_features_;
 };
 

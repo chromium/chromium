@@ -5,7 +5,7 @@
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 
 #include "base/types/id_type.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -24,8 +24,7 @@ constexpr size_t kCacheSize = 10;
 class CachingContextualCueingServiceImpl
     : public CachingZeroStateSuggestionsManager {
  public:
-  explicit CachingContextualCueingServiceImpl(
-      contextual_cueing::ContextualCueingService* service)
+  explicit CachingContextualCueingServiceImpl(ContextualCueingService* service)
       : contextual_cueing_service_(service) {}
 
   void GetContextualGlicZeroStateSuggestionsForFocusedTab(
@@ -195,16 +194,14 @@ class CachingContextualCueingServiceImpl
 
   bool cache_disabled_ = false;
   CacheId::Generator id_generator_;
-  raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_cueing_service_;
+  raw_ptr<ContextualCueingService> contextual_cueing_service_;
   std::deque<Entry> entries_;
   base::WeakPtrFactory<CachingContextualCueingServiceImpl> weak_ptr_factory_{
       this};
 };
 
 std::unique_ptr<CachingZeroStateSuggestionsManager>
-CreateCachingZeroStateSuggestionsManager(
-    contextual_cueing::ContextualCueingService* service) {
+CreateCachingZeroStateSuggestionsManager(ContextualCueingService* service) {
   return std::make_unique<CachingContextualCueingServiceImpl>(service);
 }
 

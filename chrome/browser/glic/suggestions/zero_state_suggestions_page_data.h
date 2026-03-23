@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_request.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_request.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
@@ -44,7 +44,7 @@ namespace page_content_annotations {
 class PageContentExtractionService;
 }  // namespace page_content_annotations
 
-namespace contextual_cueing {
+namespace glic {
 
 enum class PageContextIneligibilityType {
   kNone = 0,
@@ -196,6 +196,6 @@ class ZeroStateSuggestionsPageData
   PAGE_USER_DATA_KEY_DECL();
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_

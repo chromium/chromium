@@ -40,12 +40,9 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace contextual_cueing {
-class ZeroStateSuggestionsPageData;
-}  // namespace contextual_cueing
-
 namespace glic {
 class GlicPageContextEligibilityObserver;
+class ZeroStateSuggestionsPageData;
 }  // namespace glic
 
 namespace on_device_internals {
@@ -280,7 +277,7 @@ class OptimizationGuideKeyedService
 
  private:
   friend class ChromeBrowsingDataRemoverDelegate;
-  friend class contextual_cueing::ZeroStateSuggestionsPageData;
+  friend class glic::ZeroStateSuggestionsPageData;
   friend class glic::GlicPageContextEligibilityObserver;
   friend class HintsFetcherBrowserTest;
   friend class on_device_internals::PageHandler;

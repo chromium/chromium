@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
 
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 class MockContextualCueingService : public ContextualCueingService {
  public:
@@ -47,6 +47,6 @@ class MockContextualCueingService : public ContextualCueingService {
                GlicSuggestionsCallback));
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_MOCK_CONTEXTUAL_CUEING_SERVICE_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_FEATURES_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
@@ -98,6 +98,6 @@ extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
 // Timeout before giving up on getting context from a page.
 extern const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout;
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_FEATURES_H_

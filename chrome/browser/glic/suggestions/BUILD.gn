@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//pdf/features.gni")
 
-source_set("contextual_cueing") {
+source_set("suggestions") {
   sources = [
     "contextual_cueing_enums.h",
     "contextual_cueing_features.h",
@@ -37,9 +37,9 @@ source_set("impl") {
     "zero_state_suggestions_request.h",
   ]
   deps = [
+    ":suggestions",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
-    "//chrome/browser/contextual_cueing",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
@@ -78,7 +78,7 @@ source_set("test_support") {
     "mock_contextual_cueing_service.h",
   ]
   deps = [
-    ":contextual_cueing",
+    ":suggestions",
     "//chrome/test:test_support",
   ]
 }
@@ -92,8 +92,8 @@ source_set("unit_tests") {
     "nudge_cap_tracker_unittest.cc",
   ]
   deps = [
-    ":contextual_cueing",
     ":impl",
+    ":suggestions",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser:global_features",

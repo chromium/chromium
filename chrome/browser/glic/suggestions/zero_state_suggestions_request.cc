@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_request.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_request.h"
 
 #include <string>
 #include <vector>
@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -21,7 +21,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
@@ -260,4 +260,4 @@ ZeroStateSuggestionsRequest::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

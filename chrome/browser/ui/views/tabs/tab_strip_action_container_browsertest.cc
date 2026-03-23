@@ -17,13 +17,13 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -90,8 +90,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
         {
             {features::kGlicRollout, {}},
             {features::kGlicActorUi,
-             { {features::kGlicActorUiTaskIconName, "true"} }},
-            {contextual_cueing::kContextualCueing, {}},
+             {{features::kGlicActorUiTaskIconName, "true"}}},
+            {glic::kContextualCueing, {}},
         },
         {});
   }
@@ -572,7 +572,7 @@ class TabStripActionContainerPrivateAiBrowserTest
     private_ai_feature_list_.InitWithFeaturesAndParameters(
         {{private_ai::kPrivateAi,
           {{private_ai::kPrivateAiApiKey.name, "test-api-key"}}},
-         {contextual_cueing::kZeroStateSuggestionsUsePrivateAi, {}}},
+         {glic::kZeroStateSuggestionsUsePrivateAi, {}}},
         {});
   }
 

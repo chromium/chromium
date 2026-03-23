@@ -7,13 +7,13 @@
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -80,7 +80,7 @@ class ContextualCueingHelperBrowserTest
   ContextualCueingHelperBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         // Disable feature engagement logic.
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"BackoffTime", "0h"},
            {"BackoffMultiplierBase", "0.0"},
            {"NudgeCapTime", "0h"},
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kSuccess, 1);
+      glic::NudgeDecision::kSuccess, 1);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+      static_cast<int64_t>(glic::NudgeDecision::kSuccess));
 
   // Simulate reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -213,13 +213,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kSuccess, 1);
-  histogram_tester.ExpectBucketCount(
-      "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+      glic::NudgeDecision::kSuccess, 1);
+  histogram_tester.ExpectBucketCount("ContextualCueing.NudgeInteraction",
+                                     glic::NudgeInteraction::kShown, 1);
   histogram_tester.ExpectBucketCount(
       "ContextualCueing.NudgeInteraction.Dynamic",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+      glic::NudgeInteraction::kShown, 1);
 
   auto decision_entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -233,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       decision_entry,
       ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+      static_cast<int64_t>(glic::NudgeDecision::kSuccess));
   // Simulate nudge click.
   glic_nudge_controller()->OnNudgeActivity(
       glic::GlicNudgeActivity::kNudgeClicked);
@@ -247,12 +246,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       ukm::builders::ContextualCueing_NudgeInteraction::kNudgeIsDynamicName,
       static_cast<int64_t>(true));
 
-  histogram_tester.ExpectBucketCount(
-      "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kClicked, 1);
+  histogram_tester.ExpectBucketCount("ContextualCueing.NudgeInteraction",
+                                     glic::NudgeInteraction::kClicked, 1);
   histogram_tester.ExpectBucketCount(
       "ContextualCueing.NudgeInteraction.Dynamic",
-      contextual_cueing::NudgeInteraction::kClicked, 1);
+      glic::NudgeInteraction::kClicked, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -294,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kServerDataUnavailable, 1);
+      glic::NudgeDecision::kServerDataUnavailable, 1);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -306,8 +304,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
       static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(
-          contextual_cueing::NudgeDecision::kServerDataUnavailable));
+      static_cast<int64_t>(glic::NudgeDecision::kServerDataUnavailable));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -334,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kServerDataMalformed, 1);
+      glic::NudgeDecision::kServerDataMalformed, 1);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -346,8 +343,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(
-          contextual_cueing::NudgeDecision::kServerDataMalformed));
+      static_cast<int64_t>(glic::NudgeDecision::kServerDataMalformed));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -379,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kClientConditionsUnmet, 1);
+      glic::NudgeDecision::kClientConditionsUnmet, 1);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -391,8 +387,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(
-          contextual_cueing::NudgeDecision::kClientConditionsUnmet));
+      static_cast<int64_t>(glic::NudgeDecision::kClientConditionsUnmet));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -478,12 +473,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
+                                      glic::NudgeInteraction::kShown, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction.Static",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+      glic::NudgeInteraction::kShown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -506,12 +500,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
+                                      glic::NudgeInteraction::kShown, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction.Dynamic",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+      glic::NudgeInteraction::kShown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -530,12 +523,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
+                                      glic::NudgeInteraction::kShown, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction.Static",
-      contextual_cueing::NudgeInteraction::kShown, 1);
+      glic::NudgeInteraction::kShown, 1);
 
   base::HistogramTester histogram_tester_2;
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -546,10 +538,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   histogram_tester_2.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
-      contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
+      glic::NudgeInteraction::kIgnoredTabChange, 1);
   histogram_tester_2.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction.Static",
-      contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
+      glic::NudgeInteraction::kIgnoredTabChange, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -587,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kSuccess, 1);
+      glic::NudgeDecision::kSuccess, 1);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
@@ -599,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
-      static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+      static_cast<int64_t>(glic::NudgeDecision::kSuccess));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, NudgeHideAfterUnpin) {
@@ -674,9 +666,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
-    histogram_tester.ExpectUniqueSample(
-        "ContextualCueing.NudgeInteraction",
-        contextual_cueing::NudgeInteraction::kShown, 1);
+    histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
+                                        glic::NudgeInteraction::kShown, 1);
   }
 
   {
@@ -689,9 +680,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
     histogram_tester.ExpectUniqueSample(
         "ContextualCueing.NudgeInteraction",
-        contextual_cueing::NudgeInteraction::
-            kIgnoredOpenedContextualTasksSidePanel,
-        1);
+        glic::NudgeInteraction::kIgnoredOpenedContextualTasksSidePanel, 1);
     EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   }
 }
@@ -722,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kClientConditionsUnmet, 1);
+      glic::NudgeDecision::kClientConditionsUnmet, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -751,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
-      contextual_cueing::NudgeDecision::kSuccess, 1);
+      glic::NudgeDecision::kSuccess, 1);
 }
 
 // Test fixture to verify that auto-open for PDF bypasses nudge caps.
@@ -760,14 +749,14 @@ class ContextualCueingBypassNudgeCapsTest
  public:
   ContextualCueingBypassNudgeCapsTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_cueing::kContextualCueing,
+        {{glic::kContextualCueing,
           {{"BackoffTime", "0h"},
            {"BackoffMultiplierBase", "0.0"},
            {"NudgeCapTime", "0h"},
            {"NudgeCapCount", "10"},
            {"MinPageCountBetweenNudges", "0"},
            {"UseDynamicCues", "true"}}},
-         {contextual_cueing::kEnableAutoOpenGlicSidePanel, {}},
+         {glic::kEnableAutoOpenGlicSidePanel, {}},
          {features::kAutoOpenGlicForPdf, {}},
          {features::kGlicTrustFirstOnboarding, {}},
          {page_content_annotations::features::kAnnotatedPageContentExtraction,

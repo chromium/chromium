@@ -17,7 +17,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser:browser_process",
-      "//chrome/browser/contextual_cueing",
+      "//chrome/browser/glic/suggestions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//components/keyed_service/core",

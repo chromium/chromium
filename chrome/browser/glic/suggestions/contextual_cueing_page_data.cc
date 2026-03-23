@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
 
 #include <algorithm>
 
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
@@ -19,7 +19,7 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-namespace contextual_cueing {
+namespace glic {
 
 namespace {
 
@@ -257,4 +257,4 @@ void ContextualCueingPageData::OnPageContentExtracted(
   FindMatchingConfig();
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

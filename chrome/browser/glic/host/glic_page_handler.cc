@@ -31,7 +31,6 @@
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
@@ -60,6 +59,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -868,8 +868,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicActor);
     state->enable_scroll_to =
         base::FeatureList::IsEnabled(features::kGlicScrollTo);
-    state->enable_zero_state_suggestions =
-        contextual_cueing::IsZeroStateSuggestionsEnabled();
+    state->enable_zero_state_suggestions = IsZeroStateSuggestionsEnabled();
     state->enable_cached_get_user_profile_info = base::FeatureList::IsEnabled(
         features::kGlicEnableCachedGetUserProfileInfo);
 
@@ -1896,7 +1895,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetZeroStateSuggestionsForFocusedTab(
       std::optional<bool> is_fre,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {
-    if (!contextual_cueing::IsZeroStateSuggestionsEnabled()) {
+    if (!IsZeroStateSuggestionsEnabled()) {
       receiver_.ReportBadMessage(
           "Client should not call "
           "GetZeroStateSuggestionsForFocusedTab "

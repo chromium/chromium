@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -11,8 +11,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
@@ -76,7 +76,7 @@ void GetEligibilityAndRunCallback(
 
 }  // namespace
 
-namespace contextual_cueing {
+namespace glic {
 
 ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
     : content::PageUserData<ZeroStateSuggestionsPageData>(page) {
@@ -439,4 +439,4 @@ void ZeroStateSuggestionsPageData::OnPageContextEligibilityAPILoaded(
 
 PAGE_USER_DATA_KEY_IMPL(ZeroStateSuggestionsPageData);
 
-}  // namespace contextual_cueing
+}  // namespace glic

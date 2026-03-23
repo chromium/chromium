@@ -45,11 +45,9 @@ class Profile;
 namespace tabs {
 class TabInterface;
 }
-namespace contextual_cueing {
-class ContextualCueingService;
-}
 
 namespace glic {
+class ContextualCueingService;
 class GlicMetrics;
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
@@ -107,7 +105,7 @@ class GlicInstanceImpl : public GlicInstance,
       InstanceId instance_id,
       base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
       GlicMetrics* metrics,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service);
+      ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceImpl() override;
 
   GlicInstanceImpl(const GlicInstanceImpl&) = delete;

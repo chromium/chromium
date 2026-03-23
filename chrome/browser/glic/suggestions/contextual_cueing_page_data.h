@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_PAGE_DATA_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_PAGE_DATA_H_
 
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pdf/common/constants.h"
@@ -18,7 +18,7 @@
 #include "pdf/mojom/pdf.mojom.h"
 #endif
 
-namespace contextual_cueing {
+namespace glic {
 
 // Contains data from a valid cueing response.
 struct CueingResult {
@@ -136,6 +136,6 @@ class ContextualCueingPageData
   PAGE_USER_DATA_KEY_DECL();
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_PAGE_DATA_H_

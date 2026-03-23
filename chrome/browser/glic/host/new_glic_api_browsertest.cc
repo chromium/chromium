@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
@@ -91,7 +91,7 @@ class NewGlicApiTest : public GlicApiBrowserTest, public WithTestParams {
         /*disabled_features=*/
         {
             features::kGlicWarming,
-            contextual_cueing::kGlicZeroStateSuggestions,
+            kGlicZeroStateSuggestions,
             features::kGlicDaisyChainNewTabs,
             features::kGlicCountryFiltering,
             features::kGlicLocaleFiltering,

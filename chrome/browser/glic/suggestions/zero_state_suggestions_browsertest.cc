@@ -5,11 +5,11 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 enum class ContentExtraction {
   kFetchInnerTextOnly,
@@ -55,8 +55,8 @@ class ZeroStateSuggestionsBrowserTest
         break;
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_cueing::kContextualCueing, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, zss_params}},
+        {{glic::kContextualCueing, {}},
+         {glic::kGlicZeroStateSuggestions, zss_params}},
         /*disabled_features=*/{});
   }
 
@@ -643,4 +643,4 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
       PageContextIneligibilityType::kNone, 1);
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

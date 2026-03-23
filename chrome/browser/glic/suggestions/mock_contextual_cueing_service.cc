@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 MockContextualCueingService::MockContextualCueingService()
     : ContextualCueingService(
@@ -17,4 +17,4 @@ MockContextualCueingService::MockContextualCueingService()
 
 MockContextualCueingService::~MockContextualCueingService() = default;
 
-}  // namespace contextual_cueing
+}  // namespace glic

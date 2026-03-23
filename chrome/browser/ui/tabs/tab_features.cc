@@ -18,10 +18,10 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/glic/host/context/glic_page_features_manager.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
@@ -322,8 +322,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<RollBackModeBInfoBarController>(tab.GetContents());
     }
 
-    contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
-        tab.GetContents());
+    glic::ContextualCueingHelper::MaybeCreateForWebContents(tab.GetContents());
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {

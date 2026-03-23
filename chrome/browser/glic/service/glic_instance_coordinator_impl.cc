@@ -105,7 +105,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
     GlicEnabling* enabling,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       service_(service),
       contextual_cueing_service_(contextual_cueing_service),

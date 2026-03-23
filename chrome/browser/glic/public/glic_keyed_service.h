@@ -96,13 +96,12 @@ class GlicKeyedService : public KeyedService,
 #endif
 {
  public:
-  explicit GlicKeyedService(
-      Profile* profile,
-      signin::IdentityManager* identity_manager,
-      ProfileManager* profile_manager,
-      GlicProfileManager* glic_profile_manager,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service,
-      actor::ActorKeyedService* actor_keyed_service);
+  explicit GlicKeyedService(Profile* profile,
+                            signin::IdentityManager* identity_manager,
+                            ProfileManager* profile_manager,
+                            GlicProfileManager* glic_profile_manager,
+                            ContextualCueingService* contextual_cueing_service,
+                            actor::ActorKeyedService* actor_keyed_service);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
@@ -483,8 +482,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 
   // Unowned
-  raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_cueing_service_;
+  raw_ptr<ContextualCueingService> contextual_cueing_service_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

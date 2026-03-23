@@ -11,13 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -83,7 +83,7 @@ bool HasUserNavigationBeyondInitial(content::WebContents& web_contents) {
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
     GlicSharingManager* sharing_manager,
     GlicInstance* glic_instance,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),
       glic_instance_(glic_instance),
       contextual_cueing_service_(contextual_cueing_service) {
@@ -158,8 +158,7 @@ void GlicZeroStateSuggestionsManager::
     return;
   }
   if (pinned_tab_data.size() >
-      static_cast<size_t>(
-          contextual_cueing::kMaxPinnedPagesForTriggeringSuggestions.Get())) {
+      static_cast<size_t>(kMaxPinnedPagesForTriggeringSuggestions.Get())) {
     if (pause_pinned_subscription_updates_) {
       return;
     }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_SERVICE_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_SERVICE_H_
 
 #include <optional>
 #include <string>
@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
+#include "chrome/browser/glic/suggestions/nudge_cap_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -40,11 +40,8 @@ class LoadingPredictor;
 }  // namespace predictors
 
 namespace glic {
+
 enum class GlicNudgeActivity;
-}  // namespace glic
-
-namespace contextual_cueing {
-
 class ZeroStateSuggestionsRequest;
 
 using GlicSuggestionsCallbackList =
@@ -198,6 +195,6 @@ class ContextualCueingService
   base::WeakPtrFactory<ContextualCueingService> weak_ptr_factory_{this};
 };
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_SERVICE_H_

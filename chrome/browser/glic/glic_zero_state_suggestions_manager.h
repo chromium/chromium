@@ -13,12 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 
-namespace contextual_cueing {
-class ContextualCueingService;
-}  // namespace contextual_cueing
-
 namespace glic {
 class CachingZeroStateSuggestionsManager;
+class ContextualCueingService;
 class GlicSharingManager;
 class GlicInstance;
 class Host;
@@ -29,7 +26,7 @@ class GlicZeroStateSuggestionsManager {
   GlicZeroStateSuggestionsManager(
       GlicSharingManager* sharing_manager,
       GlicInstance* glic_instance,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service);
+      ContextualCueingService* contextual_cueing_service);
   virtual ~GlicZeroStateSuggestionsManager();
 
   // Callback to send zero state suggestions to the webui on tab changes.
@@ -95,8 +92,7 @@ class GlicZeroStateSuggestionsManager {
       caching_zero_state_manager_;
 
   // This passed by the glic_keyed_service.
-  raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_cueing_service_;
+  raw_ptr<ContextualCueingService> contextual_cueing_service_;
 
   mojom::ZeroStateSuggestionsOptions current_zero_state_suggestions_options_;
   base::CallbackListSubscription
