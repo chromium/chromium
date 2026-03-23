@@ -616,7 +616,14 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
   }
 
   // Remove any existing infobars of the same type.
-  CloseEntityImportBubble();
+  const auto existing_infobar = std::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS,
+      &infobars::InfoBar::GetIdentifier);
+
+  if (existing_infobar != infobar_manager_->infobars().cend()) {
+    infobar_manager_->RemoveInfoBar(*existing_infobar);
+  }
 
   SaveEntityParams params(std::move(new_entity), std::move(old_entity),
                           std::move(user_email.value()), save_is_synchronous,
@@ -632,14 +639,8 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
 }
 
 void ChromeAutofillClientIOS::CloseEntityImportBubble() {
-  const auto existing_infobar = std::ranges::find(
-      infobar_manager_->infobars(),
-      infobars::InfoBarDelegate::AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS,
-      &infobars::InfoBar::GetIdentifier);
-
-  if (existing_infobar != infobar_manager_->infobars().cend()) {
-    infobar_manager_->RemoveInfoBar(*existing_infobar);
-  }
+  // This should be a no-op if the entity import bubble is already closed.
+  [commands_handler_ dismissSaveEntityDialog];
 }
 
 void ChromeAutofillClientIOS::ShowAutofillAiLocalSaveNotification() {
