@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/strings/grit/components_strings.h",
-  "+net/cert",
-  "+third_party/boringssl/src/include/openssl",
-  "+third_party/boringssl/src/pki",
-]
