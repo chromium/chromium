@@ -8,12 +8,14 @@
 #include <array>
 
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -87,6 +89,23 @@ void ReadTask(
 void DeleteTask(base::FilePath file_path) {
   if (base::PathExists(file_path)) {
     base::DeleteFile(file_path);
+  }
+}
+
+void DeleteAllExceptForIdsTask(base::FilePath base_path_,
+                               absl::flat_hash_set<base::FilePath> safe_files) {
+  if (!base::PathExists(base_path_)) {
+    return;
+  }
+
+  base::FileEnumerator file_iter(base_path_, false,
+                                 base::FileEnumerator::FILES);
+  while (!file_iter.Next().empty()) {
+    base::FileEnumerator::FileInfo info = file_iter.GetInfo();
+    if (!safe_files.contains(info.GetName())) {
+      base::FilePath child = base_path_.Append(info.GetName());
+      base::DeleteFile(child);
+    }
   }
 }
 
@@ -194,6 +213,17 @@ void Etc1ThumbnailHelper::Delete(TabId tab_id) {
                               base::BindOnce(&DeleteTask, file_path));
 }
 
+void Etc1ThumbnailHelper::DeleteAllExceptForIds(std::vector<int> tab_ids) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  absl::flat_hash_set<base::FilePath> file_names(tab_ids.size());
+  for (int tab_id : tab_ids) {
+    file_names.insert(GetFileName(tab_id));
+  }
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DeleteAllExceptForIdsTask, base_path_,
+                                std::move(file_names)));
+}
+
 void Etc1ThumbnailHelper::Decompress(
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
     sk_sp<SkPixelRef> compressed_data,
@@ -211,7 +241,11 @@ void Etc1ThumbnailHelper::Decompress(
 }
 
 base::FilePath Etc1ThumbnailHelper::GetFilePath(TabId tab_id) {
-  return base_path_.Append(base::NumberToString(tab_id));
+  return base_path_.Append(GetFileName(tab_id));
+}
+
+base::FilePath Etc1ThumbnailHelper::GetFileName(TabId tab_id) {
+  return base::FilePath(base::NumberToString(tab_id));
 }
 
 }  // namespace thumbnail

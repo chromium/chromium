@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_CC_ETC1_THUMBNAIL_HELPER_H_
 #define CHROME_BROWSER_THUMBNAIL_CC_ETC1_THUMBNAIL_HELPER_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -44,6 +46,7 @@ class Etc1ThumbnailHelper {
             base::OnceCallback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
                 post_read_task);
   void Delete(thumbnail::TabId tab_id);
+  void DeleteAllExceptForIds(std::vector<thumbnail::TabId> tab_ids);
   // `post_decompress_callback` will run on the thread that created this
   // Etc1ThumbnailHelper.
   void Decompress(
@@ -62,6 +65,7 @@ class Etc1ThumbnailHelper {
   // Member function to retrieve the ETC1 file path using the stored base
   // path, and is exposed primarily for unit testing purposes.
   base::FilePath GetFilePath(thumbnail::TabId tab_id);
+  base::FilePath GetFileName(thumbnail::TabId tab_id);
 
   const base::FilePath base_path_;
 
