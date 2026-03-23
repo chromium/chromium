@@ -155,7 +155,7 @@ class AttemptLoginToolInteractiveUiTestBase
 class AttemptLoginToolInteractiveUiTest
     : public glic::test::InteractiveGlicTestMixin<
           AttemptLoginToolInteractiveUiTestBase>,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   static constexpr char kActivateSurfaceIncompatibilityNotice[] =
       "Programmatic window activation does not work on the Weston reference "
@@ -167,11 +167,9 @@ class AttemptLoginToolInteractiveUiTest
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    const auto [multi_instance, federation] = info.param;
+    const bool federation = info.param;
     return base::StringPrintf(
-        "%s_%s",
-        multi_instance ? "MultiInstanceEnabled" : "MultiInstanceDisabled",
-        federation ? "FederationEnabled" : "FederationDisabled");
+        "%s", federation ? "FederationEnabled" : "FederationDisabled");
   }
 
   AttemptLoginToolInteractiveUiTest() {
@@ -179,15 +177,6 @@ class AttemptLoginToolInteractiveUiTest
         password_manager::features::kActorLogin,
         password_manager::features::kActorLoginReauthTaskRefocus};
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (multi_instance_enabled()) {
-      enabled_features.push_back(features::kGlicMultiInstance);
-      enabled_features.push_back(glic::mojom::features::kGlicMultiTab);
-    } else {
-      disabled_features.push_back(features::kGlicMultiInstance);
-      disabled_features.push_back(glic::mojom::features::kGlicMultiTab);
-    }
-
     if (federation_enabled()) {
       enabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);
       enabled_features.push_back(features::kFedCmNavigationInterception);
@@ -200,8 +189,7 @@ class AttemptLoginToolInteractiveUiTest
   }
   ~AttemptLoginToolInteractiveUiTest() override = default;
 
-  bool multi_instance_enabled() const { return std::get<0>(GetParam()); }
-  bool federation_enabled() const { return std::get<1>(GetParam()); }
+  bool federation_enabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTestMixin<
@@ -216,16 +204,9 @@ class AttemptLoginToolInteractiveUiTest
     base::test::TestFuture<
         base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
         create_task_future;
-    if (multi_instance_enabled()) {
-      ASSERT_TRUE(GetGlicInstanceImpl());
-      GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
-                                        create_task_future.GetCallback());
-    } else {
-      glic::GlicKeyedService* service = glic::GlicKeyedService::Get(
-          InProcessBrowserTest::browser()->profile());
-      service->CreateTask(service->GetWeakPtr(), nullptr,
-                          create_task_future.GetCallback());
-    }
+    ASSERT_TRUE(GetGlicInstanceImpl());
+    GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
+                                      create_task_future.GetCallback());
     auto create_task_result = create_task_future.Get();
     ASSERT_TRUE(create_task_result.has_value());
     task_id_ = TaskId(create_task_result.value());
@@ -758,9 +739,18 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// FederationEnabled tests are flaky on ChromeOS.
+// TODO(b/495445228): Fix flaky tests.
 INSTANTIATE_TEST_SUITE_P(All,
                          AttemptLoginToolInteractiveUiTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         testing::Values(false),
                          AttemptLoginToolInteractiveUiTest::DescribeParams);
+#else
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttemptLoginToolInteractiveUiTest,
+                         testing::Bool(),
+                         AttemptLoginToolInteractiveUiTest::DescribeParams);
+#endif
 
 }  // namespace actor
