@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
