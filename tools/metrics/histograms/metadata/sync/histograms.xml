@@ -2642,6 +2642,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigrationOutcome.EncryptedBookmarksFileMove"
+    enum="PlatformFileError" expires_after="2027-02-24">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>plcoirier@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    The outcome of moving the encrypted bookmarks JSON file from the local to
+    the account location, during the Sync-to-Signin migration. Recorded only if
+    the overall migration ran and decided to migrate bookmarks (see
+    Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK) and the Bookmarks
+    encryption feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigrationOutcome.ExtensionsDeduplicatedCount"
     units="extensions" expires_after="2027-01-28">
   <owner>ankushkush@google.com</owner>
