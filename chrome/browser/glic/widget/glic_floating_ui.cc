@@ -144,7 +144,7 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
       base::BindRepeating(&GlicFloatingUi::MaybeSetWidgetCanResize,
                           weak_ptr_factory_.GetWeakPtr()));
   window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
-      glic_widget_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr());
+      glic_widget_->GetWeakPtr(), this);
   glic_widget_observation_.Observe(GetGlicWidget());
 }
 
@@ -167,11 +167,6 @@ GlicWindowAnimator* GlicFloatingUi::window_animator() {
 
 void GlicFloatingUi::OnDragComplete() {
   NOTIMPLEMENTED();
-}
-
-base::WeakPtr<GlicWindowEventObserver::Delegate>
-GlicFloatingUi::GetDelegateWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GlicFloatingUi::FocusIfOpen() {
