@@ -26,7 +26,7 @@ class GlicWindowEventObserver::WindowEventObserverImpl
     : public ui::EventObserver {
  public:
   WindowEventObserverImpl(GlicWindowEventObserver* observer, GlicView* view)
-      : observer_(observer), view_(view) {
+      : observer_(observer->GetWeakPtr()), view_(view->GetWeakPtr()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, view->GetWidget()->GetNativeWindow(),
         {
@@ -57,6 +57,9 @@ class GlicWindowEventObserver::WindowEventObserverImpl
   }
 
   void OnEvent(const ui::Event& event) override {
+    if (!view_ || !observer_) {
+      return;
+    }
 #if BUILDFLAG(IS_WIN)
     if (event.IsTouchEvent()) {
       // If we get a touch event, send the corresponding mouse event so that
@@ -69,7 +72,7 @@ class GlicWindowEventObserver::WindowEventObserverImpl
       const ui::TouchEvent* touch_event = event.AsTouchEvent();
       gfx::Point touch_location = touch_event->location();
       auto touch_screen_point =
-          views::View::ConvertPointToScreen(view_, touch_location);
+          views::View::ConvertPointToScreen(view_.get(), touch_location);
       auto* host = view_->GetWidget()->GetNativeWindow()->GetHost();
 
       host->ConvertDIPToPixels(&touch_screen_point);
@@ -101,7 +104,7 @@ class GlicWindowEventObserver::WindowEventObserverImpl
 #endif  // BUILDFLAG(IS_WIN)
 
     gfx::Point mouse_location = event_monitor_->GetLastMouseLocation();
-    views::View::ConvertPointFromScreen(view_, &mouse_location);
+    views::View::ConvertPointFromScreen(view_.get(), &mouse_location);
     if (event.type() == ui::EventType::kMousePressed) {
       mouse_down_in_draggable_area_ =
           view_->IsPointWithinDraggableRegion(mouse_location);
@@ -124,8 +127,8 @@ class GlicWindowEventObserver::WindowEventObserverImpl
   }
 
  private:
-  raw_ptr<GlicWindowEventObserver> observer_;
-  raw_ptr<GlicView> view_;
+  base::WeakPtr<GlicWindowEventObserver> observer_;
+  base::WeakPtr<GlicView> view_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
   // Tracks whether the mouse is pressed and was initially within a draggable
@@ -145,7 +148,7 @@ class GlicWindowEventObserver::WindowEventObserverImpl
 
 GlicWindowEventObserver::GlicWindowEventObserver(
     base::WeakPtr<GlicWidget> glic_widget,
-    Delegate* delegate)
+    base::WeakPtr<Delegate> delegate)
     : widget_(glic_widget), delegate_(delegate) {}
 
 GlicWindowEventObserver::~GlicWindowEventObserver() = default;
@@ -166,7 +169,7 @@ void GlicWindowEventObserver::SetDraggingAreasAndWatchForMouseEvents() {
 
 void GlicWindowEventObserver::HandleWindowDragWithOffset(
     const gfx::Vector2d& mouse_offset) {
-  if (in_move_loop_) {
+  if (in_move_loop_ || !widget_ || !delegate_) {
     return;
   }
   in_move_loop_ = true;
@@ -177,18 +180,35 @@ void GlicWindowEventObserver::HandleWindowDragWithOffset(
 #endif
   const views::Widget::MoveLoopSource move_loop_source =
       views::Widget::MoveLoopSource::kMouse;
+
+  base::WeakPtr<GlicWindowEventObserver> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   widget_->RunMoveLoop(mouse_offset, move_loop_source,
                        views::Widget::MoveLoopEscapeBehavior::kDontHide);
+
+  if (!weak_this) {
+    return;
+  }
+
   in_move_loop_ = false;
 
-  delegate_->window_animator()->MaybeAnimateToTargetSize();
+  if (!delegate_) {
+    return;
+  }
 
+  delegate_->window_animator()->MaybeAnimateToTargetSize();
   AdjustPositionIfNeeded();
-  widget_->SetIsDragging(false);
   delegate_->OnDragComplete();
+
+  if (widget_) {
+    widget_->SetIsDragging(false);
+  }
 }
 
 void GlicWindowEventObserver::AdjustPositionIfNeeded() {
+  if (!widget_) {
+    return;
+  }
   // Always have at least `kMinimumVisible` px visible from glic window in
   // both vertical and horizontal directions.
   constexpr int kMinimumVisible = 40;
