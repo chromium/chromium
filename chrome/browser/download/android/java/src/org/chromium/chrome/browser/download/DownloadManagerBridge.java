@@ -143,8 +143,9 @@ public class DownloadManagerBridge {
         DownloadQueryResult result = new DownloadQueryResult(downloadId);
         DownloadManager manager =
                 (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        Cursor c = null;
         try {
-            Cursor c = manager.query(new DownloadManager.Query().setFilterById(downloadId));
+            c = manager.query(new DownloadManager.Query().setFilterById(downloadId));
             if (c == null) {
                 result.downloadStatus = DownloadStatus.CANCELLED;
                 return result;
@@ -176,7 +177,6 @@ public class DownloadManagerBridge {
             } else {
                 result.downloadStatus = DownloadStatus.CANCELLED;
             }
-            c.close();
 
             try {
                 result.contentUri = manager.getUriForDownloadedFile(downloadId);
@@ -188,6 +188,10 @@ public class DownloadManagerBridge {
         } catch (Exception e) {
             result.downloadStatus = DownloadStatus.CANCELLED;
             Log.e(TAG, "unable to query android DownloadManager", e);
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
 
         return result;
