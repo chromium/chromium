@@ -2293,6 +2293,49 @@ TEST_P(TabStripModelTest, DetachingFocusedGroupUnsetsFocus) {
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
 }
 
+TEST_P(TabStripModelTest, TabGroupsFocusingAutoClose) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{"tab_groups_focusing_auto_close", "true"}});
+
+  PrepareTabs(tabstrip(), 5);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  ASSERT_EQ(5, tabstrip()->count());
+  ASSERT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Unfocusing should close the group.
+  tabstrip()->SetFocusedGroup(std::nullopt);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(3, tabstrip()->count());
+}
+
+TEST_P(TabStripModelTest, TabGroupsFocusingAutoCloseSwitchFocus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{"tab_groups_focusing_auto_close", "true"}});
+
+  PrepareTabs(tabstrip(), 5);
+  tab_groups::TabGroupId group_id1 = tabstrip()->AddToNewGroup({1});
+  tab_groups::TabGroupId group_id2 = tabstrip()->AddToNewGroup({3});
+  ASSERT_EQ(5, tabstrip()->count());
+
+  tabstrip()->SetFocusedGroup(group_id1);
+  ASSERT_EQ(group_id1, tabstrip()->GetFocusedGroup());
+
+  // Switching focus to G2 should close G1.
+  tabstrip()->SetFocusedGroup(group_id2);
+  EXPECT_EQ(group_id2, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id1));
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id2));
+  EXPECT_EQ(4, tabstrip()->count());
+}
+
 TEST_P(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {

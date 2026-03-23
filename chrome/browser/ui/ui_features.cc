@@ -478,6 +478,12 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kTabGroupsFocusingAutoClose,
+                   &kTabGroupsFocusing,
+                   "tab_groups_focusing_auto_close",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kTabGroupsFocusingDefaultToFocused,
                    &kTabGroupsFocusing,
                    "tab_groups_focusing_default_to_focused",

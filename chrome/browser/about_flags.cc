@@ -2296,16 +2296,34 @@ const FeatureEntry::FeatureVariation kNumSrpZpsRelatedSearches[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabGroupsFocusingPinnedTabs[] = {
     {"tab_groups_focusing_pinned_tabs", "true"}};
-const FeatureEntry::FeatureParam kTabGroupsFocusingDefaultToFocusedOnly[] = {
+const FeatureEntry::FeatureParam kTabGroupsFocusingAutoClose[] = {
+    {"tab_groups_focusing_auto_close", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingDefaultToFocused[] = {
+    {"tab_groups_focusing_default_to_focused", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingPinnedAndAutoClose[] = {
+    {"tab_groups_focusing_pinned_tabs", "true"},
+    {"tab_groups_focusing_auto_close", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingPinnedAndDefault[] = {
+    {"tab_groups_focusing_pinned_tabs", "true"},
+    {"tab_groups_focusing_default_to_focused", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingAutoCloseAndDefault[] = {
+    {"tab_groups_focusing_auto_close", "true"},
     {"tab_groups_focusing_default_to_focused", "true"}};
 const FeatureEntry::FeatureParam kTabGroupsFocusingAll[] = {
     {"tab_groups_focusing_pinned_tabs", "true"},
+    {"tab_groups_focusing_auto_close", "true"},
     {"tab_groups_focusing_default_to_focused", "true"}};
 
 const FeatureEntry::FeatureVariation kTabGroupsFocusingVariations[] = {
     {" - show pinned tabs", kTabGroupsFocusingPinnedTabs},
-    {" - autofocus opened groups only", kTabGroupsFocusingDefaultToFocusedOnly},
-    {" - autofocus and show pinned tabs", kTabGroupsFocusingAll},
+    {" - close on unfocus", kTabGroupsFocusingAutoClose},
+    {" - autofocus opened groups", kTabGroupsFocusingDefaultToFocused},
+    {" - show pinned tabs and close on unfocus",
+     kTabGroupsFocusingPinnedAndAutoClose},
+    {" - show pinned tabs and autofocus", kTabGroupsFocusingPinnedAndDefault},
+    {" - close on unfocus and autofocus",
+     kTabGroupsFocusingAutoCloseAndDefault},
+    {" - all features", kTabGroupsFocusingAll},
 };
 #endif
 

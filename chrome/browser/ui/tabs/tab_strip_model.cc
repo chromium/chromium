@@ -303,6 +303,16 @@ void TabStripModel::SetFocusedGroup(
 
   auto old_focused_group = focused_group_;
   focused_group_ = group;
+
+  if (old_focused_group.has_value() && old_focused_group != group &&
+      features::kTabGroupsFocusingAutoClose.Get()) {
+    TabGroup* const group_to_close =
+        group_model_->GetTabGroup(old_focused_group.value());
+    if (group_to_close && !group_to_close->IsGroupClosing()) {
+      CloseAllTabsInGroup(old_focused_group.value());
+    }
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupFocusChanged(focused_group_, old_focused_group);
   }
