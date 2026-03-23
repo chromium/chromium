@@ -12551,6 +12551,7 @@ from previous Chrome versions.
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
   <int value="-501461773" label="GlicActorUiOverlayMagicCursor:disabled"/>
+  <int value="-500807692" label="Apb144Patch7:disabled"/>
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
   <int value="-500187265"
       label="NtpFeatureOptimizationDismissModulesRemoval:enabled"/>
@@ -14702,6 +14703,7 @@ from previous Chrome versions.
       label="AutofillEnableAmountExtractionAllowlist:enabled"/>
   <int value="232859680" label="VCSegmentationModel:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
+  <int value="233305008" label="Apb144Patch7:enabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
   <int value="236412875" label="PreinstalledWebAppWindowExperiment:disabled"/>
   <int value="236498704" label="ArcFixupWindowFeature:disabled"/>
