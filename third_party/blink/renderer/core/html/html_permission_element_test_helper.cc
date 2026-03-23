@@ -13,12 +13,12 @@
 namespace blink {
 
 PermissionStatusChangeWaiter::PermissionStatusChangeWaiter(
-    mojo::PendingReceiver<PermissionObserver> receiver,
+    mojo::PendingReceiver<mojom::blink::PermissionObserver> receiver,
     base::OnceClosure callback)
     : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
 
 void PermissionStatusChangeWaiter::OnPermissionStatusChange(
-    MojoPermissionStatus status) {
+    mojom::blink::PermissionStatus status) {
   if (callback_) {
     std::move(callback_).Run();
   }
@@ -31,17 +31,17 @@ PermissionElementTestPermissionService::
 
 void PermissionElementTestPermissionService::BindHandle(
     mojo::ScopedMessagePipeHandle handle) {
-  receivers_.Add(this,
-                 mojo::PendingReceiver<PermissionService>(std::move(handle)));
+  receivers_.Add(this, mojo::PendingReceiver<mojom::blink::PermissionService>(
+                           std::move(handle)));
 }
 
 void PermissionElementTestPermissionService::HasPermission(
-    PermissionDescriptorPtr permission,
+    mojom::blink::PermissionDescriptorPtr permission,
     HasPermissionCallback) {}
 
 void PermissionElementTestPermissionService::
     RegisterPageEmbeddedPermissionControl(
-        Vector<PermissionDescriptorPtr> permissions,
+        Vector<mojom::blink::PermissionDescriptorPtr> permissions,
         mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
         mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
             pending_client) {
@@ -65,13 +65,13 @@ void PermissionElementTestPermissionService::
 
 void PermissionElementTestPermissionService::
     RegisterPageEmbeddedPermissionControlInternal(
-        Vector<PermissionDescriptorPtr> permissions,
+        Vector<mojom::blink::PermissionDescriptorPtr> permissions,
         mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
             pending_client) {
-  Vector<MojoPermissionStatus> statuses =
+  Vector<mojom::blink::PermissionStatus> statuses =
       initial_statuses_.empty()
-          ? Vector<MojoPermissionStatus>(permissions.size(),
-                                         MojoPermissionStatus::ASK)
+          ? Vector<mojom::blink::PermissionStatus>(
+                permissions.size(), mojom::blink::PermissionStatus::ASK)
           : initial_statuses_;
   client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
       std::move(pending_client));
@@ -89,7 +89,7 @@ void PermissionElementTestPermissionService::OnMojoDisconnect() {
 }
 
 void PermissionElementTestPermissionService::RequestPageEmbeddedPermission(
-    Vector<PermissionDescriptorPtr> permissions,
+    Vector<mojom::blink::PermissionDescriptorPtr> permissions,
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptors,
     RequestPageEmbeddedPermissionCallback callback) {
   std::move(callback).Run(
@@ -97,40 +97,41 @@ void PermissionElementTestPermissionService::RequestPageEmbeddedPermission(
 }
 
 void PermissionElementTestPermissionService::RequestPermission(
-    PermissionDescriptorPtr permission,
+    mojom::blink::PermissionDescriptorPtr permission,
     bool user_gesture,
     RequestPermissionCallback) {}
 
 void PermissionElementTestPermissionService::RequestPermissions(
-    Vector<PermissionDescriptorPtr> permissions,
+    Vector<mojom::blink::PermissionDescriptorPtr> permissions,
     bool user_gesture,
     RequestPermissionsCallback) {}
 
 void PermissionElementTestPermissionService::RevokePermission(
-    PermissionDescriptorPtr permission,
+    mojom::blink::PermissionDescriptorPtr permission,
     RevokePermissionCallback) {}
 
 void PermissionElementTestPermissionService::AddPermissionObserver(
-    PermissionDescriptorPtr permission,
-    MojoPermissionStatus last_known_status,
-    mojo::PendingRemote<PermissionObserver> observer) {}
+    mojom::blink::PermissionDescriptorPtr permission,
+    mojom::blink::PermissionStatus last_known_status,
+    mojo::PendingRemote<mojom::blink::PermissionObserver> observer) {}
 
 void PermissionElementTestPermissionService::AddPageEmbeddedPermissionObserver(
-    PermissionDescriptorPtr permission,
-    MojoPermissionStatus last_known_status,
-    mojo::PendingRemote<PermissionObserver> observer) {
+    mojom::blink::PermissionDescriptorPtr permission,
+    mojom::blink::PermissionStatus last_known_status,
+    mojo::PendingRemote<mojom::blink::PermissionObserver> observer) {
   observers_.emplace_back(
-      permission->name, mojo::Remote<PermissionObserver>(std::move(observer)));
+      permission->name,
+      mojo::Remote<mojom::blink::PermissionObserver>(std::move(observer)));
 }
 
 void PermissionElementTestPermissionService::NotifyEventListener(
-    PermissionDescriptorPtr permission,
+    mojom::blink::PermissionDescriptorPtr permission,
     const String& event_type,
     bool is_added) {}
 
 void PermissionElementTestPermissionService::NotifyPermissionStatusChange(
-    PermissionName name,
-    MojoPermissionStatus status) {
+    mojom::blink::PermissionName name,
+    mojom::blink::PermissionStatus status) {
   for (const auto& observer : observers_) {
     if (observer.first == name) {
       observer.second->OnPermissionStatusChange(status);
@@ -140,8 +141,8 @@ void PermissionElementTestPermissionService::NotifyPermissionStatusChange(
 }
 
 void PermissionElementTestPermissionService::WaitForPermissionStatusChange(
-    MojoPermissionStatus status) {
-  mojo::Remote<PermissionObserver> observer;
+    mojom::blink::PermissionStatus status) {
+  mojo::Remote<mojom::blink::PermissionObserver> observer;
   base::RunLoop run_loop;
   auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
       observer.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
@@ -150,7 +151,7 @@ void PermissionElementTestPermissionService::WaitForPermissionStatusChange(
 }
 
 void PermissionElementTestPermissionService::set_initial_statuses(
-    const Vector<MojoPermissionStatus>& statuses) {
+    const Vector<mojom::blink::PermissionStatus>& statuses) {
   initial_statuses_ = statuses;
 }
 

@@ -21,29 +21,23 @@ namespace blink {
 
 class HTMLCapabilityElementBase;
 
-using mojom::blink::PermissionDescriptor;
-using mojom::blink::PermissionDescriptorPtr;
-using mojom::blink::PermissionName;
-using mojom::blink::PermissionObserver;
-using mojom::blink::PermissionService;
-using MojoPermissionStatus = mojom::blink::PermissionStatus;
-
 // Helper class used to wait until receiving a permission status change event.
-class PermissionStatusChangeWaiter : public PermissionObserver {
+class PermissionStatusChangeWaiter : public mojom::blink::PermissionObserver {
  public:
   explicit PermissionStatusChangeWaiter(
-      mojo::PendingReceiver<PermissionObserver> receiver,
+      mojo::PendingReceiver<mojom::blink::PermissionObserver> receiver,
       base::OnceClosure callback);
 
-  // PermissionObserver override
-  void OnPermissionStatusChange(MojoPermissionStatus status) override;
+  // mojom::blink::PermissionObserver override
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
 
  private:
-  mojo::Receiver<PermissionObserver> receiver_;
+  mojo::Receiver<mojom::blink::PermissionObserver> receiver_;
   base::OnceClosure callback_;
 };
 
-class PermissionElementTestPermissionService : public PermissionService {
+class PermissionElementTestPermissionService
+    : public mojom::blink::PermissionService {
  public:
   explicit PermissionElementTestPermissionService();
   ~PermissionElementTestPermissionService() override;
@@ -51,45 +45,47 @@ class PermissionElementTestPermissionService : public PermissionService {
   void BindHandle(mojo::ScopedMessagePipeHandle handle);
 
   // mojom::blink::PermissionService implementation
-  void HasPermission(PermissionDescriptorPtr permission,
+  void HasPermission(mojom::blink::PermissionDescriptorPtr permission,
                      HasPermissionCallback) override;
   void RegisterPageEmbeddedPermissionControl(
-      Vector<PermissionDescriptorPtr> permissions,
+      Vector<mojom::blink::PermissionDescriptorPtr> permissions,
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
           pending_client) override;
 
   void RequestPageEmbeddedPermission(
-      Vector<PermissionDescriptorPtr> permissions,
+      Vector<mojom::blink::PermissionDescriptorPtr> permissions,
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptors,
       RequestPageEmbeddedPermissionCallback callback) override;
-  void RequestPermission(PermissionDescriptorPtr permission,
+  void RequestPermission(mojom::blink::PermissionDescriptorPtr permission,
                          bool user_gesture,
                          RequestPermissionCallback) override;
-  void RequestPermissions(Vector<PermissionDescriptorPtr> permissions,
-                          bool user_gesture,
-                          RequestPermissionsCallback) override;
-  void RevokePermission(PermissionDescriptorPtr permission,
+  void RequestPermissions(
+      Vector<mojom::blink::PermissionDescriptorPtr> permissions,
+      bool user_gesture,
+      RequestPermissionsCallback) override;
+  void RevokePermission(mojom::blink::PermissionDescriptorPtr permission,
                         RevokePermissionCallback) override;
   void AddPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override;
+      mojom::blink::PermissionDescriptorPtr permission,
+      mojom::blink::PermissionStatus last_known_status,
+      mojo::PendingRemote<mojom::blink::PermissionObserver> observer) override;
   void AddPageEmbeddedPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override;
+      mojom::blink::PermissionDescriptorPtr permission,
+      mojom::blink::PermissionStatus last_known_status,
+      mojo::PendingRemote<mojom::blink::PermissionObserver> observer) override;
 
-  void NotifyEventListener(PermissionDescriptorPtr permission,
+  void NotifyEventListener(mojom::blink::PermissionDescriptorPtr permission,
                            const String& event_type,
                            bool is_added) override;
 
-  void NotifyPermissionStatusChange(PermissionName name,
-                                    MojoPermissionStatus status);
+  void NotifyPermissionStatusChange(mojom::blink::PermissionName name,
+                                    mojom::blink::PermissionStatus status);
 
-  void WaitForPermissionStatusChange(MojoPermissionStatus status);
+  void WaitForPermissionStatusChange(mojom::blink::PermissionStatus status);
 
-  void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses);
+  void set_initial_statuses(
+      const Vector<mojom::blink::PermissionStatus>& statuses);
 
   void WaitForClientDisconnected();
   void set_pepc_registered_callback(base::OnceClosure callback);
@@ -99,14 +95,15 @@ class PermissionElementTestPermissionService : public PermissionService {
  private:
   void OnMojoDisconnect();
   void RegisterPageEmbeddedPermissionControlInternal(
-      Vector<PermissionDescriptorPtr> permissions,
+      Vector<mojom::blink::PermissionDescriptorPtr> permissions,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
           pending_client);
 
-  mojo::ReceiverSet<PermissionService> receivers_;
-  Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
+  mojo::ReceiverSet<mojom::blink::PermissionService> receivers_;
+  Vector<std::pair<mojom::blink::PermissionName,
+                   mojo::Remote<mojom::blink::PermissionObserver>>>
       observers_;
-  Vector<MojoPermissionStatus> initial_statuses_;
+  Vector<mojom::blink::PermissionStatus> initial_statuses_;
   mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
   bool should_defer_registered_callback_ = false;
   base::OnceClosure pepc_registered_callback_;
