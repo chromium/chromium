@@ -168,7 +168,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1702543251015153180">Vil du ændre dine indstillinger for mørkt tema?</translation>
 <translation id="1702907158640575240">Administreret browser</translation>
 <translation id="170478069042229393"><ph name="TAB_TITLE" />, fastgjort inkognitofane</translation>
-<translation id="1718835860248848330">Den seneste time</translation>
+<translation id="1718835860248848330">Seneste time</translation>
 <translation id="1726477445370128854">Du kan browse og søge hurtigere, når Chrome forudindlæser sider, som Chrome tror, du kunne være interesseret i at besøge</translation>
 <translation id="1728803206919861584">Vil du gemme adgangsnøglen uden for inkognito?</translation>
 <translation id="1732514748744806741">Hvis dine adgangskoder kompromitteres, kontakter vi dig</translation>
@@ -809,7 +809,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4521489764227272523">De valgte data er fjernet fra Chrome og synkroniserede enheder.
 
 Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="4523326818319942067">den seneste time</translation>
+<translation id="4523326818319942067">seneste time</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
 <translation id="4535755320005483982">Delt <ph name="GROUP_TITLE" />-fanegruppe</translation>
