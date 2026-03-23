@@ -2102,7 +2102,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
     std::optional<gpu::SyncToken> external_sync_token =
         GetDrawingBuffer()->CopyToPlatformSharedImage(
-            raster_interface, client_si, sync_token, gfx::Point(0, 0),
+            raster_interface, client_si, sync_token,
             gfx::Rect(drawing_buffer_->Size()), source_buffer);
 
     if (external_sync_token) {
