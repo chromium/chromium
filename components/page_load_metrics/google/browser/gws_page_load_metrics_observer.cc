@@ -839,7 +839,12 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     return;
   }
 
-  if (aft_end_time_.has_value()) {
+  // We only record the AFT end time histogram if the navigation not a
+  // prerendered navigation, or if it is a prerendered navigation that was later
+  // activated.
+  if (aft_end_time_.has_value() &&
+      (!is_prerendered_ || WasActivatedInForegroundOptionalEventInForeground(
+                               aft_end_time_, GetDelegate()))) {
     // There are multiple patterns to record the prenavigation latency events:
     // - For non prerendering cases: If we have prenavigation latency, we should
     // add them to the AFT performance mark to get the total latency.

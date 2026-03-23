@@ -2085,7 +2085,9 @@ chromium-metrics-reviews@google.com.
     Similar to
     PageLoad.Clients.GoogleSearch.PaintTiming.AFTEndWithPreNavigationLatency,
     but only track traverse navigations, with the breakdown of
-    {TraverseRestoreType}.
+    {TraverseRestoreType}. Note that as of M148, this metric will no longer
+    contain non-activated, prerender navigations (which was the case before the
+    fix).
   </summary>
   <token key="TraverseRestoreType" variants="TraverseRestoreType"/>
 </histogram>
@@ -2168,9 +2170,14 @@ chromium-metrics-reviews@google.com.
     commit phase in Search. This is only recorded in the outermost main frame.
   </summary>
   <token key="MileStone">
-    <variant name="AFTEnd2" summary="AFT end event is sent"/>
+    <variant name="AFTEnd2"
+        summary="AFT end event is sent (Note that this metrics contains
+                 non-activated prerender navigations as well)"/>
     <variant name="AFTEndWithPreNavigationLatency"
-        summary="AFT end event is sent with pre-navigation latency"/>
+        summary="AFT end event is sent with pre-navigation latency (Note that
+                 as of M148, this metric will no longer contain
+                 non-activated, prerender navigations which was the case
+                 before the fix.)"/>
     <variant name="AFTStart2" summary="AFT start event is sent"/>
     <variant name="AIOAsyncStart" summary="AIO async start"/>
     <variant name="AIOInitialContentTime" summary="AIO initial content time"/>
