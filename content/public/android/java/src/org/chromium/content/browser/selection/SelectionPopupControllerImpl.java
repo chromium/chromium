@@ -1114,7 +1114,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             cut();
         } else if (id == R.id.select_action_menu_copy) {
             copy();
-        } else if (id == R.id.select_action_menu_paste) {
+        } else if (id == android.R.id.paste) {
             paste();
             if (isPasteActionModeValid()) dismissTextHandles();
         } else if (id == R.id.select_action_menu_paste_as_plain_text) {
@@ -1240,7 +1240,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (menuItemId == R.id.select_action_menu_copy) {
             return SelectionEvent.ACTION_COPY;
         }
-        if (menuItemId == R.id.select_action_menu_paste
+        if (menuItemId == android.R.id.paste
                 || menuItemId == R.id.select_action_menu_paste_as_plain_text) {
             return SelectionEvent.ACTION_PASTE;
         }

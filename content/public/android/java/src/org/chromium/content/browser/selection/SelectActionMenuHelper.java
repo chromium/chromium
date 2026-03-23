@@ -365,7 +365,7 @@ public class SelectActionMenuHelper {
 
     private static SelectionMenuItem paste(int order) {
         return new SelectionMenuItem.Builder(android.R.string.paste)
-                .setId(R.id.select_action_menu_paste)
+                .setId(android.R.id.paste)
                 .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModePasteDrawable)
                 .setAlphabeticShortcut(ItemKeyShortcuts.PASTE)

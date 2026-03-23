@@ -393,7 +393,7 @@ public class ContentTextSelectionTest {
 
         List<ItemMatcher> matchers =
                 List.of(
-                        hasId(R.id.select_action_menu_paste),
+                        hasId(android.R.id.paste),
                         hasId(R.id.select_action_menu_select_all),
                         isDivider(),
                         hasTitle("testNonSelectionItem"));
@@ -413,7 +413,7 @@ public class ContentTextSelectionTest {
 
         List<ItemMatcher> matchers =
                 List.of(
-                        hasId(R.id.select_action_menu_paste),
+                        hasId(android.R.id.paste),
                         hasId(R.id.select_action_menu_select_all),
                         hasTitle("testNonSelectionItem"));
         ArrayList<MenuItem> actualItems = new ArrayList<>();
@@ -456,7 +456,7 @@ public class ContentTextSelectionTest {
                         isDivider(),
                         hasId(R.id.select_action_menu_cut),
                         hasId(R.id.select_action_menu_copy),
-                        hasId(R.id.select_action_menu_paste),
+                        hasId(android.R.id.paste),
                         hasId(R.id.select_action_menu_select_all),
                         isDivider(),
                         hasTitle("testTextProcessingItem"));
@@ -485,7 +485,7 @@ public class ContentTextSelectionTest {
                         hasTitle("Phone"),
                         hasId(R.id.select_action_menu_cut),
                         hasId(R.id.select_action_menu_copy),
-                        hasId(R.id.select_action_menu_paste),
+                        hasId(android.R.id.paste),
                         hasId(R.id.select_action_menu_select_all),
                         hasTitle("testTextProcessingItem"));
         ArrayList<MenuItem> actualItems = new ArrayList<>();
