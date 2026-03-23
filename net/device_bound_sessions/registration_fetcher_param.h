@@ -57,7 +57,8 @@ class NET_EXPORT RegistrationFetcherParam {
       std::optional<std::string> authorization,
       std::optional<std::string> provider_key = std::nullopt,
       std::optional<GURL> provider_url = std::nullopt,
-      std::optional<Session::Id> provider_session_id = std::nullopt);
+      std::optional<Session::Id> provider_session_id = std::nullopt,
+      bool aik_required = false);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
@@ -82,6 +83,8 @@ class NET_EXPORT RegistrationFetcherParam {
     return provider_session_id_;
   }
 
+  bool aik_required() const { return aik_required_; }
+
   GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
 
   std::optional<std::string> TakeChallenge() { return std::move(challenge_); }
@@ -99,7 +102,8 @@ class NET_EXPORT RegistrationFetcherParam {
       std::optional<std::string> authorization,
       std::optional<std::string> provider_key,
       std::optional<GURL> provider_url,
-      std::optional<Session::Id> provider_session_id);
+      std::optional<Session::Id> provider_session_id,
+      bool aik_required);
 
   static std::optional<RegistrationFetcherParam> ParseItem(
       const GURL& request_url,
@@ -112,6 +116,7 @@ class NET_EXPORT RegistrationFetcherParam {
   std::optional<std::string> provider_key_;
   std::optional<GURL> provider_url_;
   std::optional<Session::Id> provider_session_id_;
+  bool aik_required_ = false;
 };
 
 }  // namespace net::device_bound_sessions

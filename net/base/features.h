@@ -478,6 +478,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kDeviceBoundSessionsForRestrictedSitesExperimentIdParam);
 
+// This feature will enable the browser to use Device Bound Session Credentials
+// for Single Sign On. This feature is only valid if `kDeviceBoundSessions` is
+// enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsForSingleSignOn);
+
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are

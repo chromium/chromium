@@ -5,9 +5,11 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -28,6 +30,7 @@ constexpr char kAuthCodeParamKey[] = "authorization";
 constexpr char kProviderKeyParamKey[] = "provider_key";
 constexpr char kProviderUrlParamKey[] = "provider_url";
 constexpr char kProviderSessionIdParamKey[] = "provider_session_id";
+constexpr char kAikRequiredParamKey[] = "aik_required";
 
 constexpr char kES256[] = "ES256";
 constexpr char kRS256[] = "RS256";
@@ -64,14 +67,16 @@ RegistrationFetcherParam::RegistrationFetcherParam(
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,
-    std::optional<Session::Id> provider_session_id)
+    std::optional<Session::Id> provider_session_id,
+    bool aik_required)
     : registration_endpoint_(std::move(registration_endpoint)),
       supported_algos_(std::move(supported_algos)),
       challenge_(std::move(challenge)),
       authorization_(std::move(authorization)),
       provider_key_(std::move(provider_key)),
       provider_url_(std::move(provider_url)),
-      provider_session_id_(std::move(provider_session_id)) {}
+      provider_session_id_(std::move(provider_session_id)),
+      aik_required_(aik_required) {}
 
 std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     const GURL& request_url,
@@ -96,6 +101,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   std::optional<std::string> provider_key;
   std::optional<GURL> provider_url;
   std::optional<Session::Id> provider_session_id;
+  bool aik_required = false;
   for (const auto& [key, value] : session_registration.params) {
     // The keys for the parameters are unique and must be lower case.
     // Quiche (https://quiche.googlesource.com/quiche), used here,
@@ -145,6 +151,13 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
         return std::nullopt;
       }
       provider_session_id = Session::Id(value.GetString());
+    } else if (key == kAikRequiredParamKey &&
+               base::FeatureList::IsEnabled(
+                   features::kDeviceBoundSessionsForSingleSignOn)) {
+      if (!value.is_boolean()) {
+        return std::nullopt;
+      }
+      aik_required = value.GetBoolean();
     }
 
     // Other params are ignored
@@ -167,7 +180,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   return RegistrationFetcherParam(
       std::move(registration_endpoint), std::move(supported_algos),
       std::move(challenge), std::move(authorization), std::move(provider_key),
-      std::move(provider_url), std::move(provider_session_id));
+      std::move(provider_url), std::move(provider_session_id), aik_required);
 }
 
 std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
@@ -233,11 +246,12 @@ RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,
-    std::optional<Session::Id> provider_session_id) {
+    std::optional<Session::Id> provider_session_id,
+    bool aik_required) {
   return RegistrationFetcherParam(
       std::move(registration_endpoint), std::move(supported_algos),
       std::move(challenge), std::move(authorization), std::move(provider_key),
-      std::move(provider_url), std::move(provider_session_id));
+      std::move(provider_url), std::move(provider_session_id), aik_required);
 }
 
 }  // namespace net::device_bound_sessions

@@ -5,6 +5,7 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -808,6 +809,104 @@ TEST(RegistrationFetcherParamTest, RestrictedRegistration) {
   EXPECT_EQ(
       param.registration_endpoint(),
       GURL("https://restricted.example.test/startsession?experiment_id=1"));
+}
+
+TEST(RegistrationFetcherParamTest, AikRequired) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";aik_required=?1");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_TRUE(param.aik_required());
+}
+
+TEST(RegistrationFetcherParamTest, AikRequiredDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";aik_required=?1");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_FALSE(param.aik_required());
+}
+
+TEST(RegistrationFetcherParamTest, AikRequiredDefault) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeaderName,
+                              "(ES256);path=\"startsession\";challenge=\"c1\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_FALSE(param.aik_required());
+}
+
+TEST(RegistrationFetcherParamTest, AikRequiredFalse) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";aik_required=?0");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_FALSE(param.aik_required());
+}
+
+TEST(RegistrationFetcherParamTest, AikRequiredInvalidValue) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";aik_required=42");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  EXPECT_TRUE(params.empty());
 }
 
 }  // namespace
