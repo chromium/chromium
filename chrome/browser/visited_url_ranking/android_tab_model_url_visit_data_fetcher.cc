@@ -101,10 +101,8 @@ URLVisitAggregate::Tab MakeAggregateTab(
       GetTabOriginFromLaunchType(tab.tab_metadata.tab_android_launch_type);
   tab.tab_metadata.parent_tab_id = tab_android->GetParentId();
   std::optional<tab_groups::TabGroupId> tab_group_id = tab_android->GetGroup();
-  // Use optional::transform once C++23 is allowed.
-  tab.tab_metadata.local_tab_group_id =
-      tab_group_id.has_value() ? std::make_optional(tab_group_id->token())
-                               : std::nullopt;
+  tab.tab_metadata.local_tab_group_id = tab_group_id.transform(
+      [](const tab_groups::TabGroupId& id) { return id.token(); });
   auto* web_contents = tab_android->GetContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
     tab.tab_metadata.ukm_source_id = ukm::kInvalidSourceId;
