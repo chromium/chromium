@@ -79,7 +79,12 @@ class KioskAppLauncher {
     void NotifyLaunchFailed(KioskAppLaunchError::Error error);
 
    private:
-    base::ObserverList<Observer> observers_;
+    // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+    base::ObserverList<
+        Observer,
+        /*check_empty=*/false,
+        base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+        observers_;
   };
 
   KioskAppLauncher();
