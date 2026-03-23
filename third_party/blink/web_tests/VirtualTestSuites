@@ -678,6 +678,7 @@
     "args": [
       "--enable-features=DevToolsWebMCPSupport"
     ],
+    "exclusive_tests": "ALL",
     "expires": "Sep 28, 2026",
     "owners": [
       "pfaffe@google.com"

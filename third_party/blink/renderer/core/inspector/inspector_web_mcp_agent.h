@@ -5,16 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_WEB_MCP_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_WEB_MCP_AGENT_H_
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/web_mcp.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
+class Document;
 class InspectedFrames;
 class LocalFrame;
 class ModelContext;
-class Document;
+struct ScriptToolError;
 class ToolData;
 
 class CORE_EXPORT InspectorWebMCPAgent final
@@ -36,12 +39,23 @@ class CORE_EXPORT InspectorWebMCPAgent final
   // Probes
   void WebMCPToolAdded(Document* document, const ToolData& name);
   void WebMCPToolRemoved(Document* document, const ToolData& name);
+  void WebMCPToolExecuted(Document* document,
+                          const String& name,
+                          const String& input_arguments,
+                          const base::UnguessableToken& execution_id);
+  void WebMCPToolResponded(Document* document,
+                           const String& result,
+                           const base::UnguessableToken& execution_id);
+  void WebMCPToolFailed(Document* document,
+                        const ScriptToolError& error,
+                        const base::UnguessableToken& execution_id);
 
  private:
   Member<InspectedFrames> inspected_frames_;
   InspectorAgentState::Boolean enabled_;
 
   ModelContext* GetModelContext(LocalFrame* frame);
+
   std::unique_ptr<protocol::WebMCP::Tool> BuildProtocolTool(LocalFrame* frame,
                                                             const ToolData&);
 };

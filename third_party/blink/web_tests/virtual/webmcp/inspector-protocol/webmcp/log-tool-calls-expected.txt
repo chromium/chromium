@@ -1,0 +1,67 @@
+Tests that WebMCP toolInvoked and toolResponded events fire correctly.
+Enabling WebMCP Domain
+Executing imperative tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 0>
+    toolName : imperative_tool
+}
+Responded {
+    invocationId : <string 0>
+    output : {
+        text_was : hello
+    }
+    status : Success
+}
+Executing declarative tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 1>
+    toolName : declarative_tool
+}
+Responded {
+    invocationId : <string 1>
+    output : {
+        declarative : success
+    }
+    status : Success
+}
+Executing failing JS tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 2>
+    toolName : failing_js_tool
+}
+Responded {
+    errorText :
+    invocationId : <string 2>
+    status : Error
+}
+Executing failing ModelContext tool (invalid JSON)...
+Invoked {
+    frameId : <string>
+    input : invalid json
+    invocationId : <string 3>
+    toolName : imperative_tool
+}
+Responded {
+    errorText : Failed to parse input arguments
+    invocationId : <string 3>
+    status : Error
+}
+Executing cancelled tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 4>
+    toolName : abortable_tool
+}
+Responded {
+    errorText :
+    invocationId : <string 4>
+    status : Canceled
+}
+

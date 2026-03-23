@@ -141,9 +141,10 @@ String ComputeScriptToolResult(const Document& document) {
 class ModelContext::ToolFunctionFinishedCallback
     : public ThenCallable<IDLAny, ToolFunctionFinishedCallback> {
  public:
-  explicit ToolFunctionFinishedCallback(ModelContext* model_context,
-                                        uint32_t execution_id,
-                                        bool success)
+  explicit ToolFunctionFinishedCallback(
+      ModelContext* model_context,
+      const base::UnguessableToken& execution_id,
+      bool success)
       : model_context_(model_context),
         execution_id_(execution_id),
         success_(success) {}
@@ -186,7 +187,7 @@ class ModelContext::ToolFunctionFinishedCallback
 
  private:
   Member<ModelContext> model_context_;
-  const uint32_t execution_id_;
+  const base::UnguessableToken execution_id_;
   const bool success_;
 };
 
@@ -287,33 +288,41 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
   return declaration;
 }
 
-std::optional<uint32_t> ModelContext::ExecuteTool(
+void ModelContext::OnToolFailed(ScriptToolExecutedCallback callback,
+                                const base::UnguessableToken& execution_id,
+                                ScriptToolError&& error) {
+  probe::WebMCPToolFailed(document_, error, execution_id);
+  task_runner_->PostTask(
+      FROM_HERE,
+      blink::BindOnce(std::move(callback), base::unexpected(std::move(error))));
+}
+
+std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
     AbortSignal* signal,
     ScriptToolExecutedCallback tool_executed_cb) {
-  auto it = tool_map_.find(name);
+  base::UnguessableToken execution_id = base::UnguessableToken::Create();
+  probe::WebMCPToolExecuted(document_, name, input_arguments, execution_id);
 
+  auto it = tool_map_.find(name);
   if (it == tool_map_.end()) {
-    task_runner_->PostTask(
-        FROM_HERE, blink::BindOnce(std::move(tool_executed_cb),
-                                   base::unexpected(ScriptToolError(
-                                       ScriptToolErrorCode::kInvalidToolName,
-                                       String("Tool not found: " + name)))));
+    OnToolFailed(std::move(tool_executed_cb), execution_id,
+                 ScriptToolError(ScriptToolErrorCode::kInvalidToolName,
+                                 String("Tool not found: " + name)));
     return std::nullopt;
   }
 
-  std::optional<uint32_t> execution_id;
+  bool success = true;
   if (V8ToolExecuteCallback* v8_tool_function =
           it->value->GetV8ToolExecuteCallback()) {
-    execution_id = ExecuteV8Tool(v8_tool_function, name, input_arguments,
-                                 signal, std::move(tool_executed_cb));
+    success =
+        ExecuteV8Tool(v8_tool_function, execution_id, name, input_arguments,
+                      signal, std::move(tool_executed_cb));
   } else {
-    // TODO(479598776): Add support for tracking execution of
-    // declarative tools, so that they can be cancelled.
     // TODO(481899636): Add signal support for declarative tools.
-    ExecuteDeclarativeTool(it->value->DeclarativeTool(), input_arguments,
-                           std::move(tool_executed_cb));
+    ExecuteDeclarativeTool(it->value->DeclarativeTool(), execution_id,
+                           input_arguments, std::move(tool_executed_cb));
   }
 
   // Fire the `toolactivate` event *after* activating the tool, but potentially
@@ -327,11 +336,14 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
         *WebMCPEvent::Create(event_type_names::kToolactivated, name));
   }
 
-  return execution_id;
+  if (success) {
+    return execution_id;
+  }
+  return std::nullopt;
 }
 
-void ModelContext::CancelTool(uint32_t execution_id) {
-  auto it = pending_executions_.find(execution_id);
+void ModelContext::CancelTool(const base::UnguessableToken& execution_id) {
+  auto it = pending_executions_.find(String(execution_id.ToString()));
   if (it == pending_executions_.end()) {
     return;
   }
@@ -345,14 +357,13 @@ void ModelContext::CancelTool(uint32_t execution_id) {
   }
 
   // The pending_executions_ map might have been rehashed during DispatchEvent.
-  auto pending_execution = pending_executions_.find(execution_id);
+  auto pending_execution =
+      pending_executions_.find(String(execution_id.ToString()));
   if (pending_execution == pending_executions_.end()) {
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE, blink::BindOnce(std::move(pending_execution->value.callback),
-                                 base::unexpected(ScriptToolError(
-                                     ScriptToolErrorCode::kToolCancelled))));
+  OnToolFailed(std::move(pending_execution->value.callback), execution_id,
+               ScriptToolError(ScriptToolErrorCode::kToolCancelled));
   pending_executions_.erase(pending_execution);
 }
 
@@ -391,27 +402,43 @@ void ModelContext::DidFinishParsing() {
 //     but respondWith() isn't called, an error is reported back to the agent.)
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
+    const base::UnguessableToken& execution_id,
     const String& input_arguments,
     ScriptToolExecutedCallback tool_executed_cb) {
-  tool->ExecuteTool(input_arguments,
-                    blink::BindOnce(
-                        [](ScriptToolExecutedCallback tool_executed_cb,
-                           base::expected<String, ScriptToolError> result) {
-                          std::move(tool_executed_cb).Run(result);
-                        },
-                        std::move(tool_executed_cb)));
+  // TODO(479598776): Add support for tracking execution of
+  // declarative tools in pending_executions_, so that they can be cancelled.
+  tool->ExecuteTool(
+      input_arguments,
+      blink::BindOnce(
+          [](Document* document, base::UnguessableToken execution_id,
+             ScriptToolExecutedCallback tool_executed_cb,
+             base::expected<String, ScriptToolError> result) {
+            if (result.has_value()) {
+              // A null string indicates a cross-document navigation, in which
+              // case we don't want to emit a toolResponded event here. The
+              // new document will handle the response.
+              if (!result->IsNull()) {
+                probe::WebMCPToolResponded(document, *result, execution_id);
+              }
+            } else {
+              probe::WebMCPToolFailed(document, result.error(), execution_id);
+            }
+            std::move(tool_executed_cb).Run(result);
+          },
+          WrapWeakPersistent(document_.Get()), execution_id,
+          std::move(tool_executed_cb)));
 }
 
 // This overload is used for JS-provided tool functions. It converts the input
 // argument string to a JSON object, calls the function, receives a Promise,
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
-std::optional<uint32_t> ModelContext::ExecuteV8Tool(
-    V8ToolExecuteCallback* tool_function,
-    const String& name,
-    const String& input_arguments,
-    AbortSignal* signal,
-    ScriptToolExecutedCallback tool_executed_cb) {
+bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
+                                 const base::UnguessableToken& execution_id,
+                                 const String& name,
+                                 const String& input_arguments,
+                                 AbortSignal* signal,
+                                 ScriptToolExecutedCallback tool_executed_cb) {
   UseCounter::Count(document_, WebFeature::kModelContextExecuteTool);
   ScriptState* script_state = tool_function->CallbackRelevantScriptState();
   ScriptState::Scope scope(script_state);
@@ -421,13 +448,10 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
   ScriptValue script_value = script_object;
 
   if (try_catch.HasCaught() || script_value.IsEmpty()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        blink::BindOnce(std::move(tool_executed_cb),
-                        base::unexpected(ScriptToolError(
-                            ScriptToolErrorCode::kInvalidInputArguments,
-                            "Failed to parse input arguments"))));
-    return std::nullopt;
+    OnToolFailed(std::move(tool_executed_cb), execution_id,
+                 ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
+                                 "Failed to parse input arguments"));
+    return false;
   }
 
   ScriptPromise<IDLAny> result;
@@ -449,8 +473,6 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
     }
   }
 
-  uint32_t execution_id = ++next_execution_id_;
-
   // Use blink::ScopedAbortState to manage the abort algorithm lifecycle.
   // The state is wrapped in a unique_ptr and passed to the cleanup callback
   // to ensure the abort algorithm is unregistered when the tool finishes.
@@ -471,15 +493,16 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
       },
       std::move(tool_executed_cb), std::move(scoped_abort_state));
   pending_executions_.insert(
-      execution_id, PendingExecution{.tool_name = name,
-                                     .callback = std::move(callback_wrapper)});
+      String(execution_id.ToString()),
+      PendingExecution{.tool_name = name,
+                       .callback = std::move(callback_wrapper)});
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
                   this, execution_id, true),
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
                   this, execution_id, false));
-  return execution_id;
+  return true;
 }
 
 void ModelContext::RegisterDeclarativeTool(
@@ -502,19 +525,20 @@ void ModelContext::RegisterDeclarativeTool(
   OnToolChange();
 }
 
-void ModelContext::OnToolExecuted(uint32_t execution_id,
+void ModelContext::OnToolExecuted(const base::UnguessableToken& execution_id,
                                   std::optional<String> result) {
-  auto it = pending_executions_.find(execution_id);
+  auto it = pending_executions_.find(String(execution_id.ToString()));
   if (it == pending_executions_.end()) {
     return;
   }
 
   if (result) {
+    probe::WebMCPToolResponded(document_, *result, execution_id);
     std::move(it->value.callback).Run(*result);
   } else {
-    std::move(it->value.callback)
-        .Run(base::unexpected(
-            ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed)));
+    ScriptToolError error(ScriptToolErrorCode::kToolInvocationFailed);
+    probe::WebMCPToolFailed(document_, error, execution_id);
+    std::move(it->value.callback).Run(base::unexpected(error));
   }
   pending_executions_.erase(it);
 }

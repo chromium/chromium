@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -39,7 +40,7 @@ class ScriptTool : public ToolBase {
 
  private:
   mojom::ScriptToolActionPtr action_;
-  std::optional<uint32_t> execution_id_;
+  std::optional<base::UnguessableToken> execution_id_;
   base::WeakPtrFactory<ScriptTool> weak_ptr_factory_{this};
 };
 

@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
@@ -227,7 +228,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   //
   // The return value is a document-scoped execution ID which can be used to
   // cancel the tool execution.
-  std::optional<uint32_t> ExecuteScriptTool(
+  std::optional<base::UnguessableToken> ExecuteScriptTool(
       const WebString& name,
       const WebString& input_arguments,
       WebScriptToolResultCallback tool_result_cb);
@@ -240,7 +241,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
       CrossDocumentScriptToolResultCallback result_callback);
 
   // Cancels a script tool with the given execution ID.
-  void CancelScriptTool(uint32_t execution_id);
+  void CancelScriptTool(const base::UnguessableToken& execution_id);
 
   // Returns whether the AutofillEvent runtime feature is enabled for this
   // document's execution context (including origin trial tokens).

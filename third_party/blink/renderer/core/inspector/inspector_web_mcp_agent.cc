@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/inspector/inspector_web_mcp_agent.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/protocol/web_mcp.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
@@ -44,6 +47,9 @@ ModelContext* InspectorWebMCPAgent::GetModelContext(LocalFrame* frame) {
 
 namespace {
 std::unique_ptr<protocol::DictionaryValue> ParseJSON(const String& value) {
+  if (!value) {
+    return protocol::DictionaryValue::create();
+  }
   std::vector<uint8_t> cbor;
 
   if (value.Is8Bit()) {
@@ -121,5 +127,38 @@ void InspectorWebMCPAgent::WebMCPToolRemoved(Document* document,
   auto tools = std::make_unique<protocol::Array<protocol::WebMCP::Tool>>();
   tools->push_back(BuildProtocolTool(frame, tool));
   GetFrontend()->toolsRemoved(std::move(tools));
+}
+
+void InspectorWebMCPAgent::WebMCPToolExecuted(
+    Document* document,
+    const String& name,
+    const String& input_arguments,
+    const base::UnguessableToken& execution_id) {
+  if (LocalFrame* frame = document->GetFrame()) {
+    GetFrontend()->toolInvoked(name, IdentifiersFactory::FrameId(frame),
+                               String(execution_id.ToString()),
+                               input_arguments);
+  }
+}
+
+void InspectorWebMCPAgent::WebMCPToolResponded(
+    Document* document,
+    const String& result,
+    const base::UnguessableToken& execution_id) {
+  GetFrontend()->toolResponded(String(execution_id.ToString()),
+                               protocol::WebMCP::InvocationStatusEnum::Success,
+                               ParseJSON(result));
+}
+
+void InspectorWebMCPAgent::WebMCPToolFailed(
+    Document* document,
+    const ScriptToolError& error,
+    const base::UnguessableToken& execution_id) {
+  GetFrontend()->toolResponded(
+      String(execution_id.ToString()),
+      error.code == ScriptToolErrorCode::kToolCancelled
+          ? protocol::WebMCP::InvocationStatusEnum::Canceled
+          : protocol::WebMCP::InvocationStatusEnum::Error,
+      {}, error.message);
 }
 }  // namespace blink

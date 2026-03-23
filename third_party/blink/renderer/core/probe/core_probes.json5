@@ -317,6 +317,9 @@
       probes: [
         "WebMCPToolAdded",
         "WebMCPToolRemoved",
+        "WebMCPToolExecuted",
+        "WebMCPToolResponded",
+        "WebMCPToolFailed",
       ]
     },
     InspectorTraceEvents: {

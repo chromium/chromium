@@ -11,11 +11,19 @@ experimental domain WebMCP
 
   # Tool annotations
   type Annotation extends object
+
     properties
       # A hint indicating that the tool does not modify any state.
       optional boolean readOnly
       # If the declarative tool was declared with the autosubmit attribute.
       optional boolean autosubmit
+
+  # Represents the status of a tool invocation.
+  type InvocationStatus extends string
+    enum
+      Success
+      Canceled
+      Error
 
   # Definition of a tool that can be invoked.
   type Tool extends object
@@ -51,3 +59,30 @@ experimental domain WebMCP
     parameters
       # Array of tools that were removed.
       array of Tool tools
+
+  # Event fired when a tool invocation starts.
+  event toolInvoked
+    parameters
+      # Name of the tool to invoke.
+      string toolName
+      # Frame id
+      Page.FrameId frameId
+      # Invocation identifier.
+      string invocationId
+      # The input parameters used for the invocation.
+      string input
+
+  # Event fired when a tool invocation completes or fails.
+  event toolResponded
+    parameters
+      # Invocation identifier.
+      string invocationId
+      # Status of the invocation.
+      InvocationStatus status
+      # Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
+      optional object output
+      # Error text for protocol users
+      optional string errorText
+      # Exception details if errorred from JS with details like stacktrace.
+      # TODO optional Runtime.ExceptionDetails exceptionDetails
+

@@ -885,13 +885,14 @@ TEST_F(ModelContextTest, CancelTool) {
 
   base::RunLoop run_loop;
 
-  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
-      "echo", "{\"text\": \"hello\"}", /* signal= */ nullptr,
-      base::BindLambdaForTesting(
-          [&](base::expected<String, ScriptToolError> res) {
-            ASSERT_FALSE(res.has_value());
-            run_loop.Quit();
-          }));
+  std::optional<base::UnguessableToken> execution_id =
+      model_context->ExecuteTool(
+          "echo", "{\"text\": \"hello\"}", /* signal= */ nullptr,
+          base::BindLambdaForTesting(
+              [&](base::expected<String, ScriptToolError> res) {
+                ASSERT_FALSE(res.has_value());
+                run_loop.Quit();
+              }));
 
   ASSERT_TRUE(execution_id.has_value());
   model_context->CancelTool(execution_id.value());
@@ -932,12 +933,13 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
   base::RunLoop run_loop;
 
   // Execute and Cancel
-  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
-      "slow", "{}", /* signal= */ nullptr,
-      base::BindLambdaForTesting(
-          [&](base::expected<String, ScriptToolError> res) {
-            run_loop.Quit();
-          }));
+  std::optional<base::UnguessableToken> execution_id =
+      model_context->ExecuteTool(
+          "slow", "{}", /* signal= */ nullptr,
+          base::BindLambdaForTesting(
+              [&](base::expected<String, ScriptToolError> res) {
+                run_loop.Quit();
+              }));
 
   EXPECT_EQ(EvalJsString("window.events.join(',')"), "activated:slow");
 
@@ -1182,14 +1184,15 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
 
   base::RunLoop run_loop;
 
-  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
-      "hang", "{}", /* signal= */ nullptr,
-      base::BindLambdaForTesting(
-          [&](base::expected<String, ScriptToolError> res) {
-            EXPECT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
-            run_loop.Quit();
-          }));
+  std::optional<base::UnguessableToken> execution_id =
+      model_context->ExecuteTool(
+          "hang", "{}", /* signal= */ nullptr,
+          base::BindLambdaForTesting(
+              [&](base::expected<String, ScriptToolError> res) {
+                EXPECT_FALSE(res.has_value());
+                EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
+                run_loop.Quit();
+              }));
 
   ASSERT_TRUE(execution_id.has_value());
 
