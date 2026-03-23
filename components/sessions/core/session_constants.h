@@ -10,9 +10,14 @@
 
 namespace sessions {
 
-// Directory under the profile directory to store session data.
+// Directory under the profile directory to store cleartext session data.
 // Added in Chrome 85.
 extern const base::FilePath::StringViewType SESSIONS_EXPORT kSessionsDirectory;
+
+// Directory under the profile directory to store encrypted session data.
+// Added in Chrome 148 for crbug.com/479420496.
+extern const base::FilePath::StringViewType SESSIONS_EXPORT
+    kEncryptedSessionsDirectory;
 
 // File name prefix for a type of TAB.
 // Added in Chrome 85.

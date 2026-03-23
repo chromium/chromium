@@ -83,6 +83,9 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
       SnapshotItemDetails(base::FilePath(sessions::kSessionsDirectory),
                           SnapshotItemDetails::ItemType::kDirectory,
                           chrome_browsing_data_remover::DATA_TYPE_HISTORY),
+      SnapshotItemDetails(base::FilePath(sessions::kEncryptedSessionsDirectory),
+                          SnapshotItemDetails::ItemType::kDirectory,
+                          chrome_browsing_data_remover::DATA_TYPE_HISTORY),
       // Sign-in state
       SnapshotItemDetails(base::FilePath(profiles::kGAIAPictureFileName),
                           SnapshotItemDetails::ItemType::kFile, 0),

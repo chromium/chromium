@@ -77,7 +77,9 @@ class CommandStorageBackendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     init_path_ = temp_dir_.GetPath();
     sessions_dir_ = init_path_.Append(kSessionsDirectory);
+    encrypted_sessions_dir_ = init_path_.Append(kEncryptedSessionsDirectory);
     base::CreateDirectory(sessions_dir_);
+    base::CreateDirectory(encrypted_sessions_dir_);
   }
 
   void AssertCommandEqualsData(const TestData& data,
@@ -125,9 +127,10 @@ class CommandStorageBackendTest : public testing::Test {
   }
 
   std::vector<base::FilePath> GetSessionFilePathsSortedByReverseTimestamp(
-      SessionType session_type) {
+      SessionType session_type,
+      bool encrypted) {
     auto infos = CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
-        init_path_, session_type);
+        init_path_, session_type, encrypted);
     std::vector<base::FilePath> result;
     for (const auto& info : infos) {
       result.push_back(info.path);
@@ -135,15 +138,17 @@ class CommandStorageBackendTest : public testing::Test {
     return result;
   }
 
-  // Helper for calling CommandStorageBackend::FilePathFromTime() with a time
+  // Helper for calling CommandStorageBackend::GetFilePath() with a time
   // delta in microseconds.
-  static base::FilePath FilePathFromTime(SessionType type,
-                                         const base::FilePath& path,
-                                         uint64_t time_delta_microseconds) {
-    return CommandStorageBackend::FilePathFromTime(
+  static base::FilePath GetFilePath(SessionType type,
+                                    const base::FilePath& path,
+                                    uint64_t time_delta_microseconds,
+                                    bool encrypted) {
+    return CommandStorageBackend::GetFilePath(
         type, path,
         base::Time::FromDeltaSinceWindowsEpoch(
-            base::Microseconds(time_delta_microseconds)));
+            base::Microseconds(time_delta_microseconds)),
+        encrypted);
   }
 
   base::FilePath GetTestFilePath(const std::string& test_data_filename) {
@@ -159,21 +164,24 @@ class CommandStorageBackendTest : public testing::Test {
         .AppendASCII(test_data_filename);
   }
 
-  bool copyTestDataToSessionFile(const std::string& test_data_filename,
-                                 const std::string& session_filename) {
+  bool CopyTestDataToSessionFile(const std::string& test_data_filename,
+                                 const std::string& session_filename,
+                                 bool encrypted) {
     base::FilePath test_file_path = GetTestFilePath(test_data_filename);
     if (!base::PathExists(test_file_path)) {
       return false;
     }
-    return base::CopyFile(test_file_path,
-                          sessions_dir().AppendASCII(session_filename));
+    return base::CopyFile(
+        test_file_path, sessions_dir(encrypted).AppendASCII(session_filename));
   }
 
   // The path that is passed to `CreateBackend`.
   const base::FilePath& init_path() const { return init_path_; }
 
   // The path to the directory that contains the session files.
-  const base::FilePath& sessions_dir() const { return sessions_dir_; }
+  const base::FilePath& sessions_dir(bool encrypted) const {
+    return encrypted ? encrypted_sessions_dir_ : sessions_dir_;
+  }
 
  private:
   // Creates an OSCryptAsync that uses a predefined key.
@@ -210,8 +218,11 @@ class CommandStorageBackendTest : public testing::Test {
   };
 
   base::test::TaskEnvironment task_environment_;
-  base::FilePath init_path_;     // Passed to CommandStorageBackend constructor.
-  base::FilePath sessions_dir_;  // The directory containing the session files.
+  base::FilePath init_path_;  // Passed to CommandStorageBackend constructor.
+  // The directory containing the cleartext session files.
+  base::FilePath sessions_dir_;
+  // The directory containing the encrypted session files.
+  base::FilePath encrypted_sessions_dir_;
   base::ScopedTempDir temp_dir_;
   const std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
 };
@@ -221,77 +232,17 @@ class CommandStorageBackendTest : public testing::Test {
 // `CommandStorageBackendParamTest` below).  Test that do not use parameters
 // are grouped here into `CommandStorageBackendTest`.
 
-TEST_F(CommandStorageBackendTest, GetSessionFiles_AppRestore) {
-  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
-                  init_path(), SessionType::kAppRestore)
-                  .empty());
-  // Not a valid name, as doesn't contain timestamp separator.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Apps 123"), ""));
-  // Valid name.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Apps_124"), ""));
-  // Valid name, but should not be returned as beginning doesn't match.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Foo_125"), ""));
-  auto paths = CommandStorageBackend::GetSessionFilePaths(
-      init_path(), SessionType::kAppRestore);
-  ASSERT_EQ(1u, paths.size());
-  EXPECT_EQ("Apps_124", paths.begin()->BaseName().MaybeAsASCII());
-}
-
-TEST_F(CommandStorageBackendTest, GetSessionFiles_SessionRestore) {
-  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
-                  init_path(), SessionType::kSessionRestore)
-                  .empty());
-  // Not a valid name, as doesn't contain timestamp separator.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Session 123"), ""));
-  // Valid name.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Session_124"), ""));
-  // Valid name, but should not be returned as beginning doesn't match.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Foo_125"), ""));
-  auto paths = CommandStorageBackend::GetSessionFilePaths(
-      init_path(), SessionType::kSessionRestore);
-  ASSERT_EQ(1u, paths.size());
-  EXPECT_EQ("Session_124", paths.begin()->BaseName().MaybeAsASCII());
-}
-
-TEST_F(CommandStorageBackendTest, GetSessionFiles_TabRestore) {
-  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
-                  init_path(), SessionType::kTabRestore)
-                  .empty());
-  // Not a valid name, as doesn't contain timestamp separator.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Tabs 123"), ""));
-  // Valid name.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Tabs_124"), ""));
-  // Valid name, but should not be returned as beginning doesn't match.
-  ASSERT_TRUE(base::WriteFile(sessions_dir().AppendASCII("Foo_125"), ""));
-  auto paths = CommandStorageBackend::GetSessionFilePaths(
-      init_path(), SessionType::kTabRestore);
-  ASSERT_EQ(1u, paths.size());
-  EXPECT_EQ("Tabs_124", paths.begin()->BaseName().MaybeAsASCII());
-}
-
-// Test that the a file with an invalid name won't be used.
-TEST_F(CommandStorageBackendTest, DeterminePreviousSessionInvalid) {
-  const auto prev_path =
-      sessions_dir().Append(FILE_PATH_LITERAL("Session_invalid"));
-  ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_TRUE(base::WriteFile(prev_path, ""));
-
-  scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  auto last_session_info = GetLastSessionInfo(backend.get());
-  ASSERT_FALSE(last_session_info);
-}
-
 TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
   // V1 files do not contain markers.
   // They were used in production prior to commit 223e5cd on 2021-05-25.
-  ASSERT_TRUE(copyTestDataToSessionFile("Session-v1NoMarker", "Session_1234"));
+  ASSERT_TRUE(
+      CopyTestDataToSessionFile("Session-v1NoMarker", "Session_1234", false));
 
   // V1 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  ASSERT_FALSE(
-      backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
+  ASSERT_FALSE(backend->IsValidFileForTest(
+      sessions_dir(false).AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
 }
@@ -300,14 +251,14 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
   // V2 files are encrypted and do not contain markers.
   // They could have been written prior to commit 223e5cd on 2021-05-25.
   // They were never used in production.
-  ASSERT_TRUE(
-      copyTestDataToSessionFile("Session-v2NoMarkerEncrypted", "Session_1234"));
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v2NoMarkerEncrypted",
+                                        "Session_1234", false));
 
   // V2 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  ASSERT_FALSE(
-      backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
+  ASSERT_FALSE(backend->IsValidFileForTest(
+      sessions_dir(false).AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
 }
@@ -317,7 +268,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
   // They have been used in production from early 2021 through at least
   // 2026-02.
   ASSERT_TRUE(
-      copyTestDataToSessionFile("Session-v3WithMarker", "Session_1234"));
+      CopyTestDataToSessionFile("Session-v3WithMarker", "Session_1234", false));
 
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
@@ -363,8 +314,8 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
   // which results in the Marker being in the middle of the file (between
   // the "banana" and "coconut" commands).  See also related test
   // `WriteSessionFileV3With2Appends`.
-  ASSERT_TRUE(
-      copyTestDataToSessionFile("Session-v3With2Appends", "Session_1234"));
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v3With2Appends",
+                                        "Session_1234", false));
 
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
@@ -415,14 +366,14 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   // V4 files contain markers and are encrypted.
   // They have never been used in production, but could have been written from
   // early 2021 through at least 2026-02.
-  ASSERT_TRUE(copyTestDataToSessionFile("Session-v4WithMarkerEncrypted",
-                                        "Session_1234"));
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v4WithMarkerEncrypted",
+                                        "Session_1234", false));
 
   // V4 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  ASSERT_FALSE(
-      backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
+  ASSERT_FALSE(backend->IsValidFileForTest(
+      sessions_dir(false).AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
 }
@@ -440,10 +391,19 @@ class CommandStorageBackendParamTest
     return CommandStorageBackendTest::CreateBackend(
         GetParam().session_type, GetParam().encrypted, clock);
   }
+  scoped_refptr<CommandStorageBackend> CreateBackend(SessionType session_type) {
+    return CommandStorageBackendTest::CreateBackend(session_type,
+                                                    GetParam().encrypted);
+  }
+
+  base::FilePath GetFilePath(uint64_t time_delta_microseconds) {
+    return CommandStorageBackendTest::GetFilePath(
+        GetParam().session_type, init_path(), time_delta_microseconds,
+        GetParam().encrypted);
+  }
 };
 
 TEST_P(CommandStorageBackendParamTest, SimpleWrite) {
-  SessionType session_type = GetParam().session_type;
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(13234316721694577)));
@@ -466,8 +426,7 @@ TEST_P(CommandStorageBackendParamTest, SimpleWrite) {
   EXPECT_FALSE(write_error);
   const base::FilePath path = backend->current_path_for_testing();
   EXPECT_TRUE(base::PathExists(path));
-  base::FilePath expected_path =
-      FilePathFromTime(session_type, init_path(), 13234316721694577);
+  base::FilePath expected_path = GetFilePath(13234316721694577);
   EXPECT_EQ(expected_path, path);
   EXPECT_GT(base::GetFileSize(path), 0);
 }
@@ -667,8 +626,54 @@ TEST_P(CommandStorageBackendParamTest, MaxSizeType) {
             expected_command->contents().first(expected_size));
 }
 
+TEST_P(CommandStorageBackendParamTest, GetSessionFiles) {
+  bool encrypted = GetParam().encrypted;
+  SessionType type = GetParam().session_type;
+
+  EXPECT_TRUE(
+      GetSessionFilePathsSortedByReverseTimestamp(type, encrypted).empty());
+
+  base::FilePath valid_path = GetFilePath(124);
+  std::string valid_name = valid_path.BaseName().MaybeAsASCII();
+
+  // Not a valid name, as doesn't contain timestamp separator.
+  std::string invalid_name = valid_name;
+  std::replace(invalid_name.begin(), invalid_name.end(), '_', ' ');
+  ASSERT_TRUE(
+      base::WriteFile(sessions_dir(encrypted).AppendASCII(invalid_name), ""));
+
+  // Valid name.
+  ASSERT_TRUE(base::WriteFile(valid_path, ""));
+
+  // Valid name, but should not be returned as "Foo" doesn't match.
+  ASSERT_TRUE(
+      base::WriteFile(sessions_dir(encrypted).AppendASCII("Foo_125"), ""));
+
+  auto paths = GetSessionFilePathsSortedByReverseTimestamp(type, encrypted);
+  ASSERT_EQ(1u, paths.size());
+  EXPECT_EQ(valid_name, paths.begin()->BaseName().MaybeAsASCII());
+}
+
+// Test that the a file with an invalid name won't be used.
+TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionInvalid) {
+  if (GetParam().session_type != SessionType::kSessionRestore) {
+    GTEST_SKIP() << "This test is only for SessionRestore.";
+  }
+  bool encrypted = GetParam().encrypted;
+  const auto prev_path =
+      sessions_dir(encrypted).Append(FILE_PATH_LITERAL("Session_invalid"));
+  ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
+  ASSERT_TRUE(base::WriteFile(prev_path, ""));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore);
+  auto last_session_info = GetLastSessionInfo(backend.get());
+  ASSERT_FALSE(last_session_info);
+}
+
 TEST_P(CommandStorageBackendParamTest, IsValidFileWithInvalidFiles) {
-  const auto file_path = sessions_dir().AppendASCII("Session_123");
+  bool encrypted = GetParam().encrypted;
+  const auto file_path = sessions_dir(encrypted).AppendASCII("Session_123");
   base::WriteFile(file_path, "z");  // invalid file contents
   EXPECT_FALSE(CommandStorageBackend::IsValidFileForTest(file_path));
 
@@ -716,14 +721,14 @@ TEST_P(CommandStorageBackendParamTest, ReadEmptyCommands) {
 // Test parsing the timestamp of a session from the path.
 TEST_P(CommandStorageBackendParamTest, TimestampFromPath) {
   // Test parsing the timestamp from a valid session.
-  const auto test_path_1 = sessions_dir().Append(FILE_PATH_LITERAL("Tabs_0"));
+  bool encrypted = GetParam().encrypted;
+  const base::FilePath test_path_1 = GetFilePath(0);
   base::Time result_time_1;
   EXPECT_TRUE(
       CommandStorageBackend::TimestampFromPath(test_path_1, result_time_1));
   EXPECT_EQ(base::Time(), result_time_1);
 
-  const auto test_path_2 =
-      sessions_dir().Append(FILE_PATH_LITERAL("Session_13234316721694577"));
+  const base::FilePath test_path_2 = GetFilePath(13234316721694577);
   base::Time result_time_2;
   EXPECT_TRUE(
       CommandStorageBackend::TimestampFromPath(test_path_2, result_time_2));
@@ -732,39 +737,42 @@ TEST_P(CommandStorageBackendParamTest, TimestampFromPath) {
             result_time_2);
 
   // Test attempting to parse invalid file names.
-  const auto invalid_path_1 = sessions_dir().AppendASCII("Session_nonsense");
+  const auto invalid_path_1 =
+      sessions_dir(encrypted).AppendASCII("Session_nonsense");
   base::Time invalid_result_1;
   EXPECT_FALSE(CommandStorageBackend::TimestampFromPath(invalid_path_1,
                                                         invalid_result_1));
 
-  const auto invalid_path_2 = sessions_dir().AppendASCII("Arbitrary");
+  const auto invalid_path_2 = sessions_dir(encrypted).AppendASCII("Arbitrary");
   base::Time invalid_result_2;
   EXPECT_FALSE(CommandStorageBackend::TimestampFromPath(invalid_path_2,
                                                         invalid_result_2));
 }
 
 // Test serializing a timestamp to string.
-TEST_P(CommandStorageBackendParamTest, FilePathFromTime) {
+TEST_P(CommandStorageBackendParamTest, GetFilePath) {
   const SessionType session_type = GetParam().session_type;
-  const auto result_path_1 = FilePathFromTime(session_type, init_path(), 0);
-  const auto result_path_2 =
-      FilePathFromTime(session_type, init_path(), 13234316721694577);
+  bool encrypted = GetParam().encrypted;
+  const base::FilePath result_path_1 = GetFilePath(0);
+  const base::FilePath result_path_2 = GetFilePath(13234316721694577);
 
   switch (session_type) {
     case SessionType::kAppRestore:
-      EXPECT_EQ(sessions_dir().AppendASCII("Apps_0"), result_path_1);
-      EXPECT_EQ(sessions_dir().AppendASCII("Apps_13234316721694577"),
+      EXPECT_EQ(sessions_dir(encrypted).AppendASCII("Apps_0"), result_path_1);
+      EXPECT_EQ(sessions_dir(encrypted).AppendASCII("Apps_13234316721694577"),
                 result_path_2);
       break;
     case SessionType::kTabRestore:
-      EXPECT_EQ(sessions_dir().AppendASCII("Tabs_0"), result_path_1);
-      EXPECT_EQ(sessions_dir().AppendASCII("Tabs_13234316721694577"),
+      EXPECT_EQ(sessions_dir(encrypted).AppendASCII("Tabs_0"), result_path_1);
+      EXPECT_EQ(sessions_dir(encrypted).AppendASCII("Tabs_13234316721694577"),
                 result_path_2);
       break;
     case SessionType::kSessionRestore:
-      EXPECT_EQ(sessions_dir().AppendASCII("Session_0"), result_path_1);
-      EXPECT_EQ(sessions_dir().AppendASCII("Session_13234316721694577"),
-                result_path_2);
+      EXPECT_EQ(sessions_dir(encrypted).AppendASCII("Session_0"),
+                result_path_1);
+      EXPECT_EQ(
+          sessions_dir(encrypted).AppendASCII("Session_13234316721694577"),
+          result_path_2);
       break;
   }
 }
@@ -777,9 +785,8 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionEmpty) {
 
 // Test that the previous session is selected correctly when a file is present.
 TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionSingle) {
-  const auto prev_path =
-      FilePathFromTime(GetParam().session_type, init_path(), 13235178308836991);
-  ASSERT_TRUE(base::CreateDirectory(sessions_dir()));
+  const auto prev_path = GetFilePath(13235178308836991);
+  ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
   ASSERT_TRUE(base::WriteFile(prev_path, ""));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
@@ -791,12 +798,9 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionSingle) {
 // Test that the previous session is selected correctly when multiple session
 // files are present.
 TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionMultiple) {
-  SessionType session_type = GetParam().session_type;
-  const auto prev_path =
-      FilePathFromTime(session_type, init_path(), 13235178308836991);
-  const auto old_path_1 =
-      FilePathFromTime(session_type, init_path(), 13235178308548874);
-  const auto old_path_2 = FilePathFromTime(session_type, init_path(), 0);
+  base::FilePath prev_path = GetFilePath(13235178308836991);
+  base::FilePath old_path_1 = GetFilePath(13235178308548874);
+  base::FilePath old_path_2 = GetFilePath(0);
   ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
   ASSERT_TRUE(base::WriteFile(prev_path, ""));
   ASSERT_TRUE(base::WriteFile(old_path_1, ""));
@@ -811,8 +815,7 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionMultiple) {
 // Tests that MoveCurrentSessionToLastSession deletes the last session file.
 TEST_P(CommandStorageBackendParamTest,
        MoveCurrentSessionToLastDeletesLastSession) {
-  const auto last_session =
-      FilePathFromTime(GetParam().session_type, init_path(), 13235178308836991);
+  base::FilePath last_session = GetFilePath(13235178308836991);
   ASSERT_TRUE(base::CreateDirectory(last_session.DirName()));
   ASSERT_TRUE(base::WriteFile(last_session, ""));
 
@@ -826,16 +829,19 @@ TEST_P(CommandStorageBackendParamTest,
 TEST_P(CommandStorageBackendParamTest,
        GetSessionFilePathsAreSortedByReverseTimestamp) {
   SessionType session_type = GetParam().session_type;
-  auto path_130 = FilePathFromTime(session_type, init_path(), 130);
-  auto path_120 = FilePathFromTime(session_type, init_path(), 120);
-  auto path_125 = FilePathFromTime(session_type, init_path(), 125);
-  auto path_128 = FilePathFromTime(session_type, init_path(), 128);
+  bool encrypted = GetParam().encrypted;
+  base::FilePath path_130 = GetFilePath(130);
+  base::FilePath path_120 = GetFilePath(120);
+  base::FilePath path_125 = GetFilePath(125);
+  base::FilePath path_128 = GetFilePath(128);
+  ASSERT_TRUE(base::CreateDirectory(path_130.DirName()));
   ASSERT_TRUE(base::WriteFile(path_130, ""));
   ASSERT_TRUE(base::WriteFile(path_120, ""));
   ASSERT_TRUE(base::WriteFile(path_125, ""));
   ASSERT_TRUE(base::WriteFile(path_128, ""));
 
-  auto paths = GetSessionFilePathsSortedByReverseTimestamp(session_type);
+  auto paths =
+      GetSessionFilePathsSortedByReverseTimestamp(session_type, encrypted);
   ASSERT_EQ(4u, paths.size());
   EXPECT_EQ(path_130, paths[0]);
   EXPECT_EQ(path_128, paths[1]);

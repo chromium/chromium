@@ -9,6 +9,9 @@ namespace sessions {
 const base::FilePath::StringViewType kSessionsDirectory =
     FILE_PATH_LITERAL("Sessions");
 
+const base::FilePath::StringViewType kEncryptedSessionsDirectory =
+    FILE_PATH_LITERAL("Sessions_Encrypted");
+
 const base::FilePath::CharType kTabSessionFileNamePrefix[] =
     FILE_PATH_LITERAL("Tabs");
 
