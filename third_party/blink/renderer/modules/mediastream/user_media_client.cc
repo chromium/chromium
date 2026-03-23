@@ -134,8 +134,14 @@ UserMediaClient::RequestQueue::~RequestQueue() {
 void UserMediaClient::RequestQueue::EnqueueAndMaybeProcess(Request* request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   pending_requests_.push_back(request);
-  if (!is_processing_request_)
+  if (!is_processing_request_) {
     MaybeProcessNextRequestInfo();
+  } else if (request->IsUserMedia()) {
+    blink::WebRtcLogMessage(base::StringPrintf(
+        "UMCI::RequestQueue::EnqueueAndMaybeProcess({request_id=%d}) is in "
+        "queue for processing ",
+        request->user_media_request()->request_id()));
+  }
 }
 
 void UserMediaClient::RequestQueue::CancelUserMediaRequest(
@@ -187,6 +193,10 @@ void UserMediaClient::RequestQueue::MaybeProcessNextRequestInfo() {
   is_processing_request_ = true;
 
   if (current_request->IsUserMedia()) {
+    blink::WebRtcLogMessage(base::StringPrintf(
+        "UMCI::RequestQueue::MaybeProcessNextRequestInfo({request_id=%d}) is "
+        "sent to UMP for processing ",
+        current_request->user_media_request()->request_id()));
     user_media_processor_->ProcessRequest(
         current_request->MoveUserMediaRequest(),
         BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
