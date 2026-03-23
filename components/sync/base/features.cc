@@ -92,6 +92,11 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+bool IsReplaceSyncPromosWithSignInPromosEnabled() {
+  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+}
+
 BASE_FEATURE_PARAM(bool,
                    kExplicitSigninForExtensions,
                    &kReplaceSyncPromosWithSignInPromos,

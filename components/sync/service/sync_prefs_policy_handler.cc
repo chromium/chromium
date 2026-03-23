@@ -35,8 +35,7 @@ void SyncPrefsPolicyHandler::OnSyncShutdown(SyncService* sync_service) {
 }
 
 void SyncPrefsPolicyHandler::EnforcePolicyOnDataTypes() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return;
   }
 

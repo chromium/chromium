@@ -49,10 +49,9 @@ CoreAccountInfo GetDefaultAccountInfo() {
 
 TestSyncService::TestSyncService()
     : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {
-  SetSignedIn(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync);
+  SetSignedIn(IsReplaceSyncPromosWithSignInPromosEnabled()
+                  ? signin::ConsentLevel::kSignin
+                  : signin::ConsentLevel::kSync);
 }
 
 TestSyncService::~TestSyncService() = default;

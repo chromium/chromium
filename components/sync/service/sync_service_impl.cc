@@ -1411,7 +1411,7 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
           SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent &&
       sync_prefs_.DoesTypeHaveDefaultValueForAccount(
           UserSelectableType::kAutofill, GetAccountInfo().gaia) &&
-      base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+      IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GetUserSettings()->SetSelectedType(UserSelectableType::kAutofill, false);
   }
 #endif

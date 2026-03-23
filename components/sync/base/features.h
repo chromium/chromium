@@ -85,7 +85,14 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
 
 // Feature flag to replace all sync-related UI with sign-in ones.
+// Do not use this flag directly in production code. Use
+// `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()` instead.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
+
+// Returns true if the replace sync promos with sign-in promos feature is
+// enabled. The launch may be controlled by multiple `base::Feature` flags,
+// prefer using this function over checking the feature flags directly.
+bool IsReplaceSyncPromosWithSignInPromosEnabled();
 
 // Enables syncing extensions only if the user newly signs in to Chrome, not if
 // they were already signed in by the time `kReplaceSyncPromosWithSignInPromos`

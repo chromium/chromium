@@ -93,8 +93,7 @@ DecodeTrustedVaultAutoUpgradeExperimentGroupFromString(
 bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
                                                  const GaiaId& gaia_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  return IsReplaceSyncPromosWithSignInPromosEnabled();
 #else
   // If `kReplaceSyncPromosWithSignInPromos` is enabled, bookmarks and reading
   // list are enabled by default for new sign-ins (not pre-existing sessions).
@@ -111,8 +110,7 @@ bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
 bool IsExtensionsSelectedByDefaultInTransportMode(PrefService& pref_service,
                                                   const GaiaId& gaia_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  return IsReplaceSyncPromosWithSignInPromosEnabled();
 #else
   // if `kReplaceSyncPromosWithSignInPromos` is enabled, extensions are enabled
   // by default for new sign-ins (not pre-existing sessions). This pref is set
@@ -733,7 +731,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
         return false;
       }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
 #else
       // Search engines are behind `UserSelectableType::kPreferences`.
       return base::FeatureList::IsEnabled(
@@ -748,13 +746,13 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       // transport mode everywhere.
       return true;
     case UserSelectableType::kHistory:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kTabs:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kProductComparison:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kSavedTabGroups:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kExtensions:
       return switches::IsExtensionsExplicitBrowserSigninEnabled();
     case UserSelectableType::kThemes:
@@ -768,7 +766,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
           syncer::kSeparateLocalAndAccountThemes);
 #endif
     case UserSelectableType::kApps:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kCookies:
       // `kCookies` is not supported in transport mode (ChromeOS-only type).
       return false;
@@ -827,7 +825,7 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
     const GaiaId& gaia_id) {
-  if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
     return false;
@@ -918,7 +916,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
   // The migration pref shouldn't be set if the feature is disabled, but if it
   // somehow happened, do *not* run the migration, and clear the pref so that
   // the migration will get triggered again once the feature gets enabled again.
-  if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
     pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
     return false;
   }
@@ -1185,7 +1183,7 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
                                                          gaia_id);
     case UserSelectableType::kPreferences:
     case UserSelectableType::kThemes:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+      return IsReplaceSyncPromosWithSignInPromosEnabled() ||
              pref_service_->GetBoolean(
                  ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
     case UserSelectableType::kExtensions:
@@ -1196,7 +1194,7 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
     case UserSelectableType::kCookies:
       // All other types are always enabled by default with
       // kReplaceSyncPromosWithSignInPromos.
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
   }
   NOTREACHED();
 }
