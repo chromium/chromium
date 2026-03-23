@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
@@ -83,7 +84,8 @@ class PeriodicWave final : public ScriptWrappable {
 // to an AudioNode. This allows it to be held strongly from the audio thread
 // which avoids converting weak to strong references which is prone to
 // GC interference.
-class PeriodicWaveImpl final : public GarbageCollected<PeriodicWaveImpl> {
+class MODULES_EXPORT PeriodicWaveImpl final
+    : public GarbageCollected<PeriodicWaveImpl> {
  public:
   explicit PeriodicWaveImpl(float sample_rate);
   ~PeriodicWaveImpl();

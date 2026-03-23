@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OSCILLATOR_HANDLER_H_
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_type.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -21,7 +23,10 @@ namespace blink {
 class ExceptionState;
 class PeriodicWaveImpl;
 
-class OscillatorHandler final : public AudioScheduledSourceHandler {
+class MODULES_EXPORT OscillatorHandler final
+    : public AudioScheduledSourceHandler {
+  FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest, RoundingBug);
+
  public:
   // The waveform type.
   // These must be defined as in the .idl file.
