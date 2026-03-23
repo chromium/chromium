@@ -89,6 +89,16 @@ const DeviceInfo::OsType kLocalDeviceOS = DeviceInfo::OsType::kLinux;
 const DeviceInfo::FormFactor kLocalDeviceFormFactor =
     DeviceInfo::FormFactor::kDesktop;
 
+MobilePromoOnDesktopPromoTypeSet SpecificsToPromoTypes(
+    const DeviceInfoSpecifics& specifics) {
+  MobilePromoOnDesktopPromoTypeSet types;
+  for (const auto& type :
+       specifics.feature_fields().desktop_to_ios_promo_receiving_types()) {
+    types.Put(static_cast<MobilePromoOnDesktopPromoType>(type));
+  }
+  return types;
+}
+
 MATCHER_P(HasDeviceInfo, expected, "") {
   return arg.device_info().SerializeAsString() == expected.SerializeAsString();
 }
@@ -148,6 +158,8 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .desktop_to_ios_promo_receiving_enabled() ==
              arg.desktop_to_ios_promo_receiving_enabled() &&
+         SpecificsToPromoTypes(expected_specifics) ==
+             arg.desktop_to_ios_promo_receiving_types() &&
          expected_specifics.invalidation_fields().instance_id_token() ==
              arg.fcm_registration_token();
 }
@@ -456,6 +468,10 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         auto copy = *paask_info_;
         local_device_info_->set_paask_info(std::move(copy));
       }
+      if (promo_types_) {
+        local_device_info_->set_desktop_to_ios_promo_receiving_types(
+            *promo_types_);
+      }
     }
     return local_device_info_.get();
   }
@@ -479,11 +495,17 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     paask_info_ = paask_info;
   }
 
+  void UpdateDesktopToIOSPromoReceivingTypes(
+      const MobilePromoOnDesktopPromoTypeSet& promo_types) {
+    promo_types_ = promo_types;
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
   std::optional<std::string> fcm_registration_token_;
   std::optional<DataTypeSet> interested_data_types_;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
+  std::optional<MobilePromoOnDesktopPromoTypeSet> promo_types_;
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,
@@ -844,6 +866,49 @@ TEST_F(DeviceInfoSyncBridgeTest, GetAllData) {
                   Pair(local_device()->GetLocalDeviceInfo()->guid(), _),
                   Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1)),
                   Pair(specifics2.cache_guid(), HasDeviceInfo(specifics2))));
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, LegacyDesktopToIOSPromoReceivingEnabled) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  // If Lens is the only granular type enabled, the legacy boolean should be
+  // false, because Lens is not a legacy promo.
+  local_device()->UpdateDesktopToIOSPromoReceivingTypes(
+      MobilePromoOnDesktopPromoTypeSet{
+          MobilePromoOnDesktopPromoType::kLensPromo});
+  ForcePulse();
+  auto data = GetAllData();
+  ASSERT_EQ(1u, data.size());
+  EXPECT_FALSE(data.begin()
+                   ->second.device_info()
+                   .feature_fields()
+                   .desktop_to_ios_promo_receiving_enabled());
+
+  // If a legacy type (e.g. Autofill) is enabled, the legacy boolean should be
+  // true.
+  local_device()->UpdateDesktopToIOSPromoReceivingTypes(
+      MobilePromoOnDesktopPromoTypeSet{
+          MobilePromoOnDesktopPromoType::kLensPromo,
+          MobilePromoOnDesktopPromoType::kAutofillPromo});
+  ForcePulse();
+  data = GetAllData();
+  ASSERT_EQ(1u, data.size());
+  EXPECT_TRUE(data.begin()
+                  ->second.device_info()
+                  .feature_fields()
+                  .desktop_to_ios_promo_receiving_enabled());
+
+  // If kAllPromos is enabled, the legacy boolean should be true.
+  local_device()->UpdateDesktopToIOSPromoReceivingTypes(
+      MobilePromoOnDesktopPromoTypeSet{
+          MobilePromoOnDesktopPromoType::kAllPromos});
+  ForcePulse();
+  data = GetAllData();
+  ASSERT_EQ(1u, data.size());
+  EXPECT_TRUE(data.begin()
+                  ->second.device_info()
+                  .feature_fields()
+                  .desktop_to_ios_promo_receiving_enabled());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {

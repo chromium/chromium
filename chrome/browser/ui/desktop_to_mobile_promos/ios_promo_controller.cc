@@ -205,10 +205,23 @@ bool IOSPromoController::IsUserEligibleForPromo(PromoType promo_type) {
 
   // Check if user is eligible for Reminder type promo.
   if (device && !ios_promos_utils::IsUserActive16OnIOS(browser_->profile()) &&
-      device->desktop_to_ios_promo_receiving_enabled() &&
       MobilePromoOnDesktopTypeEnabled(
           feature_type, desktop_to_mobile_promos::BubbleType::kReminder)) {
-    return true;
+    // For backwards compatibility with older iOS clients that only populate the
+    // boolean field, treat an empty types set as a fallback to the boolean.
+    bool receiving_enabled = false;
+    if (device->desktop_to_ios_promo_receiving_types().empty()) {
+      receiving_enabled = device->desktop_to_ios_promo_receiving_enabled();
+    } else {
+      receiving_enabled =
+          device->desktop_to_ios_promo_receiving_types().Has(
+              MobilePromoOnDesktopPromoType::kAllPromos) ||
+          device->desktop_to_ios_promo_receiving_types().Has(feature_type);
+    }
+
+    if (receiving_enabled) {
+      return true;
+    }
   }
 
   // Check if user is eligible for QRCode type promo.

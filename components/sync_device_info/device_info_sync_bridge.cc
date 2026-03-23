@@ -131,6 +131,20 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   return to;
 }
 
+MobilePromoOnDesktopPromoTypeSet SpecificsToDesktopToIOSPromoReceivingTypes(
+    const DeviceInfoSpecifics& specifics) {
+  MobilePromoOnDesktopPromoTypeSet types;
+  for (const auto& type_int :
+       specifics.feature_fields().desktop_to_ios_promo_receiving_types()) {
+    auto type = static_cast<MobilePromoOnDesktopPromoType>(type_int);
+    if (type >= MobilePromoOnDesktopPromoType::kMinValue &&
+        type <= MobilePromoOnDesktopPromoType::kMaxValue) {
+      types.Put(type);
+    }
+  }
+  return types;
+}
+
 std::optional<base::Time> SpecificsToAutoSignOutLastSigninTimestamp(
     const DeviceInfoSpecifics& specifics) {
   if (!specifics.feature_fields()
@@ -186,7 +200,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
       SpecificsToAutoSignOutLastSigninTimestamp(specifics),
-      specifics.feature_fields().desktop_to_ios_promo_receiving_enabled());
+      specifics.feature_fields().desktop_to_ios_promo_receiving_enabled(),
+      SpecificsToDesktopToIOSPromoReceivingTypes(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -245,8 +260,23 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
       info.send_tab_to_self_receiving_type());
-  feature_fields->set_desktop_to_ios_promo_receiving_enabled(
-      info.desktop_to_ios_promo_receiving_enabled());
+
+  // The `desktop_to_ios_promo_receiving_enabled` boolean is a legacy field.
+  // Older Desktop clients (e.g. M145) only check this boolean and assume it
+  // applies to the original promos (ESB and Autofill/Passwords).
+  // To avoid breaking the feature on old Desktop clients, we set this legacy
+  // boolean to true if any of those original promos (or kAllPromos) are
+  // enabled.
+  bool legacy_enabled = info.desktop_to_ios_promo_receiving_enabled() ||
+                        info.desktop_to_ios_promo_receiving_types().HasAny(
+                            {MobilePromoOnDesktopPromoType::kAllPromos,
+                             MobilePromoOnDesktopPromoType::kAutofillPromo,
+                             MobilePromoOnDesktopPromoType::kESBPromo});
+  feature_fields->set_desktop_to_ios_promo_receiving_enabled(legacy_enabled);
+  for (const auto type : info.desktop_to_ios_promo_receiving_types()) {
+    feature_fields->add_desktop_to_ios_promo_receiving_types(
+        static_cast<sync_pb::SyncEnums_MobilePromoOnDesktopPromoType>(type));
+  }
   if (info.auto_sign_out_last_signin_timestamp().has_value()) {
     feature_fields
         ->set_auto_sign_out_last_signin_timestamp_windows_epoch_micros(
@@ -327,6 +357,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->send_tab_to_self_receiving_type() &&
          current->desktop_to_ios_promo_receiving_enabled() ==
              stored->desktop_to_ios_promo_receiving_enabled() &&
+         current->desktop_to_ios_promo_receiving_types() ==
+             stored->desktop_to_ios_promo_receiving_types() &&
          current->sharing_info() == stored->sharing_info() &&
          ArePaaskInfosEqual(current->paask_info(), stored->paask_info()) &&
          current->fcm_registration_token() ==

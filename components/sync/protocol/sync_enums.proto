@@ -240,4 +240,16 @@ message SyncEnums {
     // in-app message.
     SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION = 1;
   }
+
+  // Type of promos for the Desktop to iOS feature.
+  // LINT.IfChange(MobilePromoOnDesktopPromoType)
+  enum MobilePromoOnDesktopPromoType {
+    PROMO_TYPE_ALL = 0;
+    PROMO_TYPE_LENS = 1;
+    PROMO_TYPE_ESB = 2;
+    PROMO_TYPE_AUTOFILL = 3;
+    PROMO_TYPE_TAB_GROUPS = 4;
+    PROMO_TYPE_PRICE_TRACKING = 5;
+  }
+  // LINT.ThenChange(/components/desktop_to_mobile_promos/features.h:MobilePromoOnDesktopPromoType)
 }

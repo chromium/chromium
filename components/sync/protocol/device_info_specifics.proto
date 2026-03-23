@@ -122,6 +122,12 @@ message FeatureSpecificFields {
   // Tracks whether the Desktop to iOS Promo feature is enabled on the device.
   // This is populated only for iOS devices.
   optional bool desktop_to_ios_promo_receiving_enabled = 4;
+
+  // List of Desktop to iOS Promo types enabled on the device.
+  // This is populated only for iOS devices.
+  // The values correspond to the MobilePromoOnDesktopPromoType enum.
+  repeated SyncEnums.MobilePromoOnDesktopPromoType
+      desktop_to_ios_promo_receiving_types = 5;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end

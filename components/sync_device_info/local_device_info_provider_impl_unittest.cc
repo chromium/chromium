@@ -72,6 +72,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               (const override));
   MOCK_METHOD(bool, IsUmaEnabledOnCrOSDevice, (), (const override));
   MOCK_METHOD(bool, GetDesktopToIOSPromoReceivingEnabled, (), (const override));
+  MOCK_METHOD(MobilePromoOnDesktopPromoTypeSet,
+              GetDesktopToIOSPromoReceivingTypes,
+              (),
+              (const override));
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
@@ -229,19 +233,30 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingType) {
 TEST_F(LocalDeviceInfoProviderImplTest, DesktopToIOSPromoReceivingEnabled) {
   ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingEnabled())
       .WillByDefault(Return(true));
+  ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingTypes())
+      .WillByDefault(Return(MobilePromoOnDesktopPromoTypeSet{
+          MobilePromoOnDesktopPromoType::kAllPromos}));
 
   InitializeProvider();
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()
                   ->desktop_to_ios_promo_receiving_enabled());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()
+                  ->desktop_to_ios_promo_receiving_types()
+                  .Has(MobilePromoOnDesktopPromoType::kAllPromos));
 
   ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingEnabled())
       .WillByDefault(Return(false));
+  ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingTypes())
+      .WillByDefault(Return(MobilePromoOnDesktopPromoTypeSet{}));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_FALSE(provider_->GetLocalDeviceInfo()
                    ->desktop_to_ios_promo_receiving_enabled());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()
+                  ->desktop_to_ios_promo_receiving_types()
+                  .empty());
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {

@@ -137,6 +137,23 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return MobilePromoOnDesktopEnabled();
   }
 
+  // syncer::DeviceInfoSyncClient:
+  MobilePromoOnDesktopPromoTypeSet GetDesktopToIOSPromoReceivingTypes()
+      const override {
+    if (!MobilePromoOnDesktopEnabled()) {
+      return {};
+    }
+
+    MobilePromoOnDesktopPromoTypeSet enabled_types;
+    for (MobilePromoOnDesktopPromoType type :
+         MobilePromoOnDesktopPromoTypeSet::All()) {
+      if (MobilePromoOnDesktopTypeEnabled(type)) {
+        enabled_types.Put(type);
+      }
+    }
+    return enabled_types;
+  }
+
  private:
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
