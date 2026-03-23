@@ -244,8 +244,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "test_crosapi_environment.cc",
-    "test_crosapi_environment.h",
     "test_local_printer_ash.cc",
     "test_local_printer_ash.h",
   ]
