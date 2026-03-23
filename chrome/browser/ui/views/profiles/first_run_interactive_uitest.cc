@@ -702,16 +702,22 @@ INSTANTIATE_TEST_SUITE_P(
       return RefreshedViewSuffix(info.param);
     });
 
-class FirstRunInteractiveUiTestWithSyncService
-    : public FirstRunInteractiveUiTest {
+template <typename T>
+class WithTestSyncServiceMixin : public T {
+ public:
+  using T::T;
+
  protected:
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
-    FirstRunServiceBrowserTestBase::SetUpBrowserContextKeyedServices(context);
+    T::SetUpBrowserContextKeyedServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
   }
 };
+
+using FirstRunInteractiveUiTestWithSyncService =
+    WithTestSyncServiceMixin<FirstRunInteractiveUiTest>;
 
 // TODO(crbug.com/366119368): Re-enable this test
 #if BUILDFLAG(IS_WIN)
@@ -1288,16 +1294,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          ValuesIn(GetTestParams()),
                          &ParamToTestSuffix);
 
-class FirstRunParameterizedInteractiveUiTestWithSyncService
-    : public FirstRunParameterizedInteractiveUiTest {
- protected:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    FirstRunInteractiveUiBaseTest::SetUpBrowserContextKeyedServices(context);
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestSyncService));
-  }
-};
+using FirstRunParameterizedInteractiveUiTestWithSyncService =
+    WithTestSyncServiceMixin<FirstRunParameterizedInteractiveUiTest>;
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
                        SignInAndSync) {
@@ -1740,16 +1738,8 @@ INSTANTIATE_TEST_SUITE_P(
       return RefreshedViewSuffix(info.param);
     });
 
-class FirstRunWithHatsInteractiveUiTestWithSyncService
-    : public FirstRunWithHatsInteractiveUiTest {
- protected:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    FirstRunServiceBrowserTestBase::SetUpBrowserContextKeyedServices(context);
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestSyncService));
-  }
-};
+using FirstRunWithHatsInteractiveUiTestWithSyncService =
+    WithTestSyncServiceMixin<FirstRunWithHatsInteractiveUiTest>;
 
 // TODO(crbug.com/366082752): Re-enable this test once the issue is fixed.
 #if BUILDFLAG(IS_WIN)
