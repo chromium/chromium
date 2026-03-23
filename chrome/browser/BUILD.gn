@@ -1220,6 +1220,11 @@ static_library("browser") {
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access:impl",
+
+    # TODO(crbug.com/494635303): Remove this circular dependency when
+    # chrome/browser/notifications/scheduler/notification_schedule_service_factory.h
+    # gets extracted into its own target.
+    "//chrome/browser/finds",
     "//chrome/browser/first_party_sets:impl",
     "//chrome/browser/google",
 

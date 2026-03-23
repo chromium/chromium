@@ -6,9 +6,12 @@
 
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
+#include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/service_access_type.h"
 
@@ -36,6 +39,7 @@ FindsServiceFactory::FindsServiceFactory()
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(NotificationScheduleServiceFactory::GetInstance());
 }
 
 FindsServiceFactory::~FindsServiceFactory() = default;
@@ -49,8 +53,11 @@ FindsServiceFactory::BuildServiceInstanceForBrowserContext(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
+  notifications::NotificationScheduleService* notification_schedule_service =
+      NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
   return std::make_unique<FindsService>(opt_guide_service, history_service,
-                                        profile->GetPrefs());
+                                        profile->GetPrefs(),
+                                        notification_schedule_service);
 }
 
 }  // namespace finds
