@@ -54,13 +54,15 @@ void UserAddingScreenImpl::Start() {
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
   CHECK(!IsRunning());
   display_host_ = new LoginDisplayHostMojo(
-      local_state, application_locale_storage, browser_policy_connector_ash,
-      DisplayedScreen::USER_ADDING_SCREEN,
+      local_state, application_locale_storage, shared_url_loader_factory,
+      browser_policy_connector_ash, DisplayedScreen::USER_ADDING_SCREEN,
       /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This

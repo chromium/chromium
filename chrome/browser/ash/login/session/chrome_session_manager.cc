@@ -84,9 +84,11 @@ void RemoveObsoleteKioskCryptohomes() {
 // `local_state`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
+// `shared_url_loader_factory` must be non-null.
 void StartKioskSession(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     KioskAppId app,
     bool is_auto_launch = false) {
@@ -100,7 +102,8 @@ void StartKioskSession(
 
   // Manages its own lifetime. See ShutdownDisplayHost().
   auto* display_host = new LoginDisplayHostWebUI(
-      local_state, application_locale_storage, browser_policy_connector_ash);
+      local_state, application_locale_storage,
+      std::move(shared_url_loader_factory), browser_policy_connector_ash);
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -111,14 +114,17 @@ void StartKioskSession(
 // `local_state`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
+// `shared_url_loader_factory` must be non-null.
 void StartAutoLaunchKioskSession(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
   StartKioskSession(local_state, application_locale_storage,
+                    std::move(shared_url_loader_factory),
                     browser_policy_connector_ash, app.value().id(),
                     /*is_auto_launch=*/true);
 }
@@ -478,6 +484,7 @@ void ChromeSessionManager::Initialize(
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
     StartAutoLaunchKioskSession(&local_state_.get(), application_locale_storage,
+                                std::move(shared_url_loader_factory),
                                 &browser_policy_connector_ash_.get());
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();

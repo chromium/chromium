@@ -24,6 +24,8 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,11 +52,15 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   }
 
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     existing_user_controller_ = std::make_unique<ExistingUserController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
-            ->application_locale_storage());
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
 
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
@@ -86,6 +92,12 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
 
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
+  }
+
+  void TearDown() override {
+    mock_login_display_host_.reset();
+    existing_user_controller_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
   ExistingUserController* existing_user_controller() const {
@@ -147,6 +159,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   ScopedCrosSettingsTestHelper settings_helper_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};

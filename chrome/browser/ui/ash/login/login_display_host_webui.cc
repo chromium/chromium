@@ -268,6 +268,8 @@ void ShowLoginWizardFinish(
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
@@ -303,19 +305,20 @@ void ShowLoginWizardFinish(
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
     display_host = new LoginDisplayHostMojo(
-        local_state, application_locale_storage, browser_policy_connector_ash,
-        DisplayedScreen::SIGN_IN_SCREEN,
+        local_state, application_locale_storage, shared_url_loader_factory,
+        browser_policy_connector_ash, DisplayedScreen::SIGN_IN_SCREEN,
         /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
     display_host = new LoginDisplayHostMojo(
-        local_state, application_locale_storage, browser_policy_connector_ash,
-        DisplayedScreen::SIGN_IN_SCREEN,
+        local_state, application_locale_storage, shared_url_loader_factory,
+        browser_policy_connector_ash, DisplayedScreen::SIGN_IN_SCREEN,
         /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
     display_host = new LoginDisplayHostWebUI(
-        local_state, application_locale_storage, browser_policy_connector_ash);
+        local_state, application_locale_storage, shared_url_loader_factory,
+        browser_policy_connector_ash);
   }
 
   if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
@@ -514,9 +517,11 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 LoginDisplayHostWebUI::LoginDisplayHostWebUI(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
     : LoginDisplayHostCommon(local_state,
                              application_locale_storage,
+                             std::move(shared_url_loader_factory),
                              browser_policy_connector_ash,
                              /*update_geolocation_usage_allowed=*/true),
       oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
@@ -1087,7 +1092,8 @@ void LoginDisplayHostWebUI::OnLoginPromptVisible() {
 
 void LoginDisplayHostWebUI::CreateExistingUserController() {
   existing_user_controller_ = std::make_unique<ExistingUserController>(
-      &local_state_.get(), &application_locale_storage_.get());
+      &local_state_.get(), &application_locale_storage_.get(),
+      shared_url_loader_factory_);
 }
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {
@@ -1233,6 +1239,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
@@ -1270,7 +1278,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI(
-        &local_state, application_locale_storage, browser_policy_connector_ash);
+        &local_state, application_locale_storage, shared_url_loader_factory,
+        browser_policy_connector_ash);
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572

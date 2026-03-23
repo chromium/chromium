@@ -229,10 +229,12 @@ CreateSecondDeviceAuthBroker() {
 LoginDisplayHostCommon::LoginDisplayHostCommon(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
@@ -254,6 +256,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
               []() { return g_browser_process->local_state(); }),
           base::BindRepeating(
               []() { return g_browser_process->metrics_service(); }))) {
+  CHECK(shared_url_loader_factory_);
+
   if (features::IsOobeCrosEventsEnabled()) {
     oobe_cros_events_metrics_ = std::make_unique<OobeCrosEventsMetrics>(
         &local_state_.get(), oobe_metrics_helper_.get());

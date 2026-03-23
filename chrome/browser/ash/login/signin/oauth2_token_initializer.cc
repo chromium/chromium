@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -16,14 +14,15 @@ OAuth2TokenInitializer::OAuth2TokenInitializer() = default;
 
 OAuth2TokenInitializer::~OAuth2TokenInitializer() = default;
 
-void OAuth2TokenInitializer::Start(const UserContext& user_context,
-                                   FetchOAuth2TokensCallback callback) {
+void OAuth2TokenInitializer::Start(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    const UserContext& user_context,
+    FetchOAuth2TokensCallback callback) {
   DCHECK(!user_context.GetAuthCode().empty());
   callback_ = std::move(callback);
   user_context_ = user_context;
   oauth2_token_fetcher_ = std::make_unique<OAuth2TokenFetcher>(
-      this, g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory());
+      this, std::move(shared_url_loader_factory));
   if (user_context.GetDeviceId().empty()) {
     NOTREACHED() << "Device ID is not set";
   }

@@ -8,8 +8,13 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/login/signin/oauth2_token_fetcher.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -28,7 +33,10 @@ class OAuth2TokenInitializer final : public OAuth2TokenFetcher::Delegate {
   ~OAuth2TokenInitializer() override;
 
   // Fetch OAuth2 tokens.
-  void Start(const UserContext& context, FetchOAuth2TokensCallback callback);
+  void Start(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const UserContext& context,
+      FetchOAuth2TokensCallback callback);
 
  private:
   // OAuth2TokenFetcher::Delegate overrides.

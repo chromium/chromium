@@ -358,12 +358,15 @@ ExistingUserController* ExistingUserController::current_controller() {
 
 ExistingUserController::ExistingUserController(
     PrefService* local_state,
-    const ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       cros_settings_(CrosSettings::Get()),
       network_state_helper_(new login::NetworkStateHelper),
       pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
+  CHECK(shared_url_loader_factory_);
   HttpAuthDialog::AddObserver(this);
 
   enable_system_httpauth_ = HttpAuthDialog::Enable();
@@ -1659,7 +1662,7 @@ void ExistingUserController::DoCompleteLogin(
   if (!user_context.GetAuthCode().empty()) {
     oauth2_token_initializer_ = std::make_unique<OAuth2TokenInitializer>();
     oauth2_token_initializer_->Start(
-        user_context,
+        shared_url_loader_factory_, user_context,
         base::BindOnce(&ExistingUserController::OnOAuth2TokensFetched,
                        weak_factory_.GetWeakPtr()));
     return;

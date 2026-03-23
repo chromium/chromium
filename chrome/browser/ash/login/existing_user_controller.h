@@ -42,6 +42,10 @@ namespace base {
 class ElapsedTimer;
 }  // namespace base
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 class CrosSettings;
 class KioskAppId;
@@ -73,9 +77,11 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // All UI initialization is deferred till Init() call.
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
   ExistingUserController(
       PrefService* local_state,
-      const ApplicationLocaleStorage* application_locale_storage);
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   ExistingUserController(const ExistingUserController&) = delete;
   ExistingUserController& operator=(const ExistingUserController&) = delete;
@@ -304,6 +310,8 @@ class ExistingUserController : public HttpAuthDialog::Observer,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Public session auto-login timer.
   std::unique_ptr<base::OneShotTimer> auto_login_timer_;

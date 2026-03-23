@@ -162,17 +162,26 @@ class DemoLoginControllerTest : public testing::Test {
 
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     existing_user_controller_ = std::make_unique<ExistingUserController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
-            ->application_locale_storage());
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
-    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
-        test_url_loader_factory_.GetSafeWeakWrapper());
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     ExpectGetExistingController();
+  }
+
+  void TearDown() override {
+    existing_user_controller_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   // This will trigger `ExistingUserController:ConfigureAutoLogin` since the
@@ -209,14 +218,6 @@ class DemoLoginControllerTest : public testing::Test {
 
     GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(
         cloud_policy_manager_.get());
-  }
-
-  void TearDown() override {
-    existing_user_controller_.reset();
-    if (chromeos::PowerPolicyController::IsInitialized()) {
-      chromeos::PowerPolicyController::Shutdown();
-    }
-    chromeos::PowerManagerClient::Shutdown();
   }
 
   GURL GetSetupUrl() {

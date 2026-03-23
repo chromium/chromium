@@ -189,11 +189,13 @@ LoginDisplayHostMojo::AuthState::~AuthState() = default;
 LoginDisplayHostMojo::LoginDisplayHostMojo(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
                              application_locale_storage,
+                             std::move(shared_url_loader_factory),
                              browser_policy_connector_ash,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
@@ -1009,7 +1011,8 @@ void LoginDisplayHostMojo::StopObservingOobeUI() {
 
 void LoginDisplayHostMojo::CreateExistingUserController() {
   existing_user_controller_ = std::make_unique<ExistingUserController>(
-      &local_state_.get(), &application_locale_storage_.get());
+      &local_state_.get(), &application_locale_storage_.get(),
+      shared_url_loader_factory_);
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);

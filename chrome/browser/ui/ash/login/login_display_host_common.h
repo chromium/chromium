@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
@@ -27,6 +28,10 @@
 class AccountId;
 class ApplicationLocaleStorage;
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
@@ -48,9 +53,11 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
  public:
   // `local_state`, `application_locale_storage` and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
   LoginDisplayHostCommon(
       PrefService* local_state,
       ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       bool update_geolocation_usage_allowed);
 
@@ -142,6 +149,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
 

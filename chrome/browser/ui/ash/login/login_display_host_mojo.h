@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -33,6 +34,10 @@
 
 class ApplicationLocaleStorage;
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
@@ -59,9 +64,11 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
  public:
   // `local_state`, `application_locale_storage` and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
   LoginDisplayHostMojo(
       PrefService* local_state,
       ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       DisplayedScreen displayed_screen,
       bool update_geolocation_usage_allowed);

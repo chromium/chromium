@@ -49,6 +49,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -75,10 +77,14 @@ class MockExistingUserController : public ash::ExistingUserController {
  public:
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
   MockExistingUserController(
       PrefService* local_state,
-      const ApplicationLocaleStorage* application_locale_storage)
-      : ash::ExistingUserController(local_state, application_locale_storage) {}
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+      : ash::ExistingUserController(local_state,
+                                    application_locale_storage,
+                                    std::move(shared_url_loader_factory)) {}
 
   MockExistingUserController(const MockExistingUserController&) = delete;
 
@@ -183,13 +189,16 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::unique_ptr<ash::FakeChromeUserManager>(fake_chrome_user_manager_));
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     mock_login_display_host_ = std::make_unique<ash::MockLoginDisplayHost>();
     mock_existing_user_controller_ =
         std::make_unique<MockExistingUserController>(
             TestingBrowserProcess::GetGlobal()->local_state(),
             TestingBrowserProcess::GetGlobal()
                 ->GetFeatures()
-                ->application_locale_storage());
+                ->application_locale_storage(),
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     mock_lock_handler_ = std::make_unique<MockLoginApiLockHandler>();
     // Set `LOGIN_PRIMARY` as the default state.
 
@@ -210,6 +219,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     mock_lock_handler_.reset();
     mock_existing_user_controller_.reset();
     mock_login_display_host_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     scoped_user_manager_.reset();
     auth_events_recorder_.reset();
 
@@ -230,6 +240,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
