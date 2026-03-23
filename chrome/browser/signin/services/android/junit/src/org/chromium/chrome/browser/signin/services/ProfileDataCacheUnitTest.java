@@ -50,7 +50,7 @@ public class ProfileDataCacheUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Parameters(name = "{index}: isIdentityManagerSourceOfAccounts={0}")
+    @Parameters(name = "{index}_isIdentityManagerSourceOfAccounts={0}")
     public static Collection parameters() {
         return Arrays.asList(false, true);
     }
@@ -381,5 +381,87 @@ public class ProfileDataCacheUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mObserverMock, never()).onAccountsUpdated(any());
         verify(mObserverMock).onProfileDataUpdated(any());
+    }
+
+    // TODO(crbug.com/494569985): Remove after MakeIdentityManagerSourceOfAccounts flag cleanup
+    @Test
+    public void testUpdateProfileDataWithoutDisplayableInfo_Legacy() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        mProfileDataCache.addObserver(mObserverMock);
+
+        AccountInfo accountWithoutDisplayableInfo =
+                new AccountInfo.Builder(
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getGaiaId())
+                        .build();
+        mAccountManagerTestRule.addAccount(accountWithoutDisplayableInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var profileData = mProfileDataCache.getById(accountWithoutDisplayableInfo.getId());
+        Assert.assertEquals(
+                accountWithoutDisplayableInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertNull(profileData.getFullName());
+        Assert.assertNull(profileData.getGivenName());
+    }
+
+    // TODO(crbug.com/494569985): Remove after MakeIdentityManagerSourceOfAccounts flag cleanup
+    @Test
+    public void testUpdateProfileDataWithDisplayableInfo_Legacy() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        mProfileDataCache.addObserver(mObserverMock);
+
+        AccountInfo accountWithDisplayableInfo =
+                new AccountInfo.Builder(
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getGaiaId())
+                        .accountImage(TestAccounts.ACCOUNT1.getAccountImage())
+                        .build();
+        mAccountManagerTestRule.addAccount(accountWithDisplayableInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var profileData = mProfileDataCache.getById(accountWithDisplayableInfo.getId());
+        Assert.assertEquals(accountWithDisplayableInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals("", profileData.getFullName());
+        Assert.assertEquals("", profileData.getGivenName());
+    }
+
+    // TODO(crbug.com/494569985): Remove after MakeIdentityManagerSourceOfAccounts flag cleanup
+    @Test
+    public void testUpdateProfileDataWithBadgeConfig_Legacy() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        mProfileDataCache.addObserver(mObserverMock);
+
+        AccountInfo accountWithDisplayableInfo =
+                new AccountInfo.Builder(
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getGaiaId())
+                        .build();
+        mProfileDataCache.setBadge(
+                accountWithDisplayableInfo.getId(),
+                BadgeConfig.create(R.drawable.ic_sync_badge_error_20dp)
+                        .withDefaultSizeChildAccountConfig()
+                        .build(RuntimeEnvironment.application.getApplicationContext()));
+        mAccountManagerTestRule.addAccount(accountWithDisplayableInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var profileData = mProfileDataCache.getById(accountWithDisplayableInfo.getId());
+        Assert.assertEquals(accountWithDisplayableInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals("", profileData.getFullName());
+        Assert.assertEquals("", profileData.getGivenName());
     }
 }

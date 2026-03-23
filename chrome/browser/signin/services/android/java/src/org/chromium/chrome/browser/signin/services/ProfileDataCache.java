@@ -360,17 +360,22 @@ public class ProfileDataCache implements IdentityManager.Observer {
             croppedAvatar = overlayBadgeOnUserPicture(badgeConfig, croppedAvatar);
         }
 
-        // TODO(crbug.com/493091231): Hide this logic behind the feature flag.
-        final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
-        final var fullName = shouldPopulateNames ? accountInfo.getFullName() : null;
-        final var givenName = shouldPopulateNames ? accountInfo.getGivenName() : null;
-
-        return new DisplayableProfileData(
-                accountInfo.getEmail(),
-                croppedAvatar,
-                fullName,
-                givenName,
-                accountInfo.canHaveEmailAddressDisplayed());
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            return new DisplayableProfileData(
+                    accountInfo.getEmail(),
+                    croppedAvatar,
+                    accountInfo.getFullName(),
+                    accountInfo.getGivenName(),
+                    accountInfo.canHaveEmailAddressDisplayed());
+        } else {
+            final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
+            return new DisplayableProfileData(
+                    accountInfo.getEmail(),
+                    croppedAvatar,
+                    shouldPopulateNames ? accountInfo.getFullName() : null,
+                    shouldPopulateNames ? accountInfo.getGivenName() : null,
+                    accountInfo.canHaveEmailAddressDisplayed());
+        }
     }
 
     private void fireOnAccountsUpdated(List<DisplayableProfileData> accounts) {
