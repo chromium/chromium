@@ -664,7 +664,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kPeripheralCustomization,
          features::kAltClickAndSixPackCustomization,
-         features::kPeripheralNotification, features::kWelcomeExperience,
+         features::kPeripheralNotification,
          ::features::kSupportF11AndF12KeyShortcuts, features::kModifierSplit},
         {});
     NoSessionAshTestBase::SetUp();

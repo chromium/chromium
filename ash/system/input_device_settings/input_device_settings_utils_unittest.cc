@@ -699,7 +699,7 @@ class GetDeviceKeyForMetadataRequestTest : public testing::Test {
 
 TEST_F(GetDeviceKeyForMetadataRequestTest, DeviceKeyRewrittenWhenFlagEnabled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kPeripheralCustomization, features::kWelcomeExperience,
+      {features::kPeripheralCustomization,
        features::kWelcomeExperienceTestUnsupportedDevices},
       {});
   auto device_key = GetDeviceKeyForMetadataRequest("040e:0726");

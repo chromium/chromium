@@ -1982,9 +1982,6 @@ BASE_FEATURE(kWallpaperFastRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a new Welcome Experience for first-time peripheral connections.
-BASE_FEATURE(kWelcomeExperience, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // kWelcomeExperienceTestUnsupportedDevices enables the new device Welcome
 // Experience to be tested on external devices that are not officially
 // supported. When enabled, users will be able to initiate and complete
@@ -3378,13 +3375,8 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperGooglePhotosSharedAlbums);
 }
 
-bool IsWelcomeExperienceEnabled() {
-  return IsPeripheralCustomizationEnabled() &&
-         base::FeatureList::IsEnabled(kWelcomeExperience);
-}
-
 bool IsWelcomeExperienceTestUnsupportedDevicesEnabled() {
-  return IsWelcomeExperienceEnabled() &&
+  return IsPeripheralCustomizationEnabled() &&
          base::FeatureList::IsEnabled(kWelcomeExperienceTestUnsupportedDevices);
 }
 

@@ -7811,10 +7811,6 @@ inline constexpr char kWakeOnWifiAllowedName[] =
 inline constexpr char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";
 
-inline constexpr char kWelcomeExperienceName[] = "Welcome Experience";
-inline constexpr char kWelcomeExperienceDescription[] =
-    "Enables a new Welcome Experience for first-time peripheral connections.";
-
 inline constexpr char kWelcomeExperienceTestUnsupportedDevicesName[] =
     "Welcome Experience test unsupported devices";
 inline constexpr char kWelcomeExperienceTestUnsupportedDevicesDescription[] =
