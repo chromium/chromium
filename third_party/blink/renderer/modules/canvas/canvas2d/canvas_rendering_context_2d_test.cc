@@ -518,8 +518,7 @@ void CanvasRenderingContext2DTestBase::SetUp() {
   // This is above the threshold for canvas hibernation, even when small
   // canvases are excluded.
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(
-          "<body><canvas id='c'></canvas><canvas id='d'></canvas></body>"));
+      "<body><canvas id='c'></canvas><canvas id='d'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
 
   // Simulate that we allow scripts, so that HTMLCanvasElement uses

@@ -115,8 +115,8 @@ class ProcessedLocalAudioSourceBase : public SimTest {
             scheduler::GetSingleThreadTaskRunnerForTesting());
     source->SetAllowInvalidRenderFrameIdForTesting(true);
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), /*remote=*/false, std::move(source));
+        "audio_label", MediaStreamSource::kTypeAudio, "audio_track",
+        /*remote=*/false, std::move(source));
     audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source_->Id(), audio_source_,
         std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));

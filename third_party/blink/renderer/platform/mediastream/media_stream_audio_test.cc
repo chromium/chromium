@@ -252,9 +252,8 @@ class MediaStreamAudioTest : public ::testing::Test {
  protected:
   void SetUp() override {
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */,
-        std::make_unique<FakeMediaStreamAudioSource>());
+        "audio_id", MediaStreamSource::kTypeAudio, "audio_track",
+        false /* remote */, std::make_unique<FakeMediaStreamAudioSource>());
     audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source_->Id(), audio_source_,
         std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));

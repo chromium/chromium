@@ -897,7 +897,7 @@ TEST(KURLTest, urlStrippedForUseAsReferrer) {
 TEST(KURLTest, urlStrippedForUseAsReferrerRespectsReferrerScheme) {
   const KURL example_http_url = KURL("http://example.com/");
   const KURL foobar_url = KURL("foobar://somepage/");
-  const String foobar_scheme = String::FromUTF8("foobar");
+  const String foobar_scheme = "foobar";
 
   EXPECT_EQ("", foobar_url.StrippedForUseAsReferrer().Utf8());
 #if DCHECK_IS_ON()

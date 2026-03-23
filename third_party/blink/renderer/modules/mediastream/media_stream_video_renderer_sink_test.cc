@@ -43,9 +43,8 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     auto mock_source = std::make_unique<MockMediaStreamVideoSource>();
     mock_source_ = mock_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("dummy_source_name"), false /* remote */,
-        std::move(mock_source));
+        "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
+        false /* remote */, std::move(mock_source));
     WebMediaStreamTrack web_track = MediaStreamVideoTrack::CreateVideoTrack(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true);

@@ -91,9 +91,8 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
     auto capture_source = std::make_unique<HtmlAudioElementCapturerSource>(
         audio_source_, blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */,
-        std::move(capture_source));
+        "audio_id", MediaStreamSource::kTypeAudio, "audio_track",
+        false /* remote */, std::move(capture_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         media_stream_source_->Id(), media_stream_source_,
         std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));

@@ -17,7 +17,7 @@ namespace blink {
 
 TEST(String16MojomTraitsTest, String16) {
   // |str| is 8-bit.
-  String str = String::FromUTF8("hello world");
+  String str = "hello world";
   String output;
 
   ASSERT_TRUE(
@@ -36,7 +36,7 @@ TEST(String16MojomTraitsTest, String16) {
 }
 
 TEST(String16MojomTraitsTest, EmptyString16) {
-  String str = String::FromUTF8("");
+  String str = "";
   String output;
 
   ASSERT_TRUE(
@@ -46,7 +46,7 @@ TEST(String16MojomTraitsTest, EmptyString16) {
 }
 
 TEST(String16MojomTraitsTest, BigString16_Empty) {
-  String str = String::FromUTF8("");
+  String str = "";
   String output;
 
   ASSERT_TRUE(
@@ -56,7 +56,7 @@ TEST(String16MojomTraitsTest, BigString16_Empty) {
 }
 
 TEST(String16MojomTraitsTest, BigString16_Short) {
-  String str = String::FromUTF8("hello world");
+  String str = "hello world";
   ASSERT_TRUE(str.Is8Bit());
   String output;
 

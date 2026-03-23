@@ -53,15 +53,14 @@ TEST(SecurityPolicyTest, EmptyReferrerForUnauthorizedScheme) {
   const KURL example_http_url = KURL("http://example.com/");
   EXPECT_TRUE(String() == SecurityPolicy::GenerateReferrer(
                               network::mojom::ReferrerPolicy::kAlways,
-                              example_http_url,
-                              String::FromUTF8("chrome://somepage/"))
+                              example_http_url, "chrome://somepage/")
                               .referrer);
 }
 
 TEST(SecurityPolicyTest, GenerateReferrerRespectsReferrerSchemesRegistry) {
   const KURL example_http_url = KURL("http://example.com/");
-  const String foobar_url = String::FromUTF8("foobar://somepage/");
-  const String foobar_scheme = String::FromUTF8("foobar");
+  const String foobar_url = "foobar://somepage/";
+  const String foobar_scheme = "foobar";
 
   EXPECT_EQ(String(), SecurityPolicy::GenerateReferrer(
                           network::mojom::ReferrerPolicy::kAlways,
@@ -78,7 +77,7 @@ TEST(SecurityPolicyTest, GenerateReferrerRespectsReferrerSchemesRegistry) {
 TEST(SecurityPolicyTest, ShouldHideReferrerRespectsReferrerSchemesRegistry) {
   const KURL example_http_url = KURL("http://example.com/");
   const KURL foobar_url = KURL("foobar://somepage/");
-  const String foobar_scheme = String::FromUTF8("foobar");
+  const String foobar_scheme = "foobar";
 
   EXPECT_TRUE(SecurityPolicy::ShouldHideReferrer(example_http_url, foobar_url));
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);

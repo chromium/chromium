@@ -324,8 +324,7 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlotOrReadingFlowContainer) {
   auto* host = To<Element>(GetDocument().body()->firstChild());
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8("<slot></slot>"));
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot></slot>");
 
   Element* inner1 = GetDocument().QuerySelector(AtomicString("#inner1"));
   Element* inner2 = GetDocument().QuerySelector(AtomicString("#inner2"));

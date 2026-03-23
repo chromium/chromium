@@ -436,17 +436,17 @@ TEST(CaseMapTest, ToTitleLocale) {
 TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   CaseMap en_case_map(AtomicString("en"));
 
-  String input1 = String::FromUTF8("bc def");
+  String input1 = "bc def";
   String result1 = en_case_map.ToTitle(input1, nullptr, u'a');
-  EXPECT_EQ(result1, String::FromUTF8("bc Def"));
+  EXPECT_EQ(result1, "bc Def");
 
-  String input2 = String::FromUTF8("bc");
+  String input2 = "bc";
   String result2 = en_case_map.ToTitle(input2, nullptr, u'a');
-  EXPECT_EQ(result2, String::FromUTF8("bc"));
+  EXPECT_EQ(result2, "bc");
 
-  String input3 = String::FromUTF8("abc");
+  String input3 = "abc";
   String result3 = en_case_map.ToTitle(input3, nullptr, u'@');
-  EXPECT_EQ(result3, String::FromUTF8("Abc"));
+  EXPECT_EQ(result3, "Abc");
 
   CaseMap de_case_map(AtomicString("de"));
 
@@ -455,15 +455,15 @@ TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   String result4 = de_case_map.ToTitle(input4, nullptr, u'a');
   EXPECT_EQ(result4, String::FromUTF8("\xC3\x9F"));
 
-  String input5 = String::FromUTF8("abc");
+  String input5 = "abc";
   String result5 = de_case_map.ToTitle(input5, nullptr, u'\u00DF');
-  EXPECT_EQ(result5, String::FromUTF8("abc"));
+  EXPECT_EQ(result5, "abc");
 
   CaseMap nl_case_map(AtomicString("nl"));
 
-  String input6 = String::FromUTF8("ja");
+  String input6 = "ja";
   String result6 = nl_case_map.ToTitle(input6, nullptr, u'i');
-  EXPECT_EQ(result6, String::FromUTF8("ja"));
+  EXPECT_EQ(result6, "ja");
 }
 
 }  // namespace blink

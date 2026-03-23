@@ -49,7 +49,7 @@ class ThreadSafeScriptContainerTest : public ::testing::Test {
                base::WaitableEvent* waiter) {
               auto data =
                   std::make_unique<ThreadSafeScriptContainer::RawScriptData>(
-                      String::FromUTF8("utf-8") /* encoding */,
+                      "utf-8" /* encoding */,
                       Vector<uint8_t>() /* script_text */,
                       Vector<uint8_t>() /* meta_data */);
               *out_data = data.get();

@@ -50,7 +50,7 @@ class WebRtcMediaStreamTrackAdapterMapTest : public ::testing::Test {
     MediaStreamAudioSource* audio_source_ptr = audio_source.get();
     auto* source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8(id), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("local_audio_track"), false, std::move(audio_source));
+        "local_audio_track", false, std::move(audio_source));
 
     auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
         source->Id(), source,

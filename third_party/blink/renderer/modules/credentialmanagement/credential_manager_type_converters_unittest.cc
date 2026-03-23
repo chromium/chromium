@@ -429,8 +429,7 @@ TEST(CredentialManagerTypeConvertersTest,
   supplemental_pub_keys->setAttestationFormats(
       Vector({blink::String::FromUTF8(attestation_format)}));
   supplemental_pub_keys->setScopes(
-      Vector({blink::String::FromUTF8("device"),
-              blink::String::FromUTF8("provider")}));
+      Vector<blink::String>({"device", "provider"}));
   blink_type->setSupplementalPubKeys(supplemental_pub_keys);
 
   blink::mojom::blink::AuthenticationExtensionsClientInputsPtr mojo_type =

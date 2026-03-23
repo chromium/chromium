@@ -52,8 +52,8 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
         scheduler::GetSingleThreadTaskRunnerForTesting(), true);
     auto* audio_source_ptr = audio_source.get();
     auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("local_audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("local_audio_track"), false, std::move(audio_source));
+        "local_audio_id", MediaStreamSource::kTypeAudio, "local_audio_track",
+        false, std::move(audio_source));
 
     auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
         source->Id(), source,
@@ -71,8 +71,8 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
     // TODO(https://crbug.com/1302689): Fix this crazy lifecycle jumping back
     // and forth between GCed and non-GCed objects...
     MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("local_video_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("local_video_track"), false, std::move(video_source));
+        "local_video_id", MediaStreamSource::kTypeVideo, "local_video_track",
+        false, std::move(video_source));
 
     return MediaStreamVideoTrack::CreateVideoTrack(
         video_source_ptr,

@@ -829,11 +829,10 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     auto audio_source = std::make_unique<MediaStreamAudioSource>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), true);
     auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("dummy_source_name"), false /* remote */,
-        std::move(audio_source));
+        "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
+        false /* remote */, std::move(audio_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
-        String::FromUTF8("audio_track"), source,
+        "audio_track", source,
         std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
     CHECK(MediaStreamAudioSource::From(source)->ConnectToInitializedTrack(
         media_stream_component_));

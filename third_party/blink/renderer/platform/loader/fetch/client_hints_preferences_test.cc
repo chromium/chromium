@@ -73,7 +73,7 @@ TEST(ClientHintsPreferencesTest, BasicSecure) {
   for (const auto& test_case : cases) {
     SCOPED_TRACE(testing::Message() << test_case.header_value);
     ClientHintsPreferences preferences;
-    const KURL kurl(String::FromUTF8("https://www.google.com/"));
+    const KURL kurl("https://www.google.com/");
     bool did_update = preferences.UpdateFromMetaCH(
         test_case.header_value, kurl, nullptr,
         network::MetaCHType::HttpEquivAcceptCH,
@@ -188,7 +188,7 @@ TEST(ClientHintsPreferencesTest, BasicSecure) {
 // Update*() methods are called.
 TEST(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   ClientHintsPreferences preferences;
-  const KURL kurl(String::FromUTF8("https://www.google.com/"));
+  const KURL kurl("https://www.google.com/");
   bool did_update = preferences.UpdateFromMetaCH(
       "rtt, downlink", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
       /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
@@ -320,9 +320,8 @@ TEST(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
 TEST(ClientHintsPreferencesTest, Insecure) {
   for (const auto& use_secure_url : {false, true}) {
     ClientHintsPreferences preferences;
-    const KURL kurl = use_secure_url
-                          ? KURL(String::FromUTF8("https://www.google.com/"))
-                          : KURL(String::FromUTF8("http://www.google.com/"));
+    const KURL kurl = use_secure_url ? KURL("https://www.google.com/")
+                                     : KURL("http://www.google.com/");
     bool did_update = preferences.UpdateFromMetaCH(
         "dpr", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
         /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
@@ -552,7 +551,7 @@ TEST(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
-    const KURL kurl(String::FromUTF8("https://www.google.com/"));
+    const KURL kurl("https://www.google.com/");
     preferences.UpdateFromMetaCH(test.accept_ch_header_value, kurl, nullptr,
                                  network::MetaCHType::HttpEquivAcceptCH,
                                  /*is_doc_preloader=*/true,

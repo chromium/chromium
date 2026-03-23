@@ -176,16 +176,16 @@ TEST_P(FindLengthOfDeclarationListTest, NonASCII) {
 TEST_P(FindLengthOfDeclarationListTest, NewlineInString) {
   // Newlines are invalid in strings (they will produce “bad string tokens”,
   // which immediately ends the string), so we give up here.
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: \"\n\"")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: '\n'")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: \"\r\"")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: '\r'")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: \"\f\"")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: '\f'")));
-  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--longer-than-16: \"\n\"")));
+  EXPECT_FALSE(BlockAccepted("--foo: \"\n\""));
+  EXPECT_FALSE(BlockAccepted("--foo: '\n'"));
+  EXPECT_FALSE(BlockAccepted("--foo: \"\r\""));
+  EXPECT_FALSE(BlockAccepted("--foo: '\r'"));
+  EXPECT_FALSE(BlockAccepted("--foo: \"\f\""));
+  EXPECT_FALSE(BlockAccepted("--foo: '\f'"));
+  EXPECT_FALSE(BlockAccepted("--longer-than-16: \"\n\""));
 
   // However, newlines in general are allowed.
-  EXPECT_TRUE(BlockAccepted(String::FromUTF8("--foo: 'bar'\n--bar: 'foo'\n")));
+  EXPECT_TRUE(BlockAccepted("--foo: 'bar'\n--bar: 'foo'\n"));
 }
 
 #endif  // SIMD

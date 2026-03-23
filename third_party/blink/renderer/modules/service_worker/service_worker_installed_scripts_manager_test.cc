@@ -347,7 +347,7 @@ TEST_F(ServiceWorkerInstalledScriptsManagerTest, EarlyDisconnectionBody) {
     // only sends kExpectedBody and a null byte (kExpectedBody.length() + 1
     // bytes in total).
     sender.TransferInstalledScript(
-        kScriptUrl, String::FromUTF8("utf8"), HashMap<String, String>(),
+        kScriptUrl, "utf8", HashMap<String, String>(),
         kExpectedBody.length() + 100, kExpectedMetaData.length() + 1);
     sender.PushBody(kExpectedBody);
     sender.PushMetaData(kExpectedMetaData);
@@ -392,7 +392,7 @@ TEST_F(ServiceWorkerInstalledScriptsManagerTest, EarlyDisconnectionMetaData) {
     // sender only sends kExpectedMetaData and a null byte
     // (kExpectedMetaData.length() + 1 bytes in total).
     sender.TransferInstalledScript(
-        kScriptUrl, String::FromUTF8("utf8"), HashMap<String, String>(),
+        kScriptUrl, "utf8", HashMap<String, String>(),
         kExpectedBody.length() + 1, kExpectedMetaData.length() + 100);
     sender.PushBody(kExpectedBody);
     sender.PushMetaData(kExpectedMetaData);

@@ -137,7 +137,7 @@ void OffscreenCanvasTest::SetUp() {
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8("<body><canvas id='c'></canvas></body>"));
+      "<body><canvas id='c'></canvas></body>");
 
   canvas_element_ =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));

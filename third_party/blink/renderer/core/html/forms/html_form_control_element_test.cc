@@ -99,7 +99,7 @@ TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {
   EXPECT_EQ(TextDirection::kRtl, message_dir);
   EXPECT_EQ(TextDirection::kLtr, sub_message_dir);
 
-  input->setCustomValidity(String::FromUTF8("Main message."));
+  input->setCustomValidity("Main message.");
   message = input->validationMessage().StripWhiteSpace();
   sub_message = input->ValidationSubMessage().StripWhiteSpace();
   input->FindCustomValidationMessageTextDirection(message, message_dir,

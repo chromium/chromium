@@ -46,11 +46,11 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
                        WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize);
     sink_bus_ = media::AudioBus::Create(sink_params_);
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("dummy_source_name"), /*remote=*/false,
+        "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
+        /*remote=*/false,
         /*platform_source=*/nullptr);
     component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
-        String::FromUTF8("audio_track"), audio_source,
+        "audio_track", audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
         component_, context_sample_rate, platform_buffer_duration);

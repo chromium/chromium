@@ -23,17 +23,16 @@ namespace {
 static payments::mojom::blink::PaymentCurrencyAmountPtr
 CreatePaymentCurrencyAmountForTest() {
   auto currency_amount = payments::mojom::blink::PaymentCurrencyAmount::New();
-  currency_amount->currency = String::FromUTF8("USD");
-  currency_amount->value = String::FromUTF8("9.99");
+  currency_amount->currency = "USD";
+  currency_amount->value = "9.99";
   return currency_amount;
 }
 
 static payments::mojom::blink::PaymentMethodDataPtr
 CreatePaymentMethodDataForTest() {
   auto method_data = payments::mojom::blink::PaymentMethodData::New();
-  method_data->supported_method = String::FromUTF8("foo");
-  method_data->stringified_data =
-      String::FromUTF8("{\"merchantId\":\"12345\"}");
+  method_data->supported_method = "foo";
+  method_data->stringified_data = "{\"merchantId\":\"12345\"}";
   return method_data;
 }
 
@@ -63,8 +62,8 @@ static payments::mojom::blink::PaymentShippingOptionPtr
 CreateShippingOptionForTest() {
   auto shipping_option = payments::mojom::blink::PaymentShippingOption::New();
   shipping_option->amount = CreatePaymentCurrencyAmountForTest();
-  shipping_option->label = String::FromUTF8("shipping-option-label");
-  shipping_option->id = String::FromUTF8("shipping-option-id");
+  shipping_option->label = "shipping-option-label";
+  shipping_option->id = "shipping-option-id";
   shipping_option->selected = true;
   return shipping_option;
 }
@@ -74,12 +73,12 @@ CreatePaymentRequestEventDataForTest() {
   auto event_data = payments::mojom::blink::PaymentRequestEventData::New();
   event_data->top_origin = KURL("https://example.com");
   event_data->payment_request_origin = KURL("https://example.com");
-  event_data->payment_request_id = String::FromUTF8("payment-request-id");
+  event_data->payment_request_id = "payment-request-id";
   Vector<payments::mojom::blink::PaymentMethodDataPtr> method_data;
   method_data.push_back(CreatePaymentMethodDataForTest());
   event_data->method_data = std::move(method_data);
   event_data->total = CreatePaymentCurrencyAmountForTest();
-  event_data->instrument_key = String::FromUTF8("payment-instrument-key");
+  event_data->instrument_key = "payment-instrument-key";
   event_data->payment_options = CreatePaymentOptionsForTest();
   Vector<payments::mojom::blink::PaymentShippingOptionPtr> shipping_options;
   shipping_options.push_back(CreateShippingOptionForTest());

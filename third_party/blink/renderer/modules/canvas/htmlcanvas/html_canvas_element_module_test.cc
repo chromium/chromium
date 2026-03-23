@@ -65,7 +65,7 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
   void SetUp() override {
     web_view_helper_.Initialize();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-        String::FromUTF8("<body><canvas id='c'></canvas></body>"));
+        "<body><canvas id='c'></canvas></body>");
     canvas_element_ =
         To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
   }

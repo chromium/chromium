@@ -56,9 +56,8 @@ class MediaStreamVideoSourceTest : public testing::Test {
             false)) {
     mock_stream_video_source_->DisableStopForRestart();
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("dummy_source_name"), false /* remote */,
-        base::WrapUnique(mock_stream_video_source_.get()));
+        "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
+        false /* remote */, base::WrapUnique(mock_stream_video_source_.get()));
     ON_CALL(*mock_stream_video_source_, OnSourceCanDiscardAlpha)
         .WillByDefault(Return());
     ON_CALL(*mock_stream_video_source_, SupportsEncodedOutput)

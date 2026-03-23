@@ -341,9 +341,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     auto* processed_audio_source_ptr = processed_audio_source.get();
     processed_audio_source->SetAllowInvalidRenderFrameIdForTesting(true);
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
-        audio_track_label, MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */,
-        std::move(processed_audio_source));
+        audio_track_label, MediaStreamSource::kTypeAudio, "audio_track",
+        false /* remote */, std::move(processed_audio_source));
 
     auto native_video_source = std::make_unique<MockMediaStreamVideoSource>();
     auto* native_video_source_ptr = native_video_source.get();
@@ -355,9 +354,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     // TODO(https://crbug.com/1302689): Fix this crazy lifecycle jumping back
     // and forth between GCed and non-GCed objects...
     MakeGarbageCollected<MediaStreamSource>(
-        video_track_label, MediaStreamSource::kTypeVideo,
-        String::FromUTF8("video_track"), false /* remote */,
-        std::move(native_video_source));
+        video_track_label, MediaStreamSource::kTypeVideo, "video_track",
+        false /* remote */, std::move(native_video_source));
 
     HeapVector<Member<MediaStreamComponent>> audio_components(
         static_cast<size_t>(1));

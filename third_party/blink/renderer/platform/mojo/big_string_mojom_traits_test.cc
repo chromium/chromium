@@ -23,7 +23,7 @@ TEST(BigStringMojomTraitsTest, BigString_Null) {
 }
 
 TEST(BigStringMojomTraitsTest, BigString_Empty) {
-  String str = String::FromUTF8("");
+  String str = "";
   String output;
 
   ASSERT_TRUE(
@@ -33,7 +33,7 @@ TEST(BigStringMojomTraitsTest, BigString_Empty) {
 }
 
 TEST(BigStringMojomTraitsTest, BigString_Short) {
-  String str = String::FromUTF8("hello world");
+  String str = "hello world";
   ASSERT_TRUE(str.Is8Bit());
   String output;
 

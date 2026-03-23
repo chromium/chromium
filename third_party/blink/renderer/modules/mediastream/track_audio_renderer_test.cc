@@ -117,9 +117,8 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
 
     auto* audio_component = MakeGarbageCollected<MediaStreamComponentImpl>(
         MakeGarbageCollected<MediaStreamSource>(
-            String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-            String::FromUTF8("audio_track"), false /* remote */,
-            std::move(source)),
+            "audio_id", MediaStreamSource::kTypeAudio, "audio_track",
+            false /* remote */, std::move(source)),
         std::move(platform_track));
 
     static_cast<blink::MediaStreamAudioSource*>(

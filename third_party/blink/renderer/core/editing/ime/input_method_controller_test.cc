@@ -3713,14 +3713,12 @@ TEST_F(InputMethodControllerTest, ExecCommandDuringComposition) {
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");
 
   // Open a composition.
-  Controller().SetComposition(String::FromUTF8("hello"), Vector<ImeTextSpan>(),
-                              5, 5);
+  Controller().SetComposition("hello", Vector<ImeTextSpan>(), 5, 5);
   // Turn on bold formatting.
   GetDocument().execCommand("bold", false, "", ASSERT_NO_EXCEPTION);
 
   // Extend the composition with some more text.
-  Controller().SetComposition(String::FromUTF8("helloworld"),
-                              Vector<ImeTextSpan>(), 10, 10);
+  Controller().SetComposition("helloworld", Vector<ImeTextSpan>(), 10, 10);
 
   // "world" should be bold.
   EXPECT_EQ("hello<b>world</b>", div->GetInnerHTMLString());
@@ -3735,12 +3733,10 @@ TEST_F(InputMethodControllerTest, SetCompositionAfterNonEditableElement) {
   div->Focus();
 
   // Open a composition and insert some text.
-  Controller().SetComposition(String::FromUTF8("c"), Vector<ImeTextSpan>(), 1,
-                              1);
+  Controller().SetComposition("c", Vector<ImeTextSpan>(), 1, 1);
 
   // Add some more text to the composition.
-  Controller().SetComposition(String::FromUTF8("cd"), Vector<ImeTextSpan>(), 2,
-                              2);
+  Controller().SetComposition("cd", Vector<ImeTextSpan>(), 2, 2);
 
   EXPECT_EQ(
       "<div contenteditable=\"true\" id=\"sample\">"
@@ -3760,8 +3756,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInTableCell) {
   Element* const table = GetDocument().getElementById(AtomicString("sample"));
   table->Focus();
 
-  Controller().SetComposition(String::FromUTF8("c"), Vector<ImeTextSpan>(), 1,
-                              1);
+  Controller().SetComposition("c", Vector<ImeTextSpan>(), 1, 1);
 
   Element* const td2 = GetDocument().getElementById(AtomicString("td2"));
   const Node* const text_node = td2->firstChild();
