@@ -1277,6 +1277,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Microsoft Excel OpenXML"/>
 </enum>
 
+<!-- LINT.IfChange(IOSOverflowMenuAction) -->
+
 <enum name="IOSOverflowMenuAction">
   <int value="0" label="Reload"/>
   <int value="1" label="NewTab"/>
@@ -1295,7 +1297,18 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="ShareChrome"/>
   <int value="15" label="EditActions"/>
   <int value="16" label="LensOverlay"/>
+  <int value="17" label="AIPrototype"/>
+  <int value="18" label="SetTabReminder"/>
+  <int value="19" label="ReaderMode"/>
+  <int value="20" label="AskGemini"/>
+  <int value="21" label="HideToolbars"/>
+  <int value="22" label="TabGroup"/>
+  <int value="23" label="ShareThisPage"/>
 </enum>
+
+<!-- LINT.ThenChange(
+    /ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:actionType
+)-->
 
 <enum name="IOSOverflowMenuActionType">
   <int value="0" label="No scroll, no action"/>

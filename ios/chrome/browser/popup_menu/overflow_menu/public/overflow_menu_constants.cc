@@ -9,6 +9,56 @@
 #import "base/strings/sys_string_conversions.h"
 
 namespace overflow_menu {
+
+namespace {
+// Ingests overflow_menu::Destination `destination` and records the
+// corresponding UMA action based when it is displayed on NTP.
+void RecordUmaActionForDestinationOnNtp(Destination destination) {
+  switch (destination) {
+    case Destination::Bookmarks:
+      base::RecordAction(
+          base::UserMetricsAction("MobileMenuAllBookmarksOnNTP"));
+      break;
+    case Destination::History:
+      base::RecordAction(base::UserMetricsAction("MobileMenuHistoryOnNTP"));
+      break;
+    case Destination::ReadingList:
+      base::RecordAction(base::UserMetricsAction("MobileMenuReadingListOnNTP"));
+      break;
+    case Destination::Passwords:
+      base::RecordAction(base::UserMetricsAction("MobileMenuPasswordsOnNTP"));
+      break;
+    case Destination::PriceNotifications:
+      base::RecordAction(
+          base::UserMetricsAction("MobileMenuPriceNotificationsOnNTP"));
+      break;
+    case Destination::Downloads:
+      base::RecordAction(base::UserMetricsAction(
+          "MobileDownloadFolderUIShownFromToolsMenuOnNTP"));
+      break;
+    case Destination::RecentTabs:
+      base::RecordAction(base::UserMetricsAction("MobileMenuRecentTabsOnNTP"));
+      break;
+    case Destination::SiteInfo:
+      base::RecordAction(
+          base::UserMetricsAction("MobileMenuSiteInformationOnNTP"));
+      break;
+    case Destination::Settings:
+      base::RecordAction(base::UserMetricsAction("MobileMenuSettingsOnNTP"));
+      break;
+    case Destination::WhatsNew:
+      base::RecordAction(base::UserMetricsAction("MobileMenuWhatsNewOnNTP"));
+      break;
+    case overflow_menu::Destination::SpotlightDebugger:
+      // No need to log metrics for a debug-only feature.
+      break;
+    case overflow_menu::Destination::Cobalt:
+      // No need to log metrics yet.
+      break;
+  }
+}
+}  // namespace
+
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 // LINT.IfChange(stringToDestination)
@@ -187,7 +237,11 @@ std::string StringNameForActionType(ActionType action) {
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-void RecordUmaActionForDestination(Destination destination) {
+void RecordUmaActionForDestination(Destination destination, bool on_ntp) {
+  if (on_ntp) {
+    RecordUmaActionForDestinationOnNtp(destination);
+  }
+
   switch (destination) {
     case Destination::Bookmarks:
       base::RecordAction(base::UserMetricsAction("MobileMenuAllBookmarks"));

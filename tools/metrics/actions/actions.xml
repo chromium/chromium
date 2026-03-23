@@ -27012,6 +27012,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileDownloadFolderUIShownFromToolsMenuOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Downloads' in the app menu from a NTP page. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileDownloadRetryDownload">
   <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
@@ -28309,6 +28317,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Bookmarks' in the app menu.</description>
 </action>
 
+<action name="MobileMenuAllBookmarksOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Bookmarks' in the app menu from a NTP page. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileMenuBack">
   <obsolete>Obsolete as of 5/2015</obsolete>
   <owner>aurimas@chromium.org</owner>
@@ -28479,6 +28495,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'History' in the app menu.</description>
 </action>
 
+<action name="MobileMenuHistoryOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'History' in the app menu from a NTP page. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileMenuIncognitoSearch">
   <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
@@ -28641,6 +28665,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Passwords' in the app menu.</description>
 </action>
 
+<action name="MobileMenuPasswordsOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Passwords' in the app menu from a NTP page. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileMenuPasteAndGo">
   <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
@@ -28659,6 +28691,14 @@ should be able to be added at any place in this file.
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>User pressed 'Track Price' in the app menu.</description>
+</action>
+
+<action name="MobileMenuPriceNotificationsOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Track Price' in the app menu from a NTP page. Logged in
+    addition to the general metric.
+  </description>
 </action>
 
 <action name="MobileMenuPrint">
@@ -28690,6 +28730,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Reading List' in the app menu.</description>
 </action>
 
+<action name="MobileMenuReadingListOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Reading List' in the app menu from a NTP page. Logged in
+    addition to the general metric.
+  </description>
+</action>
+
 <action name="MobileMenuReadLater">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Add to Reading List' in the app menu.</description>
@@ -28698,6 +28746,14 @@ should be able to be added at any place in this file.
 <action name="MobileMenuRecentTabs">
   <owner>justincohen@chromium.org</owner>
   <description>User pressed 'Recent tabs' in the app menu.</description>
+</action>
+
+<action name="MobileMenuRecentTabsOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Recent tabs' in the app menu from a NTP page. Logged in
+    addition to the general metric.
+  </description>
 </action>
 
 <action name="MobileMenuReload">
@@ -28766,6 +28822,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuSettingsOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Settings' in the app menu from a NTP page. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileMenuShare">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Share' in the app menu.</description>
@@ -28804,6 +28868,14 @@ should be able to be added at any place in this file.
 <action name="MobileMenuSiteInformation">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Site Information' in the app menu.</description>
+</action>
+
+<action name="MobileMenuSiteInformationOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Site Information' in the app menu from a NTP page. Logged in
+    addition to the general metric.
+  </description>
 </action>
 
 <action name="MobileMenuStop">
@@ -28889,6 +28961,14 @@ should be able to be added at any place in this file.
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <description>User pressed 'What's New' in the app menu.</description>
+</action>
+
+<action name="MobileMenuWhatsNewOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'What's New' in the app menu from a NTP page. Logged in
+    addition to the general metric.
+  </description>
 </action>
 
 <action name="MobileMenuWindowManager">
@@ -32101,6 +32181,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarBackOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Back' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
+  </description>
+</action>
+
 <action name="MobileToolbarCloseAllIncognitoTabsButtonTap">
   <owner>mdjones@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -32175,6 +32263,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarForwardOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'forward' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
+  </description>
+</action>
+
 <action name="MobileToolbarIdentityDiscTap">
   <owner>pavely@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -32210,6 +32306,14 @@ should be able to be added at any place in this file.
     User pressed the NewTab shortcut on the toolbar. iOS only. The UI of the bar
     changed from a toolbar UI to an an appbar UI, which may affect usage. This
     change happened when the flag ChromeNextIa was enabled.
+  </description>
+</action>
+
+<action name="MobileToolbarNewTabShortcutOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'New Tab' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
   </description>
 </action>
 
@@ -32255,6 +32359,14 @@ should be able to be added at any place in this file.
     User pressed the reload icon in the toolbar. Pre-M55, MobileToolbarReload
     accounted for all reload actions. M55+, this metric only refers to reloads
     that occurred from the toolbar.
+  </description>
+</action>
+
+<action name="MobileToolbarReloadOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Reload' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
   </description>
 </action>
 
@@ -32319,6 +32431,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarShareMenuOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Share' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
+  </description>
+</action>
+
 <action name="MobileToolbarShowMenu">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -32327,8 +32447,16 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarShowMenuFromReaderMode">
   <owner>fernandex@google.com</owner>
   <description>
-    User pressed the toolbar's button to open the app menu from Reader Mode. iOS
-    only.
+    User pressed button to show the overflow menu on the toolbar from Reader
+    Mode. iOS only.
+  </description>
+</action>
+
+<action name="MobileToolbarShowMenuOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed button to show the overflow menu on the toolbar from a NTP
+    page. Logged in addition to the general metric.
   </description>
 </action>
 
@@ -32354,6 +32482,14 @@ should be able to be added at any place in this file.
     User tapped on the toolbar button to show the TabGrid. On iOS the UI of the
     bar changed from a toolbar UI to an an appbar UI, which may affect usage.
     This change happened when the flag ChromeNextIa was enabled.
+  </description>
+</action>
+
+<action name="MobileToolbarShowStackViewOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed the TabGrid button on the toolbar from a NTP page. Logged in
+    addition to the general metric.
   </description>
 </action>
 
@@ -32441,6 +32577,14 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarStop">
   <owner>tedchoc@chromium.org</owner>
   <description>User pressed the stop icon in the toolbar.</description>
+</action>
+
+<action name="MobileToolbarStopOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed 'Stop' on the toolbar from a NTP page. Logged in addition to
+    the general metric.
+  </description>
 </action>
 
 <action name="MobileToolbarSwipeOpenStackView">

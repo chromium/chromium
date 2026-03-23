@@ -185,7 +185,7 @@ struct OverflowMenuDestinationView: View {
           .opacity(0)
         Button(
           action: {
-            metricsHandler?.popupMenuTookAction()
+            metricsHandler?.popupMenuTriggerElement()
             metricsHandler?.popupMenuUserSelectedDestination()
             destination.handler()
           },

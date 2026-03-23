@@ -521,24 +521,51 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
 
   if (sender == self.view.backButton) {
+    if (self.isNTP) {
+      base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
   } else if (sender == self.view.forwardButton) {
+    if (self.isNTP) {
+      base::RecordAction(base::UserMetricsAction("MobileToolbarForwardOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
   } else if (sender == self.view.reloadButton) {
+    if (self.isNTP) {
+      base::RecordAction(base::UserMetricsAction("MobileToolbarReloadOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
   } else if (sender == self.view.stopButton) {
+    if (self.isNTP) {
+      base::RecordAction(base::UserMetricsAction("MobileToolbarStopOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
   } else if (sender == self.view.toolsMenuButton) {
+    if (self.isNTP) {
+      base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenuOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
     if (self.adaptiveDelegate.isReaderModeActive) {
       base::RecordAction(
           base::UserMetricsAction("MobileToolbarShowMenuFromReaderMode"));
     }
   } else if (sender == self.view.tabGridButton) {
+    if (self.isNTP) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarShowStackViewOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
   } else if (sender == self.view.shareButton) {
+    if (self.isNTP) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarShareMenuOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenu"));
   } else if (sender == self.view.openNewTabButton) {
+    if (self.isNTP) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarNewTabShortcutOnNTP"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
     base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   } else {

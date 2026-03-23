@@ -4676,6 +4676,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.ActionTriggered" enum="IOSOverflowMenuAction"
+    expires_after="2027-03-31">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>The action taken by the user on the overflow menu.</summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.ActionTriggeredOnNTP"
+    enum="IOSOverflowMenuAction" expires_after="2027-03-31">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>
+    The action taken by the user on the overflow menu when on NTP.
+  </summary>
+</histogram>
+
 <histogram name="IOS.OverflowMenu.ActionType" enum="IOSOverflowMenuActionType"
     expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
