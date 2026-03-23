@@ -192,8 +192,7 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
 
   // Check the feature flag(s) last, so that metrics can record all the other
   // reasons to not do the migration, even with the flag disabled.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
       !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }

@@ -204,8 +204,7 @@ bool ArePreferencesAllowedInTransportMode() {
     return false;
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 #else
   return true;
 #endif
@@ -696,7 +695,7 @@ CommonControllerBuilder::CreateAutofillWalletMetadataDataTypeController(
       syncer::AUTOFILL_WALLET_METADATA,
       base::BindRepeating(&AutofillWalletMetadataDelegateFromDataService),
       sync_service, /*with_transport_mode_support=*/
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -709,7 +708,7 @@ CommonControllerBuilder::CreateAutofillWalletOfferDataTypeController(
       syncer::AUTOFILL_WALLET_OFFER,
       base::BindRepeating(&AutofillWalletOfferDelegateFromDataService),
       sync_service, /*with_transport_mode_support=*/
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -790,7 +789,7 @@ CommonControllerBuilder::CreateSessionsDataTypeController(
   auto full_sync_mode_delegate =
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate);
   auto transport_mode_delegate =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate)
           : nullptr;
@@ -1000,7 +999,7 @@ CommonControllerBuilder::CreateUserEventsDataTypeController(
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate)
           : nullptr);

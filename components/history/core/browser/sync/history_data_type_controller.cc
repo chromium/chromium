@@ -26,8 +26,8 @@ GetDelegateFromHistoryService(HistoryService* history_service,
 
   // Transport-mode support for HISTORY requires
   // `kReplaceSyncPromosWithSignInPromos`.
-  if (for_transport_mode && !base::FeatureList::IsEnabled(
-                                syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (for_transport_mode &&
+      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return nullptr;
   }
   // The same delegate is used for transport mode and full-sync mode.

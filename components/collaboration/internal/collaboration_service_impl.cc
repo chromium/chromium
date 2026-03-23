@@ -375,8 +375,7 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   // However, setting `kSyncDisabledByEnterprise` is necessary for properly
   // displaying an error message/hiding the "Share group" entry point if sync is
   // disabled.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     bool any_type_disabled_by_policy = false;
     for (const syncer::UserSelectableType type : kRequiredTypes) {
       if (user_settings->IsTypeManagedByPolicy(type)) {
@@ -402,8 +401,7 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
     // The user needs to enable them in settings.
     return SyncStatus::kSyncWithoutTabGroup;
   } else {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       // Sync-the-feature is not required, but the user needs to enable
       // the required data types in settings. Note that this also includes cases
       // where the user is not signed in at all - that is covered by

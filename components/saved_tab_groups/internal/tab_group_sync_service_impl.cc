@@ -336,8 +336,7 @@ void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
   std::vector<signin::ConsentLevel> consent_levels;
   consent_levels.push_back(signin::ConsentLevel::kSignin);
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     consent_levels.push_back(signin::ConsentLevel::kSync);
   }
 

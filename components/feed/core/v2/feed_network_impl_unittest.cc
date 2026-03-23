@@ -138,10 +138,9 @@ class FeedNetworkTest : public testing::Test {
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
         shared_url_loader_factory_, &profile_prefs_);
-    SignIn(
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync);
+    SignIn(syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+               ? signin::ConsentLevel::kSignin
+               : signin::ConsentLevel::kSync);
   }
 
   void SignIn(signin::ConsentLevel consent_level) {

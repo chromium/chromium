@@ -80,8 +80,7 @@ using UrlProductInfoTuple =
 // This function can be deleted once the Sync feature is removed.
 signin::ConsentLevel GetConsentLevelForEndpointFetchers(
     PrefService* pref_service) {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
              ? signin::ConsentLevel::kSignin
              : signin::ConsentLevel::kSync;
 }
@@ -129,8 +128,8 @@ ShoppingService::ShoppingService(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
                   sync_service,
-                  /*require_sync_feature_enabled=*/!base::FeatureList::
-                      IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
+                  /*require_sync_feature_enabled=*/!syncer::
+                      IsReplaceSyncPromosWithSignInPromosEnabled())),
       web_extractor_(std::move(web_extractor)),
       tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {

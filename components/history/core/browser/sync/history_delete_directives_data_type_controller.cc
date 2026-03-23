@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/sync/base/features.h"
@@ -32,8 +31,7 @@ using DelegateMode =
 DelegateMode GetDelegateMode() {
   // Transport mode is only supported if if `kReplaceSyncPromosWithSignInPromos`
   // is enabled.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return DelegateMode::kTransportModeWithSingleModel;
   }
   return DelegateMode::kLegacyFullSyncModeOnly;

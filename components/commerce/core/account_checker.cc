@@ -72,8 +72,7 @@ AccountChecker::AccountChecker(
 AccountChecker::~AccountChecker() = default;
 
 bool AccountChecker::IsSignedIn() {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return identity_manager_ &&
            identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
@@ -313,7 +312,7 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
   // kReplaceSyncPromosWithSignInPromos is launched on all platforms. See
   // ConsentLevel::kSync documentation for details.
   signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
   EndpointFetcher::RequestParams::Builder request_params =

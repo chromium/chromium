@@ -362,8 +362,7 @@ std::u16string GetCounterTextFromResult(
 
     // TODO(crbug.com/40066949): Clean this up once Sync-the-feature is gone on
     // all platforms.
-    bool synced = !base::FeatureList::IsEnabled(
-                      syncer::kReplaceSyncPromosWithSignInPromos) &&
+    bool synced = !syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
                   autofill_result->is_sync_enabled();
 
     // TODO(crbug.com/371539581): Exclude payment methods from this part,

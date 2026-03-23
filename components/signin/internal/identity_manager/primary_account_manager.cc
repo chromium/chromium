@@ -129,8 +129,7 @@ bool ShouldEnableExtensionsExplicitBrowserSigninPrefForSignedInUser() {
   // existing sessions (requiring a new sign-in to be enabled). This function
   // identifies users from the original migration group to ensure they maintain
   // their existing behavior.
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) &&
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
          !syncer::kExplicitSigninForExtensions.Get();
 }
 
@@ -145,8 +144,7 @@ bool ShouldEnableBookmarksExplicitBrowserSigninPrefForSignedInUser() {
   // existing sessions (requiring a new sign-in to be enabled). This function
   // identifies users from the original migration group to ensure they maintain
   // their existing behavior.
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) &&
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
          !syncer::kExplicitSigninForBookmarks.Get();
 }
 
@@ -154,16 +152,14 @@ bool ShouldEnableExtensionExplicitBrowserSigninPrefOnSignIn(
     signin_metrics::AccessPoint access_point) {
   // For all user groups, for new sign-in enable extensions.
   return access_point == signin_metrics::AccessPoint::kExtensionInstallBubble ||
-         base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
+         syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 }
 
 bool ShouldEnableBookmarksExplicitBrowserSigninPrefOnSignIn(
     signin_metrics::AccessPoint access_point) {
   // For all user groups, for new sign-in enable bookmarks.
   return access_point == signin_metrics::AccessPoint::kBookmarkBubble ||
-         base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
+         syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -755,8 +751,7 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
+      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
         scoped_pref_commit.SetBoolean(
             prefs::kPrimaryAccountSetAfterSigninMigration, true);
       }

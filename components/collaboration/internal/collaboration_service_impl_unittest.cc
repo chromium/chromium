@@ -317,8 +317,7 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   EXPECT_EQ(service_->GetServiceStatus().sync_status,
             SyncStatus::kSyncWithoutTabGroup);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // If sync-the-feature is not required, kNotSyncing is never happening.
     test_sync_service_->SetSignedOut();
     test_sync_service_->FireStateChanged();

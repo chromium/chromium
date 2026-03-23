@@ -314,8 +314,7 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
     return ProfileUpdateBlockReason::kUserSignedOut;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
       !sync_service_observer_.GetSource()->IsSyncFeatureEnabled()) {
     return ProfileUpdateBlockReason::kSyncDisabled;
   }

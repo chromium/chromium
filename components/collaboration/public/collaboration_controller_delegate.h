@@ -117,8 +117,7 @@ class CollaborationControllerDelegate {
           error_header = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER);
           error_body = l10n_util::GetStringUTF8(
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
+              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                   ? IDS_COLLABORATION_ENTREPRISE_TABS_SYNC_DISABLED_BODY
                   : IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY);
           break;
@@ -127,8 +126,7 @@ class CollaborationControllerDelegate {
               IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_HEADER);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
           error_body = l10n_util::GetStringUTF8(
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
+              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                   ? IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_SYNC_HISTORY_BODY
                   : IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
 #else

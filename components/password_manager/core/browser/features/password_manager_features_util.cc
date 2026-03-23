@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/sync/base/features.h"
@@ -128,8 +127,7 @@ bool ShouldShowAccountStorageSettingToggle(
   // IsAccountStorageActive() after kReplaceSyncPromosWithSignInPromos is
   // launched and cleaned-up.
   return IsUserEligibleForAccountStorage(sync_service) &&
-         !base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
+         !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

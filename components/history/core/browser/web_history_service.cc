@@ -165,8 +165,7 @@ class RequestImpl : public WebHistoryService::Request {
     // TODO(crbug.com/40066882): Simplify this once
     // kReplaceSyncPromosWithSignInPromos has rolled out on all platforms.
     signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       consent_level = signin::ConsentLevel::kSignin;
     }
 

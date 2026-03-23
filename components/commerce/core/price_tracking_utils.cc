@@ -7,7 +7,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -529,9 +528,9 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
 
   // Only try to use account nodes if the user is not syncing.
-  bool use_account_nodes = base::FeatureList::IsEnabled(
-                               syncer::kReplaceSyncPromosWithSignInPromos) &&
-                           model->IsLocalOnlyNode(*model->other_node());
+  bool use_account_nodes =
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
+      model->IsLocalOnlyNode(*model->other_node());
 
   const auto node_type_for_lookup =
       use_account_nodes

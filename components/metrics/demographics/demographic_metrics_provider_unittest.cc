@@ -104,8 +104,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         sync_service_->GetUserSettings()->SetSelectedTypes(
             /*sync_everything=*/false,
             /*types=*/{});
-        if (base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos)) {
+        if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
           CHECK(!sync_service_->IsSyncFeatureEnabled());
         } else {
           CHECK(sync_service_->IsSyncFeatureEnabled());
@@ -128,8 +127,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // However TestSyncService::SetSignedIn forces
         // TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() to return
         // false when sync is in transport mode.
-        if (base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos)) {
+        if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
           CHECK(!sync_service_->GetUserSettings()
                      ->IsInitialSyncFeatureSetupComplete());
         } else {

@@ -61,10 +61,9 @@ class NtpFeedContentFetcherTest : public testing::Test {
  public:
   NtpFeedContentFetcherTest() {
     identity_test_env_.SetPrimaryAccount(
-        kEmail,
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync);
+        kEmail, syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+                    ? signin::ConsentLevel::kSignin
+                    : signin::ConsentLevel::kSync);
   }
   NtpFeedContentFetcherTest(NtpFeedContentFetcherTest&) = delete;
   NtpFeedContentFetcherTest& operator=(const NtpFeedContentFetcherTest&) =

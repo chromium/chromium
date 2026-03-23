@@ -832,8 +832,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     bookmark_model_->MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
   }
 
