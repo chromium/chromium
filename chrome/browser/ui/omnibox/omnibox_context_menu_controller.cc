@@ -119,9 +119,6 @@ OmniboxContextMenuController::OmniboxContextMenuController(
       web_contents_(web_contents->GetWeakPtr()) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
-  min_tools_and_models_command_id_ =
-      kMinOmniboxContextMenuRecentTabsCommandId +
-      omnibox::kContextMenuMaxTabSuggestions.Get();
   auto* composebox_handler =
       GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
   if (composebox_handler &&
@@ -131,6 +128,8 @@ OmniboxContextMenuController::OmniboxContextMenuController(
                        weak_ptr_factory_.GetWeakPtr()));
     InitializeMenuItemInfo();
   }
+  min_tools_and_models_command_id_ =
+      kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions();
   BuildMenu();
 }
 
@@ -405,8 +404,7 @@ OmniboxContextMenuController::GetRecentTabs() {
 
   // Sort tabs by most recently active.
   int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()),
-               omnibox::kContextMenuMaxTabSuggestions.Get());
+      std::min(static_cast<int>(tabs.size()), GetMaxTabSuggestions());
   std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
                     tabs.end(),
                     [](const OmniboxContextMenuController::TabInfo& a,
@@ -539,6 +537,15 @@ bool OmniboxContextMenuController::IsContentSharingEnabled() const {
   return omnibox::IsContentSharingEnabled(profile, session_handle);
 }
 
+int OmniboxContextMenuController::GetMaxTabSuggestions() const {
+  if (auto it = input_state_.max_inputs_by_type.find(
+          omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+      it != input_state_.max_inputs_by_type.end()) {
+    return it->second;
+  }
+  return omnibox::kContextMenuMaxTabSuggestions.Get();
+}
+
 OmniboxContextMenuController::ContextType
 OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
@@ -603,7 +610,7 @@ OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
       // tabs that would have the same command id.
       CHECK_GE(command_id, kMinOmniboxContextMenuRecentTabsCommandId);
       CHECK_LT(command_id, kMinOmniboxContextMenuRecentTabsCommandId +
-                               omnibox::kContextMenuMaxTabSuggestions.Get());
+                               GetMaxTabSuggestions());
       return OmniboxContextMenuController::ContextType::kTab;
   }
 }
@@ -817,8 +824,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
   // Add tab context if tab is selected.
   if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      id < kMinOmniboxContextMenuRecentTabsCommandId +
-               omnibox::kContextMenuMaxTabSuggestions.Get()) {
+      id < kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions()) {
     base::UmaHistogramExactLinear(
         "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
         /*ContextMenu*/ 0, 4);
@@ -962,7 +968,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     // Command ID corresponds to "Most recent tabs" menu item.
     if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
         command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                         omnibox::kContextMenuMaxTabSuggestions.Get()) {
+                         GetMaxTabSuggestions()) {
       auto it =
           input_type_info_.find(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       return it != input_type_info_.end() && it->second.enabled;
@@ -1091,8 +1097,8 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
 
   // Command ID corresponds to "Most recent tabs" menu item.
   if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                       omnibox::kContextMenuMaxTabSuggestions.Get()) {
+      command_id <
+          kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions()) {
     return true;
   }
 

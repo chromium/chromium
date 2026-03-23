@@ -1655,6 +1655,51 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   }
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
+  base::FieldTrialParams params;
+  params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_composebox::kNtpComposebox, params);
+
+  // Add 5 valid tabs.
+  AddTab(GURL("https://www.google.com"));
+  AddTab(GURL("https://www.youtube.com"));
+  AddTab(GURL("https://www.gmail.com"));
+  auto* example_tab = AddTab(GURL("https://www.example.com"));
+  auto* chromium_tab = AddTab(GURL("https://www.chromium.org"));
+
+  // Initially, it should use the feature param limit.
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future1;
+  handler().GetRecentTabs(future1.GetCallback());
+  auto tabs = future1.Take();
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->tab_id, example_tab->GetHandle().raw_value());
+
+  // Now set a server-side limit of 1.
+  omnibox::InputState state;
+  state.max_inputs_by_type[omnibox::InputType::INPUT_TYPE_BROWSER_TAB] = 1;
+  handler().input_state_model()->set_state_for_testing(state);
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future2;
+  handler().GetRecentTabs(future2.GetCallback());
+  tabs = future2.Take();
+  ASSERT_EQ(tabs.size(), 1u);
+  EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
+
+  // Fallback to feature param limit if not in map.
+  state.max_inputs_by_type.erase(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  handler().input_state_model()->set_state_for_testing(state);
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future3;
+  handler().GetRecentTabs(future3.GetCallback());
+  tabs = future3.Take();
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->tab_id, example_tab->GetHandle().raw_value());
+}
+
 class ContextualSearchboxHandlerSignedInTestTabsTest
     : public ContextualSearchboxHandlerTestTabsTest {
  public:

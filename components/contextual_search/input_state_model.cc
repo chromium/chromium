@@ -36,27 +36,15 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
   }
   omnibox::RuleSet* rule_set = config->mutable_rule_set();
 
-  // The default max_instance for tabs is 5.
-  int max_browser_tab_instances = 5;
-
-  bool browser_tab_rule_exists = false;
-  for (const auto& rule : rule_set->input_type_rules()) {
-    // Until we get browser tab rules, treat browser tab input as image input
-    // for max instance limit purposes.
-    if (rule.input_type() == omnibox::INPUT_TYPE_LENS_IMAGE) {
-      max_browser_tab_instances = rule.max_instance();
-    }
-    if (rule.input_type() == omnibox::INPUT_TYPE_BROWSER_TAB) {
-      browser_tab_rule_exists = true;
-      break;
-    }
-  }
+  bool browser_tab_rule_exists =
+      std::ranges::any_of(rule_set->input_type_rules(), [](const auto& rule) {
+        return rule.input_type() == omnibox::INPUT_TYPE_BROWSER_TAB;
+      });
 
   // Populate `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB`.
   if (!browser_tab_rule_exists) {
     omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
     new_rule->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
-    new_rule->set_max_instance(max_browser_tab_instances);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
