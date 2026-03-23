@@ -274,11 +274,23 @@ export class ContentController {
         }
       }
 
-      // Set before updateImages to avoid early return.
+      // Process images from distillation. If images are disabled or there is
+      // no text content, images shouldn't be considered "content" and the
+      // empty state page should be shown. If there is a valid selection, then
+      // the images may be shown.
+      // TODO: crbug.com/483140075- Right now, selection with Readability does
+      // not work, so selected images will not be distilled.
+      const hasImages = this.updateImagesForReadability_(contentContainer);
+      const hasImagesAsContent = chrome.readingMode.imagesEnabled &&
+          chrome.readingMode.hasValidSelection && hasImages;
+
+      if (!contentContainer.textContent && !hasImagesAsContent) {
+        this.setEmpty();
+        return null;
+      }
+
       this.setState(ContentType.HAS_CONTENT);
 
-      // Process images from distillation.
-      this.updateImages(contentContainer);
       contentFragment.appendChild(contentContainer);
 
       // Ensure link visibility is updated with user preferences.
@@ -309,7 +321,13 @@ export class ContentController {
     const node = this.buildSubtree_(rootId);
     // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
-    if (!node.textContent && !this.nodeStore_.hasImagesToFetch()) {
+    // We should only consider images as content when determining whether or
+    // not to show the empty state page if they are enabled and if
+    // the user specifically selected the content.
+    const hasImagesAsContent = chrome.readingMode.imagesEnabled &&
+        chrome.readingMode.hasValidSelection &&
+        this.nodeStore_.hasImagesToFetch();
+    if (!node.textContent && !hasImagesAsContent) {
       // Sometimes the controller thinks there will be content and redraws
       // without showing the empty page, but we end up not actually having any
       // content and also not showing the empty page sometimes. In this case,

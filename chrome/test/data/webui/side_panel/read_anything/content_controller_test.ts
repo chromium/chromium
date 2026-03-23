@@ -280,6 +280,7 @@ suite('ContentController', () => {
       const rootId = 1;
       const imgId1 = 89;
       const imgId2 = 88;
+      const textId = 90;
       readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.rootId = rootId;
 
@@ -293,10 +294,17 @@ suite('ContentController', () => {
         return '';
       };
 
+      readingMode.getTextContent = (id) => {
+        if (id === textId) {
+          return 'I don\'t own a motorbike.';
+        }
+        return '';
+      };
+
       // So that nodeStore.addImageToFetch(imgId1) is called in updateContent
       readingMode.getChildren = (id) => {
         if (id === rootId) {
-          return [imgId1];
+          return [imgId1, textId];
         }
         return [];
       };
@@ -307,7 +315,7 @@ suite('ContentController', () => {
       // So that nodeStore.addImageToFetch(imgId2) is called in updateContent
       readingMode.getChildren = (id) => {
         if (id === rootId) {
-          return [imgId2];
+          return [imgId2, textId];
         }
         return [];
       };
@@ -1286,5 +1294,48 @@ suite('ContentController', () => {
       // 4 status calls.
       assertEquals(4, metrics.getCallCount('recordCount'));
     });
+  });
+
+  suite('hidden images empty state', () => {
+    setup(() => {
+      readingMode.imagesFeatureEnabled = true;
+      readingMode.rootId = 1;
+      readingMode.getHtmlTag = (id) => id === 1 ? 'img' : '';
+      readingMode.getChildren = (id) => id === 1 ? [] : [];
+      readingMode.getTextContent = () => '';
+      readingMode.hasValidSelection = false;
+    });
+
+    test('Images enabled, images available, no text -> empty state', () => {
+      readingMode.imagesEnabled = true;
+      contentController.updateContent();
+      assertTrue(contentController.isEmpty());
+    });
+
+    test('Images disabled with images and no text -> empty state', () => {
+      readingMode.imagesEnabled = false;
+      contentController.updateContent();
+      assertTrue(contentController.isEmpty());
+    });
+
+    test(
+        'Images enabled, with images and no text, with selection -> has content',
+        () => {
+          readingMode.imagesEnabled = true;
+          readingMode.hasValidSelection = true;
+          const root = contentController.updateContent();
+          assertFalse(contentController.isEmpty());
+          assertTrue(contentController.hasContent());
+          assertTrue(root instanceof HTMLCanvasElement);
+        });
+
+    test(
+        'Images disabled, with images and no text, with selection -> empty state',
+        () => {
+          readingMode.imagesEnabled = false;
+          readingMode.hasValidSelection = true;
+          contentController.updateContent();
+          assertTrue(contentController.isEmpty());
+        });
   });
 });
