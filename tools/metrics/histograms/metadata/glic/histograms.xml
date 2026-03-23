@@ -2817,6 +2817,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
+    enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2026-09-20">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Logged during the detection of the YouTube 'Ask' button whose presence is
+    used to offer a summarize video suggestion in Glic. This is a diagnostic
+    metric logged on YT pages to understand if the button was found and how many
+    tries (max is 2) it took to find it.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

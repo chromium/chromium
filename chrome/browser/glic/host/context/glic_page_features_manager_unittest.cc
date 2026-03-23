@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -122,6 +123,57 @@ TEST_F(GlicPageFeaturesManagerTest, WillDiscardContents) {
 
   // Fast forward.
   task_environment()->FastForwardBy(GlicPageFeaturesManager::kCheckDelay);
+}
+
+TEST_F(GlicPageFeaturesManagerTest, HistogramLogging) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSummarizeVideoSuggestion);
+
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost user_data_host;
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents()));
+  ON_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+
+  base::HistogramTester histogram_tester;
+  auto manager = std::make_unique<TestGlicPageFeaturesManager>(&mock_tab);
+
+  // Navigate to YouTube.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://www.youtube.com/watch?v=123"));
+
+  // Simulate first failure.
+  manager->OnCheckResult(base::Value(false));
+
+  // Simulate second failure.
+  manager->OnCheckResult(base::Value(false));
+  histogram_tester.ExpectBucketCount(
+      "Glic.YoutubeSummarizeVideoZSS.Events",
+      GlicPageFeaturesManager::YoutubeSummarizeVideoZSS::
+          kButtonNotFoundAfterAllChecks,
+      1);
+
+  // Navigate again and succeed on first check.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://www.youtube.com/watch?v=456"));
+  manager->OnCheckResult(base::Value(true));
+  histogram_tester.ExpectBucketCount(
+      "Glic.YoutubeSummarizeVideoZSS.Events",
+      GlicPageFeaturesManager::YoutubeSummarizeVideoZSS::
+          kButtonFoundOnFirstCheck,
+      1);
+
+  // Navigate again and succeed on second check.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://www.youtube.com/watch?v=789"));
+  manager->OnCheckResult(base::Value(false));  // First fail
+  manager->OnCheckResult(base::Value(true));   // Second success
+  histogram_tester.ExpectBucketCount(
+      "Glic.YoutubeSummarizeVideoZSS.Events",
+      GlicPageFeaturesManager::YoutubeSummarizeVideoZSS::
+          kButtonFoundOnSecondCheck,
+      1);
 }
 
 }  // namespace glic
