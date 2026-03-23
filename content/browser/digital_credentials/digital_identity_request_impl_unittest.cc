@@ -56,6 +56,8 @@ using RequestDigitalIdentityStatus = blink::mojom::RequestDigitalIdentityStatus;
 using DigitalIdentityCallback =
     DigitalIdentityProvider::DigitalIdentityCallback;
 using DigitalCredential = DigitalIdentityProvider::DigitalCredential;
+using RequestStatusForMetrics =
+    DigitalIdentityProvider::RequestStatusForMetrics;
 using GetCallback = blink::mojom::DigitalIdentityRequest::GetCallback;
 
 // StubDigitalIdentityProvider which enables overriding
@@ -1188,6 +1190,43 @@ TEST_F(DigitalIdentityRequestImplTest,
   // The protocol in the response should be used when invoking the callback.
   EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
                                  Optional(kProtocolInResponse), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       mock_callback.Get());
+
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ShouldReturnUserDeclinedWhenNoCredential) {
+  const std::string kProtocol = "protocol";
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  base::DictValue request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data = base::Value(std::move(request_data));
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
+        // Running the `callback` will destroy the provider, reset the
+        // pointer to avoid dangling pointers after invoking the callback.
+        reset_provider_pointer();
+
+        std::move(callback).Run(
+            base::unexpected(RequestStatusForMetrics::kErrorNoCredential));
+      }));
+
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorUserDeclined,
+                  testing::Eq(std::nullopt), _))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
 
   digital_identity_request_impl()->Get(std::move(requests),
