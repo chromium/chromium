@@ -66,6 +66,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
@@ -1884,7 +1885,12 @@ class NetworkContextConfigurationProxySettingsBrowserTest
  public:
   const size_t kDefaultMaxConnectionsPerProxy = 32;
 
-  NetworkContextConfigurationProxySettingsBrowserTest() = default;
+  NetworkContextConfigurationProxySettingsBrowserTest() {
+    // This is disabled as backup jobs cause extra connections without opening
+    // new sockets, and this breaks WebSocket tests.
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kPermitTcpSocketPoolConnectBackupJobs);
+  }
 
   NetworkContextConfigurationProxySettingsBrowserTest(
       const NetworkContextConfigurationProxySettingsBrowserTest&) = delete;
@@ -2052,6 +2058,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   // connections as we expect.
   absl::flat_hash_set<std::string> observed_request_urls_;
   bool is_websocket_test_ = false;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
@@ -2059,16 +2066,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
   RunMaxConnectionsPerProxyTest();
 }
 
-// Test failure on Windows: crbug.com/467278609
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MaxConnectionsPerProxyForWebSocket \
-  DISABLED_MaxConnectionsPerProxyForWebSocket
-#else
-#define MAYBE_MaxConnectionsPerProxyForWebSocket \
-  MaxConnectionsPerProxyForWebSocket
-#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       MAYBE_MaxConnectionsPerProxyForWebSocket) {
+                       MaxConnectionsPerProxyForWebSocket) {
   RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
@@ -2121,17 +2120,9 @@ IN_PROC_BROWSER_TEST_P(
   RunMaxConnectionsPerProxyTest();
 }
 
-// Test failure on Windows: crbug.com/467278609
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MaxConnectionsPerManagedProxyForWebSocket \
-  DISABLED_MaxConnectionsPerManagedProxyForWebSocket
-#else
-#define MAYBE_MaxConnectionsPerManagedProxyForWebSocket \
-  MaxConnectionsPerManagedProxyForWebSocket
-#endif
 IN_PROC_BROWSER_TEST_P(
     NetworkContextConfigurationManagedProxySettingsBrowserTest,
-    MAYBE_MaxConnectionsPerManagedProxyForWebSocket) {
+    MaxConnectionsPerManagedProxyForWebSocket) {
   RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
