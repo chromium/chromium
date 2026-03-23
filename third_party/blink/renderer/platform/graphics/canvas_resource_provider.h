@@ -692,7 +692,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
     NOTREACHED();
   }
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
-                                  const SkImageInfo& src_info,
                                   uint32_t src_x,
                                   uint32_t src_y);
 

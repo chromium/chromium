@@ -110,8 +110,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
         SkPixmap pixmap;
         if (skia_image->peekPixels(&pixmap)) {
           copy_success = resource_provider->UploadToBackingSharedImage(
-              pixmap, paint_image.GetSkImageInfo(), image_sub_rect.x(),
-              image_sub_rect.y());
+              pixmap, image_sub_rect.x(), image_sub_rect.y());
         }
       }
     }

@@ -769,7 +769,6 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
 
 bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
-    const SkImageInfo& src_info,
     uint32_t src_x,
     uint32_t src_y) {
   const size_t dest_width = static_cast<size_t>(Size().width());
@@ -779,8 +778,8 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
   const size_t source_row_bytes = pixmap.rowBytes();
   const size_t source_height = pixmap.height();
 
-  SkImageInfo copy_rect_info = src_info.makeWH(static_cast<int>(dest_width),
-                                               static_cast<int>(dest_height));
+  SkImageInfo copy_rect_info = pixmap.info().makeWH(
+      static_cast<int>(dest_width), static_cast<int>(dest_height));
   const size_t dest_row_bytes = copy_rect_info.bytesPerPixel() * dest_width;
 
   std::vector<uint8_t> dest_pixels;
