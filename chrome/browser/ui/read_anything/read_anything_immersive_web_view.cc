@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -37,7 +38,9 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
   auto* controller =
       ReadAnythingControllerGlue::FromWebContents(web_contents())->controller();
   if (controller && controller->has_shown_ui()) {
-    ShowUI();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ReadAnythingImmersiveWebView::ShowUI,
+                                  weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -95,10 +98,12 @@ ReadAnythingImmersiveWebView::CloseAndTakeContentsWrapper() {
 // Called by the WebUI on its embedder (this class) when the WebUI is ready to
 // be shown.
 void ReadAnythingImmersiveWebView::ShowUI() {
+  // Call SetVisible before running on_show_ui_callback_, in case the callback
+  // relies on the visibility of the view.
+  SetVisible(true);
   if (on_show_ui_callback_) {
     std::move(on_show_ui_callback_).Run();
   }
-  SetVisible(true);
   auto* read_anything_controller = ReadAnythingControllerGlue::FromWebContents(
                                        contents_wrapper_->web_contents())
                                        ->controller();
