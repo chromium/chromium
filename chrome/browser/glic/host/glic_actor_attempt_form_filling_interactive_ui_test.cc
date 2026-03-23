@@ -304,6 +304,15 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
         .AddDescriptionPrefix("Waiting for Autofill Dialog");
   }
 
+  // Generic helper to check the origin in Glic.
+  [[nodiscard]] auto CheckFormattedRequestOriginInGlic(
+      int form_index,
+      const std::string& expected_origin) {
+    return CheckJsInGlicAt(
+        StringPrintf("#formatted-request-origin-%d", form_index),
+        "el => el.textContent", Eq(expected_origin));
+  }
+
   // Issues an onFormPresented to the AutofillSelectionDialogRequest on the glic
   // api via the glic test page.
   [[nodiscard]] auto PresentForm(int form_index) {
@@ -477,6 +486,70 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
       ConfirmForm(/*form_index=*/0, suggestion.id),
       // Since this is the last (only) form the dialog response is sent.
       SubmitSelections({suggestion.id}),
+      CheckExecuteActionsResultHandle(perform_actions_result_handle));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
+                       OriginIsFormattedViaUrlFormatter) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+
+  ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(123);
+  suggestion.title = "My Address";
+
+  std::vector<autofill::ActorFormFillingRequest> requests;
+  // 0. Standard non-IDN domain.
+  requests.emplace_back().request_origin =
+      url::Origin::Create(GURL("https://www.example.test"));
+  requests.back().suggestions.push_back(suggestion);
+
+  // 1. IDN Chinese.
+  requests.emplace_back().request_origin =
+      url::Origin::Create(GURL("http://\xe4\xb8\xad\xe5\x9b\xbd.icom.museum"));
+  requests.back().suggestions.push_back(suggestion);
+
+  // 2. IDN Hebrew RTL.
+  requests.emplace_back().request_origin = url::Origin::Create(
+      GURL("http://\xd7\x90\xd7\x99\xd7\xa7\xd7\x95\xd7\xb4\xd7\x9d."
+           "\xd7\x99\xd7\xa9\xd7\xa8\xd7\x90\xd7\x9c.museum/"));
+  requests.back().suggestions.push_back(suggestion);
+
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
+      .WillOnce(RunOnceCallback<2>(requests));
+  EXPECT_CALL(mock_form_filling_service(), FillSuggestions)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+
+  TaskId task_id;
+  DomNode address_field_node;
+  std::optional<PerformActionsResultHandle> perform_actions_result_handle;
+  RunTestSequence(
+      SetupTaskForAttemptFormFilling(kNewActorTabId, task_id, url),
+      GetDomNodeForLabel(address_field_node, "Address:"),
+      SendExecuteActions(
+          perform_actions_result_handle,
+          base::BindLambdaForTesting([this, &task_id, &address_field_node]() {
+            optimization_guide::proto::Actions actions;
+            actions.set_task_id(task_id.value());
+            SetFormFillingAction(actions.add_actions(), tab_handle_.raw_value(),
+                                 address_field_node,
+                                 FormFillingRequest_RequestedData_ADDRESS);
+            return EncodeActionProto(actions);
+          })),
+      WaitForAutofillDialog(),
+      // Verify the formatted request origin does not contain the scheme.
+      CheckFormattedRequestOriginInGlic(/*form_index=*/0, "www.example.test"),
+      // Verify the Chinese IDN request origin is formatted to unicode.
+      CheckFormattedRequestOriginInGlic(/*form_index=*/1, "中国.icom.museum"),
+      // Verify the Hebrew RTL IDN request origin is formatted as punycode.
+      CheckFormattedRequestOriginInGlic(/*form_index=*/2,
+                                        "xn--4dbklr2c8d.xn--4dbrk0ce.museum"),
+      // Close the dialog by submitting selections.
+      SubmitSelections({ActorSuggestionId(123), ActorSuggestionId(123),
+                        ActorSuggestionId(123)}),
+      // Wait for completion, so that mock expectations are checked after the
+      // action has completed.
       CheckExecuteActionsResultHandle(perform_actions_result_handle));
 }
 

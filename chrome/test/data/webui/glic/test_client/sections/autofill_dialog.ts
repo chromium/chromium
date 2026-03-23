@@ -27,6 +27,14 @@ function handleRequest(request: SelectAutofillSuggestionsDialogRequest) {
     li_form.textContent =
         `Form for requestedData: ${formFillingRequest.requestedData}`;
 
+    const originContainer = document.createElement('div');
+    originContainer.appendChild(document.createTextNode('Origin: '));
+    const originValue = document.createElement('span');
+    originValue.id = `formatted-request-origin-${formIndex}`;
+    originValue.textContent = formFillingRequest.formattedRequestOrigin ?? null;
+    originContainer.appendChild(originValue);
+    li_form.appendChild(originContainer);
+
     const notifyFormPresentedBtn = document.createElement('button');
     notifyFormPresentedBtn.textContent = 'Notify Form Presented';
     notifyFormPresentedBtn.id = `notify-form-presented-${formIndex}`;
