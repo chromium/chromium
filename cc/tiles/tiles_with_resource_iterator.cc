@@ -11,13 +11,11 @@
 namespace cc {
 
 TilesWithResourceIterator::TilesWithResourceIterator(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
-        picture_layers,
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
-        secondary_picture_layers)
-    : picture_layers_(picture_layers),
-      secondary_picture_layers_(secondary_picture_layers),
-      active_layers_(picture_layers) {
+    PictureLayerImplRange picture_layers,
+    PictureLayerImplRange secondary_picture_layers)
+    : secondary_picture_layers_(secondary_picture_layers),
+      active_layers_(picture_layers),
+      current_picture_layer_(active_layers_.begin()) {
   FindNextInPictureLayers();
 }
 
@@ -46,7 +44,7 @@ void TilesWithResourceIterator::Next() {
   ++current_picture_layer_tiling_index_;
   if (FindNextInPictureLayerTilingSet())
     return;
-  ++current_picture_layer_index_;
+  ++current_picture_layer_;
   if (FindNextInPictureLayers())
     return;
   // At the end.
@@ -63,15 +61,16 @@ bool TilesWithResourceIterator::FindNextInPictureLayers() {
   // through secondary layers.
   is_active_layers_secondary_layers_ = true;
   active_layers_ = secondary_picture_layers_;
-  if (!active_layers_)
+  if (active_layers_.empty()) {
     return false;
-  current_picture_layer_index_ = 0;
+  }
+  current_picture_layer_ = active_layers_.begin();
   return FindNextInActiveLayers();
 }
 
 bool TilesWithResourceIterator::FindNextInActiveLayers() {
-  for (; current_picture_layer_index_ < active_layers_->size();
-       ++current_picture_layer_index_) {
+  for (; current_picture_layer_ != active_layers_.end();
+       ++current_picture_layer_) {
     current_picture_layer_tiling_index_ = 0u;
     if (FindNextInPictureLayerTilingSet())
       return true;
@@ -105,8 +104,7 @@ bool TilesWithResourceIterator::FindNextInTileIterator() {
 
 PictureLayerTilingSet*
 TilesWithResourceIterator::CurrentPictureLayerTilingSet() {
-  return (*active_layers_)[current_picture_layer_index_]
-      ->picture_layer_tiling_set();
+  return current_picture_layer_->picture_layer_tiling_set();
 }
 
 PictureLayerTiling* TilesWithResourceIterator::CurrentPictureLayerTiling() {

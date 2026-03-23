@@ -15,7 +15,7 @@ namespace cc {
 namespace {
 
 void AppendTilingSetRequiredQueues(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
+    PictureLayerImplRange layers,
     std::vector<std::unique_ptr<TilingSetRasterQueueRequired>>* queues) {
   const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : layers) {
@@ -43,21 +43,20 @@ RasterTilePriorityQueueRequired::RasterTilePriorityQueueRequired() = default;
 RasterTilePriorityQueueRequired::~RasterTilePriorityQueueRequired() = default;
 
 void RasterTilePriorityQueueRequired::Build(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        active_layers,
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        pending_layers,
+    PictureLayerImplRange active_layers,
+    PictureLayerImplRange pending_layers,
     Type type) {
   DCHECK_NE(static_cast<int>(type), static_cast<int>(Type::ALL));
-  if (type == Type::REQUIRED_FOR_DRAW)
-    BuildRequiredForDraw(active_layers);
-  else
-    BuildRequiredForActivation(active_layers, pending_layers);
+  if (type == Type::REQUIRED_FOR_DRAW) {
+    BuildRequiredForDraw(std::move(active_layers));
+  } else {
+    BuildRequiredForActivation(std::move(active_layers),
+                               std::move(pending_layers));
+  }
 }
 
 void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        active_layers) {
+    PictureLayerImplRange active_layers) {
   const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : active_layers) {
     if (!layer->HasValidTilePriorities())
@@ -77,12 +76,10 @@ void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
 }
 
 void RasterTilePriorityQueueRequired::BuildRequiredForActivation(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        active_layers,
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        pending_layers) {
-  AppendTilingSetRequiredQueues(active_layers, &tiling_set_queues_);
-  AppendTilingSetRequiredQueues(pending_layers, &tiling_set_queues_);
+    PictureLayerImplRange active_layers,
+    PictureLayerImplRange pending_layers) {
+  AppendTilingSetRequiredQueues(std::move(active_layers), &tiling_set_queues_);
+  AppendTilingSetRequiredQueues(std::move(pending_layers), &tiling_set_queues_);
 }
 
 bool RasterTilePriorityQueueRequired::IsEmpty() const {

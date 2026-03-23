@@ -100,9 +100,7 @@ gfx::Rect SafeIntersectRects(const gfx::Rect& one, const gfx::Rect& two) {
 }  // namespace
 
 PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
-    : TileBasedLayerImpl(tree_impl, id) {
-  layer_tree_impl()->RegisterPictureLayerImpl(this);
-}
+    : TileBasedLayerImpl(tree_impl, id) {}
 
 PictureLayerImpl::~PictureLayerImpl() {
   if (twin_layer_)
@@ -120,8 +118,6 @@ PictureLayerImpl::~PictureLayerImpl() {
         ->paint_worklet_tracker()
         .UpdatePaintWorkletInputProperties({}, this);
   }
-
-  layer_tree_impl()->UnregisterPictureLayerImpl(this);
 
   // Unregister for all images on the current raster source.
   UnregisterAnimatedImages();

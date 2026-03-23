@@ -22,12 +22,8 @@
 namespace cc {
 class Layer;
 class LayerImpl;
+class PictureLayerImpl;
 class RenderSurfaceImpl;
-
-using LayerList = std::vector<scoped_refptr<Layer>>;
-// RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler stacks.
-using LayerImplList = RAW_PTR_EXCLUSION std::vector<LayerImpl*>;
-using RenderSurfaceList = RAW_PTR_EXCLUSION std::vector<RenderSurfaceImpl*>;
 
 // OwnedLayerImplList handles ownership and all bookkeeping for a set of
 // LayerImpls.  It allows fast random access and lookup by layer->id(), as well
@@ -96,90 +92,109 @@ class CC_EXPORT OwnedLayerImplList {
   const_iterator find(int id) const;
   bool contains(int id) const;
 
-  // Property invalidation
-  void SetShouldPushProperties(int id) {
-    layers_that_should_push_properties_.insert(id);
-  }
-  void ClearLayersShouldPushProperties() {
-    layers_that_should_push_properties_.clear();
-  }
-
-  // Tracking of layers that need to push properties.
-  class DirtyLayerIterator {
+  // Used to iterate over the various tracked subsets of LayerImpls stored as
+  // SetType members of OwnedLayerImplList (e.g. picture_layers_). SetType
+  // stored indexes into the main layer_list_; this iterator class internally
+  // converts those indexes into the underlying LayerImpl*.
+  template <typename LayerType>
+  class SetIterator {
    public:
     using difference_type = SetType::iterator::difference_type;
-    using value_type = LayerImpl*;
+    using value_type = LayerType*;
 
-    DirtyLayerIterator() = default;
-    DirtyLayerIterator(const OwnedLayerImplList& layer_list,
-                       const SetType::iterator& cur)
+    SetIterator() = default;
+    SetIterator(const OwnedLayerImplList& layer_list,
+                SetType::const_iterator cur)
         : layer_list_(&layer_list), cur_(cur) {}
-    DirtyLayerIterator(const DirtyLayerIterator&) = default;
-    DirtyLayerIterator(DirtyLayerIterator&&) = default;
-    DirtyLayerIterator& operator=(const DirtyLayerIterator&) = default;
-    DirtyLayerIterator& operator=(DirtyLayerIterator&&) = default;
-    LayerImpl* operator*() const {
+    SetIterator(const SetIterator<LayerType>&) = default;
+    SetIterator(SetIterator<LayerType>&&) = default;
+    SetIterator& operator=(const SetIterator<LayerType>&) = default;
+    SetIterator& operator=(SetIterator<LayerType>&&) = default;
+    LayerType* operator*() const {
       if (!cur_layer_) {
-        cur_layer_ = layer_list_->find(*cur_)->get();
+        cur_layer_ = static_cast<LayerType*>(layer_list_->find(*cur_)->get());
       }
       return cur_layer_;
     }
-    LayerImpl* operator->() const { return this->operator*(); }
-    DirtyLayerIterator& operator++() {
+    LayerType* operator->() const { return this->operator*(); }
+    SetIterator<LayerType>& operator++() {
       ++cur_;
       cur_layer_ = nullptr;
       return *this;
     }
-    DirtyLayerIterator operator++(int) {
-      DirtyLayerIterator result(*this);
+    SetIterator<LayerType> operator++(int) {
+      SetIterator<LayerType> result(*this);
       ++*this;
       return result;
     }
-    bool operator==(const DirtyLayerIterator& other) const {
+    bool operator==(const SetIterator<LayerType>& other) const {
       return layer_list_ == other.layer_list_ && cur_ == other.cur_;
     }
 
    private:
     raw_ptr<const OwnedLayerImplList> layer_list_{nullptr};
     SetType::const_iterator cur_;
-    mutable raw_ptr<LayerImpl> cur_layer_{nullptr};
+    mutable raw_ptr<LayerType> cur_layer_{nullptr};
   };
 
-  class DirtyLayerRange {
+  // Functions as an iterable std::ranges::range over the various tracked
+  // subsets of LayerImpls stored as SetType members of OwnedLayerImplList
+  // (e.g. picture_layers_).
+  template <typename LayerType>
+  class Range {
    public:
-    explicit DirtyLayerRange(const OwnedLayerImplList& layer_list)
-        : layer_list_(layer_list) {}
-    DirtyLayerRange(const DirtyLayerRange&) = default;
-    DirtyLayerRange(DirtyLayerRange&&) = default;
-    DirtyLayerRange& operator=(const DirtyLayerRange&) = default;
-    DirtyLayerRange& operator=(DirtyLayerRange&&) = default;
-    DirtyLayerIterator begin() const {
-      return {*layer_list_,
-              layer_list_->layers_that_should_push_properties_.begin()};
+    using iterator = SetIterator<LayerType>;
+
+    Range() {}
+    Range(const OwnedLayerImplList& layer_list, const SetType& set)
+        : layer_list_(&layer_list), set_(&set) {}
+    Range(const Range&) = default;
+    Range(Range&&) = default;
+    Range& operator=(const Range&) = default;
+    Range& operator=(Range&&) = default;
+    iterator begin() const {
+      return layer_list_ && set_ ? iterator(*layer_list_, set_->begin())
+                                 : iterator();
     }
-    DirtyLayerIterator end() const {
-      return {*layer_list_,
-              layer_list_->layers_that_should_push_properties_.end()};
+    iterator end() const {
+      return layer_list_ && set_ ? iterator(*layer_list_, set_->end())
+                                 : iterator();
     }
-    size_type size() const {
-      return layer_list_->layers_that_should_push_properties_.size();
-    }
+    size_type size() const { return set_ ? set_->size() : 0u; }
+    bool empty() const { return size() == 0u; }
 
    private:
-    raw_ref<const OwnedLayerImplList> layer_list_;
+    raw_ptr<const OwnedLayerImplList> layer_list_{nullptr};
+    raw_ptr<const SetType> set_{nullptr};
   };
-  DirtyLayerRange LayersThatShouldPushProperties() const {
-    return DirtyLayerRange(*this);
-  }
+
+  Range<LayerImpl> LayersThatShouldPushProperties() const;
+  void SetShouldPushProperties(LayerImpl* layer);
+  void ClearLayersShouldPushProperties();
+
+  Range<PictureLayerImpl> PictureLayers() const;
+
+  Range<PictureLayerImpl> PictureLayersWithWorklets() const;
+  void SetPictureLayerWithWorklet(PictureLayerImpl* layer);
+  void RemovePictureLayerWithWorklet(PictureLayerImpl* layer);
 
  private:
   VectorType layers_;
   SetType layers_that_should_push_properties_;
+  SetType picture_layers_;
+  SetType picture_layers_with_worklets_;
   mutable MapType layer_map_;
   mutable bool layer_map_needs_rebuild_ = false;
 
   void RebuildLayerMap() const;
 };
+
+using LayerList = std::vector<scoped_refptr<Layer>>;
+// RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler stacks.
+using LayerImplList = RAW_PTR_EXCLUSION std::vector<LayerImpl*>;
+using RenderSurfaceList = RAW_PTR_EXCLUSION std::vector<RenderSurfaceImpl*>;
+using LayerImplRange = OwnedLayerImplList::Range<LayerImpl>;
+using PictureLayerImplRange = OwnedLayerImplList::Range<PictureLayerImpl>;
 
 }  // namespace cc
 

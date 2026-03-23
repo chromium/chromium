@@ -608,19 +608,13 @@ class CC_EXPORT LayerTreeImpl {
 
   bool IsUIResourceOpaque(UIResourceId uid) const;
 
-  void RegisterPictureLayerImpl(PictureLayerImpl* layer);
-  void UnregisterPictureLayerImpl(PictureLayerImpl* layer);
-  const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-  picture_layers() const {
-    return picture_layers_;
+  auto picture_layers() const { return layer_list_.PictureLayers(); }
+  auto picture_layers_with_paint_worklets() const {
+    return layer_list_.PictureLayersWithWorklets();
   }
 
   void NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
                                           bool has_worklets);
-  const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>&
-  picture_layers_with_paint_worklets() const {
-    return picture_layers_with_paint_worklets_;
-  }
 
   void RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer);
   void UnregisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer);
@@ -1006,14 +1000,6 @@ class CC_EXPORT LayerTreeImpl {
   // scrollbar layer and consumed by PushPropertiesTo() and
   // HandleScrollbarShowRequests().
   base::flat_set<ElementId> show_scrollbar_requests_;
-
-  std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>> picture_layers_;
-
-  // After commit (or impl-side invalidation), the LayerTreeHostImpl must walk
-  // all PictureLayerImpls that have PaintWorklets to ensure they are painted.
-  // To avoid unnecessary walking, we track that set here.
-  base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>
-      picture_layers_with_paint_worklets_;
 
   base::flat_set<viz::SurfaceRange> surface_layer_ranges_;
 

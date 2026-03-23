@@ -2674,11 +2674,10 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   child3->SetRasterSourceForTesting(raster_source3);
 
   // The set should correctly track which layers are in it.
-  const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>& layers =
-      pending_tree->picture_layers_with_paint_worklets();
+  auto layers = pending_tree->picture_layers_with_paint_worklets();
   EXPECT_EQ(layers.size(), 2u);
-  EXPECT_TRUE(layers.contains(child1));
-  EXPECT_TRUE(layers.contains(child3));
+  EXPECT_TRUE(std::ranges::contains(layers, child1));
+  EXPECT_TRUE(std::ranges::contains(layers, child3));
 
   // Test explicitly removing a layer from the set.
   scoped_refptr<RasterSource> empty_raster_source =
@@ -2686,7 +2685,7 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   child1->SetRasterSourceForTesting(empty_raster_source);
 
   EXPECT_EQ(layers.size(), 1u);
-  EXPECT_FALSE(layers.contains(child1));
+  EXPECT_FALSE(std::ranges::contains(layers, child1));
 
   pending_tree->DetachLayers();
   EXPECT_EQ(layers.size(), 0u);

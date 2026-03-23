@@ -407,7 +407,7 @@ void LayerTreeImpl::OnCanDrawStateChangedForTree() {
 void LayerTreeImpl::InvalidateRegionForImages(
     const PaintImageIdFlatSet& images_to_invalidate) {
   TRACE_EVENT_BEGIN1("cc", "LayerTreeImpl::InvalidateRegionForImages",
-                     "total_layer_count", picture_layers_.size());
+                     "total_layer_count", picture_layers().size());
   DCHECK(IsSyncTree());
 
   size_t no_images_count = 0;
@@ -416,7 +416,7 @@ void LayerTreeImpl::InvalidateRegionForImages(
   if (!images_to_invalidate.empty()) {
     // TODO(khushalsagar): It might be better to keep track of layers with
     // images and only iterate through those here.
-    for (PictureLayerImpl* picture_layer : picture_layers_) {
+    for (PictureLayerImpl* picture_layer : picture_layers()) {
       auto result =
           picture_layer->InvalidateRegionForImages(images_to_invalidate);
       switch (result) {
@@ -447,7 +447,7 @@ void LayerTreeImpl::InvalidateRasterInducingScrolls(
     return;
   }
   did_raster_inducing_scroll_ = true;
-  for (PictureLayerImpl* picture_layer : picture_layers_) {
+  for (PictureLayerImpl* picture_layer : picture_layers()) {
     picture_layer->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
   }
 }
@@ -1143,7 +1143,7 @@ void LayerTreeImpl::MoveChangeTrackingToLayers() {
 }
 
 void LayerTreeImpl::ForceRecalculateRasterScales() {
-  for (PictureLayerImpl* layer : picture_layers_) {
+  for (PictureLayerImpl* layer : picture_layers()) {
     layer->ResetRasterScale();
   }
 }
@@ -1896,7 +1896,7 @@ bool LayerTreeImpl::UpdateTiles() {
   bool tile_priorities_updated = false;
   const bool release_tile_resources_for_hidden_layers =
       settings().release_tile_resources_for_hidden_layers;
-  for (PictureLayerImpl* layer : picture_layers_) {
+  for (PictureLayerImpl* layer : picture_layers()) {
     if (!layer->HasValidTilePriorities()) {
       if (release_tile_resources_for_hidden_layers) {
         layer->ReleaseResources();
@@ -1970,7 +1970,7 @@ void LayerTreeImpl::ClearSurfaceRanges() {
 }
 
 void LayerTreeImpl::AddLayerShouldPushProperties(LayerImpl* layer) {
-  layer_list_.SetShouldPushProperties(layer->id());
+  layer_list_.SetShouldPushProperties(layer);
 }
 
 void LayerTreeImpl::ClearLayersThatShouldPushProperties() {
@@ -2332,31 +2332,16 @@ void LayerTreeImpl::ProcessUIResourceRequestQueue() {
     host_impl_->SetNeedsCommit();
 }
 
-void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
-  DCHECK(!std::ranges::contains(picture_layers_, layer));
-  picture_layers_.push_back(layer);
-}
-
-void LayerTreeImpl::UnregisterPictureLayerImpl(PictureLayerImpl* layer) {
-  auto it = std::ranges::find(picture_layers_, layer);
-  CHECK(it != picture_layers_.end());
-  picture_layers_.erase(it);
-
-  // Make sure that |picture_layers_with_paint_worklets_| doesn't get left with
-  // dead layers. They should already have been removed (via calling
-  // NotifyLayerHasPaintWorkletsChanged) before the layer was unregistered.
-  DCHECK(!picture_layers_with_paint_worklets_.contains(layer));
-}
-
 void LayerTreeImpl::NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
                                                        bool has_worklets) {
   if (has_worklets) {
-    auto insert_pair = picture_layers_with_paint_worklets_.insert(layer);
-    DCHECK(insert_pair.second);
+    layer_list_.SetPictureLayerWithWorklet(layer);
+    DCHECK(
+        std::ranges::contains(layer_list_.PictureLayersWithWorklets(), layer));
   } else {
-    auto it = picture_layers_with_paint_worklets_.find(layer);
-    CHECK(it != picture_layers_with_paint_worklets_.end());
-    picture_layers_with_paint_worklets_.erase(it);
+    layer_list_.RemovePictureLayerWithWorklet(layer);
+    DCHECK(
+        !std::ranges::contains(layer_list_.PictureLayersWithWorklets(), layer));
   }
 }
 

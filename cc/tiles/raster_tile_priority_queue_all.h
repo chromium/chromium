@@ -35,10 +35,8 @@ class CC_EXPORT RasterTilePriorityQueueAll : public RasterTilePriorityQueue {
  private:
   friend class RasterTilePriorityQueue;
 
-  void Build(const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-                 active_layers,
-             const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-                 pending_layers,
+  void Build(PictureLayerImplRange active_layers,
+             PictureLayerImplRange pending_layers,
              TreePriority tree_priority);
 
   std::vector<std::unique_ptr<TilingSetRasterQueueAll>>& GetNextQueues();

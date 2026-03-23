@@ -10,10 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
+#include "cc/layers/layer_collections.h"
 #include "cc/tiles/tile_priority.h"
 
 namespace cc {
-class PictureLayerImpl;
 class PrioritizedTile;
 
 class CC_EXPORT RasterTilePriorityQueue {
@@ -21,10 +21,8 @@ class CC_EXPORT RasterTilePriorityQueue {
   enum class Type { ALL, REQUIRED_FOR_ACTIVATION, REQUIRED_FOR_DRAW };
 
   static std::unique_ptr<RasterTilePriorityQueue> Create(
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-          active_layers,
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-          pending_layers,
+      PictureLayerImplRange active_layers,
+      PictureLayerImplRange pending_layers,
       TreePriority tree_priority,
       Type type);
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
 
 namespace cc {
 
@@ -35,13 +36,24 @@ void OwnedLayerImplList::clear() {
   layers_that_should_push_properties_.clear();
   layer_map_.clear();
   layer_map_needs_rebuild_ = false;
+  picture_layers_.clear();
+  picture_layers_with_worklets_.clear();
 }
 
 void OwnedLayerImplList::push_back(std::unique_ptr<LayerImpl>&& value) {
+  int id = value->id();
   layer_map_needs_rebuild_ = true;
   layers_.push_back(std::move(value));
   if (back()->GetChangeFlag(LayerImpl::kChangedAllProperties)) {
-    SetShouldPushProperties(back()->id());
+    layers_that_should_push_properties_.insert(id);
+  }
+  if (back()->GetLayerType() == mojom::LayerType::kPicture) {
+    picture_layers_.insert(id);
+    if (static_cast<PictureLayerImpl*>(back().get())
+            ->GetPaintWorkletRecordMap()
+            .size()) {
+      picture_layers_with_worklets_.insert(id);
+    }
   }
 }
 
@@ -51,6 +63,39 @@ OwnedLayerImplList::iterator OwnedLayerImplList::find(int id) {
   }
   auto iter = layer_map_.find(id);
   return iter == layer_map_.end() ? end() : begin() + iter->second;
+}
+
+void OwnedLayerImplList::SetShouldPushProperties(LayerImpl* layer) {
+  layers_that_should_push_properties_.insert(layer->id());
+}
+
+void OwnedLayerImplList::ClearLayersShouldPushProperties() {
+  layers_that_should_push_properties_.clear();
+}
+
+OwnedLayerImplList::Range<LayerImpl>
+OwnedLayerImplList::LayersThatShouldPushProperties() const {
+  return Range<LayerImpl>(*this, layers_that_should_push_properties_);
+}
+
+OwnedLayerImplList::Range<PictureLayerImpl> OwnedLayerImplList::PictureLayers()
+    const {
+  return Range<PictureLayerImpl>(*this, picture_layers_);
+}
+
+void OwnedLayerImplList::SetPictureLayerWithWorklet(PictureLayerImpl* layer) {
+  DCHECK(contains(layer->id()));
+  picture_layers_with_worklets_.insert(layer->id());
+}
+
+void OwnedLayerImplList::RemovePictureLayerWithWorklet(
+    PictureLayerImpl* layer) {
+  picture_layers_with_worklets_.erase(layer->id());
+}
+
+OwnedLayerImplList::Range<PictureLayerImpl>
+OwnedLayerImplList::PictureLayersWithWorklets() const {
+  return Range<PictureLayerImpl>(*this, picture_layers_with_worklets_);
 }
 
 OwnedLayerImplList::const_iterator OwnedLayerImplList::find(int id) const {

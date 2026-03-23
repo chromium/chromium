@@ -2154,7 +2154,7 @@ std::unique_ptr<RasterTilePriorityQueue> LayerTreeHostImpl::BuildRasterQueue(
       active_tree_->picture_layers(),
       pending_tree_ && pending_tree_fully_painted_
           ? pending_tree_->picture_layers()
-          : std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>(),
+          : PictureLayerImplRange(),
       tree_priority, type);
 }
 
@@ -2165,19 +2165,18 @@ LayerTreeHostImpl::BuildEvictionQueue() {
 
   std::unique_ptr<EvictionTilePriorityQueue> queue(
       new EvictionTilePriorityQueue);
-  queue->Build(
-      active_tree_->picture_layers(),
-      pending_tree_
-          ? pending_tree_->picture_layers()
-          : std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>());
+  queue->Build(active_tree_->picture_layers(),
+               pending_tree_ ? pending_tree_->picture_layers()
+                             : PictureLayerImplRange());
   return queue;
 }
 
 std::unique_ptr<TilesWithResourceIterator>
 LayerTreeHostImpl::CreateTilesWithResourceIterator() {
   return std::make_unique<TilesWithResourceIterator>(
-      &active_tree_->picture_layers(),
-      pending_tree_ ? &pending_tree_->picture_layers() : nullptr);
+      active_tree_->picture_layers(), pending_tree_
+                                          ? pending_tree_->picture_layers()
+                                          : PictureLayerImplRange());
 }
 
 gfx::DisplayColorSpaces LayerTreeHostImpl::GetDisplayColorSpaces() const {

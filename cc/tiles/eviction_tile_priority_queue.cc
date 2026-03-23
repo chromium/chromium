@@ -58,7 +58,7 @@ class EvictionOrderComparator {
 };
 
 void CreateTilingSetEvictionQueues(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
+    PictureLayerImplRange layers,
     std::vector<std::unique_ptr<TilingSetEvictionQueue>>* queues) {
   DCHECK(queues->empty());
 
@@ -80,11 +80,8 @@ EvictionTilePriorityQueue::EvictionTilePriorityQueue() = default;
 
 EvictionTilePriorityQueue::~EvictionTilePriorityQueue() = default;
 
-void EvictionTilePriorityQueue::Build(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        active_layers,
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        pending_layers) {
+void EvictionTilePriorityQueue::Build(PictureLayerImplRange active_layers,
+                                      PictureLayerImplRange pending_layers) {
   CreateTilingSetEvictionQueues(active_layers, &active_queues_);
   CreateTilingSetEvictionQueues(pending_layers, &pending_queues_);
 }

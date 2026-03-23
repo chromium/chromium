@@ -11,23 +11,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
+#include "cc/layers/layer_collections.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/prioritized_tile.h"
 
 namespace cc {
 
-class PictureLayerImpl;
 class PictureLayerTilingSet;
 
 // Iterates over all tiles that have a resource. The order of iteration is not
 // defined.
 class CC_EXPORT TilesWithResourceIterator {
  public:
-  TilesWithResourceIterator(
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
-          picture_layers,
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
-          secondary_picture_layers);
+  TilesWithResourceIterator(PictureLayerImplRange picture_layers,
+                            PictureLayerImplRange secondary_picture_layers);
   TilesWithResourceIterator(const TilesWithResourceIterator&) = delete;
   TilesWithResourceIterator& operator=(const TilesWithResourceIterator&) =
       delete;
@@ -52,25 +49,17 @@ class CC_EXPORT TilesWithResourceIterator {
   PictureLayerTilingSet* CurrentPictureLayerTilingSet();
   PictureLayerTiling* CurrentPictureLayerTiling();
 
-  // Iteration occurs over this vector first.
-  const raw_ptr<
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
-      picture_layers_;
-
   // The secondary set of layers to iterate through, may be null.
-  const raw_ptr<
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
-      secondary_picture_layers_;
+  PictureLayerImplRange secondary_picture_layers_;
 
   // Indicates whether `active_layers_` is referencing `picture_layers_` or
   // `secondary_picture_layers_`.
   bool is_active_layers_secondary_layers_ = false;
 
-  raw_ptr<const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
-      active_layers_;
+  PictureLayerImplRange active_layers_;
 
   // Index into `active_layers_` the current tile comes from.
-  size_t current_picture_layer_index_ = 0;
+  PictureLayerImplRange::iterator current_picture_layer_;
 
   // Index into the current PictureLayerTilingSet the current tile comes from.
   size_t current_picture_layer_tiling_index_ = 0;

@@ -2038,6 +2038,7 @@ TEST_F(PixelInspectTileManagerTest, ImageDrawn) {
   layer->SetRasterSourceForTesting(raster);
   PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
   layer->set_contributes_to_drawn_render_surface(true);
+  host_impl()->pending_tree()->AddLayer(std::move(layer));
 
   auto* tiling = tiling_set->AddTiling(gfx::AxisTransform2d(), raster);
   tiling->set_resolution(HIGH_RESOLUTION);

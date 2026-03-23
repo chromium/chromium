@@ -33,19 +33,12 @@ class RasterTilePriorityQueueRequired : public RasterTilePriorityQueue {
  private:
   friend class RasterTilePriorityQueue;
 
-  void Build(const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-                 active_layers,
-             const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-                 pending_layers,
+  void Build(PictureLayerImplRange active_layers,
+             PictureLayerImplRange pending_layers,
              Type type);
-  void BuildRequiredForDraw(
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-          active_layers);
-  void BuildRequiredForActivation(
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-          active_layers,
-      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-          pending_layers);
+  void BuildRequiredForDraw(PictureLayerImplRange active_layers);
+  void BuildRequiredForActivation(PictureLayerImplRange active_layers,
+                                  PictureLayerImplRange pending_layers);
 
   std::vector<std::unique_ptr<TilingSetRasterQueueRequired>> tiling_set_queues_;
 };

@@ -48,7 +48,7 @@ class RasterOrderComparator {
 };
 
 void CreateTilingSetRasterQueues(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
+    PictureLayerImplRange layers,
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
@@ -77,16 +77,13 @@ void CreateTilingSetRasterQueues(
 RasterTilePriorityQueueAll::RasterTilePriorityQueueAll() = default;
 RasterTilePriorityQueueAll::~RasterTilePriorityQueueAll() = default;
 
-void RasterTilePriorityQueueAll::Build(
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        active_layers,
-    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
-        pending_layers,
-    TreePriority tree_priority) {
+void RasterTilePriorityQueueAll::Build(PictureLayerImplRange active_layers,
+                                       PictureLayerImplRange pending_layers,
+                                       TreePriority tree_priority) {
   tree_priority_ = tree_priority;
 
-  CreateTilingSetRasterQueues(active_layers, &active_queues_);
-  CreateTilingSetRasterQueues(pending_layers, &pending_queues_);
+  CreateTilingSetRasterQueues(std::move(active_layers), &active_queues_);
+  CreateTilingSetRasterQueues(std::move(pending_layers), &pending_queues_);
 }
 
 bool RasterTilePriorityQueueAll::IsEmpty() const {
