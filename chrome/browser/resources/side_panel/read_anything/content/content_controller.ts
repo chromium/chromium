@@ -208,7 +208,7 @@ export class ContentController {
       this.listeners_.forEach(l => l.onContentChange());
     }
     const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
-    if (this.hasContent() && !root?.textContent) {
+    if (this.hasContent() && !root?.textContent?.trim()) {
       this.setState(this.getNoContentType_());
       chrome.readingMode.onNoTextContent();
     }
@@ -241,7 +241,7 @@ export class ContentController {
       const title = chrome.readingMode.htmlTitle;
       const contentHtml = chrome.readingMode.htmlContent;
 
-      if (!contentHtml) {
+      if (!contentHtml || !contentHtml.trim()) {
         this.setEmpty();
         return null;
       }
@@ -284,7 +284,7 @@ export class ContentController {
       const hasImagesAsContent = chrome.readingMode.imagesEnabled &&
           chrome.readingMode.hasValidSelection && hasImages;
 
-      if (!contentContainer.textContent && !hasImagesAsContent) {
+      if (!contentContainer.textContent?.trim() && !hasImagesAsContent) {
         this.setEmpty();
         return null;
       }
@@ -327,7 +327,7 @@ export class ContentController {
     const hasImagesAsContent = chrome.readingMode.imagesEnabled &&
         chrome.readingMode.hasValidSelection &&
         this.nodeStore_.hasImagesToFetch();
-    if (!node.textContent && !hasImagesAsContent) {
+    if (!node.textContent?.trim() && !hasImagesAsContent) {
       // Sometimes the controller thinks there will be content and redraws
       // without showing the empty page, but we end up not actually having any
       // content and also not showing the empty page sometimes. In this case,
