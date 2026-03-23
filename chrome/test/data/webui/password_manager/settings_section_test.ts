@@ -409,6 +409,48 @@ suite('SettingsSectionTest', function() {
     assertEquals(url, loadTimeData.getString('trustedVaultLearnMoreUrl'));
   });
 
+  test(
+      'Shows trusted vault banner when Trusted Vault Key is needed',
+      async function() {
+        const section = document.createElement('settings-section');
+        document.body.appendChild(section);
+        await flushTasks();
+
+        const trustedVaultBanner = section.$.trustedVaultBanner;
+
+        // 1. Initially, there is no error, so the banner should be hidden
+        // (assuming the default SyncBrowserProxy state is NOT_SHOWN).
+        assertFalse(isVisible(trustedVaultBanner));
+
+        // 2. Simulate the backend reporting that a Trusted Vault Key is needed.
+        passwordManager.listeners.passwordManagerActionableErrorChangedListener!
+            (chrome.passwordsPrivate.PasswordManagerActionableError
+                 .TRUSTED_VAULT_KEY_NEEDED);
+        await flushTasks();
+
+        // The banner should now be visible, as the state internally
+        // transitioned to OPTED_IN.
+        assertTrue(isVisible(trustedVaultBanner));
+
+        // Reset the mock's call history so we can accurately verify the
+        // re-fetch.
+        syncProxy.resetResolver('getTrustedVaultBannerState');
+
+        // 3. Simulate resolving the error (e.g., the user successfully
+        // authenticated).
+        passwordManager.listeners.passwordManagerActionableErrorChangedListener!
+            (chrome.passwordsPrivate.PasswordManagerActionableError.NO_ERROR);
+        await flushTasks();
+
+        // The observer should re-fetch the Trusted Vault state from the browser
+        // to determine if it should stay visible or be hidden.
+        await syncProxy.whenCalled('getTrustedVaultBannerState');
+
+        // Assuming the proxy still resolves to NOT_SHOWN, the banner should
+        // hide again.
+        assertFalse(isVisible(trustedVaultBanner));
+      });
+
   test('account storage toggle visibility - starts showing', async function() {
     passwordManager.data.shouldShowAccountStorageSettingToggle = true;
     const settings = document.createElement('settings-section');
@@ -905,13 +947,13 @@ suite('SettingsSectionTest', function() {
     await passwordManager.whenCalled('changePasswordManagerPin');
     assertFalse(section.$.toast.open);
 
-    passwordManager.data.changePasswordManagerPinSuccesful = false;
+    passwordManager.data.changePasswordManagerPinSuccessful = false;
     changePasswordManagerPinRow.click();
 
     await passwordManager.whenCalled('changePasswordManagerPin');
     assertFalse(section.$.toast.open);
 
-    passwordManager.data.changePasswordManagerPinSuccesful = true;
+    passwordManager.data.changePasswordManagerPinSuccessful = true;
     changePasswordManagerPinRow.click();
 
     await passwordManager.whenCalled('changePasswordManagerPin');

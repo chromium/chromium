@@ -36,7 +36,7 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ShouldShowAccountStorageToggleChangedListener} from './password_manager_proxy.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerActionableError, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
@@ -209,6 +209,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
           'isSyncingPasswords, isAccountStoreUser)',
       'updateIsCloudAuthenticatorConnected_(' +
           'isSyncingPasswords, isAccountStoreUser)',
+      'updateTrustedVaultBannerState_(actionableError)',
     ];
   }
 
@@ -305,7 +306,15 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
             this.shouldShowAccountStorageSettingToggleListener_);
 
     const trustedVaultStateChanged = (state: TrustedVaultBannerState) => {
+      // Set the state provided by the backend.
       this.trustedVaultBannerState_ = state;
+
+      // If we are currently in the error state, override the visual state to
+      // OPTED_IN.
+      if (this.actionableError ===
+          PasswordManagerActionableError.kTrustedVaultKeyNeeded) {
+        this.trustedVaultBannerState_ = TrustedVaultBannerState.OPTED_IN;
+      }
     };
     syncBrowserProxy.getTrustedVaultBannerState().then(
         trustedVaultStateChanged);
@@ -567,6 +576,18 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().isConnectedToCloudAuthenticator().then(
         connected => this.isConnectedToCloudAuthenticator_ =
             connected && (this.isSyncingPasswords || this.isAccountStoreUser));
+  }
+
+  private updateTrustedVaultBannerState_(
+      error: PasswordManagerActionableError) {
+    if (error === PasswordManagerActionableError.kTrustedVaultKeyNeeded) {
+      this.trustedVaultBannerState_ = TrustedVaultBannerState.OPTED_IN;
+    } else if (
+        this.trustedVaultBannerState_ === TrustedVaultBannerState.OPTED_IN) {
+      // Re-fetch the state from the browser if we no longer require unlock.
+      SyncBrowserProxyImpl.getInstance().getTrustedVaultBannerState().then(
+          state => this.trustedVaultBannerState_ = state);
+    }
   }
 
   private onDisconnectCloudAuthenticatorClick_() {

@@ -144,6 +144,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SiteFavicon) {
   RunTest("password_manager/site_favicon_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, UserUtilsMixin) {
+  RunTest("password_manager/user_utils_mixin_test.js", "mocha.run()");
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PromoCards) {
   RunTest("password_manager/promo_cards_test.js", "mocha.run()");
