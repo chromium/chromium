@@ -45,7 +45,7 @@ enum class ActuationErrorCode {
   // Failed to retrieve the WebState from the WebStateList.
   kCreationMissingWebState = 103,
 
-  // JavaScript Feature Errors (200-299).
+  // General JavaScriptFeature Errors (200-299).
 
   // The JavaScript feature received a result from the JavaScript that didn't
   // match the format it expected.
@@ -56,6 +56,19 @@ enum class ActuationErrorCode {
   // When this is used, the ActuationError.message should be populated with an
   // error message from the JavaScript that provides more context.
   kJavascriptFeatureFailedInJavaScriptExecution = 202,
+  // The ActuationTargetJavaScriptFeature failed because the WebState was
+  // destroyed while trying to find the target frame.
+  kActuationTargetWebStateDestroyed = 203,
+  // The ActuationTargetJavaScriptFeature received a remote frame token that
+  // could not be deserialized.
+  kActuationTargetInvalidRemoteFrameToken = 204,
+  // The target frame was not registered with the ChildFrameRegistrar.
+  kActuationTargetFrameNotRegistered = 205,
+  // The target frame could not be found in the WebFramesManager after
+  // registration.
+  kActuationTargetFrameNotFoundById = 206,
+  // The ActuationTargetJavaScriptFeature reached the maximum recursion depth.
+  kActuationTargetMaxDepthExceeded = 207,
 
   // Navigation Tool Errors (300-399).
 

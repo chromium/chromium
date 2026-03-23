@@ -47,6 +47,18 @@ std::string GetActuationErrorMessage(const ActuationError& error) {
       return "The JavaScriptFeature::CallJavaScriptFunction call failed.";
     case ActuationErrorCode::kJavascriptFeatureFailedInJavaScriptExecution:
       return "The JavaScriptFeature failed when executing the JavaScript.";
+    case ActuationErrorCode::kActuationTargetWebStateDestroyed:
+      return "The WebState was destroyed while looking for actuation target.";
+    case ActuationErrorCode::kActuationTargetInvalidRemoteFrameToken:
+      return "Failed to deserialize remote frame token.";
+    case ActuationErrorCode::kActuationTargetFrameNotRegistered:
+      return "The target frame was not registered with the "
+             "ChildFrameRegistrar.";
+    case ActuationErrorCode::kActuationTargetFrameNotFoundById:
+      return "Could not find target frame in WebFramesManager by the frame ID.";
+    case ActuationErrorCode::kActuationTargetMaxDepthExceeded:
+      return "The ActuationTargetJavaScriptFeature reached the maximum "
+             "recursion depth.";
     case ActuationErrorCode::kNavigationInvalidURL:
       return "Navigation failed due to invalid destination URL.";
     case ActuationErrorCode::kNavigationTabNotRealized:

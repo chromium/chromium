@@ -46,12 +46,23 @@ compile_ts("actuation_utils_ts") {
   sources = [ "resources/actuation_utils.ts" ]
 }
 
+optimize_ts("actuation_target_ts") {
+  sources = [ "resources/actuation_target.ts" ]
+  output_name = "actuation_target"
+
+  deps = [
+    ":actuation_utils_ts",
+    "//components/autofill/ios/form_util:child_frame_registration_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 optimize_ts("click_tool_ts") {
   sources = [ "resources/click_tool.ts" ]
   output_name = "click_tool"
 
   deps = [
-    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_utils_ts",
+    ":actuation_utils_ts",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
@@ -77,14 +88,20 @@ source_set("click_tool") {
 
 source_set("java_script_features") {
   sources = [
+    "actuation_target_java_script_feature.h",
+    "actuation_target_java_script_feature.mm",
     "click_tool_java_script_feature.h",
     "click_tool_java_script_feature.mm",
   ]
 
   deps = [
     ":actuation_interface",
+    ":actuation_target_ts",
     ":click_tool_ts",
     "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -94,6 +111,8 @@ source_set("java_script_features") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actuation_target_java_script_feature_unittest.mm",
+    "actuation_target_js_unittest.mm",
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",
@@ -101,13 +120,18 @@ source_set("unit_tests") {
   ]
   deps = [
     ":actuation_interface",
+    ":actuation_target_ts",
     ":click_tool",
     ":click_tool_ts",
     ":java_script_features",
     ":navigate_tool",
     "//base/test:test_support",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:autofill_form_features",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

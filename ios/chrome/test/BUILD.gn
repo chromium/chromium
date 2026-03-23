@@ -116,6 +116,8 @@ source_set("ios_chrome_test_with_web_state") {
   deps = [
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

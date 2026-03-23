@@ -9,6 +9,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -29,14 +30,14 @@ constexpr int kMidPointY = kHtmlHeight / 2;
 
 class ClickToolJavaScriptFeatureTest : public IOSChromeTestWithWebState {
  protected:
-  ClickToolJavaScriptFeatureTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        web::features::kAssertOnJavaScriptErrors);
+  ClickToolJavaScriptFeatureTest()
+      : IOSChromeTestWithWebState(WebClientMode::kChromeWebClient) {
+    scoped_feature_list_.InitWithFeatures(
+        {web::features::kAssertOnJavaScriptErrors, kActuationTools}, {});
   }
 
   void SetUp() override {
     IOSChromeTestWithWebState::SetUp();
-    fake_web_client()->SetJavaScriptFeatures({feature()});
     NSString* html = [NSString
         stringWithFormat:
             @"<html><body style='width: %dpx; height: %dpx;'></body></html>",

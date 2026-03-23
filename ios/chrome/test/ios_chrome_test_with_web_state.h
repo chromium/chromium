@@ -9,6 +9,7 @@
 #import <string>
 
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -17,6 +18,7 @@ namespace web {
 class JavaScriptFeature;
 class WebFrame;
 class WebState;
+class WebClient;
 }  // namespace web
 
 // Test fixture for //ios/chrome tests that need a WebState.
@@ -25,9 +27,17 @@ class WebState;
 // uses a web::BrowserState* as the BrowserState and breaks //ios/chrome
 // invariants about ProfileIOS.See //ios/web/public/test:test_fixture for more
 // context.
+//
+// This uses a FakeWebClient for its web::WebClient by default.
 class IOSChromeTestWithWebState : public PlatformTest {
  public:
-  IOSChromeTestWithWebState();
+  enum class WebClientMode {
+    kFakeWebClient,
+    kChromeWebClient,
+  };
+
+  explicit IOSChromeTestWithWebState(
+      WebClientMode web_client_mode = WebClientMode::kFakeWebClient);
   ~IOSChromeTestWithWebState() override;
 
  protected:
@@ -36,7 +46,6 @@ class IOSChromeTestWithWebState : public PlatformTest {
   void LoadHtml(std::string html);
 
   web::WebState* web_state() const { return web_state_.get(); }
-  web::FakeWebClient* fake_web_client() { return &web_client_; }
 
   // Gets the main frame for the WebState once it's loaded.
   web::WebFrame* WaitForMainFrame(web::JavaScriptFeature* feature);
@@ -46,8 +55,10 @@ class IOSChromeTestWithWebState : public PlatformTest {
   [[nodiscard]] bool WaitForFrameCount(web::JavaScriptFeature* feature,
                                        size_t expected_count);
 
+ private:
   web::WebTaskEnvironment task_environment_;
-  web::FakeWebClient web_client_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<web::WebClient> web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };

@@ -6,21 +6,36 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-IOSChromeTestWithWebState::IOSChromeTestWithWebState() {
-  web::SetWebClient(&web_client_);
+IOSChromeTestWithWebState::IOSChromeTestWithWebState(
+    WebClientMode web_client_mode) {
+  switch (web_client_mode) {
+    case WebClientMode::kChromeWebClient:
+      web_client_.reset(new ChromeWebClient());
+      break;
+    case WebClientMode::kFakeWebClient:
+      web_client_.reset(new web::FakeWebClient());
+      break;
+  }
+  web::SetWebClient(web_client_.get());
   profile_ = TestProfileIOS::Builder().Build();
   web::WebState::CreateParams params(profile_.get());
   web_state_ = web::WebState::Create(params);
 }
 
-IOSChromeTestWithWebState::~IOSChromeTestWithWebState() = default;
+IOSChromeTestWithWebState::~IOSChromeTestWithWebState() {
+  web_state_.reset();
+  profile_.reset();
+  web::SetWebClient(nullptr);
+}
 
 void IOSChromeTestWithWebState::LoadHtml(NSString* html) {
   web::test::LoadHtml(html, web_state_.get());
