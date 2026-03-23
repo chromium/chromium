@@ -656,7 +656,7 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
 }
 
 std::unique_ptr<gpu::RasterScopedAccess>
-CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
+CanvasNon2DResourceProviderSharedImage::WillDrawInternal(bool is_overwrite) {
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer
@@ -685,7 +685,7 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
 
   resource_ = NewOrRecycledResource();
   dst_access = resource_->BeginAccess(/*readonly=*/false);
-  if (must_preserve_content_on_copy_on_write_) {
+  if (must_preserve_content_on_copy_on_write_ && !is_overwrite) {
     auto old_mailbox =
         old_resource_shared_image->GetClientSharedImage()->mailbox();
     auto mailbox = resource()->GetClientSharedImage()->mailbox();
@@ -694,9 +694,9 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
                                        Size().width(), Size().height());
     gpu::RasterScopedAccess::EndAccess(std::move(src_access));
   } else {
-    // If we're not copying over the previous contents, we need to ensure
-    // that the image is cleared on the next BeginRasterCHROMIUM.
-    is_cleared_ = false;
+    // If we're not overwriting the image completely, we need to ensure that
+    // the image is cleared on the next BeginRasterCHROMIUM.
+    is_cleared_ = is_overwrite;
   }
 
   UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
@@ -820,7 +820,7 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     return false;
   }
 
-  auto access = WillDrawInternal();
+  auto access = WillDrawInternal(/*is_overwrite=*/false);
 
   // The below  write to the resource's SharedImage will need to be preserved in
   // the case of a subsequent CopyOnWrite.
@@ -859,7 +859,7 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
   gfx::Rect copy_rect(src_x, src_y, Size().width(), Size().height());
 
   EndWriteAccess();
-  auto dst_access = WillDrawInternal();
+  auto dst_access = WillDrawInternal(/*is_overwrite=*/false);
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
@@ -897,7 +897,7 @@ CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
 
   // NOTE: Invoking WillDrawInternal() ensures that this invocation of
   // EndAccess() will generate a new sync token.
-  auto access = WillDrawInternal();
+  auto access = WillDrawInternal(/*is_overwrite=*/false);
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
   return resource_->GetClientSharedImage();
@@ -1127,7 +1127,7 @@ void CanvasNon2DResourceProviderSharedImage::RasterRecord(
     return;
   }
 
-  auto access = WillDrawInternal();
+  auto access = WillDrawInternal(/*is_overwrite=*/false);
   EnsureWriteAccess();
 
   const bool needs_clear = !is_cleared_;

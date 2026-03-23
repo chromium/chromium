@@ -741,7 +741,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
  private:
   bool IsCanvas2D() const override { return false; }
 
-  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
+  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 };
 
 }  // namespace blink
