@@ -1,2 +1,5 @@
 vizcay@google.com
 jihadghanna@google.com
+
+# For large-scale Sync-related changes, refactorings, etc.
+per-file *sync*=file://components/sync/OWNERS
