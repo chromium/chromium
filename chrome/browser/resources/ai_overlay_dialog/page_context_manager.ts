@@ -13,8 +13,13 @@ export interface PageContext {
  * provided by the browser.
  */
 export class PageContextManager {
+  private readonly onDidUpdatePageContent?: (() => void);
   private context: PageContext|null = null;
   private isStale: boolean = true;
+
+  constructor(onDidUpdatePageContent?: () => void) {
+    this.onDidUpdatePageContent = onDidUpdatePageContent;
+  }
 
   get pageContext(): PageContext|null {
     return this.context;
@@ -29,6 +34,10 @@ export class PageContextManager {
         'PageContextManager: Update', url, title, content.substring(0, 200));
     this.context = {url, title, content};
     this.isStale = false;
+
+    if (this.onDidUpdatePageContent) {
+      this.onDidUpdatePageContent();
+    }
   }
 
   invalidatePageContext() {

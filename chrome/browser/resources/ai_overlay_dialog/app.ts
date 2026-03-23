@@ -203,6 +203,10 @@ export class AppElement extends CrLitElement {
       return;
     }
 
+    if (this.isConnecting_) {
+      return;
+    }
+
     if (!this.conversation.connected) {
       console.info('Attempting to connect');
       this.isConnecting_ = true;

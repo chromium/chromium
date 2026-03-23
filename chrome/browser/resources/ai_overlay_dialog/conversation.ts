@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+
 import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiSessionDelegate} from './api_session.js';
@@ -29,11 +31,12 @@ interface UiDelegate {
  * conversation state and bridges the UI with the API session.
  */
 export class Conversation implements ApiSessionDelegate {
-  private session: ApiSession|null = null;
-  private apiKey: string;
-  private uiDelegate: UiDelegate;
-  private pageContextManager: PageContextManager = new PageContextManager();
+  private readonly apiKey: string;
+  private readonly uiDelegate: UiDelegate;
+  private readonly pageContextManager: PageContextManager =
+      new PageContextManager(() => this.didUpdatePageContent());
 
+  private session: ApiSession|null = null;
   private state: State = State.STOPPED;
 
   constructor(
@@ -108,18 +111,8 @@ export class Conversation implements ApiSessionDelegate {
    * conversation into a live state once the connection is ready.
    */
   start() {
-    // TODO(bokan): Rebuild the session with a new system instruction each time
-    // the context changes.
-    // TODO(bokan): We should aim to always have an up-to-date URL and title
-    // if content is stale.
-    const context = this.pageContextManager.pageContext;
-    const systemInstruction = buildSystemInstruction(
-        'You are a helpful assistant.', context?.title || '',
-        context?.url || '', context?.content);
-
-    this.session = new ApiSession(this.apiKey, systemInstruction, this);
-
-    this.session.connect();
+    assert(!this.connected);
+    this.createNewApiSession();
   }
 
   /**
@@ -127,6 +120,7 @@ export class Conversation implements ApiSessionDelegate {
    * where nothing should be happening.
    */
   stop() {
+    assert(this.connected);
     this.session?.stop();
     this.session = null;
     this.setState(State.STOPPED);
@@ -140,5 +134,31 @@ export class Conversation implements ApiSessionDelegate {
     const oldState = this.state;
     this.state = state;
     this.uiDelegate.onStateChange(state, oldState);
+  }
+
+  private createNewApiSession() {
+    assert(!this.session);
+
+    // TODO(bokan): We should aim to always have an up-to-date URL and title
+    // if content is stale.
+    const context = this.pageContextManager.pageContext;
+    const systemInstruction = buildSystemInstruction(
+        'You are a helpful assistant.', context?.title || '',
+        context?.url || '', context?.content);
+
+    this.session = new ApiSession(this.apiKey, systemInstruction, this);
+    this.session.connect();
+  }
+
+  private didUpdatePageContent() {
+    if (!this.connected) {
+      return;
+    }
+
+    assert(this.session);
+    this.session.stop();
+    this.session = null;
+
+    this.createNewApiSession();
   }
 }

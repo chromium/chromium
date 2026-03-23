@@ -38,7 +38,9 @@ This directory contains the WebUI implementation of the AI Overlay Dialog.
     state tracking. This is a long lived object that persists across page loads
     and tabs.
 - **`ApiSession` (`api_session.ts`)**: Manages the `WebSocket` connection to the
-    AI backend and handles communication. This object is recreated at each
+    AI backend and handles communication. This object is recreated whenever page
+    context is updated. In practice, this means whenever the active tab changes
+    or is navigated.
 - **`Persona` (`persona.ts`)**: Defines the system instruction for the AI.
 
 ## State
