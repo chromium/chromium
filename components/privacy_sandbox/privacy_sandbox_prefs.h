@@ -6,6 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace prefs {
 
@@ -180,6 +181,10 @@ enum class TopicsConsentUpdateSource {
 
 // Registers user preferences related to privacy sandbox.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// If the Ad Privacy Deprecation feature is enabled, this function will set all
+// the Ad API prefs to false if it is already set to true.
+void ClearAdPrivacyPrefs(PrefService* pref_service);
 
 }  // namespace privacy_sandbox
 

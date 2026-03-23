@@ -2734,6 +2734,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 03/2026.
   profile_prefs->ClearPref(kNtpContextMenuClickCount);
 
+  // Added 03/2026.
+  privacy_sandbox::ClearAdPrivacyPrefs(profile_prefs);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

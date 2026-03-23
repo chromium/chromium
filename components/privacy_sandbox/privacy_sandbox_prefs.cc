@@ -7,6 +7,8 @@
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
 
@@ -70,6 +72,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kBlockAll3pcToggleEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kTrackingProtection3pcdEnabled, false);
+}
+
+void ClearAdPrivacyPrefs(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(kPrivacySandboxAdPrivacyUxDeprecation)) {
+    return;
+  }
+  prefs->ClearPref(prefs::kPrivacySandboxM1TopicsEnabled);
+  prefs->ClearPref(prefs::kPrivacySandboxM1FledgeEnabled);
+  prefs->ClearPref(prefs::kPrivacySandboxM1AdMeasurementEnabled);
 }
 
 }  // namespace privacy_sandbox
