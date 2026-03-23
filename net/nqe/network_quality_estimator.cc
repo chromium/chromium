@@ -48,7 +48,7 @@
 namespace net {
 
 BASE_FEATURE(kNetworkQualityEstimatorAsyncNotifyStartTransaction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimatorAsyncNotifyHeadersReceived,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -61,7 +61,7 @@ BASE_FEATURE_PARAM(bool,
                    kDeferUntilNextStep,
                    &kNetworkQualityEstimatorAsyncNotifyStartTransaction,
                    "defer_until_next_step",
-                   false);
+                   true);
 
 // If true, don't call NotifyHeadersReceived asynchronously as a task but defer
 // it until the next step like NotifyBytesRead.
