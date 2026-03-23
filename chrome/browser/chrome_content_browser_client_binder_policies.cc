@@ -11,7 +11,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
@@ -38,7 +38,7 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
   policy_map
       .SetAssociatedPolicy<subresource_filter::mojom::SubresourceFilterHost>(
           content::MojoBinderAssociatedPolicy::kGrant);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // LocalFrameHost supports content scripts related APIs, which are
   // RequestScriptInjectionPermission, GetInstallState, SendRequestIPC, and
   // notifying CSS selector updates. These APIs are used by Chrome Extensions
