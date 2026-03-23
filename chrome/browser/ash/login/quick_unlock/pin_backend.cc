@@ -327,9 +327,6 @@ void PinBackend::Remove(const AccountId& account_id,
     return;
   }
 
-  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  DCHECK(storage);
-
   // Disable PIN auto submit when removing the pin.
   UpdatePinAutosubmitOnRemove(account_id);
 
@@ -343,6 +340,8 @@ void PinBackend::Remove(const AccountId& account_id,
         base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
                        account_id, token, std::move(did_remove)));
   } else {
+    QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+    DCHECK(storage);
     const bool had_pin = storage->pin_storage_prefs()->IsPinSet();
     storage->pin_storage_prefs()->RemovePin();
     PostResponse(std::move(did_remove), had_pin);
@@ -504,7 +503,11 @@ void PinBackend::OnPinAutosubmitCheckComplete(
 }
 
 PrefService* PinBackend::PrefService(const AccountId& account_id) {
-  return ProfileHelper::Get()->GetProfileByAccountId(account_id)->GetPrefs();
+  auto* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!profile) {
+    return nullptr;
+  }
+  return profile->GetPrefs();
 }
 
 void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
@@ -535,7 +538,12 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
 void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetUserPinLength(account_id, 0);
-  PrefService(account_id)->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
+  auto* pref_service = PrefService(account_id);
+  // There may not be a pref service available if the pin is removed before the
+  // user logs in.
+  if (pref_service) {
+    pref_service->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
+  }
 }
 
 void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
