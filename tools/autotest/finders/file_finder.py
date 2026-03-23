@@ -281,26 +281,23 @@ def FindMatchingTestFiles(target: str,
   return test_files
 
 
-def GetTestFilesFromChanges() -> list[str]:
-  # Find both committed and uncommitted changes.
+def _GetChangedFiles() -> list[str]:
+  # Find files updated in both committed and uncommitted changes.
   merge_base_command: list[str] = ['git', 'merge-base', 'origin/main', 'HEAD']
   merge_base: str = command.RunCommand(merge_base_command).strip()
   git_command: list[str] = [
       'git', 'diff', '--name-only', '--diff-filter=ACMRT', merge_base
   ]
   changed_files: list[str] = command.RunCommand(git_command).splitlines()
+  return changed_files
 
+
+def GetChangedTestFiles() -> list[str]:
+  """Gets test files modified in git."""
+  changed_files = _GetChangedFiles()
   test_files: list[str] = []
+
   for f in changed_files:
     if IsTestFile(f) is const.TestValidity.VALID_TEST:
       test_files.append(f)
-    else:
-      mapped_file = _FindTestForFile(f)
-      if mapped_file and mapped_file != f:
-        test_files.append(mapped_file)
-      elif f.endswith('.java'):
-        root, _ = os.path.splitext(f)
-        test_name = os.path.basename(root) + 'Test.java'
-        if os.path.isfile(test_name):
-          test_files.append(test_name)
   return test_files
