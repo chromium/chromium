@@ -283,6 +283,7 @@ class ChromeAimEligibilityServiceBrowserTest
     enabled_features.push_back(
         {omnibox::kAimServerEligibilityForPrimaryAccountEnabled, {}});
     enabled_features.push_back({omnibox::kAimUrlNavigationFetchEnabled, {}});
+    enabled_features.push_back({omnibox::kAimUsePecApi, {}});
     enabled_features.push_back(
         {omnibox::kAimServerRequestOnStartupEnabled, {}});
     enabled_features.push_back(
@@ -367,6 +368,15 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(is_server_eligible);
   response.set_is_pdf_upload_eligible(is_pdf_upload_eligible);
+  if (is_server_eligible) {
+    response.mutable_searchbox_config()->add_tool_configs()->set_tool(
+        omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  }
+  if (is_pdf_upload_eligible) {
+    response.mutable_searchbox_config()
+        ->add_input_type_configs()
+        ->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  }
   base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
@@ -516,8 +526,18 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     base::HistogramTester histogram_tester;
 
     // Handle the eligibility request with a custom response.
+    response.Clear();
     response.set_is_eligible(!is_server_eligible);
     response.set_is_pdf_upload_eligible(!is_pdf_upload_eligible);
+    if (!is_server_eligible) {
+      response.mutable_searchbox_config()->add_tool_configs()->set_tool(
+          omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    }
+    if (!is_pdf_upload_eligible) {
+      response.mutable_searchbox_config()
+          ->add_input_type_configs()
+          ->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+    }
     url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) {
@@ -1002,8 +1022,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
 
   // Configure the response to explicitly allow DEEP_SEARCH but not IMAGE_GEN.
   // This helps verify that the service respects the specific allowlist.
-  auto* rule_set = response.mutable_searchbox_config()->mutable_rule_set();
-  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  response.mutable_searchbox_config()->add_tool_configs()->set_tool(
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
 
   base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
@@ -1032,12 +1052,12 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
                        RespectsPdfUploadConfig) {
   // Prepare a response that explicitly allows PDF uploads via
   // `SearchboxConfig`. This verifies that the service checks the
-  // `allowed_input_types` list.
+  // `input_type_configs` list.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
 
-  auto* rule_set = response.mutable_searchbox_config()->mutable_rule_set();
-  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  response.mutable_searchbox_config()->add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
 
   base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
