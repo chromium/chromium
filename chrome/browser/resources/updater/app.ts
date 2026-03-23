@@ -58,9 +58,15 @@ export class UpdaterAppElement extends CrLitElement {
       updaterStateError: {type: Boolean},
       apps: {type: Array},
       appStateError: {type: Boolean},
-      pageDataSource: {type: Number},
+      pageDataSource: {
+        type: Number,
+        reflect: true,
+      },
       fileSelectionBannerLabel: {type: String},
-      historyLoadError: {type: Boolean},
+      historyLoadError: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
