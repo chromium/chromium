@@ -2304,6 +2304,23 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingNewPage) -->
 
+<!-- LINT.IfChange(ReadAnythingOmniboxChipDecision) -->
+
+<enum name="ReadAnythingOmniboxChipDecision">
+  <int value="0" label="Shown on an article"/>
+  <int value="1" label="Shown on a PDF"/>
+  <int value="2" label="Not shown on app window"/>
+  <int value="3" label="Not shown on non-http(s)"/>
+  <int value="4" label="Not shown on block-listed site"/>
+  <int value="5" label="Not shown because of optimization guide"/>
+  <int value="6" label="Not shown because of Readability signal"/>
+  <int value="7" label="Not shown on a short PDF"/>
+  <int value="8"
+      label="Not shown on a PDF with too many non-alphabetic characters"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/read_anything/read_anything_enums.h:ReadAnythingOmniboxChipDecision) -->
+
 <!-- LINT.IfChange(ReadAnythingReadAloudSettingsChange) -->
 
 <enum name="ReadAnythingReadAloudSettingsChange">

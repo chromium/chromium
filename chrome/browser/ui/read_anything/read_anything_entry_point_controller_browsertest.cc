@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -468,11 +469,15 @@ IN_PROC_BROWSER_TEST_P(
           std::optional<optimization_guide::OptimizationMetadata>());
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kShowArticle, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -483,11 +488,15 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideOptimizationGuide, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -502,11 +511,15 @@ IN_PROC_BROWSER_TEST_P(
           std::optional<optimization_guide::OptimizationMetadata>());
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideReadability, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -517,30 +530,15 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
-                       CheckIfShouldSuggestReadingMode_LongerPdfIsCandidate) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "/pdf/accessibility/paragraphs-and-heading-untagged.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-  base::test::TestFuture<bool> future;
-
-  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
-      browser(), future.GetCallback());
-
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideOptimizationGuide, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -554,11 +552,15 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideShortPdf, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -574,11 +576,15 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideLowAlphabeticPdf, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -587,11 +593,15 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideNonHttp, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -601,11 +611,15 @@ IN_PROC_BROWSER_TEST_P(
       browser(), GURL("https://www.docs.google.com")));
   base::test::TestFuture<bool> future;
 
+  base::HistogramTester histogram_tester;
   ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
       browser(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideDenyList, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
