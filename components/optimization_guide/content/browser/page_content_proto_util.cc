@@ -144,6 +144,10 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER;
     case blink::mojom::AIPageContentClickabilityReason::kHoverPseudoClass:
       return optimization_guide::proto::CLICKABILITY_REASON_HOVER_PSEUDO_CLASS;
+    case blink::mojom::AIPageContentClickabilityReason::kAriaToggle:
+      return optimization_guide::proto::CLICKABILITY_REASON_ARIA_TOGGLE;
+    case blink::mojom::AIPageContentClickabilityReason::kAriaSelectable:
+      return optimization_guide::proto::CLICKABILITY_REASON_ARIA_SELECTABLE;
   }
   NOTREACHED();
 }

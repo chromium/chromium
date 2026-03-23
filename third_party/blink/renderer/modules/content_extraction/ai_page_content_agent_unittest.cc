@@ -5995,6 +5995,41 @@ TEST_F(AIPageContentAgentTest, AriaExpandedFalse) {
           mojom::blink::AIPageContentClickabilityReason::kAriaExpandedFalse));
 }
 
+TEST_F(AIPageContentAgentTest, ClickabilityReasonAriaToggleAndSelectable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <button aria-pressed="false">Toggle Button</button>
+        <div role="checkbox" aria-checked="mixed">Toggle Checkbox</div>
+        <div role="option" aria-selected="false">Selectable Option</div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& pressed_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(pressed_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(pressed_node.content_attributes->node_interaction_info
+                  ->clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kAriaToggle));
+
+  const auto& checked_node = *ContentRootNode().children_nodes[1];
+  ASSERT_TRUE(checked_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(checked_node.content_attributes->node_interaction_info
+                  ->clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kAriaToggle));
+
+  const auto& selected_node = *ContentRootNode().children_nodes[2];
+  ASSERT_TRUE(selected_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      selected_node.content_attributes->node_interaction_info
+          ->clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kAriaSelectable));
+}
+
 TEST_F(AIPageContentAgentTest, Autocomplete) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(), R"(<body>

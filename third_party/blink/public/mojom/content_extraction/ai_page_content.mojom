@@ -212,6 +212,14 @@ enum AIPageContentClickabilityReason {
 
   // The node has a CSS :hover pseudo-class that would affect it on hover.
   kHoverPseudoClass,
+
+  // The node has the aria-checked or aria-pressed attribute indicating it can
+  // be toggled.
+  kAriaToggle,
+
+  // The node has the aria-selected attribute indicating it can be selected or
+  // unselected.
+  kAriaSelectable,
 };
 
 // Provides hints to indicate that interaction with the element is disabled.

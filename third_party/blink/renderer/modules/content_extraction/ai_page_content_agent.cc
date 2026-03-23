@@ -681,6 +681,17 @@ void AddClickabilityReasons(
     interaction_info.clickability_reasons.push_back(Reason::kAriaHasPopup);
   }
 
+  // Preserve explicit ARIA state hints when authors mark a node as toggleable.
+  if (AXObject::HasAriaAttribute(element, html_names::kAriaCheckedAttr) ||
+      AXObject::HasAriaAttribute(element, html_names::kAriaPressedAttr)) {
+    interaction_info.clickability_reasons.push_back(Reason::kAriaToggle);
+  }
+
+  // Preserve explicit ARIA state hints when authors mark a node as selectable.
+  if (AXObject::HasAriaAttribute(element, html_names::kAriaSelectedAttr)) {
+    interaction_info.clickability_reasons.push_back(Reason::kAriaSelectable);
+  }
+
   bool aria_expanded = false;
   if (AXObject::AriaBooleanAttribute(element, html_names::kAriaExpandedAttr,
                                      &aria_expanded)) {
