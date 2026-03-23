@@ -15,10 +15,12 @@ SaveEntityParams::SaveEntityParams(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
     std::u16string user_email,
+    bool save_is_synchronous,
     AutofillClient::EntityImportPromptResultCallback callback)
     : new_entity(std::move(new_entity)),
       old_entity(std::move(old_entity)),
       user_email(std::move(user_email)),
+      save_is_synchronous(save_is_synchronous),
       callback(std::move(callback)) {}
 
 SaveEntityParams::SaveEntityParams(SaveEntityParams&&) = default;

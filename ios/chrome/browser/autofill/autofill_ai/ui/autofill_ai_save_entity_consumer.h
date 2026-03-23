@@ -17,8 +17,13 @@
 
 // Sets the entities to be displayed and managed by the consumer.
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-           userEmail:(const std::u16string&)userEmail;
+            oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
+            userEmail:(const std::u16string&)userEmail
+    saveIsSynchronous:(BOOL)saveIsSynchronous;
+
+// Updates the UI to show the progress of the entity upload via the loading
+// state.
+- (void)showLoadingState;
 
 @end
 

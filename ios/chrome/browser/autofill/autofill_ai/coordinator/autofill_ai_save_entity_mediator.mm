@@ -35,10 +35,19 @@
 #pragma mark - AutofillAISaveEntityMutator
 
 - (void)acceptSaving {
-  if (_params && !_params->callback.is_null()) {
-    std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
+  CHECK(_params);
+
+  // When `_params->save_is_synchronous` is true, `_params->callback` is run
+  // that saves the profile. Otherwise, the view enters the loading state and
+  // `_params->callback` does an async call in the client.
+  if (!_params->save_is_synchronous) {
+    // Trigger the loading state in the UI immediately.
+    [self.consumer showLoadingState];
   }
+
+  CHECK(!_params->callback.is_null());
+  std::move(_params->callback)
+      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 - (void)cancelSaving {
@@ -62,7 +71,8 @@
 
   [_consumer setNewEntity:_params->new_entity
                 oldEntity:_params->old_entity
-                userEmail:_params->user_email];
+                userEmail:_params->user_email
+        saveIsSynchronous:_params->save_is_synchronous];
 }
 
 @end

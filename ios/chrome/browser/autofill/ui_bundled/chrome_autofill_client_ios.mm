@@ -619,7 +619,7 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
   CloseEntityImportBubble();
 
   SaveEntityParams params(std::move(new_entity), std::move(old_entity),
-                          std::move(user_email.value()),
+                          std::move(user_email.value()), save_is_synchronous,
                           std::move(prompt_result_callback));
 
   auto delegate = std::make_unique<AutofillAiSaveEntityInfoBarDelegateIOS>(

@@ -58,7 +58,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOSTest
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextSave) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
   SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
-                          base::DoNothing());
+                          /*bool save_is_synchronous=*/true, base::DoNothing());
   AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
                                                   base::DoNothing());
 
@@ -72,7 +72,8 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextSave) {
 // to save the new entity to the device.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextUpdate) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  SaveEntityParams params(entity, entity, kTestUserEmail, base::DoNothing());
+  SaveEntityParams params(entity, entity, kTestUserEmail,
+                          /*bool save_is_synchronous=*/true, base::DoNothing());
   AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
                                                   base::DoNothing());
 
@@ -84,7 +85,7 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextUpdate) {
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelSave) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
   SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
-                          base::DoNothing());
+                          /*bool save_is_synchronous=*/true, base::DoNothing());
   AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
                                                   base::DoNothing());
 
@@ -99,7 +100,8 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelSave) {
 // Tests that the button labels are correct for the update case.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelUpdate) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  SaveEntityParams params(entity, entity, kTestUserEmail, base::DoNothing());
+  SaveEntityParams params(entity, entity, kTestUserEmail,
+                          /*bool save_is_synchronous=*/true, base::DoNothing());
   AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
                                                   base::DoNothing());
 
@@ -116,7 +118,7 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelUpdate) {
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetIcon) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
   SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
-                          base::DoNothing());
+                          /*bool save_is_synchronous=*/true, base::DoNothing());
   AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
                                                   base::DoNothing());
 

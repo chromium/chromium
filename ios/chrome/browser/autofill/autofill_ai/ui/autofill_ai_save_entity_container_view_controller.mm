@@ -36,6 +36,9 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
   // Button title.
   NSString* _buttonTitle;
+
+  // Denotes if the save is synchronous or not.
+  BOOL _saveIsSynchronous;
 }
 
 - (instancetype)init {
@@ -115,14 +118,16 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 #pragma mark - AutofillAISaveEntityConsumer
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-           userEmail:(const std::u16string&)userEmail {
+            oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
+            userEmail:(const std::u16string&)userEmail
+    saveIsSynchronous:(BOOL)saveIsSynchronous {
   // Forward the data to the table view controller for display.
   [_tableViewController setNewEntity:newEntity
                            oldEntity:oldEntity
                            userEmail:userEmail];
 
   self.title = base::SysUTF16ToNSString(newEntity.type().GetNameForI18n());
+  _saveIsSynchronous = saveIsSynchronous;
 
   // Update the button title based on whether it's an update or save.
   _buttonTitle = l10n_util::GetNSString(
@@ -134,6 +139,18 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   }
 }
 
+- (void)showLoadingState {
+  _saveButton.enabled = NO;
+  _saveButtonEnabled = NO;
+
+  _saveButton.title = @"";
+  _saveButton.tunedDownStyle = YES;
+  _saveButton.primaryButtonImage = PrimaryButtonImageSpinner;
+
+  _saveButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_AUTOFILL_AI_WALLET_UPLOAD_THROBBER_ACCESSIBLE_NAME);
+}
+
 #pragma mark - Actions
 
 - (void)handleCancelButton {
@@ -142,8 +159,17 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 }
 
 - (void)saveButtonWasPressed:(UIButton*)sender {
+  // Early return if the save button is disabled.
+  if (!_saveButtonEnabled) {
+    return;
+  }
   [self.mutator acceptSaving];
-  [self.autofillHandler dismissSaveEntityDialog];
+  // Only dismiss immediately if it's a synchronous local save.
+  // Otherwise, the UI stays open to show the loading state. Once the async call
+  // is completed, the UI is informed and the loading state is dismissed.
+  if (_saveIsSynchronous) {
+    [self.autofillHandler dismissSaveEntityDialog];
+  }
 }
 
 @end
