@@ -5,13 +5,19 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
-import {SessionState} from './api_session.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
-import {Conversation} from './conversation.js';
+import {Conversation, State} from './conversation.js';
+
+enum UiState {
+  INERT = 'inert',
+  CONNECTING = 'connecting',
+  SPEAKING = 'speaking',
+  IDLE = 'idle',
+}
 
 interface MockAudioButton {
   name: string;
@@ -38,19 +44,44 @@ export class AppElement extends CrLitElement {
       mockButtons_: {
         type: Array,
       },
+      isSpeaking_: {
+        type: Boolean,
+      },
+      isConnecting_: {
+        type: Boolean,
+      },
     };
   }
 
   protected accessor mockButtons_: MockAudioButton[] = [];
+  protected accessor isSpeaking_: boolean = false;
+  protected accessor isConnecting_: boolean = false;
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
   // If onStateClick_ happens before the API key mojo returns, this will turn
   // to true and invoke the state change after the key becomes available.
   private queueStateChange: boolean = false;
-  private state: SessionState = SessionState.IDLE;
   private conversation: Conversation|null = null;
-  private blobCapturer_: BlobAudioCapturer|null = null;
+  private blobCapturer: BlobAudioCapturer|null = null;
+  private audioCapturer: AudioCapturer|null = null;
+  private audioPlayer: AudioPlayer|null = null;
+
+  protected get uiState_(): UiState {
+    if (this.isConnecting_) {
+      return UiState.CONNECTING;
+    }
+
+    if (!this.conversation?.connected) {
+      return UiState.INERT;
+    }
+
+    if (this.isSpeaking_) {
+      return UiState.SPEAKING;
+    }
+
+    return UiState.IDLE;
+  }
 
   constructor() {
     super();
@@ -66,9 +97,9 @@ export class AppElement extends CrLitElement {
     this.pageHandler.getApiKey().then(({apiKey}) => {
       this.conversation = new Conversation(apiKey, {
         sendToUI: (msg) => this.onMessageFromConversation(msg),
-        onStateChange: (state) => this.setState(state),
-        createAudioCapturer: () => this.createAudioCapturer(),
-        createAudioPlayer: () => this.createAudioPlayer(),
+        onStateChange: (state, oldState) =>
+            this.onConversationStateChanged(state, oldState),
+        onResponse: (audioData) => this.onAudioOutput(audioData),
       });
       this.conversation.bindMojoHandlers(this.pageCallbackRouter);
 
@@ -79,8 +110,19 @@ export class AppElement extends CrLitElement {
     });
   }
 
+  private onAudioInput(sampleRate: number, data: string) {
+    this.conversation?.sendAudio(sampleRate, data);
+  }
+
+  private onAudioOutput(audioData: string) {
+    // TODO(bokan): 24000 Hz (the default sampleRate in AudioPlayer) happens to
+    // be what we receive from the server but we should be looking at the value
+    // on the mime type and recreate the AudioPlayer if necessary.
+    this.audioPlayer?.play(audioData);
+  }
+
   protected onInjectAudioClick_(e: Event) {
-    if (!this.blobCapturer_) {
+    if (!this.blobCapturer) {
       return;
     }
 
@@ -96,12 +138,18 @@ export class AppElement extends CrLitElement {
       bytes[i] = binaryString.charCodeAt(i);
     }
     const blob = new Blob([bytes], {type: 'audio/wav'});
-    this.blobCapturer_.send(blob);
+    this.blobCapturer.send(blob);
   }
 
   private createAudioPlayer(): AudioPlayer {
-    return new AudioPlayer(
-        /*onDone=*/ this.setState.bind(this, SessionState.LISTENING));
+    return new AudioPlayer(/*onStart=*/
+                           () => {
+                             this.isSpeaking_ = true;
+                           },
+                           /*onDone=*/
+                           () => {
+                             this.isSpeaking_ = false;
+                           });
   }
 
   private async createAudioCapturer(): Promise<AudioCapturer|null> {
@@ -116,8 +164,8 @@ export class AppElement extends CrLitElement {
         if (jsonData) {
           const config = JSON.parse(jsonData);
           this.mockButtons_ = config.buttons || [];
-          this.blobCapturer_ = new BlobAudioCapturer();
-          return this.blobCapturer_;
+          this.blobCapturer = new BlobAudioCapturer();
+          return this.blobCapturer;
         } else {
           console.warn('No mock audio data provided or found');
         }
@@ -136,25 +184,38 @@ export class AppElement extends CrLitElement {
       return;
     }
 
-    if (this.state === SessionState.IDLE) {
+    if (!this.conversation.connected) {
       console.info('Attempting to connect');
+      this.isConnecting_ = true;
       this.conversation.start();
     } else {
       this.conversation.stop();
     }
   }
 
-  private setState(state: SessionState) {
-    if (state === this.state) {
-      return;
+  private async onConversationStateChanged(state: State, oldState: State) {
+    console.info('onConversationStateChanged: ', state);
+
+    if (oldState === State.STOPPED && state !== State.STOPPED) {
+      this.isConnecting_ = false;
+      this.audioPlayer = this.createAudioPlayer();
+      this.audioCapturer = await this.createAudioCapturer();
+      if (this.audioCapturer) {
+        this.audioCapturer.start(
+            this.onAudioInput.bind(this, this.audioCapturer.getSampleRate()));
+      }
     }
 
-    console.info('SetState: ', state);
-    this.state = state;
-
-    if (state === SessionState.IDLE) {
+    if (state === State.STOPPED) {
+      this.isConnecting_ = false;
       this.mockButtons_ = [];
-      this.blobCapturer_ = null;
+      this.blobCapturer = null;
+      this.audioCapturer?.stop();
+      this.audioPlayer?.stop();
+      this.audioCapturer = null;
+      this.audioPlayer = null;
+    } else if (state === State.LISTENING) {
+      this.audioPlayer?.stop();
     }
   }
 

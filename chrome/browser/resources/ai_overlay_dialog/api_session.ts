@@ -4,19 +4,6 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {AudioCapturer} from './audio_capturer.js';
-import {AudioPlayer} from './audio_player.js';
-
-/**
- * States for the API session.
- * TODO(bokan): This doesn't belong here long term but will be moved once we
- * have a more appropriate coordinator object.
- */
-export enum SessionState {
-  IDLE = 'idle',
-  LISTENING = 'listening',
-  TALKING = 'talking',
-}
 
 /**
  * API session WebSocket protocol types.
@@ -71,35 +58,29 @@ interface ApiConfig {
   model: string;
 }
 
+export interface ApiSessionDelegate {
+  onResponse(audioData: string): void;
+  interrupt(): void;
+  onConnectionChanged(connected: boolean): void;
+}
+
 /**
  * Manages the connection and communication with the server.
  */
 export class ApiSession {
   private readonly apiKey: string;
   private readonly systemInstruction: string;
-  private readonly audioCapturer: AudioCapturer;
-  private readonly audioPlayer: AudioPlayer;
 
   private ws: WebSocket|null = null;
-  // TODO(bokan): the session shouldn't interact with state, the coordinator
-  // should be responsible for this based on the incoming messages.
-  private onStateChange: (state: SessionState) => void;
   private config_: ApiConfig|null = null;
 
+  private delegate: ApiSessionDelegate;
+
   constructor(
-      apiKey: string, systemInstruction: string,
-      audioCapturer: AudioCapturer, audioPlayer: AudioPlayer,
-      onStateChange: (state: SessionState) => void) {
+      apiKey: string, systemInstruction: string, delegate: ApiSessionDelegate) {
     this.apiKey = apiKey;
     this.systemInstruction = systemInstruction;
-    this.audioCapturer = audioCapturer;
-    this.audioPlayer = audioPlayer;
-    this.onStateChange = onStateChange;
-    // TODO(bokan): 24000 Hz (the default sampleRate in AudioPlayer) happens to
-    // be what we receive from the server but we should be looking at the value
-    // on the mime type and recreate the AudioPlayer if necessary.
-    this.audioPlayer =
-        new AudioPlayer(onStateChange.bind(this, SessionState.LISTENING));
+    this.delegate = delegate;
   }
 
   async connect() {
@@ -118,13 +99,9 @@ export class ApiSession {
     const url = `${this.config_.endpoint_url}?key=${this.apiKey}`;
     this.ws = new WebSocket(url);
 
-    this.ws.onopen = async () => {
+    this.ws.onopen = () => {
       console.info('WebSocket Opened');
-      this.onStateChange(SessionState.LISTENING);
       this.sendSetup();
-
-      await this.audioCapturer.start(
-          this.sendAudio.bind(this, this.audioCapturer.getSampleRate()));
     };
 
     this.ws.onmessage = async (event) => {
@@ -148,22 +125,21 @@ export class ApiSession {
 
     this.ws.onclose = (e) => {
       console.info('WebSocket Closed: ', e);
+      this.delegate.onConnectionChanged(false);
       this.stop();
     };
 
     this.ws.onerror = (error) => {
       console.error('API WebSocket error:', error);
+      this.delegate.onConnectionChanged(false);
       this.stop();
     };
   }
 
   stop() {
     console.info('stop()');
-    this.audioCapturer.stop();
-    this.audioPlayer.stop();
     this.ws?.close();
     this.ws = null;
-    this.onStateChange(SessionState.IDLE);
   }
 
   private sendSetup() {
@@ -187,7 +163,7 @@ export class ApiSession {
     this.ws?.send(JSON.stringify(setup));
   }
 
-  private sendAudio(sampleRate: number, base64Data: string) {
+  sendAudio(sampleRate: number, base64Data: string) {
     const msg: RealtimeInputMessage = {
       realtimeInput: {
         mediaChunks: [{
@@ -200,6 +176,12 @@ export class ApiSession {
   }
 
   private handleMessage(msg: ServerContentMessage) {
+    if (msg.setupComplete) {
+      console.info('ApiSession SetupComplete');
+      this.delegate.onConnectionChanged(true);
+      return;
+    }
+
     const content = msg.serverContent;
     if (!content) {
       return;
@@ -208,15 +190,13 @@ export class ApiSession {
     if (content.modelTurn?.parts) {
       for (const part of content.modelTurn?.parts) {
         if (part.inlineData) {
-          this.onStateChange(SessionState.TALKING);
-          this.audioPlayer.play(part.inlineData.data);
+          this.delegate.onResponse(part.inlineData.data);
         }
       }
     }
 
     if (content.interrupted) {
-      this.onStateChange(SessionState.LISTENING);
-      this.audioPlayer.stop();
+      this.delegate.interrupt();
     }
   }
 }

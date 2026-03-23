@@ -11,10 +11,13 @@ export class AudioPlayer {
   private nextStartTime: number = 0;
 
   private onDone?: () => void;
+  private onStart?: () => void;
   private doneTimeout: number = 0;
 
-  constructor(onDone?: () => void, sampleRate: number = 24000) {
+  constructor(
+      onStart?: () => void, onDone?: () => void, sampleRate: number = 24000) {
     this.onDone = onDone;
+    this.onStart = onStart;
     this.sampleRate = sampleRate;
     this.audioContext = new AudioContext({sampleRate: this.sampleRate});
   }
@@ -56,6 +59,9 @@ export class AudioPlayer {
 
     const now = this.audioContext.currentTime;
     if (this.nextStartTime < now) {
+      if (this.onStart) {
+        this.onStart();
+      }
       this.nextStartTime = now;
     }
 

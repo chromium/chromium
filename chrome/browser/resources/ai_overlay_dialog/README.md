@@ -41,6 +41,18 @@ This directory contains the WebUI implementation of the AI Overlay Dialog.
     AI backend and handles communication. This object is recreated at each
 - **`Persona` (`persona.ts`)**: Defines the system instruction for the AI.
 
+## State
+
+Conversation is the source of truth for the conversation state which can be in one of three states:
+
+* STOPPED (initial and ended) - In this state input/output is disabled and the
+  server connection is torn down.
+* LISTENING - The conversation is waiting for the user to issue a query
+* TALKING - The conversation is playing back a response from the server
+
+The UI in app.ts receives changes in the Conversation state but uses it's own,
+similar but distinct, state machine to update the UI.
+
 ## Dev
 
 Provide an API key by starting chrome with chrome:
