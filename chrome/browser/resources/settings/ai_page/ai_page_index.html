@@ -46,6 +46,13 @@
     </settings-history-search-page>
   </template>
 
+  <template is="dom-if" if="[[enableAiModeSearchSetting_]]">
+    <settings-ai-mode-search-page slot="view" id="aiModeSearch"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.AI_MODE_SEARCH.path]]">
+    </settings-ai-mode-search-page>
+  </template>
+
   <template is="dom-if" if="[[showComposeControl_]]">
     <settings-offer-writing-help-page slot="view" id="compose"
         data-parent-view-id="parent" prefs="{{prefs}}"

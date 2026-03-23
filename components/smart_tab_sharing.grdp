@@ -74,6 +74,9 @@
   <message name="IDS_STS_SETTINGS_OPTION_1_RELEVANT_OPEN_TABS_ARE_USED_TO_PERSONALIZE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Relevant open tabs are used to personalize responses in all threads
   </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_YOU_CAN_EASILY_ASK_QUESTIONS" desc="This text is shown in chrome://settings/ai/aiModeSearch under the When On section">
+    You can easily ask questions about the tabs you're sharing as you browse.
+  </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_THINGS_TO_CONSIDER" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Things to consider
   </message>

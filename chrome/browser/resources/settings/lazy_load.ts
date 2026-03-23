@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Subpages
+import './ai_page/ai_mode_search_page.js';
 import './ai_page/ai_tab_organization_subpage.js';
 import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
@@ -163,6 +164,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate.js';
 export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
+export {SettingsAiModeSearchPageElement} from './ai_page/ai_mode_search_page.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';

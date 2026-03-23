@@ -201,6 +201,9 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('showTabOrganizationControl')) {
       r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
     }
+    if (loadTimeData.getBoolean('enableAiModeSearchSetting')) {
+      r.AI_MODE_SEARCH = r.AI.createChild('/ai/aiModeSearch');
+    }
     if (loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
     }

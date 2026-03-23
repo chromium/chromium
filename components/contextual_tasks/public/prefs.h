@@ -8,6 +8,7 @@
 namespace contextual_tasks {
 
 extern const char kContextualTasksOnboardingTooltipDismissedCount[];
+extern const char kContextualTasksShareOpenTabsEveryThread[];
 
 }  // namespace contextual_tasks
 

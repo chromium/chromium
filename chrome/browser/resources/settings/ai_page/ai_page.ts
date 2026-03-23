@@ -51,6 +51,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
+
+      enableAiModeSearchSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiModeSearchSetting'),
+      },
     };
   }
 
@@ -58,6 +63,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
+  declare private enableAiModeSearchSetting_: boolean;
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -96,6 +102,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
+  }
+
+  private onAiModeSearchRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().AI_MODE_SEARCH);
   }
 
   private onComposeRowClick_() {
@@ -161,6 +172,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
     }
 
+    if (routes.AI_MODE_SEARCH) {
+      map.set(routes.AI_MODE_SEARCH.path, '#aiModeSearchRow');
+    }
+
     return map;
   }
 
@@ -170,6 +185,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       'compose',
       'historySearch',
       'tabOrganization',
+      'aiModeSearch',
     ];
     assert(ids.includes(childViewId));
 
@@ -186,6 +202,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       case 'tabOrganization':
         assert(this.showTabOrganizationControl_);
         triggerId = 'tabOrganizationRowV2';
+        break;
+      case 'aiModeSearch':
+        assert(this.enableAiModeSearchSetting_);
+        triggerId = 'aiModeSearchRow';
         break;
       default:
         assertNotReached();

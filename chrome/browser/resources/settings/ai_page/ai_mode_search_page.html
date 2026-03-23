@@ -1,0 +1,93 @@
+<style include="settings-shared settings-columned-section">
+  .separator {
+    margin: 0 4px;
+  }
+
+  .separator + settings-toggle-button {
+    margin-inline-end: 12px;
+  }
+
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<settings-subpage page-title="$i18n{stsSettingsEntrypointAiModeSearch}">
+  <div class="settings-row first">
+    <cr-link-row label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThread}"
+        on-click="onLearnMoreRowClick_" external>
+      <div slot="sub-label">
+        <span>$i18n{stsSettingsOption1ShareOpenTabsByDefault}</span>
+        <a href="https://support.google.com/chrome?p=ai_mode_search"
+            aria-label="$i18n{stsSettingsOption1LearnMore}"
+            aria-description="$i18n{opensInNewTab}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{stsSettingsOption1LearnMore}
+        </a>
+      </div>
+    </cr-link-row>
+    <div class="separator"></div>
+    <settings-toggle-button
+        id="shareTabsEveryThreadToggle"
+        aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThread}"
+        pref="{{prefs.contextual_tasks.share_open_tabs_every_thread}}">
+    </settings-toggle-button>
+  </div>
+
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{stsSettingsOption1WhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:auto-summarize"
+              aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{stsSettingsOption1YouCanEasilyAskQuestions}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{stsSettingsOption1RelevantOpenTabsAreUsedToPersonalize}
+          </div>
+        </li>
+      </ul>
+    </div>
+  <div class="column">
+      <h2 class=
+          "description-header">$i18n{stsSettingsOption1ThingsToConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:auto-tab-group"
+              aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{stsSettingsOption1SendsYourOpenTabs}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cr-row first">
+    <div class="flex cr-padded-text">
+      <h2>$i18n{stsSettingsOption1SiteExclusions}</h2>
+      <div class="secondary">
+        $i18n{stsSettingsOption1SitesAddedHereWontBeReferenced}
+      </div>
+    </div>
+  </div>
+  <div class="list-frame">
+    <div class="list-item">
+      <div class="flex secondary">
+        No sites added
+      </div>
+      <cr-button>Add</cr-button>
+    </div>
+  </div>
+
+  <cr-link-row class="hr"
+      label="$i18n{stsSettingsOption1MyGoogleSearchHistory}"
+      sub-label="$i18n{stsSettingsOption1ReviewAndManage}"
+      on-click="onGoogleSearchHistoryClick_" external>
+  </cr-link-row>
+</settings-subpage>

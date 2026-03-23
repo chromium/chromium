@@ -40,6 +40,7 @@ suite('AiPageIndex', function() {
       showHistorySearchControl: true,
       showTabOrganizationControl: true,
       showGlicSettings: true,
+      enableAiModeSearchSetting: true,
       actorLoginFederatedLoginSupportEnabled: true,
     });
     resetRouterForTesting();
@@ -67,6 +68,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.HISTORY_SEARCH);
     await microtasksFinished();
     assertActiveViews(['historySearch']);
+
+    Router.getInstance().navigateTo(routes.AI_MODE_SEARCH);
+    await microtasksFinished();
+    assertActiveViews(['aiModeSearch']);
 
     Router.getInstance().navigateTo(routes.OFFER_WRITING_HELP);
     await microtasksFinished();
@@ -107,7 +112,12 @@ suite('AiPageIndex', function() {
 
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
-    const childViewsId = ['tabOrganization', 'historySearch', 'compose'];
+    const childViewsId = [
+      'tabOrganization',
+      'historySearch',
+      'compose',
+      'aiModeSearch',
+    ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(
           `#${id}[slot=view][data-parent-view-id=parent]`));

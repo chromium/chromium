@@ -557,6 +557,7 @@ source_set("extensions") {
     "//components/bookmarks/managed",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/contextual_tasks/public",
     "//components/cookie_config",
     "//components/crx_file",
     "//components/data_sharing/public",

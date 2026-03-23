@@ -1,2 +1,5 @@
 rainhard@chromium.org
 zalmashni@google.com
+
+# For AI Mode Search settings.
+per-file ai_mode_search_page.*=file://components/contextual_tasks/OWNERS
