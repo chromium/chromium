@@ -130,8 +130,9 @@ void SiteInstanceGroup::RenderProcessExited(
   // iteration.
   scoped_refptr<SiteInstanceGroup> self_refcount = base::WrapRefCounted(this);
   base::AutoReset<bool> scope(&is_notifying_observers_, true);
-  for (auto& observer : observers_)
-    observer.RenderProcessGone(this, info);
+  // Allow reentrancy because this can be called within RenderProcessExited.
+  observers_.NotifyAllowReentrancy(
+      &SiteInstanceGroup::Observer::RenderProcessGone, this, info);
 }
 
 const StoragePartitionConfig& SiteInstanceGroup::GetStoragePartitionConfig()
