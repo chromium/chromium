@@ -46,8 +46,7 @@ struct AvailableLanguageAliases {
 #if DCHECK_IS_ON()
 // Returns true if the items in the given range are sorted and lower cased.
 bool IsArraySortedAndLowerCased(span<const LangToOffset> languages_to_offset) {
-  return std::is_sorted(languages_to_offset.begin(),
-                        languages_to_offset.end()) &&
+  return std::ranges::is_sorted(languages_to_offset) &&
          std::ranges::all_of(languages_to_offset, [](const auto& lang) {
            auto language = AsStringPiece16(lang.first);
            return ToLowerASCII(language) == language;
@@ -101,11 +100,8 @@ bool GetExactLanguageOffset(span<const LangToOffset> languages_to_offset,
 
   // Binary search in the sorted arrays to find the offset corresponding
   // to a given language |name|.
-  auto search_result = std::lower_bound(
-      languages_to_offset.begin(), languages_to_offset.end(), language,
-      [](const LangToOffset& left, const std::wstring& to_find) {
-        return left.first < to_find;
-      });
+  auto search_result = std::ranges::lower_bound(languages_to_offset, language,
+                                                {}, &LangToOffset::first);
   if (languages_to_offset.end() != search_result &&
       search_result->first == language) {
     *matched_language_to_offset = &*search_result;

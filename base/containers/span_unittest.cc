@@ -2068,8 +2068,8 @@ TEST(SpanTest, OutOfBoundsDeath) {
   // checked too late due to https://crbug.com/1520041.
 
   // Copying more values than fit in the destination.
-  ASSERT_DEATH_IF_SUPPORTED(
-      std::copy(span_len3.begin(), span_len3.end(), span_len2.begin()), "");
+  ASSERT_DEATH_IF_SUPPORTED(std::ranges::copy(span_len3, span_len2.begin()),
+                            "");
   ASSERT_DEATH_IF_SUPPORTED(std::ranges::copy(span_len3, span_len2.begin()),
                             "");
   ASSERT_DEATH_IF_SUPPORTED(
@@ -2086,11 +2086,11 @@ TEST(SpanTest, Sort) {
   span<int> dynamic_span = array;
   std::ranges::sort(dynamic_span);
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
-  std::sort(dynamic_span.rbegin(), dynamic_span.rend());
+  std::ranges::sort(Reversed(dynamic_span));
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));
 
   span<int, 5> static_span = array;
-  std::sort(static_span.rbegin(), static_span.rend(), std::greater<>());
+  std::ranges::sort(Reversed(static_span), std::greater<>());
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
   std::ranges::sort(static_span, std::greater<>());
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));

@@ -593,8 +593,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
   auto histogram_name_does_not_contain_query =
       [comparator, query](const HistogramBase* const h) {
         const auto& name = h->histogram_name();
-        return std::search(name.begin(), name.end(), query.begin(), query.end(),
-                           comparator) == name.end();
+        return !std::ranges::contains_subrange(name, query, comparator);
       };
   // Erase the non-matching histograms. Note that `histograms` was passed by
   // value so we can efficiently remove the unwanted elements and return the

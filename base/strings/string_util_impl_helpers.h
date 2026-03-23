@@ -232,7 +232,7 @@ inline bool DoIsStringUTF8(std::string_view str) {
 // Lookup table for fast ASCII case-insensitive comparison.
 inline constexpr std::array<unsigned char, 256> kToLower = []() {
   std::array<unsigned char, 256> table;
-  std::iota(table.begin(), table.end(), 0);
+  std::ranges::iota(table, 0);
   std::iota(table.begin() + size_t{'A'}, table.begin() + size_t{'Z'} + 1, 'a');
   return table;
 }();

@@ -384,13 +384,13 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
 
   if (base::FeatureList::IsEnabled(kMemoryDumpProviderGroupBySequence)) {
     // Move providers which can run on this sequence to the back of the list.
-    std::stable_partition(pending_providers.begin(), pending_providers.end(),
-                          [&](const MeasuredMemoryDumpProviderInfo& mdpinfo) {
-                            // Return true for providers which can't run on this
-                            // sequence, to keep them at the front.
-                            return !get_effective_task_runner(mdpinfo)
-                                        ->RunsTasksInCurrentSequence();
-                          });
+    std::ranges::stable_partition(
+        pending_providers, [&](const MeasuredMemoryDumpProviderInfo& mdpinfo) {
+          // Return true for providers which can't run on this
+          // sequence, to keep them at the front.
+          return !get_effective_task_runner(mdpinfo)
+                      ->RunsTasksInCurrentSequence();
+        });
   }
 
   // Refresh the number of following providers, following the above sort.

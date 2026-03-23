@@ -75,7 +75,7 @@ bool SubstringSetMatcher::Build(
   }
 
   // Compute the total number of tree nodes needed.
-  std::sort(patterns.begin(), patterns.end(), ComparePatterns);
+  std::ranges::sort(patterns, ComparePatterns);
   NodeID tree_size = GetTreeSize(patterns);
   if (tree_size >= kInvalidNodeID) {
     return false;
@@ -176,7 +176,7 @@ constexpr SubstringSetMatcher::NodeID SubstringSetMatcher::kRootID;
 
 SubstringSetMatcher::NodeID SubstringSetMatcher::GetTreeSize(
     const std::vector<const MatcherStringPattern*>& patterns) const {
-  DCHECK(std::is_sorted(patterns.begin(), patterns.end(), ComparePatterns));
+  DCHECK(std::ranges::is_sorted(patterns, ComparePatterns));
 
   base::CheckedNumeric<NodeID> result = 1u;  // 1 for the root node.
   if (patterns.empty()) {

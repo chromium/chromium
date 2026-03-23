@@ -71,7 +71,7 @@ void EnableFDOwnershipEnforcement(bool enabled) {
 #endif  // !defined(COMPONENT_BUILD)
 
 void ResetFDOwnership() {
-  std::fill(g_is_fd_owned.begin(), g_is_fd_owned.end(), false);
+  std::ranges::fill(g_is_fd_owned, false);
 }
 
 }  // namespace subtle

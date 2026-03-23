@@ -499,8 +499,7 @@ TEST_F(SysInfoTest, NumberOfEfficientProcessors) {
   // Can be 0, if this is not a big.LITTLE architecture.
   EXPECT_LE(static_cast<int>(SysInfo::NumberOfEfficientProcessors()),
             SysInfo::NumberOfProcessors());
-  uint64_t min_frequency =
-      *std::min_element(frequencies.begin(), frequencies.end());
+  uint64_t min_frequency = *std::ranges::min_element(frequencies);
   size_t expected_count = SysInfo::NumberOfEfficientProcessors() == 0
                               ? frequencies.size()
                               : SysInfo::NumberOfEfficientProcessors();
@@ -522,8 +521,8 @@ TEST_F(SysInfoTest, MaxFrequencyPerProcessor) {
             SysInfo::NumberOfProcessors());
   // Make sure that the frequency is correctly parsed. We could perhaps assert
   // that it's somewhat realistic, but this might fail in e.g. VM environments.
-  EXPECT_TRUE(std::all_of(frequencies.begin(), frequencies.end(),
-                          [](uint64_t freq) { return freq > 0; }));
+  EXPECT_TRUE(
+      std::ranges::all_of(frequencies, [](uint64_t freq) { return freq > 0; }));
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)

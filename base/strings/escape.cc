@@ -547,7 +547,7 @@ std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
   if (escaped_text.find('%') == std::string_view::npos) {
     std::string unescaped_text(escaped_text);
     if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE) {
-      std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
+      std::ranges::replace(unescaped_text, '+', ' ');
     }
     return unescaped_text;
   }

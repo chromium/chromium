@@ -17,9 +17,8 @@ namespace {
 constexpr bool is_sorted_and_unique(
     base::span<const HistogramBase::Sample32> c) {
   // Return true if we cannot find any adjacent pair {a, b} where a >= b.
-  return std::adjacent_find(c.begin(), c.end(),
-                            std::greater_equal<HistogramBase::Sample32>()) ==
-         c.end();
+  return std::ranges::adjacent_find(
+             c, std::greater_equal<HistogramBase::Sample32>()) == c.end();
 }
 
 }  // namespace

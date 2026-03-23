@@ -511,9 +511,9 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
 }
 
 std::vector<struct pollfd>::iterator MessagePumpEpoll::FindPollEntry(int fd) {
-  return std::find_if(
-      pollfds_.begin(), pollfds_.end(),
-      [fd](const struct pollfd poll_entry) { return poll_entry.fd == fd; });
+  return std::ranges::find_if(pollfds_, [fd](const struct pollfd poll_entry) {
+    return poll_entry.fd == fd;
+  });
 }
 
 void MessagePumpEpoll::RemovePollEntry(int fd) {

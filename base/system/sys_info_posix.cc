@@ -350,8 +350,7 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
   }
 
   auto [min_max_core_frequencies_it, max_max_core_frequencies_it] =
-      std::minmax_element(max_core_frequencies.begin(),
-                          max_core_frequencies.end());
+      std::ranges::minmax_element(max_core_frequencies);
 
   if (*min_max_core_frequencies_it == *max_max_core_frequencies_it) {
     return 0;

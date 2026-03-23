@@ -826,8 +826,8 @@ bool FilePath::ReferencesParent() const {
   }
 
   const std::vector<StringType> components = GetComponents();
-  return std::any_of(
-      components.begin(), components.end(), [](const StringType& component) {
+  return std::ranges::any_of(
+      components, [](const StringType& component) {
 #if BUILDFLAG(IS_WIN)
         // Windows has odd, undocumented behavior with path components
         // containing only whitespace and . characters. So, if all we see is .
