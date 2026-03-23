@@ -2645,6 +2645,10 @@ void UserSessionManager::Shutdown() {
   xdr_manager_.reset();
   token_handle_store_ = nullptr;
   frozen_update_notification_handler_.clear();
+
+  // NOTE: Make sure that the current session length is accumulated on the prefs
+  // before the primary Profile is destroyed.
+  onboarding_user_activity_counter_.reset();
 }
 
 void UserSessionManager::SetSwitchesForUser(
