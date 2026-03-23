@@ -929,25 +929,23 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::ReadBookmark(
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kBookmark);
+void ClipboardWin::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+                           ReadUrlCallback callback) const {
+  RecordRead(ClipboardFormatMetric::kUrl);
 
-  std::u16string title;
-  std::string url;
+  ClipboardUrlInfo url_info;
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow())) {
-    std::move(callback).Run(std::move(title), GURL(url));
+    std::move(callback).Run(std::move(url_info));
     return;
   }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
   if (!data) {
-    std::move(callback).Run(std::move(title), GURL(url));
+    std::move(callback).Run(std::move(url_info));
     return;
   }
 
@@ -956,8 +954,8 @@ void ClipboardWin::ReadBookmark(
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
 
-  url = base::UTF16ToUTF8(bookmark);
-  std::move(callback).Run(std::move(title), GURL(url));
+  url_info.url = GURL(base::UTF16ToUTF8(bookmark));
+  std::move(callback).Run(std::move(url_info));
 }
 
 // static
@@ -1075,11 +1073,11 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
-void ClipboardWin::WriteBookmark(std::string_view title, std::string_view url) {
+void ClipboardWin::WriteURL(const ClipboardUrlInfo& url_info) {
   // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
   // title separated by a newline.
   // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
-  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(url));
+  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(url_info.url.spec()));
 
   WriteToClipboard(ClipboardFormatType::UrlType(), glob);
 }

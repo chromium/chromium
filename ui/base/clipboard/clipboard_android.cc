@@ -814,14 +814,14 @@ void ClipboardAndroid::ReadFilenames(
 }
 // 'data_dst' is not used. It's only passed to be consistent with
 // other platforms.
-void ClipboardAndroid::ReadBookmark(
+void ClipboardAndroid::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+    ReadUrlCallback callback) const {
   DCHECK(CalledOnValidThread());
-  RecordRead(ClipboardFormatMetric::kBookmark);
-  std::move(callback).Run(
-      std::u16string(),
-      GURL(GetClipboardMap().Get(ClipboardFormatType::UrlType())));
+  RecordRead(ClipboardFormatMetric::kUrl);
+  ClipboardUrlInfo url_info;
+  url_info.url = GURL(GetClipboardMap().Get(ClipboardFormatType::UrlType()));
+  std::move(callback).Run(std::move(url_info));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -902,9 +902,8 @@ void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 
 // According to other platforms implementations, this really writes the
 // URL spec.
-void ClipboardAndroid::WriteBookmark(std::string_view title,
-                                     std::string_view url) {
-  GetClipboardMap().Set(ClipboardFormatType::UrlType(), url);
+void ClipboardAndroid::WriteURL(const ClipboardUrlInfo& url_info) {
+  GetClipboardMap().Set(ClipboardFormatType::UrlType(), url_info.url.spec());
 }
 
 // Write an extra flavor that signifies WebKit was the last to modify the

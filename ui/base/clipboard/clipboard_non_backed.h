@@ -118,8 +118,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void ReadFilenames(ClipboardBuffer buffer,
                      const std::optional<DataTransferEndpoint>& data_dst,
                      ReadFilenamesCallback callback) const override;
-  void ReadBookmark(const std::optional<DataTransferEndpoint>& data_dst,
-                    ReadBookmarkCallback callback) const override;
+  void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+               ReadUrlCallback callback) const override;
   void ReadData(const ClipboardFormatType& format,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void WriteSvg(std::string_view markup) override;
   void WriteRTF(std::string_view rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
-  void WriteBookmark(std::string_view title, std::string_view url) override;
+  void WriteURL(const ClipboardUrlInfo& url_info) override;
   void WriteWebSmartPaste() override;
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,

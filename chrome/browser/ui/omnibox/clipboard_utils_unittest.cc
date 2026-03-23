@@ -82,7 +82,8 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
   // Can we pull a bookmark off the clipboard?
   {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteBookmark(kTitle, kURL);
+    clipboard_writer.WriteURL(ui::ClipboardUrlInfo{
+        .url = GURL(kURL), .title = std::u16string(kTitle)});
   }
   EXPECT_EQ(ASCIIToUTF16(kURL),
             GetClipboardTextSync(/*notify_if_restricted=*/false));
@@ -91,7 +92,8 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
   {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(kPlainText);
-    clipboard_writer.WriteBookmark(kTitle, kURL);
+    clipboard_writer.WriteURL(ui::ClipboardUrlInfo{
+        .url = GURL(kURL), .title = std::u16string(kTitle)});
   }
   EXPECT_EQ(kPlainText, GetClipboardTextSync(/*notify_if_restricted=*/false));
 #endif

@@ -23,7 +23,7 @@ namespace bookmarks {
 namespace {
 
 #if !BUILDFLAG(IS_APPLE)
-std::unique_ptr<BookmarkNodeData> FromClipboardBookmarkReadResult(
+std::unique_ptr<BookmarkNodeData> FromClipboardUrlReadResult(
     std::unique_ptr<BookmarkNodeData> data,
     std::u16string title,
     GURL url) {
@@ -41,13 +41,12 @@ std::unique_ptr<BookmarkNodeData> FromClipboardBookmarkReadResult(
   return nullptr;
 }
 
-void OnReadBookmarkFromClipboardComplete(
+void OnReadUrlFromClipboardComplete(
     base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback,
     std::unique_ptr<BookmarkNodeData> data,
-    std::u16string title,
-    GURL url) {
-  std::move(callback).Run(
-      FromClipboardBookmarkReadResult(std::move(data), title, url));
+    ui::ClipboardUrlInfo url_info) {
+  std::move(callback).Run(FromClipboardUrlReadResult(
+      std::move(data), url_info.title, url_info.url));
 }
 
 void OnReadDataFromClipboardComplete(
@@ -64,10 +63,10 @@ void OnReadDataFromClipboardComplete(
 
   // If `ReadFromPickle` failed, `data` might have `profile_path_` set (see
   // `BookmarkNodeData::ReadFromPickle`). We want to preserve it when falling
-  // back to `ReadBookmark`.
-  ui::Clipboard::GetForCurrentThread()->ReadBookmark(
+  // back to `ReadURL`.
+  ui::Clipboard::GetForCurrentThread()->ReadURL(
       /*data_dst=*/std::nullopt,
-      base::BindOnce(&OnReadBookmarkFromClipboardComplete, std::move(callback),
+      base::BindOnce(&OnReadUrlFromClipboardComplete, std::move(callback),
                      std::move(data)));
 }
 #endif  // !BUILDFLAG(IS_APPLE)
@@ -346,7 +345,7 @@ void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
     const std::u16string& title = elements[0].title;
     const std::string url = elements[0].url.spec();
 
-    scw.WriteBookmark(title, url);
+    scw.WriteURL(ui::ClipboardUrlInfo{.url = GURL(url), .title = title});
     scw.WriteHyperlink(title, url);
     scw.WriteText(base::UTF8ToUTF16(url));
   } else {

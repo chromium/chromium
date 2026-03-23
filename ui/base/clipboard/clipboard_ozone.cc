@@ -636,12 +636,12 @@ void ClipboardOzone::ReadFilenames(
       });
 }
 
-void ClipboardOzone::ReadBookmark(
+void ClipboardOzone::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+    ReadUrlCallback callback) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();
-  std::move(callback).Run(u"", GURL());
+  std::move(callback).Run(ClipboardUrlInfo());
 }
 
 void ClipboardOzone::ReadData(
@@ -740,11 +740,10 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeUriList});
 }
 
-void ClipboardOzone::WriteBookmark(std::string_view title,
-                                   std::string_view url) {
+void ClipboardOzone::WriteURL(const ClipboardUrlInfo& url_info) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
-  std::u16string bookmark =
-      base::StrCat({base::UTF8ToUTF16(url) + u"\n" + base::UTF8ToUTF16(title)});
+  std::u16string bookmark = base::StrCat(
+      {base::UTF8ToUTF16(url_info.url.spec()), u"\n", url_info.title});
 
   std::vector<uint8_t> data(reinterpret_cast<const uint8_t*>(bookmark.data()),
                             reinterpret_cast<const uint8_t*>(UNSAFE_TODO(

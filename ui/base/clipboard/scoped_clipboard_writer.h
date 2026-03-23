@@ -68,8 +68,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // party since any paths written to the clipboard can be read by renderers.
   void WriteFilenames(std::string uri_list);
 
-  // Adds a bookmark to the clipboard.
-  void WriteBookmark(std::u16string_view bookmark_title, std::string url);
+  // Adds a URL to the clipboard.
+  void WriteURL(const ClipboardUrlInfo& url_info);
 
   // Adds an html hyperlink (<a href>) to the clipboard. |anchor_text| and
   // |url| will be escaped as needed.

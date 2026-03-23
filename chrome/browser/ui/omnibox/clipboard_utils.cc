@@ -45,14 +45,14 @@ void OnGetAvailableFormats(GetClipboardTextCallback callback,
   // cannonicalized, which is not what the user expects.  By pasting in this
   // order, we are sure to paste what the user copied.
   if (formats.contains(ui::ClipboardFormatType::UrlType())) {
-    clipboard->ReadBookmark(
+    clipboard->ReadURL(
         data_dst,
         base::BindOnce(
-            [](GetClipboardTextCallback callback, std::u16string title,
-               GURL url) {
-              if (url.is_valid()) {
+            [](GetClipboardTextCallback callback,
+               ui::ClipboardUrlInfo url_info) {
+              if (url_info.url.is_valid()) {
                 std::move(callback).Run(omnibox::StripJavascriptSchemas(
-                    base::UTF8ToUTF16(url.spec())));
+                    base::UTF8ToUTF16(url_info.url.spec())));
               } else {
                 std::move(callback).Run(std::u16string());
               }

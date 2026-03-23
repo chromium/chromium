@@ -34,6 +34,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -67,8 +68,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       base::OnceCallback<void(std::u16string result)>;
   using ReadFilenamesCallback =
       base::OnceCallback<void(std::vector<ui::FileInfo> result)>;
-  using ReadBookmarkCallback =
-      base::OnceCallback<void(std::u16string title, GURL url)>;
+  using ReadUrlCallback = base::OnceCallback<void(ClipboardUrlInfo url_info)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
   using ExtractCustomPlatformNamesCallback =
       base::OnceCallback<void(std::map<std::string, std::string>)>;
@@ -249,11 +249,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       const std::optional<DataTransferEndpoint>& data_dst,
       ReadFilenamesCallback callback) const = 0;
 
-  // Reads a bookmark from the clipboard, if available.
-  // `title` and `url` will both be empty if the clipboard does not contain a
-  // bookmark.
-  virtual void ReadBookmark(const std::optional<DataTransferEndpoint>& data_dst,
-                            ReadBookmarkCallback callback) const = 0;
+  // Reads a URL from the clipboard, if available.
+  // If the clipboard does not contain a URL, `url_info.title` will be empty and
+  // `url_info.url` will be invalid.
+  virtual void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+                       ReadUrlCallback callback) const = 0;
 
   // Reads data from the clipboard with the given format type. Stores result
   // as a byte vector.
@@ -313,9 +313,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   struct RtfData {
     std::string data;
   };
-  struct BookmarkData {
-    std::string title;
-    std::string url;
+  struct UrlData {
+    ClipboardUrlInfo url_info;
   };
   struct TextData {
     std::string data;
@@ -365,7 +364,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using Data = std::variant<BitmapData,
                             HtmlData,
                             RtfData,
-                            BookmarkData,
+                            UrlData,
                             TextData,
                             WebkitData,
                             SvgData,
@@ -430,7 +429,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   virtual void WriteFilenames(std::vector<ui::FileInfo> filenames) = 0;
 
-  virtual void WriteBookmark(std::string_view title, std::string_view url) = 0;
+  virtual void WriteURL(const ClipboardUrlInfo& url_info) = 0;
 
   virtual void WriteWebSmartPaste() = 0;
 

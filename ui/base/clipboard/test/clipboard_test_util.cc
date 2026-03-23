@@ -139,15 +139,14 @@ void ReadBookmark(Clipboard* clipboard,
                   const DataTransferEndpoint* data_dst,
                   std::u16string* title,
                   std::string* url) {
-  base::test::TestFuture<std::u16string, GURL> future;
-  clipboard->ReadBookmark(base::OptionalFromPtr(data_dst),
-                          future.GetCallback());
-  auto [t, u] = future.Take();
+  base::test::TestFuture<ClipboardUrlInfo> future;
+  clipboard->ReadURL(base::OptionalFromPtr(data_dst), future.GetCallback());
+  ClipboardUrlInfo url_info = future.Take();
   if (title) {
-    *title = std::move(t);
+    *title = std::move(url_info.title);
   }
   if (url) {
-    *url = u.spec();
+    *url = url_info.url.spec();
   }
 }
 

@@ -312,13 +312,13 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
 
             WriteRTF(data.data);
           },
-          [&](const BookmarkData& data) {
+          [&](const UrlData& data) {
             if (ui::clipboard_util::ShouldSkipBookmark(
-                    base::UTF8ToUTF16(data.title), data.url)) {
+                    data.url_info.title, data.url_info.url.spec())) {
               return;
             }
 
-            WriteBookmark(data.title, data.url);
+            WriteURL(data.url_info);
           },
           [&](const TextData& data) {
             if (data.data.empty()) {

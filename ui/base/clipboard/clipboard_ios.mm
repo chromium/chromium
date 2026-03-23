@@ -344,11 +344,10 @@ void ClipboardIOS::ReadFilenames(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardIOS::ReadBookmark(
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+void ClipboardIOS::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+                           ReadUrlCallback callback) const {
   DCHECK(CalledOnValidThread());
-  RecordRead(ClipboardFormatMetric::kBookmark);
+  RecordRead(ClipboardFormatMetric::kUrl);
 
   std::string url;
   NSData* url_data = GetDataWithTypeFromPasteboard(
@@ -367,7 +366,10 @@ void ClipboardIOS::ReadBookmark(
                                                encoding:NSUTF8StringEncoding];
     title.assign(base::SysNSStringToUTF16(contents));
   }
-  std::move(callback).Run(std::move(title), GURL(url));
+  ClipboardUrlInfo url_info;
+  url_info.url = GURL(url);
+  url_info.title = std::move(title);
+  std::move(callback).Run(std::move(url_info));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -459,10 +461,11 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   [GetPasteboard() addItems:items];
 }
 
-void ClipboardIOS::WriteBookmark(std::string_view title, std::string_view url) {
+void ClipboardIOS::WriteURL(const ClipboardUrlInfo& url_info) {
   NSDictionary<NSString*, id>* bookmarkItem = @{
-    ClipboardFormatType::UrlType().ToNSString() : base::SysUTF8ToNSString(url),
-    kUTTypeUrlName : base::SysUTF8ToNSString(title),
+    ClipboardFormatType::UrlType().ToNSString() :
+        base::SysUTF8ToNSString(url_info.url.spec()),
+    kUTTypeUrlName : base::SysUTF16ToNSString(url_info.title),
   };
 
   [GetPasteboard() addItems:@[ bookmarkItem ]];

@@ -622,7 +622,8 @@ void ClipboardHostImpl::WriteDataTransferCustomData(
 
 void ClipboardHostImpl::WriteBookmark(const std::string& url,
                                       const std::u16string& title) {
-  clipboard_writer_->WriteBookmark(title, url);
+  clipboard_writer_->WriteURL(
+      ui::ClipboardUrlInfo{.url = GURL(url), .title = title});
 }
 
 void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {

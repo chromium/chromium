@@ -21,7 +21,7 @@ enum class ClipboardFormatMetric {
   kHtml = 1,
   kRtf = 2,
   kImage = 3,  // Bitmap data.
-  kBookmark = 4,
+  kUrl = 4,
   kData = 5,
   kCustomData = 6,
   kWebSmartPaste = 7,  // Only used on write.

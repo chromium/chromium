@@ -460,11 +460,10 @@ void ClipboardMac::ReadFilenames(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardMac::ReadBookmark(
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+void ClipboardMac::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+                           ReadUrlCallback callback) const {
   DCHECK(CalledOnValidThread());
-  RecordRead(ClipboardFormatMetric::kBookmark);
+  RecordRead(ClipboardFormatMetric::kUrl);
   NSPasteboard* pb = GetPasteboard();
 
   std::u16string title =
@@ -474,7 +473,10 @@ void ClipboardMac::ReadBookmark(
   if (url_string) {
     url = base::SysNSStringToUTF8(url_string);
   }
-  std::move(callback).Run(std::move(title), GURL(url));
+  ClipboardUrlInfo url_info;
+  url_info.url = GURL(url);
+  url_info.title = std::move(title);
+  std::move(callback).Run(std::move(url_info));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -598,9 +600,10 @@ void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
-void ClipboardMac::WriteBookmark(std::string_view title, std::string_view url) {
+void ClipboardMac::WriteURL(const ClipboardUrlInfo& url_info) {
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
-      @[ base::SysUTF8ToNSString(url) ], @[ base::SysUTF8ToNSString(title) ]);
+      @[ base::SysUTF8ToNSString(url_info.url.spec()) ],
+      @[ base::SysUTF16ToNSString(url_info.title) ]);
   clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);
 }
 

@@ -430,7 +430,8 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteBookmark(title, url);
+    clipboard_writer.WriteURL(
+        ui::ClipboardUrlInfo{.url = GURL(url), .title = title});
   }
 
   EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
@@ -1147,7 +1148,7 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"foo");
     writer.WriteHTML(u"foo", "bar");
-    writer.WriteBookmark(u"foo", "bar");
+    writer.WriteURL(ui::ClipboardUrlInfo{.url = GURL("bar"), .title = u"foo"});
     writer.WriteHyperlink(u"foo", "bar");
     writer.WriteWebSmartPaste();
     // Left out: WriteFile, WriteFiles, WriteBitmapFromPixels, WritePickledData.
@@ -1208,7 +1209,7 @@ TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {
 
 TYPED_TEST(ClipboardTest, WriteBookmarkEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteBookmark(std::u16string(), std::string());
+  scw.WriteURL(ui::ClipboardUrlInfo());
 }
 
 TYPED_TEST(ClipboardTest, WriteHyperlinkEmptyParams) {
@@ -1241,7 +1242,8 @@ TYPED_TEST(ClipboardTest, BookmarkTestWithoutTitle) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteBookmark(std::u16string(), url);
+    clipboard_writer.WriteURL(
+        ui::ClipboardUrlInfo{.url = GURL(url), .title = std::u16string()});
   }
 
   EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(

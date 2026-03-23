@@ -484,7 +484,8 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   bookmarks::BookmarkNodeData().WriteToPickle(base::FilePath(), &pickle);
   {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteBookmark(u"foobar", url);
+    clipboard_writer.WriteURL(
+        ui::ClipboardUrlInfo{.url = GURL(url), .title = u"foobar"});
     clipboard_writer.WritePickledData(
         pickle, ui::ClipboardFormatType::CustomPlatformType(
                     std::string("chromium/x-bookmark-entries")));

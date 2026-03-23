@@ -885,9 +885,9 @@ void ClipboardNonBacked::ReadFilenames(
 #endif
 }
 
-void ClipboardNonBacked::ReadBookmark(
+void ClipboardNonBacked::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+    ReadUrlCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal =
@@ -895,7 +895,7 @@ void ClipboardNonBacked::ReadBookmark(
 
   if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kBookmark)) {
-    std::move(callback).Run(std::u16string(), GURL());
+    std::move(callback).Run(ClipboardUrlInfo());
     return;
   }
 
@@ -903,11 +903,14 @@ void ClipboardNonBacked::ReadBookmark(
   RecordTimeIntervalBetweenCommitAndRead(clipboard_internal.GetData());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  RecordRead(ClipboardFormatMetric::kBookmark);
+  RecordRead(ClipboardFormatMetric::kUrl);
   std::u16string title;
   std::string url;
   clipboard_internal.ReadBookmark(&title, &url);
-  std::move(callback).Run(std::move(title), GURL(url));
+  ClipboardUrlInfo url_info;
+  url_info.url = GURL(url);
+  url_info.title = std::move(title);
+  std::move(callback).Run(std::move(url_info));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
@@ -1002,9 +1005,9 @@ void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
-void ClipboardNonBacked::WriteBookmark(std::string_view title,
-                                       std::string_view url) {
-  ClipboardDataBuilder::WriteBookmark(title, url);
+void ClipboardNonBacked::WriteURL(const ClipboardUrlInfo& url_info) {
+  ClipboardDataBuilder::WriteBookmark(base::UTF16ToUTF8(url_info.title),
+                                      url_info.url.spec());
 }
 
 void ClipboardNonBacked::WriteWebSmartPaste() {

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "url/gurl.h"
 
 // An implementation of ClipboardRecentContent that uses
@@ -48,7 +49,7 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
   void OnReadURLAsAsciiText(GetRecentURLCallback callback,
                             std::string gurl_string);
   void OnReadText(GetRecentURLCallback callback, std::u16string gurl_string16);
-  void OnReadURL(GetRecentURLCallback callback, std::u16string title, GURL url);
+  void OnReadURL(GetRecentURLCallback callback, ui::ClipboardUrlInfo url_info);
 
   base::WeakPtrFactory<ClipboardRecentContentGeneric> weak_factory_{this};
 };

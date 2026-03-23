@@ -299,12 +299,11 @@ void TestClipboard::ReadFilenames(
 }
 
 // TODO(crbug.com/40704509): |data_dst| should be supported.
-void TestClipboard::ReadBookmark(
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadBookmarkCallback callback) const {
+void TestClipboard::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadUrlCallback callback) const {
   const DataStore& store = GetDefaultStore();
   if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
-    std::move(callback).Run(std::u16string(), GURL());
+    std::move(callback).Run(ClipboardUrlInfo());
     return;
   }
 
@@ -313,7 +312,10 @@ void TestClipboard::ReadBookmark(
   if (it != store.data.end()) {
     url = it->second;
   }
-  std::move(callback).Run(base::UTF8ToUTF16(store.url_title), GURL(url));
+  ClipboardUrlInfo url_info;
+  url_info.url = GURL(url);
+  url_info.title = base::UTF8ToUTF16(store.url_title);
+  std::move(callback).Run(std::move(url_info));
 }
 
 void TestClipboard::ReadData(
@@ -402,11 +404,10 @@ void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   GetDefaultStore().filenames = std::move(filenames);
 }
 
-void TestClipboard::WriteBookmark(std::string_view title,
-                                  std::string_view url) {
-  GetDefaultStore().data[ClipboardFormatType::UrlType()] = url;
+void TestClipboard::WriteURL(const ClipboardUrlInfo& url_info) {
+  GetDefaultStore().data[ClipboardFormatType::UrlType()] = url_info.url.spec();
 #if !BUILDFLAG(IS_WIN)
-  GetDefaultStore().url_title = title;
+  GetDefaultStore().url_title = base::UTF16ToUTF8(url_info.title);
 #endif
 }
 

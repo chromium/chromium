@@ -54,7 +54,7 @@ void ClipboardRecentContentGeneric::GetRecentURLFromClipboard(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
 
 #if BUILDFLAG(IS_ANDROID)
-  ui::Clipboard::GetForCurrentThread()->ReadBookmark(
+  ui::Clipboard::GetForCurrentThread()->ReadURL(
       std::move(data_dst),
       base::BindOnce(&ClipboardRecentContentGeneric::OnReadURL,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -82,7 +82,8 @@ void ClipboardRecentContentGeneric::OnReadURLAsAsciiText(
     url = GURL(gurl_string);
   }
 
-  OnReadURL(std::move(callback), u"", std::move(url));
+  OnReadURL(std::move(callback),
+            ui::ClipboardUrlInfo{.url = std::move(url), .title = u""});
 }
 
 void ClipboardRecentContentGeneric::OnReadText(GetRecentURLCallback callback,
@@ -243,10 +244,9 @@ bool ClipboardRecentContentGeneric::IsAppropriateSuggestion(const GURL& url) {
 }
 
 void ClipboardRecentContentGeneric::OnReadURL(GetRecentURLCallback callback,
-                                              std::u16string title,
-                                              GURL url) {
-  if (url.is_valid() && IsAppropriateSuggestion(url)) {
-    std::move(callback).Run(std::move(url));
+                                              ui::ClipboardUrlInfo url_info) {
+  if (url_info.url.is_valid() && IsAppropriateSuggestion(url_info.url)) {
+    std::move(callback).Run(std::move(url_info.url));
     return;
   }
 
