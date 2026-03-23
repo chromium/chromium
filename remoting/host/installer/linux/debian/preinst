@@ -9,6 +9,9 @@ set -e
 VAR_DIR="/var/lib/chrome-remote-desktop"
 HASHES_FILE="$VAR_DIR/hashes"
 
+# Remove the obsolete SysVinit script.
+dpkg-maintscript-helper rm_conffile /etc/init.d/chrome-remote-desktop -- "$@"
+
 save_hash() {
   if [ -f "$1" ]; then
     mkdir -p "$VAR_DIR"

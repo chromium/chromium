@@ -110,7 +110,10 @@ action("remoting_me2me_host_deb_installer") {
     "-b",
     build_timestamp,
   ]
-  inputs += [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
+  inputs += [
+    "//remoting/host/installer/linux/chrome-remote-desktop.service",
+    "//remoting/host/installer/linux/chrome-remote-desktop@.service",
+  ]
 
   deps = [
     ":credits",

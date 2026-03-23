@@ -6,7 +6,7 @@ Source: chrome-remote-desktop
 Section: net
 Priority: optional
 Maintainer: The Chromium Authors <chromium-dev@chromium.org>
-Build-Depends: debhelper (>= 7.0.0)
+Build-Depends: debhelper (>= 11)
 Standards-Version: 3.9.2
 Homepage: https://chrome.google.com/remotedesktop
 

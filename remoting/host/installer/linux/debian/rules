@@ -11,3 +11,13 @@
 # or similar systems - see b/322991199.
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
+
+# Do not auto-enable the multi-process chrome-remote-desktop service. The
+# service will be restarted during upgarde; for the multi-process host, the
+# graphical session is managed by an external service, so the user will not lose
+# unsaved work.
+# The single-process chrome-remote-desktop@ service is templated, so Debhelper
+# will not try to auto-enable/start/disable/stop it, and we don't need to
+# override its behavior.
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --name=chrome-remote-desktop
