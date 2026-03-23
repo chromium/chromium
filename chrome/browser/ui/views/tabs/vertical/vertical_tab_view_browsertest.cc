@@ -856,10 +856,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDecorateOnCollapse) {
 
   // Ensure the tab is active and hovered so that the close button is visible.
   tab_strip_model()->ActivateTabAt(0);
-  ui::test::EventGenerator event_generator(
-      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
-      browser()->GetBrowserView().GetNativeWindow());
-  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  // TODO(crbug.com/492603554): Investigate why using EventGenerator here
+  // flakes.
+  tab_view->UpdateHovered(true);
 
   auto* alert_indicator =
       tab_view->GetViewByElementId(kTabAlertIndicatorButtonElementId);
