@@ -1691,6 +1691,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Do children need to recompute their cached values?
   bool child_cached_values_need_update_ : 1 = false;
 
+  std::optional<TreeUpdateReason> cached_values_dirty_reason_;
+
   // The following cached attribute values (the ones starting with cached_**)
   // are only valid if cached_values_need_update_ is false.
   // Objects are marked ignored at construction time (and thus by default they
