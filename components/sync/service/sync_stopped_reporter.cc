@@ -119,7 +119,7 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf("Bearer %s", access_token.c_str()));
+      base::StringPrintf("Bearer %s", access_token));
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                       user_agent_);
   simple_url_loader_ = network::SimpleURLLoader::Create(

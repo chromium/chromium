@@ -56,7 +56,7 @@ class SyncError {
   std::optional<ModelError::Type> model_error_type() const;
 
   // Type specific message prefix for logging and UI purposes.
-  std::string GetMessagePrefix() const;
+  std::string_view GetMessagePrefix() const;
 
  private:
   SyncError(const base::Location& location,

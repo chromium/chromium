@@ -54,7 +54,7 @@ std::optional<ModelError::Type> SyncError::model_error_type() const {
   return model_error_type_;
 }
 
-std::string SyncError::GetMessagePrefix() const {
+std::string_view SyncError::GetMessagePrefix() const {
   switch (error_type_) {
     case MODEL_ERROR:
       return "model error was encountered: ";

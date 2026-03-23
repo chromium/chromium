@@ -99,7 +99,7 @@ class ScopedRemoteUpdateBookmarks {
   const raw_ptr<bookmarks::BookmarkModelObserver> observer_;
 };
 
-std::string ComputeServerDefinedUniqueTagForDebugging(
+std::string_view ComputeServerDefinedUniqueTagForDebugging(
     const bookmarks::BookmarkNode* node,
     const BookmarkModelView* model) {
   if (node == model->bookmark_bar_node()) {

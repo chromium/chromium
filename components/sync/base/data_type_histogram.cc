@@ -38,7 +38,8 @@ constexpr char kEntitySizeSpecificsOnlyHistogramPrefix[] =
 constexpr char kEntitySizeTombstoneHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Tombstone.";
 
-std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
+std::string_view GetHistogramSuffixForUpdateDropReason(
+    UpdateDropReason reason) {
   switch (reason) {
     case UpdateDropReason::kInconsistentClientTag:
       return "InconsistentClientTag";
@@ -79,9 +80,9 @@ const char* SyncGetNumUnsyncedEntitiesHistogramSuffix(
 
 void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason,
                                         DataType type) {
-  std::string full_histogram_name =
-      kDataTypeUpdateDropHistogramPrefix +
-      GetHistogramSuffixForUpdateDropReason(reason);
+  const std::string full_histogram_name =
+      base::StrCat({kDataTypeUpdateDropHistogramPrefix,
+                    GetHistogramSuffixForUpdateDropReason(reason)});
   base::UmaHistogramEnumeration(full_histogram_name,
                                 DataTypeHistogramValue(type));
 }

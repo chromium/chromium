@@ -564,9 +564,8 @@ std::string SyncerProtoUtil::SyncEntityDebugString(
       "name: %s, "
       "d, "
       "%s ",
-      entry.id_string().c_str(), entry.parent_id_string().c_str(),
-      entry.version(), entry.mtime(), mtime_str.c_str(), entry.ctime(),
-      ctime_str.c_str(), entry.name().c_str(),
+      entry.id_string(), entry.parent_id_string(), entry.version(),
+      entry.mtime(), mtime_str, entry.ctime(), ctime_str, entry.name(),
       entry.deleted() ? "deleted, " : "");
 }
 

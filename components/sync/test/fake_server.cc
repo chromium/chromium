@@ -892,7 +892,7 @@ void FakeServer::LogForTestFailure(const base::Location& location,
   gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(
       location.file_name(), location.line_number(),
       base::StringPrintf("--- %s %d (reverse chronological order) ---\n%s",
-                         title.c_str(), request_counter_, body.c_str())));
+                         title, request_counter_, body)));
 }
 
 void FakeServer::OnWillCommit() {

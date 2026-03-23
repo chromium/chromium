@@ -119,8 +119,7 @@ LoopbackServerEntity::GetLoopbackServerEntityType() const {
 string LoopbackServerEntity::CreateId(const DataType& data_type,
                                       const string& inner_id) {
   int field_number = GetSpecificsFieldNumberFromDataType(data_type);
-  return base::StringPrintf("%d%s%s", field_number, kIdSeparator,
-                            inner_id.c_str());
+  return base::StringPrintf("%d%s%s", field_number, kIdSeparator, inner_id);
 }
 
 // static

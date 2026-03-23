@@ -61,8 +61,7 @@ std::string GetGroupName(
     type_index_str = base::StringPrintf("%d", type_index);
   }
 
-  return base::StringPrintf("Cohort%d_%s%s", cohort, type_str,
-                            type_index_str.c_str());
+  return base::StringPrintf("Cohort%d_%s%s", cohort, type_str, type_index_str);
 }
 
 }  // namespace
