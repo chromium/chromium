@@ -5,6 +5,7 @@
 import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiSessionDelegate} from './api_session.js';
+import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
 
@@ -35,9 +36,24 @@ export class Conversation implements ApiSessionDelegate {
 
   private state: State = State.STOPPED;
 
-  constructor(apiKey: string, uiDelegate: UiDelegate) {
+  constructor(
+      apiKey: string, uiDelegate: UiDelegate, router: PageCallbackRouter,
+      initialPageContext?: PageContext) {
     this.apiKey = apiKey;
     this.uiDelegate = uiDelegate;
+
+    if (initialPageContext) {
+      this.pageContextManager.updateCurrentPageContext(
+          initialPageContext.url, initialPageContext.title,
+          initialPageContext.content);
+    }
+
+    router.invalidatePageContext.addListener(
+        () => this.pageContextManager.invalidatePageContext());
+    router.updateCurrentPageContext.addListener(
+        (url: string, title: string, content: string) =>
+            this.pageContextManager.updateCurrentPageContext(
+                url, title, content));
   }
 
   get connected(): boolean {
@@ -85,20 +101,6 @@ export class Conversation implements ApiSessionDelegate {
     }
 
     this.session?.sendAudio(sampleRate, data);
-  }
-
-  bindMojoHandlers(router: PageCallbackRouter) {
-    // TODO(bokan): Unlike the bindings in C++, it seems the listeners aren't
-    // fired for messages sent before they were registered. We'll need to notify
-    // the host that we've finished binding and need to receive a new page
-    // context.
-    console.info('Conversation: Bind Mojo');
-    router.invalidatePageContext.addListener(
-        () => this.pageContextManager.invalidatePageContext());
-    router.updateCurrentPageContext.addListener(
-        (url, title, content) =>
-            this.pageContextManager.updateCurrentPageContext(
-                url, title, content));
   }
 
   /**

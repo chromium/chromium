@@ -11,6 +11,7 @@ import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
+import type {PageContext} from './page_context_manager.js';
 
 enum UiState {
   INERT = 'inert',
@@ -66,6 +67,10 @@ export class AppElement extends CrLitElement {
   private blobCapturer: BlobAudioCapturer|null = null;
   private audioCapturer: AudioCapturer|null = null;
   private audioPlayer: AudioPlayer|null = null;
+  // The conversation and thus the page context manager take some time to
+  // initialize so keep track of any page context that arrives before those are
+  // setup so that it can be provided when these objects initialize.
+  private initialPageContext?: PageContext;
 
   protected get uiState_(): UiState {
     if (this.isConnecting_) {
@@ -89,19 +94,33 @@ export class AppElement extends CrLitElement {
     // Setup Mojo connection
     this.pageCallbackRouter = new PageCallbackRouter();
     this.pageHandler = new PageHandlerRemote();
+
+    // Start listening for page context updates immediately to ensure we catch
+    // any initial updates before the Conversation is initialized.
+    const pageContextListenerId =
+        this.pageCallbackRouter.updateCurrentPageContext.addListener(
+            (url: string, title: string, content: string) =>
+                this.initialPageContext = {url, title, content});
+
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.pageHandler.$.bindNewPipeAndPassReceiver(),
         this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
 
-    this.pageHandler.getApiKey().then(({apiKey}) => {
-      this.conversation = new Conversation(apiKey, {
-        sendToUI: (msg) => this.onMessageFromConversation(msg),
-        onStateChange: (state, oldState) =>
-            this.onConversationStateChanged(state, oldState),
-        onResponse: (audioData) => this.onAudioOutput(audioData),
-      });
-      this.conversation.bindMojoHandlers(this.pageCallbackRouter);
+    this.pageHandler.getApiKey().then(({apiKey}: {apiKey: string}) => {
+      this.conversation = new Conversation(
+          apiKey, {
+            sendToUI: (msg) => this.onMessageFromConversation(msg),
+            onStateChange: (state, oldState) =>
+                this.onConversationStateChanged(state, oldState),
+            onResponse: (audioData) => this.onAudioOutput(audioData),
+          },
+          this.pageCallbackRouter, this.initialPageContext);
+
+      // Now that the conversation is initialized, we can stop listening for the
+      // initial page context.
+      this.pageCallbackRouter.removeListener(pageContextListenerId);
+      this.initialPageContext = undefined;
 
       if (this.queueStateChange) {
         this.onStateClick_();
