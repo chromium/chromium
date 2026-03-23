@@ -721,6 +721,8 @@ bool PseudoElement::SupportsHitTesting(PseudoId pseudo_id) {
   // originating) is determined by HasActivationBehavior() in
   // EventTargetRespectingTargetRules.
   switch (pseudo_id) {
+    case kPseudoIdBackdrop:
+      return RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled();
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdMarker:

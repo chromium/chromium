@@ -28,6 +28,8 @@ bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
     case kPseudoIdMarker:
     case kPseudoIdScrollMarker:
       return true;
+    case kPseudoIdBackdrop:
+      return RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled();
     default:
       return false;
   }

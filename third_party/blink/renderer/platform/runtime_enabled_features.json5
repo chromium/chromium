@@ -1723,6 +1723,10 @@
       status: "stable",
     },
     {
+      name: "CSSPseudoElementBackdrop",
+      status: "experimental",
+    },
+    {
       name: "CSSPseudoElementInterface",
       status: "stable",
     },

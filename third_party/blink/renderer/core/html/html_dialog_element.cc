@@ -272,10 +272,16 @@ namespace {
 const HTMLDialogElement* FindNearestDialog(const Node& target_node,
                                            double client_x,
                                            double client_y) {
+  const HTMLDialogElement* dialog = DynamicTo<HTMLDialogElement>(target_node);
+  if (!dialog && target_node.IsBackdropPseudoElement()) {
+    DCHECK(RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled());
+    dialog =
+        DynamicTo<HTMLDialogElement>(FlatTreeTraversal::Parent(target_node));
+  }
+
   // First check if this is a click on a dialog's backdrop, which will show up
   // as a click on the dialog directly.
-  if (auto* dialog = DynamicTo<HTMLDialogElement>(target_node);
-      dialog && dialog->IsOpenAndActive() && dialog->IsModal()) {
+  if (dialog && dialog->IsOpenAndActive() && dialog->IsModal()) {
     DOMRect* dialog_rect =
         const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
     if (!dialog_rect->IsPointInside(client_x, client_y)) {
@@ -285,9 +291,9 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
   // Otherwise, walk up the tree looking for an open dialog.
   for (const Node* node = &target_node; node;
        node = FlatTreeTraversal::Parent(*node)) {
-    if (auto* dialog = DynamicTo<HTMLDialogElement>(node);
-        dialog && dialog->IsOpenAndActive()) {
-      return dialog;
+    if (auto* open_dialog = DynamicTo<HTMLDialogElement>(node);
+        open_dialog && open_dialog->IsOpenAndActive()) {
+      return open_dialog;
     }
   }
   return nullptr;
