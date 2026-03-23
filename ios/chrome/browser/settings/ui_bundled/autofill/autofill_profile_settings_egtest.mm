@@ -150,6 +150,14 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
         autofill::features::kAutofillAiWithDataSchema);
   }
 
+  if ([self isRunningTest:@selector(testToggleToolbarAddButtonByPolicy)] ||
+      [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)]) {
+    config.features_disabled.push_back(
+        autofill::features::kAutofillAiWithDataSchema);
+    config.features_disabled.push_back(
+        autofill::features::kAutofillAiCreateEntityDataManager);
+  }
+
   return config;
 }
 

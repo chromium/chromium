@@ -20,6 +20,8 @@ TEST_F(AutofillAIAddEntitiesMenuBuilderTest, AddressAtEndAndTotalItems) {
 
   UIMenu* menu =
       [AutofillAIAddEntitiesMenuBuilder buildMenuWithTypes:entityTypes
+                                            profileEnabled:YES
+                                           entitiesEnabled:YES
                                                   delegate:nil];
 
   NSArray<UIMenuElement*>* children = menu.children;
@@ -30,4 +32,19 @@ TEST_F(AutofillAIAddEntitiesMenuBuilderTest, AddressAtEndAndTotalItems) {
   EXPECT_TRUE([last_action.title
       isEqualToString:l10n_util::GetNSString(
                           IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT)]);
+}
+
+TEST_F(AutofillAIAddEntitiesMenuBuilderTest, NoAddress) {
+  std::vector<autofill::EntityType> entityTypes = {
+      autofill::EntityType(autofill::EntityTypeName::kVehicle),
+      autofill::EntityType(autofill::EntityTypeName::kPassport)};
+
+  UIMenu* menu =
+      [AutofillAIAddEntitiesMenuBuilder buildMenuWithTypes:entityTypes
+                                            profileEnabled:NO
+                                           entitiesEnabled:YES
+                                                  delegate:nil];
+
+  NSArray<UIMenuElement*>* children = menu.children;
+  EXPECT_EQ(children.count, 2u);
 }

@@ -30,6 +30,8 @@ class EntityType;
 
 // Returns a UIMenu for adding an address or a new entity.
 + (UIMenu*)buildMenuWithTypes:(const std::vector<autofill::EntityType>&)types
+               profileEnabled:(BOOL)profileEnabled
+              entitiesEnabled:(BOOL)entitiesEnabled
                      delegate:(id<AutofillAIAddEntitiesMenuDelegate>)delegate;
 
 @end

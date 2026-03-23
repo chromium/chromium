@@ -14,22 +14,26 @@
 @implementation AutofillAIAddEntitiesMenuBuilder
 
 + (UIMenu*)buildMenuWithTypes:(const std::vector<autofill::EntityType>&)types
+               profileEnabled:(BOOL)profileEnabled
+              entitiesEnabled:(BOOL)entitiesEnabled
                      delegate:(id<AutofillAIAddEntitiesMenuDelegate>)delegate {
   __weak id<AutofillAIAddEntitiesMenuDelegate> weakDelegate = delegate;
 
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  // Address
-  UIAction* addressAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT)
-                          image:DefaultSymbolWithPointSize(
-                                    kEnvelopeSymbol, kSymbolActionPointSize)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakDelegate didSelectAddAutofillProfile];
-                        }];
-  [actions addObject:addressAction];
+  if (profileEnabled) {
+    // Address
+    UIAction* addressAction =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT)
+                            image:DefaultSymbolWithPointSize(
+                                      kEnvelopeSymbol, kSymbolActionPointSize)
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakDelegate didSelectAddAutofillProfile];
+                          }];
+    [actions addObject:addressAction];
+  }
 
   for (const auto& entityType : types) {
     NSString* title = base::SysUTF16ToNSString(entityType.GetNameForI18n());
@@ -43,6 +47,9 @@
                 handler:^(UIAction* action) {
                   [weakDelegate didSelectAddEntityWithType:entityType];
                 }];
+    if (!entitiesEnabled) {
+      uiAction.attributes = UIMenuElementAttributesDisabled;
+    }
     [actions addObject:uiAction];
   }
 
