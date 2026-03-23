@@ -900,6 +900,9 @@ void WaylandEventSource::OnHoldEvent(EventType event_type,
                     finger_count);
 
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
+  if (!target) {
+    return;
+  }
 
   if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTargetAndDispatchEvent(&event, target);
