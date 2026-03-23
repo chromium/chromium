@@ -112,8 +112,7 @@ constexpr net::BackoffEntry::Policy
 };
 
 constexpr char kAiPageHost[] = "https://google.com";
-constexpr char kTaskQueryParam[] = "task";
-constexpr char kAimUrlQueryParam[] = "aim_url";
+constexpr char kTaskQueryParam[] = "chrome_task_id";
 constexpr char kDebugParam[] = "deb";
 constexpr char kDebugNoCobrowseValue[] = "nocobrowse1";
 
@@ -1403,16 +1402,19 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
           !value.empty());
 }
 
-GURL ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
-    const GURL& url) {
-  std::string aim_url_str;
-  if (net::GetValueForKeyInQuery(url, kAimUrlQueryParam, &aim_url_str)) {
-    GURL aim_url = GURL(aim_url_str);
-    if (IsSearchResultsUrl(aim_url)) {
-      return aim_url;
+GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
+                                                      const GURL& webui_url) {
+  // Get all of the params off of the original URL.
+  net::QueryIterator it(webui_url);
+  GURL aim_url(base_url);
+  while (!it.IsAtEnd()) {
+    if (it.GetKey() != kTaskQueryParam) {
+      aim_url = net::AppendQueryParameter(aim_url, it.GetKey(), it.GetValue());
     }
+    it.Advance();
   }
-  return GURL();
+
+  return aim_url;
 }
 
 void ContextualTasksUiService::OnLensOverlayStateChanged(

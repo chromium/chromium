@@ -752,13 +752,22 @@ IN_PROC_BROWSER_TEST_F(DisabledContextualTasksUiServiceInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(DisabledContextualTasksUiServiceInteractiveUiTest,
                        RedirectToAimUrlFromSearchParams) {
-  GURL contextual_tasks_url = GURL(
-      "chrome://contextual-tasks?aim_url=https%3A%2F%2Fgoogle.com%2Fsearch");
+  GURL contextual_tasks_url =
+      GURL("chrome://contextual-tasks?param1=1&param2=2&chrome_task_id=1234");
   EXPECT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(contextual_tasks_url)));
   TabListInterface* tab_list = TabListInterface::From(browser());
-  ASSERT_EQ(GURL("https://google.com/search"),
-            tab_list->GetActiveTab()->GetContents()->GetLastCommittedURL());
+
+  GURL url = tab_list->GetActiveTab()->GetContents()->GetLastCommittedURL();
+  EXPECT_EQ("https", url.scheme());
+  EXPECT_EQ("www.google.com", url.host());
+  EXPECT_EQ("/search", url.path());
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "param1", &value));
+  EXPECT_EQ(value, "1");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "param2", &value));
+  EXPECT_EQ(value, "2");
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "chrome_task_id", &value));
 }
 
 class MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest

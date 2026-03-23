@@ -33,9 +33,6 @@ class TaskInfoDelegate {
   virtual content::WebContents* GetWebUIWebContents() = 0;
   virtual void OnZeroStateChange(bool is_zero_state) = 0;
 
-  // Get aim URL preserved in contextual tasks URL search params.
-  virtual GURL GetAimUrl() = 0;
-
   // Called to prepare for a task change.
   virtual void PrepareForTaskChange() = 0;
 

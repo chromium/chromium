@@ -97,8 +97,8 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     this.methodCalled('onLensOverlayStateChanged', isOverlayShowing);
   }
 
-  setTaskDetails(taskId: Uuid, threadId: string, turnId: string) {
-    this.methodCalled('setTaskDetails', taskId, threadId, turnId);
+  setTaskDetails(taskId: Uuid) {
+    this.methodCalled('setTaskDetails', taskId);
   }
 
   setAimUrl(url: Url) {

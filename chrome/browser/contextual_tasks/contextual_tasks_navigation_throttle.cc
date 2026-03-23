@@ -67,8 +67,8 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
          !is_cobrowse_eligible) &&
         ContextualTasksUiService::IsContextualTasksUrl(url_params.url)) {
       // Redirect contextual tasks URL to aim page URL.
-      GURL url = ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
-          url_params.url);
+      GURL url = ContextualTasksUiService::CopyParamsFromWebUIUrl(
+          GURL(GetContextualTasksAiPageUrl()), url_params.url);
       if (url.is_empty()) {
         url = GURL(GetContextualTasksAiPageUrl());
       }

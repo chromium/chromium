@@ -551,12 +551,6 @@ void ContextualTasksUI::OnTaskUpdated(
   }
 }
 
-GURL ContextualTasksUI::GetAimUrl() {
-  return contextual_tasks::ContextualTasksUiService::
-      GetAimUrlFromContextualTasksUrl(
-          web_ui()->GetWebContents()->GetLastCommittedURL());
-}
-
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
   return task_id_;
 }
@@ -767,6 +761,10 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
       /*browser_window=*/browser_window_interface, contextual_tasks_service_,
       controller, web_contents, task_id_.value());
   return helper->session_handle();
+}
+
+GURL ContextualTasksUI::GetWebUiUrl() {
+  return web_ui()->GetWebContents()->GetLastCommittedURL();
 }
 
 // Empty implementation, does not need to be cleared in contextual tasks. Only
@@ -1046,8 +1044,7 @@ bool ContextualTasksUI::IsActiveTabContextSuggestionShowing() const {
 }
 
 void ContextualTasksUI::PushTaskDetailsToPage() {
-  page_->SetTaskDetails(task_id_.value_or(base::Uuid()),
-                        thread_id_.value_or(""), thread_turn_id_.value_or(""));
+  page_->SetTaskDetails(task_id_.value_or(base::Uuid()));
 }
 
 bool ContextualTasksUI::CanExpandToFullTab() const {
