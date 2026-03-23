@@ -17,12 +17,32 @@
 
 namespace blink {
 
+namespace {
+
 // The length of the memory buffers for the IIR filter.  This MUST be a power of
 // two and must be greater than the possible length of the filter coefficients.
 const int kBufferLength = 32;
 static_assert(kBufferLength >= IIRFilter::kMaxOrder + 1,
               "Internal IIR buffer length must be greater than maximum IIR "
               "Filter order.");
+
+std::complex<double> EvaluatePolynomial(base::span<const double> coef,
+                                        std::complex<double> z) {
+  // Use Horner's method to evaluate the polynomial P(z) = sum(coef[k]*z^k, k,
+  // 0, order);
+  std::complex<double> result = 0;
+  const size_t coef_size = coef.size();
+  if (coef_size) {
+    const int order = coef_size - 1;
+    for (int k = order; k >= 0; --k) {
+      result = result * z + std::complex<double>(coef[k]);
+    }
+  }
+
+  return result;
+}
+
+}  // namespace
 
 IIRFilter::IIRFilter(const AudioDoubleArray* feedforward,
                      const AudioDoubleArray* feedback)
@@ -40,23 +60,10 @@ void IIRFilter::Reset() {
   buffer_index_ = 0;
 }
 
-static std::complex<double> EvaluatePolynomial(const double* coef,
-                                               std::complex<double> z,
-                                               int order) {
-  // Use Horner's method to evaluate the polynomial P(z) = sum(coef[k]*z^k, k,
-  // 0, order);
-  std::complex<double> result = 0;
+void IIRFilter::Process(base::span<const float> source,
+                        base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
 
-  for (int k = order; k >= 0; --k) {
-    result = result * z + std::complex<double>(UNSAFE_TODO(coef[k]));
-  }
-
-  return result;
-}
-
-void IIRFilter::Process(const float* source_p,
-                        float* dest_p,
-                        uint32_t frames_to_process) {
   // Compute
   //
   //   y[n] = sum(b[k] * x[n - k], k = 0, M) - sum(a[k] * y[n - k], k = 1, N)
@@ -67,13 +74,11 @@ void IIRFilter::Process(const float* source_p,
   // This is a Direct Form I implementation of an IIR Filter.  Should we
   // consider doing a different implementation such as Transposed Direct Form
   // II?
-  const double* feedback = feedback_->Data();
-  const double* feedforward = feedforward_->Data();
+  const size_t frames_to_process = dest.size();
+  base::span<const double> feedback = feedback_->as_span();
+  base::span<const double> feedforward = feedforward_->as_span();
 
-  DCHECK(feedback);
-  DCHECK(feedforward);
-
-  // Sanity check to see if the feedback coefficients have been scaled
+  // Check to see if the feedback coefficients have been scaled
   // appropriately. It must be EXACTLY 1!
   DCHECK_EQ(feedback[0], 1);
 
@@ -81,40 +86,36 @@ void IIRFilter::Process(const float* source_p,
   int feedforward_length = feedforward_->size();
   int min_length = std::min(feedback_length, feedforward_length);
 
-  double* x_buffer = x_buffer_.Data();
-  double* y_buffer = y_buffer_.Data();
-
   for (size_t n = 0; n < frames_to_process; ++n) {
     // To help minimize roundoff, we compute using double's, even though the
     // filter coefficients only have single precision values.
-    double yn = feedforward[0] * UNSAFE_TODO(source_p[n]);
+    double yn = feedforward[0] * source[n];
 
     // Run both the feedforward and feedback terms together, when possible.
     for (int k = 1; k < min_length; ++k) {
       int m = (buffer_index_ - k) & (kBufferLength - 1);
-      yn += UNSAFE_TODO(feedforward[k]) * UNSAFE_TODO(x_buffer[m]);
-      yn -= UNSAFE_TODO(feedback[k]) * UNSAFE_TODO(y_buffer[m]);
+      yn += feedforward[k] * x_buffer_[m];
+      yn -= feedback[k] * y_buffer_[m];
     }
 
     // Handle any remaining feedforward or feedback terms.
     for (int k = min_length; k < feedforward_length; ++k) {
-      yn += UNSAFE_TODO(feedforward[k]) *
-            UNSAFE_TODO(x_buffer[(buffer_index_ - k) & (kBufferLength - 1)]);
+      yn +=
+          feedforward[k] * x_buffer_[(buffer_index_ - k) & (kBufferLength - 1)];
     }
 
     for (int k = min_length; k < feedback_length; ++k) {
-      yn -= UNSAFE_TODO(feedback[k]) *
-            UNSAFE_TODO(y_buffer[(buffer_index_ - k) & (kBufferLength - 1)]);
+      yn -= feedback[k] * y_buffer_[(buffer_index_ - k) & (kBufferLength - 1)];
     }
 
     // Save the current input and output values in the memory buffers for the
     // next output.
-    x_buffer_[buffer_index_] = UNSAFE_TODO(source_p[n]);
+    x_buffer_[buffer_index_] = source[n];
     y_buffer_[buffer_index_] = yn;
 
     buffer_index_ = (buffer_index_ + 1) & (kBufferLength - 1);
 
-    UNSAFE_TODO(dest_p[n]) = yn;
+    dest[n] = yn;
   }
 }
 
@@ -150,10 +151,10 @@ void IIRFilter::GetFrequencyResponse(base::span<const float> frequency,
       std::complex<double> z_recip =
           std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
 
-      std::complex<double> numerator = EvaluatePolynomial(
-          feedforward_->Data(), z_recip, feedforward_->size() - 1);
+      std::complex<double> numerator =
+          EvaluatePolynomial(feedforward_->as_span(), z_recip);
       std::complex<double> denominator =
-          EvaluatePolynomial(feedback_->Data(), z_recip, feedback_->size() - 1);
+          EvaluatePolynomial(feedback_->as_span(), z_recip);
       std::complex<double> response = numerator / denominator;
       mag_response[k] = static_cast<float>(abs(response));
       phase_response[k] =
@@ -208,7 +209,7 @@ double IIRFilter::TailTime(double sample_rate,
   input[0] = 1;
 
   // Process the first block and get the max magnitude of the output.
-  Process(input.Data(), output.Data(), render_quantum_frames);
+  Process(input.as_span(), output.as_span());
   vector_math::Vmaxmgv(output.Data(), 1, &magnitudes[0], render_quantum_frames);
 
   // Process the rest of the signal, getting the max magnitude of the
@@ -216,7 +217,7 @@ double IIRFilter::TailTime(double sample_rate,
   input[0] = 0;
 
   for (int k = 1; k < number_of_blocks; ++k) {
-    Process(input.Data(), output.Data(), render_quantum_frames);
+    Process(input.as_span(), output.as_span());
     vector_math::Vmaxmgv(output.Data(), 1, &magnitudes[k],
                          render_quantum_frames);
   }
