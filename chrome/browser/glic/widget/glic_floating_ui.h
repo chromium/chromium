@@ -86,6 +86,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // GlicWindowEventObserver::Delegate:
   GlicWindowAnimator* window_animator() override;
   void OnDragComplete() override;
+  base::WeakPtr<GlicWindowEventObserver::Delegate> GetDelegateWeakPtr()
+      override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -113,6 +115,10 @@ class GlicFloatingUi : public GlicUiEmbedder,
   bool ShouldConstrainDialogBoundsByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
+  GlicWindowEventObserver* GetWindowEventObserverForTesting() {
+    return window_event_observer_.get();
+  }
 
  private:
   void ClearWebContentsDelegate();

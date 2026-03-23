@@ -117,6 +117,8 @@ class GlicWindowControllerImpl
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override;
+  base::WeakPtr<GlicWindowEventObserver::Delegate> GetDelegateWeakPtr()
+      override;
 
   // GlicWindowEventObserver::Delegate:
   GlicWindowAnimator* window_animator() override;
