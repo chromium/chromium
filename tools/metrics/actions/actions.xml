@@ -408,6 +408,8 @@ should be able to be added at any place in this file.
       summary="For engagement with Fusebox attachments."/>
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
       summary="For generic always show help UI feature."/>
+  <variant name="_GestureUserEducation"
+      summary="For gesture user edcuation IPH feature."/>
   <variant name="_GlicPromo" summary="For Glic feature."/>
   <variant name="_GlicPromoAndroid" summary="For Glic promotion on Android."/>
   <variant name="_GlicTrustFirstOnboardingShortcutSnoozePromo"

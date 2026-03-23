@@ -257,6 +257,8 @@ chromium-metrics-reviews@google.com.
       summary="engagement with Fusebox attachments"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
+  <variant name="IPH_GestureUserEducation"
+      summary="IPH for gesture user education"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>
   <variant name="IPH_GlicPromoAndroid" summary="Glic promotion on Android"/>
   <variant name="IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"

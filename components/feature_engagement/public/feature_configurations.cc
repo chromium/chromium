@@ -2128,6 +2128,20 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(ANY, 0), 0, 360);
     return config;
   }
+
+  if (kIPHGestureUserEducation.name == feature->name) {
+    // TODO(crbug.com/493307156): Add final values for IPH
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);  // Always available
+    config.session_rate = Comparator(
+        EQUAL, 0);  // Only shows when no other IPH has been shown this session
+
+    // Only show the IPH once per year
+    config.trigger = EventConfig("gesture_user_education_trigger",
+                                 Comparator(ANY, 0), 0, 360);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

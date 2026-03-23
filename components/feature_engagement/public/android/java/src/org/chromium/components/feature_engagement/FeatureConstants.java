@@ -91,6 +91,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
+    FeatureConstants.GESTURE_USER_EDUCATION,
     FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
@@ -372,6 +373,9 @@ public @interface FeatureConstants {
 
     /** A generic IPH feature to always trigger help UI when asked. */
     String GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE = "IPH_GenericAlwaysTriggerHelpUiFeature";
+
+    /** An IPH feature to prompt users to use the back swipe. */
+    String GESTURE_USER_EDUCATION = "IPH_GestureUserEducation";
 
     /** An IPH feature to show on the Glic Promo on Android. */
     String GLIC_PROMO_ANDROID_FEATURE = "IPH_GlicPromoAndroid";

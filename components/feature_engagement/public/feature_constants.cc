@@ -455,6 +455,9 @@ BASE_FEATURE(kIPHFuseboxAttachmentFeature,
 BASE_FEATURE(kIPHGenericAlwaysTriggerHelpUiFeature,
              "IPH_GenericAlwaysTriggerHelpUiFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGestureUserEducation,
+             "IPH_GestureUserEducation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicPromoAndroidFeature,
              "IPH_GlicPromoAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
