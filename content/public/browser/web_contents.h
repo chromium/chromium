@@ -1603,27 +1603,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // ui::Events will be always ignored without asking the callback. The given
   // callback will be invoked only while the returned ScopedIgnoreInputEvents
   // alives.
-  // By default, this also blocks all interactive accessibility actions,
-  // treating them as standard user input, while still permitting hit testing
-  // for screenreaders.
+  // This also blocks all interactive accessibility actions, treating them as
+  // standard user input, while still permitting hit testing for screenreaders.
   using WebInputEventAuditCallback =
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
-  [[nodiscard]] inline ScopedIgnoreInputEvents IgnoreInputEvents(
-      std::optional<WebInputEventAuditCallback> audit_callback) {
-    return IgnoreInputEvents(std::move(audit_callback),
-                             /*should_ignore_a11y_input=*/true);
-  }
-  // If `should_ignore_a11y_input` is true, this also blocks all
-  // accessibility actions from interacting with the WebContents, other than the
-  // hit test.
-  // TODO(crbug.com/452693512): Remove this overloaded method and the
-  // `should_ignore_a11y_input` parameter once all callers have been migrated to
-  // the 1-argument version.
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
-      std::optional<WebInputEventAuditCallback> audit_callback,
-      bool should_ignore_a11y_input) = 0;
+      std::optional<WebInputEventAuditCallback> audit_callback) = 0;
   virtual bool ShouldIgnoreInputEventsForTesting() = 0;
-  virtual bool ShouldIgnoreA11yInputEventsForTesting() = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was

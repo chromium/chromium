@@ -4011,9 +4011,9 @@ void RenderFrameHostImpl::AccessibilityPerformAction(
     return;
   }
 
-  // Don't perform the action if the WebContents is set to ignore accessibility
-  // input events. See WebContents::IgnoreInputEvents for more information.
-  if (delegate()->ShouldIgnoreA11yInputEvents()) {
+  // Don't perform the action if the WebContents is set to ignore input events.
+  // See WebContents::IgnoreInputEvents for more information.
+  if (delegate()->ShouldIgnoreInputEvents()) {
     return;
   }
 

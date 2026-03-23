@@ -69,7 +69,7 @@ ui::AXMode RenderFrameHostDelegate::GetAccessibilityMode() {
   return ui::AXMode();
 }
 
-bool RenderFrameHostDelegate::ShouldIgnoreA11yInputEvents() {
+bool RenderFrameHostDelegate::ShouldIgnoreInputEvents() {
   return false;
 }
 

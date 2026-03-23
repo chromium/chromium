@@ -3623,28 +3623,23 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
 TEST_F(WebContentsImplTest, IgnoreInputEvents) {
   // By default, input events should not be ignored.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
 
   std::optional<WebContents::ScopedIgnoreInputEvents> ignore_1 =
       contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
 
   // A second request to ignore should continue to ignore events.
   WebContents::ScopedIgnoreInputEvents ignore_2 =
       contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
 
   // Releasing one of them should not change anything.
   ignore_1.reset();
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
 
   // Move construction should not allow input.
   WebContents::ScopedIgnoreInputEvents ignore_3(std::move(ignore_2));
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
 
   {
     // Cannot create an empty `ScopedIgnoreInputEvents`, so get a new one and
@@ -3653,48 +3648,11 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
         contents()->IgnoreInputEvents(std::nullopt);
     ignore_4 = std::move(ignore_3);
     EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-    EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
     // `ignore_4` goes out of scope.
   }
 
   // Now input should be allowed.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
-}
-
-TEST_F(WebContentsImplTest, IgnoreInputEvents_IgnoreA11yInputEvents) {
-  // By default, input and a11y input events should not be ignored.
-  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
-
-  // Create two requests with different a11y input settings.
-  // The default 1-argument call now ignores both regular input and a11y input.
-  std::optional<WebContents::ScopedIgnoreInputEvents>
-      ignore_input_and_a11y_input = contents()->IgnoreInputEvents(std::nullopt);
-
-  // To test ignoring ONLY regular input, we must explicitly pass false.
-  std::optional<WebContents::ScopedIgnoreInputEvents> ignore_input_only =
-      contents()->IgnoreInputEvents(std::nullopt,
-                                    /*should_ignore_a11y_input=*/false);
-
-  // With both requests active, both input and a11y input should be ignored.
-  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
-
-  // Manually release the request that was ignoring a11y input events.
-  ignore_input_and_a11y_input.reset();
-
-  // Verify the state reverted: general input is still ignored by the first
-  // request, but a11y input events are now allowed.
-  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
-
-  // Manually release the ignore input only request.
-  ignore_input_only.reset();
-
-  // Verify everything is back to the default state.
-  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
-  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
 }
 
 TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {

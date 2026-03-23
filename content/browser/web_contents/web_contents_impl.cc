@@ -3028,8 +3028,7 @@ base::TimeTicks WebContentsImpl::GetLastInteractionTimeTicks() {
 }
 
 WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
-    std::optional<WebInputEventAuditCallback> audit_callback,
-    bool should_ignore_a11y_input) {
+    std::optional<WebInputEventAuditCallback> audit_callback) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IgnoreInputEvents");
 
   uint64_t callback_id = 0;
@@ -3052,14 +3051,11 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
     }
 #endif
     ++ignore_input_events_count_;
-    if (should_ignore_a11y_input) {
-      ++ignore_a11y_input_count_;
-    }
   }
 
   // Bind weakly, since the token might outlive us.
   return ScopedIgnoreInputEvents(base::BindOnce(
-      [](base::WeakPtr<WebContentsImpl> wc, bool should_ignore_a11y_input,
+      [](base::WeakPtr<WebContentsImpl> wc,
          std::optional<uint64_t> callback_id) {
         if (wc) {
           OPTIONAL_TRACE_EVENT0("content",
@@ -3086,23 +3082,16 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
             }
 #endif
             --wc->ignore_input_events_count_;
-            if (should_ignore_a11y_input) {
-              --wc->ignore_a11y_input_count_;
-            }
           }
         }
       },
-      weak_factory_.GetWeakPtr(), should_ignore_a11y_input,
+      weak_factory_.GetWeakPtr(),
       audit_callback.has_value() ? std::make_optional<uint64_t>(callback_id)
                                  : std::nullopt));
 }
 
 bool WebContentsImpl::ShouldIgnoreInputEventsForTesting() {
   return ShouldIgnoreInputEvents();
-}
-
-bool WebContentsImpl::ShouldIgnoreA11yInputEventsForTesting() {
-  return ShouldIgnoreA11yInputEvents();
 }
 
 bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
@@ -10520,16 +10509,6 @@ bool WebContentsImpl::ShouldIgnoreInputEvents() {
   return web_contents->ShouldIgnoreInputEvents();
 }
 
-bool WebContentsImpl::ShouldIgnoreA11yInputEvents() {
-  if (ignore_a11y_input_count_ > 0) {
-    return true;
-  }
-  WebContentsImpl* web_contents = GetOuterWebContents();
-  if (!web_contents) {
-    return false;
-  }
-  return web_contents->ShouldIgnoreA11yInputEvents();
-}
 
 void WebContentsImpl::FocusOwningWebContents(
     RenderWidgetHostImpl* render_widget_host) {

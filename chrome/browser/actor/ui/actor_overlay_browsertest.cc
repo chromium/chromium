@@ -376,15 +376,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   ASSERT_NE(state_manager, nullptr);
   tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
 
-  // Check initial state: Input and A11y Input should NOT be ignored by default.
+  // Check initial state: Input should NOT be ignored by default.
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
-  EXPECT_FALSE(browser()
-                   ->GetActiveTabInterface()
-                   ->GetContents()
-                   ->ShouldIgnoreA11yInputEventsForTesting());
 
   // Start actuating on the tab.
   TestFuture<ActionResultPtr> result;
@@ -396,15 +392,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
 
-  // Check that input and a11y input should be ignored.
+  // Check that input should be ignored.
   EXPECT_TRUE(browser()
                   ->GetActiveTabInterface()
                   ->GetContents()
                   ->ShouldIgnoreInputEventsForTesting());
-  EXPECT_TRUE(browser()
-                  ->GetActiveTabInterface()
-                  ->GetContents()
-                  ->ShouldIgnoreA11yInputEventsForTesting());
 
   // Add a new tab, which is the new active tab
   tabs::TabInterface* tab_2 =
@@ -415,29 +407,21 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   // Wait for overlay to become invisible for the newly added tab.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser()); }));
-  // Check that input and a11y input is NOT ignored for newly added tab.
+  // Check that input is NOT ignored for newly added tab.
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
-  EXPECT_FALSE(browser()
-                   ->GetActiveTabInterface()
-                   ->GetContents()
-                   ->ShouldIgnoreA11yInputEventsForTesting());
   // Activate the actuating tab
   browser()->tab_strip_model()->ActivateTabAt(0);
   // Wait for overlay to become visible on actuating tab.
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-  // Check that input and a11y input is ignored for actuating tab.
+  // Check that input is ignored for actuating tab.
   EXPECT_TRUE(browser()
                   ->GetActiveTabInterface()
                   ->GetContents()
                   ->ShouldIgnoreInputEventsForTesting());
-  EXPECT_TRUE(browser()
-                  ->GetActiveTabInterface()
-                  ->GetContents()
-                  ->ShouldIgnoreA11yInputEventsForTesting());
 
   // Stop actuating on the tab.
   state_manager->OnUiEvent(StoppedActingOnTab(tab_handle));
@@ -446,16 +430,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser()); }));
 
-  // Check that input and a11y input is NOT ignored for previously actuating
-  // tab.
+  // Check that input is NOT ignored for previously actuating tab.
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
-  EXPECT_FALSE(browser()
-                   ->GetActiveTabInterface()
-                   ->GetContents()
-                   ->ShouldIgnoreA11yInputEventsForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayIsIgnoredByAccessibility) {
