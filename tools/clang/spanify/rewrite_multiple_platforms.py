@@ -15,6 +15,8 @@ import shutil
 import subprocess
 import time
 
+from gnconfigs import GnConfigs
+
 PROJECTS = {
     'chrome': {
         'compile_dirs': '.',
@@ -27,63 +29,20 @@ PROJECTS = {
         'tool_arg':
         '--project=partition_alloc',
         'build_targets': [
-            '//base/allocator/partition_allocator/src/partition_alloc:partition_alloc'
+            '//base/allocator/partition_allocator/src/partition_alloc:'
         ],
     },
 }
 
-# Standard GN arguments common to most platforms.
-COMMON_GN_ARGS = [
+# Standard GN arguments common to most platforms for spanification.
+COMMON_EXTRA_GN_ARGS = [
     'clang_use_chrome_plugins = false',
-    'is_debug = false',
-    'dcheck_always_on = true',
-    'is_official_build = true',
-    'use_remoteexec = false',
     'force_enable_raw_ptr_exclusion = true',
 ]
 
-# Platform-specific GN arguments.
-PLATFORM_SPECIFIC_GN_ARGS = {
-    'android': [
-        'target_os = "android"',
-        'is_chrome_branded = true',
-        'symbol_level = 1',
-        'enable_remoting = true',
-        'enable_webview_bundles = true',
-        'ffmpeg_branding = "Chrome"',
-        'proprietary_codecs = true',
-    ],
-    'win': [
-        'target_os = "win"',
-        'enable_precompiled_headers = false',
-        'is_chrome_branded = true',
-        'symbol_level = 1',
-        'chrome_pgo_phase = 0',
-    ],
-    'linux': [
-        'target_os = "linux"',
-        'is_chrome_branded = true',
-        'chrome_pgo_phase = 0',
-    ],
-    'cros': [
-        'target_os = "chromeos"',
-        'chromeos_is_browser_only = true',
-        'is_chrome_branded = true',
-        'chrome_pgo_phase = 0',
-    ],
-    'chromeos': [
-        'target_os = "chromeos"',
-        'chrome_pgo_phase = 0',
-    ],
-    'mac': [
-        'target_os = "mac"',
-        'is_chrome_branded = true',
-        'chrome_pgo_phase = 0',
-        'symbol_level = 1',
-        'enable_dsyms = false',
-        'enable_stripping = false',
-    ],
-}
+# Discover all available platforms and configurations from gnconfigs.
+AVAILABLE_PLATFORMS = sorted(set(GnConfigs(False).min_all_platforms.keys()) |
+                             set(GnConfigs(False).all_platforms_and_configs.keys()))
 
 LLVM_BUILD_DIR = pathlib.Path('third_party/llvm-build')
 LLVM_UPSTREAM_DIR = pathlib.Path('third_party/llvm-build-upstream')
@@ -104,8 +63,17 @@ def get_platform_args(platform):
     """
     Returns the GN arguments for the given platform.
     """
-    return '\n'.join(COMMON_GN_ARGS +
-                     PLATFORM_SPECIFIC_GN_ARGS[platform]) + '\n'
+    configs = GnConfigs(False)
+
+    args = configs.min_all_platforms.get(platform)
+    if args is None:
+        # If not in min_all_platforms, try to get it directly from all configs.
+        args = configs[platform]
+
+    if args is None:
+        raise ValueError(f"Unknown platform: {platform}")
+
+    return '\n'.join(args + COMMON_EXTRA_GN_ARGS) + '\n'
 
 
 @contextlib.contextmanager
@@ -193,7 +161,8 @@ def prepare_platform(platform, out_dir, project):
                 continue
             src = v_dir / 'lib/darwin'
             if src.exists():
-                dst = LLVM_BUILD_DIR / CLANG_LIB_REL_PATH / v_dir.name / 'lib/darwin'
+                dst = (LLVM_BUILD_DIR / CLANG_LIB_REL_PATH / v_dir.name /
+                       'lib/darwin')
                 shutil.copytree(src, dst, dirs_exist_ok=True)
 
     logging.info('Generating build files for %s...', platform)
@@ -368,12 +337,17 @@ def apply_edits_phase(last_platform):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Multi-platform spanify tool.')
+        description='Multi-platform spanify tool.',
+        formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-p',
                         '--platforms',
                         nargs='+',
-                        choices=PLATFORM_SPECIFIC_GN_ARGS.keys(),
-                        default=['linux'])
+                        choices=AVAILABLE_PLATFORMS,
+                        default=['linux-rel'],
+                        metavar='PLATFORM',
+                        help='Platforms to rewrite. Available options:\n  ' +
+                        '\n  '.join(AVAILABLE_PLATFORMS) +
+                        '\n(default: linux-rel)')
     parser.add_argument('-r', '--skip-rewrite', action='store_true')
     parser.add_argument('-e', '--skip-extract-edits', action='store_true')
     parser.add_argument('--project', choices=PROJECTS.keys(), default='chrome')
