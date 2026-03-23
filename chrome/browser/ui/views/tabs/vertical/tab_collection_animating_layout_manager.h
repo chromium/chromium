@@ -46,6 +46,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
 
   class Delegate {
    public:
+    virtual bool IsDragging() const;
     virtual bool IsViewDragging(const views::View& child_view) const;
     virtual bool ShouldSnapToTarget(const views::View& child_view) const;
     virtual bool ShouldAnimateOpacityForAddAndRemove(
@@ -119,6 +120,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // `target_view_set_` reflect the current layout state.
   void SetStartingLayout(const views::ProposedLayout& starting_layout);
   void SetTargetLayout(const views::ProposedLayout& target_layout);
+
+  // Updates `current_layout_` to reflect the current state of `animation_`.
+  void UpdateCurrentLayout();
 
   // Recalculates the target layout and starts/updates animation if necessary.
   // Returns true if a new target layout was computed.
