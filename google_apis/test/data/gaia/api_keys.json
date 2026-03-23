@@ -1,6 +1,7 @@
 {
   "api_keys": {
     "GOOGLE_API_KEY": "config-API_KEY",
+    "GOOGLE_CDM_SERVER_CERTIFICATE": "config-CDM_SERVER_CERTIFICATE",
 
     "GOOGLE_CLIENT_ID_MAIN": "config-ID_MAIN",
     "GOOGLE_CLIENT_SECRET_MAIN": "config-SECRET_MAIN",

@@ -29,14 +29,22 @@ class GoogleAPIKeysTest : public testing::Test {
  private:
   std::unique_ptr<base::Environment> env_;
 
-  // Why 3?  It is for GOOGLE_API_KEY, GOOGLE_DEFAULT_CLIENT_ID and
+#if !BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
+  // For GOOGLE_API_KEY, GOOGLE_DEFAULT_CLIENT_ID and
   // GOOGLE_DEFAULT_CLIENT_SECRET.
-  //
-  // Why 2 times CLIENT_NUM_ITEMS?  This is the number of different
-  // clients in the OAuth2Client enumeration, and for each of these we
-  // have both an ID and a secret.
-  std::array<EnvironmentCache, 3 + 2 * google_apis::CLIENT_NUM_ITEMS>
-      env_cache_;
+  static constexpr int kApiKeysCacheLength = 3;
+#else
+  // For all the above plus GOOGLE_CDM_CERTIFICATE.
+  static constexpr int kApiKeysCacheLength = 4;
+#endif
+
+  // This is the number of different clients in the OAuth2Client enumeration,
+  // and for each of these we have both an ID and a secret.
+  static constexpr int kOAuth2CacheLength = 2 * google_apis::CLIENT_NUM_ITEMS;
+  static constexpr int kTotalCacheLength =
+      kApiKeysCacheLength + kOAuth2CacheLength;
+
+  std::array<EnvironmentCache, kTotalCacheLength> env_cache_;
 };
 
 #endif  // GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_
