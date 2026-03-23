@@ -635,12 +635,14 @@ bool PrintPreviewShowing(const Browser* browser) {
 
 }  // namespace
 
-bool IsCommandEnabled(Browser* browser, int command) {
-  return browser->command_controller()->IsCommandEnabled(command);
+bool IsCommandEnabled(BrowserWindowInterface* browser, int command) {
+  return browser->GetFeatures().browser_command_controller()->IsCommandEnabled(
+      command);
 }
 
-bool SupportsCommand(Browser* browser, int command) {
-  return browser->command_controller()->SupportsCommand(command);
+bool SupportsCommand(BrowserWindowInterface* browser, int command) {
+  return browser->GetFeatures().browser_command_controller()->SupportsCommand(
+      command);
 }
 
 bool ExecuteCommand(BrowserWindowInterface* bwi,
@@ -650,27 +652,31 @@ bool ExecuteCommand(BrowserWindowInterface* bwi,
       command, time_stamp);
 }
 
-bool ExecuteCommandWithDisposition(Browser* browser,
+bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
                                    int command,
                                    WindowOpenDisposition disposition) {
-  return browser->command_controller()->ExecuteCommandWithDisposition(
-      command, disposition);
+  return browser->GetFeatures()
+      .browser_command_controller()
+      ->ExecuteCommandWithDisposition(command, disposition);
 }
 
-void UpdateCommandEnabled(Browser* browser, int command, bool enabled) {
-  browser->command_controller()->UpdateCommandEnabled(command, enabled);
+void UpdateCommandEnabled(BrowserWindowInterface* browser, int command, bool enabled) {
+  browser->GetFeatures().browser_command_controller()->UpdateCommandEnabled(
+      command, enabled);
 }
 
-void AddCommandObserver(Browser* browser,
+void AddCommandObserver(BrowserWindowInterface* browser,
                         int command,
                         CommandObserver* observer) {
-  browser->command_controller()->AddCommandObserver(command, observer);
+  browser->GetFeatures().browser_command_controller()->AddCommandObserver(
+      command, observer);
 }
 
-void RemoveCommandObserver(Browser* browser,
+void RemoveCommandObserver(BrowserWindowInterface* browser,
                            int command,
                            CommandObserver* observer) {
-  browser->command_controller()->RemoveCommandObserver(command, observer);
+  browser->GetFeatures().browser_command_controller()->RemoveCommandObserver(
+      command, observer);
 }
 
 int GetContentRestrictions(const BrowserWindowInterface* bwi) {
@@ -793,8 +799,8 @@ void OpenURLOffTheRecord(Profile* profile, const GURL& url) {
 }
 
 
-bool CanGoBack(const Browser* browser) {
-  return CanGoBack(browser->tab_strip_model()->GetActiveWebContents());
+bool CanGoBack(const BrowserWindowInterface* browser) {
+  return CanGoBack(browser->GetTabStripModel()->GetActiveWebContents());
 }
 
 bool CanGoBack(content::WebContents* web_contents) {
@@ -804,9 +810,9 @@ bool CanGoBack(content::WebContents* web_contents) {
               web_contents));
 }
 
-bool ShouldEnableBackButton(const Browser* browser) {
+bool ShouldEnableBackButton(const BrowserWindowInterface* browser) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return false;
   }
@@ -890,8 +896,8 @@ void GoBack(content::WebContents* web_contents) {
   back_to_opener::BackToOpenerController::GoBackToOpener(web_contents);
 }
 
-bool CanGoForward(const Browser* browser) {
-  return browser->tab_strip_model()
+bool CanGoForward(const BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetController()
       .CanGoForward();
@@ -901,8 +907,8 @@ bool CanGoForward(content::WebContents* web_contents) {
   return web_contents->GetController().CanGoForward();
 }
 
-bool ShouldEnableForwardButton(const Browser* browser) {
-  return browser->tab_strip_model()
+bool ShouldEnableForwardButton(const BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetController()
       .ShouldEnableForwardButton();
@@ -1063,9 +1069,9 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
   return result;
 }
 
-void Stop(Browser* browser) {
+void Stop(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Stop"));
-  browser->tab_strip_model()->GetActiveWebContents()->Stop();
+  browser->GetTabStripModel()->GetActiveWebContents()->Stop();
 }
 
 void NewWindow(BrowserWindowInterface* browser) {
@@ -1229,51 +1235,51 @@ bool CanResetZoom(content::WebContents* contents) {
          !zoom_controller->PageScaleFactorIsOne();
 }
 
-void SelectNextTab(Browser* browser,
+void SelectNextTab(BrowserWindowInterface* browser,
                    TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectNextTab"));
-  browser->tab_strip_model()->SelectNextTab(gesture_detail);
+  browser->GetTabStripModel()->SelectNextTab(gesture_detail);
 }
 
-void SelectPreviousTab(Browser* browser,
+void SelectPreviousTab(BrowserWindowInterface* browser,
                        TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectPrevTab"));
-  browser->tab_strip_model()->SelectPreviousTab(gesture_detail);
+  browser->GetTabStripModel()->SelectPreviousTab(gesture_detail);
 }
 
-void MoveTabNext(Browser* browser) {
+void MoveTabNext(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("MoveTabNext"));
-  browser->tab_strip_model()->MoveTabNext();
+  browser->GetTabStripModel()->MoveTabNext();
 }
 
-void MoveTabPrevious(Browser* browser) {
+void MoveTabPrevious(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("MoveTabPrevious"));
-  browser->tab_strip_model()->MoveTabPrevious();
+  browser->GetTabStripModel()->MoveTabPrevious();
 }
 
-void SelectNumberedTab(Browser* browser,
+void SelectNumberedTab(BrowserWindowInterface* browser,
                        int index,
                        TabStripUserGestureDetails gesture_detail) {
   int visible_count = 0;
-  for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
-    if (browser->tab_strip_model()->IsTabCollapsed(i)) {
+  for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
+    if (browser->GetTabStripModel()->IsTabCollapsed(i)) {
       continue;
     }
     if (visible_count == index) {
       base::RecordAction(UserMetricsAction("SelectNumberedTab"));
-      browser->tab_strip_model()->ActivateTabAt(i, gesture_detail);
+      browser->GetTabStripModel()->ActivateTabAt(i, gesture_detail);
       break;
     }
     visible_count += 1;
   }
 }
 
-void SelectLastTab(Browser* browser,
+void SelectLastTab(BrowserWindowInterface* browser,
                    TabStripUserGestureDetails gesture_detail) {
-  for (int i = browser->tab_strip_model()->count() - 1; i >= 0; i--) {
-    if (!browser->tab_strip_model()->IsTabCollapsed(i)) {
+  for (int i = browser->GetTabStripModel()->count() - 1; i >= 0; i--) {
+    if (!browser->GetTabStripModel()->IsTabCollapsed(i)) {
       base::RecordAction(UserMetricsAction("SelectLastTab"));
-      browser->tab_strip_model()->ActivateTabAt(i, gesture_detail);
+      browser->GetTabStripModel()->ActivateTabAt(i, gesture_detail);
       break;
     }
   }
@@ -1369,15 +1375,15 @@ void MoveTabsToNewWindow(Browser* browser,
   MoveTabsToWindowImpl(browser, new_browser, tab_indices);
 }
 
-bool CanCloseTabsToRight(const Browser* browser) {
-  return browser->tab_strip_model()->IsContextMenuCommandEnabled(
-      browser->tab_strip_model()->active_index(),
+bool CanCloseTabsToRight(const BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()->IsContextMenuCommandEnabled(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::CommandCloseTabsToRight);
 }
 
-bool CanCloseOtherTabs(const Browser* browser) {
-  return browser->tab_strip_model()->IsContextMenuCommandEnabled(
-      browser->tab_strip_model()->active_index(),
+bool CanCloseOtherTabs(const BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()->IsContextMenuCommandEnabled(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::CommandCloseOtherTabs);
 }
 
@@ -1439,15 +1445,15 @@ void MoveGroupToExistingWindow(Browser* source,
   MoveGroupToWindowImpl(source, target, group);
 }
 
-void PinTab(Browser* browser) {
-  browser->tab_strip_model()->ExecuteContextMenuCommand(
-      browser->tab_strip_model()->active_index(),
+void PinTab(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->ExecuteContextMenuCommand(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::ContextMenuCommand::CommandTogglePinned);
 }
 
-void GroupTab(Browser* browser) {
-  browser->tab_strip_model()->ExecuteContextMenuCommand(
-      browser->tab_strip_model()->active_index(),
+void GroupTab(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->ExecuteContextMenuCommand(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::ContextMenuCommand::CommandToggleGrouped);
 }
 
@@ -1511,8 +1517,8 @@ void CloseTabGroup(Browser* browser) {
   browser->tab_strip_model()->CloseAllTabsInGroup(group_id.value());
 }
 
-void FocusNextTabGroup(Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+void FocusNextTabGroup(BrowserWindowInterface* browser) {
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   if (!tab_strip_model->SupportsTabGroups()) {
     return;
   }
@@ -1536,8 +1542,8 @@ void FocusNextTabGroup(Browser* browser) {
   }
 }
 
-void FocusPreviousTabGroup(Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+void FocusPreviousTabGroup(BrowserWindowInterface* browser) {
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   if (!tab_strip_model->SupportsTabGroups()) {
     return;
   }
@@ -1568,8 +1574,8 @@ void FocusPreviousTabGroup(Browser* browser) {
   }
 }
 
-bool GroupAllUngroupedTabs(Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+bool GroupAllUngroupedTabs(BrowserWindowInterface* browser) {
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   if (!tab_strip_model->SupportsTabGroups()) {
     return false;
   }
@@ -1616,15 +1622,15 @@ void AddNewTabToRecentGroup(Browser* browser) {
   AddTabAt(browser, GURL(), -1, true, group_id);
 }
 
-void UnfocusTabGroup(Browser* browser) {
+void UnfocusTabGroup(BrowserWindowInterface* browser) {
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    browser->tab_strip_model()->SetFocusedGroup(std::nullopt);
+    browser->GetTabStripModel()->SetFocusedGroup(std::nullopt);
   }
 }
 
-void MuteSite(Browser* browser) {
-  browser->tab_strip_model()->ExecuteContextMenuCommand(
-      browser->tab_strip_model()->active_index(),
+void MuteSite(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->ExecuteContextMenuCommand(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::ContextMenuCommand::CommandToggleSiteMuted);
 }
 
@@ -1690,15 +1696,15 @@ void ConvertPopupToTabbedBrowser(Browser* browser) {
   b->window()->Show();
 }
 
-void CloseTabsToRight(Browser* browser) {
-  browser->tab_strip_model()->ExecuteContextMenuCommand(
-      browser->tab_strip_model()->active_index(),
+void CloseTabsToRight(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->ExecuteContextMenuCommand(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::CommandCloseTabsToRight);
 }
 
-void CloseOtherTabs(Browser* browser) {
-  browser->tab_strip_model()->ExecuteContextMenuCommand(
-      browser->tab_strip_model()->active_index(),
+void CloseOtherTabs(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->ExecuteContextMenuCommand(
+      browser->GetTabStripModel()->active_index(),
       TabStripModel::CommandCloseOtherTabs);
 }
 
@@ -1875,42 +1881,42 @@ void ShowOffersAndRewardsForPage(BrowserWindowInterface* bwi) {
   controller->ReshowBubble();
 }
 
-void SaveCreditCard(Browser* browser) {
+void SaveCreditCard(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   autofill::SaveCardBubbleControllerImpl* controller =
       autofill::SaveCardBubbleControllerImpl::FromWebContents(web_contents);
   controller->ReshowBubble(/*is_user_gesture=*/true);
 }
 
-void SaveIban(Browser* browser) {
+void SaveIban(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   autofill::IbanBubbleControllerImpl* controller =
       autofill::IbanBubbleControllerImpl::FromWebContents(web_contents);
   controller->ReshowBubble();
 }
 
-void ShowMandatoryReauthOptInPrompt(Browser* browser) {
+void ShowMandatoryReauthOptInPrompt(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   autofill::MandatoryReauthBubbleControllerImpl* controller =
       autofill::MandatoryReauthBubbleControllerImpl::FromWebContents(
           web_contents);
   controller->ReshowBubble();
 }
 
-void SaveAutofillAddress(Browser* browser) {
+void SaveAutofillAddress(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   autofill::AddressBubblesController* controller =
       autofill::AddressBubblesController::FromWebContents(web_contents);
   controller->OnIconClicked();
 }
 
-void ShowFilledCardInformationBubble(Browser* browser) {
+void ShowFilledCardInformationBubble(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   auto* controller =
       autofill::FilledCardInformationBubbleControllerImpl::FromWebContents(
           web_contents);
@@ -1919,9 +1925,9 @@ void ShowFilledCardInformationBubble(Browser* browser) {
   }
 }
 
-void ShowVirtualCardEnrollBubble(Browser* browser) {
+void ShowVirtualCardEnrollBubble(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   autofill::VirtualCardEnrollBubbleControllerImpl* controller =
       autofill::VirtualCardEnrollBubbleControllerImpl::FromWebContents(
           web_contents);
@@ -1999,9 +2005,9 @@ bool CanSendTabToSelf(BrowserWindowInterface* bwi) {
       bwi->GetTabStripModel()->GetActiveWebContents());
 }
 
-void SendTabToSelf(Browser* browser) {
+void SendTabToSelf(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   send_tab_to_self::ShowBubble(web_contents);
 }
 
@@ -2024,9 +2030,9 @@ void GenerateQRCode(BrowserWindowInterface* bwi) {
   controller->ShowBubble(entry->GetURL());
 }
 
-void SharingHub(Browser* browser) {
+void SharingHub(BrowserWindowInterface* browser) {
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           web_contents);
@@ -2041,9 +2047,9 @@ void ScreenshotCapture(Browser* browser) {
   controller->Capture(browser);
 }
 
-void SavePage(Browser* browser) {
+void SavePage(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("SavePage"));
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* current_tab = browser->GetTabStripModel()->GetActiveWebContents();
   DCHECK(current_tab);
   if (current_tab->GetContentsMimeType() == "application/pdf") {
     base::RecordAction(UserMetricsAction("PDF.SavePage"));
@@ -2124,8 +2130,8 @@ bool CanPrint(BrowserWindowInterface* bwi) {
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-void BasicPrint(Browser* browser) {
-  printing::StartBasicPrint(browser->tab_strip_model()->GetActiveWebContents());
+void BasicPrint(BrowserWindowInterface* browser) {
+  printing::StartBasicPrint(browser->GetTabStripModel()->GetActiveWebContents());
 }
 
 bool CanBasicPrint(Browser* browser) {
@@ -2147,12 +2153,12 @@ bool CanRouteMedia(BrowserWindowInterface* bwi) {
          !IsShowingWebContentsModalDialog(bwi);
 }
 
-void RouteMediaInvokedFromAppMenu(Browser* browser) {
+void RouteMediaInvokedFromAppMenu(BrowserWindowInterface* browser) {
   DCHECK(CanRouteMedia(browser));
 
   media_router::MediaRouterDialogController* dialog_controller =
       media_router::MediaRouterDialogController::GetOrCreateForWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+          browser->GetTabStripModel()->GetActiveWebContents());
   if (!dialog_controller) {
     return;
   }
@@ -2161,22 +2167,22 @@ void RouteMediaInvokedFromAppMenu(Browser* browser) {
       media_router::MediaRouterDialogActivationLocation::APP_MENU);
 }
 
-void Find(Browser* browser) {
+void Find(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Find"));
   FindInPage(browser, false, true);
 }
 
-void FindNext(Browser* browser) {
+void FindNext(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FindNext"));
   FindInPage(browser, true, true);
 }
 
-void FindPrevious(Browser* browser) {
+void FindPrevious(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FindPrevious"));
   FindInPage(browser, true, false);
 }
 
-void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
+void FindInPage(BrowserWindowInterface* browser, bool find_next, bool forward_direction) {
   browser->GetFeatures().GetFindBarController()->Show(find_next,
                                                       forward_direction);
 }
@@ -2185,8 +2191,8 @@ void ShowTabSearch(BrowserWindowInterface* bwi) {
   bwi->GetBrowserForMigrationOnly()->window()->CreateTabSearchBubble();
 }
 
-void CloseTabSearch(Browser* browser) {
-  browser->window()->CloseTabSearchBubble();
+void CloseTabSearch(BrowserWindowInterface* browser) {
+  browser->GetBrowserForMigrationOnly()->window()->CloseTabSearchBubble();
 }
 
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
@@ -2209,8 +2215,8 @@ void ToggleVerticalTabs(Browser* browser) {
   controller->SetVerticalTabsEnabled(!controller->ShouldDisplayVerticalTabs());
 }
 
-bool CanCloseFind(Browser* browser) {
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
+bool CanCloseFind(BrowserWindowInterface* browser) {
+  WebContents* current_tab = browser->GetTabStripModel()->GetActiveWebContents();
   if (!current_tab) {
     return false;
   }
@@ -2220,60 +2226,60 @@ bool CanCloseFind(Browser* browser) {
   return find_helper ? find_helper->find_ui_active() : false;
 }
 
-void CloseFind(Browser* browser) {
+void CloseFind(BrowserWindowInterface* browser) {
   browser->GetFeatures().GetFindBarController()->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 }
 
-void Zoom(Browser* browser, content::PageZoom zoom) {
-  zoom::PageZoom::Zoom(browser->tab_strip_model()->GetActiveWebContents(),
+void Zoom(BrowserWindowInterface* browser, content::PageZoom zoom) {
+  zoom::PageZoom::Zoom(browser->GetTabStripModel()->GetActiveWebContents(),
                        zoom);
 }
 
-void FocusToolbar(Browser* browser) {
+void FocusToolbar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusToolbar"));
-  browser->window()->FocusToolbar();
+  browser->GetBrowserForMigrationOnly()->window()->FocusToolbar();
 }
 
-void FocusLocationBar(Browser* browser) {
+void FocusLocationBar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusLocation"));
-  browser->window()->SetFocusToLocationBar(true);
+  browser->GetBrowserForMigrationOnly()->window()->SetFocusToLocationBar(true);
 }
 
-void FocusSearch(Browser* browser) {
+void FocusSearch(BrowserWindowInterface* browser) {
   // TODO(beng): replace this with FocusLocationBar
   base::RecordAction(UserMetricsAction("FocusSearch"));
-  browser->window()->GetLocationBar()->FocusSearch();
+  browser->GetBrowserForMigrationOnly()->window()->GetLocationBar()->FocusSearch();
 }
 
-void FocusAppMenu(Browser* browser) {
+void FocusAppMenu(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusAppMenu"));
-  browser->window()->FocusAppMenu();
+  browser->GetBrowserForMigrationOnly()->window()->FocusAppMenu();
 }
 
-void FocusBookmarksToolbar(Browser* browser) {
+void FocusBookmarksToolbar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusBookmarksToolbar"));
-  browser->window()->FocusBookmarksToolbar();
+  browser->GetBrowserForMigrationOnly()->window()->FocusBookmarksToolbar();
 }
 
-void FocusInactivePopupForAccessibility(Browser* browser) {
+void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusInactivePopupForAccessibility"));
-  browser->window()->FocusInactivePopupForAccessibility();
+  browser->GetBrowserForMigrationOnly()->window()->FocusInactivePopupForAccessibility();
 }
 
-void FocusNextPane(Browser* browser) {
+void FocusNextPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusNextPane"));
-  browser->window()->RotatePaneFocus(true);
+  browser->GetBrowserForMigrationOnly()->window()->RotatePaneFocus(true);
 }
 
-void FocusPreviousPane(Browser* browser) {
+void FocusPreviousPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusPreviousPane"));
-  browser->window()->RotatePaneFocus(false);
+  browser->GetBrowserForMigrationOnly()->window()->RotatePaneFocus(false);
 }
 
-void FocusWebContentsPane(Browser* browser) {
+void FocusWebContentsPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusWebContentsPane"));
-  browser->window()->FocusWebContentsPane();
+  browser->GetBrowserForMigrationOnly()->window()->FocusWebContentsPane();
 }
 
 void ToggleDevToolsWindow(BrowserWindowInterface* bwi,
@@ -2324,46 +2330,46 @@ void OpenReportUnsafeSiteDialog(Browser* browser) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-void ToggleBookmarkBar(Browser* browser) {
+void ToggleBookmarkBar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ShowBookmarksBar"));
-  ToggleBookmarkBarWhenVisible(browser->profile());
+  ToggleBookmarkBarWhenVisible(browser->GetProfile());
 }
 
-void ToggleShowFullURLs(Browser* browser) {
-  bool pref_enabled = browser->profile()->GetPrefs()->GetBoolean(
+void ToggleShowFullURLs(BrowserWindowInterface* browser) {
+  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
       omnibox::kPreventUrlElisionsInOmnibox);
-  browser->profile()->GetPrefs()->SetBoolean(
+  browser->GetProfile()->GetPrefs()->SetBoolean(
       omnibox::kPreventUrlElisionsInOmnibox, !pref_enabled);
 }
 
-void ToggleShowGoogleLensShortcut(Browser* browser) {
-  bool pref_enabled = browser->profile()->GetPrefs()->GetBoolean(
+void ToggleShowGoogleLensShortcut(BrowserWindowInterface* browser) {
+  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
       omnibox::kShowGoogleLensShortcut);
-  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
-                                             !pref_enabled);
+  browser->GetProfile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                                !pref_enabled);
 }
 
-void ToggleShowAiModeOmniboxButton(Browser* browser) {
-  bool pref_enabled = browser->profile()->GetPrefs()->GetBoolean(
+void ToggleShowAiModeOmniboxButton(BrowserWindowInterface* browser) {
+  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
       omnibox::kShowAiModeOmniboxButton);
-  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton,
-                                             !pref_enabled);
+  browser->GetProfile()->GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton,
+                                                !pref_enabled);
 }
 
-void ToggleShowSearchTools(Browser* browser) {
+void ToggleShowSearchTools(BrowserWindowInterface* browser) {
   bool pref_enabled =
-      browser->profile()->GetPrefs()->GetBoolean(omnibox::kShowSearchTools);
-  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowSearchTools,
-                                             !pref_enabled);
+      browser->GetProfile()->GetPrefs()->GetBoolean(omnibox::kShowSearchTools);
+  browser->GetProfile()->GetPrefs()->SetBoolean(omnibox::kShowSearchTools,
+                                                !pref_enabled);
 }
 
-void ShowAppMenu(Browser* browser) {
+void ShowAppMenu(BrowserWindowInterface* browser) {
   // We record the user metric for this event in AppMenu::RunMenu.
-  browser->window()->ShowAppMenu();
+  browser->GetBrowserForMigrationOnly()->window()->ShowAppMenu();
 }
 
-void ShowAvatarMenu(Browser* browser) {
-  browser->window()->ShowAvatarBubbleFromAvatarButton(
+void ShowAvatarMenu(BrowserWindowInterface* browser) {
+  browser->GetBrowserForMigrationOnly()->window()->ShowAvatarBubbleFromAvatarButton(
       /*is_source_accelerator=*/true);
 }
 
@@ -2394,8 +2400,8 @@ bool CanRequestTabletSite(WebContents* current_tab) {
          current_tab->GetController().GetLastCommittedEntry() != nullptr;
 }
 
-bool IsRequestingTabletSite(Browser* browser) {
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
+bool IsRequestingTabletSite(BrowserWindowInterface* browser) {
+  WebContents* current_tab = browser->GetTabStripModel()->GetActiveWebContents();
   if (!current_tab) {
     return false;
   }
@@ -2407,8 +2413,8 @@ bool IsRequestingTabletSite(Browser* browser) {
   return entry->GetIsOverridingUserAgent();
 }
 
-void ToggleRequestTabletSite(Browser* browser) {
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
+void ToggleRequestTabletSite(BrowserWindowInterface* browser) {
+  WebContents* current_tab = browser->GetTabStripModel()->GetActiveWebContents();
   if (!current_tab) {
     return;
   }
@@ -2454,17 +2460,17 @@ void ToggleFullscreenMode(BrowserWindowInterface* browser,
       ->ToggleBrowserFullscreenMode(user_initiated);
 }
 
-void ClearCache(Browser* browser) {
+void ClearCache(BrowserWindowInterface* browser) {
   content::BrowsingDataRemover* remover =
-      browser->profile()->GetBrowsingDataRemover();
+      browser->GetProfile()->GetBrowsingDataRemover();
   remover->Remove(base::Time(), base::Time::Max(),
                   content::BrowsingDataRemover::DATA_TYPE_CACHE,
                   content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
   // BrowsingDataRemover takes care of deleting itself when done.
 }
 
-bool IsDebuggerAttachedToCurrentTab(Browser* browser) {
-  WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
+bool IsDebuggerAttachedToCurrentTab(BrowserWindowInterface* browser) {
+  WebContents* contents = browser->GetTabStripModel()->GetActiveWebContents();
   return contents ? content::DevToolsAgentHost::IsDebuggerAttached(contents)
                   : false;
 }
@@ -2525,13 +2531,13 @@ bool CanViewSource(const Browser* browser) {
   return web_contents->GetController().CanViewSource();
 }
 
-bool CanToggleCaretBrowsing(Browser* browser) {
+bool CanToggleCaretBrowsing(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_MAC)
   // On Mac, ignore the keyboard shortcut unless web contents is focused,
   // because the keyboard shortcut interferes with a Japenese IME when the
   // omnibox is focused.  See https://crbug.com/1138475
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return false;
   }
@@ -2543,12 +2549,12 @@ bool CanToggleCaretBrowsing(Browser* browser) {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void ToggleCaretBrowsing(Browser* browser) {
+void ToggleCaretBrowsing(BrowserWindowInterface* browser) {
   if (!CanToggleCaretBrowsing(browser)) {
     return;
   }
 
-  PrefService* prefService = browser->profile()->GetPrefs();
+  PrefService* prefService = browser->GetProfile()->GetPrefs();
   bool enabled = prefService->GetBoolean(prefs::kCaretBrowsingEnabled);
 
   if (enabled) {
@@ -2564,7 +2570,7 @@ void ToggleCaretBrowsing(Browser* browser) {
   if (prefService->GetBoolean(prefs::kShowCaretBrowsingDialog) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCaretBrowsing)) {
-    browser->window()->ShowCaretBrowsingDialog();
+    browser->GetBrowserForMigrationOnly()->window()->ShowCaretBrowsingDialog();
   } else {
     base::RecordAction(base::UserMetricsAction(
         "Accessibility.CaretBrowsing.EnableWithKeyboard"));
@@ -2577,8 +2583,8 @@ void PromptToNameWindow(Browser* browser) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void ToggleMultitaskMenu(Browser* browser) {
-  browser->window()->ToggleMultitaskMenu();
+void ToggleMultitaskMenu(BrowserWindowInterface* browser) {
+  browser->GetBrowserForMigrationOnly()->window()->ToggleMultitaskMenu();
 }
 #endif
 
@@ -2594,13 +2600,13 @@ void ShowIncognitoClearBrowsingDataDialog(BrowserWindowInterface* bwi) {
       ->ShowIncognitoClearBrowsingDataDialog();
 }
 
-void ShowIncognitoHistoryDisclaimerDialog(Browser* browser) {
-  browser->window()->ShowIncognitoHistoryDisclaimerDialog();
+void ShowIncognitoHistoryDisclaimerDialog(BrowserWindowInterface* browser) {
+  browser->GetBrowserForMigrationOnly()->window()->ShowIncognitoHistoryDisclaimerDialog();
 }
 
-bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
+bool ShouldInterceptChromeURLNavigationInIncognito(BrowserWindowInterface* browser,
                                                    const GURL& url) {
-  if (!browser || !browser->profile()->IsIncognitoProfile()) {
+  if (!browser || !browser->GetProfile()->IsIncognitoProfile()) {
     return false;
   }
 
@@ -2614,7 +2620,7 @@ bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
   return show_clear_browsing_data_dialog || show_history_disclaimer_dialog;
 }
 
-void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
+void ProcessInterceptedChromeURLNavigationInIncognito(BrowserWindowInterface* browser,
                                                       const GURL& url) {
   if (url == GURL(chrome::kChromeUISettingsURL)
                  .Resolve(chrome::kClearBrowserDataSubPage)) {
@@ -2626,9 +2632,9 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
   }
 }
 
-void ExecLensOverlay(Browser* browser) {
+void ExecLensOverlay(BrowserWindowInterface* browser) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   CHECK(web_contents);
 
   LensSearchController* const controller =
