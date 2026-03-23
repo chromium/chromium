@@ -1618,10 +1618,8 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
   auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource();
   if (!canvas_resource)
     return false;
-  const int width = GetDrawingBuffer()->Size().width();
-  const int height = GetDrawingBuffer()->Size().height();
-  const bool submitted_frame = Host()->PushFrame(
-      std::move(canvas_resource), SkIRect::MakeWH(width, height));
+  const bool submitted_frame =
+      Host()->PushFrame(std::move(canvas_resource), std::nullopt);
 
   MarkLayerComposited();
   return submitted_frame;
@@ -1641,11 +1639,9 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   auto* resource_provider =
       PaintRenderingResultsToResourceProvider(kBackBuffer);
   if (resource_provider && resource_provider_has_content_for_frame_push_) {
-    const int width = GetDrawingBuffer()->Size().width();
-    const int height = GetDrawingBuffer()->Size().height();
-    auto size = SkIRect::MakeWH(width, height);
     submitted_frame = Host()->PushFrame(
-        resource_provider->ProduceCanvasResource(FlushReason::kOther), size);
+        resource_provider->ProduceCanvasResource(FlushReason::kOther),
+        std::nullopt);
     resource_provider_has_content_for_frame_push_ = false;
   }
   MarkLayerComposited();

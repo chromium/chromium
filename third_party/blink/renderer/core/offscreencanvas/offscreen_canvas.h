@@ -122,7 +122,7 @@ class CORE_EXPORT OffscreenCanvas final
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame,
-                 const SkIRect& damage_rect) override;
+                 std::optional<SkIRect> damage_rect) override;
   void DidDraw(const SkIRect&) override;
   using CanvasRenderingContextHost::DidDraw;
   bool ShouldAccelerate2dContext() const override;

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
+#include <optional>
+
 #include "base/byte_size.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -67,7 +69,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual void PostFinalizeFrame(FlushReason) = 0;
   void NotifyCachesOfSwitchingFrame();
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
-                         const SkIRect& damage_rect) = 0;
+                         std::optional<SkIRect> damage_rect) = 0;
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
   virtual CanvasRenderingContext* RenderingContext() const = 0;

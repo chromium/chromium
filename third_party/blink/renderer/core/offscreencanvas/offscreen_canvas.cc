@@ -499,11 +499,16 @@ bool OffscreenCanvas::PushFrameIfNeeded() {
 }
 
 bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
-                                const SkIRect& damage_rect) {
+                                std::optional<SkIRect> damage_rect) {
   TRACE_EVENT0("blink", "OffscreenCanvas::PushFrame");
   DCHECK(needs_push_frame_);
   needs_push_frame_ = false;
-  current_frame_damage_rect_.join(damage_rect);
+  if (damage_rect) {
+    current_frame_damage_rect_.join(*damage_rect);
+  } else {
+    current_frame_damage_rect_ =
+        SkIRect::MakeWH(Size().width(), Size().height());
+  }
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
   canvas_resource->SetOriginClean(OriginClean());

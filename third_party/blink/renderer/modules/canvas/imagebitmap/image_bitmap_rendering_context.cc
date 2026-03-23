@@ -227,10 +227,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
   scoped_refptr<CanvasResource> resource =
       resource_provider_for_offscreen_canvas_->ProduceCanvasResource(
           FlushReason::kOther);
-  Host()->PushFrame(
-      std::move(resource),
-      SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),
-                      image_layer_bridge_->GetImage()->Size().height()));
+  Host()->PushFrame(std::move(resource), std::nullopt);
   return true;
 }
 
