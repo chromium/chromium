@@ -30,4 +30,12 @@ Skill& Skill::operator=(Skill&&) = default;
 
 Skill::~Skill() = default;
 
+std::ostream& operator<<(std::ostream& os, const Skill& skill) {
+  os << "{id: \"" << skill.id << "\", name: \"" << skill.name << "\", icon: \""
+     << skill.icon << "\", prompt: \"" << skill.prompt << "\", description: \""
+     << skill.description << "\", source_skill_id: \"" << skill.source_skill_id
+     << "\", source: " << static_cast<int>(skill.source) << "}";
+  return os;
+}
+
 }  // namespace skills

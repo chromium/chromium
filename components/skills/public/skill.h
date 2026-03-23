@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SKILLS_PUBLIC_SKILL_H_
 #define COMPONENTS_SKILLS_PUBLIC_SKILL_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/time/time.h"
@@ -61,6 +62,8 @@ struct Skill {
   Skill(Skill&&);
   Skill& operator=(Skill&&);
   ~Skill();
+
+  friend std::ostream& operator<<(std::ostream& os, const Skill& skill);
 };
 // LINT.ThenChange(//components/skills/public/skill.mojom:Skill,
 // //chrome/browser/glic/host/glic.mojom:Skill)
