@@ -27,9 +27,7 @@ namespace {
 
 // Appends "data" at the end of "container".
 void Append(std::vector<uint8_t>& container, NSData* data) {
-  base::span<const uint8_t> span = base::apple::NSDataToSpan(data);
-  // Use append_range when C++23 is available.
-  container.insert(container.end(), span.begin(), span.end());
+  container.append_range(base::apple::NSDataToSpan(data));
 }
 
 // Creates an ExtensionInputData structure from the prf inputs provided in the
