@@ -8033,6 +8033,7 @@ from previous Chrome versions.
   <int value="-2014474383" label="GameDashboardUtilities:enabled"/>
   <int value="-2014144009"
       label="AutofillEnableAmountExtractionDesktopLogging:enabled"/>
+  <int value="-2014051368" label="DefferOsClipboardReadCallToGettype:enabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -13849,6 +13850,7 @@ from previous Chrome versions.
   <int value="-59530055" label="ChromeVoxArcSupport:enabled"/>
   <int value="-59491374" label="LockedMode:enabled"/>
   <int value="-59401847" label="ContentSuggestionsLargeThumbnail:disabled"/>
+  <int value="-59069096" label="DefferOsClipboardReadCallToGettype:disabled"/>
   <int value="-58338160" label="ChromeShareLongScreenshot:enabled"/>
   <int value="-58242474" label="ash-disable-swipe-to-close-in-overview-mode"/>
   <int value="-57986995" label="DisablePostScriptPrinting:enabled"/>
@@ -13907,6 +13909,8 @@ from previous Chrome versions.
   <int value="-38147034"
       label="AutofillEnableCvcStorageAndFillingEnhancement:enabled"/>
   <int value="-38104294" label="AudioSelectionImprovement:disabled"/>
+  <int value="-38088645"
+      label="ReadClipboardDataOnClipboardItemGetType:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-36671802"
       label="ApplyClientsideModelPredictionsForOtps:disabled"/>
@@ -18600,6 +18604,8 @@ from previous Chrome versions.
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1535497541" label="FillingAcrossGroupedSites:disabled"/>
   <int value="1536024579" label="OverscrollHistoryNavigationSetting:enabled"/>
+  <int value="1536262463"
+      label="ReadClipboardDataOnClipboardItemGetType:disabled"/>
   <int value="1536337926" label="extensions-on-extension-urls"/>
   <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>

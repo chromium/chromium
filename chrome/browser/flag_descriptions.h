@@ -4022,6 +4022,13 @@ inline constexpr char kSegmentationSurveyPageName[] =
 inline constexpr char kSegmentationSurveyPageDescription[] =
     "Enable internals page for survey and fetching model";
 
+inline constexpr char kDeferOsClipboardReadCallToGetTypeName[] =
+    "Defer OS Clipboard Read Call To GetType";
+inline constexpr char kDeferOsClipboardReadCallToGetTypeDescription[] =
+    "Defers Async Clipboard Read API data retrieval from the OS until "
+    "ClipboardItem.getType() is called, instead of eagerly fetching all "
+    "formats at read() time.";
+
 inline constexpr char kServiceWorkerSyntheticResponseName[] =
     "ServiceWorkerSyntheticResponse";
 inline constexpr char kServiceWorkerSyntheticResponseDescription[] =

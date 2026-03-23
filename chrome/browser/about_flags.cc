@@ -13112,6 +13112,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch6Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch6)},
 #endif
+
+    {"defer-os-clipboard-read-call-to-get-type",
+     flag_descriptions::kDeferOsClipboardReadCallToGetTypeName,
+     flag_descriptions::kDeferOsClipboardReadCallToGetTypeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kReadClipboardDataOnClipboardItemGetType)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

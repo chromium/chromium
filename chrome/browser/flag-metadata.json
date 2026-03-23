@@ -2275,6 +2275,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "defer-os-clipboard-read-call-to-get-type",
+    "owners": [ "shwetabindal@microsoft.com", "ashishkum@microsoft.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "demo-mode-test-tag",
     "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
     "expiry_milestone": 150
