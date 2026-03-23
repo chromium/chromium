@@ -3090,6 +3090,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-chromeos-isolated-web-app-set-shape",
+    "owners": [ "edmanp@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-chromeos-soda-conch",
     "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
     "expiry_milestone": 149

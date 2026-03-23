@@ -215,6 +215,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/chromeos/printing/print_preview/printing_init_cros.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
+#include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -724,6 +725,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ash::BootTimesRecorderTabHelper::MaybeCreateForWebContents(web_contents);
 
   CrosAppsTabHelper::MaybeCreateForWebContents(web_contents);
+  ash::CrosIsolatedWebAppEnabler::CreateForWebContents(web_contents);
   GeminiAppTabHelper::MaybeCreateForWebContents(web_contents);
   mahi::MahiTabHelper::MaybeCreateForWebContents(web_contents);
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);

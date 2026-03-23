@@ -11774,6 +11774,7 @@ from previous Chrome versions.
   <int value="-759830869" label="enable-tab-discarding"/>
   <int value="-758999727" label="ContentIndexingNTP:disabled"/>
   <int value="-758917191" label="AccountIdMigration:enabled"/>
+  <int value="-758184290" label="CrosIsolatedWebAppSetShape:enabled"/>
   <int value="-758048639" label="InfiniteSessionRestore:enabled"/>
   <int value="-757946835"
       label="OmniboxUIExperimentShowSuggestionFavicons:enabled"/>
@@ -19893,6 +19894,7 @@ from previous Chrome versions.
       label="EnableEphemeralGuestProfilesOnDesktop:enabled"/>
   <int value="1961148488" label="SyncAndroidLimitNTPPromoImpressions:enabled"/>
   <int value="1961425320" label="force-qtkit"/>
+  <int value="1961500441" label="CrosIsolatedWebAppSetShape:disabled"/>
   <int value="1961717207" label="PageInfoAboutThisSite:enabled"/>
   <int value="1962485086" label="DesktopPWAsLocalUpdating:enabled"/>
   <int value="1962591232" label="ImeManifestV3:disabled"/>

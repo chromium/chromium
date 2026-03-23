@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/experiences/isolated_web_app/shaped_window_targeter.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -26,8 +27,9 @@ namespace {
 
 // True if the IWA blink extension API is enabled for `render_frame_host`.
 bool ApiIsEnabledFor(content::RenderFrameHost& render_frame_host) {
-  return render_frame_host.GetWebExposedIsolationLevel() >=
-         content::WebExposedIsolationLevel::kIsolatedApplication;
+  return chromeos::features::IsCrosIsolatedWebAppSetShapeEnabled() &&
+         render_frame_host.GetWebExposedIsolationLevel() >=
+             content::WebExposedIsolationLevel::kIsolatedApplication;
 }
 
 void SetShapeAndEventTargeter(views::Widget& widget,

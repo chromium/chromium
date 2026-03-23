@@ -1,6 +1,9 @@
 include_rules = [
+  "+chromeos/constants",
+  "+components/webapps/isolated_web_apps",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/common/runtime_feature_state",
   "+third_party/blink/public/mojom/chromeos",
   "+ui/aura/window.h",
   "+ui/gfx/geometry",

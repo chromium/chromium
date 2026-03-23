@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 component("isolated_web_app") {
   sources = [
+    "cros_isolated_web_app_enabler.cc",
+    "cros_isolated_web_app_enabler.h",
     "isolated_web_app_api_bridge_impl.cc",
     "isolated_web_app_api_bridge_impl.h",
     "shaped_window_targeter.cc",
@@ -18,6 +20,8 @@ component("isolated_web_app") {
 
   deps = [
     "//base",
+    "//chromeos/constants",
+    "//components/webapps/isolated_web_apps",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/mojom:mojom_platform",

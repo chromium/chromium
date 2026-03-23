@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/containers/fixed_flat_set.h"
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,8 +16,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,19 +38,17 @@ webapps::AppId InstallIsolatedWebAppAndReturnAppId(Profile* profile) {
 }  // namespace
 
 // Verifies the behavior of Blink extensions for Isolated Web Apps in ChromeOS
-// when the `BlinkExtensionChromeOS` flag is enabled.
+// when the `kCrosIsolatedWebAppSetShape` flag is enabled.
 class BlinkExtensionsWithFlagSetTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  BlinkExtensionsWithFlagSetTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    web_app::IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-    // TODO(crbug.com/480133572): Enable the flag automatically.
-    command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "BlinkExtensionChromeOS,BlinkExtensionChromeOSIsolatedWebAppSetShape");
+  BlinkExtensionsWithFlagSetTest() {
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosIsolatedWebAppSetShape);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
@@ -106,27 +107,23 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest, SetShapeValidation) {
   }
 }
 
-// In practice the `BlinkExtensionChromeOS` feature remains disabled for regular
-// websites, so `window.chromeos` should be undefined. We force enable the flag
-// in this test to verify `chromeos.isolatedWebApp` is still undefined in that
-// case.
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
                        RegularPageCannotAccessExtensions) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  std::unique_ptr<net::EmbeddedTestServer> server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps"));
+  auto page_url = server->GetOrigin().GetURL().Resolve("basic.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // `window.chromeos` should exist because the flag is enabled.
-  EXPECT_EQ(true, content::EvalJs(web_contents, "'chromeos' in window"));
-  // window.chromeos.isolatedWebApp should not exist because it's
-  // IsolatedContext.
-  EXPECT_EQ(false, content::EvalJs(web_contents,
-                                   "'isolatedWebApp' in window.chromeos"));
+  // `window.chromeos` is not defined because this is not an IWA.
+  EXPECT_EQ(false, content::EvalJs(web_contents, "'chromeos' in window"));
 }
 
 // Verifies the behavior of Blink extensions for Isolated Web Apps in ChromeOS
-// when the `BlinkExtensionChromeOS` flag is left in its default disabled value.
+// when the `kCrosIsolatedWebAppSetShape` flag is left in its default disabled
+// value.
 using BlinkExtensionsWithDefaultFlagTest =
     web_app::IsolatedWebAppBrowserTestHarness;
 
