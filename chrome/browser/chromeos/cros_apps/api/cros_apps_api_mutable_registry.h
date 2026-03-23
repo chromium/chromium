@@ -13,7 +13,9 @@
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 class CrosAppsApiInfo;
 
 // CrosAppsApiMutableRegistry stores and maintains information about ChromeOS
@@ -26,10 +28,12 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
                                    public base::SupportsUserData::Data {
  public:
   // See CrosAppsApiRegistry::GetInstance() about lifetime.
-  static CrosAppsApiMutableRegistry& GetInstance(Profile* profile);
+  static CrosAppsApiMutableRegistry& GetInstance(
+      content::BrowserContext* context);
 
   using PassKey = base::PassKey<CrosAppsApiMutableRegistry>;
-  explicit CrosAppsApiMutableRegistry(PassKey passkey, Profile* profile);
+  explicit CrosAppsApiMutableRegistry(PassKey passkey,
+                                      content::BrowserContext* context);
   ~CrosAppsApiMutableRegistry() override;
 
   void AddOrReplaceForTesting(CrosAppsApiInfo api_info);
@@ -50,7 +54,7 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
 
   // The profile `this` is attached to. Safe to retain profile because `this` is
   // owned by the profile.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<content::BrowserContext> context_;
   base::flat_map<CrosAppsApiId, CrosAppsApiInfo> api_infos_;
 };
 

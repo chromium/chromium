@@ -9,7 +9,9 @@
 
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 class CrosAppsApiFrameContext;
 
 // CrosAppsApiRegistry provides an read-only interface to query access control
@@ -21,13 +23,15 @@ class CrosAppsApiRegistry {
  public:
   // Returns a lazily constructed API registry that's attached to `profile`. The
   // returned registry is valid until `profile` destructs.
-  static const CrosAppsApiRegistry& GetInstance(Profile* profile);
+  static const CrosAppsApiRegistry& GetInstance(
+      content::BrowserContext* context);
 
   // Returns whether the API identified by `api_id` can be enabled in the
   // profile where `this` registry was retrieved from.
   //
   // This performs JavaScript context independent checks that doesn't require
-  // frame information. For example, base::Feature flags and Profile types.
+  // frame information. For example, base::Feature flags and BrowserContext
+  // types.
   virtual bool CanEnableApi(const CrosAppsApiId api_id) const = 0;
 
   // Return a list of functions that should be called on

@@ -6,7 +6,7 @@
 
 #include <variant>
 
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -44,15 +44,15 @@ bool CrosAppsApiFrameContext::IsPrimaryMainFrame() const {
       context_);
 }
 
-const Profile* CrosAppsApiFrameContext::Profile() const {
+const content::BrowserContext* CrosAppsApiFrameContext::GetBrowserContext()
+    const {
   return std::visit(
       absl::Overload{
           [](const raw_ref<content::RenderFrameHost> rfh) {
-            return Profile::FromBrowserContext(rfh->GetBrowserContext());
+            return rfh->GetBrowserContext();
           },
           [](const raw_ref<content::NavigationHandle> navigation_handle) {
-            return Profile::FromBrowserContext(
-                navigation_handle->GetWebContents()->GetBrowserContext());
+            return navigation_handle->GetWebContents()->GetBrowserContext();
           }},
       context_);
 }

@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_infos.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_utils.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -21,22 +21,23 @@ const void* kUserDataKey = &kUserDataKey;
 
 // static
 CrosAppsApiMutableRegistry& CrosAppsApiMutableRegistry::GetInstance(
-    Profile* profile) {
-  if (!profile->GetUserData(&kUserDataKey)) {
-    profile->SetUserData(
+    content::BrowserContext* context) {
+  if (!context->GetUserData(&kUserDataKey)) {
+    context->SetUserData(
         kUserDataKey,
-        std::make_unique<CrosAppsApiMutableRegistry>(PassKey(), profile));
+        std::make_unique<CrosAppsApiMutableRegistry>(PassKey(), context));
   }
 
   return *static_cast<CrosAppsApiMutableRegistry*>(
-      profile->GetUserData(&kUserDataKey));
+      context->GetUserData(&kUserDataKey));
 }
 
 CrosAppsApiMutableRegistry::~CrosAppsApiMutableRegistry() = default;
 
-CrosAppsApiMutableRegistry::CrosAppsApiMutableRegistry(PassKey,
-                                                       Profile* profile)
-    : profile_(profile), api_infos_(CreateDefaultCrosAppsApiInfo()) {}
+CrosAppsApiMutableRegistry::CrosAppsApiMutableRegistry(
+    PassKey,
+    content::BrowserContext* context)
+    : context_(context), api_infos_(CreateDefaultCrosAppsApiInfo()) {}
 
 bool CrosAppsApiMutableRegistry::CanEnableApi(
     const CrosAppsApiId api_id) const {
@@ -62,9 +63,9 @@ bool CrosAppsApiMutableRegistry::CanEnableApi(
 bool CrosAppsApiMutableRegistry::IsApiEnabledForFrame(
     const CrosAppsApiInfo& api_info,
     const CrosAppsApiFrameContext& api_context) const {
-  // The API enablement check must be performed on the Profile which `this`
-  // registry was created for. See CrosAppsApiRegistry::GetInstance().
-  CHECK_EQ(profile_, api_context.Profile());
+  // The API enablement check must be performed on the BrowserContext which
+  // `this` registry was created for. See CrosAppsApiRegistry::GetInstance().
+  CHECK_EQ(context_, api_context.GetBrowserContext());
 
   if (!CanEnableApi(api_info)) {
     return false;

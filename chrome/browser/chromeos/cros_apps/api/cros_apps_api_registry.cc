@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_mutable_registry.h"
 
-const CrosAppsApiRegistry& CrosAppsApiRegistry::GetInstance(Profile* profile) {
-  return CrosAppsApiMutableRegistry::GetInstance(profile);
+const CrosAppsApiRegistry& CrosAppsApiRegistry::GetInstance(
+    content::BrowserContext* context) {
+  return CrosAppsApiMutableRegistry::GetInstance(context);
 }

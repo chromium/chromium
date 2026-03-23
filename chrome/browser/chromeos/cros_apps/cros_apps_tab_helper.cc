@@ -9,7 +9,6 @@
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -38,10 +37,10 @@ CrosAppsTabHelper::~CrosAppsTabHelper() = default;
 
 void CrosAppsTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+  content::BrowserContext* context =
+      navigation_handle->GetWebContents()->GetBrowserContext();
 
-  auto enable_fns = CrosAppsApiRegistry::GetInstance(profile)
+  auto enable_fns = CrosAppsApiRegistry::GetInstance(context)
                         .GetBlinkFeatureEnablementFunctionsForFrame(
                             CrosAppsApiFrameContext(*navigation_handle));
 

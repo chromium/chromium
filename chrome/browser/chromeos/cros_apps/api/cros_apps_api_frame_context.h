@@ -14,9 +14,8 @@
 namespace content {
 class RenderFrameHost;
 class NavigationHandle;
+class BrowserContext;
 }  // namespace content
-
-class Profile;
 
 // Encapsulates information required to make a decision on whether an API should
 // be enabled in a frame running ChromeOS App.
@@ -46,8 +45,7 @@ class CrosAppsApiFrameContext {
   // Whether this frame is the primary main frame.
   bool IsPrimaryMainFrame() const;
 
-  // Returns the Profile.
-  const Profile* Profile() const;
+  const content::BrowserContext* GetBrowserContext() const;
 
  private:
   const std::variant<raw_ref<content::RenderFrameHost>,

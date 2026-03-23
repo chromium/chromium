@@ -45,7 +45,6 @@ source_set("api") {
   ]
 
   deps = [
-    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/constants",
     "//content/public/browser",
