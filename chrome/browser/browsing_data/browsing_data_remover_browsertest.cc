@@ -147,12 +147,6 @@ std::vector<std::string> GetHistogramSuffixes(
   return types;
 }
 
-void AppendRange(std::vector<std::string>& target,
-                 const std::vector<std::string_view>& append) {
-  // Use std append_range() when c++23 is available.
-  target.insert(target.end(), append.begin(), append.end());
-}
-
 }  // namespace
 
 class BrowsingDataRemoverBrowserTest
@@ -905,13 +899,13 @@ const char kImplHistogramPrefix[] = "History.ClearBrowsingData.Duration.Task.";
 
 // Add data types here that support filtering and only delete data that matches
 // the BrowsingDataFilterBuilder.
-const std::vector<std::string_view> kSupportsOriginFilteringImpl{
+const std::vector<std::string> kSupportsOriginFilteringImpl{
     "AuthCache",           "EmbedderData",   "HttpCache",
     "NetworkErrorLogging", "PrefetchCache",  "PreflightCache",
     "PrerenderCache",      "ReportingCache", "SharedDictionary",
     "StoragePartition",    "Synchronous",    "TrustTokens",
 };
-const std::vector<std::string_view> kSupportsOriginFilteringDelegate{
+const std::vector<std::string> kSupportsOriginFilteringDelegate{
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
     "CdmLicenses",
 #endif
@@ -949,11 +943,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, FullyFilteredDataTypes) {
 // "kPreserve" and MatchesMostOriginsAndDomains() is true. Otherwise data for
 // these types will be cleared when per-origin deletions like those from the
 // Clear-Site-Data header are performed.
-const std::vector<std::string_view> kDoesNotSupportOriginFilteringImpl{
+const std::vector<std::string> kDoesNotSupportOriginFilteringImpl{
     "CodeCaches",
     "NetworkHistory",
 };
-const std::vector<std::string_view> kDoesNotSupportOriginFilteringDelegate{
+const std::vector<std::string> kDoesNotSupportOriginFilteringDelegate{
     "FaviconCacheExpiration",
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
     "UserDataSnapshot",
@@ -974,14 +968,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, AllFilterableDataTypes) {
                           std::move(filter_builder));
 
   std::vector<std::string> all_impl_types;
-  AppendRange(all_impl_types, kSupportsOriginFilteringImpl);
-  AppendRange(all_impl_types, kDoesNotSupportOriginFilteringImpl);
+  all_impl_types.append_range(kSupportsOriginFilteringImpl);
+  all_impl_types.append_range(kDoesNotSupportOriginFilteringImpl);
   EXPECT_THAT(GetHistogramSuffixes(tester, kImplHistogramPrefix),
               UnorderedElementsAreArray(all_impl_types));
 
   std::vector<std::string> all_delegate_types;
-  AppendRange(all_delegate_types, kSupportsOriginFilteringDelegate);
-  AppendRange(all_delegate_types, kDoesNotSupportOriginFilteringDelegate);
+  all_delegate_types.append_range(kSupportsOriginFilteringDelegate);
+  all_delegate_types.append_range(kDoesNotSupportOriginFilteringDelegate);
   EXPECT_THAT(GetHistogramSuffixes(tester, kDelegateHistogramPrefix),
               UnorderedElementsAreArray(all_delegate_types));
 }
