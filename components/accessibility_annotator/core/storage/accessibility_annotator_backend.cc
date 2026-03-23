@@ -47,6 +47,10 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
 
 AccessibilityAnnotatorBackend::~AccessibilityAnnotatorBackend() = default;
 
+void AccessibilityAnnotatorBackend::Shutdown() {
+  history_service_observation_.Reset();
+}
+
 void AccessibilityAnnotatorBackend::Init() {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
       .WithArgs(db_path_)

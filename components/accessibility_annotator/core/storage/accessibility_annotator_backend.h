@@ -60,6 +60,9 @@ class AccessibilityAnnotatorBackend
   AccessibilityAnnotatorBackend& operator=(
       const AccessibilityAnnotatorBackend&) = delete;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // Initializes the database at the given path. Must be called before any other
   // methods.
   void Init();
