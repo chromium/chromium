@@ -859,7 +859,7 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
   gfx::Rect copy_rect(src_x, src_y, Size().width(), Size().height());
 
   EndWriteAccess();
-  auto dst_access = WillDrawInternal(/*is_overwrite=*/false);
+  auto dst_access = WillDrawInternal(/*is_overwrite=*/true);
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
