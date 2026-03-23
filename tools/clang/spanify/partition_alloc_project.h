@@ -133,11 +133,13 @@ class PartitionAllocProject : public Project {
         total_length += current_namespace_it->size();
         ++current_namespace_it;
         ++target_namespace_it;
-        if (target_namespace_it != kTargetNamespaces.end()) {
-          // for each namespace that isn't the last one we need to add +2 for
-          // the '::' separating namespaces.
-          total_length += 2;
-        }
+        // for each namespace it is need to add +2 for the '::' separating
+        // namespaces. It is also true for the last namespace because it
+        // separates namespace from the type. For example:
+        // base::span
+        //  ^     ^
+        //  ns    type
+        total_length += 2;
       } else {
         // We no longer match so we've found our target length.
         break;
