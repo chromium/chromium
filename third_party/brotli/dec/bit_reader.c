@@ -26,12 +26,12 @@ brotli_reg_t kBrotliBitMask[33] = {     0x00000000,
     0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF, 0xFFFFFFFF
 };
 
-void BrotliInitBitReader(BrotliBitReader* const br) {
+void BrotliInitBitReader(BrotliBitReader* br) {
   br->val_ = 0;
   br->bit_pos_ = 0;
 }
 
-BROTLI_BOOL BrotliWarmupBitReader(BrotliBitReader* const br) {
+BROTLI_BOOL BrotliWarmupBitReader(BrotliBitReader* br) {
   size_t aligned_read_mask = (sizeof(br->val_) >> 1) - 1;
   /* Fixing alignment after unaligned BrotliFillWindow would result accumulator
      overflow. If unalignment is caused by BrotliSafeReadBits, then there is
@@ -55,7 +55,7 @@ BROTLI_BOOL BrotliWarmupBitReader(BrotliBitReader* const br) {
   return BROTLI_TRUE;
 }
 
-BROTLI_BOOL BrotliSafeReadBits32Slow(BrotliBitReader* const br,
+BROTLI_BOOL BrotliSafeReadBits32Slow(BrotliBitReader* br,
     brotli_reg_t n_bits, brotli_reg_t* val) {
   brotli_reg_t low_val;
   brotli_reg_t high_val;

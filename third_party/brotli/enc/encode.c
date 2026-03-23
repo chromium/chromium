@@ -245,7 +245,8 @@ static void InitCommandPrefixCodes(BrotliOnePassArena* s) {
 static double EstimateEntropy(const uint32_t* population, size_t size) {
   size_t total = 0;
   double result = 0;
-  for (size_t i = 0; i < size; ++i) {
+  size_t i;
+  for (i = 0; i < size; ++i) {
     uint32_t p = population[i];
     total += p;
     result += (double)p * FastLog2(p);
