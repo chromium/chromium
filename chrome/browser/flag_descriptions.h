@@ -1424,6 +1424,10 @@ inline constexpr char kGlicActorAutofillDescription[] =
 inline constexpr char kGlicActorCursorName[] = "Glic actor cursor";
 inline constexpr char kGlicActorCursorDescription[] =
     "Enables the Glic actor cursor";
+inline constexpr char kGlicActorEnableScriptToolsName[] =
+    "Glic actor script tools";
+inline constexpr char kGlicActorEnableScriptToolsDescription[] =
+    "Enables script tools for the Glic actor.";
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
@@ -1514,6 +1518,7 @@ inline constexpr char kGlicTrustFirstOnboardingDescription[] =
 inline constexpr char kGlicUnifiedFreScreenName[] = "Glic Unified Fre Screen";
 inline constexpr char kGlicUnifiedFreScreenDescription[] =
     "Moves the first-run-experience (fre) screen into the side panel.";
+
 inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
     "Glic Use Toolbar Height Side Panel";
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =

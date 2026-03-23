@@ -157,4 +157,6 @@ const base::FeatureParam<base::TimeDelta>
     kGlicActorLoadAndExtractContentToolTimeout{
         &kGlicActorLoadAndExtractContentTool, "timeout", base::Seconds(30)};
 
+BASE_FEATURE(kGlicActorEnableScriptTools, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace actor

@@ -7,6 +7,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -28,7 +29,8 @@ namespace {
 class ActorToolsTestScriptTool : public ActorToolsTest {
  public:
   ActorToolsTestScriptTool() {
-    features_.InitAndEnableFeature(blink::features::kWebMCP);
+    features_.InitWithFeatures(
+        {blink::features::kWebMCP, actor::kGlicActorEnableScriptTools}, {});
   }
 
   void SetUpOnMainThread() override {

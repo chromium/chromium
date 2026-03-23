@@ -5292,6 +5292,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-actor-script-tools",
+    "owners": [
+      "mfoltz@chromium.org",
+      "agentic-web-platform-team@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "glic-bind-pinned-unbound-tab",
     "owners": [
       "basiaz@google.com",

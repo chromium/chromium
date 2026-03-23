@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -19,7 +20,8 @@ using apc::Actions;
 class GlicActorWithScriptToolsTest : public GlicActorUiTest {
  public:
   GlicActorWithScriptToolsTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebMCP, actor::kGlicActorEnableScriptTools}, {});
   }
   ~GlicActorWithScriptToolsTest() override = default;
 
@@ -71,7 +73,8 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
   auto CheckErrorResult(const std::string& name,
                         const std::string& input_arguments,
                         const actor::mojom::ActionResultCode expected_code,
-                        const std::string& expected_message) {
+                        const std::string& expected_message,
+                        bool has_tab_observation) {
     return Steps(Do([=, this]() {
       ASSERT_TRUE(last_execution_result());
       EXPECT_EQ(last_execution_result()->action_result(),
@@ -81,11 +84,15 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
 
       ASSERT_EQ(last_execution_result()->script_tool_results().size(), 0);
 
-      ASSERT_EQ(last_execution_result()->tabs().size(), 1);
-      const auto& apc =
-          last_execution_result()->tabs().at(0).annotated_page_content();
-      const auto& main_frame_data = apc.main_frame_data();
-      ASSERT_EQ(main_frame_data.script_tool_results().size(), 0);
+      if (has_tab_observation) {
+        EXPECT_EQ(last_execution_result()->tabs().size(), 1);
+        const auto& apc =
+            last_execution_result()->tabs().at(0).annotated_page_content();
+        const auto& main_frame_data = apc.main_frame_data();
+        ASSERT_EQ(main_frame_data.script_tool_results().size(), 0);
+      } else {
+        EXPECT_EQ(last_execution_result()->tabs().size(), 0);
+      }
     }));
   }
 
@@ -122,7 +129,41 @@ IN_PROC_BROWSER_TEST_F(GlicActorWithScriptToolsTest, InvalidToolName) {
                    actor::mojom::ActionResultCode::kScriptToolInvalidName),
       CheckErrorResult("invalid", input_arguments,
                        actor::mojom::ActionResultCode::kScriptToolInvalidName,
-                       "Tool not found: invalid"));
+                       "Tool not found: invalid",
+                       true /* has_tab_observation */));
+}
+
+class GlicActorWithScriptToolsDisabledTest
+    : public GlicActorWithScriptToolsTest {
+ public:
+  GlicActorWithScriptToolsDisabledTest() {
+    scoped_feature_list_.InitWithFeatures({blink::features::kWebMCP},
+                                          {actor::kGlicActorEnableScriptTools});
+  }
+  ~GlicActorWithScriptToolsDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorWithScriptToolsDisabledTest, Disabled) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/script_tool.html");
+
+  const std::string input_arguments = "{}";
+  // If the feature is disabled, CreateToolRequest returns nullptr for
+  // ScriptToolAction, which results in kArgumentsInvalid from
+  // GlicActorTaskManager::PerformActions.
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      ScriptAction("echo", input_arguments,
+                   actor::mojom::ActionResultCode::kArgumentsInvalid),
+      CheckErrorResult("echo", input_arguments,
+                       actor::mojom::ActionResultCode::kArgumentsInvalid, "",
+                       false /* has_tab_observation */));
 }
 
 }  //  namespace

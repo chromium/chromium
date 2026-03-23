@@ -609,6 +609,10 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
 
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(
     const ScriptToolAction& action) {
+  if (!base::FeatureList::IsEnabled(actor::kGlicActorEnableScriptTools)) {
+    return nullptr;
+  }
+
   const tabs::TabHandle tab_handle = GetTabHandle(action);
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
