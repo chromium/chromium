@@ -183,7 +183,13 @@ class ObjectPermissionContextBase : public KeyedService {
 
   const std::optional<ContentSettingsType> guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
-  base::ObserverList<PermissionObserver> permission_observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      PermissionObserver,
+      /*check_empty=*/false,
+      /*allow_reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      permission_observer_list_;
 
  private:
   base::DictValue GetWebsiteSetting(const url::Origin& origin,

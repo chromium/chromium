@@ -307,7 +307,12 @@ class PermissionRequestManager
     embedding_origin_for_testing_ = embedding_origin;
   }
 
-  base::ObserverList<Observer>* get_observer_list_for_testing() {
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*allow_reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>*
+  get_observer_list_for_testing() {
     CHECK_IS_TEST();
     return &observer_list_;
   }
@@ -562,7 +567,13 @@ class PermissionRequestManager
   // not prempt a request if the incoming request is already validated.
   std::vector<base::raw_ref<PermissionRequest>> validated_requests_;
 
-  base::ObserverList<Observer> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*allow_reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
   AutoResponseType auto_response_for_test_ = NONE;
   PromptOptions auto_response_prompt_options_for_test_ = std::monostate();
 

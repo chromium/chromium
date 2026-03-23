@@ -272,7 +272,12 @@ class PermissionContextBase : public content_settings::Observer {
   virtual bool PermissionAllowedByPermissionsPolicy(
       content::RenderFrameHost* rfh) const;
 
-  base::ObserverList<permissions::Observer> permission_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      permissions::Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding
   // and removing themselves as observers to the HostContentSettingsMap.
