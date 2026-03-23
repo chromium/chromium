@@ -186,7 +186,8 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
 
 
 def IsProbablyFile(name: str) -> bool:
-  '''Returns whether the name is likely a test file name, path, or directory path.'''
+  # Returns whether the name is likely a test file name, path,
+  # or directory path.
   return bool(const.TEST_FILE_NAME_REGEX.match(name)) or os.path.exists(name)
 
 

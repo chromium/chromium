@@ -106,9 +106,8 @@ def main(ctx, **kwargs) -> int:
   # Don't try to search if rg is not installed, and use the old behavior.
   if not use_remote_search and not shutil.which('rg'):
     if not config.quiet:
-      click.echo(
-          'rg command not found. Install ripgrep to enable running tests by name.'
-      )
+      click.echo('rg command not found. '
+                 'Install ripgrep to enable running tests by name.')
     files_to_test = list(config.files)
     test_names = []
   else:
