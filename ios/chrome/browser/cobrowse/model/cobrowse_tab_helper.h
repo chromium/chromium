@@ -10,7 +10,8 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@class CobrowseContext;
+class TemplateURLService;
+
 @protocol SceneCommands;
 
 // Tab helper that listens for new tabs to triggers or not the cobrowse view.
@@ -44,10 +45,14 @@ class CobrowseTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<CobrowseTabHelper>;
 
-  explicit CobrowseTabHelper(web::WebState* web_state);
+  explicit CobrowseTabHelper(web::WebState* web_state,
+                             TemplateURLService* template_url_service);
 
   // The delegate for this tab helper.
   raw_ptr<Delegate> delegate_ = nullptr;
+
+  // The template URL service used to check for search URLs.
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // The handler for scene commands.
   __weak id<SceneCommands> scene_handler_ = nil;

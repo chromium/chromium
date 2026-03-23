@@ -39,6 +39,8 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

@@ -94,6 +94,7 @@
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -344,7 +345,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<EditMenuTabHelper>();
 
   if (IsAimCobrowseEnabled()) {
-    attacher.Create<CobrowseTabHelper>();
+    attacher.Create<CobrowseTabHelper>(
+        ios::TemplateURLServiceFactory::GetForProfile(profile));
   }
 
   if (IsComposeboxIOSEnabled()) {

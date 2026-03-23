@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -29,7 +31,22 @@ class CobrowseTabHelperTest : public PlatformTest {
   CobrowseTabHelperTest() {
     feature_list_.InitAndEnableFeature(kAimCobrowse);
 
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    template_url_service->Load();
+
+    // Add default search provider
+    TemplateURLData data;
+    data.SetURL("https://www.google.com/search?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 
     mock_scene_state_ = OCMClassMock([SceneState class]);
     mock_tab_grid_state_ = OCMClassMock([TabGridState class]);
@@ -49,15 +66,45 @@ class CobrowseTabHelperTest : public PlatformTest {
 
     CobrowseBrowserAgent::CreateForBrowser(browser_.get());
 
-    auto fake_web_state = std::make_unique<web::FakeWebState>();
-    fake_web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
-    fake_web_state_ = fake_web_state.get();
-    CobrowseTabHelper::CreateForWebState(fake_web_state_);
-    web_state_list_->InsertWebState(std::move(fake_web_state),
-                                    WebStateList::InsertionParams::Automatic());
+    fake_web_state_ = CreateAndInsertWebState(GURL::EmptyGURL());
 
     tab_helper_ = CobrowseTabHelper::FromWebState(fake_web_state_);
+  }
+
+  // Creates a new WebState with the given `url`, adds it to the list and
+  // returns a pointer to it.
+  web::FakeWebState* CreateAndInsertWebState(const GURL& url) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    web_state->SetCurrentURL(url);
+    web::FakeWebState* web_state_ptr = web_state.get();
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    CobrowseTabHelper::CreateForWebState(web_state_ptr, template_url_service);
+    web_state_list_->InsertWebState(std::move(web_state));
+    return web_state_ptr;
+  }
+
+  // Creates a new WebState with the given `url` and `opener`, adds it to the
+  // list and returns a pointer to it.
+  web::FakeWebState* CreateAndInsertWebStateWithOpener(const GURL& url,
+                                                       web::WebState* opener) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    web_state->SetCurrentURL(url);
+    web::FakeWebState* web_state_ptr = web_state.get();
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    CobrowseTabHelper::CreateForWebState(web_state_ptr, template_url_service);
+    web_state_list_->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().WithOpener(
+            WebStateOpener(opener)));
+    return web_state_ptr;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -81,26 +128,10 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
 
   OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
-  // Create an opener WebState and add it to the list.
-  auto opener_web_state = std::make_unique<web::FakeWebState>();
-  opener_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  opener_web_state->SetCurrentURL(aim_url);
-  web::FakeWebState* opener_ptr = opener_web_state.get();
-  CobrowseTabHelper::CreateForWebState(opener_web_state.get());
-  web_state_list_->InsertWebState(std::move(opener_web_state));
+  web::FakeWebState* opener_ptr = CreateAndInsertWebState(aim_url);
 
-  // Create a new WebState with the opener and add it to the list.
-  auto new_web_state = std::make_unique<web::FakeWebState>();
-  new_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  new_web_state->SetCurrentURL(GURL::EmptyGURL());
-  web::FakeWebState* new_web_state_ptr = new_web_state.get();
-  CobrowseTabHelper::CreateForWebState(new_web_state_ptr);
-  web_state_list_->InsertWebState(
-      std::move(new_web_state),
-      WebStateList::InsertionParams::Automatic().WithOpener(
-          WebStateOpener(opener_ptr)));
+  web::FakeWebState* new_web_state_ptr =
+      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
 
   CobrowseTabHelper* new_tab_helper =
       CobrowseTabHelper::FromWebState(new_web_state_ptr);
@@ -121,26 +152,10 @@ TEST_F(CobrowseTabHelperTest, NoTriggerFromNonAimOpener) {
   GURL non_aim_url("https://www.google.com/search?q=test");
   GURL next_url("https://www.example.com");
 
-  // Create an opener WebState and add it to the list.
-  auto opener_web_state = std::make_unique<web::FakeWebState>();
-  opener_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  opener_web_state->SetCurrentURL(non_aim_url);
-  web::FakeWebState* opener_ptr = opener_web_state.get();
-  CobrowseTabHelper::CreateForWebState(opener_web_state.get());
-  web_state_list_->InsertWebState(std::move(opener_web_state));
+  web::FakeWebState* opener_ptr = CreateAndInsertWebState(non_aim_url);
 
-  // Create a new WebState with the opener and add it to the list.
-  auto new_web_state = std::make_unique<web::FakeWebState>();
-  new_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  new_web_state->SetCurrentURL(GURL::EmptyGURL());
-  web::FakeWebState* new_web_state_ptr = new_web_state.get();
-  CobrowseTabHelper::CreateForWebState(new_web_state_ptr);
-  web_state_list_->InsertWebState(
-      std::move(new_web_state),
-      WebStateList::InsertionParams::Automatic().WithOpener(
-          WebStateOpener(opener_ptr)));
+  web::FakeWebState* new_web_state_ptr =
+      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
 
   CobrowseTabHelper* new_tab_helper =
       CobrowseTabHelper::FromWebState(new_web_state_ptr);
@@ -185,6 +200,8 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
 
   // Create an incognito browser.
   ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  TemplateURLService* incognito_template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(incognito_profile);
   std::unique_ptr<TestBrowser> incognito_browser =
       std::make_unique<TestBrowser>(incognito_profile, mock_scene_state_);
 
@@ -194,7 +211,8 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
       std::make_unique<web::FakeNavigationManager>());
   opener_web_state->SetCurrentURL(aim_url);
   web::FakeWebState* opener_ptr = opener_web_state.get();
-  CobrowseTabHelper::CreateForWebState(opener_web_state.get());
+  CobrowseTabHelper::CreateForWebState(opener_web_state.get(),
+                                       incognito_template_url_service);
   incognito_browser->GetWebStateList()->InsertWebState(
       std::move(opener_web_state));
 
@@ -204,7 +222,8 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
       std::make_unique<web::FakeNavigationManager>());
   new_web_state->SetCurrentURL(GURL::EmptyGURL());
   web::FakeWebState* new_web_state_ptr = new_web_state.get();
-  CobrowseTabHelper::CreateForWebState(new_web_state_ptr);
+  CobrowseTabHelper::CreateForWebState(new_web_state_ptr,
+                                       incognito_template_url_service);
   incognito_browser->GetWebStateList()->InsertWebState(
       std::move(new_web_state),
       WebStateList::InsertionParams::Automatic().WithOpener(
@@ -224,6 +243,20 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
   [[mock_scene_commands_handler_ reject] showAssistant];
 
   incognito_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
+
+  [mock_scene_commands_handler_ verify];
+}
+
+// Tests that hideAssistant is called when navigating to a search URL.
+TEST_F(CobrowseTabHelperTest, HideAssistantOnSearchNavigation) {
+  GURL search_url("https://www.google.com/search?q=test");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(search_url);
+
+  OCMExpect([mock_scene_commands_handler_ hideAssistant]);
+
+  tab_helper_->DidStartNavigation(fake_web_state_, &context);
 
   [mock_scene_commands_handler_ verify];
 }
