@@ -39,6 +39,7 @@ class GlicRegionCaptureController
       tabs::TabInterface* tab,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   void CancelCaptureRegion();
+  void DeleteRegion(tabs::TabInterface* tab, const base::UnguessableToken& id);
   bool IsCaptureRegionInProgressForTesting() const;
 
   void SetOnCaptureRegionForTesting(base::RepeatingClosure cb) {

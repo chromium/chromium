@@ -4,7 +4,7 @@
 
 import type {CaptureRegionResult, Subscriber} from '/glic/glic_api/glic_api.js';
 
-import {getBrowser, logMessage} from '../client.js';
+import {client, getBrowser, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
 
 let captureRegionSubscription: Subscriber|null = null;
@@ -69,6 +69,25 @@ function onCaptureRegionClick() {
   }
 }
 
+function onDeleteRegionClick() {
+  const browser = getBrowser();
+  if (!browser) {
+    $.captureRegionResultList.textContent = 'Browser API not available.';
+    return;
+  }
+
+  // Start capturing.
+  if (!browser.deleteCapturedRegion) {
+    $.captureRegionResultList.textContent =
+        'deleteCapturedRegion() not supported.';
+    return;
+  }
+  logMessage('Starting delete region capture...');
+  browser.deleteCapturedRegion(
+      client.getFocusedTabId(), $.deleteCaptureRegion.value);
+}
+
 export function initCaptureRegion() {
   $.captureRegionBtn.addEventListener('click', onCaptureRegionClick);
+  $.deleteCaptureRegionBtn.addEventListener('click', onDeleteRegionClick);
 }

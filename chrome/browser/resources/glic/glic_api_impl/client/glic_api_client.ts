@@ -757,6 +757,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableCaptureRegion) {
       this.captureRegion = undefined;
+      this.deleteCapturedRegion = undefined;
     }
 
     if (!state.enableActivateTab) {
@@ -1059,6 +1060,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.captureRegionObservable =
         new CaptureRegionObservable(this.idGenerator.next(), this.sender);
     return this.captureRegionObservable;
+  }
+
+  deleteCapturedRegion?(tabId: string, regionId: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserDeleteCapturedRegion', {tabId, regionId});
   }
 
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void> {

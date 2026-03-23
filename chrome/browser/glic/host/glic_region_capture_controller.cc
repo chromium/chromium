@@ -117,6 +117,18 @@ void GlicRegionCaptureController::CancelCaptureRegion() {
   }
 }
 
+void GlicRegionCaptureController::DeleteRegion(
+    tabs::TabInterface* tab,
+    const base::UnguessableToken& id) {
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
+      tab_handle_.Get() == tab) {
+    if (auto* web_contents = tab->GetContents()) {
+      SelectionOverlayController::FromTabWebContents(web_contents)
+          ->DeleteRegion(id);
+    }
+  }
+}
+
 void GlicRegionCaptureController::OnOverlayClosed() {
   ResetMembers();
 }

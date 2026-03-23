@@ -78,6 +78,8 @@ export interface PageElementTypes {
   desktopScreenshotErrorReason: HTMLSpanElement;
   panelScreenshot: HTMLButtonElement;
   captureRegionBtn: HTMLButtonElement;
+  deleteCaptureRegion: HTMLInputElement;
+  deleteCaptureRegionBtn: HTMLButtonElement;
   captureRegionResultList: HTMLUListElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
