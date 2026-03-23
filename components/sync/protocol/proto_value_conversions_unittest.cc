@@ -448,5 +448,32 @@ TEST(ProtoValueConversionsTest, ThemeIosSpecificsToValue) {
   EXPECT_THAT(bg_dict->FindString("main_color"), Pointee(Eq("4278190080")));
 }
 
+TEST(ProtoValueConversionsTest, SendTabToSelfSpecificsToValue) {
+  sync_pb::SendTabToSelfSpecifics specifics;
+  specifics.set_guid("guid");
+  specifics.set_url("https://foo.com");
+  specifics.set_title("foo");
+  specifics.set_shared_time_usec(12345);
+  specifics.set_current_navigation_index(0);
+  sync_pb::TabNavigation* navigation = specifics.add_navigation();
+  navigation->set_virtual_url("https://foo.com");
+  navigation->set_title("foo");
+
+  base::DictValue value = SendTabToSelfSpecificsToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+  EXPECT_THAT(value.FindString("guid"), Pointee(Eq("guid")));
+  EXPECT_THAT(value.FindString("url"), Pointee(Eq("https://foo.com")));
+  EXPECT_THAT(value.FindString("title"), Pointee(Eq("foo")));
+  EXPECT_THAT(value.FindString("shared_time_usec"), Pointee(Eq("12345")));
+  EXPECT_THAT(value.FindString("current_navigation_index"), Pointee(Eq("0")));
+  const base::ListValue* navigation_list = value.FindList("navigation");
+  ASSERT_TRUE(navigation_list);
+  EXPECT_EQ(1u, navigation_list->size());
+  EXPECT_THAT((*navigation_list)[0].GetDict().FindString("virtual_url"),
+              Pointee(Eq("https://foo.com")));
+  EXPECT_THAT((*navigation_list)[0].GetDict().FindString("title"),
+              Pointee(Eq("foo")));
+}
+
 }  // namespace
 }  // namespace syncer

@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Sync protocol datatype extension for the reading list items.
+// Sync protocol datatype extension for the send tab to self items.
 
 // If you change or add any fields in this file, update proto_visitors.h and
 // potentially proto_enum_conversions.{h, cc}.
 
 syntax = "proto2";
 
+package sync_pb;
+
+import "components/sync/protocol/tab_navigation.proto";
+
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sync.protocol";
-
 option optimize_for = LITE_RUNTIME;
-
-package sync_pb;
 
 // Send Tab To Self list entry. This proto contains the fields synced to send
 // a url across devices.
@@ -44,6 +45,17 @@ message SendTabToSelfSpecifics {
   reserved 6;
 
   optional PageContext page_context = 10;
+
+  // Navigation history for the shared tab. If not empty, the `url` and `title`
+  // fields above should match the navigation at `current_navigation_index`.
+  // These top-level fields are kept for backward compatibility and are
+  // currently duplicated.
+  // TODO(crbug.com/495336862): Deduplicate these fields once older clients are
+  // no longer supported.
+  repeated TabNavigation navigation = 11;
+
+  // Index of the current navigation in `navigation`.
+  optional int32 current_navigation_index = 12;
 }
 
 message PageContext {
@@ -75,7 +87,8 @@ message ScrollPosition {
 // https://wicg.github.io/scroll-to-text-fragment/
 message TextFragmentData {
   // The exact text to match.
-  // Corresponds to the 'textStart' parameter in the Text Fragment specification.
+  // Corresponds to the 'textStart' parameter in the Text Fragment
+  // specification.
   optional string text_start = 1;
 
   // Optional: The end text for a range selection.
