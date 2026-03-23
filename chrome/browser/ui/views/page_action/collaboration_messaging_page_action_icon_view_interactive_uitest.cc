@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -68,61 +67,27 @@ PersistentMessage CreateChipMessage(std::string given_name,
 
 }  // namespace
 
-struct CollaborationMessagingPageActionIconInteractiveTestParams {
-  bool page_actions_migration_enabled = false;
-};
-
 class CollaborationMessagingPageActionIconViewInteractiveTest
-    : public PageActionInteractiveTestMixin<InteractiveBrowserTest>,
-      public ::testing::WithParamInterface<
-          CollaborationMessagingPageActionIconInteractiveTestParams> {
+    : public PageActionInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   CollaborationMessagingPageActionIconViewInteractiveTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {data_sharing::features::kDataSharingFeature, {}},
-    };
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back({
-        features::kPageActionsMigration,
-        {
-            {
-                features::kPageActionsMigrationCollaborationMessaging.name,
-                GetParam().page_actions_migration_enabled ? "true" : "false",
-            },
-        },
-    });
-
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
-    CHECK_EQ(IsPageActionsMigrationEnabled(),
-             GetParam().page_actions_migration_enabled);
+    features_.InitAndEnableFeature(data_sharing::features::kDataSharingFeature);
   }
 
  protected:
-  bool IsPageActionsMigrationEnabled() {
-    return IsPageActionMigrated(PageActionIconType::kCollaborationMessaging);
-  }
-
   using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
 
   auto WaitForPageActionToShow() {
     MultiStep steps;
-    if (IsPageActionsMigrationEnabled()) {
-      steps +=
-          WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
-    } else {
-      steps += WaitForShow(kCollaborationMessagingPageActionIconElementId);
-    }
+    steps +=
+        WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
     return steps;
   }
 
   auto CheckLabelText(const std::u16string expected_string) {
     MultiStep steps;
-    if (IsPageActionsMigrationEnabled()) {
-      steps +=
-          WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
-    }
+    steps +=
+        WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
     steps += CheckView(
         kCollaborationMessagingPageActionIconElementId,
         [](IconLabelBubbleView* icon) { return icon->GetText(); },
@@ -134,7 +99,7 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingPageActionIconViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
                        ShowPageActionWithAvatarFallback) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
@@ -170,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingPageActionIconViewInteractiveTest,
       WaitForHide(kCollaborationMessagingPageActionIconElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingPageActionIconViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
                        ReactsToChangesInTabData) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
@@ -214,22 +179,3 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingPageActionIconViewInteractiveTest,
                   }),
                   WaitForHide(kCollaborationMessagingPageActionIconElementId));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    CollaborationMessagingPageActionIconViewInteractiveTest,
-    ::testing::Values(
-        CollaborationMessagingPageActionIconInteractiveTestParams{
-            .page_actions_migration_enabled = false,
-        },
-        CollaborationMessagingPageActionIconInteractiveTestParams{
-            .page_actions_migration_enabled = true,
-        }),
-    [](const ::testing::TestParamInfo<
-        CollaborationMessagingPageActionIconViewInteractiveTest::ParamType>&
-           info) {
-      return base::StrCat({
-          info.param.page_actions_migration_enabled ? "NewPageAction"
-                                                    : "OriginalPageAction",
-      });
-    });

@@ -565,10 +565,6 @@ void LocationBarView::Init() {
                                 PageActionIconType::kAiMode);
   }
 
-  if (browser_ && tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
-    params.types_enabled.push_back(PageActionIconType::kCollaborationMessaging);
-  }
-
   if (browser_ && !is_popup_mode_) {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
   }

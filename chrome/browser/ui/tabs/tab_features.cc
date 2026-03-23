@@ -345,8 +345,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                                                                          &tab);
     }
 
-    if (IsPageActionMigrated(PageActionIconType::kCollaborationMessaging) &&
-        tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
       collaboration_messaging_page_action_controller_ =
           GetUserDataFactory()
               .CreateInstance<CollaborationMessagingPageActionController>(

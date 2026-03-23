@@ -45,8 +45,6 @@ CollaborationMessagingPageActionController::
     : page_actions_controller_(page_action_controller),
       collaboration_messaging_tab_data_(collaboration_messaging_tab_data),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kCollaborationMessaging));
-
   tab_activated_subscription_ = tab.RegisterDidActivate(base::BindRepeating(
       &CollaborationMessagingPageActionController::HandleUpdate,
       base::Unretained(this)));

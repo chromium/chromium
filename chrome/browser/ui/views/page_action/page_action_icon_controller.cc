@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
-#include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
@@ -188,12 +187,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<OptimizationGuideIconView>(
                       params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
-        break;
-      case PageActionIconType::kCollaborationMessaging:
-        add_page_action_icon(
-            type, std::make_unique<CollaborationMessagingPageActionIconView>(
-                      params.browser, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kFind:
       case PageActionIconType::kFederation:

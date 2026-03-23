@@ -325,12 +325,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationCollaborationMessaging,
-                   &kPageActionsMigration,
-                   "collaboration_messaging",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAutofillMandatoryReauth,
                    &kPageActionsMigration,
                    "mandatory_reauth",

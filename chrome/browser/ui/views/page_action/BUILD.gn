@@ -15,7 +15,6 @@ source_set("page_action") {
   public = [
     "action_ids.h",
     "anchored_message_view.h",
-    "collaboration_messaging_page_action_icon_view.h",
     "page_action_container_view.h",
     "page_action_controller.h",
     "page_action_icon_container.h",
@@ -72,7 +71,6 @@ source_set("impl") {
   sources = [
     "anchored_message_view.cc",
     "chip_selector.cc",
-    "collaboration_messaging_page_action_icon_view.cc",
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_icon_container.cc",

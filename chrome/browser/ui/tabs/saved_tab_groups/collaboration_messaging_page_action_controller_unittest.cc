@@ -125,19 +125,7 @@ class CollaborationMessagingPageActionControllerTest : public testing::Test {
   void SetUp() override {
     Test::SetUp();
 
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {data_sharing::features::kDataSharingFeature, {}},
-        {
-            features::kPageActionsMigration,
-            {
-                {
-                    features::kPageActionsMigrationCollaborationMessaging.name,
-                    "true",
-                },
-            },
-        }};
-
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
+    features_.InitAndEnableFeature(data_sharing::features::kDataSharingFeature);
 
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

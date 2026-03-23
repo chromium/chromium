@@ -135,34 +135,11 @@ InstantMessage CreateInstantMessage(
 
 }  // namespace
 
-struct CollaborationMessagingInteractiveTestParams {
-  bool page_actions_migration_enabled = false;
-};
-
 class CollaborationMessagingObserverBrowserTest
-    : public InteractiveBrowserTest,
-      public ::testing::WithParamInterface<
-          CollaborationMessagingInteractiveTestParams> {
+    : public InteractiveBrowserTest {
  public:
   CollaborationMessagingObserverBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {data_sharing::features::kDataSharingFeature, {}},
-    };
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back({
-        features::kPageActionsMigration,
-        {
-            {
-                features::kPageActionsMigrationCollaborationMessaging.name,
-                GetParam().page_actions_migration_enabled ? "true" : "false",
-            },
-        },
-    });
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
-    CHECK_EQ(IsPageActionsMigrationEnabled(),
-             GetParam().page_actions_migration_enabled);
+    features_.InitAndEnableFeature(data_sharing::features::kDataSharingFeature);
   }
   ~CollaborationMessagingObserverBrowserTest() override = default;
 
@@ -211,10 +188,6 @@ class CollaborationMessagingObserverBrowserTest
     }
   }
 
-  bool IsPageActionsMigrationEnabled() const {
-    return IsPageActionMigrated(PageActionIconType::kCollaborationMessaging);
-  }
-
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
@@ -227,7 +200,7 @@ class CollaborationMessagingObserverBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        HandlesMessages) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -298,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   EXPECT_FALSE(attention_indicator_view->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        HandlesTabMessagesInCollapsedGroup) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -352,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   EXPECT_FALSE(GetTabIcon(browser(), 2)->GetShowingAttentionIndicator());
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        IgnoresTabMessagesWithIncompleteData) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -435,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        IgnoresUnsupportedTabMessages) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -463,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        InstantMessageReopensTab) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -495,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
             test_url);
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        InstantMessageManagesSharing) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -523,7 +496,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   EXPECT_TRUE(toast_controller->IsShowingToast());
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        InstantMessageManagesSharingWithClosedGroup) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -574,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
                   .has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                        InstantMessageForTabGroupRemoved) {
   WaitForTabGroupSyncServiceInitialized();
 
@@ -597,23 +570,5 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
       browser()->browser_window_features()->toast_controller();
   EXPECT_TRUE(toast_controller->IsShowingToast());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    CollaborationMessagingObserverBrowserTest,
-    ::testing::Values(
-        CollaborationMessagingInteractiveTestParams{
-            .page_actions_migration_enabled = false,
-        },
-        CollaborationMessagingInteractiveTestParams{
-            .page_actions_migration_enabled = true,
-        }),
-    [](const ::testing::TestParamInfo<
-        CollaborationMessagingObserverBrowserTest::ParamType>& info) {
-      return base::StrCat({
-          info.param.page_actions_migration_enabled ? "NewPageAction"
-                                                    : "OriginalPageAction",
-      });
-    });
 
 }  // namespace tab_groups

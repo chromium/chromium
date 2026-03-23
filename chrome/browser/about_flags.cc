@@ -1093,7 +1093,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"ai_mode", "true"},
     {"bookmark_star", "true"},
     {"cookie_controls", "true"},
-    {"collaboration_messaging", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},
     {"intent_picker", "true"},

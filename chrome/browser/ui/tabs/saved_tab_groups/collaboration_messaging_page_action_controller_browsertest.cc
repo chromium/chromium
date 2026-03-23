@@ -63,19 +63,7 @@ class CollaborationMessagingPageActionControllerBrowserTest
     : public PageActionInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   CollaborationMessagingPageActionControllerBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {data_sharing::features::kDataSharingFeature, {}},
-        {
-            features::kPageActionsMigration,
-            {
-                {
-                    features::kPageActionsMigrationCollaborationMessaging.name,
-                    "true",
-                },
-            },
-        }};
-
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
+    features_.InitAndEnableFeature(data_sharing::features::kDataSharingFeature);
   }
   ~CollaborationMessagingPageActionControllerBrowserTest() override = default;
 
