@@ -101,7 +101,7 @@ TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
-TEST_F(TabStripServiceImplTest, CloseTabs) {
+TEST_F(TabStripServiceImplTest, CloseNodes) {
   tabs_api::NodeId tab_id1(NodeId::Type::kContent, "123");
   tabs_api::NodeId tab_id2(NodeId::Type::kContent, "321");
 
@@ -109,7 +109,7 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
   tab_strip_->AddTab({tabs::TabHandle(123), GURL("1")});
   tab_strip_->AddTab({tabs::TabHandle(321), GURL("2")});
 
-  auto result = service_->CloseTabs({tab_id1, tab_id2});
+  auto result = service_->CloseNodes({tab_id1, tab_id2});
 
   ASSERT_TRUE(result.has_value());
   // tab entries should be removed.

@@ -158,7 +158,7 @@ export class TabElement extends CustomElement {
     assert(this.tab_);
     event.stopPropagation();
     console.info('Close tab', this.tab_.id);
-    TabStripService.getRemote().closeTabs([this.tab_.id]);
+    TabStripService.getRemote().closeNodes([this.tab_.id]);
   }
 
   slideOut(): Promise<void> {

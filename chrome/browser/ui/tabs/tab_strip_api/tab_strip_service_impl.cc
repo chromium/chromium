@@ -176,7 +176,7 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
   return std::move(mojo_tab);
 }
 
-mojom::TabStripService::CloseTabsResult TabStripServiceImpl::CloseTabs(
+mojom::TabStripService::CloseNodesResult TabStripServiceImpl::CloseNodes(
     const std::vector<tabs_api::NodeId>& ids) {
   auto session = session_controller_->CreateSession();
 

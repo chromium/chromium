@@ -42,7 +42,7 @@ class TabStripService {
   virtual mojom::TabStripService::CreateTabAtResult CreateTabAt(
       const std::optional<tabs_api::Position>& pos,
       const std::optional<GURL>& url) = 0;
-  virtual mojom::TabStripService::CloseTabsResult CloseTabs(
+  virtual mojom::TabStripService::CloseNodesResult CloseNodes(
       const std::vector<tabs_api::NodeId>& ids) = 0;
   virtual mojom::TabStripService::ActivateTabResult ActivateTab(
       const tabs_api::NodeId& id) = 0;

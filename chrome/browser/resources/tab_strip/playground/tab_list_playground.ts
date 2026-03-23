@@ -9,7 +9,7 @@ import '../tab_group.js';
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabsSnapshot, TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Data, SplitTab, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnNodesClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
@@ -134,10 +134,10 @@ export class TabListPlaygroundElement extends CustomElement implements
     });
   }
 
-  onTabsClosed(onTabsClosedEvent: OnTabsClosedEvent) {
-    const tabsClosed = onTabsClosedEvent.tabs;
-    tabsClosed.forEach((tabId: NodeId) => {
-      const element = this.findNodeElement_(tabId);
+  onNodesClosed(onNodesClosedEvent: OnNodesClosedEvent) {
+    const nodesClosed = onNodesClosedEvent.nodeIds;
+    nodesClosed.forEach((nodeId: NodeId) => {
+      const element = this.findNodeElement_(nodeId);
       if (element instanceof TabElement) {
         this.addAnimationPromise_(element.slideOut());
       }

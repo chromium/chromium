@@ -62,8 +62,8 @@ export class TabStripObservation implements TabsObserverInterface {
       case TabsEventFieldTags.NODE_MOVED_EVENT:
         this.observer_.onNodeMoved(event.nodeMovedEvent!);
         break;
-      case TabsEventFieldTags.TABS_CLOSED_EVENT:
-        this.observer_.onTabsClosed(event.tabsClosedEvent!);
+      case TabsEventFieldTags.NODES_CLOSED_EVENT:
+        this.observer_.onNodesClosed(event.nodesClosedEvent!);
         break;
       case TabsEventFieldTags.TABS_CREATED_EVENT:
         this.observer_.onTabsCreated(event.tabsCreatedEvent!);

@@ -29,7 +29,7 @@ mojom::OnCollectionCreatedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter& adapter,
     bool insert_from_detached);
 
-mojom::OnTabsClosedEventPtr ToEvent(
+mojom::OnNodesClosedEventPtr ToEvent(
     const tabs::TabCollectionNodes& removed_handles);
 
 mojom::OnNodeMovedEventPtr ToEvent(

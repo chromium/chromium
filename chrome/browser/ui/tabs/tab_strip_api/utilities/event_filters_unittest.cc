@@ -23,11 +23,11 @@ TEST(EventFiltersTest, FilterEvents) {
   events.push_back(tabs_api::mojom::TabsEvent::NewTabsCreatedEvent(
       std::move(tabs_created_event)));
 
-  auto tabs_closed_event = tabs_api::mojom::OnTabsClosedEvent::New();
-  tabs_closed_event->tabs.push_back(
+  auto nodes_closed_event = tabs_api::mojom::OnNodesClosedEvent::New();
+  nodes_closed_event->node_ids.push_back(
       tabs_api::NodeId(tabs_api::NodeId::Type::kContent, "111"));
-  events.push_back(tabs_api::mojom::TabsEvent::NewTabsClosedEvent(
-      std::move(tabs_closed_event)));
+  events.push_back(tabs_api::mojom::TabsEvent::NewNodesClosedEvent(
+      std::move(nodes_closed_event)));
 
   auto tab_moved_event = tabs_api::mojom::OnNodeMovedEvent::New();
   tab_moved_event->id =
@@ -56,7 +56,7 @@ TEST(EventFiltersTest, FilterEvents) {
       std::move(created_event)));
 
   auto created_tabs = FilterForTabsCreatedEvents(events);
-  auto closed_tabs = FilterForTabsClosedEvents(events);
+  auto closed_nodes = FilterForNodesClosedEvents(events);
   auto moved_tabs = FilterForNodeMovedEvents(events);
   auto created_groups = FilterForCollectionCreatedEvents(events);
   auto data_changed_events = FilterForDataChangedEvents(events);
@@ -64,8 +64,8 @@ TEST(EventFiltersTest, FilterEvents) {
   EXPECT_EQ(created_tabs.size(), 1u);
   EXPECT_EQ(created_tabs[0]->tabs.size(), 2u);
 
-  EXPECT_EQ(closed_tabs.size(), 1u);
-  EXPECT_EQ(closed_tabs[0]->tabs[0].Id(), "111");
+  EXPECT_EQ(closed_nodes.size(), 1u);
+  EXPECT_EQ(closed_nodes[0]->node_ids[0].Id(), "111");
 
   EXPECT_EQ(moved_tabs.size(), 1u);
   EXPECT_EQ(moved_tabs[0]->id.Id(), "222");

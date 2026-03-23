@@ -21,9 +21,9 @@ class TrivialTabStripApiObserver : public TabStripApiObserver {
     on_tabs_created_invoked = true;
   }
 
-  void OnTabsClosed(
-      const mojom::OnTabsClosedEventPtr& tabs_closed_event) override {
-    on_tabs_closed_invoked = true;
+  void OnNodesClosed(
+      const mojom::OnNodesClosedEventPtr& nodes_closed_event) override {
+    on_nodes_closed_invoked = true;
   }
 
   void OnNodeMoved(
@@ -42,7 +42,7 @@ class TrivialTabStripApiObserver : public TabStripApiObserver {
   }
 
   bool on_tabs_created_invoked = false;
-  bool on_tabs_closed_invoked = false;
+  bool on_nodes_closed_invoked = false;
   bool on_node_moved_invoked = false;
   bool on_data_changed_invoked = false;
   bool on_collection_created_invoked = false;
@@ -63,10 +63,10 @@ TEST(TabStripApiObserver, Dispatch) {
   {
     buffer.clear();
     TrivialTabStripApiObserver closed_test;
-    buffer.push_back(
-        mojom::TabsEvent::NewTabsClosedEvent(mojom::OnTabsClosedEvent::New()));
+    buffer.push_back(mojom::TabsEvent::NewNodesClosedEvent(
+        mojom::OnNodesClosedEvent::New()));
     closed_test.OnTabEvents(buffer);
-    ASSERT_TRUE(closed_test.on_tabs_closed_invoked);
+    ASSERT_TRUE(closed_test.on_nodes_closed_invoked);
   }
 
   {

@@ -14,7 +14,7 @@ import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Tab as TabData, TabCreatedContainer, TabGroupVisualData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import {OnDataChangedEventFieldTags, whichOnDataChangedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
-import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnNodesClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
@@ -116,9 +116,9 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     });
   }
 
-  onTabsClosed(tabsClosedEvent: OnTabsClosedEvent) {
-    tabsClosedEvent.tabs.forEach(tabId => {
-      this.removeTab(tabId);
+  onNodesClosed(nodesClosedEvent: OnNodesClosedEvent) {
+    nodesClosedEvent.nodeIds.forEach(nodeId => {
+      this.removeTab(nodeId);
     });
   }
 
@@ -181,7 +181,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   }
 
   protected onTabCloseClick(e: CustomEvent<{id: string}>) {
-    this.tabStripService_.closeTabs([e.detail.id]);
+    this.tabStripService_.closeNodes([e.detail.id]);
   }
 
   private activateTab(tabId: NodeId) {

@@ -68,11 +68,11 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     tab_created_events.push_back(event.Clone());
   }
 
-  void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr& event) {
-    for (auto& id : event->tabs) {
+  void OnNodesClosed(tabs_api::mojom::OnNodesClosedEventPtr& event) {
+    for (auto& id : event->node_ids) {
       tabs.erase(std::string(id.Id()));
     }
-    tab_closed_events.push_back(event.Clone());
+    node_closed_events.push_back(event.Clone());
   }
 
   void OnNodeMoved(tabs_api::mojom::OnNodeMovedEventPtr event) {
@@ -110,8 +110,8 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
         case tabs_api::mojom::TabsEvent::Tag::kTabsCreatedEvent:
           OnTabsCreated(std::move(event->get_tabs_created_event()));
           break;
-        case tabs_api::mojom::TabsEvent::Tag::kTabsClosedEvent:
-          OnTabsClosed(event->get_tabs_closed_event());
+        case tabs_api::mojom::TabsEvent::Tag::kNodesClosedEvent:
+          OnNodesClosed(event->get_nodes_closed_event());
           break;
         case tabs_api::mojom::TabsEvent::Tag::kNodeMovedEvent:
           OnNodeMoved(std::move(event->get_node_moved_event()));
@@ -129,7 +129,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   std::vector<tabs_api::mojom::OnNodeMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnCollectionCreatedEventPtr> created_events;
   std::vector<tabs_api::mojom::OnTabsCreatedEventPtr> tab_created_events;
-  std::vector<tabs_api::mojom::OnTabsClosedEventPtr> tab_closed_events;
+  std::vector<tabs_api::mojom::OnNodesClosedEventPtr> node_closed_events;
 
   std::map<std::string, tabs_api::mojom::TabPtr> tabs;
 };
@@ -480,11 +480,11 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   ASSERT_EQ("https://www.google.com/",
             client.tabs.find(std::string(created_tab->id.Id()))->second->url);
 
-  TabStripService::CloseTabsResult close_result;
+  TabStripService::CloseNodesResult close_result;
   base::RunLoop close_tab_loop;
-  remote->CloseTabs(
+  remote->CloseNodes(
       {created_tab->id},
-      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult in) {
+      base::BindLambdaForTesting([&](TabStripService::CloseNodesResult in) {
         close_result = std::move(in);
         close_tab_loop.Quit();
       }));
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   ASSERT_EQ(0ul, client.tabs.size());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseNodes) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
@@ -511,11 +511,11 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   const auto* interface = GetTabStripModel()->GetTabAtIndex(0);
 
   base::RunLoop close_loop;
-  remote->CloseTabs(
+  remote->CloseNodes(
       {tabs_api::NodeId(
           tabs_api::NodeId::Type::kContent,
           base::NumberToString(interface->GetHandle().raw_value()))},
-      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult result) {
+      base::BindLambdaForTesting([&](TabStripService::CloseNodesResult result) {
         ASSERT_TRUE(result.has_value());
         close_loop.Quit();
       }));
@@ -541,8 +541,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, RemoveTabGroup) {
 
   // Total number of nodes closed (3 tabs + 1 group collection).
   int closed_node_count = 0;
-  for (const auto& event : observation->client.tab_closed_events) {
-    closed_node_count += event->tabs.size();
+  for (const auto& event : observation->client.node_closed_events) {
+    closed_node_count += event->node_ids.size();
   }
   EXPECT_EQ(closed_node_count, 4);
   EXPECT_EQ(model->count(), 1);
@@ -565,12 +565,12 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
       tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                        base::NumberToString(old_tab_handle.raw_value()));
   base::RunLoop activate_loop;
-  remote->ActivateTab(
-      old_tab_id,
-      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult result) {
-        ASSERT_TRUE(result.has_value());
-        activate_loop.Quit();
-      }));
+  remote->ActivateTab(old_tab_id,
+                      base::BindLambdaForTesting(
+                          [&](TabStripService::ActivateTabResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            activate_loop.Quit();
+                          }));
   activate_loop.Run();
 
   // Old tab should now be re-activated.

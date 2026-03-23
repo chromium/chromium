@@ -43,7 +43,7 @@ class TabStripServiceImpl : public TabStripService {
   mojom::TabStripService::CreateTabAtResult CreateTabAt(
       const std::optional<tabs_api::Position>& pos,
       const std::optional<GURL>& url) override;
-  mojom::TabStripService::CloseTabsResult CloseTabs(
+  mojom::TabStripService::CloseNodesResult CloseNodes(
       const std::vector<tabs_api::NodeId>& ids) override;
   mojom::TabStripService::ActivateTabResult ActivateTab(
       const tabs_api::NodeId& id) override;

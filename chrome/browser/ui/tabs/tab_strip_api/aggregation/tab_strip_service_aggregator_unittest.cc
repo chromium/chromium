@@ -115,13 +115,13 @@ TEST_F(TabStripServiceAggregatorTest, ObservesServices) {
   managed1.TriggerEvents(events1);
 
   std::vector<events::Event> events2;
-  events2.push_back(mojom::OnTabsClosedEvent::New());
+  events2.push_back(mojom::OnNodesClosedEvent::New());
   managed2.TriggerEvents(events2);
 
   ASSERT_EQ(delegate.received_events().size(), 3u);
   ASSERT_TRUE(delegate.received_events()[0]->is_tabs_created_event());
   ASSERT_TRUE(delegate.received_events()[1]->is_node_moved_event());
-  ASSERT_TRUE(delegate.received_events()[2]->is_tabs_closed_event());
+  ASSERT_TRUE(delegate.received_events()[2]->is_nodes_closed_event());
 }
 
 TEST_F(TabStripServiceAggregatorTest, ObservesAddedServices) {

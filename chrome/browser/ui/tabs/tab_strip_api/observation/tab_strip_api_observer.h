@@ -18,8 +18,8 @@ class TabStripApiObserver : public TabStripApiBatchedObserver {
 
   virtual void OnTabsCreated(
       const mojom::OnTabsCreatedEventPtr& tabs_created_event) = 0;
-  virtual void OnTabsClosed(
-      const mojom::OnTabsClosedEventPtr& tabs_closed_event) = 0;
+  virtual void OnNodesClosed(
+      const mojom::OnNodesClosedEventPtr& nodes_closed_event) = 0;
   virtual void OnNodeMoved(
       const mojom::OnNodeMovedEventPtr& node_moved_event) = 0;
   virtual void OnDataChanged(

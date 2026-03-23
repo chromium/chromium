@@ -57,10 +57,10 @@ void TabStripServiceMojoHandler::CreateTabAt(
   std::move(callback).Run(tab_strip_service_->CreateTabAt(pos, url));
 }
 
-void TabStripServiceMojoHandler::CloseTabs(
+void TabStripServiceMojoHandler::CloseNodes(
     const std::vector<tabs_api::NodeId>& ids,
-    CloseTabsCallback callback) {
-  std::move(callback).Run(tab_strip_service_->CloseTabs(ids));
+    CloseNodesCallback callback) {
+  std::move(callback).Run(tab_strip_service_->CloseNodes(ids));
 }
 
 void TabStripServiceMojoHandler::ActivateTab(const tabs_api::NodeId& id,

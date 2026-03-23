@@ -18,13 +18,13 @@ FilterForTabsCreatedEvents(
   return created_events;
 }
 
-std::vector<const tabs_api::mojom::OnTabsClosedEvent*>
-FilterForTabsClosedEvents(
+std::vector<const tabs_api::mojom::OnNodesClosedEvent*>
+FilterForNodesClosedEvents(
     const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
-  std::vector<const tabs_api::mojom::OnTabsClosedEvent*> closed_events;
+  std::vector<const tabs_api::mojom::OnNodesClosedEvent*> closed_events;
   for (const auto& event : events) {
-    if (event->is_tabs_closed_event()) {
-      closed_events.push_back(event->get_tabs_closed_event().get());
+    if (event->is_nodes_closed_event()) {
+      closed_events.push_back(event->get_nodes_closed_event().get());
     }
   }
   return closed_events;

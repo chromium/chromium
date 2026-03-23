@@ -57,11 +57,11 @@ interface TabStripService {
   CreateTabAt(Position? pos, url.mojom.Url? url)
       => result<Tab, mojo_base.mojom.Error>;
 
-  // Closes a list of tabs. The accepted tab types are content and collection
+  // Closes a list of nodes. The accepted node types are content and collection
   // types. All the provided IDs must exist. If an ID could not be found, the
   // invocation will be rejected with a |Code.kNotFound| error.
-  // If the method call succeeds, all of the tabs will have been closed.
-  CloseTabs(array<NodeId> id)
+  // If the method call succeeds, all of the nodes will have been closed.
+  CloseNodes(array<NodeId> ids)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Activates a tab. The only accepted id type for this method are |kContent|
@@ -86,8 +86,8 @@ union TabsEvent {
   // When new tabs have been created on the tab strip.
   OnTabsCreatedEvent tabs_created_event;
 
-  // When tabs have been closed on the tab strip.
-  OnTabsClosedEvent tabs_closed_event;
+  // When nodes have been closed on the tab strip.
+  OnNodesClosedEvent nodes_closed_event;
 
   // When any node in the tab strip tree has been moved. This could be a tab
   // TabGroup or SplitTab.

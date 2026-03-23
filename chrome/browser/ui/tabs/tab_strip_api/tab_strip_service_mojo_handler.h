@@ -61,8 +61,8 @@ class TabStripServiceMojoHandler
   void CreateTabAt(const std::optional<tabs_api::Position>& pos,
                    const std::optional<GURL>& url,
                    CreateTabAtCallback callback) override;
-  void CloseTabs(const std::vector<tabs_api::NodeId>& ids,
-                 CloseTabsCallback callback) override;
+  void CloseNodes(const std::vector<tabs_api::NodeId>& ids,
+                  CloseNodesCallback callback) override;
   void ActivateTab(const tabs_api::NodeId& id,
                    ActivateTabCallback callback) override;
   void SetSelectedTabs(const std::vector<tabs_api::NodeId>& selection,

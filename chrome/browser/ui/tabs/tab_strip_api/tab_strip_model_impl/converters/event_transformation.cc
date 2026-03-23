@@ -52,17 +52,18 @@ mojom::OnCollectionCreatedEventPtr ToEvent(
   return event;
 }
 
-mojom::OnTabsClosedEventPtr ToEvent(
+mojom::OnNodesClosedEventPtr ToEvent(
     const tabs::TabCollectionNodes& removed_handles) {
-  auto event = mojom::OnTabsClosedEvent::New();
+  auto event = mojom::OnNodesClosedEvent::New();
 
   for (const auto& handle_variant : removed_handles) {
     if (auto* tab_handle = std::get_if<tabs::TabHandle>(&handle_variant)) {
-      event->tabs.emplace_back(NodeId::Type::kContent,
-                               base::NumberToString(tab_handle->raw_value()));
+      event->node_ids.emplace_back(
+          NodeId::Type::kContent,
+          base::NumberToString(tab_handle->raw_value()));
     } else if (auto* collection_handle =
                    std::get_if<tabs::TabCollectionHandle>(&handle_variant)) {
-      event->tabs.emplace_back(
+      event->node_ids.emplace_back(
           NodeId::Type::kCollection,
           base::NumberToString(collection_handle->raw_value()));
     }

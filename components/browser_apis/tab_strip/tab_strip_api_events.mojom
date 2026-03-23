@@ -12,9 +12,9 @@ struct OnTabsCreatedEvent {
   array<TabCreatedContainer> tabs;
 };
 
-struct OnTabsClosedEvent {
-  // Tab ids of the closed tabs.
-  array<NodeId> tabs;
+struct OnNodesClosedEvent {
+  // Node ids of the closed nodes.
+  array<NodeId> node_ids;
 };
 
 // Fired when the data properties of an existing node have changed, but the

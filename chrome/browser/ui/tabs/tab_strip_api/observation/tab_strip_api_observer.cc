@@ -13,8 +13,8 @@ void TabStripApiObserver::OnTabEvents(
       case mojom::TabsEvent::Tag::kTabsCreatedEvent:
         OnTabsCreated(event->get_tabs_created_event());
         break;
-      case mojom::TabsEvent::Tag::kTabsClosedEvent:
-        OnTabsClosed(event->get_tabs_closed_event());
+      case mojom::TabsEvent::Tag::kNodesClosedEvent:
+        OnNodesClosed(event->get_nodes_closed_event());
         break;
       case mojom::TabsEvent::Tag::kNodeMovedEvent:
         OnNodeMoved(event->get_node_moved_event());
