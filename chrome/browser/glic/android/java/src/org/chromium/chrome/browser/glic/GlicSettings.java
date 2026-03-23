@@ -28,6 +28,9 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -38,7 +41,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
-    private static final String PERMISSION_AUTO_BROWSE= "glic_permissions_auto_browse";
+    private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
     private static final String LEARN_MORE_AI_URL = "https://support.google.com/a/answer/15706919";
     private static final String AUTO_BROWSE_LEARN_MORE_URL =
             "https://support.google.com/gemini/answer/16821166";
@@ -55,21 +58,32 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.glic_settings);
         mPageTitle.set(getString(R.string.settings_glic_button_toggle));
         SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
 
-        setupSwitchPreference(PREFERENCE_BUTTON, ChromePreferenceKeys.GLIC_BUTTON_PINNED);
+        PrefService prefService = UserPrefs.get(getProfile());
+        mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
 
         setupSwitchPreference(
-                PERMISSION_LOCATION, ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED);
+                PREFERENCE_BUTTON,
+                ChromePreferenceKeys.GLIC_BUTTON_PINNED,
+                GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+
+        setupSwitchPreference(
+                PERMISSION_LOCATION,
+                ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED,
+                GlicPrefNames.GLIC_GEOLOCATION_ENABLED);
 
         ChromeExpandableSwitchPreference tabAccessPref =
                 setupSwitchPreference(
                         PERMISSION_DEFAULT_TAB_ACCESS,
-                        ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED);
+                        ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED,
+                        GlicPrefNames.GLIC_TAB_CONTEXT_ENABLED);
         String summary =
                 getString(
                         R.string
@@ -80,7 +94,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         ChromeExpandableSwitchPreference autoBrowsePref =
                 setupSwitchPreference(
                         PERMISSION_AUTO_BROWSE,
-                        ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED);
+                        ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED,
+                        GlicPrefNames.GLIC_USER_ENABLED_ACTUATION_ON_WEB);
         String autoBrowseSummary =
                 getString(R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel);
         autoBrowsePref.setSummary(
@@ -110,15 +125,61 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+        super.onDestroy();
+    }
+
+    /**
+     * Sets up a switch preference by syncing its state between the UI, Android SharedPreferences,
+     * and the Profile PrefService.
+     *
+     * <p>This helper:
+     * 1. Finds the preference in the hierarchy.
+     * 2. Initializes its state from the Profile preference (native).
+     * 3. Syncs that value to the Android SharedPreferences (Java).
+     * 4. Updates both preference locations when the UI value changes.
+     * 5. Listens for changes in the Profile preference to update the UI and SharedPreferences.
+     *
+     * @param preferenceKey The key used to find the preference in the XML layout.
+     * @param sharedPreferenceKey The key for local Android SharedPreferences.
+     * @param profilePreferenceKey The key for the native Profile PrefService.
+     * @return The configured preference.
+     */
     private <T extends ChromeSwitchPreference> T setupSwitchPreference(
-            String preferenceKey, String sharedPreferenceKey) {
+            String preferenceKey, String sharedPreferenceKey, String profilePreferenceKey) {
         T preference = assertNonNull(findPreference(preferenceKey));
-        preference.setChecked(mSharedPreferencesManager.readBoolean(sharedPreferenceKey, false));
+        // Note: We are always using the profile preference over the java shared preference manager.
+        // This could be changed if the conflict handling is decided later.
+        PrefService prefService = UserPrefs.get(getProfile());
+        boolean value = prefService.getBoolean(profilePreferenceKey);
+        mSharedPreferencesManager.writeBoolean(sharedPreferenceKey, value);
+
+        preference.setChecked(value);
         preference.setOnPreferenceChangeListener(
                 (pref, newValue) -> {
-                    mSharedPreferencesManager.writeBoolean(sharedPreferenceKey, (boolean) newValue);
+                    boolean boolValue = (boolean) newValue;
+                    mSharedPreferencesManager.writeBoolean(sharedPreferenceKey, boolValue);
+                    prefService.setBoolean(profilePreferenceKey, boolValue);
                     return true;
                 });
+
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.addObserver(
+                    profilePreferenceKey,
+                    () -> {
+                        boolean newValue = prefService.getBoolean(profilePreferenceKey);
+                        if (preference.isChecked() != newValue) {
+                            preference.setChecked(newValue);
+                            mSharedPreferencesManager.writeBoolean(sharedPreferenceKey, newValue);
+                        }
+                    });
+        }
+
         return preference;
     }
 

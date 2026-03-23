@@ -161,6 +161,11 @@ source_set("glic") {
 }
 
 if (is_android) {
+  java_cpp_strings("glic_pref_names_srcjar") {
+    sources = [ "glic_pref_names.h" ]
+    class_name = "org.chromium.chrome.browser.glic.GlicPrefNames"
+  }
+
   android_library("public_java") {
     sources = [
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
@@ -175,6 +180,7 @@ if (is_android) {
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    srcjar_deps = [ ":glic_pref_names_srcjar" ]
   }
 }
 
