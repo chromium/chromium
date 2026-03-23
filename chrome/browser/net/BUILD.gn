@@ -24,4 +24,17 @@ if (is_android) {
   java_cpp_enum("secure_dns_management_mode_generated_enum") {
     sources = [ "secure_dns_config.h" ]
   }
+} else {
+  source_set("storage_test_utils") {
+    testonly = true
+    public = [ "storage_test_utils.h" ]
+    sources = [ "storage_test_utils.cc" ]
+
+    public_deps = [ "//base" ]
+    deps = [ "//content/test:test_support" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
 }
