@@ -634,6 +634,25 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="RequestSource" variants="AimEligibilityRequestSource"/>
 </histogram>
 
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponseAccountMismatch{RequestSource}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
+
+    This metric logs whether the account changed in the time between when the
+    eligibility request was sent and when the response was received. This is
+    logged whenever a response is received.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
+</histogram>
+
 <histogram name="Omnibox.AimEligibility.EligibilityResponseChange.{Feature}"
     enum="Boolean" expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
