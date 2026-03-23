@@ -3913,6 +3913,11 @@ inline constexpr char kRobustWindowManagementExperimentalDescription[] =
     "switching and restoration, ensuring they never lose their work or "
     "context.";
 
+inline constexpr char kScheduleWindowCleaningName[] =
+    "Schedule window cleaning";
+inline constexpr char kScheduleWindowCleaningDescription[] =
+    "Enables scheduling the cleaning of unused window data.";
+
 inline constexpr char kRootScrollbarFollowsTheme[] =
     "Make scrollbar follow theme";
 inline constexpr char kRootScrollbarFollowsThemeDescription[] =

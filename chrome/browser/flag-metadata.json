@@ -8652,6 +8652,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "schedule-window-cleaning",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel@chromium.org", "mnissler@chromium.org" ],
     // This flag never expires because some users need to override CPU security
