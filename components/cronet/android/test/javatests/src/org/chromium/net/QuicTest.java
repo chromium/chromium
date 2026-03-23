@@ -202,7 +202,10 @@ public class QuicTest {
     @SuppressWarnings("deprecation")
     public void testNQEWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
-        String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
+        // Use a large file (~20KB) to guarantee the response not to be contained
+        // within a single packet. This is necessary to guarantee a throughput
+        // observation even with a deferred observation window.
+        String quicURL = QuicTestServer.getServerURL() + "/simple_20k.txt";
 
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(Executors.newSingleThreadExecutor());
@@ -225,7 +228,11 @@ public class QuicTest {
         callback.blockForDone();
 
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        String expectedContent = "This is a simple text file served by QUIC.\n";
+        StringBuilder expectedContentBuilder = new StringBuilder();
+        for (int i = 0; i < 2048; i++) {
+            expectedContentBuilder.append("foobarbaz ");
+        }
+        String expectedContent = expectedContentBuilder.toString();
         assertThat(callback.mResponseAsString).isEqualTo(expectedContent);
         assertIsQuic(callback.getResponseInfoWithChecks());
 
