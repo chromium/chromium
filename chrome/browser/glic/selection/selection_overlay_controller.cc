@@ -173,6 +173,24 @@ void SelectionOverlayController::Close() {
   CloseUI();
 }
 
+void SelectionOverlayController::CloseUI() {
+  if (state() == State::kOff) {
+    return;
+  }
+  OverlayBaseController::CloseUI();
+  for (auto& observer : observers_) {
+    observer.OnOverlayClosed();
+  }
+}
+
+void SelectionOverlayController::AddListener(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SelectionOverlayController::RemoveListener(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void SelectionOverlayController::RequestSyncClose(
     DismissalSource dismissal_source) {
   CloseUI();
