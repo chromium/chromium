@@ -11,8 +11,8 @@ import pathlib
 import shutil
 import subprocess
 import sys
-
-import util
+from util import run_command
+from util import run_jj
 
 
 def main():
@@ -21,13 +21,12 @@ def main():
   os.chdir(repo_root)
 
   if not (repo_root / '.jj').is_dir():
-    util.run_jj(['git', 'init', '--colocate', '.'])
+    run_jj(['git', 'init', '--colocate', '.'])
 
   # Link the shared jj config into the repo.
   config_path = pathlib.Path(
-      util.run_jj(['config', 'path', '--repo'],
-                  stdout=subprocess.PIPE,
-                  text=True).stdout.strip())
+      run_jj(['config', 'path', '--repo'], stdout=subprocess.PIPE,
+             text=True).stdout.strip())
   config_path.unlink(missing_ok=True)
   config_source = (script_dir / 'config.toml').resolve()
   try:
@@ -44,13 +43,13 @@ def main():
 
   # Ensure that jj snapshots the current commit so it doesn't get lost
   # with git switch.
-  util.run_jj(['new'])
+  run_jj(['new'])
 
   # Fix issues with line endings. See go/jj-in-chromium.
-  util.run_command(['git', 'config', 'core.autocrlf', 'false'])
-  util.run_command(['git', 'switch', 'origin/main', '--detach'])
-  util.run_jj(['abandon'])
-  util.run_command(['git', 'add', '-A'])
+  run_command(['git', 'config', 'core.autocrlf', 'false'])
+  run_command(['git', 'switch', 'origin/main', '--detach'])
+  run_jj(['abandon'])
+  run_command(['git', 'add', '-A'])
 
   print('Reminder: If you haven\'t already, we recommend joining '
         'https://groups.google.com/g/chromium-jj-users')
