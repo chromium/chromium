@@ -140,7 +140,9 @@ void XRRenderState::OnFrameStart() {
 
 void XRRenderState::OnFrameEnd() {
   if (base_layer_) {
-    base_layer_->OnFrameEnd();
+    base_layer_->OnFrameEndWithoutSubmit();
+    base_layer_->OnFrameEndForCamera();
+    base_layer_->SubmitLayer();
   }
 
   if (layers_) {

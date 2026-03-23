@@ -396,7 +396,57 @@ void XRWebGLLayer::CreateAndBindCameraBufferTexture(
   }
 }
 
+void XRWebGLLayer::OnFrameEndForCamera() {
+  // The session might have ended in the middle of the frame. Only perform the
+  // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
+  // shared image access is properly ended.
+  if (session()->ended()) {
+    if (camera_image_texture_scoped_access_) {
+      gpu::SharedImageTexture::ScopedAccess::EndAccess(
+          std::move(camera_image_texture_scoped_access_));
+      camera_image_shared_image_texture_.reset();
+    }
+    return;
+  }
+
+  if (framebuffer_ && session()->immersive()) {
+    // Need to stop accessing the camera image texture before calling
+    // `SubmitLayer` so that we stop using it before the sync token
+    // that `SubmitLayer` will generate.
+    if (camera_image_shared_image_texture_) {
+      const XRSharedImageData& camera_image_data = CameraSharedImage();
+
+      // We shouldn't ever have a camera texture if the holder wasn't present:
+      CHECK(camera_image_data.shared_image);
+
+      DVLOG(3) << __func__
+               << ": deleting camera image texture, "
+                  "camera_image_shared_image_texture_->id()="
+               << camera_image_shared_image_texture_->id();
+
+      gpu::SharedImageTexture::ScopedAccess::EndAccess(
+          std::move(camera_image_texture_scoped_access_));
+      camera_image_shared_image_texture_.reset();
+
+      // Notify our WebGLUnownedTexture (created from
+      // camera_image_shared_image_texture_) that we have deleted it. Also,
+      // release the reference since we no longer need it (note that it could
+      // still be kept alive by the JS application, but should be a defunct
+      // object).
+      if (camera_image_texture_) {
+        camera_image_texture_->OnGLDeleteTextures();
+        camera_image_texture_ = nullptr;
+      }
+    }
+  }
+}
+
 void XRWebGLLayer::OnFrameEnd() {
+  OnFrameEndWithoutSubmit();
+  SubmitLayer();
+}
+
+void XRWebGLLayer::OnFrameEndWithoutSubmit() {
   // The session might have ended in the middle of the frame. Only perform the
   // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
   // shared image access is properly ended.
@@ -406,11 +456,6 @@ void XRWebGLLayer::OnFrameEnd() {
       is_direct_draw_frame = false;
     }
 
-    if (camera_image_texture_scoped_access_) {
-      gpu::SharedImageTexture::ScopedAccess::EndAccess(
-          std::move(camera_image_texture_scoped_access_));
-      camera_image_shared_image_texture_.reset();
-    }
     return;
   }
 
@@ -426,8 +471,8 @@ void XRWebGLLayer::OnFrameEnd() {
       bool framebuffer_dirty = framebuffer_->HaveContentsChanged();
 
       // Not drawing to the framebuffer during a session's rAF callback is
-      // usually a sign that something is wrong, such as the app drawing to the
-      // wrong render target. Show a warning in the console if we see that
+      // usually a sign that something is wrong, such as the app drawing to
+      // the wrong render target. Show a warning in the console if we see that
       // happen too many times.
       if (!framebuffer_dirty) {
         // If the session doesn't have a pose then the framebuffer being clean
@@ -445,40 +490,15 @@ void XRWebGLLayer::OnFrameEnd() {
           }
         }
       }
-
-      // Need to stop accessing the camera image texture before calling
-      // `SubmitLayer` so that we stop using it before the sync token
-      // that `SubmitLayer` will generate.
-      if (camera_image_shared_image_texture_) {
-        const XRSharedImageData& camera_image_data = CameraSharedImage();
-
-        // We shouldn't ever have a camera texture if the holder wasn't present:
-        CHECK(camera_image_data.shared_image);
-
-        DVLOG(3) << __func__
-                 << ": deleting camera image texture, "
-                    "camera_image_shared_image_texture_->id()="
-                 << camera_image_shared_image_texture_->id();
-
-        gpu::SharedImageTexture::ScopedAccess::EndAccess(
-            std::move(camera_image_texture_scoped_access_));
-        camera_image_shared_image_texture_.reset();
-
-        // Notify our WebGLUnownedTexture (created from
-        // camera_image_shared_image_texture_) that we have deleted it. Also,
-        // release the reference since we no longer need it (note that it could
-        // still be kept alive by the JS application, but should be a defunct
-        // object).
-        if (camera_image_texture_) {
-          camera_image_texture_->OnGLDeleteTextures();
-          camera_image_texture_ = nullptr;
-        }
-      }
-
-      // Always call submit, but notify if the contents were changed or not.
-      session()->xr()->frameProvider()->SubmitLayer(layer_id(), this,
-                                                    framebuffer_dirty);
     }
+  }
+}
+
+void XRWebGLLayer::SubmitLayer() {
+  // Always call submit, but notify if the contents were changed or not.
+  if (!session()->ended() && framebuffer_ && session()->immersive()) {
+    session()->xr()->frameProvider()->SubmitLayer(
+        layer_id(), this, framebuffer_->HaveContentsChanged());
   }
 }
 
