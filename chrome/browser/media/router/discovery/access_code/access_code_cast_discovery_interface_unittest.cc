@@ -324,7 +324,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable("Service unavailable."));
   task_environment_.RunUntilIdle();
 }
 
