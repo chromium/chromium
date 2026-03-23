@@ -37,6 +37,10 @@ GURL MaybeAddMultiInstanceParameter(const GURL& guest_url);
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);
 
+// Returns the guest web contents if `web_contents` is the glic host.
+content::WebContents* GetGlicGuestWebContents(
+    content::WebContents* web_contents);
+
 // If `guest_contents` is the glic guest, do glic-specific setup and return
 // true, otherwise return false.
 bool OnGuestAdded(content::WebContents* guest_contents);

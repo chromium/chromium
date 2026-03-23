@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/safe_browsing/buildflags.h"
@@ -20,6 +22,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/clipboard/file_info.h"
@@ -152,9 +155,16 @@ void HandleOnPerformingDrop(
     content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
   CHECK(callback);
+
+  content::WebContents* scan_target =
+      glic::GetGlicGuestWebContents(web_contents);
+  if (!scan_target) {
+    scan_target = web_contents;
+  }
+
   absl::Cleanup cleanup = [&] {
-    if (web_contents->GetDelegate()) {
-      web_contents->GetDelegate()->HandleDragEnded();
+    if (scan_target->GetDelegate()) {
+      scan_target->GetDelegate()->HandleDragEnded();
     }
     std::move(callback).Run(std::move(drop_data));
   };
@@ -163,13 +173,13 @@ void HandleOnPerformingDrop(
     BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(scan_target->GetBrowserContext());
   auto connector =
       drop_data.filenames.empty()
           ? enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY
           : enterprise_connectors::AnalysisConnector::FILE_ATTACHED;
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile, web_contents->GetLastCommittedURL(), &data, connector)) {
+          profile, scan_target->GetLastCommittedURL(), &data, connector)) {
     // If the enterprise policy is not enabled, make sure that the renderer
     // never forces a default action.
     drop_data.document_is_handling_drag = true;
@@ -209,7 +219,7 @@ void HandleOnPerformingDrop(
   // It deletes itself when `HandleDropScanData::ScanData` is called or when
   // `web_contents` gets destroyed.
   auto* handle_drop_scan_data = new HandleDropScanData(
-      web_contents, drop_data, std::move(data), std::move(scan_callback));
+      scan_target, drop_data, std::move(data), std::move(scan_callback));
   if (drop_data.filenames.empty()) {
     handle_drop_scan_data->ScanData(/*files_scan_data=*/nullptr);
   } else {
