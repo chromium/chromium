@@ -922,6 +922,12 @@ TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
   return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
 }
 
+gfx::Rect VerticalTabStripRegionView::GetLinkDropBoundsForTesting(
+    const BrowserRootView::DropIndex& drop_index,
+    DropArrow::Direction* direction) {
+  return GetLinkDropBounds(drop_index, direction);
+}
+
 bool VerticalTabStripRegionView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
@@ -1009,7 +1015,7 @@ gfx::Rect VerticalTabStripRegionView::GetLinkDropBounds(
     if (base::i18n::IsRTL() && *direction == DropArrow::Direction::kLeft) {
       *direction = DropArrow::Direction::kRight;
       drop_bounds.Offset(-GetBoundsInScreen().width() - DropArrow::kSize, 0);
-    } else if (base::i18n::IsRTL() &&
+    } else if (!base::i18n::IsRTL() &&
                *direction == DropArrow::Direction::kRight) {
       *direction = DropArrow::Direction::kLeft;
       drop_bounds.Offset(GetBoundsInScreen().width() + DropArrow::kSize, 0);

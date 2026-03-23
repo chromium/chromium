@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/resize_area.h"
@@ -872,4 +873,142 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ImmersiveModeLock) {
 
   // 10. Verify vertical tabs are now enabled.
   EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetLinkDropBoundsNoShift) {
+  // Add a tab to ensure count > 0.
+  AppendTab();
+
+  // Position the window such that there is room for the arrow.
+  display::Screen* screen = display::Screen::Get();
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(region_view()->GetWidget()->GetNativeView())
+          .bounds();
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
+
+  // Place the window far enough from the edge so that the arrow (which is to
+  // the left of the region view) is within the display bounds.
+  browser()->window()->SetBounds(
+      gfx::Rect(display_bounds.x() + 100, display_bounds.y() + 100, 800, 600));
+
+  BrowserRootView::DropIndex index;
+  index.index = 0;
+  index.relative_to_index =
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+
+  DropArrow::Direction direction;
+  gfx::Rect bounds =
+      region_view()->GetLinkDropBoundsForTesting(index, &direction);
+
+  EXPECT_EQ(direction, DropArrow::Direction::kRight);
+  // In LTR, x should be region_view()->GetBoundsInScreen().x() -
+  // DropArrow::kSize.
+  EXPECT_EQ(bounds.x(),
+            region_view()->GetBoundsInScreen().x() - DropArrow::kSize);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetLinkDropBoundsWithShift) {
+  // Add a tab.
+  AppendTab();
+
+  // Position the window such that there is NO room for the arrow on the left.
+  display::Screen* screen = display::Screen::Get();
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(region_view()->GetWidget()->GetNativeView())
+          .bounds();
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
+
+  // We want region_view()->GetBoundsInScreen().x() - DropArrow::kSize <
+  // display_bounds.x().
+  // Setting the window x to the display bounds x should ensure the arrow (which
+  // is to the left of the region view) is outside the display bounds.
+  browser()->window()->SetBounds(
+      gfx::Rect(display_bounds.x(), display_bounds.y(), 800, 600));
+
+  BrowserRootView::DropIndex index;
+  index.index = 0;
+  index.relative_to_index =
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+
+  DropArrow::Direction direction;
+  gfx::Rect bounds =
+      region_view()->GetLinkDropBoundsForTesting(index, &direction);
+
+  // It should shift to the right side of the tab strip.
+  EXPECT_EQ(direction, DropArrow::Direction::kLeft);
+  EXPECT_EQ(bounds.x(), region_view()->GetBoundsInScreen().right());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetLinkDropBoundsNoShiftRTL) {
+  base::i18n::SetICUDefaultLocale("ar");
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  // Add a tab to ensure count > 0.
+  AppendTab();
+
+  // Position the window such that there is room for the arrow on the right.
+  display::Screen* screen = display::Screen::Get();
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(region_view()->GetWidget()->GetNativeView())
+          .bounds();
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
+
+  // In RTL, default arrow is to the right of the strip, at right() + kSize.
+  // We need right() + kSize + kSize (for arrow width) <=
+  // display_bounds.right(). So right() <= display_bounds.right() - 2 * kSize.
+  browser()->window()->SetBounds(gfx::Rect(display_bounds.right() - 800 - 100,
+                                           display_bounds.y() + 100, 800, 600));
+
+  BrowserRootView::DropIndex index;
+  index.index = 0;
+  index.relative_to_index =
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+
+  DropArrow::Direction direction;
+  gfx::Rect bounds =
+      region_view()->GetLinkDropBoundsForTesting(index, &direction);
+
+  EXPECT_EQ(direction, DropArrow::Direction::kLeft);
+  // In RTL, x should be region_view()->GetBoundsInScreen().right() +
+  // DropArrow::kSize.
+  EXPECT_EQ(bounds.x(),
+            region_view()->GetBoundsInScreen().right() + DropArrow::kSize);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetLinkDropBoundsWithShiftRTL) {
+  base::i18n::SetICUDefaultLocale("ar");
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  // Add a tab.
+  AppendTab();
+
+  // Position the window such that there is NO room for the arrow on the right.
+  display::Screen* screen = display::Screen::Get();
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(region_view()->GetWidget()->GetNativeView())
+          .bounds();
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
+
+  // We want region_view()->GetBoundsInScreen().right() + DropArrow::kSize >
+  // display_bounds.right().
+  // Setting the window right to the display bounds right should ensure it.
+  browser()->window()->SetBounds(
+      gfx::Rect(display_bounds.right() - 800, display_bounds.y(), 800, 600));
+
+  BrowserRootView::DropIndex index;
+  index.index = 0;
+  index.relative_to_index =
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+
+  DropArrow::Direction direction;
+  gfx::Rect bounds =
+      region_view()->GetLinkDropBoundsForTesting(index, &direction);
+
+  // It should shift to the left side of the tab strip.
+  EXPECT_EQ(direction, DropArrow::Direction::kRight);
+  EXPECT_EQ(bounds.x(), region_view()->GetBoundsInScreen().x());
 }

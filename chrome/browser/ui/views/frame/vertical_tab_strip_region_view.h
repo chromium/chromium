@@ -176,6 +176,10 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
 
+  gfx::Rect GetLinkDropBoundsForTesting(
+      const BrowserRootView::DropIndex& drop_index,
+      DropArrow::Direction* direction);
+
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
