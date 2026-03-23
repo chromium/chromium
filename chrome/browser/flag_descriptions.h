@@ -7325,11 +7325,6 @@ inline constexpr char kFastDrmMasterDropDescription[] =
     "rather than disabling all the displays. Will not work on AMD devices as "
     "they are unable to accept commits without a primary plane.";
 
-inline constexpr char kFilesConflictDialogName[] = "Files app conflict dialog";
-inline constexpr char kFilesConflictDialogDescription[] =
-    "When enabled, the conflict dialog will be shown during file transfers "
-    "if a file entry in the transfer exists at the destination.";
-
 inline constexpr char kFilesLocalImageSearchName[] =
     "Search local images by query.";
 inline constexpr char kFilesLocalImageSearchDescription[] =

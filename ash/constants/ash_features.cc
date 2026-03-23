@@ -744,9 +744,6 @@ BASE_FEATURE(kFederatedService, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the files transfer conflict dialog in Files app.
-BASE_FEATURE(kFilesConflictDialog, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2651,10 +2648,6 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
 
 bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
-}
-
-bool IsFilesConflictDialogEnabled() {
-  return base::FeatureList::IsEnabled(kFilesConflictDialog);
 }
 
 bool IsFilesLocalImageSearchEnabled() {

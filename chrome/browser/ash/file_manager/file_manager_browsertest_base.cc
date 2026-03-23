@@ -2353,12 +2353,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
 
-  if (options.enable_conflict_dialog) {
-    enabled_features.push_back(ash::features::kFilesConflictDialog);
-  } else {
-    disabled_features.push_back(ash::features::kFilesConflictDialog);
-  }
-
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
