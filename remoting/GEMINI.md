@@ -17,6 +17,9 @@ these documents:**
 *   **Architecture & IPC:** See `docs/architecture.md` if you are modifying host
     architecture, IPC, or adding/removing processes.
 
+*   **Native Client:** See `client/GEMINI.md` if you are working on the native
+    client code (ChromeOS/Boca).
+
 ## Security Context
 
 CRD host processes often run with high privileges (e.g., `SYSTEM` on Windows,
