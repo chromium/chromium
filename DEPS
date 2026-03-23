@@ -1526,6 +1526,17 @@ deps = {
       ],
   },
 
+  'src/third_party/webview2': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_win',
+      'packages': [
+        {
+          'package': 'chromium/third_party/webview2',
+          'version': 'version:2@1.0.3856.49',
+        },
+      ],
+  },
+
   'src/third_party/enterprise_companion/chromium_linux64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_linux and non_git_source',

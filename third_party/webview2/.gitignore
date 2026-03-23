@@ -1,0 +1,5 @@
+# Ignore the directories where the CIPD package is installed
+/x86/
+/x64/
+/arm64/
+/include/
