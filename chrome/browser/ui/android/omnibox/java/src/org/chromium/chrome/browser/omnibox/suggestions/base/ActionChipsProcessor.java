@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,12 +18,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class ActionChipsProcessor {
     private final SuggestionHost mSuggestionHost;
+    private final OmniboxActionDelegate mActionDelegate;
 
     /**
      * @param suggestionHost Component receiving suggestion events.
+     * @param actionDelegate Delegate for OmniboxAction execution.
      */
-    public ActionChipsProcessor(SuggestionHost suggestionHost) {
+    public ActionChipsProcessor(
+            SuggestionHost suggestionHost, OmniboxActionDelegate actionDelegate) {
         mSuggestionHost = suggestionHost;
+        mActionDelegate = actionDelegate;
     }
 
     /**
@@ -55,6 +60,12 @@ public class ActionChipsProcessor {
                             .with(
                                     ChipProperties.CLICK_HANDLER,
                                     m -> executeAction(action, position))
+                            .with(
+                                    ChipProperties.SELECT_HANDLER,
+                                    isSelected ->
+                                            action.onActionFocusedFromKeyboard(
+                                                    isSelected, mActionDelegate))
+                            .with(ChipProperties.SELECTED, false)
                             .with(ChipProperties.ICON, action.icon.chipIconRes)
                             .with(ChipProperties.APPLY_ICON_TINT, action.icon.tintWithTextColor)
                             .with(

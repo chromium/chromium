@@ -29,6 +29,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -46,6 +47,7 @@ public class TailSuggestionProcessorUnitTest {
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock BookmarkState mBookmarkState;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     private TailSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -62,7 +64,8 @@ public class TailSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new TailSuggestionProcessor(uiContext);
     }
 

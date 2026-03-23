@@ -53,6 +53,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -88,6 +89,7 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock BookmarkState mBookmarkState;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;
@@ -221,7 +223,8 @@ public class AnswerSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new AnswerSuggestionProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }

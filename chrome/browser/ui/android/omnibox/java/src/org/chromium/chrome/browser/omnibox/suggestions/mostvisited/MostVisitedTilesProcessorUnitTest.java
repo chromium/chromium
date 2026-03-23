@@ -57,6 +57,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -94,6 +95,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock BookmarkState mBookmarkState;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     static class TileData {
         public final String title;
@@ -131,7 +133,8 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -217,7 +220,8 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));

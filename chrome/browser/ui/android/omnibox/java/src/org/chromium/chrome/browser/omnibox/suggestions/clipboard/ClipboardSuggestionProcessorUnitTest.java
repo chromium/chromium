@@ -51,6 +51,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -72,6 +73,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock BookmarkState mBookmarkState;
+    private @Mock OmniboxActionDelegate mActionDelegate;
     private @Mock AutocompleteInput mInput;
 
     private Context mContext;
@@ -99,7 +101,8 @@ public class ClipboardSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new ClipboardSuggestionProcessor(uiContext);
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);

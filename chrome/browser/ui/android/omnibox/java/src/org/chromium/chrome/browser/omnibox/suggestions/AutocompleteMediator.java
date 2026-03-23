@@ -277,7 +277,7 @@ class AutocompleteMediator
     /** Initialize the Mediator with default set of suggestion processors. */
     void initDefaultProcessors() {
         mDropdownViewInfoListBuilder.initDefaultProcessors(
-                mContext, this, mUrlBarEditingTextProvider);
+                mContext, this, mUrlBarEditingTextProvider, mOmniboxActionDelegate);
     }
 
     /**
@@ -780,6 +780,9 @@ class AutocompleteMediator
         String refineText = stripKeywordIfNecessary(suggestion.getFillIntoEdit());
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
+        if (mAutocompleteInput != null) {
+            mAutocompleteInput.setUserText(refineText);
+        }
         mDelegate.setOmniboxEditingText(refineText);
         onTextChanged(refineText, /* isOnFocusContext= */ false);
 
@@ -956,7 +959,17 @@ class AutocompleteMediator
     public void setOmniboxEditingText(String text) {
         if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
-        mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
+
+        if (mAutocompleteInput != null) {
+            // Sync the source of truth (AutocompleteInput) with the focused match.
+            // This includes stripping the keyword if we were previously in keyword mode.
+            mAutocompleteInput.setUserText(stripKeywordIfNecessary(text));
+            // When moving focus between suggestions via keyboard, we should always clear
+            // the site search preview unless we explicitly target a site search chip.
+            mAutocompleteInput.setSiteSearchData(null);
+
+            mDelegate.setOmniboxEditingText(mAutocompleteInput.getUserText());
+        }
     }
 
     /**
@@ -1121,26 +1134,35 @@ class AutocompleteMediator
     private void onKeywordModeEntered(@Nullable SiteSearchData siteSearchData) {
         if (!isInInputSession()) return;
 
-        // mIgnoreOmniboxItemSelection doesn't need to be reset since it will be cleared
-        // in onTextChanged which is triggered by setOmniboxEditingText.
+        if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
-        mDelegate.setOmniboxEditingText("");
 
-        // In keyword mode, the query string starts fresh/empty. The keyword is presented as a
-        // UI chip outside the URL bar text input field.
-        mAutocompleteInput.setUserText("");
-        mAutocompleteInput.setSiteSearchData(siteSearchData);
+        // Prevent clearing the text from triggering a new autocomplete request.
+        mAutocompleteInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(true);
 
-        onTextChanged("", /* isOnFocusContext= */ false);
+        if (siteSearchData != null) {
+            // In keyword mode, the query string starts fresh/empty. The keyword is presented as a
+            // UI chip outside the URL bar text input field.
+            // Note: The order here is critical. The internal state and UI text must be cleared
+            // *before* the keyword chip is updated. Applying the chip can trigger a text change
+            // notification, and if the state/UI text are not already perfectly aligned (empty),
+            // the suppression flag above will fail, triggering an unintended suggestion request.
+            mAutocompleteInput.setUserText("");
+            mAutocompleteInput.setSiteSearchData(siteSearchData);
+            mDelegate.setOmniboxEditingText("");
+        } else {
+            // When explicitly clearing keyword mode, we just update the data.
+            // Do not clear the text. The text belongs to the user or the suggestion.
+            mAutocompleteInput.setSiteSearchData(null);
+        }
     }
 
     private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
         mUrlBarEditingTextProvider.setSiteSearchChip(
                 siteSearchData != null ? siteSearchData.fullName : null);
+
         if (isInInputSession()) {
-            onTextChanged(
-                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                    /* isOnFocusContext= */ false);
+            onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
         }
     }
 

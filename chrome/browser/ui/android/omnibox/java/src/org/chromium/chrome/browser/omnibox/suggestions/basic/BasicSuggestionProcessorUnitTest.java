@@ -50,6 +50,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -117,6 +118,7 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -145,7 +147,8 @@ public class BasicSuggestionProcessorUnitTest {
                         mIsBookmarked,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new BasicSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();

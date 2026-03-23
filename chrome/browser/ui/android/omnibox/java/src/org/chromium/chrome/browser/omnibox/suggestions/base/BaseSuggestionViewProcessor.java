@@ -72,7 +72,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionSizePx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-        mActionChipsProcessor = new ActionChipsProcessor(uiContext.host);
+        mActionChipsProcessor = new ActionChipsProcessor(uiContext.host, uiContext.actionDelegate);
 
         mShouldShowRemoveButton =
                 OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()

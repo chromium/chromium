@@ -54,6 +54,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -80,6 +81,7 @@ public class EntitySuggestionProcessorUnitTest {
     private @Mock AutocompleteInput mInput;
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     private EntitySuggestionProcessor mProcessor;
 
@@ -135,7 +137,8 @@ public class EntitySuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new EntitySuggestionProcessor(uiContext);
         doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
@@ -228,7 +231,8 @@ public class EntitySuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new EntitySuggestionProcessor(uiContext);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);

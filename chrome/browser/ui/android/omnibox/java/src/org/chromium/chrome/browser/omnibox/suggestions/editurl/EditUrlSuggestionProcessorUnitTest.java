@@ -59,6 +59,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
@@ -103,6 +104,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock UrlBarEditingTextStateProvider mTextProvider;
     private @Mock BookmarkState mBookmarkState;
+    private @Mock OmniboxActionDelegate mActionDelegate;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     private @Mock AutocompleteInput mInput;
     private @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
@@ -151,7 +153,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP),
+                        mActionDelegate);
         mProcessor = new EditUrlSuggestionProcessor(uiContext);
         mModel = mProcessor.createModel();
 

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 
 import java.util.function.Supplier;
 
@@ -52,6 +53,9 @@ public final class AutocompleteUIContext {
     /** Toolbar position supplier, reporting the on-screen position of the Toolbar. */
     public final MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier;
 
+    /** Delegate capable of executing variety of action-specific tasks. */
+    public final OmniboxActionDelegate actionDelegate;
+
     /**
      * @param context Android context for UI operations
      * @param host Component for creating suggestion view delegates
@@ -60,6 +64,7 @@ public final class AutocompleteUIContext {
      * @param bookmarkState Bookmark state provider
      * @param activityTabSupplier Activity tab supplier
      * @param shareDelegateSupplier Share delegate supplier, may be null
+     * @param actionDelegate Delegate for OmniboxAction execution
      */
     public AutocompleteUIContext(
             Context context,
@@ -69,7 +74,8 @@ public final class AutocompleteUIContext {
             BookmarkState bookmarkState,
             Supplier<@Nullable Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
-            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            OmniboxActionDelegate actionDelegate) {
         this.context = context;
         this.host = host;
         this.textProvider = textProvider;
@@ -78,5 +84,6 @@ public final class AutocompleteUIContext {
         this.activityTabSupplier = activityTabSupplier;
         this.shareDelegateSupplier = shareDelegateSupplier;
         this.toolbarPositionSupplier = toolbarPositionSupplier;
+        this.actionDelegate = actionDelegate;
     }
 }
