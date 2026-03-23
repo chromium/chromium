@@ -305,7 +305,6 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
-
 };
 
 // Page handler for the glic internals WebUI.
@@ -320,12 +319,13 @@ interface InternalsPageHandler {
                      url.mojom.Url prod);
 
   // Triggers an invocation for testing from the internals page.
-  TriggerInvokeFromInternalsAction(TriggerInvokeFromInternalsOptions options)
+  TriggerInvokeFromInternalsAction(
+      TriggerInvokeFromInternalsOptions options)
       => (bool success, string error_message);
 
   // Sets the web continuity originating host URL preset for the internals page.
   SetWebContinuityOriginatingHostUrlPreset(
-                     url.mojom.Url web_continuity_originating_host_url);
+      url.mojom.Url web_continuity_originating_host_url);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.
@@ -753,7 +753,8 @@ enum SkillSource {
 };
 
 // clang-format off
-// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //components/sync/protocol/skill_specifics.proto:SkillSource)
+// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource,
+// //components/sync/protocol/skill_specifics.proto:SkillSource)
 // clang-format on
 
 // LINT.IfChange(Skill)
@@ -785,7 +786,9 @@ struct Skill {
 };
 
 // clang-format off
-// LINT.ThenChange(//components/skills/public/skill.mojom:Skill, //components/skills/public/skill.h:Skill, //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
+// LINT.ThenChange(//components/skills/public/skill.mojom:Skill,
+// //components/skills/public/skill.h:Skill,
+// //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
 // clang-format on
 
 // Request to create a skill.
@@ -846,6 +849,7 @@ enum SkillsWebClientEvent {
   // Skill Builder Step 3: User clicked save on the generated draft.
   kSkillBuilderClickedSaveAsSkill = 22,
 };
+
 // LINT.ThenChange(
 //  //tools/metrics/histograms/metadata/glic/enums.xml:SkillsWebClientEvent
 // )
@@ -1470,6 +1474,9 @@ struct PanelOpeningData {
   //   `registerConversation` or `switchConversation` calls.
   //
   ConversationInfo conversation_info;
+
+  // The FRE override, if any.
+  FreOverride fre_override = kUnspecified;
 };
 
 // @generate glic_api
@@ -1488,6 +1495,19 @@ struct PanelState {
   PanelStateKind kind;
   // Present when attached, indicates to which window the panel is attached.
   int32? window_id;
+};
+
+// @generate glic_api
+// Represents an override of the First Run Experience (FRE).
+[Stable, Extensible]
+enum FreOverride {
+  [Default] kUnspecified = 0,
+  // Variation that requires text input from the user to unlock full client.
+  kTrustFirstText = 1,
+  // Variation that requires mouse click from the user to unlock full client.
+  kTrustFirstClick = 2,
+  // Variation that starts with full client unlocked and shows inline consent.
+  kTrustFirstInline = 3,
 };
 
 // @generate glic_api
