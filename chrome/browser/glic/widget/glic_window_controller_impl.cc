@@ -605,7 +605,7 @@ void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
                           weak_ptr_factory_.GetWeakPtr()));
 
   window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
-      glic_widget_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr());
+      glic_widget_->GetWeakPtr(), this);
 
   glic_widget_->Show();
 
@@ -1330,11 +1330,6 @@ bool GlicWindowControllerImpl::IsWarmed() const {
 
 base::WeakPtr<GlicWindowControllerInterface>
 GlicWindowControllerImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-base::WeakPtr<GlicWindowEventObserver::Delegate>
-GlicWindowControllerImpl::GetDelegateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

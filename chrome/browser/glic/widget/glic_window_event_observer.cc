@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/glic_window_event_observer.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
@@ -148,7 +149,7 @@ class GlicWindowEventObserver::WindowEventObserverImpl
 
 GlicWindowEventObserver::GlicWindowEventObserver(
     base::WeakPtr<GlicWidget> glic_widget,
-    base::WeakPtr<Delegate> delegate)
+    Delegate* delegate)
     : widget_(glic_widget), delegate_(delegate) {}
 
 GlicWindowEventObserver::~GlicWindowEventObserver() = default;
@@ -169,7 +170,7 @@ void GlicWindowEventObserver::SetDraggingAreasAndWatchForMouseEvents() {
 
 void GlicWindowEventObserver::HandleWindowDragWithOffset(
     const gfx::Vector2d& mouse_offset) {
-  if (in_move_loop_ || !widget_ || !delegate_) {
+  if (in_move_loop_ || !widget_) {
     return;
   }
   in_move_loop_ = true;
@@ -178,31 +179,37 @@ void GlicWindowEventObserver::HandleWindowDragWithOffset(
 #if BUILDFLAG(IS_MAC)
   widget_->SetCapture(nullptr);
 #endif
-  const views::Widget::MoveLoopSource move_loop_source =
-      views::Widget::MoveLoopSource::kMouse;
 
-  base::WeakPtr<GlicWindowEventObserver> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  widget_->RunMoveLoop(mouse_offset, move_loop_source,
-                       views::Widget::MoveLoopEscapeBehavior::kDontHide);
+  // PostTaskAndReply is used to ensure that anything running on the stack
+  // (like OnEvent) is finished before the nested run loop in RunMoveLoop
+  // starts. It also ensures that the code in OnMoveLoopFinished doesn't run if
+  // this is destroyed while RunMoveLoop is running.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<GlicWidget> widget, const gfx::Vector2d& offset) {
+            if (widget) {
+              widget->RunMoveLoop(
+                  offset, views::Widget::MoveLoopSource::kMouse,
+                  views::Widget::MoveLoopEscapeBehavior::kDontHide);
+            }
+          },
+          widget_, mouse_offset),
+      base::BindOnce(&GlicWindowEventObserver::OnMoveLoopFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  if (!weak_this) {
-    return;
-  }
-
+void GlicWindowEventObserver::OnMoveLoopFinished() {
   in_move_loop_ = false;
-
-  if (!delegate_) {
-    return;
-  }
-
-  delegate_->window_animator()->MaybeAnimateToTargetSize();
-  AdjustPositionIfNeeded();
-  delegate_->OnDragComplete();
 
   if (widget_) {
     widget_->SetIsDragging(false);
   }
+
+  // The delegate owns this object, so it is guaranteed to be alive if we are.
+  delegate_->window_animator()->MaybeAnimateToTargetSize();
+  AdjustPositionIfNeeded();
+  delegate_->OnDragComplete();
 }
 
 void GlicWindowEventObserver::AdjustPositionIfNeeded() {
