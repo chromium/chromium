@@ -336,6 +336,7 @@ source_set("browser_tests") {
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/themes",

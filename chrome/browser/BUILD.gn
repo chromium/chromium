@@ -906,18 +906,6 @@ static_library("browser") {
     "preloading/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h",
     "preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.cc",
     "preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h",
-    "preloading/prerender/dse_prewarm_navigation_throttle.cc",
-    "preloading/prerender/dse_prewarm_navigation_throttle.h",
-    "preloading/prerender/prerender_manager.cc",
-    "preloading/prerender/prerender_manager.h",
-    "preloading/prerender/prerender_utils.cc",
-    "preloading/prerender/prerender_utils.h",
-    "preloading/prerender/prerender_web_contents_delegate.cc",
-    "preloading/prerender/prerender_web_contents_delegate.h",
-    "preloading/prerender/search_prewarm_progress_service.cc",
-    "preloading/prerender/search_prewarm_progress_service.h",
-    "preloading/prerender/search_prewarm_progress_service_factory.cc",
-    "preloading/prerender/search_prewarm_progress_service_factory.h",
 
     # TODO(crbug.com/408801109) Remove this once the privacy_sandbox_service_factory is moved to chrome/browser/prviacy_sandbox/BUILD.
     "privacy_sandbox/notice/notice_service_factory.cc",
@@ -1330,12 +1318,11 @@ static_library("browser") {
     # - c/b/tab_contents/
     "//chrome/browser/ui/login:impl",
 
-    # TODO(crbug.com/408146612): Remove this circular dependency when the
+    # TODO(crbug.com/408146612): Remove these circular dependencies when the
     # following headers get modularized:
     # - c/b/browser_features.h
-    # - c/b/preloading/prerender/prerender_manager.h
-    # - c/b/preloading/prerender/prerender_utils.h
     "//chrome/browser/predictors:impl",
+    "//chrome/browser/preloading/prerender:impl",
 
     # TODO(crbug.com/487357837): Remove this circular dependency when the
     # following headers get modularized:
@@ -1673,6 +1660,8 @@ static_library("browser") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//chrome/browser/preloading/prerender",
+    "//chrome/browser/preloading/prerender:impl",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy",
     "//chrome/browser/privacy_sandbox",

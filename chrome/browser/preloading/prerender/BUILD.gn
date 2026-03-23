@@ -2,6 +2,57 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("prerender") {
+  public = [
+    "dse_prewarm_navigation_throttle.h",
+    "prerender_manager.h",
+    "prerender_utils.h",
+    "prerender_web_contents_delegate.h",
+    "search_prewarm_progress_service.h",
+    "search_prewarm_progress_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/preloading",
+    "//chrome/browser/profiles:profile",
+    "//components/omnibox/browser",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "dse_prewarm_navigation_throttle.cc",
+    "prerender_manager.cc",
+    "prerender_utils.cc",
+    "prerender_web_contents_delegate.cc",
+    "search_prewarm_progress_service.cc",
+    "search_prewarm_progress_service_factory.cc",
+  ]
+
+  deps = [
+    ":prerender",
+    "//chrome/browser/headless",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/google/browser",
+    "//components/tabs",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/web_applications" ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -9,6 +60,8 @@ source_set("test_support") {
     "search_prewarm_progress_test_utils.cc",
     "search_prewarm_progress_test_utils.h",
   ]
+
+  public_deps = [ ":prerender" ]
 
   deps = [
     "//base",

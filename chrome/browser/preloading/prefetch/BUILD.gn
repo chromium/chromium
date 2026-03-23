@@ -46,6 +46,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//chrome/browser/preloading/prerender",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:test_support",

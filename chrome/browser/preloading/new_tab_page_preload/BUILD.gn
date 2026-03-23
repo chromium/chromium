@@ -9,6 +9,7 @@ source_set("unit_tests") {
 
   deps = [
     "//chrome/browser/preloading",
+    "//chrome/browser/preloading/prerender",
     "//chrome/test:test_support",
     "//content/test:test_support",
   ]

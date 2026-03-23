@@ -97,6 +97,7 @@ source_set("impl") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/preloading/prerender",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/embedder_support",
