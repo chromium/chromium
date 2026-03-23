@@ -16,11 +16,15 @@ ServiceControllerManager::ServiceControllerManager(
     PrefService* local_state,
     base::PassKey<ServiceControllerManagerFactory>)
     : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
-      local_state_(local_state) {}
+      local_state_(local_state) {
+  CHECK_GT(service_controllers_.max_size(), 0u);
+}
 
 ServiceControllerManager::ServiceControllerManager(PrefService* local_state)
     : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
-      local_state_(local_state) {}
+      local_state_(local_state) {
+  CHECK_GT(service_controllers_.max_size(), 0u);
+}
 
 ServiceControllerManager::~ServiceControllerManager() = default;
 
