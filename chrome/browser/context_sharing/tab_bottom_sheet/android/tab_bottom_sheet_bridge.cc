@@ -1,0 +1,117 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
+
+#include "base/android/jni_android.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/TabBottomSheetNativeInterface_jni.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
+
+using base::android::AttachCurrentThread;
+
+namespace context_sharing {
+
+void JNI_TabBottomSheetNativeInterface_OnClose(
+    JNIEnv* env,
+    int64_t native_tab_bottom_sheet_bridge) {
+  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
+      ->OnClose(env);
+}
+
+TabBottomSheetBridge::TabBottomSheetBridge(Observer* observer,
+                                           tabs::TabInterface* tab)
+    : observer_(observer), tab_(*tab) {
+  JNIEnv* env = AttachCurrentThread();
+  java_bridge_.Reset(Java_TabBottomSheetNativeInterface_Constructor(
+      env, reinterpret_cast<intptr_t>(this), GetTabAndroid()->GetJavaObject()));
+
+  CreateCoBrowseViews(/*web_contents=*/nullptr);
+}
+
+TabBottomSheetBridge::~TabBottomSheetBridge() {
+  DestroyCoBrowseViews();
+  if (java_bridge_) {
+    Java_TabBottomSheetNativeInterface_destroy(AttachCurrentThread(),
+                                               java_bridge_);
+  }
+}
+
+void TabBottomSheetBridge::SetWebContents(content::WebContents* web_contents) {
+  if (!co_browse_views_) {
+    CreateCoBrowseViews(web_contents);
+    return;
+  }
+
+  Java_CoBrowseViews_setWebContents(
+      AttachCurrentThread(), co_browse_views_,
+      web_contents ? web_contents->GetJavaWebContents() : nullptr);
+}
+
+bool TabBottomSheetBridge::Show(bool animate, bool starts_expanded) {
+  if (!co_browse_views_) {
+    return false;
+  }
+  return Java_TabBottomSheetNativeInterface_show(AttachCurrentThread(),
+                                                 java_bridge_, co_browse_views_,
+                                                 animate, starts_expanded);
+}
+
+void TabBottomSheetBridge::Close() {
+  if (co_browse_views_) {
+    SetWebContents(nullptr);
+  }
+  Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(), java_bridge_);
+}
+
+void TabBottomSheetBridge::OnClose(JNIEnv* env) {
+  observer_->OnClose();
+}
+
+void TabBottomSheetBridge::CreateCoBrowseViews(
+    content::WebContents* web_contents) {
+  TabAndroid* tab_android = GetTabAndroid();
+  if (!tab_android) {
+    LOG(DFATAL) << "Cannot create CoBrowseViews: TabAndroid is null.";
+    return;
+  }
+
+  ui::WindowAndroid* window_android =
+      tab_android->GetContents()->GetTopLevelNativeWindow();
+  if (!window_android) {
+    LOG(DFATAL) << "Cannot create CoBrowseViews: WindowAndroid is null.";
+    return;
+  }
+
+  DestroyCoBrowseViews();
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // Call Factory to get CoBrowseViews and save it
+  co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
+      env, window_android->GetJavaObject(),
+      web_contents ? web_contents->GetJavaWebContents() : nullptr));
+}
+
+void TabBottomSheetBridge::DestroyCoBrowseViews() {
+  if (!co_browse_views_) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  Java_CoBrowseViews_setWebContents(env, co_browse_views_,
+                                    /*webContents=*/nullptr);
+  Java_CoBrowseViews_destroy(env, co_browse_views_);
+  co_browse_views_.Reset();
+}
+
+TabAndroid* TabBottomSheetBridge::GetTabAndroid() const {
+  return TabAndroid::FromTabHandle(tab_->GetHandle());
+}
+
+DEFINE_JNI(TabBottomSheetNativeInterface)
+
+}  // namespace context_sharing

@@ -9,17 +9,18 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-class TabAndroid;
-
 namespace glic {
 
-class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
+class GlicSidePanelCoordinatorAndroid
+    : public GlicSidePanelCoordinator,
+      public context_sharing::TabBottomSheetBridge::Observer {
  public:
   explicit GlicSidePanelCoordinatorAndroid(tabs::TabInterface* tab);
   ~GlicSidePanelCoordinatorAndroid() override;
@@ -36,17 +37,14 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
 
-  void OnClose(JNIEnv* env);
+  // context_sharing::TabBottomSheetBridge::Observer:
+  void OnClose() override;
 
  private:
-  void EnsureCoBrowseViewsDestroyed();
-  void Show(bool suppress_animations, bool startsExpanded);
-  void CloseInternal(const CloseOptions& options);
-  void CreateCoBrowseViews();
+  void Show(bool suppress_animations, bool starts_expanded);
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);
-  TabAndroid* GetTabAndroid() const;
 
   State state_ = State::kClosed;
   base::RepeatingCallbackList<void(State)> state_callbacks_;
@@ -55,8 +53,7 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
   bool pending_starts_expanded_state_ = true;
-  base::android::ScopedJavaGlobalRef<jobject> java_interface_;
-  base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
+  std::unique_ptr<context_sharing::TabBottomSheetBridge> bridge_;
 };
 
 }  // namespace glic

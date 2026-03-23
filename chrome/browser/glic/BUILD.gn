@@ -143,7 +143,7 @@ source_set("glic") {
   } else {  # is_android
     deps += [
       ":actor_types_for_migration",
-      "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android",
     ]
   }
 
@@ -411,6 +411,9 @@ source_set("impl") {
     "//ui/webui",
     "//url",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
+  }
   if (!is_android) {
     # Many of these deps will be needed in Android, but are not yet supported.
     deps += [

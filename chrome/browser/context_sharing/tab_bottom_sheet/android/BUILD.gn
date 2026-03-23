@@ -5,6 +5,20 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("android") {
+  sources = [
+    "tab_bottom_sheet_bridge.cc",
+    "tab_bottom_sheet_bridge.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/android:tabs_public",
+    "//content/public/browser",
+    "//ui/android",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewFactory.java",
