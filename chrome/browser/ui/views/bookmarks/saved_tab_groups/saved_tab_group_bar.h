@@ -183,6 +183,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // the maximum visible.
   bool ShouldShowOverflowButtonForWidth(int max_width) const;
 
+  // Updates `resumption_iph_dismissed_` based on Projects Panel feature state
+  // and user education grace periods.
+  void UpdateResumptionRailIPHDismissedState();
+
   // Returns whether the overflow button is explicitly hidden by logic (e.g. for
   // promo or if there are no groups with projects panel).
   bool IsOverflowButtonHidden() const;

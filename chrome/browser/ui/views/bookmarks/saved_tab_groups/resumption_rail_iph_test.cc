@@ -18,12 +18,17 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -38,6 +43,8 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/user_education/common/user_education_features.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -138,6 +145,8 @@ class ResumptionRailPromoTest : public InteractiveFeaturePromoTest {
         group.AddTabLocally(std::move(tab));
         service->AddGroup(std::move(group));
       }
+      // Force a layout to ensure the overflow button is shown.
+      RunScheduledLayouts();
     });
   }
 
@@ -299,5 +308,72 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest, QueuePromoIfAnotherActive) {
       // Click the new Projects button to dismiss the promo.
       PressButton(kVerticalTabStripProjectsButtonElementId),
       // Should hide the Everything menu button.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
+                       HideOverflowButtonWithinGracePeriodIfNewProfile) {
+  auto* service =
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+  service->user_education_storage_service()
+      .set_profile_creation_time_for_testing(base::Time::Now());
+
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      // The overflow button should be hidden because the profile is new.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId),
+      // Advance time to pass the grace period for the promo.
+      AdvanceTime(user_education::features::GetNewProfileGracePeriod() +
+                  base::Days(1)),
+      // Still should be hidden.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
+                       HideOverflowButtonAfterGracePeriodIfNewProfile) {
+  auto* service =
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+  service->user_education_storage_service()
+      .set_profile_creation_time_for_testing(base::Time::Now());
+
+  RunTestSequence(
+      // Advance time to pass the grace period for the promo.
+      AdvanceTime(user_education::features::GetNewProfileGracePeriod() +
+                  base::Days(1)),
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      // Everything button should be hidden.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
+                       ShowOverflowButtonIfLegacyProfile) {
+  auto* service =
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+  service->user_education_storage_service()
+      .set_profile_creation_time_for_testing(
+          base::Time::Now() -
+          user_education::features::GetNewProfileGracePeriod() - base::Days(1));
+
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      // The overflow button should be visible because the profile is legacy.
+      CheckView(kSavedTabGroupOverflowButtonElementId,
+                [](views::View* view) { return view->GetVisible(); }),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      // The IPH should trigger.
+      WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
+      // Should hide the Everything button.
       WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }
