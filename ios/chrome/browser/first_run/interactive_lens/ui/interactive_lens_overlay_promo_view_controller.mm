@@ -194,6 +194,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
   [self transformButtonToPrimaryAction];
   // Further interactions with the lens view can be janky and are unnecessary.
   _lensViewController.view.userInteractionEnabled = NO;
+  _lensViewController.view.accessibilityElementsHidden = YES;
 }
 
 #pragma mark - Private
