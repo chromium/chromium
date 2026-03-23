@@ -19,11 +19,13 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/pip_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:gravity="center_horizontal"
-        android:drawableTop="@drawable/ic_spark_24dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:drawableTop="@drawable/ic_chrome"
         android:drawablePadding="@dimen/actor_pip_title_drawable_padding"
         android:drawableTint="?attr/colorOnSurface"/>
 
