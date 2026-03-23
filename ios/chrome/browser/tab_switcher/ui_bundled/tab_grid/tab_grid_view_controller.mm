@@ -1345,11 +1345,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)showGeminiFloatyIfInvoked {
   // Sheet swipe gesture triggers [dismissViewControllerAnimated:completion:].
   // Check if the presented view was truly dismissed which can be implied by
-  // `presentedViewController` == nil.
-  if (self.presentedViewController) {
+  // `presentedViewController` == nil or the scene is no longer active.
+  if (self.presentedViewController ||
+      self.view.window.windowScene.activationState !=
+          UISceneActivationStateForegroundActive) {
     return;
   }
-
   [self.geminiHandler
       updateFloatyVisibilityIfEligibleAnimated:NO
                                     fromSource:gemini::FloatyUpdateSource::

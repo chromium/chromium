@@ -9,7 +9,9 @@
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
+@protocol SceneViewControllerDelegate;
 @class LayoutGuideCenter;
+@protocol BWGCommands;
 
 // A view controller that can act as the `rootViewController` for a scene's
 // window.
@@ -19,6 +21,8 @@
 @property(nonatomic, readonly) UIView* appContainer;
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// Delegate for this view controller.
+@property(nonatomic, weak) id<SceneViewControllerDelegate> delegate;
 
 // Sets the app bar.
 - (void)setAppBar:(UIViewController*)appBar;
