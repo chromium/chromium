@@ -36,7 +36,11 @@ class SigninPartitionManager : public KeyedService {
   using StartSigninSessionDoneCallback =
       base::OnceCallback<void(const std::string& partition_name)>;
 
-  explicit SigninPartitionManager(content::BrowserContext* browser_context);
+  // `system_network_context_getter` should return the network context that is
+  // associated with the browser process.
+  SigninPartitionManager(
+      network::NetworkContextGetter system_network_context_getter,
+      content::BrowserContext* browser_context);
 
   SigninPartitionManager(const SigninPartitionManager&) = delete;
   SigninPartitionManager& operator=(const SigninPartitionManager&) = delete;

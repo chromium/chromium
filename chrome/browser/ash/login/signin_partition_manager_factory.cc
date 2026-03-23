@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
 namespace ash::login {
@@ -44,7 +47,12 @@ SigninPartitionManagerFactory* SigninPartitionManagerFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 SigninPartitionManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<SigninPartitionManager>(context);
+  return std::make_unique<SigninPartitionManager>(
+      base::BindRepeating([]() {
+        return g_browser_process->system_network_context_manager()
+            ->GetContext();
+      }),
+      context);
 }
 
 }  // namespace ash::login

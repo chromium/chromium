@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -36,10 +37,6 @@ void ClearStoragePartition(content::StoragePartition* storage_partition,
       base::Time(), base::Time::Max(), std::move(partition_data_cleared));
 }
 
-network::mojom::NetworkContext* GetSystemNetworkContext() {
-  return g_browser_process->system_network_context_manager()->GetContext();
-}
-
 // Copies the http auth cache proxy entries with key `cache_key` into
 // `signin_storage_partition`'s NetworkContext.
 void LoadHttpAuthCacheProxyEntries(
@@ -65,12 +62,13 @@ void TransferHttpAuthCacheProxyEntries(
 }  // namespace
 
 SigninPartitionManager::SigninPartitionManager(
+    network::NetworkContextGetter system_network_context_getter,
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       clear_storage_partition_task_(
           base::BindRepeating(&ClearStoragePartition)),
       get_system_network_context_task_(
-          base::BindRepeating(&GetSystemNetworkContext)) {}
+          std::move(system_network_context_getter)) {}
 
 SigninPartitionManager::~SigninPartitionManager() = default;
 
