@@ -4061,6 +4061,23 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     }
   }
 
+  if (conv2d.kind == mojom::Conv2d::Kind::kTransposed) {
+    // Calculate the col2im temp tensor size [input_height * input_width,
+    // filter_height * filter_width * output_depth].
+    const base::CheckedNumeric<int32_t> col2im_elements =
+        base::CheckedNumeric<int32_t>(input_size2d.height) *
+        input_size2d.width * filter_size2d.height * filter_size2d.width *
+        output_channels;
+
+    // Check against the 32-bit signed integer limit to avoid overflow in
+    // TFLite.
+    if (!col2im_elements.IsValid()) {
+      return base::unexpected(
+          "convTranspose2d doesn't support configurations that require an "
+          "internal computation buffer exceeding INT32_MAX elements.");
+    }
+  }
+
   ASSIGN_OR_RETURN(
       TfLitePadding padding_mode,
       GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
