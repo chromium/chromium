@@ -820,7 +820,7 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     return false;
   }
 
-  auto access = WillDrawInternal(/*is_overwrite=*/false);
+  auto access = WillDrawInternal(/*is_overwrite=*/true);
 
   // The below  write to the resource's SharedImage will need to be preserved in
   // the case of a subsequent CopyOnWrite.
