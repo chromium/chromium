@@ -180,7 +180,9 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
 #if BUILDFLAG(IS_MAC)
 // Whether the presentation should be delayed until the next DisplayLink
 // callback. Currently only for frames that handle interaction.
-BASE_FEATURE(kVSyncAlignedPresent, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVSyncAlignedPresentationForScrolling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVSyncAlignedPresentation, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Sends a CopyOutputRequest completion Ack early for view transitions so it can
@@ -509,8 +511,12 @@ NumCooldownFramesForAckOnSurfaceActivationDuringInteraction() {
 }
 
 #if BUILDFLAG(IS_MAC)
-bool IsVSyncAlignedPresentEnabled() {
-  return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
+bool IsVSyncAlignedForScrolling() {
+  return base::FeatureList::IsEnabled(
+      features::kVSyncAlignedPresentationForScrolling);
+}
+bool IsVSyncAligned() {
+  return base::FeatureList::IsEnabled(features::kVSyncAlignedPresentation);
 }
 #endif
 

@@ -203,14 +203,15 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   }
 
   bool delay_presentation_until_next_vsync =
-      features::IsVSyncAlignedPresentEnabled() && data.is_handling_interaction;
+      features::IsVSyncAligned() ||
+      (features::IsVSyncAlignedForScrolling() && data.is_handling_interaction);
 
   // The current frame has been added to
   // ca_layer_tree_coordinator_->NumPendingSwaps() after calling
   // ca_layer_tree_coordinator_->Present(). Check NumPendingSwaps() > 1 to see
   // whether there is any previous pending frame. The current frame must wait in
   // the queue if there is already one before this.
-  if (features::IsVSyncAlignedPresentEnabled() &&
+  if ((features::IsVSyncAligned() || features::IsVSyncAlignedForScrolling()) &&
       ca_layer_tree_coordinator_->NumPendingSwaps() > 1) {
     delay_presentation_until_next_vsync = true;
   }
