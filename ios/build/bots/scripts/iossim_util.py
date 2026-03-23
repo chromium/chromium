@@ -333,6 +333,19 @@ def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
       (sim_udid, simulator_list['devices']))
 
 
+def update_dyld_shared_cache(runtime=None):
+  """Updates dyld_shared_cache before starting to boot simulators.
+
+  Args:
+    runtime: (str) simulator runtime. E.g. "com.apple.CoreSimulator.SimRuntime.iOS-18-5".
+      If None, updates all runtimes.
+  """
+  LOGGER.info('Updating dyld_shared_cache')
+  cmd = ['xcrun', 'simctl', 'runtime', 'dyld_shared_cache', 'update']
+  cmd.append(runtime if runtime else '--all')
+  subprocess.check_call(cmd)
+
+
 def ensure_simulator_fully_booted(sim_udid: str,
                                   path=SIMULATOR_DEFAULT_PATH,
                                   num_attempts=1):
@@ -368,8 +381,10 @@ def ensure_simulator_fully_booted(sim_udid: str,
       '-bd',
   ]
 
+  runtime = get_simulator_runtime_by_device_udid(sim_udid)
   for boot_attempt in range(num_attempts):
     try:
+      update_dyld_shared_cache(runtime)
       subprocess.check_call(cmd, timeout=120)
       return True
     except subprocess.TimeoutExpired as e:
