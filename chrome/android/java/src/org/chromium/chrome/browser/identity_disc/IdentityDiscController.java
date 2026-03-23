@@ -68,7 +68,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -196,27 +195,27 @@ public class IdentityDiscController
             return;
         }
 
+        String email = CoreAccountInfo.getEmailFrom(getSignedInAccountInfo());
         ensureProfileDataCache(mProfile);
-        final @Nullable CoreAccountId accountId =
-                CoreAccountInfo.getIdFrom(getSignedInAccountInfo());
-        final @Nullable DisplayableProfileData profileData =
-                accountId != null ? mProfileDataCache.getById(accountId) : null;
 
         mButtonData.setButtonSpec(
-                buttonSpecWithDrawableAndDescription(mButtonData.getButtonSpec(), profileData));
+                buttonSpecWithDrawableAndDescription(mButtonData.getButtonSpec(), email));
         mButtonData.setCanShow(true);
     }
 
     private ButtonSpec buttonSpecWithDrawableAndDescription(
-            ButtonSpec buttonSpec, @Nullable DisplayableProfileData profileData) {
-        Drawable drawable = getProfileImage(profileData);
+            ButtonSpec buttonSpec, @Nullable String email) {
+        Drawable drawable = getProfileImage(email);
         if (buttonSpec.getDrawable() == drawable) {
             return buttonSpec;
         }
 
         // `supportsTinting` must be false when showing the user's profile image or its placeholder,
         // to not alter the images colors in those cases.
-        boolean shouldSupportTinting = profileData == null;
+        boolean shouldSupportTinting = email == null;
+        assumeNonNull(mProfileDataCache);
+        DisplayableProfileData profileData =
+                email == null ? null : mProfileDataCache.getProfileDataOrDefault(email);
         String contentDescription =
                 SigninUtils.getContentDescriptionForIdentityDisc(
                         mContext, profileData, mIdentityError);
@@ -253,11 +252,11 @@ public class IdentityDiscController
     /**
      * Returns Profile picture Drawable. The size of the image corresponds to current visual state.
      */
-    private Drawable getProfileImage(@Nullable DisplayableProfileData profileData) {
-        if (profileData == null) {
-            return AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
-        }
-        return profileData.getImage();
+    private Drawable getProfileImage(@Nullable String email) {
+        assumeNonNull(mProfileDataCache);
+        return email == null
+                ? AppCompatResources.getDrawable(mContext, R.drawable.account_circle)
+                : mProfileDataCache.getProfileDataOrDefault(email).getImage();
     }
 
     /** Resets ProfileDataCache. Used for flushing cached image when sign-in state changes. */
