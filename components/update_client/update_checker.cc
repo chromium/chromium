@@ -193,8 +193,9 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
   std::vector<protocol_request::App> apps;
   for (const auto& app_id : context->components_to_check_for_updates) {
-    CHECK_EQ(1u, context->components.count(app_id));
-    const auto& component = context->components.at(app_id);
+    auto it = context->components.find(app_id);
+    CHECK(it != context->components.end());
+    const auto& component = it->second;
     CHECK_EQ(component->id(), app_id);
     const auto& crx_component = component->crx_component();
     CHECK(crx_component);
@@ -221,9 +222,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
-        active_ids.find(app_id) != active_ids.end()
-            ? metadata->GetInstallId(app_id)
-            : "",
+        active_ids.contains(app_id) ? metadata->GetInstallId(app_id) : "",
         crx_component->lang.empty() ? config_->GetLang() : crx_component->lang,
         metadata->GetInstallDate(app_id), install_source,
         crx_component->install_location, crx_component->installer_attributes,
@@ -246,7 +245,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
           }
         }(crx_component->install_data_index),
         MakeProtocolPing(app_id, config_->GetPersistedData(),
-                         active_ids.find(app_id) != active_ids.end()),
+                         active_ids.contains(app_id)),
         std::nullopt));
   }
 
