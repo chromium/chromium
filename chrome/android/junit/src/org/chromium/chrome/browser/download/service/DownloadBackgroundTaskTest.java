@@ -214,4 +214,54 @@ public class DownloadBackgroundTaskTest {
         Mockito.verify(mTaskScheduler, times(1))
                 .cancel(any(), eq(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
     }
+
+    @Test
+    @Feature({"Download"})
+    public void testInferMimeTypeFromExtension_wrongMimeTypeWithCorrectExtension() {
+        // File has wrong MIME type (octet-stream) but correct file name extension (.pdf)
+        String inferred =
+                DownloadUtils.inferMimeTypeFromExtension(
+                        "document.pdf", "/path/to/document.pdf", "application/octet-stream");
+        Assert.assertEquals("application/pdf", inferred);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testInferMimeTypeFromExtension_correctMimeType() {
+        // File already has correct MIME type, should return null (no fallback needed)
+        String inferred =
+                DownloadUtils.inferMimeTypeFromExtension(
+                        "document.pdf", "/path/to/document.pdf", "application/pdf");
+        Assert.assertNull(inferred);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testInferMimeTypeFromExtension_noExtension() {
+        // File has no extension, should return null
+        String inferred =
+                DownloadUtils.inferMimeTypeFromExtension(
+                        "document", "/path/to/document", "application/octet-stream");
+        Assert.assertNull(inferred);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testInferMimeTypeFromExtension_nullFileName_usesFilePath() {
+        // Null file name, should fall back to file path for extension
+        String inferred =
+                DownloadUtils.inferMimeTypeFromExtension(
+                        null, "/path/to/document.pdf", "application/octet-stream");
+        Assert.assertEquals("application/pdf", inferred);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testInferMimeTypeFromExtension_caseInsensitive() {
+        // Extension should be matched case-insensitively
+        String inferred =
+                DownloadUtils.inferMimeTypeFromExtension(
+                        "DOCUMENT.PDF", "/path/to/DOCUMENT.PDF", "application/octet-stream");
+        Assert.assertEquals("application/pdf", inferred);
+    }
 }

@@ -743,6 +743,7 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.download") {
     sources = [
+      "src/org/chromium/chrome/browser/download/DownloadOpenRequestTest.java",
       "src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
       "src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
       "src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",

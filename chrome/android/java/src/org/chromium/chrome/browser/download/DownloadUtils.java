@@ -24,6 +24,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -413,17 +414,9 @@ public class DownloadUtils {
 
         boolean canOpen = doOpenFile(req);
         if (!canOpen) {
-            String nameForExt =
-                    !TextUtils.isEmpty(req.mFileName) ? req.mFileName : req.mFilePath;
-            String ext = FileUtils.getExtension(nameForExt);
-            String inferred = null;
-            if (!TextUtils.isEmpty(ext)) {
-                inferred = android.webkit.MimeTypeMap.getSingleton()
-                        .getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
-            }
-
-            if (!TextUtils.isEmpty(inferred)
-                    && !TextUtils.equals(inferred, req.mMimeType)) {
+            String inferred =
+                    inferMimeTypeFromExtension(req.mFileName, req.mFilePath, req.mMimeType);
+            if (inferred != null) {
                 DownloadOpenRequest inferredReq =
                     DownloadOpenRequest.builder(req.mContext, req.mFilePath)
                         .mimeType(inferred)
@@ -515,6 +508,34 @@ public class DownloadUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Infers the MIME type from the file name or file path when the original MIME type
+     * might be incorrect. This is used as a fallback when opening files fails with the
+     * original MIME type.
+     *
+     * @param fileName The file name (preferred) to extract extension from.
+     * @param filePath The file path to use if fileName is empty.
+     * @param originalMimeType The original MIME type to compare against.
+     * @return The inferred MIME type if it differs from the original, or null if no
+     *         different MIME type can be inferred.
+     */
+    @VisibleForTesting
+    public static @Nullable String inferMimeTypeFromExtension(
+            @Nullable String fileName, String filePath, @Nullable String originalMimeType) {
+        String nameForExt = !TextUtils.isEmpty(fileName) ? fileName : filePath;
+        String ext = FileUtils.getExtension(nameForExt);
+        if (TextUtils.isEmpty(ext)) {
+            return null;
+        }
+        String inferred =
+                android.webkit.MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
+        if (!TextUtils.isEmpty(inferred) && !TextUtils.equals(inferred, originalMimeType)) {
+            return inferred;
+        }
+        return null;
     }
 
     /**
