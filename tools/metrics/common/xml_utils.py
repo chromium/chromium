@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """Helpers to parse content of xml files."""
 
-import typing
-
 from collections.abc import Iterator
 import html
+import typing
 from xml.dom import minidom
+
 
 # A minidom tree is represented by a Document or an Element. A generic Node is
 # not used because these functions are designed to traverse element containers.
@@ -66,9 +66,9 @@ def NormalizeAllAttributeValues(node: minidom.Node) -> minidom.Node:
   Returns:
     The normalized minidom node.
   """
-  if node.nodeType == _ELEMENT_NODE:
-    # Casting because only Element nodes have attributes.
-    elem = typing.cast(minidom.Element, node)
+  # Casting because only Element nodes have attributes.
+  elem = typing.cast(minidom.Element, node)
+  if elem.nodeType == _ELEMENT_NODE:
     for a in elem.attributes.keys():
       elem.attributes[a].value = NormalizeString(elem.attributes[a].value)
 
@@ -147,9 +147,10 @@ def IterElementsWithTag(root: minidom.Node,
   Yields:
     xml.dom.minidom.Node: Element matching criteria.
   """
-  if depth == 0 and root.nodeType == _ELEMENT_NODE and typing.cast(
-      minidom.Element, root).tagName == tag:
-    yield typing.cast(minidom.Element, root)
+  # Casting because only Element nodes have attributes.
+  elem = typing.cast(minidom.Element, root)
+  if depth == 0 and elem.nodeType == _ELEMENT_NODE and elem.tagName == tag:
+    yield elem
     return
 
   had_tag = False
@@ -157,10 +158,10 @@ def IterElementsWithTag(root: minidom.Node,
   skipped = 0
 
   for child in root.childNodes:
-    if child.nodeType == _ELEMENT_NODE and typing.cast(minidom.Element,
-                                                       child).tagName == tag:
+    child_elem = typing.cast(minidom.Element, child)
+    if child.nodeType == _ELEMENT_NODE and child_elem.tagName == tag:
       had_tag = True
-      yield typing.cast(minidom.Element, child)
+      yield child_elem
     else:
       skipped += 1
 
