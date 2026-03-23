@@ -76,6 +76,7 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/strike_database/strike_database.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -408,7 +409,11 @@ void AutofillAiManager::HandlePromptResult(
     switch (prompt_type) {
       case AutofillClient::AutofillAiImportPromptType::kSave:
       case AutofillClient::AutofillAiImportPromptType::kMigrate:
-        wallet_manager->SaveWalletEntityInstance(entity, std::move(callback));
+        // TODO(crbug.com/489354073): Log consent and replace with the correct
+        // session ID.
+        wallet_manager->SaveWalletEntityInstance(
+            entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
+            std::move(callback));
         break;
       case AutofillClient::AutofillAiImportPromptType::kUpdate:
         wallet_manager->UpdateWalletEntityInstance(entity, std::move(callback));

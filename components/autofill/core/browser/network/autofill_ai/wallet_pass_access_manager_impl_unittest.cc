@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,9 @@ class MockWalletHttpClient : public wallet::WalletHttpClient {
               (override));
   MOCK_METHOD(void,
               UpsertPrivatePass,
-              (PrivatePass pass, UpsertPrivatePassCallback callback),
+              (PrivatePass pass,
+               std::optional<consent_auditor::ConsentAuditor::SessionId>,
+               UpsertPrivatePassCallback callback),
               (override));
   MOCK_METHOD(void,
               GetUnmaskedPass,
@@ -422,15 +425,17 @@ TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
       GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
 
   PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
+  consent_auditor::ConsentAuditor::SessionId session_id =
+      consent_auditor::ConsentAuditor::GenerateSessionId();
   masked_pass.set_pass_id("updated-id");
   EXPECT_CALL(mock_http_client(),
               UpsertPrivatePass(Truly([](const PrivatePass& pass) {
                                   return !pass.has_pass_id();
                                 }),
-                                _))
-      .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
+                                testing::Optional(session_id), _))
+      .WillOnce(RunOnceCallback<2>(std::move(masked_pass)));
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
-  access_manager().SaveWalletEntityInstance(unmasked_entity,
+  access_manager().SaveWalletEntityInstance(unmasked_entity, session_id,
                                             save_result.GetCallback());
 
   AttributeInstance expected_masked_attribute(
@@ -459,8 +464,8 @@ TEST_P(WalletPassAccessManagerImplTest, UpdateWalletEntityInstance) {
                                   return pass.pass_id() ==
                                          unmasked_entity.guid().value();
                                 }),
-                                _))
-      .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
+                                testing::Eq(std::nullopt), _))
+      .WillOnce(RunOnceCallback<2>(std::move(masked_pass)));
   base::test::TestFuture<std::optional<EntityInstance>> update_result;
   access_manager().UpdateWalletEntityInstance(unmasked_entity,
                                               update_result.GetCallback());
@@ -483,12 +488,13 @@ TEST_P(WalletPassAccessManagerImplTest,
   EntityInstance unmasked_entity =
       GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
   EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
           base::unexpected(WalletRequestError::kGenericError)));
 
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
-  access_manager().SaveWalletEntityInstance(unmasked_entity,
-                                            save_result.GetCallback());
+  access_manager().SaveWalletEntityInstance(
+      unmasked_entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
+      save_result.GetCallback());
   EXPECT_FALSE(save_result.Get().has_value());
 
   base::test::TestFuture<std::optional<EntityInstance>> update_result;
@@ -504,11 +510,12 @@ TEST_P(WalletPassAccessManagerImplTest,
   EntityInstance unmasked_entity =
       GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
   EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(PrivatePass()));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(PrivatePass()));
 
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
-  access_manager().SaveWalletEntityInstance(unmasked_entity,
-                                            save_result.GetCallback());
+  access_manager().SaveWalletEntityInstance(
+      unmasked_entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
+      save_result.GetCallback());
   EXPECT_FALSE(save_result.Get().has_value());
 
   base::test::TestFuture<std::optional<EntityInstance>> update_result;
@@ -532,11 +539,12 @@ TEST_P(WalletPassAccessManagerImplTest,
     malformed_pass.mutable_passport()->set_passport_number(kMaskedValue);
   }
   EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(malformed_pass));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(malformed_pass));
 
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
-  access_manager().SaveWalletEntityInstance(unmasked_entity,
-                                            save_result.GetCallback());
+  access_manager().SaveWalletEntityInstance(
+      unmasked_entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
+      save_result.GetCallback());
   EXPECT_FALSE(save_result.Get().has_value());
 
   base::test::TestFuture<std::optional<EntityInstance>> update_result;

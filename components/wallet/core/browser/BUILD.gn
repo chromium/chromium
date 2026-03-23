@@ -40,6 +40,7 @@ static_library("browser") {
   ]
   deps = [
     "//base",
+    "//components/consent_auditor",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -87,6 +88,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/consent_auditor",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/prefs:test_support",

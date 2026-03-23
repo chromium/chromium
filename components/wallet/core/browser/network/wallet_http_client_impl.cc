@@ -59,10 +59,11 @@ void WalletHttpClientImpl::UpsertPublicPass(Pass pass,
 
 void WalletHttpClientImpl::UpsertPrivatePass(
     PrivatePass pass,
+    std::optional<consent_auditor::ConsentAuditor::SessionId> session_id,
     UpsertPrivatePassCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kWalletApiPrivatePassesEnabled));
-  SendRequest(std::make_unique<UpsertPrivatePassRequest>(std::move(pass),
-                                                         std::move(callback)));
+  SendRequest(std::make_unique<UpsertPrivatePassRequest>(
+      std::move(pass), std::move(session_id), std::move(callback)));
 }
 
 void WalletHttpClientImpl::GetUnmaskedPass(std::string_view pass_id,

@@ -3,6 +3,7 @@ include_rules = [
   "+components/accessibility_annotator/core",
   "+components/accessibility_annotator/core/annotation_reducer",
   "+components/browser_ui/device_lock/android",
+  "+components/consent_auditor",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",
   "+components/google/core/common/google_util.h",

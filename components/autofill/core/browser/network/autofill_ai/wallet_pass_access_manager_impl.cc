@@ -97,6 +97,7 @@ WalletPassAccessManagerImpl::~WalletPassAccessManagerImpl() = default;
 
 void WalletPassAccessManagerImpl::SaveWalletEntityInstance(
     const EntityInstance& entity,
+    const consent_auditor::ConsentAuditor::SessionId& session_id,
     UpsertEntityInstanceCallback callback) {
   PrivatePass pass = EntityInstanceToPrivatePass(entity);
   // To indicate saving of a new entity, the pass ID in the request is kept
@@ -104,8 +105,9 @@ void WalletPassAccessManagerImpl::SaveWalletEntityInstance(
   // Upsert response, which `UpsertPrivatePass()` uses to set the result's ID.
   pass.clear_pass_id();
   http_client_->UpsertPrivatePass(
-      std::move(pass), GetUpsertResponseToMaskedEntityCallback(entity).Then(
-                           std::move(callback)));
+      std::move(pass), session_id,
+      GetUpsertResponseToMaskedEntityCallback(entity).Then(
+          std::move(callback)));
 }
 
 void WalletPassAccessManagerImpl::UpdateWalletEntityInstance(
@@ -118,8 +120,9 @@ void WalletPassAccessManagerImpl::UpdateWalletEntityInstance(
   // the server-side.
   CHECK(pass.has_pass_id());
   http_client_->UpsertPrivatePass(
-      std::move(pass), GetUpsertResponseToMaskedEntityCallback(entity).Then(
-                           std::move(callback)));
+      std::move(pass), /*session_id=*/std::nullopt,
+      GetUpsertResponseToMaskedEntityCallback(entity).Then(
+          std::move(callback)));
 }
 
 void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(

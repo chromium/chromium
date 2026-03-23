@@ -63,6 +63,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1191,8 +1192,10 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
 
   if (autofill::WalletPassAccessManager* pass_manager =
           autofill_client()->GetWalletPassAccessManager()) {
+    // TODO(crbug.com/489354073): Log consent and replace with the correct
+    // session ID.
     pass_manager->SaveWalletEntityInstance(
-        entity_instance,
+        entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
                            OnSavePrivatePassToWalletFinished,
                        base::RetainedRef(this), entity_instance));

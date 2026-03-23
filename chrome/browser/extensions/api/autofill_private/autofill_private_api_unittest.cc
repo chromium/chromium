@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   base::JSONWriter::Write(args, &json_args);
 
   EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
-      .WillOnce(RunOnceCallback<1>(
+      .WillOnce(RunOnceCallback<2>(
           autofill::test::MaskEntityInstance(entity_instance)));
 
   auto function = base::MakeRefCounted<
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   base::JSONWriter::Write(args, &json_args);
 
   EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
-      .WillOnce(RunOnceCallback<1>(std::nullopt));
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();

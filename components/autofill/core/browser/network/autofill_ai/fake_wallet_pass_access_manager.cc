@@ -32,6 +32,7 @@ FakeWalletPassAccessManager::~FakeWalletPassAccessManager() {
 
 void FakeWalletPassAccessManager::SaveWalletEntityInstance(
     const EntityInstance& entity,
+    const consent_auditor::ConsentAuditor::SessionId& session_id,
     UpsertEntityInstanceCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 
@@ -33,8 +34,12 @@ class WalletPassAccessManager : public KeyedService {
 
   // Issues an save request to the Wallet backend for the given `entity`.
   // Notably, the returned entity will always have a new entity id.
+  // `session_id` identifies the consent that was logged through
+  // `consent_auditor::ConsentAuditor::RecordWalletPrivatePassConsent()` prior
+  // to the save.
   virtual void SaveWalletEntityInstance(
       const EntityInstance& entity,
+      const consent_auditor::ConsentAuditor::SessionId& session_id,
       UpsertEntityInstanceCallback callback) = 0;
 
   // Issues an update request to the Wallet backend for the given `entity`.

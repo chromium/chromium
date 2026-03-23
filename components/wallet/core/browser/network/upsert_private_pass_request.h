@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
@@ -18,6 +19,7 @@ class UpsertPrivatePassRequest : public WalletRequest {
  public:
   UpsertPrivatePassRequest(
       PrivatePass pass,
+      std::optional<consent_auditor::ConsentAuditor::SessionId> session_id,
       WalletHttpClient::UpsertPrivatePassCallback callback);
   ~UpsertPrivatePassRequest() override;
 
@@ -30,6 +32,9 @@ class UpsertPrivatePassRequest : public WalletRequest {
 
  private:
   const PrivatePass pass_;
+  // Set for Upsert requests that correspond to the creation of new passes,
+  // indicated by the absence of `pass_.id`.
+  const std::optional<consent_auditor::ConsentAuditor::SessionId> session_id_;
   WalletHttpClient::UpsertPrivatePassCallback callback_;
 };
 

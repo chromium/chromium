@@ -135,11 +135,10 @@ Matcher<EntityInstance> HasRecordType(EntityInstance::RecordType record_type) {
 // Returns an action that mimics a successful response to a
 // WalletPassAccessManager save request.
 auto ReplyWithMaskedEntity() {
-  return WithArgs<0, 1>(
-      [](const EntityInstance& entity_to_upload,
-         WalletPassAccessManager::UpsertEntityInstanceCallback callback) {
-        std::move(callback).Run(MaskEntityInstance(entity_to_upload));
-      });
+  return [](const EntityInstance& entity_to_upload,
+            WalletPassAccessManager::UpsertEntityInstanceCallback callback) {
+    std::move(callback).Run(MaskEntityInstance(entity_to_upload));
+  };
 }
 
 class MockAutofillClient : public TestAutofillClient {
@@ -1248,8 +1247,8 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWallet) {
         .WillOnce(DoAll(SaveArg<0>(&entity_to_save),
                         RunOnceCallback<3>(kAcceptBubble)));
     EXPECT_CALL(wallet_manager(),
-                SaveWalletEntityInstance(Eq(ByRef(entity_to_save)), _))
-        .WillOnce(ReplyWithMaskedEntity());
+                SaveWalletEntityInstance(Eq(ByRef(entity_to_save)), _, _))
+        .WillOnce(WithArgs<0, 2>(ReplyWithMaskedEntity()));
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
   }
 
@@ -1279,8 +1278,8 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletFails) {
         .WillOnce(DoAll(SaveArg<0>(&entity_to_save),
                         RunOnceCallback<3>(kAcceptBubble)));
     EXPECT_CALL(wallet_manager(),
-                SaveWalletEntityInstance(Eq(ByRef(entity_to_save)), _))
-        .WillOnce(RunOnceCallback<1>(std::nullopt));
+                SaveWalletEntityInstance(Eq(ByRef(entity_to_save)), _, _))
+        .WillOnce(RunOnceCallback<2>(std::nullopt));
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
     EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification());
   }
@@ -1320,7 +1319,7 @@ TEST_F(AutofillAiManagerImportFormTest, PassportUpdateToWallet) {
                         RunOnceCallback<3>(kAcceptBubble)));
     EXPECT_CALL(wallet_manager(),
                 UpdateWalletEntityInstance(Eq(ByRef(entity_to_update)), _))
-        .WillOnce(ReplyWithMaskedEntity());
+        .WillOnce(WithArgs<0, 1>(ReplyWithMaskedEntity()));
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
   }
 

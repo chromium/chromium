@@ -33,8 +33,10 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
       delete;
 
   // WalletPassAccessManager:
-  void SaveWalletEntityInstance(const EntityInstance& entity,
-                                UpsertEntityInstanceCallback callback) override;
+  void SaveWalletEntityInstance(
+      const EntityInstance& entity,
+      const consent_auditor::ConsentAuditor::SessionId& session_id,
+      UpsertEntityInstanceCallback callback) override;
   void UpdateWalletEntityInstance(
       const EntityInstance& entity,
       UpsertEntityInstanceCallback callback) override;

@@ -54,6 +54,11 @@ class ConsentAuditor : public KeyedService {
 
   ~ConsentAuditor() override = default;
 
+  // Generates a `SessionId` to identify a consent.
+  static SessionId GenerateSessionId() {
+    return base::Uuid::GenerateRandomV4();
+  }
+
   // Records the ARC Play |consent| for the signed-in GAIA account with the ID
   // |gaia_id| (as defined in AccountInfo).
   virtual void RecordArcPlayConsent(

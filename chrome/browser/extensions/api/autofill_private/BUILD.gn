@@ -36,6 +36,7 @@ source_set("autofill_private") {
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:credit_card_number_validation",
+    "//components/consent_auditor",
     "//components/device_reauth",
     "//components/feature_engagement/public",
     "//components/prefs",
