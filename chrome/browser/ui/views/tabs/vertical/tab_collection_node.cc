@@ -20,6 +20,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -360,7 +361,11 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
     }
     dst_parent_node->EnsureFocusOrder(new_index);
     if (was_focused) {
-      child_node->node_view_->RequestFocus();
+      if (auto* focus_manager = child_node->node_view_->GetFocusManager()) {
+        focus_manager->SetFocusedViewWithReason(
+            child_node->node_view_,
+            views::FocusManager::FocusChangeReason::kFocusTraversal);
+      }
     }
     return;
   }
