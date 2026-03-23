@@ -7747,6 +7747,21 @@
             ]
         }
     ],
+    "DesktopAndroidLinkCapturing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260319",
+                    "enable_features": [
+                        "DesktopAndroidLinkCapturing"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopCapturePermissionCheckerPreMacos14_4": [
         {
             "platforms": [
