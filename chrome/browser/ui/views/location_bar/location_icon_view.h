@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_interface.h"
 #include "components/security_state/core/security_state.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -24,7 +25,8 @@ class LocationBarModel;
 // Use a LocationIconView to display an icon on the leading side of the edit
 // page security status (after navigation has completed), or extension name (if
 // the URL is a chrome-extension:// URL).
-class LocationIconView : public IconLabelBubbleView {
+class LocationIconView : public IconLabelBubbleView,
+                         public LocationIconInterface {
   METADATA_HEADER(LocationIconView, IconLabelBubbleView)
 
  public:
@@ -93,7 +95,7 @@ class LocationIconView : public IconLabelBubbleView {
 
   // Returns true if the icon's security state has changed since the last call
   // to Update().
-  bool HasSecurityStateChanged() const;
+  bool HasSecurityStateChanged() const override;
 
   // Returns what the minimum width for the label text.
   int GetMinimumLabelTextWidth() const;
@@ -103,7 +105,7 @@ class LocationIconView : public IconLabelBubbleView {
   // the text change animation (e.g. when swapping tabs).
   // `force_hide_background` hides the background color. This is useful in
   // situations like where the popup is shown.
-  void Update(bool suppress_animations, bool force_hide_background = false);
+  void Update(bool suppress_animations, bool force_hide_background) override;
 
   // Returns text to be placed in the view.
   // - For secure/insecure pages, returns text describing the URL's security
@@ -118,7 +120,11 @@ class LocationIconView : public IconLabelBubbleView {
   // Returns true if any of the following is true:
   // - the current page is explicitly secure or insecure.
   // - the current page has a special scheme (chrome://, extension, file://).
-  bool GetShowText() const;
+  bool GetShowText() const override;
+
+  // LocationIconInterface:
+  void SetVisible(bool visible) override;
+  views::BubbleAnchor GetAnchor() override;
 
   const views::InkDrop* get_ink_drop_for_testing();
 

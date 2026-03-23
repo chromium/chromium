@@ -141,8 +141,16 @@ bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
+void LocationIconView::SetVisible(bool visible) {
+  views::View::SetVisible(visible);
+}
+
+views::BubbleAnchor LocationIconView::GetAnchor() {
+  return this;
+}
+
 void LocationIconView::AddedToWidget() {
-  Update(true);
+  Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
 }
 
 void LocationIconView::OnThemeChanged() {

@@ -868,7 +868,8 @@ void PictureInPictureBrowserFrameView::GetWindowMask(const gfx::Size& size,
 void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
   // This will be called after WebContents in PictureInPictureWindowManager is
   // set, so that we can update the icon and title based on WebContents.
-  location_icon_view_->Update(/*suppress_animations=*/false);
+  location_icon_view_->Update(/*suppress_animations=*/false,
+                              /*force_hide_background=*/false);
   window_title_->SetText(location_bar_model_->GetURLForDisplay());
 }
 
@@ -1281,7 +1282,8 @@ void PictureInPictureBrowserFrameView::AnimationEnded(
     const gfx::Animation* animation) {
   if (animation == &top_bar_color_animation_) {
     current_foreground_color_ = std::nullopt;
-    location_icon_view_->Update(/*suppress_animations=*/false);
+    location_icon_view_->Update(/*suppress_animations=*/false,
+                                /*force_hide_background=*/false);
   }
 }
 
@@ -1297,7 +1299,8 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
       view->SetIconColor(color);
     }
     current_foreground_color_ = color;
-    location_icon_view_->Update(/*suppress_animations=*/false);
+    location_icon_view_->Update(/*suppress_animations=*/false,
+                                /*force_hide_background=*/false);
     return;
   }
 
