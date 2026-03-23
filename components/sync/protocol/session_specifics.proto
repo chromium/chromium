@@ -9,14 +9,14 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-
-option optimize_for = LITE_RUNTIME;
-
 package sync_pb;
 
 import "components/sync/protocol/sync_enums.proto";
+import "components/sync/protocol/tab_navigation.proto";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+option optimize_for = LITE_RUNTIME;
 
 message SessionSpecifics {
   // Unique id for the client. Since M89, this is sync's cache GUID (client
@@ -87,116 +87,12 @@ message SessionTab {
   // or a valid PNG encoded favicon.
   optional bytes favicon = 8 [deprecated = true];
   // The type of favicon. For now only normal web favicons are supported.
-  enum FaviconType { TYPE_WEB_FAVICON = 1; }
+  enum FaviconType {
+    TYPE_WEB_FAVICON = 1;
+  }
   optional FaviconType favicon_type = 9 [deprecated = true];
   // The url of the actual favicon (as opposed to the page using the favicon).
   optional string favicon_source = 11 [deprecated = true];
   // Ids of the currently assigned variations which should be sent to sync.
   repeated uint64 variation_id = 12 [deprecated = true];
-}
-
-message TabNavigation {
-  // The page's URL as displayed to the user (which can be the actual page URL
-  // or a virtual override). It can be empty or, in rare cases, an unsyncable
-  // URL, so it is the receiver's responsibility to implement additional
-  // filtering before displaying these URLs or tabs in the UI.
-  optional string virtual_url = 2;
-  // The referring URL, which can be empty.
-  optional string referrer = 3;
-  // The title of the page.
-  optional string title = 4;
-  // The core transition type.
-  optional SyncEnums.PageTransition page_transition = 6 [default = LINK];
-  // If this transition was triggered by a redirect, the redirect type.
-  optional SyncEnums.PageTransitionRedirectType redirect_type = 7;
-  // The unique navigation id (within this client).
-  optional int32 unique_id = 8;
-  // Timestamp for when this navigation last occurred (in client time).
-  // If the user goes back/forward in history the timestamp may refresh.
-  optional int64 timestamp_msec = 9;
-  // User used the Forward or Back button to navigate among browsing history.
-  optional bool navigation_forward_back = 10;
-  // User used the address bar to trigger this navigation.
-  optional bool navigation_from_address_bar = 11;
-  // User is navigating to the home page.
-  optional bool navigation_home_page = 12;
-  // The id for this navigation, which is globally unique with high
-  // probability.
-  optional int64 global_id = 15;
-  // The favicon url associated with this page.
-  optional string favicon_url = 17;
-
-  // The status code from the last navigation.
-  optional int32 http_status_code = 20;
-
-  // Correct referrer policy. Valid enums are defined in
-  // third_party/WebKit/public/platform/WebReferrerPolicy.h.
-  optional int32 correct_referrer_policy = 25 [default = 1];
-
-  // Whether the Password Manager saw a password field on the page.
-  optional SyncEnums.PasswordState password_state = 26;
-
-  // The start/end of a redirect chain. Deprecated in M108 because they were
-  // always set to false in practice, and don't make sense in the first place -
-  // this message corresponds to a complete chain.
-  optional bool navigation_chain_start = 13 [deprecated = true];
-  optional bool navigation_chain_end = 14 [deprecated = true];
-  // Search terms extracted from the URL. Deprecated in M64.
-  optional string search_terms = 16 [deprecated = true];
-  enum BlockedState {
-    STATE_ALLOWED = 1;
-    STATE_BLOCKED = 2;
-  }
-  // Whether access to the URL was allowed or blocked. Deprecated in M121
-  // because it was unused.
-  optional BlockedState blocked_state = 18
-      [deprecated = true, default = STATE_ALLOWED];
-  // Referrer policy. Old, broken value. Deprecated in M61.
-  optional int32 obsolete_referrer_policy = 21 [deprecated = true];
-  // True if created from restored navigation entry that hasn't been loaded.
-  // Deprecated in M121 because it was unused.
-  optional bool is_restored = 22 [deprecated = true];
-  // The chain of redirections for this navigation, from the original URL
-  // through the last URL that redirected. Deprecated in M121 because it was
-  // unused.
-  repeated NavigationRedirect navigation_redirect = 23 [deprecated = true];
-  // The last URL traversed when different from the virtual_url. Deprecated in
-  // M121 because it was unused.
-  optional string last_navigation_redirect_url = 24 [deprecated = true];
-  // The id for the task associated with this navigation, which is globally
-  // unique with high probability. Deprecated in M121 because it was unused.
-  optional int64 task_id = 27 [deprecated = true];
-  // Task ids of all ancestor navigations, which can be from other tabs, from
-  // root to parent. Deprecated in M121 because it was unused.
-  repeated int64 ancestor_task_id = 28 [deprecated = true];
-  // When a history entry is replaced (e.g. history.replaceState()), this
-  // contained some information about the entry prior to being replaced.
-  // Deprecated in M121 because it was unused.
-  optional ReplacedNavigation replaced_navigation = 29 [deprecated = true];
-  // The page language as determined by its textual content. An ISO 639 language
-  // code (two letters, except for Chinese where a localization is necessary).
-  // Deprecated in M121 because it was unused.
-  optional string page_language = 30 [deprecated = true];
-
-  reserved 1;
-  reserved "index";
-  reserved 5;
-  reserved "state";
-  reserved 19;
-  reserved "content_pack_categories";
-}
-
-// Navigation information for a single redirection within a single navigation.
-message NavigationRedirect {
-  // A URL that redirected while navigating to the virtual_url.
-  optional string url = 1;
-}
-
-// Subset of TabNavigation fields representing a navigation that was later
-// replaced in history (e.g. history.replaceState()), which allows tracking
-// information about the original navigation prior to the first replacement.
-message ReplacedNavigation {
-  optional string first_committed_url = 1;
-  optional int64 first_timestamp_msec = 2;
-  optional SyncEnums.PageTransition first_page_transition = 3;
 }
