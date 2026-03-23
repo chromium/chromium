@@ -12,10 +12,14 @@ $trials = $headers['X-Web-Test-Enabled-Origin-Trials'];
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
-    test(function(){
+    promise_test(async function() {
         assert_equals("<?php echo($trials)?>", "FrobulatePersistent");
-        this.add_cleanup(function() {
-            window.open("support/cleanup.https.html");
+        await new Promise(resolve => {
+            const cleanupWindow = window.open("support/cleanup.https.html");
+            cleanupWindow.onload = () => {
+                cleanupWindow.close();
+                resolve();
+            };
         });
     }, "PersistentOriginTrial using Critical header");
 </script>

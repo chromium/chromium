@@ -36,13 +36,17 @@ if (!$child) {
 <script src="/resources/testharness.js"></script>
 <body>
 <script>
-    test(function() {
+    promise_test(async function() {
         // In the child, assert that the header is now applied without any
         // redirects
         assert_equals("<?php echo($trials)?>", "FrobulatePersistent");
 
-        this.add_cleanup(function() {
-            window.open("support/cleanup.https.html");
+        await new Promise(resolve => {
+            const cleanupWindow = window.open("support/cleanup.https.html");
+            cleanupWindow.onload = () => {
+                cleanupWindow.close();
+                resolve();
+            };
         });
     }, "PersistentInChild");
 </script>
