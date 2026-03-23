@@ -16,8 +16,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_local_data_batch_uploader.h"
@@ -224,7 +224,7 @@ void CommonControllerBuilder::SetAccessibilityAnnotatorBackend(
 }
 
 void CommonControllerBuilder::SetAccountSettingService(
-    autofill::AccountSettingService* account_setting_service) {
+    account_settings::AccountSettingService* account_setting_service) {
   account_setting_service_.Set(account_setting_service);
 }
 

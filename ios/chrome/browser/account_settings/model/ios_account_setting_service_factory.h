@@ -10,7 +10,7 @@
 
 class ProfileIOS;
 
-namespace autofill {
+namespace account_settings {
 class AccountSettingService;
 }
 
@@ -19,7 +19,8 @@ class AccountSettingService;
 class IOSAccountSettingServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static IOSAccountSettingServiceFactory* GetInstance();
-  static autofill::AccountSettingService* GetForProfile(ProfileIOS* profile);
+  static account_settings::AccountSettingService* GetForProfile(
+      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<IOSAccountSettingServiceFactory>;

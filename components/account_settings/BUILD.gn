@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("account_settings") {
+  sources = [
+    "account_setting_service.cc",
+    "account_setting_service.h",
+    "account_setting_sync_bridge.cc",
+    "account_setting_sync_bridge.h",
+    "account_setting_sync_util.cc",
+    "account_setting_sync_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync/model",
+  ]
+
+  deps = [
+    "//components/sync/base",
+    "//components/sync/protocol",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_setting_service_unittest.cc",
+    "account_setting_sync_bridge_unittest.cc",
+  ]
+
+  deps = [
+    ":account_settings",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

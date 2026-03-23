@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -30,7 +31,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -47,7 +47,7 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
     PrefService* prefs,
     const signin::IdentityManager* identity_manager,
     const syncer::SyncService* sync_service,
-    const AccountSettingService* account_setting_service,
+    const account_settings::AccountSettingService* account_setting_service,
     bool is_off_the_record,
     EntityDataManager* entity_data_manager)
     : weak_java_obj_(env, obj),

@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/account_settings",
     "//components/autofill/core/browser",
     "//components/sync/base:features",
     "//components/sync/model",

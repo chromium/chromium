@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
+#include "components/account_settings/account_setting_service.h"
 
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_sync_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace account_settings {
 
 namespace {
 
@@ -61,4 +61,4 @@ TEST_F(AccountSettingServiceTest, GetValue) {
 
 }  // namespace
 
-}  // namespace autofill
+}  // namespace account_settings

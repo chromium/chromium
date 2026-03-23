@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
+#define COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -11,7 +11,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
-namespace autofill {
+namespace account_settings {
 
 // Bridge for ACCOUNT_SETTING. Lives on the UI thread and is owned by
 // `AccountSettingService`.
@@ -91,6 +91,6 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
   base::WeakPtrFactory<AccountSettingSyncBridge> weak_factory_{this};
 };
 
-}  // namespace autofill
+}  // namespace account_settings
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_

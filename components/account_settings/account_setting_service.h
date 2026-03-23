@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
+#ifndef COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
+#define COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
 
 #include <memory>
 #include <string_view>
 
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
 }
 
-namespace autofill {
+namespace account_settings {
 
 // Manages settings stored in your Google account. These settings differ from
 // regular prefs, since they originate from the user's account and are available
@@ -48,6 +48,6 @@ class AccountSettingService : public KeyedService,
       scoped_observation_{this};
 };
 
-}  // namespace autofill
+}  // namespace account_settings
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
+#endif  // COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_

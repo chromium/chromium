@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
+#include "components/account_settings/account_setting_sync_util.h"
 
 #include <string>
 #include <variant>
 
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
-namespace autofill {
+namespace account_settings {
 
 sync_pb::AccountSettingSpecifics CreateSettingSpecifics(
     std::string_view name,
@@ -25,4 +25,4 @@ sync_pb::AccountSettingSpecifics CreateSettingSpecifics(
   return specifics;
 }
 
-}  // namespace autofill
+}  // namespace account_settings

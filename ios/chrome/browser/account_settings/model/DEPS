@@ -1,5 +1,7 @@
 include_rules = [
   # keep-sorted start
+  "+components/account_settings",
+  "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/sync/model",
   # keep-sorted end
 ]

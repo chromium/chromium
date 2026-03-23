@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
+#include "components/account_settings/account_setting_service.h"
 
 #include <memory>
 
@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -18,7 +18,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 
-namespace autofill {
+namespace account_settings {
 
 namespace {
 constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
@@ -29,7 +29,7 @@ constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
 // AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() to true.
 constexpr char kEnableAutofillWalletPrivacyContextualSurfacingForTesting[] =
     "enable-autofill-wallet-privacy-contextual-surfacing";
-}
+}  // namespace
 
 AccountSettingService::AccountSettingService(
     std::unique_ptr<AccountSettingSyncBridge> sync_bridge)
@@ -69,4 +69,4 @@ void AccountSettingService::OnDataLoadedFromDisk() {
                             IsWalletPrivacyContextualSurfacingEnabled());
 }
 
-}  // namespace autofill
+}  // namespace account_settings

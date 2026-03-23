@@ -54,6 +54,7 @@ source_set("model") {
     ":model_shared",
     "//base",
     "//base:i18n",
+    "//components/account_settings",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",

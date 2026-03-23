@@ -76,6 +76,7 @@ static_library("autofill") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
+    "//components/account_settings",
     "//components/autofill/content/browser",
     "//components/image_fetcher/core",
     "//components/prefs",

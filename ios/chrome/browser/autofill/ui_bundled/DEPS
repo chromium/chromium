@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/account_settings",
   "+components/plus_addresses/core/browser",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/device_reauth/model",

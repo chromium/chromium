@@ -37,6 +37,7 @@ source_set("sync_integration_tests_impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/test:browser_tests_runner",
     "//chrome/test:test_support",
+    "//components/account_settings",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/bookmarks/browser",

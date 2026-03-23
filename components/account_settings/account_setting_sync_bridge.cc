@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
 
 #include <memory>
 #include <optional>
@@ -19,7 +19,7 @@
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
-namespace autofill {
+namespace account_settings {
 
 namespace {
 
@@ -221,4 +221,4 @@ void AccountSettingSyncBridge::ReportErrorIfSet(
   RETURN_IF_ERROR(error);
 }
 
-}  // namespace autofill
+}  // namespace account_settings

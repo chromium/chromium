@@ -1879,6 +1879,7 @@ static_library("browser") {
     "//chrome/common/notifications",
     "//chrome/installer/util:with_no_strings",
     "//chrome/services/speech/buildflags",
+    "//components/account_settings",
     "//components/application_locale_storage",
     "//components/assist_ranker",
     "//components/autofill/content/browser",

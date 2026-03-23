@@ -28,23 +28,26 @@ namespace syncer {
 class SyncService;
 }
 
-namespace autofill {
-
+namespace account_settings {
 class AccountSettingService;
+}
+
+namespace autofill {
 
 // Android wrapper of the EntityDataManager which provides access from the
 // Java layer.
 class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
  public:
-  EntityDataManagerAndroid(JNIEnv* env,
-                           const jni_zero::JavaRef<jobject>& obj,
-                           const GoogleGroupsManager* google_groups_manager,
-                           PrefService* prefs,
-                           const signin::IdentityManager* identity_manager,
-                           const syncer::SyncService* sync_service,
-                           const AccountSettingService* account_setting_service,
-                           bool is_off_the_record,
-                           EntityDataManager* entity_data_manager);
+  EntityDataManagerAndroid(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jobject>& obj,
+      const GoogleGroupsManager* google_groups_manager,
+      PrefService* prefs,
+      const signin::IdentityManager* identity_manager,
+      const syncer::SyncService* sync_service,
+      const account_settings::AccountSettingService* account_setting_service,
+      bool is_off_the_record,
+      EntityDataManager* entity_data_manager);
 
   EntityDataManagerAndroid(const EntityDataManagerAndroid&) = delete;
   EntityDataManagerAndroid& operator=(const EntityDataManagerAndroid&) = delete;
@@ -129,7 +132,8 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<const signin::IdentityManager> identity_manager_;
   const raw_ptr<const syncer::SyncService> sync_service_;
-  const raw_ptr<const AccountSettingService> account_setting_service_;
+  const raw_ptr<const account_settings::AccountSettingService>
+      account_setting_service_;
   const bool is_off_the_record_;
 
   // Pointer to the EntityDataManager.

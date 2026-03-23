@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
+#include "components/account_settings/account_setting_sync_util.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/model_error.h"
@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace account_settings {
 
 namespace {
 
@@ -258,4 +258,4 @@ TEST_F(AccountSettingSyncBridgeTest, IsEntityDataValid) {
 
 }  // namespace
 
-}  // namespace autofill
+}  // namespace account_settings

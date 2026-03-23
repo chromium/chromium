@@ -201,6 +201,7 @@ source_set("impl") {
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/plus_addresses",
     "//chrome/browser/webdata_services",
+    "//components/account_settings",
     "//components/autofill/content/browser",
     "//components/autofill/content/browser:risk_proto",
     "//components/compose/core/browser",

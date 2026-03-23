@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_setting_service.h"
+#include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -27,9 +27,10 @@ AccountSettingServiceFactory* AccountSettingServiceFactory::GetInstance() {
 }
 
 // static
-AccountSettingService* AccountSettingServiceFactory::GetForBrowserContext(
+account_settings::AccountSettingService*
+AccountSettingServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<AccountSettingService*>(
+  return static_cast<account_settings::AccountSettingService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
@@ -49,9 +50,9 @@ std::unique_ptr<KeyedService>
 AccountSettingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<AccountSettingService>(
+  return std::make_unique<account_settings::AccountSettingService>(
       base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)
-          ? std::make_unique<AccountSettingSyncBridge>(
+          ? std::make_unique<account_settings::AccountSettingSyncBridge>(
                 std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
                     syncer::ACCOUNT_SETTING,
                     /*dump_stack=*/base::DoNothing()),

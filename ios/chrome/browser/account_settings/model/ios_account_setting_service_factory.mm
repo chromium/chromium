@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 
 #import "base/functional/callback_helpers.h"
-#import "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
-#import "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
+#import "components/account_settings/account_setting_service.h"
+#import "components/account_settings/account_setting_sync_bridge.h"
 #import "components/sync/base/features.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/data_type_store_service.h"
@@ -20,10 +20,11 @@ IOSAccountSettingServiceFactory::GetInstance() {
 }
 
 // static
-autofill::AccountSettingService* IOSAccountSettingServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<autofill::AccountSettingService>(
-      profile, /*create=*/true);
+account_settings::AccountSettingService*
+IOSAccountSettingServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<account_settings::AccountSettingService>(
+          profile, /*create=*/true);
 }
 
 IOSAccountSettingServiceFactory::IOSAccountSettingServiceFactory()
@@ -41,8 +42,8 @@ IOSAccountSettingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<autofill::AccountSettingService>(
-      std::make_unique<autofill::AccountSettingSyncBridge>(
+  return std::make_unique<account_settings::AccountSettingService>(
+      std::make_unique<account_settings::AccountSettingSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::ACCOUNT_SETTING,
               /*dump_stack=*/base::DoNothing()),

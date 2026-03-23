@@ -13,6 +13,7 @@ source_set("coordinator") {
     ":bridges",
     ":ui",
     "//base",
+    "//components/account_settings",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",

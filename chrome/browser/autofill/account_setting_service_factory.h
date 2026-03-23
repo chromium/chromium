@@ -12,16 +12,18 @@ namespace content {
 class BrowserContext;
 }
 
-namespace autofill {
-
+namespace account_settings {
 class AccountSettingService;
+}
+
+namespace autofill {
 
 // Factory responsible for creating `AccountSettingService`, which is
 // responsible for managing settings synced via `syncer::ACCOUNT_SETTING`.
 class AccountSettingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static AccountSettingServiceFactory* GetInstance();
-  static AccountSettingService* GetForBrowserContext(
+  static account_settings::AccountSettingService* GetForBrowserContext(
       content::BrowserContext* context);
 
  private:
