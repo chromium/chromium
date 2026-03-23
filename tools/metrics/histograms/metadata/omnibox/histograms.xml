@@ -1678,6 +1678,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="Usage">
     <variant name="" summary="Overall"/>
     <variant name=".AIMode" summary="AI Mode"/>
+    <variant name=".Canvas" summary="Canvas"/>
+    <variant name=".DeepSearch" summary="Deep Search"/>
     <variant name=".ImageGeneration" summary="Image generation"/>
     <variant name=".Search" summary="Search"/>
   </token>

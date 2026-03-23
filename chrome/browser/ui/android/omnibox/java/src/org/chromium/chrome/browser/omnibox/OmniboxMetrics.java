@@ -213,7 +213,9 @@ public class OmniboxMetrics {
      * Record whether the interaction with the Omnibox resulted with a navigation (true) or user
      * leaving the omnibox and suggestions list.
      *
+     * @param requestType The request type at session end.
      * @param focusResultedInNavigation Whether the user completed interaction with navigation.
+     * @param withAttachments Whether there were any attachemnts at session end.
      */
     public static void recordOmniboxFocusResultedInNavigation(
             @AutocompleteRequestType int requestType,
@@ -223,6 +225,8 @@ public class OmniboxMetrics {
                 switch (requestType) {
                     case AutocompleteRequestType.AI_MODE -> ".AIMode";
                     case AutocompleteRequestType.IMAGE_GENERATION -> ".ImageGeneration";
+                    case AutocompleteRequestType.CANVAS -> ".Canvas";
+                    case AutocompleteRequestType.DEEP_SEARCH -> ".DeepSearch";
                     default -> ".Search";
                 };
 
