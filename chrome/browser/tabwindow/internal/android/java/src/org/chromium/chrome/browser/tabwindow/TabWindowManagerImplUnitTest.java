@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -1271,5 +1272,105 @@ public class TabWindowManagerImplUnitTest {
 
         info = mSubject.getTabWindowInfoById(tab2.getId() + 1);
         assertNull(info);
+    }
+
+    @Test
+    public void testIsAllTabStateInitialized() {
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(
+                        activity0,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mMismatchedIndicesHandler0,
+                        0);
+
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+
+        TabWindowManager.Observer observer = mock(TabWindowManager.Observer.class);
+        mSubject.addObserver(observer);
+
+        assertFalse(mSubject.isAllTabStateInitialized());
+        verify(observer, never()).onAllTabModelStateInitialized();
+
+        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, selector0);
+        selector0.markTabStateInitialized();
+
+        doReturn(true).when(mArchivedTabModelSelector).isTabStateInitialized();
+        mSubject.setArchivedTabModelSelector(mArchivedTabModelSelector);
+        assertTrue(mSubject.isAllTabStateInitialized());
+        verify(observer).onAllTabModelStateInitialized();
+
+        destroyActivity(activityController0);
+    }
+
+    @Test
+    public void testIsAllTabStateInitialized_ArchivedLoadsFirst() {
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(
+                        activity0,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mMismatchedIndicesHandler0,
+                        0);
+
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+
+        ActivityController<Activity> activityController1 = createActivity();
+        Activity activity1 = activityController1.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(
+                        activity1,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mMismatchedIndicesHandler1,
+                        1);
+
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
+
+        TabWindowManager.Observer observer = mock();
+        mSubject.addObserver(observer);
+
+        // Simulate initialization flow.
+        MockTabModelSelector archivedSelector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        mSubject.setArchivedTabModelSelector(archivedSelector);
+
+        // The Archived model initialization hasn't finished yet.
+        assertFalse(mSubject.isAllTabStateInitialized());
+        verify(observer, never()).onAllTabModelStateInitialized();
+
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        instanceInfoList.add(
+                new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", null, 0, 0, false, 0, 0));
+        instanceInfoList.add(
+                new InstanceInfo(1, 0, InstanceInfo.Type.OTHER, "", "", null, 0, 0, false, 0, 0));
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
+                .thenReturn(instanceInfoList);
+
+        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, selector0);
+
+        // Simulate initialization completion
+        selector0.markTabStateInitialized();
+        selector1.markTabStateInitialized();
+        archivedSelector.markTabStateInitialized();
+
+        assertTrue(mSubject.isAllTabStateInitialized());
+        verify(observer, times(1)).onAllTabModelStateInitialized();
+
+        destroyActivity(activityController0);
+        destroyActivity(activityController1);
     }
 }

@@ -76,6 +76,13 @@ public interface TabWindowManager {
 
         /** Called when tab state is initialized. */
         default void onTabStateInitialized() {}
+
+        /**
+         * Called when the tab state for all persisted tab models, including the Archived Tab Model
+         * has been initialized. Clients should rely on {@link #onTabModelSelectorAdded()} to handle
+         * new selectors.
+         */
+        default void onAllTabModelStateInitialized() {}
     }
 
     /** Add an observer. */
@@ -264,4 +271,13 @@ public interface TabWindowManager {
      * not registered for a custom tab, will return -1.
      */
     int getTaskIdForCustomTab(TabModelSelector selector);
+
+    /**
+     * Returns whether tab state for all models, including the Archived Tab Model, has been
+     * initialized.
+     */
+    boolean isAllTabStateInitialized();
+
+    /** Returns the archived tab model selector or null if it hasn't been set. */
+    @Nullable TabModelSelector getArchivedTabModelSelector();
 }
