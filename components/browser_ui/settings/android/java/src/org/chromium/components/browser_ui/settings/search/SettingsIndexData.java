@@ -75,6 +75,7 @@ public class SettingsIndexData {
 
     public static void reset() {
         sInstance = null;
+        sNeedsIndexing = true;
     }
 
     /**
