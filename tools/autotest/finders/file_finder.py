@@ -301,3 +301,131 @@ def GetChangedTestFiles() -> list[str]:
     if IsTestFile(f) is const.TestValidity.VALID_TEST:
       test_files.append(f)
   return test_files
+
+
+def _GetPotentiallyRelatedTestFiles(basename: str, test_exts: list[str],
+                                    remote_search: bool) -> list[str]:
+  """Locate all test files starting with basename."""
+  if remote_search:
+    ext_pattern = '|'.join(e.strip('.') for e in test_exts)
+    cs_pattern = f'file:(^|/){basename}[^/]*\.({ext_pattern})$'
+    return _CodeSearchFiles([cs_pattern, 'pcre:true'])
+
+  rg_command: list[str] = ['rg', '--files']
+  for test_ext in test_exts:
+    rg_command.extend(['-g', f'{basename}*{test_ext}'])
+  rg_command.append(str(const.SRC_DIR))
+
+  try:
+    return command.RunCommand(rg_command).splitlines()
+  except CommandError as e:
+    if e.return_code == 1:
+      return []
+    raise
+
+
+def _CheckIfFileExists(basename: str, check_exts: list[str],
+                       remote_search: bool) -> bool:
+  """Checks existence with the given stem and any of the extensions."""
+  if remote_search:
+    check_ext_pattern = '|'.join(e.strip('.') for e in check_exts)
+    cs_check_pattern = f'file:(^|/){basename}\\.({check_ext_pattern})$'
+    return bool(_CodeSearchFiles([cs_check_pattern, 'pcre:true']))
+
+  rg_cmd = ['rg', '--files']
+  for check_ext in check_exts:
+    rg_cmd.extend(['-g', f'{basename}{check_ext}'])
+  rg_cmd.append(str(const.SRC_DIR))
+
+  try:
+    return bool(command.RunCommand(rg_cmd).strip())
+  except CommandError:
+    return False
+
+
+def _FindRelatedTestFiles(impl_path: str,
+                          remote_search: bool = False) -> list[str]:
+  """Finds test files related to an implementation file."""
+  # Uses iterative suffix removal as a heuristic.
+  _, filename = os.path.split(impl_path)
+  basename, ext = os.path.splitext(filename)
+
+  match ext:
+    case '.cc' | '.h' | '.mm':
+      test_exts = ['.cc', '.mm']
+      check_exts = ['.cc', '.h', '.mm']
+      split_pattern = r'_'  # snake_case
+      separator = '_'
+    case '.java':
+      test_exts = ['.java']
+      check_exts = ['.java']
+      split_pattern = r'(?=[A-Z])'  # PascalCase
+      separator = ''
+    case _:
+      # Only C++ and Java code files are supported.
+      return []
+
+  candidates = _GetPotentiallyRelatedTestFiles(basename, test_exts,
+                                               remote_search)
+
+  def generate_stems(name: str):
+    # Generator that iteratively yields the name
+    # with the last token peeled off.
+    parts = [p for p in re.split(split_pattern, name) if p]
+    while len(parts) > 1:
+      parts.pop()
+      yield separator.join(parts)
+
+  related_tests: list[str] = []
+  exists_cache: dict[str, bool] = {}
+
+  for candidate in candidates:
+    if IsTestFile(candidate) == const.TestValidity.NOT_A_TEST:
+      continue
+
+    cand_basename = pathlib.Path(candidate).stem
+
+    # Iteratively peel back one token at a time from the end of the filename.
+    # E.g. foo_manager_browser_test.cc would be peeled like:
+    # foo_manager_browser_test -> foo_manager_browser -> foo_manager -> foo
+    for current_stem in generate_stems(cand_basename):
+
+      # If we peeled back enough to match the original modified file exactly
+      # this test file is said to be related to the original target file.
+      if current_stem == basename:
+        related_tests.append(candidate)
+        break
+
+      # Otherwise, check if this intermediate stem exists as its own
+      # implementation file.
+      if current_stem not in exists_cache:
+        exists_cache[current_stem] = _CheckIfFileExists(current_stem,
+                                                        check_exts,
+                                                        remote_search)
+
+      # If this intermediate stem exists this test is not considered
+      # related the original target file.
+      if exists_cache[current_stem]:
+        break
+
+  return related_tests
+
+
+def GetRelatedTestFiles(remote_search: bool = False) -> list[str]:
+  """Gets files modified in git, and finds their related test files."""
+  changed_files = _GetChangedFiles()
+  related_test_files: set[str] = set()
+
+  if shutil.which('cs') is None:
+    remote_search = False
+
+  for f in changed_files:
+    # If the modified file is ALREADY a test file, just add it directly.
+    if IsTestFile(f) is const.TestValidity.VALID_TEST:
+      related_test_files.add(f)
+    else:
+      # If it's an implementation file, find the tests related to it.
+      related_test_files.update(
+          _FindRelatedTestFiles(f, remote_search=remote_search))
+
+  return sorted(related_test_files)

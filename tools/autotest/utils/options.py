@@ -16,6 +16,7 @@ class AutotestConfig:
   target_index: str | None
   path_index: str | None
   run_changed: bool | None
+  run_related: bool | None
   line: int | None
   gtest_filter: str | None
   test_policy_to_pref_mappings_filter: str | None
@@ -122,6 +123,13 @@ def autotest_options(f):
           '--run_changed',
           is_flag=True,
           help='Run tests files modified since this branch diverged from main.'
+      ),
+      click.option(
+          '--run-related',
+          '--run_related',
+          is_flag=True,
+          help=
+          'Run tests related to files modified since this branch diverged from main.'
       ),
       click.option('--line',
                    type=int,

@@ -92,8 +92,10 @@ def main(ctx, **kwargs) -> int:
 
   target_cache: target_finder.TargetCache = target_finder.TargetCache(out_dir)
 
-  if not config.run_changed and not config.files and not config.name:
-    raise click.UsageError('Specify a file to test or use --run-changed')
+  if (not config.run_changed and not config.run_related and not config.files
+      and not config.name):
+    raise click.UsageError(
+        'Specify a file to test or use --run-changed or --run-related')
 
   # Cog is almost unusable with local search, so turn on remote_search.
   use_remote_search: bool = config.remote_search
@@ -127,7 +129,12 @@ def main(ctx, **kwargs) -> int:
 
   if config.run_changed:
     files_to_test.extend(file_finder.GetChangedTestFiles())
-    # Remove duplicates.
+
+  if config.run_related:
+    files_to_test.extend(file_finder.GetRelatedTestFiles(use_remote_search))
+
+  # Ensure duplicates are removed.
+  if config.run_changed or config.run_related:
     files_to_test = list(set(files_to_test))
 
   filenames: list[str] = []
@@ -139,10 +146,9 @@ def main(ctx, **kwargs) -> int:
   if not filenames:
     command.ExitWithMessage('No associated test files found.')
 
-  targets, used_cache = target_finder.FindTestTargets(target_cache, out_dir,
-                                                      filenames, config.run_all,
-                                                      config.run_changed,
-                                                      config.target_index)
+  targets, used_cache = target_finder.FindTestTargets(
+      target_cache, out_dir, filenames, config.run_all, config.run_changed
+      or config.run_related, config.target_index)
 
   if not current_gtest_filter:
     current_gtest_filter = filters.BuildTestFilter(filenames, config.line)
@@ -167,10 +173,9 @@ def main(ctx, **kwargs) -> int:
     # cache is still valid.
     if used_cache and not target_cache.IsStillValid():
       target_cache = target_finder.TargetCache(out_dir)
-      new_targets, _ = target_finder.FindTestTargets(target_cache, out_dir,
-                                                     filenames, config.run_all,
-                                                     config.run_changed,
-                                                     config.target_index)
+      new_targets, _ = target_finder.FindTestTargets(
+          target_cache, out_dir, filenames, config.run_all, config.run_changed
+          or config.run_related, config.target_index)
       if targets != new_targets:
         # Note that this can happen, for example, if you rename a test target.
         click.echo('gn config was changed, trying to build again', err=True)

@@ -11,7 +11,7 @@ from unittest import mock
 import finders.file_finder as file_finder
 import finders.target_finder as target_finder
 import utils.constants as const
-from utils.command_error import AutotestError
+from utils.command_error import AutotestError, CommandError
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -338,6 +338,168 @@ class FindTestTargetsTest(TestCase):
     self.assertEqual(len(targets), 2)
     self.assertIn('chrome/test:browser_tests', targets)
     self.assertIn('chrome/test:unit_tests', targets)
+
+
+class FindRelatedTestFilesTest(TestCase):
+
+  def setUp(self):
+    super().setUp()
+    self.setUpPyfakefs()
+    self.fs.create_dir(const.SRC_DIR)
+
+    # Mock RunCommand to simulate ripgrep calls
+    self.mock_run_command = mock.patch('utils.command_util.RunCommand').start()
+    self.addCleanup(mock.patch.stopall)
+
+  def _create_command_error(self):
+    """Helper to safely throw a CommandError with a return_code property."""
+    # Pass the message and the return_code directly into the constructor
+    return CommandError('rg no match', 1)
+
+  def test_cxx_exact_match(self):
+    self.fs.create_file('foo_unittest.cc', contents='TEST(A, B) {}')
+    self.mock_run_command.return_value = 'foo_unittest.cc'
+
+    results = file_finder._FindRelatedTestFiles('foo.cc')
+    self.assertEqual(['foo_unittest.cc'], results)
+
+  def test_cxx_modifier_applied(self):
+    # Case: foo_bar_browsertest.cc belongs to foo.cc
+    test_file = 'foo_bar_browsertest.cc'
+    self.fs.create_file(test_file, contents='TEST(A, B) {}')
+
+    def rg_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      if 'foo*' in cmd_str:
+        return test_file
+      # Simulate existence check failing for intermediate stem
+      # (foo_bar).
+      if ('foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str):
+        raise self._create_command_error()
+      return ''
+
+    self.mock_run_command.side_effect = rg_mock
+    results = file_finder._FindRelatedTestFiles('foo.cc')
+    self.assertEqual([test_file], results)
+
+  def test_cxx_different_file(self):
+    # Case: foo_bar_unittest.cc belongs to foo_bar.cc,
+    # so it should NOT be returned when foo.cc is modified.
+    test_file = 'foo_bar_unittest.cc'
+    self.fs.create_file(test_file, contents='TEST(A, B) {}')
+
+    def rg_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      if 'foo*' in cmd_str:
+        return test_file
+      # Simulate finding the intermediate stem file
+      if ('foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str):
+        return 'foo_bar.cc'
+      raise self._create_command_error()
+
+    self.mock_run_command.side_effect = rg_mock
+    results = file_finder._FindRelatedTestFiles('foo.cc')
+    self.assertEqual([], results)
+
+  def test_java_exact_match(self):
+    self.fs.create_file('FooTest.java', contents='@Test')
+    self.mock_run_command.return_value = 'FooTest.java'
+
+    results = file_finder._FindRelatedTestFiles('Foo.java')
+    self.assertEqual(['FooTest.java'], results)
+
+  def test_java_modifier_applied(self):
+    # Case: FooBarTest.java belongs to Foo.java
+    test_file = 'FooBarTest.java'
+    self.fs.create_file(test_file, contents='@Test')
+
+    def rg_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      if 'Foo*' in cmd_str:
+        return test_file
+      # FooBar.java does NOT exist
+      if 'FooBar.java' in cmd_str:
+        raise self._create_command_error()
+      return ''
+
+    self.mock_run_command.side_effect = rg_mock
+    results = file_finder._FindRelatedTestFiles('Foo.java')
+    self.assertEqual([test_file], results)
+
+  def test_java_different_file(self):
+    # Case: FooBarTest.java belongs to FooBar.java
+    test_file = 'FooBarTest.java'
+    self.fs.create_file(test_file, contents='@Test')
+
+    def rg_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      if 'Foo*' in cmd_str:
+        return test_file
+      # FooBar.java DOES exist
+      if 'FooBar.java' in cmd_str:
+        return 'FooBar.java'
+      raise self._create_command_error()
+
+    self.mock_run_command.side_effect = rg_mock
+    results = file_finder._FindRelatedTestFiles('Foo.java')
+    self.assertEqual([], results)
+
+  def test_java_different_file_modifier_applied(self):
+    # Case: FooBarIntegrationTest.java belongs to
+    # FooBar.java. It has a modifier (Integration),
+    # but it still belongs to the Bar, NOT Foo.java.
+    # Therefore, it should NOT be returned when Foo.java
+    # is modified.
+    test_file = 'FooBarIntegrationTest.java'
+    self.fs.create_file(test_file, contents='@Test')
+
+    def rg_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      # 1. Candidate search finds our test file.
+      if 'Foo*' in cmd_str:
+        return test_file
+      # 2. First peel: FooBarIntegration.java does NOT exist.
+      if 'FooBarIntegration.java' in cmd_str:
+        raise self._create_command_error()
+      # 3. Second peel: FooBar.java DOES exist.
+      if 'FooBar.java' in cmd_str:
+        return 'FooBar.java'
+      raise self._create_command_error()
+
+    self.mock_run_command.side_effect = rg_mock
+    results = file_finder._FindRelatedTestFiles('Foo.java')
+
+    # Assert that the test is correctly discarded!
+    self.assertEqual([], results)
+
+  def test_unsupported_extension(self):
+    # Non-supported files should return empty immediately without
+    # querying rg.
+    results = file_finder._FindRelatedTestFiles('README.md')
+    self.assertEqual([], results)
+    self.mock_run_command.assert_not_called()
+
+  @mock.patch('shutil.which', return_value='/usr/bin/csearch')
+  @mock.patch('finders.file_finder._CodeSearchFiles')
+  def test_remote_search(self, mock_cs, mock_which):
+    test_file = 'foo_bar_browsertest.cc'
+    self.fs.create_file(test_file, contents='TEST(A, B) {}')
+
+    def cs_mock(cmd):
+      cmd_str = ' '.join(cmd)
+      # Candidate search
+      if 'foo[^/]*\\.' in cmd_str:
+        return [test_file]
+      # Existence check for intermediate stem.
+      if 'foo_bar\\.' in cmd_str:
+        return []
+      return []
+
+    mock_cs.side_effect = cs_mock
+
+    results = file_finder._FindRelatedTestFiles('foo.cc', remote_search=True)
+    self.assertEqual([test_file], results)
+    self.mock_run_command.assert_not_called()
 
 if __name__ == '__main__':
   unittest.main()
