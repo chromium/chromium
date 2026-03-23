@@ -161,8 +161,9 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                     const base::UnguessableToken& execution_id,
                     ScriptToolError&& error);
 
-  void OnToolExecuted(const base::UnguessableToken& execution_id,
-                      std::optional<String> result);
+  void OnToolExecuted(
+      const base::UnguessableToken& execution_id,
+      base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
   void OnToolChange();
   void MaybeRecordToolCount();

@@ -37,6 +37,13 @@ Invoked {
 }
 Responded {
     errorText :
+    exception : {
+        className : Error
+        description : Error: JS Error     at failing_js (<anonymous>:21:48)     at window.executeFailingJS (<anonymous>:52:49)     at <anonymous>:1:8
+        objectId : <string>
+        subtype : error
+        type : object
+    }
     invocationId : <string 2>
     status : Error
 }

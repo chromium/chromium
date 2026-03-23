@@ -151,8 +151,8 @@ class ModelContext::ToolFunctionFinishedCallback
   ~ToolFunctionFinishedCallback() override = default;
 
   void React(ScriptState* script_state, ScriptValue value) {
-    std::optional<String> result;
     if (success_) {
+      std::optional<String> result;
       if (value.IsObject()) {
         v8::Local<v8::String> json_string;
         if (v8::JSON::Stringify(script_state->GetContext(), value.V8Value())
@@ -172,12 +172,13 @@ class ModelContext::ToolFunctionFinishedCallback
       if (!result || result->empty()) {
         result = "Operation succeeded";
       }
+      model_context_->OnToolExecuted(execution_id_, *result);
     } else {
       V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                       value.V8Value());
+      model_context_->OnToolExecuted(
+          execution_id_, base::unexpected(std::make_pair(value, script_state)));
     }
-
-    model_context_->OnToolExecuted(execution_id_, std::move(result));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -291,7 +292,8 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
 void ModelContext::OnToolFailed(ScriptToolExecutedCallback callback,
                                 const base::UnguessableToken& execution_id,
                                 ScriptToolError&& error) {
-  probe::WebMCPToolFailed(document_, error, execution_id);
+  probe::WebMCPToolFailed(document_, error, execution_id,
+                          /*exception=*/std::nullopt);
   task_runner_->PostTask(
       FROM_HERE,
       blink::BindOnce(std::move(callback), base::unexpected(std::move(error))));
@@ -421,7 +423,8 @@ void ModelContext::ExecuteDeclarativeTool(
                 probe::WebMCPToolResponded(document, *result, execution_id);
               }
             } else {
-              probe::WebMCPToolFailed(document, result.error(), execution_id);
+              probe::WebMCPToolFailed(document, result.error(), execution_id,
+                                      /*exception=*/std::nullopt);
             }
             std::move(tool_executed_cb).Run(result);
           },
@@ -525,19 +528,20 @@ void ModelContext::RegisterDeclarativeTool(
   OnToolChange();
 }
 
-void ModelContext::OnToolExecuted(const base::UnguessableToken& execution_id,
-                                  std::optional<String> result) {
+void ModelContext::OnToolExecuted(
+    const base::UnguessableToken& execution_id,
+    base::expected<String, std::pair<ScriptValue, ScriptState*>> result) {
   auto it = pending_executions_.find(String(execution_id.ToString()));
   if (it == pending_executions_.end()) {
     return;
   }
 
-  if (result) {
-    probe::WebMCPToolResponded(document_, *result, execution_id);
-    std::move(it->value.callback).Run(*result);
+  if (result.has_value()) {
+    probe::WebMCPToolResponded(document_, result.value(), execution_id);
+    std::move(it->value.callback).Run(result.value());
   } else {
     ScriptToolError error(ScriptToolErrorCode::kToolInvocationFailed);
-    probe::WebMCPToolFailed(document_, error, execution_id);
+    probe::WebMCPToolFailed(document_, error, execution_id, result.error());
     std::move(it->value.callback).Run(base::unexpected(error));
   }
   pending_executions_.erase(it);

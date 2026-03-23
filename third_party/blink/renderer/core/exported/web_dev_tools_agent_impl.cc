@@ -357,7 +357,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   session->CreateAndAppend<InspectorMemoryAgent>(inspected_frames);
   if (base::FeatureList::IsEnabled(features::kDevToolsWebMCPSupport)) {
-    session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames);
+    session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames,
+                                                   session->V8Session());
   }
 
   auto* page_agent = session->CreateAndAppend<InspectorPageAgent>(

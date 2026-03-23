@@ -81,8 +81,8 @@ experimental domain WebMCP
       InvocationStatus status
       # Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
       optional object output
-      # Error text for protocol users
+      # Error text for protocol users.
       optional string errorText
-      # Exception details if errorred from JS with details like stacktrace.
-      # TODO optional Runtime.ExceptionDetails exceptionDetails
+      # The exception object, if the javascript tool threw an error>
+      optional Runtime.RemoteObject exception
 

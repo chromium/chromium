@@ -9,13 +9,17 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/protocol/web_mcp.h"
+#include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
-InspectorWebMCPAgent::InspectorWebMCPAgent(InspectedFrames* inspected_frames)
+InspectorWebMCPAgent::InspectorWebMCPAgent(
+    InspectedFrames* inspected_frames,
+    v8_inspector::V8InspectorSession* v8_session)
     : inspected_frames_(inspected_frames),
+      v8_session_(v8_session),
       enabled_(&agent_state_, /*default_value=*/false) {}
 InspectorWebMCPAgent::~InspectorWebMCPAgent() = default;
 
@@ -153,12 +157,22 @@ void InspectorWebMCPAgent::WebMCPToolResponded(
 void InspectorWebMCPAgent::WebMCPToolFailed(
     Document* document,
     const ScriptToolError& error,
-    const base::UnguessableToken& execution_id) {
-  GetFrontend()->toolResponded(
-      String(execution_id.ToString()),
-      error.code == ScriptToolErrorCode::kToolCancelled
-          ? protocol::WebMCP::InvocationStatusEnum::Canceled
-          : protocol::WebMCP::InvocationStatusEnum::Error,
-      {}, error.message);
+    const base::UnguessableToken& execution_id,
+    std::optional<std::pair<ScriptValue, ScriptState*>> exception) {
+  const char* status = error.code == ScriptToolErrorCode::kToolCancelled
+                           ? protocol::WebMCP::InvocationStatusEnum::Canceled
+                           : protocol::WebMCP::InvocationStatusEnum::Error;
+  std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
+      remote_object;
+  if (exception && !exception->first.IsEmpty()) {
+    ScriptState* script_state = exception->second;
+    ScriptState::Scope scope(script_state);
+    remote_object = v8_session_->wrapObject(script_state->GetContext(),
+                                            exception->first.V8Value(),
+                                            v8_inspector::StringView(), false);
+  }
+
+  GetFrontend()->toolResponded(String(execution_id.ToString()), status, nullptr,
+                               error.message, std::move(remote_object));
 }
 }  // namespace blink
