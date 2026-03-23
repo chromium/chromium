@@ -14,7 +14,7 @@
 namespace {
 
 // Pattern tile size.
-const CGSize kBarricadeTapeTileSize = CGSizeMake(10.0, 10.0);
+const CGSize kBarricadeTapeTileSize = {10.0, 10.0};
 // Height of the barricade tape.
 const CGFloat kBarricadeTapeHeight = 6.0;
 
