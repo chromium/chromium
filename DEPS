@@ -1209,7 +1209,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/chrome/android/orderfiles/arm64',
-              'version': '_GI3WC6uk_guL__W8qUKiPyJdvDZd-71eoJdTOqUqz0C',
+              'version': '9BjBI7DwjSFEHWxDpfazI3emZ0bCM7AN4GTj3FkDxQsC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
