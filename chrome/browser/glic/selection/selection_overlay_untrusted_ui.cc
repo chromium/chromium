@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
@@ -85,6 +86,8 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       "bottomLeftSliderAriaLabel",
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
   html_source->AddBoolean("enableMultiRegionSelection", true);
+  html_source->AddResourcePath("glic_region_selection_cursor_icon.svg",
+                               IDR_GLIC_REGION_SELECTION_CURSOR_ICON);
 
   // TODO(b/489801993): Refactor shared resources into a common directory to
   // avoid manual path concatenation for Lens and the Glic selection overlay.

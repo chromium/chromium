@@ -22,6 +22,7 @@ source_set("selection") {
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/resources/glic/selection_overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",

@@ -124,6 +124,10 @@ export class SelectionOverlayElementElement extends
     }
   }
 
+  protected override get defaultCursorIconUrl() {
+    return 'url("/glic_region_selection_cursor_icon.svg")';
+  }
+
   override handleGestureStart() {
     super.handleGestureStart();
     if (this.selectionElements.postSelectionRenderer.handleGestureStart(
