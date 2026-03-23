@@ -43,6 +43,7 @@ class JpegThumbnailHelper {
             base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                 post_read_task);
   void Delete(thumbnail::TabId tab_id);
+  void DeleteAllExceptForIds(std::vector<thumbnail::TabId> tab_ids);
 
  private:
   friend class JpegThumbnailHelperTest;
@@ -50,6 +51,7 @@ class JpegThumbnailHelper {
   // Member function to retrieve the JPEG file path using the stored base
   // path, and is exposed primarily for unit testing purposes.
   base::FilePath GetJpegFilePath(thumbnail::TabId tab_id);
+  base::FilePath GetJpegFileName(thumbnail::TabId tab_id);
 
   const base::FilePath base_path_;
 

@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
 #include <algorithm>
+#include <string>
 
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace thumbnail {
@@ -75,6 +79,23 @@ void DeleteTask(base::FilePath file_path) {
   }
 }
 
+void DeleteAllExceptForIdsTask(base::FilePath base_path_,
+                               absl::flat_hash_set<base::FilePath> safe_files) {
+  if (!base::PathExists(base_path_)) {
+    return;
+  }
+
+  base::FileEnumerator file_iter(base_path_, false,
+                                 base::FileEnumerator::FILES);
+  while (!file_iter.Next().empty()) {
+    base::FileEnumerator::FileInfo info = file_iter.GetInfo();
+    if (!safe_files.contains(info.GetName())) {
+      base::FilePath child = base_path_.Append(info.GetName());
+      base::DeleteFile(child);
+    }
+  }
+}
+
 }  // anonymous namespace
 
 JpegThumbnailHelper::JpegThumbnailHelper(
@@ -133,9 +154,23 @@ void JpegThumbnailHelper::Delete(TabId tab_id) {
                               base::BindOnce(&DeleteTask, file_path));
 }
 
+void JpegThumbnailHelper::DeleteAllExceptForIds(std::vector<TabId> tab_ids) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  absl::flat_hash_set<base::FilePath> file_names(tab_ids.size());
+  for (TabId tab_id : tab_ids) {
+    file_names.insert(GetJpegFileName(tab_id));
+  }
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DeleteAllExceptForIdsTask, base_path_,
+                                std::move(file_names)));
+}
+
 base::FilePath JpegThumbnailHelper::GetJpegFilePath(TabId tab_id) {
-  base::FilePath file_path = base_path_.Append(base::NumberToString(tab_id));
-  return file_path.AddExtension(".jpeg");
+  return base_path_.Append(GetJpegFileName(tab_id));
+}
+
+base::FilePath JpegThumbnailHelper::GetJpegFileName(TabId tab_id) {
+  return base::FilePath(base::NumberToString(tab_id)).AddExtension(".jpeg");
 }
 
 }  // namespace thumbnail
