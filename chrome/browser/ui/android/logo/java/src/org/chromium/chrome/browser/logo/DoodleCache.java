@@ -23,7 +23,7 @@ public class DoodleCache {
     private @Nullable Logo mCachedDoodle;
     private long mCachedDoodleTimeMillis;
     private @Nullable String mCachedDoodleKeyword;
-    // 12 hours cache validity.
+    // 1 hour cache validity.
     private static final long CACHE_TTL_MS = 60 * 60 * 1000;
 
     /** Static class that implements the initialization-on-demand holder idiom. */

@@ -73,8 +73,8 @@ public class DoodleCacheUnitTest {
         String keyword = "keyword";
         mDoodleCache.updateCachedDoodle(mLogo, keyword);
 
-        // Advance time by 12 hours + 1 ms.
-        mFakeTimeTestRule.advanceMillis(12 * 60 * 60 * 1000 + 1);
+        // Advance time by 1 hour + 1 ms.
+        mFakeTimeTestRule.advanceMillis(60 * 60 * 1000 + 1);
 
         assertNull(mDoodleCache.getCachedDoodle(keyword));
     }
