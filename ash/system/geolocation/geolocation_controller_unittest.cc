@@ -156,6 +156,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
 
   // AshTestBase:
   void TearDown() override {
+    timer_ptr_ = nullptr;
     controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -221,7 +222,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
  private:
   std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<base::OneShotTimer, DanglingUntriaged> timer_ptr_;
+  raw_ptr<base::OneShotTimer> timer_ptr_;
   Geoposition position_;
 };
 
