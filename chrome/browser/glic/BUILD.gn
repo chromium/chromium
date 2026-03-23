@@ -729,6 +729,7 @@ if (!is_android) {
     sources = [
       "glic_settings_util_interactive_uitest.cc",
       "glic_user_status_interactive_uitest.cc",
+      "host/glic_actor_attempt_form_filling_interactive_ui_test.cc",
       "host/glic_actor_autofill_interactive_uitest.cc",
       "host/glic_actor_click_tool_interactive_uitest.cc",
       "host/glic_actor_drag_and_release_tool_interactive_uitest.cc",
@@ -772,6 +773,8 @@ if (!is_android) {
       "//chrome/browser:global_features",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/actor:tools_test_support",
+      "//chrome/browser/autofill/actor:test_support",
       "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:test_support",

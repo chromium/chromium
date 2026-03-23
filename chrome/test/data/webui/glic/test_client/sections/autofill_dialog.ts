@@ -27,14 +27,59 @@ function handleRequest(request: SelectAutofillSuggestionsDialogRequest) {
     li_form.textContent =
         `Form for requestedData: ${formFillingRequest.requestedData}`;
 
-    const notifyPresentedBtn = document.createElement('button');
-    notifyPresentedBtn.textContent = 'Notify Form Presented';
-    notifyPresentedBtn.addEventListener('click', () => {
+    const notifyFormPresentedBtn = document.createElement('button');
+    notifyFormPresentedBtn.textContent = 'Notify Form Presented';
+    notifyFormPresentedBtn.id = `notify-form-presented-${formIndex}`;
+    notifyFormPresentedBtn.addEventListener('click', () => {
       request.onFormPresented?.({formFillingRequestIndex: formIndex});
       logMessage(
           `Notified form presented for formFillingRequestIndex ${formIndex}`);
     });
-    li_form.appendChild(notifyPresentedBtn);
+    li_form.appendChild(notifyFormPresentedBtn);
+
+    const suggestionActionsContainer = document.createElement('div');
+
+    const suggestionInput = document.createElement('input');
+    suggestionInput.type = 'text';
+    suggestionInput.id = `suggestion-input-${formIndex}`;
+    if (formFillingRequest.suggestions.length > 0) {
+      suggestionInput.value = formFillingRequest.suggestions[0]!.id;
+    }
+    suggestionActionsContainer.appendChild(suggestionInput);
+
+    const previewInput = document.createElement('button');
+    previewInput.textContent = 'Preview';
+    previewInput.id = `preview-input-btn-${formIndex}`;
+    previewInput.addEventListener('click', () => {
+      if (suggestionInput.value !== '') {
+        request.onFormPreviewChanged?.({
+          formFillingRequestIndex: formIndex,
+          response: {selectedSuggestionId: suggestionInput.value},
+        });
+      } else {
+        request.onFormPreviewChanged?.({
+          formFillingRequestIndex: formIndex,
+        });
+      }
+      logMessage(`Preview started for formFillingRequestIndex ${
+          formIndex}, id ${suggestionInput.value}`);
+    });
+    suggestionActionsContainer.appendChild(previewInput);
+
+    const confirmFormBtn = document.createElement('button');
+    confirmFormBtn.textContent = 'Confirm';
+    confirmFormBtn.id = `confirm-form-btn-${formIndex}`;
+    confirmFormBtn.addEventListener('click', () => {
+      request.onFormConfirmed?.({
+        formFillingRequestIndex: formIndex,
+        response: {selectedSuggestionId: suggestionInput.value},
+      });
+      logMessage(`Form confirmed for formFillingRequestIndex ${formIndex}, id ${
+          suggestionInput.value}`);
+    });
+    suggestionActionsContainer.appendChild(confirmFormBtn);
+
+    li_form.appendChild(suggestionActionsContainer);
 
     const ul_suggestions = document.createElement('ul');
     for (const suggestion of formFillingRequest.suggestions) {
@@ -130,12 +175,17 @@ $.cancelAutofillSuggestionsDialog.addEventListener('click', () => {
 
 
 client.getInitialized().then(() => {
+  const statusDiv = document.createElement('div');
+  statusDiv.id = 'autofill-setup-status';
+  document.body.appendChild(statusDiv);
   const handler =
       client.browser?.selectAutofillSuggestionsDialogRequestHandler?.();
   if (handler) {
+    statusDiv.textContent = 'handler-found';
     handler.subscribe(handleRequest);
     clearUi();
   } else {
+    statusDiv.textContent = 'handler-NOT-found';
     $.autofillSuggestionsDialogSection.hidden = true;
     logMessage('Autofill suggestion dialog handler not available.');
   }
