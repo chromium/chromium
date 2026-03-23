@@ -31,6 +31,17 @@ TEST_F(NavigationHandleDataDelegateTest, GetEncryptionProtocol_NoSslInfo) {
   EXPECT_EQ("Unencrypted", delegate.GetEncryptionProtocol());
 }
 
+TEST_F(NavigationHandleDataDelegateTest, GetEncryptionProtocol_UnknownVersion) {
+  content::MockNavigationHandle navigation_handle;
+  navigation_handle.set_url(GURL("https://example.com/"));
+  // connection_status is 0 by default, which is SSL_CONNECTION_VERSION_UNKNOWN.
+  net::SSLInfo ssl_info;
+  navigation_handle.set_ssl_info(ssl_info);
+
+  NavigationHandleDataDelegate delegate(navigation_handle);
+  EXPECT_EQ("Unknown", delegate.GetEncryptionProtocol());
+}
+
 struct EncryptionProtocolTestParam {
   const int ssl_version;
   const char* const expected_protocol;

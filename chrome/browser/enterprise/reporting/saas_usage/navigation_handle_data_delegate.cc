@@ -22,9 +22,12 @@ std::string NavigationHandleDataDelegate::GetEncryptionProtocol() const {
   if (!ssl_info.has_value()) {
     return "Unencrypted";
   }
-  const char* encryption_protocol = "";
   net::SSLVersion ssl_version =
       net::SSLConnectionStatusToVersion(ssl_info->connection_status);
+  if (ssl_version == net::SSL_CONNECTION_VERSION_UNKNOWN) {
+    return "Unknown";
+  }
+  const char* encryption_protocol = "";
   net::SSLVersionToString(&encryption_protocol, ssl_version);
   return encryption_protocol;
 }
