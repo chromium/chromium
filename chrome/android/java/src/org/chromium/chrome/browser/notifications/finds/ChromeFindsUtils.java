@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -101,11 +102,21 @@ public class ChromeFindsUtils {
     }
 
     /**
+     * Checks if the current device type is supported. Chrome finds notifications are not designed
+     * for Automotive, TV and XR form factors. This is a proactive guardrailing for notification
+     * settings activity crashes that tips notifications saw on these form factors.
+     */
+    public static boolean isSupportedDeviceType() {
+        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
+    }
+
+    /**
      * Returns whether the bottom sheet should be shown. This will be checked by the tab helper
      * triggering the opt-in bottom sheet to show.
      */
     public static boolean shouldShowOptInPromo() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_FINDS)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_FINDS)
+                || !isSupportedDeviceType()) {
             return false;
         }
         if (shouldAlwaysShowOptInPromo()) {

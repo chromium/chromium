@@ -44,6 +44,7 @@ public final class DeviceInfo {
 
     private static @Nullable String sGmsVersionCodeForTesting;
     private static @Nullable Boolean sIsAutomotiveForTesting;
+    private static @Nullable Boolean sIsTVForTesting;
     private static boolean sInitialized;
     private static @Nullable Boolean sIsXrForTesting;
     private static @Nullable Boolean sIsRetailDemoModeForTesting;
@@ -112,6 +113,14 @@ public final class DeviceInfo {
     public static void setIsAutomotiveForTesting(boolean isAutomotive) {
         sIsAutomotiveForTesting = isAutomotive;
         ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
+    public static void setIsTVForTesting(boolean isTV) {
+        sIsTVForTesting = isTV;
+        ResettersForTesting.register(() -> sIsTVForTesting = null);
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -287,6 +296,9 @@ public final class DeviceInfo {
                 uiModeManager != null
                         && uiModeManager.getCurrentModeType()
                                 == Configuration.UI_MODE_TYPE_TELEVISION;
+        if (sIsTVForTesting != null) {
+            mIDeviceInfo.isTv = sIsTVForTesting;
+        }
 
         boolean isAutomotive;
         try {
@@ -337,6 +349,9 @@ public final class DeviceInfo {
                 getDeviceWidthInDp() >= LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
 
         mIDeviceInfo.isXr = pm.hasSystemFeature("android.software.xr.api.openxr");
+        if (sIsXrForTesting != null) {
+            mIDeviceInfo.isXr = sIsXrForTesting;
+        }
     }
 
     @NativeMethods

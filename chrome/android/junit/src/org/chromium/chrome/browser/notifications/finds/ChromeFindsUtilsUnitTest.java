@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -185,7 +186,7 @@ public class ChromeFindsUtilsUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void testShouldShowBottomSheet_FlagDisabled() {
+    public void shouldShowOptInPromo_FlagDisabled() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED);
         assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
@@ -193,13 +194,34 @@ public class ChromeFindsUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void testShouldShowBottomSheet_FlagEnabled() {
+    public void shouldShowOptInPromo_FlagEnabled() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED);
         assertTrue(ChromeFindsUtils.shouldShowOptInPromo());
 
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED, true);
+        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
+    public void shouldShowOptInPromo_Automotive() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
+    public void shouldShowOptInPromo_XR() {
+        DeviceInfo.setIsXrForTesting(true);
+        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
+    public void shouldShowOptInPromo_TV() {
+        DeviceInfo.setIsTVForTesting(true);
         assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
     }
 
