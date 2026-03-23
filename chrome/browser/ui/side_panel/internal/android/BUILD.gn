@@ -6,6 +6,11 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel/internal:*",
+  ]
   sources = [
     "side_panel_coordinator_android.cc",
     "side_panel_coordinator_android.h",
@@ -56,6 +61,7 @@ source_set("unit_tests") {
     ":android",
     "//base",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_jni",
     "//testing/gmock",
     "//testing/gtest",

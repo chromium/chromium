@@ -2796,6 +2796,7 @@ if (!is_android) {
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/send_tab_to_self:browser_tests",
       "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:browser_tests",

@@ -88,6 +88,23 @@ source_set("side_panel_views_dependent") {
   }
 }
 
+source_set("side_panel_ui_provider") {
+  sources = [
+    "side_panel_ui_provider.cc",
+    "side_panel_ui_provider.h",
+  ]
+  deps = [
+    ":side_panel",
+    ":side_panel_views_dependent",
+    "//chrome/browser/ui/browser_window",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/side_panel/internal/android" ]
+  } else {
+    deps += [ "//chrome/browser/ui/views/side_panel" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "side_panel_entry_key_unittest.cc" ]
