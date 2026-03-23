@@ -25,6 +25,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#include "media/gpu/dolby_vision_metadata.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+
 namespace media {
 
 // Clients of this class are expected to pass H265 Annex-B byte stream
@@ -391,6 +395,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
   gfx::HDRMetadata hdr_metadata_;
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  std::vector<DolbyVisionMetadata> dolby_vision_metadata_;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
   const std::unique_ptr<H265Accelerator> accelerator_;
 };

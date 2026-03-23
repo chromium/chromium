@@ -385,6 +385,13 @@ source_set("common") {
     ]
   }
 
+  if (enable_platform_dolby_vision) {
+    sources += [
+      "dolby_vision_metadata.cc",
+      "dolby_vision_metadata.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
@@ -647,6 +654,9 @@ source_set("unit_tests") {
   ]
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [ "h265_decoder_unittest.cc" ]
+  }
+  if (enable_platform_dolby_vision) {
+    sources += [ "dolby_vision_metadata_unittest.cc" ]
   }
   if (is_linux || is_chromeos) {
     sources += [ "buffer_validation_unittest.cc" ]

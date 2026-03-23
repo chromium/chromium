@@ -11,8 +11,13 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#include "media/gpu/dolby_vision_metadata.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
 namespace media {
 
@@ -56,6 +61,15 @@ class MEDIA_GPU_EXPORT CodecPicture
     hdr_metadata_ = hdr_metadata;
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  const std::vector<DolbyVisionMetadata>& dolby_vision_metadata() const {
+    return dolby_vision_metadata_;
+  }
+  void set_dolby_vision_metadata(std::vector<DolbyVisionMetadata> metadata) {
+    dolby_vision_metadata_ = std::move(metadata);
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+
  protected:
   friend class base::RefCountedThreadSafe<CodecPicture>;
   virtual ~CodecPicture();
@@ -66,6 +80,9 @@ class MEDIA_GPU_EXPORT CodecPicture
   std::unique_ptr<DecryptConfig> decrypt_config_;
   VideoColorSpace colorspace_;
   gfx::HDRMetadata hdr_metadata_;
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  std::vector<DolbyVisionMetadata> dolby_vision_metadata_;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 };
 
 }  // namespace media

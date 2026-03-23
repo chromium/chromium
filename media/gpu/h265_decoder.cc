@@ -197,6 +197,10 @@ void H265Decoder::Reset() {
   decoder_buffer_.reset();
   secure_handle_ = 0;
 
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  dolby_vision_metadata_.clear();
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+
   state_ = kAfterReset;
 }
 
@@ -515,6 +519,16 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         }
         break;
       }
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      case H265NALU::UNSPEC62: {
+        // Reference: Dolby's open-source `dlb_mp4base` HEVC parser treats
+        // `NAL_UNIT_UNSPECIFIED_62` as a Dolby Vision RPU NAL:
+        // https://github.com/DolbyLaboratories/dlb_mp4base/blob/8da6d4a8fc095a88349fbdac33e7e68fb3b93649/src/esparser/parser_hevc.c#L1233
+        dolby_vision_metadata_.push_back(DolbyVisionMetadata::FromH265(
+            curr_nalu_->data, decoder_buffer_->timestamp()));
+        break;
+      }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;
@@ -1284,6 +1298,16 @@ H265Decoder::H265Accelerator::Status H265Decoder::DecodePicture() {
 bool H265Decoder::OutputPic(scoped_refptr<H265Picture> pic) {
   DCHECK(!pic->outputted_);
   pic->outputted_ = true;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  // Downstream Dolby Vision processing consumes metadata in output order and
+  // maintains its own cache. Attach the currently accumulated metadata batch to
+  // this outputted picture so the downstream pipeline can continue consuming it
+  // in display order.
+  if (!dolby_vision_metadata_.empty()) {
+    pic->set_dolby_vision_metadata(std::exchange(dolby_vision_metadata_, {}));
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
   DVLOG(4) << "Posting output task for POC: " << pic->pic_order_cnt_val_;
   return accelerator_->OutputPicture(std::move(pic));
