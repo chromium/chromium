@@ -281,26 +281,17 @@ export class ActionChipsElement extends CrLitElement {
     return `${prefix}${subtitle}`;
   }
 
-  protected getChipTitle_(chip: ActionChip) {
-    const suggestion = chip.suggestion;
+  protected getChipTitle_(chip: ActionChip): string {
+    const primaryText = chip.suggestTemplateInfo.primaryText;
+    const secondaryText = chip.suggestTemplateInfo.secondaryText;
 
-    if (!chip.tab) {
-      return suggestion;
+    const primary = primaryText?.a11yText || primaryText?.text || '';
+    const secondary = secondaryText?.a11yText || secondaryText?.text || '';
+
+    if (primary && secondary) {
+      return `${primary} ${secondary}`;
     }
-
-    const tabTitle = chip.tab.title;
-    const url = new URL(chip.tab.url);
-    const domain = url.hostname.replace(/^www\./, '');
-
-    if (chip.suggestTemplateInfo.typeIcon === IconType.kFavicon) {
-      return `${tabTitle}\n${domain}`;
-    }
-
-    if (chip.suggestTemplateInfo.typeIcon === IconType.kSubArrowRight) {
-      return `${suggestion}\n${domain}`;
-    }
-
-    return suggestion;
+    return primary || secondary || '';
   }
 }
 
