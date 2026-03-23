@@ -16,8 +16,6 @@ from core import path_util
 path_util.AddTelemetryToPath()
 
 from core import bot_platforms
-from core import dump_bot_platforms
-
 
 
 class ScheduleValidationTest(unittest.TestCase):
@@ -124,57 +122,6 @@ win-10-perf,2,1
     for name in sorted(list(legacy_keys)):
       with self.subTest(benchmark=name):
         self.assertEqual(legacy_map[name], csv_map[name])
-
-  def testCompareSchedules(self):
-    # TODO: remove once migration is complete.
-    legacy_platforms_list = bot_platforms.CreateLegacySchedule()
-    legacy_bots = {p.name: p for p in legacy_platforms_list}
-    csv_platforms_set = bot_platforms.LoadAllScheduleFiles()
-    csv_bots = {p.name: p for p in csv_platforms_set}
-
-    self.assertEqual(set(legacy_bots.keys()), set(csv_bots.keys()),
-                     "Bot list mismatch")
-
-    for bot, legacy_platform in legacy_bots.items():
-      with self.subTest(bot=bot):
-        csv_platform = csv_bots[bot]
-
-        # Compare benchmark_configs
-        legacy_benchmarks = [
-            dump_bot_platforms.serialize_benchmark_config(b)
-            for b in legacy_platform.benchmark_configs
-        ]
-        csv_benchmarks = [
-            dump_bot_platforms.serialize_benchmark_config(b)
-            for b in csv_platform.benchmark_configs
-        ]
-        self.assert_configs_equal(legacy_benchmarks, csv_benchmarks,
-                                  "Benchmark configs", bot)
-
-        # Compare executables
-        legacy_executables = [
-            dump_bot_platforms.serialize_executable_config(e)
-            for e in legacy_platform.executables
-        ]
-        csv_executables = [
-            dump_bot_platforms.serialize_executable_config(e)
-            for e in csv_platform.executables
-        ]
-        self.assert_configs_equal(legacy_executables, csv_executables,
-                                  "Executable configs", bot)
-
-        # Compare crossbench
-        legacy_crossbench = [
-            dump_bot_platforms.serialize_crossbench_config(c)
-            for c in legacy_platform.crossbench
-        ]
-        csv_crossbench = [
-            dump_bot_platforms.serialize_crossbench_config(c)
-            for c in csv_platform.crossbench
-        ]
-        self.assert_configs_equal(legacy_crossbench, csv_crossbench,
-                                  "Crossbench configs", bot)
-
 
 if __name__ == '__main__':
   unittest.main()
