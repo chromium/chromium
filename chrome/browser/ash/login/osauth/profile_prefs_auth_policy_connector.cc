@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -38,6 +39,23 @@ PrefService* GetPrefsForUser(const AccountId& account) {
   CHECK(user);
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   CHECK(profile);
+  return profile->GetPrefs();
+}
+
+// Safe version of `GetPrefsForUser` which won't crash in case the `account_id`
+// is invalid, or there's no associated `User` or `Profile`.
+PrefService* GetPrefsForUserSafe(const AccountId& account_id) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
+    LOG(WARNING) << "No user found for the given account ID: " << account_id;
+    return nullptr;
+  }
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  if (!profile) {
+    LOG(WARNING) << "No profile found for the user: " << account_id;
+    return nullptr;
+  }
   return profile->GetPrefs();
 }
 
@@ -84,8 +102,9 @@ std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
 std::optional<LocalAuthFactorsComplexity>
 ProfilePrefsAuthPolicyConnector::GetLocalAuthFactorsComplexity(
     const AccountId& account) {
-  const PrefService* pref_service = GetPrefsForUser(account);
-  if (!pref_service->HasPrefPath(prefs::kLocalAuthFactorsComplexity)) {
+  const PrefService* pref_service = GetPrefsForUserSafe(account);
+  if (!pref_service ||
+      !pref_service->HasPrefPath(prefs::kLocalAuthFactorsComplexity)) {
     return std::nullopt;
   }
   int val = pref_service->GetInteger(prefs::kLocalAuthFactorsComplexity);
