@@ -266,6 +266,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called for the fullscreen update animation.
   void FullscreenProgressUpdatedForAnimation();
 
+  // Configures Gemini for the authenticated user.
+  void ConfigureGemini();
+
   // Called when the page content sharing preference changes.
   void OnPageContentPrefChanged();
 
