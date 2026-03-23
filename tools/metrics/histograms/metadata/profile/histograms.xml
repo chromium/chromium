@@ -954,12 +954,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.SignInProviderStep"
-    enum="ProfilePickerSignInProviderStep" expires_after="2026-03-17">
+    enum="ProfilePickerSignInProviderStep" expires_after="2026-09-14">
   <owner>droger@google.com</owner>
+  <owner>ernn@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records steps from the ProfilePickerSignInProvider, when they are reached.
-    Introduced for debugging https://crbug.com/445316497
+    Introduced for debugging https://crbug.com/445316497, extended to provide
+    better insights into the flow during the FRE refresh project.
   </summary>
 </histogram>
 
