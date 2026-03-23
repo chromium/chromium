@@ -4,29 +4,46 @@ Instructions for working in `//remoting/codec`.
 
 ## Architecture Overview
 
-The `codec` directory contains the audio and video encoding/decoding logic used
-by Chrome Remote Desktop to stream the host's screen and audio to the client.
+The `codec` directory contains the audio and video encoding/decoding logic.
+Chrome Remote Desktop has migrated to WebRTC-based video encoding; much of the
+non-WebRTC code in this directory is obsolete and scheduled for deletion.
 
 ### Video Codecs
-Remoting uses WebRTC to transmit video, but it implements custom wrappers and
-encoders optimized for low-latency desktop streaming.
-*   **Supported Codecs:** VP8, VP9, and AV1.
-*   **`WebrtcVideoEncoder`:** The base interface for video encoders used by the
-    remoting WebRTC transport.
-*   **Implementations:** `WebrtcVideoEncoderVpx`, `WebrtcVideoEncoderAv1`, and
-    `WebrtcVideoEncoderGpu` (for hardware encoding).
-*   **Verbatim:** `VideoEncoderVerbatim` is a lossless, uncompressed fallback
-    used in specific scenarios or tests.
+
+#### Current Implementation (WebRTC-based)
+CRD implements custom wrappers around WebRTC encoders, optimized for low-latency
+desktop streaming.
+*   **Base Interface:** `WebrtcVideoEncoder`
+*   **Active Encoders:**
+    *   `WebrtcVideoEncoderVpx`: Handles VP8 and VP9 encoding.
+    *   `WebrtcVideoEncoderAv1`: Handles AV1 encoding. This is the default codec
+        used for CRD sessions.
+*   **Experimental / Unsupported:**
+    *   `WebrtcVideoEncoderGpu`: Hardware-accelerated encoding. It is compiled
+        on Windows and Linux, but is not currently supported for general usage.
+
+#### Obsolete / Legacy Codecs
+The following classes are part of the legacy non-WebRTC pipeline. They are
+not actively used and will be deleted soon:
+*   `VideoEncoderVpx` / `VideoDecoderVpx`
+*   `VideoEncoderVerbatim` / `VideoDecoderVerbatim` (Lossless fallback)
+*   `VideoEncoder` / `VideoDecoder` (Base interfaces for legacy pipeline)
 
 ### Audio Codecs
-*   **Opus:** CRD exclusively uses Opus for audio encoding.
-*   **`AudioEncoderOpus` / `AudioDecoderOpus`:** The primary classes handling
-    audio streams.
+*   **Opus:** CRD exclusively uses Opus for audio streaming.
+*   * WebRTC is currently used for Opus encoding and decoding.
+*   **Deprecated Classes:** `AudioEncoderOpus` and `AudioDecoderOpus`.
+
+### Utilities
+*   `VideoEncoderHelper`: Provides common functionality for managing active
+    maps and frame regions across different encoder implementations.
+*   `ScopedVpxCodec`: A helper for managing the lifetime of `vpx_codec_ctx`.
 
 ## Key Files to Read
-*   `remoting/codec/webrtc_video_encoder.h`: The base interface for video
-    encoding.
+*   `remoting/codec/webrtc_video_encoder.h`: The primary video encoding
+    interface.
+*   `remoting/codec/webrtc_video_encoder_aom.h`: Provides the AV1 encoder which
+    is the default and most commonly used video encoder implementation.
+*   `remoting/codec/webrtc_video_encoder_vpx.h`: Provides the VP8 and VP9
+    encoders which are used for fallback or compatibility.
 *   `remoting/codec/audio_encoder.h`: The base interface for audio encoding.
-*   `remoting/codec/video_encoder_helper.h`: Helps manage active maps and frame
-    regions for optimized encoding.
-
