@@ -405,6 +405,8 @@ class CONTENT_EXPORT PrerenderHost {
     return attributes_.prerender_action_type;
   }
 
+  bool form_submission() const { return attributes_.form_submission; }
+
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
   bool were_headers_received() const { return were_headers_received_; }
