@@ -48,6 +48,8 @@ struct DownloadTaskDetails {
   // Creates a DownloadTaskDetails struct for when the permanent path is known
   // to the AutoDeletionService but before the user's enrollment decision is
   // set.
+  // DEPRECATED. Use the struct directly instead.
+  // TODO(crbug.com/492481945) Remove this struct.
   static DownloadTaskDetails DetailsForPermanentPath(
       const base::FilePath permanent_path) {
     DownloadTaskDetails details;
@@ -60,6 +62,8 @@ struct DownloadTaskDetails {
   // Creates a DownloadTaskDetails struct for when the user's enrollment
   // decision is known to the AutoDeletionService but before the downloaded
   // file's permanent path is set.
+  // DEPRECATED. Use the struct directly instead.
+  // TODO(crbug.com/492481945) Remove this struct.
   static DownloadTaskDetails DetailsForEnrollmentDecision(
       DeletionEnrollmentStatus decision) {
     DownloadTaskDetails details;
@@ -87,6 +91,8 @@ class AutoDeletionService : public web::DownloadTaskObserver {
   // a reference (i.e marks) to `task` for later when `task` is moved to its
   // permanent location and it is scheduled for Auto-deletion if
   // `isScheduledForAutoDeletion` is true.
+  // DEPRECATED. Use `SetEnrollmentStatus` instead.
+  // TODO(crbug.com/492481945) Remove this function.
   void MarkTaskForDeletion(web::DownloadTask* task,
                            DeletionEnrollmentStatus status);
 
@@ -96,17 +102,38 @@ class AutoDeletionService : public web::DownloadTaskObserver {
   // this function stores a reference (i.e marks) to `task` and associates its
   // file location `path` for later when the user decides to enable or disable
   // Auto-deletion for `task`.
+  // DEPRECATED. Use `SetDownloadPath` instead.
+  // TODO(crbug.com/492481945) Remove this function.
   void MarkTaskForDeletion(web::DownloadTask* task, const base::FilePath& path);
 
   // Schedules a file for auto-deletion if the DownloadTask associated with
   // `task_id` was marked for Auto-deletion.
+  // DEPRECATED. This will no longer be offered as a public function soon.
+  // TODO(crbug.com/492481945) Remove this function.
   void ScheduleFileForDeletion(const std::string& task_id);
+
+  // Sets the download task that the AutoDeletionService should process. The
+  // download task is expected to be set once per download and before the other
+  // setters functions are called.
+  void SetDownloadTask(web::DownloadTask*);
+
+  // Sets the enrollment status of the download task.
+  void SetEnrollmentStatus(DeletionEnrollmentStatus status);
+
+  // Sets the file path where the downloaded content is permanently located.
+  void SetDownloadPath(const base::FilePath& path);
+
+  // Returns the download's content size in bytes.
+  int64_t GetDownloadSizeInBytes();
 
   // Deletes the files that have been marked as ready for deletion.
   void RemoveScheduledFilesReadyForDeletion(base::OnceClosure closure);
 
   // Untracks all the files that were scheduled for auto-deletion.
   void Clear();
+
+  // Resets the AutoDeletionService to prepare for an upcoming download.
+  void Reset();
 
  private:
   base::ScopedMultiSourceObservation<web::DownloadTask,
@@ -115,27 +142,45 @@ class AutoDeletionService : public web::DownloadTaskObserver {
 
   // Invoked after the download task data is read from data. It finishes
   // scheduling the file for deletion.
+  // TODO(crbug.com/492481945) Remove this function
   void UpdateAwaitingTaskOnResponseData(const std::string& task_id,
                                         NSData* data);
 
   // Updates the DownloadTaskDetails::file_content property associated with
   // `task_id` if `data` is not null.
+  // TODO(crbug.com/492481945) Remove this function
   void MaybeUpdateAwaitingTaskFileContent(const std::string& task_id,
                                           NSData* data);
+
+  // Invoked after the download task data is read from data. It finishes
+  // scheduling the file for deletion.
+  void SetFileContent(NSData* data);
+
+  // Schedules the download task for auto-deletion if all preconditions are met.
+  void MaybeScheduleFileForDeletion();
 
   // Notifies the Scheduler to remove its expired ScheduledFiles.
   void OnFilesDeletedFromDisk(base::Time instant, base::OnceClosure closure);
 
   // Checks whether all the preconditions necessary to schedule a file for
   // Auto-deletion are set.
+  // TODO(crbug.com/492481945) Remove this function and use
+  // AreAllPreconditionsMet() instead.
   bool AreAllPreconditionsMet(const std::string& task);
 
+  // Checks whether all the preconditions necessary to schedule a file for
+  // Auto-deletion are set.
+  bool AreAllPreconditionsMet();
+
   // Removes the task from observation once it is finished.
+  // TODO(crbug.com/492481945) Remove this function
   void MaybeRemoveObservation(web::DownloadTask* task);
 
   // web::DownloadTaskObserver:
   void OnDownloadUpdated(web::DownloadTask* download_task) override;
   void OnDownloadDestroyed(web::DownloadTask* download_task) override;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The Scheduler object which tracks and manages the downloaded files
   // scheduled for automatic deletion.
@@ -146,6 +191,13 @@ class AutoDeletionService : public web::DownloadTaskObserver {
   // permanent file location.
   std::unordered_map<std::string, DownloadTaskDetails>
       tasks_awaiting_scheduling_;
+
+  // The download task that the AutoDeletionService is currently processing.
+  raw_ptr<web::DownloadTask> download_task_;
+
+  // The details associated with the download task that the AutoDeletionService
+  // is currently processing.
+  DownloadTaskDetails download_task_details_;
 
   // Weak factory.
   base::WeakPtrFactory<AutoDeletionService> weak_ptr_factory_{this};

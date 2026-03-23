@@ -92,12 +92,14 @@ TEST_F(AutoDeletionServiceTest, ScheduleOneFileForDeletion) {
   // Create web::DownloadTask & schedule download for auto deletion.
   std::unique_ptr<web::DownloadTask> task = CreateTask(directory());
   web::DownloadTask* task_ptr = task.get();
+  service()->SetDownloadTask(task_ptr);
   service()->MarkTaskForDeletion(
       task_ptr, auto_deletion::DeletionEnrollmentStatus::kEnrolled);
   service()->MarkTaskForDeletion(task_ptr, directory());
 
   // Check that the pref has one value.
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
+  service()->Reset();
 }
 
 TEST_F(AutoDeletionServiceTest,
@@ -105,12 +107,14 @@ TEST_F(AutoDeletionServiceTest,
   // Create web::DownloadTask & schedule download for auto deletion.
   std::unique_ptr<web::DownloadTask> task = CreateTask(directory());
   web::DownloadTask* task_ptr = task.get();
+  service()->SetDownloadTask(task_ptr);
   service()->MarkTaskForDeletion(task_ptr, directory());
   service()->MarkTaskForDeletion(
       task_ptr, auto_deletion::DeletionEnrollmentStatus::kEnrolled);
 
   // Check that the pref has one value.
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
+  service()->Reset();
 }
 
 // Tests that the auto deletion service successfully schedules multiple file for
@@ -126,6 +130,7 @@ TEST_F(AutoDeletionServiceTest, ScheduleMultipleFilesForDeletion) {
   // Invoke the FileSchedule on all the `tasks`.
   for (const auto& task : tasks) {
     web::DownloadTask* task_ptr = task.get();
+    service()->SetDownloadTask(task_ptr);
     service()->MarkTaskForDeletion(
         task_ptr, auto_deletion::DeletionEnrollmentStatus::kEnrolled);
     service()->MarkTaskForDeletion(task_ptr, directory());
@@ -133,6 +138,7 @@ TEST_F(AutoDeletionServiceTest, ScheduleMultipleFilesForDeletion) {
 
   // Check that the pref has multiple values.
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+  service()->Reset();
 }
 
 TEST_F(AutoDeletionServiceTest, DeleteOneFileScheduledForDeletion) {
@@ -214,6 +220,7 @@ TEST_F(AutoDeletionServiceTest,
   std::unique_ptr<web::FakeDownloadTask> task = CreateTask(directory());
   task->SetState(web::DownloadTask::State::kInProgress);
   web::DownloadTask* task_ptr = task.get();
+  service()->SetDownloadTask(task_ptr);
 
   service()->MarkTaskForDeletion(
       task_ptr, auto_deletion::DeletionEnrollmentStatus::kEnrolled);
@@ -228,6 +235,7 @@ TEST_F(AutoDeletionServiceTest,
       }));
 
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
+  service()->Reset();
 }
 
 }  // namespace auto_deletion
