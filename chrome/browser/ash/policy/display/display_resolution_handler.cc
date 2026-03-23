@@ -10,8 +10,6 @@
 
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
-#include "base/functional/bind.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -212,8 +210,7 @@ void DisplayResolutionHandler::ApplyChanges(
 
     resized_display_ids_.insert(display_unit_info.id);
     ash::DisplayConfigResult result = cros_display_config.SetDisplayProperties(
-        base::NumberToString(display_unit_info.id), *new_config,
-        ash::DisplayConfigSource::kPolicy);
+        display_unit_info.id, *new_config, ash::DisplayConfigSource::kPolicy);
     if (result == ash::DisplayConfigResult::kSuccess) {
       VLOG(1) << "Successfully changed display mode.";
     } else {

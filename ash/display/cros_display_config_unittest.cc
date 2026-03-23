@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -118,17 +117,16 @@ class CrosDisplayConfigTest : public AshTestBase {
   }
 
   DisplayConfigResult SetDisplayProperties(
-      const std::string& id,
+      int64_t display_id,
       const DisplayConfigProperties& properties) {
     return cros_display_config_->SetDisplayProperties(
-        id, properties, DisplayConfigSource::kUser);
+        display_id, properties, DisplayConfigSource::kUser);
   }
 
-  bool OverscanCalibration(int64_t id,
+  bool OverscanCalibration(int64_t display_id,
                            DisplayCalibrationOperation op,
                            const std::optional<gfx::Insets>& delta) {
-    return cros_display_config()->OverscanCalibration(base::NumberToString(id),
-                                                      op, delta) ==
+    return cros_display_config()->OverscanCalibration(display_id, op, delta) ==
            DisplayConfigResult::kSuccess;
   }
 
@@ -138,26 +136,26 @@ class CrosDisplayConfigTest : public AshTestBase {
     return display.id() != display::kInvalidDisplayId;
   }
 
-  bool StartTouchCalibration(const std::string& display_id) {
+  bool StartTouchCalibration(int64_t display_id) {
     return CallTouchCalibration(display_id, DisplayCalibrationOperation::kStart,
                                 std::nullopt);
   }
 
   bool CompleteCustomTouchCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       const display::TouchCalibrationData& calibration) {
     return CallTouchCalibration(
         display_id, DisplayCalibrationOperation::kComplete, calibration);
   }
 
   bool CallTouchCalibration(
-      const std::string& id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration) {
     DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->TouchCalibration(
-        id, op, calibration,
+        display_id, op, calibration,
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result == DisplayConfigResult::kSuccess;
@@ -299,8 +297,7 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnifiedWithZoomFactors) {
   for (auto zoom_factor : zoom_factors) {
     DisplayConfigProperties properties;
     properties.display_zoom_factor = zoom_factor;
-    DisplayConfigResult result =
-        SetDisplayProperties(base::NumberToString(primary_id), properties);
+    DisplayConfigResult result = SetDisplayProperties(primary_id, properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_TRUE(display_manager()->IsInUnifiedMode());
     EXPECT_EQ(zoom_factor,
@@ -456,8 +453,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesPrimary) {
 
   DisplayConfigProperties properties;
   properties.set_primary = true;
-  DisplayConfigResult result =
-      SetDisplayProperties(base::NumberToString(secondary_id), properties);
+  DisplayConfigResult result = SetDisplayProperties(secondary_id, properties);
   EXPECT_EQ(DisplayConfigResult::kSuccess, result);
 
   // secondary display should now be primary.
@@ -473,8 +469,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
 
   DisplayConfigProperties properties;
   properties.overscan = gfx::Insets::TLBR(199, 20, 51, 130);
-  DisplayConfigResult result =
-      SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+  DisplayConfigResult result = SetDisplayProperties(secondary.id(), properties);
   EXPECT_EQ(DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1200, 0, 150, 250), secondary.bounds());
   const gfx::Insets overscan =
@@ -494,8 +489,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   {
     DisplayConfigProperties properties;
     properties.rotation = DisplayRotationOptions::k90Degrees;
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
     EXPECT_EQ(display::Display::ROTATE_90, secondary.rotation());
@@ -504,8 +498,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   {
     DisplayConfigProperties properties;
     properties.rotation = DisplayRotationOptions::k270Degrees;
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
     EXPECT_EQ(display::Display::ROTATE_270, secondary.rotation());
@@ -516,8 +509,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
     DisplayConfigProperties properties;
     properties.set_primary = true;
     properties.rotation = DisplayRotationOptions::k180Degrees;
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     const display::Display& primary =
         display::Screen::Get()->GetPrimaryDisplay();
@@ -536,8 +528,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
   {
     DisplayConfigProperties properties;
     properties.bounds_origin = gfx::Point({-520, 50});
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(-520, 50, 520, 400), secondary.bounds());
   }
@@ -545,8 +536,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
   {
     DisplayConfigProperties properties;
     properties.bounds_origin = gfx::Point({1200, 100});
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(1200, 100, 520, 400), secondary.bounds());
   }
@@ -554,8 +544,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
   {
     DisplayConfigProperties properties;
     properties.bounds_origin = gfx::Point({1100, -400});
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(1100, -400, 520, 400), secondary.bounds());
   }
@@ -563,8 +552,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
   {
     DisplayConfigProperties properties;
     properties.bounds_origin = gfx::Point({-350, 600});
-    auto result =
-        SetDisplayProperties(base::NumberToString(secondary.id()), properties);
+    auto result = SetDisplayProperties(secondary.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(gfx::Rect(-350, 600, 520, 400), secondary.bounds());
   }
@@ -598,8 +586,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
     {
       DisplayConfigProperties properties;
       properties.display_zoom_factor = zoom_factor_1;
-      auto result = SetDisplayProperties(
-          base::NumberToString(display_id_list[0]), properties);
+      auto result = SetDisplayProperties(display_id_list[0], properties);
       EXPECT_EQ(DisplayConfigResult::kSuccess, result);
       EXPECT_EQ(
           zoom_factor_1,
@@ -613,8 +600,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
     {
       DisplayConfigProperties properties;
       properties.display_zoom_factor = zoom_factor_2;
-      auto result = SetDisplayProperties(
-          base::NumberToString(display_id_list[1]), properties);
+      auto result = SetDisplayProperties(display_id_list[1], properties);
       EXPECT_EQ(DisplayConfigResult::kSuccess, result);
       EXPECT_EQ(
           zoom_factor_1,
@@ -629,8 +615,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
       const float invalid_zoom_factor = 0.01f;
       DisplayConfigProperties properties;
       properties.display_zoom_factor = invalid_zoom_factor;
-      auto result = SetDisplayProperties(
-          base::NumberToString(display_id_list[1]), properties);
+      auto result = SetDisplayProperties(display_id_list[1], properties);
       EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError, result);
       EXPECT_EQ(
           zoom_factor_2,
@@ -649,9 +634,8 @@ TEST_F(CrosDisplayConfigTest, SetDisplayMode) {
 
   DisplayConfigProperties properties;
   properties.display_mode = result[0].available_display_modes[0];
-  ASSERT_EQ(
-      DisplayConfigResult::kSuccess,
-      SetDisplayProperties(base::NumberToString(result[0].id), properties));
+  ASSERT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(result[0].id, properties));
 
   result = GetDisplayUnitInfoList();
   ASSERT_EQ(2u, result.size());
@@ -708,8 +692,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInternal) {
 
   InitExternalTouchDevices(internal_display_id);
 
-  EXPECT_FALSE(
-      StartTouchCalibration(base::NumberToString(internal_display_id)));
+  EXPECT_FALSE(StartTouchCalibration(internal_display_id));
   EXPECT_FALSE(IsTouchCalibrationActive());
 }
 
@@ -734,14 +717,12 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationNonTouchDisplay) {
                                  : display_id_list[0];
 
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices({});
-  std::string id = base::NumberToString(display_id);
-
   // Since no external touch devices are present, the calibration should fail.
-  EXPECT_FALSE(StartTouchCalibration(id));
+  EXPECT_FALSE(StartTouchCalibration(display_id));
 
   // If an external touch device is present, the calibration should proceed.
   InitExternalTouchDevices(display_id);
-  EXPECT_TRUE(StartTouchCalibration(id));
+  EXPECT_TRUE(StartTouchCalibration(display_id));
   EXPECT_TRUE(IsTouchCalibrationActive());
 }
 
@@ -762,21 +743,19 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInvalidPoints) {
 
   InitExternalTouchDevices(display_id);
 
-  std::string id = base::NumberToString(display_id);
-
   {
-    EXPECT_TRUE(StartTouchCalibration(id));
+    EXPECT_TRUE(StartTouchCalibration(display_id));
     display::TouchCalibrationData calibration;
     calibration.point_pairs[0].first.set_x(-1);
-    EXPECT_FALSE(CompleteCustomTouchCalibration(id, calibration));
+    EXPECT_FALSE(CompleteCustomTouchCalibration(display_id, calibration));
   }
 
   {
-    EXPECT_TRUE(StartTouchCalibration(id));
+    EXPECT_TRUE(StartTouchCalibration(display_id));
     display::TouchCalibrationData calibration;
     calibration.bounds.set_width(1);
     calibration.point_pairs[0].first.set_x(2);
-    EXPECT_FALSE(CompleteCustomTouchCalibration(id, calibration));
+    EXPECT_FALSE(CompleteCustomTouchCalibration(display_id, calibration));
   }
 }
 
@@ -797,12 +776,10 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
 
   InitExternalTouchDevices(display_id);
 
-  std::string id = base::NumberToString(display_id);
-
-  EXPECT_TRUE(StartTouchCalibration(id));
+  EXPECT_TRUE(StartTouchCalibration(display_id));
   EXPECT_TRUE(IsTouchCalibrationActive());
   display::TouchCalibrationData calibration;
-  EXPECT_TRUE(CompleteCustomTouchCalibration(id, calibration));
+  EXPECT_TRUE(CompleteCustomTouchCalibration(display_id, calibration));
 }
 
 TEST_F(CrosDisplayConfigTest, TabletModeAutoRotationInternalOnly) {
@@ -851,8 +828,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   {
     DisplayConfigProperties properties;
     properties.rotation = DisplayRotationOptions::kAutoRotate;
-    auto result =
-        SetDisplayProperties(base::NumberToString(display.id()), properties);
+    auto result = SetDisplayProperties(display.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
     EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
@@ -870,8 +846,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   {
     DisplayConfigProperties properties;
     properties.rotation = DisplayRotationOptions::k90Degrees;
-    auto result =
-        SetDisplayProperties(base::NumberToString(display.id()), properties);
+    auto result = SetDisplayProperties(display.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
     EXPECT_EQ(display::Display::ROTATE_90, display.rotation());
@@ -897,8 +872,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   {
     DisplayConfigProperties properties;
     properties.rotation = DisplayRotationOptions::kAutoRotate;
-    auto result =
-        SetDisplayProperties(base::NumberToString(display.id()), properties);
+    auto result = SetDisplayProperties(display.id(), properties);
     EXPECT_EQ(DisplayConfigResult::kSuccess, result);
     EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
     // Unlocking auto-rotate doesn't actually change the display rotation. It

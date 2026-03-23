@@ -8,8 +8,6 @@
 
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
-#include "base/functional/callback_helpers.h"
-#include "base/strings/string_number_conversions.h"
 
 namespace policy {
 
@@ -114,9 +112,9 @@ void DisplayRotationDefaultHandler::ApplyChanges(
     ash::DisplayConfigProperties config_properties;
     config_properties.rotation =
         RotationOptionsFromDisplayRotation(display_rotation_default_);
-    cros_display_config.SetDisplayProperties(
-        base::NumberToString(display_unit_info.id), config_properties,
-        ash::DisplayConfigSource::kPolicy);
+    cros_display_config.SetDisplayProperties(display_unit_info.id,
+                                             config_properties,
+                                             ash::DisplayConfigSource::kPolicy);
   }
 }
 

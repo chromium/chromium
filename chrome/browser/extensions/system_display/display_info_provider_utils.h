@@ -23,7 +23,7 @@ int64_t GetDisplayId(const std::string& display_id_str);
 
 // Returns a display object for if display id is found.
 // Return empty display object otherwise.
-display::Display GetDisplayForId(const std::string& display_id_str);
+display::Display GetDisplayForId(int64_t display_id);
 
 // Converts display layout `position` from extension api to ui type.
 display::DisplayPlacement::Position GetDisplayLayoutPosition(
@@ -36,7 +36,7 @@ gfx::Insets GetInsets(const api::system_display::Insets& insets);
 // DisplayManager dependencies. Returns an error string on failure or nullopt
 // on success.
 std::optional<std::string> ValidateDisplayPropertiesInput(
-    const std::string& display_id_str,
+    int64_t display_id,
     const api::system_display::DisplayProperties& info);
 
 // Converts display unit info from ash type to api type.

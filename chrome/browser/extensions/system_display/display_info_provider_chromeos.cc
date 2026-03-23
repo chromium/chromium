@@ -137,8 +137,9 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     const std::string& display_id_str,
     const api::system_display::DisplayProperties& properties,
     ErrorCallback callback) {
+  int64_t display_id = GetDisplayId(display_id_str);
   std::optional<std::string> error =
-      ValidateDisplayPropertiesInput(display_id_str, properties);
+      ValidateDisplayPropertiesInput(display_id, properties);
   if (error) {
     RunResultCallback(std::move(callback), std::move(*error));
     return;
@@ -159,19 +160,18 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
 
   // Process the deprecated 'mirroringSourceId' property. Validation ensures
   // that no other properties are set.
-  if (properties.mirroring_source_id) {
+  if (properties.mirroring_source_id.has_value()) {
     bool mirror = !properties.mirroring_source_id->empty();
     if (mirror) {
       // A display with the given id should exist and if should not be the same
       // as the target display's id.
 
-      int64_t mirroring_id =
-          GetDisplayForId(*properties.mirroring_source_id).id();
+      int64_t mirroring_id = GetDisplayId(*properties.mirroring_source_id);
       if (mirroring_id == display::kInvalidDisplayId) {
         RunResultCallback(std::move(callback), "Invalid mirroring source id");
         return;
       }
-      if (mirroring_id == GetDisplayId(display_id_str)) {
+      if (mirroring_id == display_id) {
         RunResultCallback(std::move(callback), "Not allowed to mirror self");
         return;
       }
@@ -195,11 +195,11 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
   if (properties.bounds_origin_x || properties.bounds_origin_y) {
     gfx::Point bounds_origin;
-    display::Display display = GetDisplayForId(display_id_str);
+    display::Display display = GetDisplayForId(display_id);
     if (display.id() != display::kInvalidDisplayId) {
       bounds_origin = display.bounds().origin();
     } else {
-      DLOG(ERROR) << "Unable to get origin for display: " << display_id_str;
+      DLOG(ERROR) << "Unable to get origin for display: " << display_id;
     }
     if (properties.bounds_origin_x) {
       bounds_origin.set_x(*properties.bounds_origin_x);
@@ -230,7 +230,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   if (cros_display_config_) {
     ash::DisplayConfigResult result =
         cros_display_config_->SetDisplayProperties(
-            display_id_str, std::move(config_properties),
+            display_id, std::move(config_properties),
             ash::DisplayConfigSource::kUser);
     std::move(callback).Run(GetStringResult(std::move(result)));
   }
@@ -316,7 +316,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationStart(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, ash::DisplayCalibrationOperation::kStart, std::nullopt);
+        GetDisplayId(id), ash::DisplayCalibrationOperation::kStart,
+        std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -327,7 +328,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
     const system_display::Insets& delta) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, ash::DisplayCalibrationOperation::kAdjust, GetInsets(delta));
+        GetDisplayId(id), ash::DisplayCalibrationOperation::kAdjust,
+        GetInsets(delta));
     LogErrorResult(result);
   }
   return true;
@@ -337,7 +339,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, ash::DisplayCalibrationOperation::kReset, std::nullopt);
+        GetDisplayId(id), ash::DisplayCalibrationOperation::kReset,
+        std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -347,7 +350,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
     const std::string& id) {
   if (cros_display_config_) {
     ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
-        id, ash::DisplayCalibrationOperation::kComplete, std::nullopt);
+        GetDisplayId(id), ash::DisplayCalibrationOperation::kComplete,
+        std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -396,7 +400,7 @@ void DisplayInfoProviderChromeOS::CallTouchCalibration(
     ErrorCallback callback) {
   if (cros_display_config_) {
     cros_display_config_->TouchCalibration(
-        id, op, calibration,
+        GetDisplayId(id), op, calibration,
         base::BindOnce(
             [](ErrorCallback callback, ash::DisplayConfigResult result) {
               if (!callback) {

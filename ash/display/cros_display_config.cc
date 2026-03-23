@@ -49,14 +49,6 @@ display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
 }
 
-int64_t GetDisplayId(const std::string& display_id_str) {
-  int64_t display_id;
-  if (!base::StringToInt64(display_id_str, &display_id)) {
-    display_id = display::kInvalidDisplayId;
-  }
-  return display_id;
-}
-
 display::Display GetDisplay(int64_t display_id) {
   if (display_id == display::kInvalidDisplayId) {
     return display::Display();
@@ -72,11 +64,6 @@ display::Display GetDisplay(int64_t display_id) {
     return display_manager->GetMirroringDisplayById(display_id);
   }
   return display_manager->GetDisplayForId(display_id);
-}
-
-// Gets the display with the provided string id.
-display::Display GetDisplay(const std::string& display_id_str) {
-  return GetDisplay(GetDisplayId(display_id_str));
 }
 
 std::vector<display::DisplayPlacement> GetDisplayLayouts() {
@@ -724,10 +711,10 @@ std::vector<DisplayUnitInfo> CrosDisplayConfigImpl::GetDisplayUnitInfoList(
 }
 
 DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
-    const std::string& id,
+    int64_t display_id,
     const DisplayConfigProperties& properties,
     DisplayConfigSource source) {
-  const display::Display display = GetDisplay(id);
+  const display::Display display = GetDisplay(display_id);
   DisplayConfigResult result = ValidateDisplayProperties(properties, display);
   if (result != DisplayConfigResult::kSuccess) {
     return result;
@@ -804,7 +791,7 @@ void CrosDisplayConfigImpl::SetUnifiedDesktopEnabled(bool enabled) {
 }
 
 DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
-    const std::string& display_id,
+    int64_t display_id,
     DisplayCalibrationOperation op,
     const std::optional<gfx::Insets>& delta) {
   display::Display display = GetDisplay(display_id);
@@ -858,7 +845,7 @@ DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
 }
 
 void CrosDisplayConfigImpl::TouchCalibration(
-    const std::string& display_id,
+    int64_t display_id,
     DisplayCalibrationOperation op,
     base::optional_ref<const display::TouchCalibrationData> calibration,
     TouchCalibrationCallback callback) {
@@ -991,8 +978,8 @@ void CrosDisplayConfigImpl::TouchCalibration(
 }
 
 OverscanCalibrator* CrosDisplayConfigImpl::GetOverscanCalibrator(
-    const std::string& id) {
-  auto iter = overscan_calibrators_.find(id);
+    int64_t display_id) {
+  auto iter = overscan_calibrators_.find(display_id);
   return iter == overscan_calibrators_.end() ? nullptr : iter->second.get();
 }
 

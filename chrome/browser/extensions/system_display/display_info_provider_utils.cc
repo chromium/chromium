@@ -45,10 +45,9 @@ int64_t GetDisplayId(const std::string& display_id_str) {
   return display_id;
 }
 
-display::Display GetDisplayForId(const std::string& display_id_str) {
-  int64_t id = GetDisplayId(display_id_str);
+display::Display GetDisplayForId(int64_t display_id) {
   display::Display display;
-  display::Screen::Get()->GetDisplayWithDisplayId(id, &display);
+  display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display);
   return display;
 }
 
@@ -79,15 +78,15 @@ bool IsValidRotation(int rotation) {
 }
 
 std::optional<std::string> ValidateDisplayPropertiesInput(
-    const std::string& display_id_str,
+    int64_t display_id,
     const system_display::DisplayProperties& info) {
-  int64_t id = GetDisplayId(display_id_str);
-  if (id == display::kInvalidDisplayId) {
+  if (display_id == display::kInvalidDisplayId) {
     return "Invalid display id";
   }
 
   const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
-  bool is_primary = id == primary.id() || (info.is_primary && *info.is_primary);
+  bool is_primary =
+      display_id == primary.id() || (info.is_primary && *info.is_primary);
 
   if (info.is_unified) {
     if (!is_primary) {

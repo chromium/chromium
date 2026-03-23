@@ -952,14 +952,14 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
   std::vector<ash::DisplayUnitInfo> info_list =
       cros_display_config->GetDisplayUnitInfoList(/*single_unified=*/false);
   for (const auto& display_unit_info : info_list) {
-    const std::string display_id = base::NumberToString(display_unit_info.id);
     for (const auto& rotation : rotations_to_try) {
       BrowserViewLayoutWaiter browser_view_layout_waiter(browser_view());
       ash::DisplayConfigProperties config_properties;
       config_properties.rotation = rotation;
       ash::DisplayConfigResult result =
           cros_display_config->SetDisplayProperties(
-              display_id, config_properties, ash::DisplayConfigSource::kUser);
+              display_unit_info.id, config_properties,
+              ash::DisplayConfigSource::kUser);
       EXPECT_EQ(result, ash::DisplayConfigResult::kSuccess);
 
       // Wait for the browser view to change its bounds as a result of display

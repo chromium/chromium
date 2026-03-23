@@ -47,25 +47,23 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
     NOTREACHED();
   }
   DisplayConfigResult SetDisplayProperties(
-      const std::string& id,
+      int64_t display_id,
       const DisplayConfigProperties& properties,
       DisplayConfigSource source) override {
     if (properties.set_primary) {
-      int64_t display_id;
-      base::StringToInt64(id, &display_id);
       Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(display_id);
     }
     return DisplayConfigResult::kSuccess;
   }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   DisplayConfigResult OverscanCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) override {
     NOTREACHED();
   }
   void TouchCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) override {

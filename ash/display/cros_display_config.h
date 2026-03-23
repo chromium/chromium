@@ -317,11 +317,11 @@ class CrosDisplayConfig {
   virtual std::vector<DisplayUnitInfo> GetDisplayUnitInfoList(
       bool single_unified) = 0;
 
-  // Sets |properties| for individual display with identifier |id|. |source|
-  // should describe who initiated the change. Returns Success if the properties
-  // are valid or an error value otherwise.
+  // Sets |properties| for individual display with identifier |display_id|.
+  // |source| should describe who initiated the change. Returns Success if the
+  // properties are valid or an error value otherwise.
   virtual DisplayConfigResult SetDisplayProperties(
-      const std::string& id,
+      int64_t display_id,
       const DisplayConfigProperties& properties,
       DisplayConfigSource source) = 0;
 
@@ -334,7 +334,7 @@ class CrosDisplayConfig {
   // with identifier |display_id|. If |op| is kAdjust, |delta| describes the
   // amount to change the overscan value.
   virtual DisplayConfigResult OverscanCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) = 0;
 
@@ -343,7 +343,7 @@ class CrosDisplayConfig {
   // calibration UI. Runs the callback after performing the operation or on
   // error.
   virtual void TouchCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) = 0;
@@ -382,16 +382,16 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   std::vector<DisplayUnitInfo> GetDisplayUnitInfoList(
       bool single_unified) override;
   DisplayConfigResult SetDisplayProperties(
-      const std::string& id,
+      int64_t display_id,
       const DisplayConfigProperties& properties,
       DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   DisplayConfigResult OverscanCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       const std::optional<gfx::Insets>& delta) override;
   void TouchCalibration(
-      const std::string& display_id,
+      int64_t display_id,
       DisplayCalibrationOperation op,
       base::optional_ref<const display::TouchCalibrationData> calibration,
       TouchCalibrationCallback callback) override;
@@ -410,11 +410,10 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   class ObserverImpl;
   friend class OverscanCalibratorTest;
 
-  OverscanCalibrator* GetOverscanCalibrator(const std::string& id);
+  OverscanCalibrator* GetOverscanCalibrator(int64_t display_id);
 
   std::unique_ptr<ObserverImpl> observer_impl_;
-  std::map<std::string, std::unique_ptr<OverscanCalibrator>>
-      overscan_calibrators_;
+  std::map<int64_t, std::unique_ptr<OverscanCalibrator>> overscan_calibrators_;
   std::unique_ptr<TouchCalibratorController> touch_calibrator_;
 };
 
