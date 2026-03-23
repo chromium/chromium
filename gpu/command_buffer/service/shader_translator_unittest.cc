@@ -434,63 +434,6 @@ class ShaderTranslatorOutputVersionTest
 #endif
 };
 
-// crbug.com/540543
-// https://bugs.chromium.org/p/angleproject/issues/detail?id=1276
-// https://bugs.chromium.org/p/angleproject/issues/detail?id=1277
-TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
-  ShBuiltInResources resources;
-  sh::InitBuiltInResources(&resources);
-
-  ShCompileOptions compile_options{};
-  compile_options.objectCode = true;
-
-  ShShaderOutput shader_output_language = SH_GLSL_COMPATIBILITY_OUTPUT;
-  scoped_refptr<ShaderTranslator> vertex_translator = new ShaderTranslator();
-  ASSERT_TRUE(vertex_translator->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
-                                      &resources, shader_output_language,
-                                      compile_options, false));
-  scoped_refptr<ShaderTranslator> fragment_translator = new ShaderTranslator();
-  ASSERT_TRUE(fragment_translator->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC,
-                                        &resources, shader_output_language,
-                                        compile_options, false));
-
-  std::string translated_source;
-  int shader_version;
-  {
-    const char* kShader =
-        "attribute vec4 vPosition;\n"
-        "void main() {\n"
-        "}";
-
-    EXPECT_TRUE(vertex_translator->Translate(
-        kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
-        nullptr, nullptr, nullptr));
-    EXPECT_TRUE(translated_source.find("#version") == std::string::npos);
-    if (!translated_source.contains("gl_Position =")) {
-      ADD_FAILURE() << "Did not find gl_Position initialization.";
-      LOG(ERROR) << "Generated output:\n" << translated_source;
-    }
-  }
-  {
-    const char* kShader =
-        "#pragma STDGL invariant(all)\n"
-        "precision mediump float;\n"
-        "varying vec4 v_varying;\n"
-        "void main() {\n"
-        "    gl_FragColor = v_varying;\n"
-        "}\n";
-
-    EXPECT_TRUE(fragment_translator->Translate(
-        kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
-        nullptr, nullptr, nullptr));
-    EXPECT_TRUE(translated_source.contains("#version 120"));
-    if (translated_source.contains("#pragma STDGL invariant(all)")) {
-      ADD_FAILURE() << "Found forbidden pragma.";
-      LOG(ERROR) << "Generated output:\n" << translated_source;
-    }
-  }
-}
-
 TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
   // Test that translating to a shader targeting certain OpenGL context version
   // (version string in test param tuple index 0) produces a GLSL shader that
