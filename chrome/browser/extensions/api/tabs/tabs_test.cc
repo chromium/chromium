@@ -1804,7 +1804,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   tab_invalid_id = std::max(
       tab_invalid_id, ExtensionTabUtil::GetTabId(
                           GetTabListInterface()->GetTab(1)->GetContents()));
-  tab_invalid_id++;
+  tab_invalid_id += 999999;
 
   std::string error = utils::RunFunctionAndReturnError(
       discard.get(), base::StringPrintf("[%u]", tab_invalid_id), profile());
