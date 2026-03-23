@@ -618,10 +618,11 @@ impl PlainYearMonth {
     // Useful for implementing HandleDateTimeTemporalYearMonth
     pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
         // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalYearMonth.[[ISODate]], NoonTimeRecord()).
-        let iso = IsoDateTime::new(self.iso, IsoTime::noon());
-        debug_assert!(iso.is_ok());
+        // new_unchecked: PYM is supposed to support year-months outside of the ISO range as well as long
+        // as the year is in range
+        let iso = IsoDateTime::new_unchecked(self.iso, IsoTime::noon());
         // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
-        iso.unwrap_or_default().as_nanoseconds()
+        iso.as_nanoseconds()
     }
 
     /// Returns a RFC9557 IXDTF string for the current `PlainYearMonth`
