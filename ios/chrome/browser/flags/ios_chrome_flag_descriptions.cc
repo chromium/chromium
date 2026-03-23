@@ -1275,6 +1275,11 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
+const char kPageActionMenuAuthFlowName[] = "Page Action Menu Auth Flow";
+const char kPageActionMenuAuthFlowDescription[] =
+    "When enabled, the Page Action Menu entry point becomes stable and "
+    "supports the Ask Gemini auth flow.";
+
 const char kPageActionMenuIconName[] = "PageActionMenuIcon";
 const char kPageActionMenuIconDescription[] =
     "When enabled, changes the icon for the page action menu entry point.";

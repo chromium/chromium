@@ -65,6 +65,14 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
+BASE_FEATURE(kPageActionMenuAuthFlow, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageActionMenuAuthFlowEnabled() {
+  return IsPageActionMenuEnabled() &&
+
+         base::FeatureList::IsEnabled(kPageActionMenuAuthFlow);
+}
+
 BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsProactiveSuggestionsFrameworkEnabled() {

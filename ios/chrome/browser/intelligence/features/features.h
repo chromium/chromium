@@ -45,6 +45,12 @@ BASE_DECLARE_FEATURE(kGeminiKillSwitch);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
+// Feature flag controlling the Ask Gemini auth flow in the Page Action Menu.
+BASE_DECLARE_FEATURE(kPageActionMenuAuthFlow);
+
+// Returns true if the Ask Gemini auth flow in the Page Action Menu is enabled.
+bool IsPageActionMenuAuthFlowEnabled();
+
 // Feature flag controlling the Ask Gemini chip.
 BASE_DECLARE_FEATURE(kAskGeminiChip);
 
