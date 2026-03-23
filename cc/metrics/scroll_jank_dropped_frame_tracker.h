@@ -10,10 +10,8 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/scroll_jank_ukm_reporter.h"
 
 namespace cc {
-class ScrollJankUkmReporter;
 
 class CC_EXPORT ScrollJankDroppedFrameTracker {
  public:
@@ -27,11 +25,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
                                     base::TimeTicks presentation_ts,
                                     base::TimeDelta vsync_interval);
   void OnScrollStarted();
-
-  void set_scroll_jank_ukm_reporter(
-      ScrollJankUkmReporter* scroll_jank_ukm_reporter) {
-    scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
-  }
 
   static constexpr int kHistogramEmitFrequency = 64;
   static constexpr const char* kDelayedFramesWindowHistogram =
@@ -72,8 +65,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
 
   JankData fixed_window_;
   std::optional<JankData> per_scroll_;
-
-  raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
 };
 
 }  // namespace cc

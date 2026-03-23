@@ -39,7 +39,7 @@ TEST_F(TabResumptionRankerTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  ModelProvider::Request input(processing::TabSessionSource::kNumInputs + 11,
+  ModelProvider::Request input(processing::TabSessionSource::kNumInputs + 10,
                                0);
   ASSERT_TRUE(ExecuteWithInput(input));
 

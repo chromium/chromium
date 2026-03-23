@@ -47,7 +47,6 @@
 #include "cc/layers/layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
-#include "cc/metrics/ukm_manager.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
@@ -75,7 +74,6 @@
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -144,7 +142,6 @@ std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateSingleThreaded(
 LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
     : micro_benchmark_controller_(this),
       image_worker_task_runner_(std::move(params.image_worker_task_runner)),
-      ukm_recorder_factory_(std::move(params.ukm_recorder_factory)),
       compositor_mode_(mode),
       ui_resource_manager_(std::make_unique<UIResourceManager>()),
       client_(params.client),
@@ -632,8 +629,7 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
       client, thread_unsafe_commit_state_.mutator_host, settings_,
       task_runner_provider_.get(), dark_mode_filter_, id_, task_graph_runner_,
       image_worker_task_runner_, scheduling_client_,
-      rendering_stats_instrumentation_.get(), ukm_recorder_factory_,
-      compositor_delegate_weak_ptr_);
+      rendering_stats_instrumentation_.get(), compositor_delegate_weak_ptr_);
 }
 
 std::unique_ptr<LayerTreeHostImpl>
@@ -648,7 +644,6 @@ LayerTreeHost::CreateLayerTreeHostImplInternal(
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
     LayerTreeHostSchedulingClient* scheduling_client,
     RenderingStatsInstrumentation* rendering_stats_instrumentation,
-    std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
     base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr) {
   std::unique_ptr<MutatorHost> mutator_host_impl =
       mutator_host->CreateImplInstance();
@@ -662,10 +657,6 @@ LayerTreeHost::CreateLayerTreeHostImplInternal(
       settings, client, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host_impl), dark_mode_filter, id,
       std::move(image_worker_task_runner), scheduling_client);
-  if (ukm_recorder_factory) {
-    host_impl->InitializeUkm(ukm_recorder_factory->CreateRecorder());
-    ukm_recorder_factory.reset();
-  }
 
   task_graph_runner = nullptr;
   dark_mode_filter = nullptr;

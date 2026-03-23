@@ -28,7 +28,6 @@
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
-#include "cc/metrics/ukm_manager.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_mutator.h"
@@ -56,24 +55,6 @@ class Layer;
 namespace blink {
 
 namespace {
-// This factory is used to defer binding of the InterfacePtr to the compositor
-// thread.
-class UkmRecorderFactoryImpl : public cc::UkmRecorderFactory {
- public:
-  UkmRecorderFactoryImpl() = default;
-  ~UkmRecorderFactoryImpl() override = default;
-
-  // This method gets called on the compositor thread.
-  std::unique_ptr<ukm::UkmRecorder> CreateRecorder() override {
-    mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
-
-    // Calling these methods on the compositor thread are thread safe.
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        factory.BindNewPipeAndPassReceiver());
-    return ukm::MojoUkmRecorder::Create(*factory);
-  }
-};
-
 }  // namespace
 
 LayerTreeView::LayerTreeView(
@@ -101,7 +82,6 @@ void LayerTreeView::Initialize(
   params.main_task_runner = std::move(main_thread);
   params.mutator_host = animation_host_.get();
   params.dark_mode_filter = &RasterDarkModeFilterImpl::Instance();
-  params.ukm_recorder_factory = std::make_unique<UkmRecorderFactoryImpl>();
   if (base::ThreadPoolInstance::Get()) {
     // The image worker thread needs to allow waiting since it makes discardable
     // shared memory allocations which need to make synchronous calls to the

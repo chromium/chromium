@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_task_graph_runner.h"
-#include "cc/test/test_ukm_recorder_factory.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "components/viz/test/test_context_provider.h"

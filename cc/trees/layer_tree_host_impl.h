@@ -85,10 +85,6 @@ namespace gfx {
 class PointF;
 }
 
-namespace ukm {
-class UkmRecorder;
-}
-
 namespace viz {
 class ClientResourceProvider;
 }
@@ -831,8 +827,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void UpdateImageDecodingHints(
       base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
           decoding_mode_map);
-
-  void InitializeUkm(std::unique_ptr<ukm::UkmRecorder> recorder);
 
   ActiveFrameSequenceTrackers FrameSequenceTrackerActiveTypes() {
     return frame_trackers_.FrameSequenceTrackerActiveTypes();

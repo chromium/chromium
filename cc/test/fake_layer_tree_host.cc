@@ -90,7 +90,6 @@ FakeLayerTreeHost::CreateLayerTreeHostImplInternal(
     scoped_refptr<base::SequencedTaskRunner>,
     LayerTreeHostSchedulingClient*,
     RenderingStatsInstrumentation*,
-    std::unique_ptr<UkmRecorderFactory>&,
     base::WeakPtr<CompositorDelegateForInput>&) {
   DCHECK(!host_impl_);
   auto host_impl = std::make_unique<FakeLayerTreeHostImpl>(

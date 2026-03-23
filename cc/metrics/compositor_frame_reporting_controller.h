@@ -22,11 +22,6 @@
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-
-namespace ukm {
-class UkmRecorder;
-}
 
 namespace viz {
 class FrameTimingDetails;
@@ -56,7 +51,6 @@ class CC_EXPORT CompositorFrameReportingController {
   };
 
   CompositorFrameReportingController(bool should_report_histograms,
-                                     bool should_report_ukm,
                                      int layer_tree_host_id,
                                      bool is_trees_in_viz_client);
   virtual ~CompositorFrameReportingController();
@@ -93,9 +87,6 @@ class CC_EXPORT CompositorFrameReportingController {
   // Virtual to stub out CFRC in Viz for TreesInViz.
   virtual void NotifyReadyToCommit(
       std::unique_ptr<BeginMainFrameMetrics> details);
-
-  void InitializeUkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
-  void SetSourceId(ukm::SourceId source_id);
 
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);
@@ -215,15 +206,9 @@ class CC_EXPORT CompositorFrameReportingController {
   // `global_trackers_`.
   GlobalMetricsTrackers global_trackers_;
 
-  // The latency reporter passed to each CompositorFrameReporter. Owned here
-  // because it must be common among all reporters.
-  // DO NOT reorder this line and the ones below. The latency_ukm_reporter_
-  // must outlive the objects in |submitted_compositor_frames_|.
-  std::unique_ptr<LatencyUkmReporter> latency_ukm_reporter_;
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
   std::unique_ptr<ScrollJankDroppedFrameTracker>
       scroll_jank_dropped_frame_tracker_;
-  std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
   std::unique_ptr<ScrollJankV4Processor> scroll_jank_v4_processor_;
 
   std::array<std::unique_ptr<CompositorFrameReporter>,
@@ -232,8 +217,6 @@ class CC_EXPORT CompositorFrameReportingController {
 
   // Mapping of frame token to pipeline reporter for submitted compositor
   // frames.
-  // DO NOT reorder this line and the one above. The latency_ukm_reporter_
-  // must outlive the objects in |submitted_compositor_frames_|.
   base::circular_deque<SubmittedCompositorFrame> submitted_compositor_frames_;
 
   // Contains information about the latest frame that was started, and the state

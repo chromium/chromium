@@ -142,7 +142,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
@@ -554,8 +553,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
         std::make_unique<CompositorFrameReportingController>(
             /*should_report_histograms=*/!settings
                 .single_thread_proxy_scheduler,
-            /*should_report_ukm=*/!settings.single_thread_proxy_scheduler &&
-                base::FeatureList::IsEnabled(features::kReportUkm),
             id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
@@ -6401,12 +6398,6 @@ void LayerTreeHostImpl::ShowScrollbarsForImplScroll(ElementId element_id) {
   }
 }
 
-void LayerTreeHostImpl::InitializeUkm(
-    std::unique_ptr<ukm::UkmRecorder> recorder) {
-  compositor_frame_reporting_controller_->InitializeUkmManager(
-      std::move(recorder));
-}
-
 void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   tile_manager_.set_active_url(url);
   has_observed_first_scroll_delay_ = false;
@@ -6417,7 +6408,6 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // interaction, it must be in progress when the navigation commits for this
   // case to occur.
   // The source id has already been associated to the URL.
-  compositor_frame_reporting_controller_->SetSourceId(source_id);
   frame_sorter_.Reset(/*reset_fcp=*/true);
 }
 

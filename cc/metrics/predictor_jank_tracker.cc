@@ -117,24 +117,13 @@ void PredictorJankTracker::ReportLatestScrollDelta(
   bool contains_missed_vsyncs =
       ContainsMissedVSync(next_presentation_ts, vsync_interval);
 
-  bool report_ukm = false;
   if (frame_janky_lower >= janky_threshold) {
     ReportJankyFrame(next_delta, frame_janky_lower - janky_threshold,
                      contains_missed_vsyncs, slow_scroll, trace_id);
-    report_ukm = true;
   }
   if (frame_janky_upper >= janky_threshold) {
     ReportJankyFrame(next_delta, frame_janky_upper - janky_threshold,
                      contains_missed_vsyncs, slow_scroll, trace_id);
-    report_ukm = true;
-  }
-
-  if (scroll_jank_ukm_reporter_ && report_ukm) {
-    // The max delta can be used to determine if this is a fast or slow scroll.
-    // If this value is > kScrollDeltaThreshold, then the scroll is fast. This
-    // value can also let us know the jank threshold (kSlowJankyThreshold or
-    // kFastJankyThreshold).
-    scroll_jank_ukm_reporter_->set_max_delta(GetMaxDelta(d1, d2, d3));
   }
 
   if (total_frames_ >= 64) {
@@ -151,9 +140,6 @@ void PredictorJankTracker::ReportJankyFrame(
     bool slow_scroll,
     std::optional<EventMetrics::TraceId> trace_id) {
   janky_frames_++;
-  if (scroll_jank_ukm_reporter_) {
-    scroll_jank_ukm_reporter_->IncrementPredictorJankyFrames();
-  }
   TRACE_EVENT_INSTANT(
       "input.scrolling", "PredictorJankTracker::ReportJankyFrame",
       [&](perfetto::EventContext ctx) {
@@ -210,16 +196,6 @@ void PredictorJankTracker::ReportJankyFrame(
         "FrameAboveJankyThreshold2",
         janky_value_percentage, 1, 2000, 50);
   }
-
-  if (scroll_jank_ukm_reporter_) {
-    if (contains_missed_vsyncs) {
-      scroll_jank_ukm_reporter_->set_frame_with_missed_vsync(
-          janky_value_percentage);
-    } else {
-      scroll_jank_ukm_reporter_->set_frame_with_no_missed_vsync(
-          janky_value_percentage);
-    }
-  }
 }
 
 bool PredictorJankTracker::ContainsMissedVSync(
@@ -253,9 +229,6 @@ void PredictorJankTracker::StoreLatestFrameData(
 void PredictorJankTracker::ResetCurrentScrollReporting() {
   frame_data_.prev_delta_ = 0;
   frame_data_.cur_delta_ = 0;
-  if (scroll_jank_ukm_reporter_) {
-    scroll_jank_ukm_reporter_->ResetPredictorMetrics();
-  }
 }
 
 void PredictorJankTracker::ReportJankyFramePercentage() {

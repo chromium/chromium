@@ -47,7 +47,6 @@ class TestCompositorFrameReportingController
       bool is_trees_in_viz_client = false)
       : CompositorFrameReportingController(
             /*should_report_histograms=*/true,
-            /*should_report_ukm=*/false,
             /*layer_tree_host_id=*/1,
             /*is_trees_in_viz_client=*/is_trees_in_viz_client) {}
 

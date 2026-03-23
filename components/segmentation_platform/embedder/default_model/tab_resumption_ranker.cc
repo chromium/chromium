@@ -20,7 +20,7 @@ namespace {
 using proto::SegmentId;
 
 constexpr SegmentId kSegmentId = SegmentId::TAB_RESUMPTION_CLASSIFIER;
-constexpr uint64_t kTabResumptionRankerVersion = 3;
+constexpr uint64_t kTabResumptionRankerVersion = 4;
 
 #define DECL_SQL_FEATURE_SINGLE_UKM_METRIC(name, query, event_name,        \
                                            metric_name)                    \
@@ -106,14 +106,6 @@ DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     HasOccurred);
 
 DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
-    kTouchScroll,
-    "SELECT COUNT(metrics.metric_value) "
-    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
-    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='A523BF8A1E4EC1C3';",
-    Graphics_Smoothness_Latency,
-    TouchScroll);
-
-DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     kTextFieldEdit,
     "SELECT COUNT(metrics.metric_value) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
@@ -129,10 +121,10 @@ DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     Autofill_FormEvent,
     AutofillFormEvent);
 
-constexpr std::array<MetadataWriter::SqlFeature, 11> kSqlFeatures = {
+constexpr std::array<MetadataWriter::SqlFeature, 10> kSqlFeatures = {
     kLoadCount,        kForegroundCount, kUsageDuration, kIsBookmarked,
     kIsPartOfTabGroup, kUrlCopied,       kOmniboxShared, kMenuShare,
-    kTouchScroll,      kTextFieldEdit,   kFormEvent};
+    kTextFieldEdit,    kFormEvent};
 
 constexpr std::array<MetadataWriter::CustomInput::Arg, 1> kBindValueArg{
     std::make_pair("name", "origin")};

@@ -65,7 +65,6 @@
 #include "cc/trees/viewport_layers.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -87,7 +86,6 @@ class RenderFrameMetadataObserver;
 class RenderingStatsInstrumentation;
 class TaskGraphRunner;
 class UIResourceManager;
-class UkmRecorderFactory;
 
 struct CommitState;
 struct CompositorCommitData;
@@ -160,8 +158,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     // compositor thread may make sync calls to this thread, analogous to the
     // raster worker threads.
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner;
-
-    std::unique_ptr<UkmRecorderFactory> ukm_recorder_factory;
 
     raw_ptr<PropertyTreeDelegate> property_tree_delegate = nullptr;
   };
@@ -1025,7 +1021,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   base::WeakPtr<CompositorDelegateForInput> compositor_delegate_weak_ptr_;
 
   scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner_;
-  std::unique_ptr<UkmRecorderFactory> ukm_recorder_factory_;
 
  private:
   friend class LayerTreeHostSerializationTest;
@@ -1050,7 +1045,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
       LayerTreeHostSchedulingClient* scheduling_client,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
-      std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
       base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr);
 
   void ApplyViewportChanges(const CompositorCommitData& commit_data);

@@ -273,9 +273,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
 // the scheduler.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainIdleBypassScheduler);
 
-// When enabled, UKM will be reported for compositor frames.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReportUkm);
-
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
 
 // When enabled, browser controls height changed that does not request animation

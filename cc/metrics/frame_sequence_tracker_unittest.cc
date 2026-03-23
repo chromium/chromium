@@ -60,7 +60,6 @@ class FrameSequenceTrackerTest : public testing::Test,
         compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
-                /*should_report_ukm=*/false,
                 /*layer_tree_host_id=*/1,
                 /*is_trees_in_viz_client=*/false)) {
     compositor_frame_reporting_controller_->SetFrameSorter(&sorter_);
