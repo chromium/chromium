@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 
+#include <utility>
+
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -54,12 +56,17 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_multi_line.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -89,6 +96,26 @@ inline unsigned ComputeLengthForAPIValue(const String& text) {
       crlf_count++;
   }
   return text.length() - crlf_count;
+}
+
+// Callback passed into ShapeResultView::ForEachGlyph().
+void GetTextInfoForGlyphCallback(void* context,
+                                 unsigned character_index,
+                                 Glyph glyph,
+                                 gfx::Vector2dF glyph_offset,
+                                 float total_advance,
+                                 bool is_horizontal,
+                                 CanvasRotationInVertical canvas_rotation,
+                                 const SimpleFontData* font_data) {
+  auto& results =
+      *static_cast<std::vector<WebFormControlElement::TextInfo>*>(context);
+
+  sk_sp<SkTypeface> typeface = font_data->PlatformData().TypefaceSp();
+  if (results.empty() || results.back().typeface != typeface) {
+    results.emplace_back(std::move(typeface), std::vector<Glyph>());
+  }
+
+  results.back().glyphs.push_back(glyph);
 }
 
 }  // namespace
@@ -843,6 +870,46 @@ void HTMLTextAreaElement::SetFocused(bool is_focused,
     SetUserHasEditedTheFieldAndBlurred();
   }
   TextControlElement::SetFocused(is_focused, focus_type);
+}
+
+std::vector<WebFormControlElement::TextInfo> HTMLTextAreaElement::GetTextInfo()
+    const {
+  const auto* inner_element = InnerEditorElement();
+  if (!inner_element) {
+    return {};
+  }
+
+  const auto* inner_layout =
+      To<LayoutBlockFlow>(inner_element->GetLayoutObject());
+  if (!inner_element) {
+    return {};
+  }
+
+  std::vector<WebFormControlElement::TextInfo> results;
+  for (const LayoutObject* child = inner_layout->FirstChild(); child;
+       child = child->NextSibling()) {
+    const auto* paragraph_block = DynamicTo<LayoutBlockFlow>(child);
+    if (!paragraph_block) {
+      continue;
+    }
+
+    for (InlineCursor paragraph_cursor(*paragraph_block); paragraph_cursor;
+         paragraph_cursor.MoveToNext()) {
+      const FragmentItem* fragment = paragraph_cursor.CurrentItem();
+      if (!fragment || !fragment->IsText()) {
+        continue;
+      }
+
+      const ShapeResultView* shape = fragment->TextShapeResult();
+      if (!shape) {
+        continue;
+      }
+
+      shape->ForEachGlyph(/*initial_advance=*/0.0f, GetTextInfoForGlyphCallback,
+                          &results);
+    }
+  }
+  return results;
 }
 
 bool HTMLTextAreaElement::SupportsBaseAppearanceInternal(

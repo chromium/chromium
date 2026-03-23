@@ -31,6 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 
+#include <stdint.h>
+
+#include <optional>
+#include <vector>
+
 #include "base/i18n/rtl.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -38,6 +43,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
@@ -47,6 +53,11 @@ class HTMLFormControlElement;
 // node.
 class BLINK_EXPORT WebFormControlElement : public WebElement {
  public:
+  struct TextInfo {
+    sk_sp<SkTypeface> typeface;
+    std::vector<uint16_t> glyphs;
+  };
+
   explicit WebFormControlElement(
       cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
       : WebElement(loc) {}
@@ -165,6 +176,11 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // Returns the ax node id of the form control element in the accessibility
   // tree. The ax node id is consistent across renderer and browser processes.
   int32_t GetAxId() const;
+
+  // If this element is a <textarea>, then returns a list with information (such
+  // as typeface and glyphs) for the text inside. Otherwise returns
+  // std::nullopt.
+  std::optional<std::vector<TextInfo>> GetTextInfo() const;
 
 #if INSIDE_BLINK
   WebFormControlElement(HTMLFormControlElement*);

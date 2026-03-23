@@ -24,7 +24,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_TEXT_AREA_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_TEXT_AREA_ELEMENT_H_
 
+#include <vector>
+
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -77,6 +80,10 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   String DefaultToolTip() const override;
 
   void SetFocused(bool is_focused, mojom::blink::FocusType) override;
+
+  // Returns a list of with information (such as typeface and glyphs) for the
+  // text inside.
+  std::vector<WebFormControlElement::TextInfo> GetTextInfo() const;
 
  protected:
   bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;

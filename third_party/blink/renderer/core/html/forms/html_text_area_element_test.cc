@@ -214,4 +214,35 @@ TEST_F(HTMLTextAreaElementTest, RemoveLastLineWithInsertText) {
   EXPECT_EQ(inner_editor->StitchedSize().height, LayoutUnit(20 * 2));
 }
 
+TEST_F(HTMLTextAreaElementTest, GetTextInfo) {
+  LoadAhem();
+  LoadNoto();
+
+  SetBodyContent(
+      "<textarea id=test style='font-family: Ahem, NotoArabic'>"
+      "XX\n"
+      "pp ع\n"
+      "</textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+
+  std::vector<WebFormControlElement::TextInfo> text_info =
+      textarea.GetTextInfo();
+  ASSERT_EQ(2u, text_info.size());
+  EXPECT_TRUE(text_info[0].typeface);
+  EXPECT_TRUE(text_info[1].typeface);
+  EXPECT_NE(text_info[0].typeface, text_info[1].typeface);
+  ASSERT_EQ(5u, text_info[0].glyphs.size());
+  const int16_t first_glyph = text_info[0].glyphs[0];
+  EXPECT_EQ(first_glyph, text_info[0].glyphs[1]);
+  EXPECT_NE(first_glyph, text_info[0].glyphs[2]);
+  ASSERT_EQ(1u, text_info[1].glyphs.size());
+}
+
+TEST_F(HTMLTextAreaElementTest, GetTextInfoEmpty) {
+  SetBodyContent("<textarea id=test></textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+
+  EXPECT_TRUE(textarea.GetTextInfo().empty());
+}
+
 }  // namespace blink
