@@ -641,16 +641,28 @@ export class ContentController {
     }
   }
 
-  updateImages(root?: ParentNode) {
-    if (!root || !this.hasContent()) {
+  updateImages(shadowRoot?: ShadowRoot) {
+    if (!shadowRoot || !this.hasContent()) {
       return;
     }
 
     const imagesUpdated = isDistilledByReadability() ?
-        this.updateImagesForReadability_(root) :
-        this.updateImagesForAxTree_(root);
-    if (imagesUpdated) {
-      this.listeners_.forEach(l => l.onContentChange());
+        this.updateImagesForReadability_(shadowRoot) :
+        this.updateImagesForAxTree_(shadowRoot);
+    if (!imagesUpdated) {
+      return;
+    }
+    this.listeners_.forEach(l => l.onContentChange());
+
+    // Update read aloud state to ensure it's updated for text related to
+    // image captions.
+    if (this.speechController_.hasSpeechBeenTriggered()) {
+      this.speechController_.saveReadAloudState();
+      this.speechController_.resetForNewContent();
+      const container = shadowRoot.getElementById('container') || shadowRoot;
+      this.updateReadAloudState(container as Node);
+    } else if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+      getReadAloudModel().resetModel?.();
     }
   }
 
