@@ -31,6 +31,7 @@ import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 
 import androidx.core.graphics.Insets;
@@ -116,6 +117,9 @@ public class CompositorViewHolderUnitTest {
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int KEYBOARD_HEIGHT = 741;
+
+    private static final int SIDE_UI_START_WIDTH = 60;
+    private static final int SIDE_UI_END_WIDTH = 70;
 
     private static final long TOUCH_TIME = 0;
     private static final MotionEvent MOTION_EVENT_DOWN =
@@ -1294,5 +1298,48 @@ public class CompositorViewHolderUnitTest {
         // Verify.
         int expectedContentOffsetX = shouldBeRtl ? endContainerWidth : startContainerWidth;
         verify(mLayoutManager).setContentOffsetX(expectedContentOffsetX);
+    }
+
+    @Test
+    public void testOnSideUiSpecsChanged_contentViewMarginsNotUpdated() {
+        // Setup content view.
+        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(0, 0);
+        when(mContentView.getLayoutParams()).thenReturn(marginLayoutParams);
+
+        doTestSideUiSpecsChanged_updateMargins(
+                /* expectedStartMargin= */ 0, /* expectedEndMargin= */ 0);
+    }
+
+    @Test
+    public void testOnSideUiSpecsChanged_customViewMarginsUpdated() {
+        // Setup custom view.
+        View customView = new View(mContext);
+        when(mTab.isShowingCustomView()).thenReturn(true);
+        when(mTab.getView()).thenReturn(customView);
+
+        doTestSideUiSpecsChanged_updateMargins(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
+    }
+
+    private void doTestSideUiSpecsChanged_updateMargins(
+            int expectedStartMargin, int expectedEndMargin) {
+        // Notify content changed.
+        reset(mWebContents);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+
+        // Arbitrary Side UI width.
+        SideUiSpecs currentSideUiSpecs = new SideUiSpecs(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
+
+        // Verify layout params.
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTab.getView().getLayoutParams();
+        assertEquals(
+                "Unexpected start margin.", expectedStartMargin, layoutParams.getMarginStart());
+        assertEquals("Unexpected end margin.", expectedEndMargin, layoutParams.getMarginEnd());
     }
 }

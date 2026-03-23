@@ -1265,12 +1265,27 @@ public class CompositorViewHolder extends FrameLayout
                         ? sideUiSpecs.mEndContainerWidth
                         : sideUiSpecs.mStartContainerWidth;
         mLayoutManager.setContentOffsetX(contentOffsetX);
+        repositionTabViewForSideUi();
         onViewportChanged();
         // TODO(crbug.com/483748424): Update #getWindowViewport and #getVisibleViewport through
         //  #onViewportChanged as well. This change is not trivial, since other items, such as
         //  the tab strip, infer their bounds from the viewport. For SidePanel, however, we only
         //  want to resize the WebContents, and not the tab strip. As such, we need to decouple
         //  the viewport bounds from these items.
+    }
+
+    private void repositionTabViewForSideUi() {
+        Tab currentTab = getCurrentTab();
+        if (mSideUiStateProvider == null || mView == null || currentTab == null) return;
+
+        // Only reposition custom views and native pages. Do not reposition ContentView.
+        if (!currentTab.isShowingCustomView() && !currentTab.isNativePage()) return;
+
+        SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
+        layoutParams.setMarginStart(sideUiSpecs.mStartContainerWidth);
+        layoutParams.setMarginEnd(sideUiSpecs.mEndContainerWidth);
+        mView.setLayoutParams(layoutParams);
     }
 
     // View.OnHierarchyChangeListener implementation
@@ -1637,6 +1652,7 @@ public class CompositorViewHolder extends FrameLayout
             // CompositorView always has index of 0.
             // TODO(crbug.com/40770763): Look into enforcing the z-order of the views.
             addView(mView, 1);
+            repositionTabViewForSideUi();
             updateFocusability(false, /* blockDescendants= */ false);
 
             // Claim focus for the new view unless the user is currently using the URL bar.
