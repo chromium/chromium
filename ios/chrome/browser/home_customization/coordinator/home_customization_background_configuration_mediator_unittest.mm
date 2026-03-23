@@ -272,10 +272,12 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   BackgroundCollectionConfiguration* collection = consumer_.configurations[0];
 
-  // First element is the default background, so expected size is number of
-  // colors + 1.
-  EXPECT_EQ(kSeedColors.size() + 1, collection.configurationOrder.count);
-  EXPECT_EQ(kSeedColors.size() + 1, collection.configurations.count);
+  // First element is the default background. Last element may be the custom
+  // color option. So expected size is number of colors + 1 or 2.
+  std::size_t expected_size =
+      kSeedColors.size() + 1 + (IsNTPBackgroundColorSliderEnabled() ? 1 : 0);
+  EXPECT_EQ(expected_size, collection.configurationOrder.count);
+  EXPECT_EQ(expected_size, collection.configurations.count);
 
   for (size_t i = 0; i < kSeedColors.size(); i++) {
     NSString* item_id = collection.configurationOrder[i];
