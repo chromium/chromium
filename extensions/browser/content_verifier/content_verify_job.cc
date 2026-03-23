@@ -178,9 +178,7 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
               extension_root_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
-      current_extension_version != extension_version_) {
+  if (current_extension_version != extension_version_) {
     // The version should have been checked in ContentVerifier::StartJob(), so
     // we should never reach here.
     NOTREACHED() << "Content verification job was started for an extension "
@@ -230,9 +228,7 @@ void ContentVerifyJob::StartWithContentHash(
               extension_root_, "hash_root", content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
-      content_hash->extension_version() != extension_version_) {
+  if (content_hash->extension_version() != extension_version_) {
     // TODO(crbug.com/416484593): Remove crash keys once we're confident the
     // issue is fixed.
     debug::ScopedContentVerifyJobCrashKey crash_keys(

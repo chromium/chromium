@@ -912,11 +912,8 @@ void ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
   auto callback =
       base::BindOnce(&ContentVerifier::VerifyFailed, this, job->extension_id(),
                      file_types, data->manifest_version);
-
   const base::Version& current_extension_version = data->version;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
-      current_extension_version != job->extension_version()) {
+  if (current_extension_version != job->extension_version()) {
     // This verify job must've started after a newer version of the extension
     // has been loaded so let's not start the job since it'll try to check for a
     // non-existent `ContentHash` and/or create a `ContentHash` for an unloaded

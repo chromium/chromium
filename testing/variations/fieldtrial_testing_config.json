@@ -6474,24 +6474,6 @@
             ]
         }
     ],
-    "ContentVerifyJobUseJobVersionForHashing": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentVerifyJobUseJobVersionForHashing"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualCueingDynamicCues": [
         {
             "platforms": [

@@ -286,18 +286,6 @@ BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 // memory leaks from stale cache entries and false-positive corruption reports.
 BASE_DECLARE_FEATURE(kExtensionContentVerificationUsesExtensionRoot);
 
-// Addresses content verification race conditions during extension updates. When
-// an extension updates, a content verification job for a previous version can
-// sometimes run *after* the new version has been loaded. This can lead to two
-// issues:
-//   1) the old job might be given the hashes for the new version, or
-//   2) it might unnecessarily re-create hashes for the old version.
-//
-// When this feature is enabled, the verification job will strictly use its
-// original extension version for all hash lookups and creations, preventing
-// these inconsistencies.
-BASE_DECLARE_FEATURE(kContentVerifyJobUseJobVersionForHashing);
-
 // Enables the shouldShowPromotion API to determine which promotion to show for
 // Chrome Enterprise on CWS.
 BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
