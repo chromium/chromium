@@ -8338,6 +8338,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Timing.AddressRewriter.Rewrite" units="ms"
+    expires_after="2026-09-20">
+  <owner>picarella@google.com</owner>
+  <owner>mmaryia@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Number of milliseconds passed between the start and end of
+    AddressRewriter::Rewrite().
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
     expires_after="2026-12-12">
   <owner>schwering@google.com</owner>

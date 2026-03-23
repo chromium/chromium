@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -200,6 +201,7 @@ AddressRewriter AddressRewriter::ForCustomRules(
 }
 
 std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.AddressRewriter.Rewrite");
   if (compiled_rules_ == nullptr || compiled_rules_->empty()) {
     return base::CollapseWhitespace(text, true);
   }
