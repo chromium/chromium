@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 
 namespace {
 
@@ -205,11 +206,22 @@ void ProfileManagementFlowController::CreateSignedOutFlowWebContents(
     Profile* profile) {
   signed_out_flow_web_contents_ =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      signed_out_flow_web_contents_.get());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      signed_out_flow_web_contents_.get())
+      ->SetDelegate(this);
 }
 
 content::WebContents*
 ProfileManagementFlowController::GetSignedOutFlowWebContents() const {
   return signed_out_flow_web_contents_.get();
+}
+
+web_modal::WebContentsModalDialogHost*
+ProfileManagementFlowController::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return host_->GetWebContentsModalDialogHost();
 }
 
 void ProfileManagementFlowController::Reset(

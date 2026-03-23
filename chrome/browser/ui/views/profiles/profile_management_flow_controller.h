@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 class Profile;
@@ -28,7 +29,8 @@ class ProfilePickerWebContentsHost;
 // will register and switch to the first step. Then as the user interacts with
 // the flow, this controller will handle instantiating and navigating between
 // the next steps.
-class ProfileManagementFlowController {
+class ProfileManagementFlowController
+    : public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   // TODO(crbug.com/40237131): Split the steps more granularly across
   // logical steps instead of according to implementation details.
@@ -72,7 +74,7 @@ class ProfileManagementFlowController {
   explicit ProfileManagementFlowController(ProfilePickerWebContentsHost* host,
                                            ClearHostClosure clear_host_callback,
                                            std::string_view flow_type_string);
-  virtual ~ProfileManagementFlowController();
+  ~ProfileManagementFlowController() override;
 
   // Starts the flow by registering and switching to the first step.
   virtual void Init() = 0;
@@ -162,6 +164,10 @@ class ProfileManagementFlowController {
 
   // Returns a pointer to `signed_out_flow_web_contents_`.
   content::WebContents* GetSignedOutFlowWebContents() const;
+
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
  private:
   // Structure that takes care of logging metrics based on the flow type and the
