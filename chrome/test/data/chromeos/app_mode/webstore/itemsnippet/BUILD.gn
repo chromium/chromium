@@ -18,7 +18,7 @@ protoc_convert("itemsnippet") {
     "ggbflgnkafappblpkiflbgpmkfdpnhhe.textproto",
     "iiigpodgfihagabpagjehoocpakbnclp.textproto",
   ]
-  inputs = [ "//chrome/browser/extensions/cws_item_service.proto" ]
+  inputs = [ "//extensions/browser/cws_item_service.proto" ]
 
   # Output becomes:
   #   gen/chrome/test/data/chromeos/app_mode/webstore/itemsnippet/iiigpodgfihagabpagjehoocpakbnclp
@@ -27,7 +27,7 @@ protoc_convert("itemsnippet") {
     "--encode=extensions.FetchItemSnippetResponse",
     "-I",
     rebase_path("//", root_build_dir),
-    "chrome/browser/extensions/cws_item_service.proto",
+    "extensions/browser/cws_item_service.proto",
   ]
 }
 

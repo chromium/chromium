@@ -1,4 +1,4 @@
-# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-file: //extensions/browser/cws_item_service.proto"
 # proto-message: extensions.FetchItemSnippetResponse
 
 item_id: "app_1"

@@ -511,7 +511,6 @@ source_set("extensions") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
-    "//chrome/browser/extensions:cws_item_service_proto",
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",
@@ -599,6 +598,7 @@ source_set("extensions") {
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/browser:crx_installer",
+    "//extensions/browser:cws_item_service_proto",
     "//extensions/browser:keepalive",
     "//extensions/browser/api/content_settings",
     "//extensions/browser/api/storage:settings_namespace",
@@ -1575,10 +1575,6 @@ source_set("extensions") {
       "api/tabs/app_window_helper.h",
     ]
   }
-}
-
-proto_library("cws_item_service_proto") {
-  sources = [ "cws_item_service.proto" ]
 }
 
 static_library("test_support") {

@@ -9703,7 +9703,6 @@ test("unit_tests") {
     ]
     deps += [
       "//base",
-      "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/bookmarks/test:test_support",
       "//chrome/browser/extensions/api/cookies:helpers",
@@ -9714,6 +9713,7 @@ test("unit_tests") {
       "//components/themes:prefs",
       "//components/value_store:test_support",
       "//extensions/browser:crx_installer",
+      "//extensions/browser:cws_item_service_proto",
       "//extensions/browser/api/content_settings",
       "//extensions/browser/forced_extensions",
       "//extensions/browser/updater",

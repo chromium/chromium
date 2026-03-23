@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
+#include "extensions/browser/cws_item_service.pb.h"
 #include "extensions/common/extension_id.h"
 
 class Browser;

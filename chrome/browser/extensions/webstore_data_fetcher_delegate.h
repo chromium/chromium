@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/cws_item_service.pb.h"
+#include "extensions/browser/cws_item_service.pb.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

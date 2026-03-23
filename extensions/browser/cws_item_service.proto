@@ -122,7 +122,7 @@ message BatchFetchItemBlockStatusForEnterpriseRequest {
 
 // Response message for FetchItemBlockStatusForEnterprise.
 message FetchItemBlockStatusForEnterpriseResponse {
-   // Item id
+  // Item id
   string item_id = 1;
 
   // Whether the item is blocked by CWS for the caller.
