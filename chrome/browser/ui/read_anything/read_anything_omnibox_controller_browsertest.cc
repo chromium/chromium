@@ -100,6 +100,12 @@ class ReadAnythingOmniboxControllerTestBase
     }));
   }
 
+  void WaitForChipShowing(bool expected_state) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetCurrentPageActionState().chip_showing == expected_state;
+    }));
+  }
+
   void ShowPageAction() {
     tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
     tab->GetTabFeatures()->page_action_controller()->Show(
@@ -225,6 +231,29 @@ class ReadAnythingOmniboxControllerBrowserTest
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
+                       PrimaryPageChanged_ShowsChipOnDistillablePage) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingOmniboxControllerBrowserTest,
+    PrimaryPageChanged_ShowsIconOnDistillablePageAfterIgnoredManyTimes) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 5);
+
+  MockLongDwellTime();
+  NavigateToDistillablePage();
+
+  WaitForChipShowing(false);
+  ExpectPageActionStateImmediate(true);
+}
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChanged_HidesOnNonHttp) {
@@ -475,6 +504,30 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   browser()->tab_strip_model()->GetActiveTab()->Close();
 
   EXPECT_EQ(GetOmniboxIgnoredCount(), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingOmniboxControllerBrowserTest,
+    TabDetached_ShowsIconOnDistillablePageAfterIgnoredManyTimes) {
+  chrome::NewTab(browser());
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 5);
+
+  // This is the 6th time the chip was ignored.
+  MockLongDwellTime();
+  browser()->tab_strip_model()->GetActiveTab()->Close();
+  WaitForChipShowing(false);
+
+  // Open a new tab and navigate to a distillable page. Only the icon should
+  // show.
+  chrome::NewTab(browser());
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  EXPECT_FALSE(GetCurrentPageActionState().chip_showing);
 }
 
 IN_PROC_BROWSER_TEST_P(

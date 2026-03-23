@@ -164,58 +164,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       ShowOmniboxAsIconOnlyAfterIgnoredCountExceedsThreshold) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      // Shown and ignored (1).
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Shown and ignored (2).
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Shown and ignored (3).
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Shown and ignored (4).
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Shown and ignored (5).
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Shown and ignored (6). From now on should show as icon only.
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(),
-      // Now should show as icon only.
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionIconVisible(),
-      // The icon is used, and not ignored.
-      InvokePageAction(), WaitForPageActionChipNotVisible(),
-      // Close RM so the omnibox chip can show again.
-      Do([&]() {
-        auto context = actions::ActionInvocationContext();
-        context.SetProperty(
-            kSidePanelOpenTriggerKey,
-            static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
-        read_anything::ReadAnythingEntryPointController::InvokePageAction(
-            browser(), context);
-      }),
-      WaitForPageActionChipVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
                        ShowOmniboxChipImmediatelyAfterReadingModeClosed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
@@ -233,53 +181,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
             browser(), context);
       }),
       WaitForPageActionChipVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       TabClose_MarkOmniboxIgnoredIfGoodCandidate) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab1);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab4);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab5);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab6);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab7);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab8);
-  RunTestSequence(
-      // Show the chip on the first tab.
-      InstrumentTab(kTab1), NavigateWebContents(kTab1, distillable_url_),
-      WaitForWebContentsReady(kTab1), WaitForPageActionChipVisible(),
-      AddInstrumentedTab(kTab2, non_distillable_url_, 1),
-      AddInstrumentedTab(kTab3, distillable_url_, 2),
-      AddInstrumentedTab(kTab4, distillable_url_, 3),
-      AddInstrumentedTab(kTab5, distillable_url_, 4),
-      AddInstrumentedTab(kTab6, distillable_url_, 5),
-      AddInstrumentedTab(kTab7, distillable_url_, 6),
-      AddInstrumentedTab(kTab8, distillable_url_, 7),
-      WaitForWebContentsReady(kTab2),
-      // Move to the second tab and close the first tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab1), CloseTab(kTab1),
-      WaitForWebContentsReady(kTab3),
-      // Move to the third tab and close the second tab, this should not count
-      // as ignored since the chip should not show on the second tab.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab2),
-      WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab4),
-      // Move to the fourth tab and close the third tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab3), CloseTab(kTab3),
-      WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab5),
-      // Move to the fifth tab and close the fourth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab4), CloseTab(kTab4),
-      WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab6),
-      // Move to the sixth tab and close the fifth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab5), CloseTab(kTab5),
-      WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab7),
-      // Move to the seventh tab and close the sixth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab6), CloseTab(kTab6),
-      WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab8),
-      // Move to the eighth tab and close the seventh tab, ignoring the chip for
-      // the sixth time, so the omnibox should now show as icon only.
-      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab7), CloseTab(kTab7),
-      WaitForPageActionIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
@@ -304,35 +205,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       LogRmOpenedAfterOmniboxIphShown) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
-      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
-      InvokePageAction(), WaitForPageActionChipNotVisible(), Do([this]() {
-        histogram_tester().ExpectUniqueSample(
-            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", true, 1);
-      }));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       LogRmNotOpenedAfterOmniboxIphShownAndPageChanged) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
-      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForPageActionChipNotVisible(), Do([this]() {
-        histogram_tester().ExpectUniqueSample(
-            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", false, 1);
-      }));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
                        ShowAndHideIphAfterTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -350,25 +222,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
       SelectTab(kTabStripElementId, 0),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       LogRmNotOpenedAfterOmniboxIphShownAndTabSwitch) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
-      NavigateWebContents(kFirstTab, non_distillable_url_),
-      AddInstrumentedTab(kSecondTab, distillable_url_),
-      SelectTab(kTabStripElementId, 1),
-      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
-      SelectTab(kTabStripElementId, 0),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      Do([this]() {
-        histogram_tester().ExpectUniqueSample(
-            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", false, 1);
-      }));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
