@@ -868,4 +868,105 @@
     Manage ad privacy
   </message>
 
+  <!-- Public key algorithm OID strings shared across platforms -->
+  <message name="IDS_CERT_OID_PKCS1_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_RSA_ENCRYPTION">
+    PKCS #1 RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION">
+    PKCS #1 MD2 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION">
+    PKCS #1 MD4 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION">
+    PKCS #1 MD5 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION">
+    PKCS #1 SHA-1 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION">
+    PKCS #1 SHA-256 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION">
+    PKCS #1 SHA-384 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION" desc="description of public key algorithm SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION">
+    PKCS #1 SHA-512 With RSA Encryption
+  </message>
+  <message name="IDS_CERT_OID_ANSIX962_ECDSA_SHA1_SIGNATURE" desc="description of public key algorithm SEC_OID_ANSIX962_ECDSA_SHA1_SIGNATURE">
+    X9.62 ECDSA Signature with SHA-1
+  </message>
+  <message name="IDS_CERT_OID_ANSIX962_ECDSA_SHA256_SIGNATURE" desc="description of public key algorithm SEC_OID_ANSIX962_ECDSA_SHA256_SIGNATURE">
+    X9.62 ECDSA Signature with SHA-256
+  </message>
+  <message name="IDS_CERT_OID_ANSIX962_ECDSA_SHA384_SIGNATURE" desc="description of public key algorithm SEC_OID_ANSIX962_ECDSA_SHA384_SIGNATURE">
+    X9.62 ECDSA Signature with SHA-384
+  </message>
+  <message name="IDS_CERT_OID_ANSIX962_ECDSA_SHA512_SIGNATURE" desc="description of public key algorithm SEC_OID_ANSIX962_ECDSA_SHA512_SIGNATURE">
+    X9.62 ECDSA Signature with SHA-512
+  </message>
+  <message name="IDS_CERT_OID_ANSIX962_EC_PUBLIC_KEY" desc="description of public key algorithm SEC_OID_ANSIX962_EC_PUBLIC_KEY">
+    Elliptic Curve Public Key
+  </message>
+  <message name="IDS_CERT_OID_SECG_EC_SECP256R1" desc="description of public key algorithm SEC_OID_SECG_EC_SECP256R1">
+    SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)
+  </message>
+  <message name="IDS_CERT_OID_SECG_EC_SECP384R1" desc="description of public key algorithm SEC_OID_SECG_EC_SECP384R1">
+    SECG elliptic curve secp384r1 (aka NIST P-384)
+  </message>
+  <message name="IDS_CERT_OID_SECG_EC_SECP521R1" desc="description of public key algorithm SEC_OID_SECG_EC_SECP521R1">
+    SECG elliptic curve secp521r1 (aka NIST P-521)
+  </message>
+
+  <!-- Extended Key Usage strings shared across platforms -->
+  <message name="IDS_CERT_EKU_ANY_EKU" desc="description of X.509 certificate extended key usage value `anyExtendedKeyUsage`. This indicates that the certificate may be used for any purpose.">
+    Any
+  </message>
+  <message name="IDS_CERT_EKU_CODE_SIGNING" desc="description of extended key usage Code Signing">
+    Code Signing
+  </message>
+  <message name="IDS_CERT_EKU_EMAIL_PROTECTION" desc="description of extended key usage E-mail Protection">
+    Email Protection
+  </message>
+  <message name="IDS_CERT_EKU_TIME_STAMPING" desc="description of extended key usage Time Stamping">
+    Time Stamping
+  </message>
+
+  <!-- Certificate Key Usage strings shared across platforms -->
+  <message name="IDS_CERT_X509_AUTH_INFO_ACCESS" desc="description of extension Authority Information Access">
+    Authority Information Access
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_NONREP" desc="description of certificate usage Non-repudiation">
+    Non-repudiation
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_ENCIPHERMENT" desc="description of certificate usage Key Encipherment">
+    Key Encipherment
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_DATA_ENCIPHERMENT" desc="description of certificate usage Data Encipherment">
+    Data Encipherment
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_KEY_AGREEMENT" desc="description of certificate usage Key Agreement">
+    Key Agreement
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_CERT_SIGNER" desc="description of certificate usage Certificate Signer">
+    Certificate Signer
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_CRL_SIGNER" desc="description of certificate usage CRL Signer">
+    CRL Signer
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_ENCIPHER_ONLY" desc="description of certificate usage Encipher Only">
+    Encipher Only
+  </message>
+  <message name="IDS_CERT_X509_KEY_USAGE_DECIPHER_ONLY" desc="description of certificate usage Decipher Only">
+    Decipher Only
+  </message>
+
+  <!-- Certificate Policy Qualifier strings shared across platforms -->
+  <message name="IDS_CERT_PKIX_CPS_POINTER_QUALIFIER" desc="description of pointer (URI) to Certification Practice Statement published by Certification Authority">
+    Certification Practice Statement Pointer
+  </message>
+  <message name="IDS_CERT_PKIX_USER_NOTICE_QUALIFIER" desc="description of User Notice certificate policy qualifier">
+    User Notice
+  </message>
+
 </grit-part>

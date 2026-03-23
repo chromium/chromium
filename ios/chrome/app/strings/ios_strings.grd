@@ -1445,6 +1445,45 @@
       <message name="IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT" desc="A message to inform the user that a credit card will be saved to their Google Account.">
         Cards are saved to your Google Account.
       </message>
+      <message name="IDS_IOS_CERT_AIA_ACCESS_METHOD_CA_ISSUERS" desc="description of Authority Information Access method CA Issuers.">
+        CA Issuers
+      </message>
+      <message name="IDS_IOS_CERT_AIA_ACCESS_METHOD_OCSP" desc="description of Authority Information Access method OCSP (Online Certificate Status Protocol).">
+        OCSP
+      </message>
+      <message name="IDS_IOS_CERT_DETAILS_PARAMETERS_NONE" desc="Value displayed when certificate algorithm parameters are empty or NULL.">
+        None
+      </message>
+      <message name="IDS_IOS_CERT_EKU_CLIENT_AUTH" desc="description of extended key usage Client Authentication">
+        Client Authentication
+      </message>
+      <message name="IDS_IOS_CERT_EKU_DOCUMENT_SIGNING" desc="description of extended key usage Document Signing">
+        Document Signing
+      </message>
+      <message name="IDS_IOS_CERT_EKU_OCSP_SIGNING" desc="description of extended key usage OCSP Signing">
+        OCSP Signing
+      </message>
+      <message name="IDS_IOS_CERT_EKU_RCS_MLS_CLIENT" desc="description of extended key usage RCS MLS Client">
+        RCS MLS Client
+      </message>
+      <message name="IDS_IOS_CERT_EKU_SERVER_AUTH" desc="description of extended key usage Server Authentication">
+        Server Authentication
+      </message>
+      <message name="IDS_IOS_CERT_PKIX_USER_NOTICE_QUALIFIER_DESCRIPTION" desc="description of User Notice certificate policy qualifier">
+        Explicit Text
+      </message>
+      <message name="IDS_IOS_CERT_POLICY_QUALIFIER_CPS" desc="description of Certificate Policy Qualifier type: CPS">
+        CPS URI
+      </message>
+      <message name="IDS_IOS_CERT_POLICY_QUALIFIER_UNKNOWN" desc="description of unknown Certificate Policy Qualifier type">
+        Unknown
+      </message>
+      <message name="IDS_IOS_CERT_UNKNOWN_OID_PREFIX" desc="Prefix for displaying unknown OID values in certificate details">
+        OID.
+      </message>
+      <message name="IDS_IOS_CERT_X509_KEY_USAGE_DIGITAL_SIGNATURE" desc="description of certificate usage Digital Signature">
+        Digital Signature
+      </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD" desc="Button which is shown on Password Details Screen when password is compromised. [iOS only]" meaning="Telling user to change password on a website since it is compromised.">
         Change password on website
       </message>
