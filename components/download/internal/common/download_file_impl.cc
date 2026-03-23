@@ -325,11 +325,10 @@ DownloadInterruptReason DownloadFileImpl::ValidateAndWriteDataToFile(
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (obfuscator_) {
-    bool is_last_chunk =
-        save_info_->total_bytes > 0 &&
-        static_cast<int64_t>(offset + to_validate.size() + to_write.size()) ==
-            save_info_->total_bytes;
-    auto obfuscated_data = obfuscator_->ObfuscateChunk(to_write, is_last_chunk);
+    // All data chunks are obfuscated with `is_last_chunk = false`. An empty
+    // chunk with `is_last_chunk = true` is appended in `OnDownloadCompleted()`.
+    auto obfuscated_data =
+        obfuscator_->ObfuscateChunk(to_write, /*is_last_chunk=*/false);
 
     // TODO(b/367259664): Add better error handling for file obfuscation.
     if (!obfuscated_data.has_value()) {
@@ -768,10 +767,11 @@ void DownloadFileImpl::OnDownloadCompleted() {
   weak_factory_.InvalidateWeakPtrs();
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  // If total bytes not provided, we append an empty obfuscated chunk to
-  // protect against truncation.
-  if (obfuscator_ && save_info_->total_bytes == 0) {
-    auto obfuscated_empty_data = obfuscator_->ObfuscateChunk({}, true);
+  // Append an empty obfuscated chunk to securely mark the end of the file
+  // and protect against truncation.
+  if (obfuscator_) {
+    auto obfuscated_empty_data =
+        obfuscator_->ObfuscateChunk({}, /*is_last_chunk=*/true);
     if (!obfuscated_empty_data.has_value()) {
       SendErrorUpdateIfFinished(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
       return;

@@ -1379,6 +1379,10 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationEnabled) {
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
   AppendDataToFile(chunks, 3);
 
+  // The download appends an empty chunk at the end of the file when completed,
+  // so we need to append its size.
+  expected_data_ += std::string(kObfuscationChunkOverhead, '\0');
+
   // Original file hash should be returned, not the obfuscated hash.
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
 
@@ -1388,7 +1392,8 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationEnabled) {
       base::ReadFileToString(download_file_->FullPath(), &file_content));
   EXPECT_NE(file_content, std::string(kTestData1) + std::string(kTestData2) +
                               std::string(kTestData3));
-  EXPECT_EQ(file_content.size(), length + CalculateObfuscationOverhead(3));
+  // Total size includes the 3 data chunks and the 1 empty termination chunk.
+  EXPECT_EQ(file_content.size(), length + CalculateObfuscationOverhead(4));
 
   download_file_->Cancel();
   DestroyDownloadFile(0, false);
@@ -1463,6 +1468,8 @@ TEST_F(DownloadFileTestWithObfuscation, DeobfuscateAndRename) {
 
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
   AppendDataToFile(chunks, 3);
+
+  expected_data_ += std::string(kObfuscationChunkOverhead, '\0');
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
 
   // Deobfuscate the file in place.
