@@ -248,6 +248,13 @@ class CORE_EXPORT HTMLTokenizer {
     return true;
   }
 
+  inline bool EmitProcessingInstruction(SegmentedString& source) {
+    temporary_buffer_.clear();
+    state_ = kDataState;
+    source.AdvancePastNonNewline();
+    return true;
+  }
+
   inline bool EmitAndReconsumeInDataState() {
     SaveEndTagNameIfNeeded();
     state_ = kDataState;

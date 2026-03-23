@@ -52,6 +52,10 @@ Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& marker_name) {
   }
 
   DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
+  DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget, ("marker"));
+  DEFINE_STATIC_LOCAL(AtomicString, kStartTarget, ("start"));
+  DEFINE_STATIC_LOCAL(AtomicString, kEndTarget, ("end"));
+
   for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
     auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
     if (!processing_instruction ||
@@ -59,13 +63,13 @@ Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& marker_name) {
              kNamePseudoAttr, g_empty_atom) != marker_name)) {
       continue;
     }
-    if (EqualIgnoringAsciiCase(processing_instruction->target(), "marker")) {
+    if (processing_instruction->target() == kMarkerTarget) {
       return MakeGarbageCollected<Patch>(
           base::PassKey<Patch>(), processing_instruction->parentNode(),
           processing_instruction, processing_instruction);
     }
 
-    if (!EqualIgnoringAsciiCase(processing_instruction->target(), "start")) {
+    if (processing_instruction->target() != kStartTarget) {
       continue;
     }
 
@@ -77,11 +81,9 @@ Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& marker_name) {
          node = node->nextSibling()) {
       if (ProcessingInstruction* next_processing_instruction =
               DynamicTo<ProcessingInstruction>(*node)) {
-        if (EqualIgnoringAsciiCase(next_processing_instruction->target(),
-                                   "start")) {
+        if (next_processing_instruction->target() == kStartTarget) {
           marker_depth++;
-        } else if (EqualIgnoringAsciiCase(next_processing_instruction->target(),
-                                          "end")) {
+        } else if (next_processing_instruction->target() == kEndTarget) {
           if (marker_depth == 0) {
             return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
                                                processing_instruction,

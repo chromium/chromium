@@ -1135,7 +1135,8 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         ParseError();
         return EmitEndOfFile(source);
       } else if (cc == '-' || IsAsciiAlphanumeric(cc)) {
-        token_.AppendToProcessingInstructionTarget(cc);
+        token_.AppendToProcessingInstructionTarget(ToLowerCaseIfAlpha(cc));
+        temporary_buffer_.AddChar(cc);
         HTML_CONSUME(kProcessingInstructionTargetState);
       } else {
         if (!(IsTokenizerWhitespace(cc) || cc == '>' || cc == '?') ||
@@ -1144,9 +1145,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           Reset();
           token_.BeginComment();
           token_.AppendToComment('?');
-          for (const UChar c : target) {
+          for (const UChar c : temporary_buffer_) {
             token_.AppendToComment(c);
           }
+          temporary_buffer_.clear();
           HTML_RECONSUME_IN(kContinueBogusCommentState);
         } else {
           HTML_RECONSUME_IN(kAfterProcessingInstructionTargetState);
@@ -1164,7 +1166,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (cc == '?') {
         HTML_ADVANCE_TO(kProcessingInstructionQuestionableState);
       } else if (cc == '>') {
-        return EmitAndResumeInDataState(source);
+        return EmitProcessingInstruction(source);
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         return EmitEndOfFile(source);
@@ -1179,7 +1181,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (cc == '?') {
         HTML_ADVANCE_TO(kProcessingInstructionQuestionableState);
       } else if (cc == '>') {
-        return EmitAndResumeInDataState(source);
+        return EmitProcessingInstruction(source);
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         return EmitEndOfFile(source);
@@ -1193,7 +1195,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     HTML_BEGIN_STATE(kProcessingInstructionQuestionableState) {
       CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (cc == '>') {
-        return EmitAndResumeInDataState(source);
+        return EmitProcessingInstruction(source);
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         return EmitEndOfFile(source);

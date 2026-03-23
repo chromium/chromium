@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>HTML partial updates - declarative append</title>
+<title>HTML partial updates - ignores case for parsed markers</title>
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,5 +12,5 @@
 <script>
   test(() => {
     assert_equals(document.getElementById("placeholder").textContent, "abc");
-  }, "marker/end/start PI targets are case-insensitive");
+  }, "marker/end/start PI targets are parsed as lower case");
 </script>
