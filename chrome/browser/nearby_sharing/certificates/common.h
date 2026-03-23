@@ -12,7 +12,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "crypto/hkdf.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
 
 // Returns true if the |current_time| exceeds |not_after| by more than the
@@ -43,7 +43,8 @@ ComputeAuthenticationTokenHash(base::span<const uint8_t> authentication_token,
 template <size_t NewNumBytes>
 std::array<uint8_t, NewNumBytes> DeriveNearbyShareKey(
     base::span<const uint8_t> key) {
-  return crypto::HkdfSha256<NewNumBytes>(key, /*salt=*/{}, /*info=*/{});
+  return crypto::kdf::Hkdf<NewNumBytes>(crypto::hash::kSha256, key, /*salt=*/{},
+                                        /*info=*/{});
 }
 
 // Generates a random byte array with size |num_bytes|.

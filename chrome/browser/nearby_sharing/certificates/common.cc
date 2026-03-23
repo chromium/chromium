@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "crypto/hkdf.h"
+#include "crypto/kdf.h"
 #include "crypto/sha2.h"
 
 bool IsNearbyShareCertificateExpired(base::Time current_time,
@@ -41,7 +41,7 @@ bool IsNearbyShareCertificateWithinValidityPeriod(
 std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
 ComputeAuthenticationTokenHash(base::span<const uint8_t> authentication_token,
                                base::span<const uint8_t> secret_key) {
-  return crypto::HkdfSha256<kNearbyShareNumBytesAuthenticationTokenHash>(
-      authentication_token, secret_key,
+  return crypto::kdf::Hkdf<kNearbyShareNumBytesAuthenticationTokenHash>(
+      crypto::hash::kSha256, authentication_token, secret_key,
       /*info=*/base::span<const uint8_t>());
 }
