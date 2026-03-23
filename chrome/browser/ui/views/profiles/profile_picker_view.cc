@@ -61,6 +61,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -449,6 +450,12 @@ content::WebContentsDelegate* ProfilePickerView::GetWebContentsDelegate() {
 }
 
 web_modal::WebContentsModalDialogHost*
+ProfilePickerView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return this;
+}
+
+web_modal::WebContentsModalDialogHost*
 ProfilePickerView::GetWebContentsModalDialogHost() {
   return this;
 }
@@ -647,6 +654,10 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(picker_profile));
   contents_->SetDelegate(this);
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      contents_.get());
+  web_modal::WebContentsModalDialogManager::FromWebContents(contents_.get())
+      ->SetDelegate(this);
 
   // Destroy the System Profile when the ProfilePickerView is closed (assuming
   // its refcount hits 0). We need to use GetOriginalProfile() here because
