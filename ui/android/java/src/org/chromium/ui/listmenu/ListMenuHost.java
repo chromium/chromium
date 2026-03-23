@@ -4,6 +4,7 @@
 
 package org.chromium.ui.listmenu;
 
+import android.app.Activity;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -15,6 +16,7 @@ import android.view.ViewParent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -278,7 +280,9 @@ public class ListMenuHost
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
 
-        View rootView = mView.getRootView();
+        Activity activity = ContextUtils.activityFromContext(mView.getContext());
+        assert activity != null;
+        View rootView = activity.getWindow().getDecorView().getRootView();
 
         AnchoredPopupWindow popupMenu =
                 new AnchoredPopupWindow.Builder(
