@@ -6892,9 +6892,6 @@
         <!-- End of APN -->
 
         <!-- Arc Input Overlay -->
-        <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHAV2" desc="Label displayed next to the Settings UI's entry point so the user is aware.">
-          Open menu to customize keys. Drag menu to move.
-        </message>
         <message name="IDS_INPUT_OVERLAY_KEYMAPPING_KEY" desc="Accessibility label for key label. Spoken by screen readers when the label 'w' control gets focus but not visually rendered.">
           Keymapping key
         </message>
@@ -6904,9 +6901,6 @@
         <message name="IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS" desc="Accessibility label for touch point which is cross shape. Spoken by screen readers when the cross-shaped touch point control gets focus but not visually rendered.">
           Keymapping D-pad
         </message>
-        <message name="IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU" desc="Accessibility label for save and reset button group. Spoken by screen readers when the save and reset button group gets focus but not visually rendered.">
-          Layout actions menu
-        </message>
         <message name="IDS_INPUT_OVERLAY_KEY_LABEL_BACKSPACE" desc="Name for symbol of backspace key. Spoken by screen readers when symbol backspace renders in key label and gets focus but the symbol name not visually rendered.">
           backspace
         </message>
@@ -6915,12 +6909,6 @@
         </message>
         <message name="IDS_INPUT_OVERLAY_KEY_LABEL_SPACE" desc="Name for symbol of space key. Spoken by screen readers when symbol space renders in key label and gets focus but the symbol name not visually rendered.">
           space
-        </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_MENU_FOCUS" desc="Spoken by screen readers when action layout menu (save button group) is focused. The content is not rendered.">
-          Reposition with mouse or arrow keys.
-        </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2" desc="Text presented via a tooltip so the user knows how to interact and edit key-bindings.">
-          Click on any key to customize your button. Reposition key with mouse or arrow keys.
         </message>
         <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS" desc="Text presented via a tooltip so the user knows how to interact when the touch point is focused.">
           Move the blue touch point to an action. Select the associated key to customize.
