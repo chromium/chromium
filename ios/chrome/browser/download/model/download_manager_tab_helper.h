@@ -19,6 +19,10 @@
 
 class DownloadFileService;
 
+namespace enterprise_connectors {
+class IOSAnalysisRequestHandler;
+}
+
 namespace web {
 class DownloadTask;
 class WebState;
@@ -126,6 +130,15 @@ class DownloadManagerTabHelper
   // See ScheduleTaskDestruction().
   void DestroyTask();
 
+  // Move the download to user selected location if `shouldProceed` is set as
+  // true, otherwise clean up the current download task.
+  void MaybeMoveDownloadToDownloadsDirectory(bool shouldProceed);
+
+  // Process the complete download task. Move the download item to the user
+  // selected location if it's not to be saved to google drive, otherwise stop
+  // the process.
+  void ProcessCompleteDownloadTask();
+
   // Returns the DownloadFileService instance.
   DownloadFileService* GetDownloadFileService();
 
@@ -133,6 +146,8 @@ class DownloadManagerTabHelper
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
+  std::unique_ptr<enterprise_connectors::IOSAnalysisRequestHandler>
+      analysis_request_handler_;
   base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
 

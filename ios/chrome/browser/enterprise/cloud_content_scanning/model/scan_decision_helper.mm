@@ -121,22 +121,27 @@ void DispatchSnackbarCommands(web::WebState* web_state,
 
 }  // namespace
 
-void HandleScanDecision(web::WebState* web_state,
+void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
                         TriggerType trigger_type,
                         base::OnceCallback<void(bool)> download_proceed,
                         RequestHandlerResult result) {
+  if (!web_state) {
+    std::move(download_proceed).Run(false);
+    return;
+  }
+
   switch (result.final_result) {
     case FinalContentAnalysisResult::SUCCESS:
       std::move(download_proceed).Run(true);
       break;
     case FinalContentAnalysisResult::WARNING:
-      DispatchWarningDialogCommands(web_state, trigger_type,
+      DispatchWarningDialogCommands(web_state.get(), trigger_type,
                                     std::move(download_proceed));
       break;
     case FinalContentAnalysisResult::LARGE_FILES:
     case FinalContentAnalysisResult::FAILURE:
     case FinalContentAnalysisResult::FAIL_CLOSED:
-      DispatchSnackbarCommands(web_state, trigger_type);
+      DispatchSnackbarCommands(web_state.get(), trigger_type);
 
       // Block the download even if we fail to show the snackbar message to
       // users.

@@ -7,8 +7,10 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
@@ -21,6 +23,8 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_analysis_request_handler.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -239,19 +243,7 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
     case web::DownloadTask::State::kInProgress:
       break;
     case web::DownloadTask::State::kComplete:
-      // If the download succeeded and the file will not be uploaded, move it to
-      // the appropriate folder.
-      if (!WillDownloadTaskBeSavedToDrive()) {
-        base::FilePath user_download_path;
-        GetDownloadsDirectory(&user_download_path);
-        base::FilePath base_file_name = task_->GenerateFileName();
-
-        GetDownloadFileService()->ResolveAvailableFilePath(
-            user_download_path, base_file_name,
-            base::BindOnce(
-                &DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
-                weak_ptr_factory_.GetWeakPtr()));
-      }
+      DownloadManagerTabHelper::ProcessCompleteDownloadTask();
       break;
     case web::DownloadTask::State::kFailed:
     case web::DownloadTask::State::kFailedNotResumable:
@@ -375,4 +367,55 @@ DownloadFileService* DownloadManagerTabHelper::GetDownloadFileService() {
 
   CHECK(download_file_service);
   return download_file_service;
+}
+
+void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
+    bool shouldProceed) {
+  // Ensure the handler is destroyed as soon as it is no longer necessary.
+  base::ScopedClosureRunner cleanup(base::BindOnce(
+      [](std::unique_ptr<enterprise_connectors::IOSAnalysisRequestHandler>
+             handler) {},
+      std::move(analysis_request_handler_)));
+
+  if (!shouldProceed) {
+    CleanupCurrentDownload();
+    return;
+  }
+
+  base::FilePath user_download_path;
+  GetDownloadsDirectory(&user_download_path);
+  base::FilePath base_file_name = task_->GenerateFileName();
+
+  GetDownloadFileService()->ResolveAvailableFilePath(
+      user_download_path, base_file_name,
+      base::BindOnce(&DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
+  if (WillDownloadTaskBeSavedToDrive()) {
+    return;
+  }
+
+  CHECK(web_state_);
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+
+  // Send the download file for enterprise DLP download content scanning.
+  //
+  // TODO(crbug.com/485126116): Replace the nullptr with a valid
+  // `ContentAnalysisInfo` once the refactoring for
+  // ContentAnalysisInfoBase is done.
+  analysis_request_handler_ = std::make_unique<
+      enterprise_connectors::IOSAnalysisRequestHandler>(
+      nullptr, profile, "",
+      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      task_->GetResponsePath(),
+      base::BindOnce(
+          &enterprise_connectors::HandleScanDecision, web_state_->GetWeakPtr(),
+          enterprise_connectors::TriggerType::kSavePrompt,
+          base::BindOnce(
+              &DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory,
+              weak_ptr_factory_.GetWeakPtr())));
+  analysis_request_handler_->PrepareContentAnalysisRequest();
 }
