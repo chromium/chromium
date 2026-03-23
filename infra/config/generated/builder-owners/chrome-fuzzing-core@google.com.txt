@@ -6,6 +6,7 @@ ci/Libfuzzer High End Upload Linux ASan Debug
 ci/Libfuzzer Upload Chrome OS ASan
 ci/Libfuzzer Upload Linux ASan
 ci/Libfuzzer Upload Linux ASan Debug
+ci/Libfuzzer Upload Linux ASanBrpV2
 ci/Libfuzzer Upload Linux MSan
 ci/Libfuzzer Upload Linux UBSan
 ci/Libfuzzer Upload Linux32 ASan

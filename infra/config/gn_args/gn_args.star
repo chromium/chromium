@@ -577,6 +577,16 @@ gn_args.config(
     },
 )
 
+# Enables Asan backup ref ptr v2 service for Asan build. This enables raw_ptr
+# refcount emulation on Asan build, but at the cost of some runtime
+# performance. This feature depends on Asan, BackupRefPtr, and Asan hooks.
+gn_args.config(
+    name = "enable_asan_backup_ref_ptr_v2",
+    args = {
+        "use_asan_backup_ref_ptr_v2": True,
+    },
+)
+
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:

@@ -906,6 +906,26 @@ libfuzzer_linux_asan_builder(
     test_builder_name = "linux-x64-libfuzzer-asan-dbg-tests",
 )
 
+libfuzzer_linux_asan_builder(
+    name = "Libfuzzer Upload Linux ASanBrpV2",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "This builder uploads libfuzzer fuzzers, for x64 using ASan with AsanBackupRefPtrV2.",
+    # TODO(487852130): remove this once we've added a test builder for this and
+    # we've verified that the builder works.
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    clusterfuzz_archive_name_prefix = "libfuzzer-asan-brp-v2",
+    console_short_name = "linux-asan-brp-v2",
+    execution_timeout = 4 * time.hour,
+    gn_extra_configs = [
+        "mojo_fuzzer",
+        "enable_asan_backup_ref_ptr_v2",
+    ],
+    max_concurrent_invocations = 4,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
 libfuzzer_linux_builder(
     name = "Libfuzzer Upload Linux MSan",
     build_config = builder_config.build_config.RELEASE,
