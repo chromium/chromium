@@ -1,2 +1,4 @@
 per-file move_source_file.py=satorux@chromium.org
 per-file suggest_owners.py=mheikal@chromium.org
+per-file worktree.py=vincb@google.com, leozhao@google.com
+per-file worktree_unittest.py=vincb@google.com, leozhao@google.com
