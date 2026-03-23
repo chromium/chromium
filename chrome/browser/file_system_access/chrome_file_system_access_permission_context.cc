@@ -259,7 +259,6 @@ bool MaybeIsLocalUNCPath(const base::FilePath& path) {
 
     // component ends with "$"
     if (!component.empty() && component.back() == L'$') {
-
       // Drive admin share: "C$".."Z$" (case-insensitive on the letter).
       if (component.size() == 2 &&
           ((component[0] >= L'A' && component[0] <= L'Z') ||
@@ -268,14 +267,14 @@ bool MaybeIsLocalUNCPath(const base::FilePath& path) {
       }
 
       // Named admin shares: "ADMIN$", "IPC$", "PRINT$", and "FAX$"
-      if (base::FilePath::CompareEqualIgnoreCase(
-              component, FILE_PATH_LITERAL("ADMIN$")) ||
-          base::FilePath::CompareEqualIgnoreCase(
-              component, FILE_PATH_LITERAL("IPC$")) ||
-          base::FilePath::CompareEqualIgnoreCase(
-              component, FILE_PATH_LITERAL("PRINT$")) ||
-          base::FilePath::CompareEqualIgnoreCase(
-              component, FILE_PATH_LITERAL("FAX$"))) {
+      if (base::FilePath::CompareEqualIgnoreCase(component,
+                                                 FILE_PATH_LITERAL("ADMIN$")) ||
+          base::FilePath::CompareEqualIgnoreCase(component,
+                                                 FILE_PATH_LITERAL("IPC$")) ||
+          base::FilePath::CompareEqualIgnoreCase(component,
+                                                 FILE_PATH_LITERAL("PRINT$")) ||
+          base::FilePath::CompareEqualIgnoreCase(component,
+                                                 FILE_PATH_LITERAL("FAX$"))) {
         return true;
       }
 
