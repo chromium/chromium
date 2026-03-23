@@ -400,7 +400,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '793ef62f9d72cac9e17812a40604cbe129854423',
+  'devtools_frontend_revision': '4884c7658f7f3532efac17bba5770c0e62cca9ac',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1231,7 +1231,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm64',
-              'version': 'uWkh4bKjI17j3Bl3wMY6zISqsA6IrErBSQ9-IeQDLVwC',
+              'version': 'CRd8zxt3JlvhBWsI5mQrlw9QYSVQJ44VenGEcrggIgMC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
