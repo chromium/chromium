@@ -418,6 +418,24 @@ class WebCryptoPbkdf2Params : public WebCryptoAlgorithmParamsWithHash {
   const unsigned iterations_;
 };
 
+class WebCryptoContextParams : public WebCryptoAlgorithmParams {
+ public:
+  explicit WebCryptoContextParams(
+      std::optional<std::vector<unsigned char>> context)
+      : context_(std::move(context)) {}
+
+  WebCryptoAlgorithmParamsType GetType() const override {
+    return kWebCryptoAlgorithmParamsTypeContextParams;
+  }
+
+  const std::optional<std::vector<unsigned char>>& Context() const {
+    return context_;
+  }
+
+ private:
+  const std::optional<std::vector<unsigned char>> context_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_

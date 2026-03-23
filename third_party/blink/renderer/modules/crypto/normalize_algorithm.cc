@@ -210,10 +210,7 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
   WebCryptoAlgorithmId id = it->algorithm_id;
 
   if ((id == kWebCryptoAlgorithmIdChaCha20Poly1305 ||
-       id == kWebCryptoAlgorithmIdMlDsa44 ||
-       id == kWebCryptoAlgorithmIdMlDsa65 ||
-       id == kWebCryptoAlgorithmIdMlDsa87 ||
-       id == kWebCryptoAlgorithmIdMlKem768 ||
+       WebCryptoAlgorithm::IsMlDsa(id) || id == kWebCryptoAlgorithmIdMlKem768 ||
        id == kWebCryptoAlgorithmIdMlKem1024) &&
       !RuntimeEnabledFeatures::WebCryptoPQCEnabled()) {
     return std::nullopt;
@@ -1010,6 +1007,32 @@ bool ParseHkdfParams(v8::Isolate* isolate,
   return true;
 }
 
+// Defined by the WebCrypto spec as:
+//
+//     dictionary ContextParams : Algorithm {
+//       BufferSource context;
+//     };
+bool ParseContextParams(const Dictionary& raw,
+                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
+                        const ErrorContext& error_context,
+                        ExceptionState& exception_state) {
+  bool has_param_context;
+  std::vector<uint8_t> param_context;
+
+  if (!GetOptionalBufferSource(raw, "context", has_param_context, param_context,
+                               error_context, exception_state)) {
+    return false;
+  }
+
+  if (has_param_context) {
+    params = std::make_unique<WebCryptoContextParams>(std::move(param_context));
+  } else {
+    params = std::make_unique<WebCryptoContextParams>(std::nullopt);
+  }
+
+  return true;
+}
+
 bool ParseAlgorithmParams(v8::Isolate* isolate,
                           const Dictionary& raw,
                           WebCryptoAlgorithmParamsType type,
@@ -1074,6 +1097,9 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
     case kWebCryptoAlgorithmParamsTypePbkdf2Params:
       context.Add("Pbkdf2Params");
       return ParsePbkdf2Params(isolate, raw, params, context, exception_state);
+    case kWebCryptoAlgorithmParamsTypeContextParams:
+      context.Add("ContextParams");
+      return ParseContextParams(raw, params, context, exception_state);
   }
   NOTREACHED();
 }

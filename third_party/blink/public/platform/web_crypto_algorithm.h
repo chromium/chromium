@@ -115,6 +115,7 @@ enum WebCryptoAlgorithmParamsType {
   kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,
   kWebCryptoAlgorithmParamsTypeHkdfParams,
   kWebCryptoAlgorithmParamsTypePbkdf2Params,
+  kWebCryptoAlgorithmParamsTypeContextParams,
 };
 
 struct WebCryptoAlgorithmInfo {
@@ -148,6 +149,7 @@ class WebCryptoEcdhKeyDeriveParams;
 class WebCryptoAesDerivedKeyParams;
 class WebCryptoHkdfParams;
 class WebCryptoPbkdf2Params;
+class WebCryptoContextParams;
 
 class WebCryptoAlgorithmParams;
 class WebCryptoAlgorithmPrivate;
@@ -208,12 +210,15 @@ class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
   const WebCryptoAesDerivedKeyParams* AesDerivedKeyParams() const;
   const WebCryptoHkdfParams* HkdfParams() const;
   const WebCryptoPbkdf2Params* Pbkdf2Params() const;
+  const WebCryptoContextParams* ContextParams() const;
 
   // Returns true if the provided algorithm ID is for a hash (in other words,
   // SHA-*)
   static bool IsHash(WebCryptoAlgorithmId);
   // Returns true if the provided algorithm ID is for a key derivation function
   static bool IsKdf(WebCryptoAlgorithmId);
+  // Returns true if the provided algorithm ID is for a ML-DSA algorithm
+  static bool IsMlDsa(WebCryptoAlgorithmId);
 
  private:
   void Assign(const WebCryptoAlgorithm& other);

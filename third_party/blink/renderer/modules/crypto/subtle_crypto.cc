@@ -108,6 +108,12 @@ bool ParseJsonWebKey(const JsonWebKey& key, std::vector<uint8_t>& json_utf8) {
   // TODO(eroman): Parse "oth" (crbug.com/441396)
   if (key.hasK())
     json_object->SetString("k", key.k());
+  if (key.hasPub()) {
+    json_object->SetString("pub", key.pub());
+  }
+  if (key.hasPriv()) {
+    json_object->SetString("priv", key.priv());
+  }
 
   std::string json = json_object->ToJSONString().Utf8();
   json_utf8 = base::ToVector(base::as_byte_span(json));

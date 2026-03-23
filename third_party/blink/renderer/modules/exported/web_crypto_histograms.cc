@@ -115,6 +115,7 @@ void HistogramAlgorithm(ExecutionContext* context,
     case kWebCryptoAlgorithmParamsTypeEcKeyGenParams:
     case kWebCryptoAlgorithmParamsTypeEcKeyImportParams:
     case kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams:
+    case kWebCryptoAlgorithmParamsTypeContextParams:
       break;
   }
 }

@@ -25,4 +25,6 @@ dictionary JsonWebKey {
   DOMString qi;
   sequence<RsaOtherPrimesInfo> oth;
   DOMString k;
+  DOMString pub;
+  DOMString priv;
 };
