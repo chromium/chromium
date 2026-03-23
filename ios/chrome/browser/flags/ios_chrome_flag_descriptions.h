@@ -1024,6 +1024,9 @@ extern const char kWalletServiceUseSandboxDescription[];
 extern const char kWelcomeBackName[];
 extern const char kWelcomeBackDescription[];
 
+extern const char kYourSavedInfoSettingsPageIosName[];
+extern const char kYourSavedInfoSettingsPageIosDescription[];
+
 extern const char kZeroStateSuggestionsName[];
 extern const char kZeroStateSuggestionsDescription[];
 

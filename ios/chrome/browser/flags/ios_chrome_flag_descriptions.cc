@@ -1678,6 +1678,11 @@ const char kWelcomeBackName[] = "Enable Welcome Back screen";
 const char kWelcomeBackDescription[] =
     "When enabled, returning users will see the Welcome Back screen.";
 
+const char kYourSavedInfoSettingsPageIosName[] =
+    "Enable Autofill and passwords settings redesign on iOS";
+const char kYourSavedInfoSettingsPageIosDescription[] =
+    "Enables the Autofill and passwords settings page redesign on iOS.";
+
 const char kZeroStateSuggestionsName[] = "Enable Zero-State Suggestions";
 const char kZeroStateSuggestionsDescription[] =
     "Enables fetching zero-state suggestions for the 'Ask Gemini' feature,"

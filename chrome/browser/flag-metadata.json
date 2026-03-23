@@ -10277,6 +10277,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "your-saved-info-settings-page-ios",
+    "owners": ["jsobiech@google.com", "chrome-autofill-team@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "zero-copy-video-capture",
     "owners": [
       "eugene@chromium.org",

@@ -1174,3 +1174,9 @@ BASE_FEATURE(kAssistantSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAssistantSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kAssistantSidePanel);
 }
+
+BASE_FEATURE(kYourSavedInfoSettingsPageIos, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsYourSavedInfoSettingsPageIosEnabled() {
+  return base::FeatureList::IsEnabled(kYourSavedInfoSettingsPageIos);
+}

@@ -2688,6 +2688,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"assistant-side-panel", flag_descriptions::kAssistantSidePanelName,
      flag_descriptions::kAssistantSidePanelDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAssistantSidePanel)},
+    {"your-saved-info-settings-page-ios",
+     flag_descriptions::kYourSavedInfoSettingsPageIosName,
+     flag_descriptions::kYourSavedInfoSettingsPageIosDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kYourSavedInfoSettingsPageIos)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
