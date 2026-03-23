@@ -81,6 +81,10 @@ class GeolocationPermissionContextAndroid
   void SetLocationSettingsForTesting(
       std::unique_ptr<LocationSettings> settings);
 
+  LocationSettings* GetLocationSettingsForTesting() {
+    return location_settings_.get();
+  }
+
  private:
   // GeolocationPermissionContext:
   void RequestPermission(std::unique_ptr<PermissionRequestData> request_data,
