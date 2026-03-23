@@ -715,6 +715,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="(obsolete) Password access loss warning"/>
   <int value="28" label="Passkey upgrade bubble"/>
   <int value="29" label="Password change state information bubble"/>
+  <int value="30" label="Autofill and passwords settings page"/>
 </enum>
 
 <enum name="PasskeysMigrationStatus">
