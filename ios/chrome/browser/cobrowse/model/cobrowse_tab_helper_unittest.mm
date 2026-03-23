@@ -260,3 +260,17 @@ TEST_F(CobrowseTabHelperTest, HideAssistantOnSearchNavigation) {
 
   [mock_scene_commands_handler_ verify];
 }
+
+// Tests that hideAssistant is called when navigating to the NTP.
+TEST_F(CobrowseTabHelperTest, HideAssistantOnNtpNavigation) {
+  GURL ntp_url("chrome://newtab");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(ntp_url);
+
+  OCMExpect([mock_scene_commands_handler_ hideAssistant]);
+
+  tab_helper_->DidStartNavigation(fake_web_state_, &context);
+
+  [mock_scene_commands_handler_ verify];
+}
