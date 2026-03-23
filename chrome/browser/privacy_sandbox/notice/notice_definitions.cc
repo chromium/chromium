@@ -11,65 +11,65 @@ namespace privacy_sandbox {
 // Topics Consent Modal Features
 BASE_FEATURE(kTopicsConsentDesktopModalFeature,
              "TopicsConsentDesktopModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTopicsConsentModalClankBrAppFeature,
              "TopicsConsentModalClankBrApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTopicsConsentModalClankCCTFeature,
              "TopicsConsentModalClankCCT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // EEA Notice Features
 BASE_FEATURE(kProtectedAudienceMeasurementNoticeModalFeature,
              "ProtectedAudienceMeasurementNoticeModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProtectedAudienceMeasurementNoticeModalClankBrAppFeature,
              "ProtectedAudienceMeasurementNoticeModalClankBrApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProtectedAudienceMeasurementNoticeModalClankCCTFeature,
              "ProtectedAudienceMeasurementNoticeModalClankCCT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // ROW Notice Features
 BASE_FEATURE(kThreeAdsAPIsNoticeModalFeature,
              "ThreeAdsAPIsNoticeModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreeAdsAPIsNoticeModalClankBrAppFeature,
              "ThreeAdsAPIsNoticeModalClankBrApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreeAdsAPIsNoticeModalClankCCTFeature,
              "ThreeAdsAPIsNoticeModalClankCCT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Restricted Notice Features
 BASE_FEATURE(kMeasurementNoticeModalFeature,
              "MeasurementNoticeModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMeasurementNoticeModalClankBrAppFeature,
              "MeasurementNoticeModalClankBrApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMeasurementNoticeModalClankCCTFeature,
              "MeasurementNoticeModalClankCCT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoticeFrameworkTopicsApiFeature,
              "PSNoticeFrameworkTopicsApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoticeFrameworkProtectedAudienceApiFeature,
              "PSNoticeFrameworkProtectedAudienceApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoticeFrameworkMeasurementApiFeature,
              "PSNoticeFrameworkMeasurementApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace privacy_sandbox
