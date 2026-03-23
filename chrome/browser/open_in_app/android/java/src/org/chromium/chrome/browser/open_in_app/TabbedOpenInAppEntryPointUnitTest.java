@@ -145,7 +145,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 123L);
+        mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 123L);
 
         // Resolve infos received; the app info should be non-null.
         assertNonNull(delegate.getCurrentOpenInAppInfo());
@@ -187,7 +187,11 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         // Empty resolve infos; the app info should be null.
         mEntryPoint.onResolveInfosFetched(
-                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl, /* navigationId= */ 0);
+                delegate,
+                new OpenInAppEntryPoint.ResolveResult.None(),
+                mIntent,
+                mUrl,
+                /* navigationId= */ 0);
         assertNull(delegate.getCurrentOpenInAppInfo());
         verify(mOmniboxChipManager, times(2)).dismissChip();
     }
@@ -205,7 +209,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         ShadowLooper.idleMainLooper();
 
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 123L);
+        mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 123L);
 
         ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mOmniboxChipManager).placeChip(any(), any(), any(), actionCaptor.capture(), any());
