@@ -5,6 +5,8 @@
 import collections
 import logging
 import re
+import shutil
+import shlex
 import subprocess
 
 # CSV-file like separators. The templating language doesn't support escaping,
@@ -29,7 +31,14 @@ MUTABLE_PARENTS = '''parents
 def run_command(args: list[str],
                 check=True,
                 **kwargs) -> subprocess.CompletedProcess:
-  logging.debug('Running command %s', ' '.join(map(str, args)))
+  # Resolve the binary path, or in the case of Windows, the batch script path,
+  # including the .bat extension.
+  resolved = shutil.which(args[0])
+  if not resolved:
+    logging.error('Could not find %s on PATH', args[0])
+    exit(1)
+  args = [resolved] + args[1:]
+  logging.debug('Running command %s', shlex.join(map(str, args)))
   ps = subprocess.run(args, **kwargs, check=False)
   if check and ps.returncode:
     # Don't create a stack trace.
