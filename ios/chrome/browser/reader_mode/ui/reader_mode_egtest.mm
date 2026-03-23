@@ -111,7 +111,7 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Returns the Contextual Panel's entrypoint view GREY matcher.
 id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
-  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
+  // TODO(crbug.com/494235953): Clean up when feature is enabled by default.
   if ([ChromeEarlGrey isAskGeminiChipEnabled] ||
       [ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
     return grey_allOf(
