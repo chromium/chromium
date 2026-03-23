@@ -77,7 +77,6 @@ class ModelBrokerState final : public OnDeviceCapability {
   void RemoveOnDeviceModelAvailabilityChangeObserver(
       mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer) override;
-  on_device_model::Capabilities GetOnDeviceCapabilities() override;
 
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.

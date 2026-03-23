@@ -565,11 +565,6 @@ void OptimizationGuideKeyedService::
       .RemoveOnDeviceModelAvailabilityChangeObserver(feature, observer);
 }
 
-on_device_model::Capabilities
-OptimizationGuideKeyedService::GetOnDeviceCapabilities() {
-  return GetGlobalState().on_device_capability().GetOnDeviceCapabilities();
-}
-
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
     Profile* profile) {
   DCHECK(profile_observation_.IsObservingSource(profile));

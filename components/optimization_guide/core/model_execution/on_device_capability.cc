@@ -164,10 +164,6 @@ void OnDeviceCapability::RemoveOnDeviceModelAvailabilityChangeObserver(
     mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {}
 
-on_device_model::Capabilities OnDeviceCapability::GetOnDeviceCapabilities() {
-  return {};
-}
-
 OnDeviceModelEligibilityReason OnDeviceCapability::GetOnDeviceModelEligibility(
     mojom::OnDeviceFeature feature) {
   return OnDeviceModelEligibilityReason::kFeatureNotEnabled;

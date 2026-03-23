@@ -327,14 +327,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
             GetFeatureMetadata(
                 optimization_guide::mojom::OnDeviceFeature::kPromptApi))
         .WillByDefault([&]() { return CreateConfig().feature_metadata(); });
-    ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
-        .WillByDefault(Return(on_device_model::Capabilities(
-            {on_device_model::CapabilityFlags::kImageInput,
-             on_device_model::CapabilityFlags::kAudioInput})));
-    ON_CALL(*mock_optimization_guide_keyed_service_,
-            GetOnDeviceModelEligibility(_))
-        .WillByDefault(Return(
-            optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   }
 
   mojo::Remote<blink::mojom::AILanguageModel> CreateSession(
@@ -920,9 +912,6 @@ INSTANTIATE_TEST_SUITE_P(
                       LanguageParams{"en,es,ja", {"ja", "fr"}, true}));
 
 TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
-  ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
-      .WillByDefault(Return(on_device_model::Capabilities()));
-
   TestCreateLanguageModelClient language_model_client;
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->type = blink::mojom::AILanguageModelPromptType::kImage;
@@ -940,9 +929,6 @@ TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
 }
 
 TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
-  ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
-      .WillByDefault(Return(on_device_model::Capabilities()));
-
   auto expected_output = blink::mojom::AILanguageModelExpected::New();
   expected_output->type = blink::mojom::AILanguageModelPromptType::kImage;
 
@@ -960,6 +946,13 @@ TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
+  fake_broker_->InstallBaseModel(
+      {.config = optimization_guide::ExecutionConfigWithCapabilities(
+           {optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
+            optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+
   auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
@@ -997,6 +990,13 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
+  fake_broker_->InstallBaseModel(
+      {.config = optimization_guide::ExecutionConfigWithCapabilities(
+           {optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
+            optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+
   auto image_input = blink::mojom::AILanguageModelExpected::New();
   image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
@@ -1034,6 +1034,13 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInput) {
+  fake_broker_->InstallBaseModel(
+      {.config = optimization_guide::ExecutionConfigWithCapabilities(
+           {optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
+            optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+
   auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
   auto image_input = blink::mojom::AILanguageModelExpected::New();

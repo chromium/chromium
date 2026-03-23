@@ -70,7 +70,8 @@ class ModelClient::OnDeviceOptionsClient final
 ModelClient::OnDeviceOptionsClient::~OnDeviceOptionsClient() = default;
 
 ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
-                         mojom::ModelSolutionConfigPtr config)
+                         mojom::ModelSolutionConfigPtr config,
+                         on_device_model::Capabilities device_capabilities)
     : remote_(std::move(remote)),
       feature_adapter_(base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
           *config->feature_config
@@ -80,12 +81,13 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
       max_tokens_(config->max_tokens),
-      model_capabilities_(config->model_capabilities),
+      capabilities_(config->model_capabilities),
       feature_(*ToOnDeviceFeature(feature_adapter_->config().feature())) {
   // Tool use is assumed supported since it is gated by RuntimeEnabledFeatures
   // in Blink. TODO(crbug.com/422803232): Expose actual model tool use
   // capability from model metadata instead of assuming support.
-  model_capabilities_.Put(on_device_model::CapabilityFlags::kToolUse);
+  capabilities_.RetainAll(device_capabilities);
+  capabilities_.Put(on_device_model::CapabilityFlags::kToolUse);
 
   remote_.set_disconnect_handler(
       base::BindOnce(&ModelClient::OnDisconnect, base::Unretained(this)));
@@ -174,7 +176,8 @@ void ModelSubscriberImpl::Available(
   TRACE_EVENT("optimization_guide", "ModelSubscriberImpl::Available");
   unavailable_reason_ = std::nullopt;
   detailed_reason_ = std::nullopt;
-  client_.emplace(std::move(remote), std::move(config));
+  client_.emplace(std::move(remote), std::move(config),
+                  capabilities_.value_or(on_device_model::Capabilities()));
   FlushCallbacks();
   FlushCanCreateSessionCallbacks();
 }
@@ -216,26 +219,21 @@ void ModelSubscriberImpl::FlushCanCreateSessionCallbacks() {
   can_create_session_callbacks_.clear();
 
   for (auto& [capability, callback] : to_call) {
-    if (!capabilities_.value().HasAll(capability)) {
-      std::move(callback).Run(
-          mojom::ModelUnavailableReason::kNotSupported,
-          mojom::ModelNotSupportedDetailedReason::kModelAdaptationNotAvailable);
-    } else if (client_) {
-      if (!client_->model_capabilities().HasAll(capability)) {
-        std::move(callback).Run(mojom::ModelUnavailableReason::kNotSupported,
-                                mojom::ModelNotSupportedDetailedReason::
-                                    kModelAdaptationNotAvailable);
-      } else {
-        std::move(callback).Run(std::nullopt, std::nullopt);
-      }
-    } else {
-      std::optional<mojom::ModelNotSupportedDetailedReason> detailed_reason =
-          std::nullopt;
-      if (unavailable_reason_ == mojom::ModelUnavailableReason::kNotSupported) {
-        detailed_reason = detailed_reason_;
-      }
-      std::move(callback).Run(unavailable_reason_, detailed_reason);
+    std::optional<mojom::ModelUnavailableReason> unavailable_reason =
+        unavailable_reason_;
+    std::optional<mojom::ModelNotSupportedDetailedReason> detailed_reason =
+        unavailable_reason_ == mojom::ModelUnavailableReason::kNotSupported
+            ? detailed_reason_
+            : std::nullopt;
+
+    if ((client_ && !client_->capabilities().HasAll(capability)) ||
+        !capabilities_.value().HasAll(capability)) {
+      unavailable_reason = mojom::ModelUnavailableReason::kNotSupported;
+      detailed_reason =
+          mojom::ModelNotSupportedDetailedReason::kModelAdaptationNotAvailable;
     }
+
+    std::move(callback).Run(unavailable_reason, detailed_reason);
   }
 }
 

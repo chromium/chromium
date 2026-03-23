@@ -343,9 +343,6 @@ class OnDeviceCapability {
       mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer);
 
-  // Returns the capabilities for the on-device model, or empty capabilities if
-  // no model is available.
-  virtual on_device_model::Capabilities GetOnDeviceCapabilities();
   virtual OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       mojom::OnDeviceFeature feature);
   // Similar to above, but bumps the priority of related tasks such as computing

@@ -169,18 +169,6 @@ bool HasMultimodalInputCapabilities(
          capabilities.Has(on_device_model::CapabilityFlags::kAudioInput);
 }
 
-// Returns whether the model supports the given capabilities. Tool use is
-// assumed supported since it is gated by RuntimeEnabledFeatures in Blink.
-// TODO(crbug.com/422803232): Expose actual model tool use capability from
-// model metadata instead of assuming support.
-bool ModelSupportsCapabilities(
-    OptimizationGuideKeyedService* service,
-    const on_device_model::Capabilities& capabilities) {
-  auto model_caps = service->GetOnDeviceCapabilities();
-  model_caps.Put(on_device_model::CapabilityFlags::kToolUse);
-  return model_caps.HasAll(capabilities);
-}
-
 // Checks if the expected outputs contain any invalid types.
 // Models can generate text and tool calls, but not images, audio, or tool
 // responses.
@@ -556,7 +544,7 @@ void AIManager::CreateLanguageModelInternal(
     if ((HasMultimodalInputCapabilities(params->capabilities) &&
          !base::FeatureList::IsEnabled(
              blink::features::kAIPromptAPIMultimodalInput)) ||
-        !ModelSupportsCapabilities(service, params->capabilities)) {
+        !model_client->capabilities().HasAll(params->capabilities)) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(client));
       on_device_ai::SendClientRemoteError(

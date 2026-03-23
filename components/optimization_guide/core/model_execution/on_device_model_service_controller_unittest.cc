@@ -2529,7 +2529,9 @@ TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
   });
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceCapabilities(),
+  EXPECT_EQ(broker_.GetOrCreateBrokerState()
+                .base_model_controller()
+                .GetCapabilities(),
             on_device_model::Capabilities(
                 {on_device_model::CapabilityFlags::kImageInput}));
 }

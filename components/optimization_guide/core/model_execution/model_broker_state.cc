@@ -227,14 +227,4 @@ void ModelBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
   model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
 }
 
-on_device_model::Capabilities ModelBrokerState::GetOnDeviceCapabilities() {
-  if (!features::IsOnDeviceExecutionEnabled()) {
-    return {};
-  }
-  auto capabilities = base_model_controller_.GetCapabilities();
-  capabilities.RetainAll(
-      performance_classifier_.GetPossibleOnDeviceCapabilities());
-  return capabilities;
-}
-
 }  // namespace optimization_guide

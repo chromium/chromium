@@ -33,7 +33,8 @@ namespace optimization_guide {
 class ModelClient final : public TextSafetyClient {
  public:
   ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
-              mojom::ModelSolutionConfigPtr config);
+              mojom::ModelSolutionConfigPtr config,
+              on_device_model::Capabilities device_capabilities);
   ~ModelClient() override;
 
   // Construct a session for this capability.
@@ -57,8 +58,9 @@ class ModelClient final : public TextSafetyClient {
   }
 
   uint32_t max_tokens() const { return max_tokens_; }
-  const on_device_model::Capabilities& model_capabilities() const {
-    return model_capabilities_;
+  // The intersection of model capabilities and device capabilities.
+  const on_device_model::Capabilities& capabilities() const {
+    return capabilities_;
   }
 
   const proto::FeatureTextSafetyConfiguration& safety_config() const {
@@ -77,7 +79,7 @@ class ModelClient final : public TextSafetyClient {
   proto::OnDeviceModelVersions model_versions_;
   // The full combined limit for input and output tokens.
   uint32_t max_tokens_ = 0;
-  on_device_model::Capabilities model_capabilities_;
+  on_device_model::Capabilities capabilities_;
   mojom::OnDeviceFeature feature_;
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};
 };
