@@ -173,7 +173,7 @@ TEST(JsonWriterTest, StackOverflow) {
 
 TEST(JsonWriterTest, TestMaxDepthWithValidNodes) {
   // Create JSON to the max depth - 1.  Nodes at that depth are still valid
-  // for writing which matches the JSONParser logic.
+  // for writing which matches the JSONReader logic.
   std::string nested_json;
   for (int i = 0; i < 199; ++i) {
     std::string node = "[";

@@ -30,17 +30,12 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/trace_event/base_tracing_forward.h"
-#include "base/types/pass_key.h"
 #include "base/value_iterators.h"
 
 namespace base {
 
 class DictValue;
 class Value;
-
-namespace internal {
-class JSONParser;
-}  // namespace internal
 
 using BlobStorage = std::vector<uint8_t>;
 
@@ -266,9 +261,6 @@ class BASE_EXPORT GSL_OWNER DictValue {
   template <class IteratorType>
   DictValue(std::move_iterator<IteratorType> first,
             std::move_iterator<IteratorType> last);
-
-  DictValue(PassKey<internal::JSONParser>,
-            flat_map<std::string, std::unique_ptr<Value>>);
 
   ~DictValue();
 

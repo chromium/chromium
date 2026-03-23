@@ -84,7 +84,7 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
   std::unique_ptr<base::Value> Deserialize(int* error_code,
                                            std::string* error_message) override;
 
-  // This enum is designed to safely overlap with JSONParser::JsonParseError.
+  // This enum is designed to safely overlap with JSONReader::Error.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UPDATE_IGNORE_STATE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UPDATE_IGNORE_STATE_H_
 
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
