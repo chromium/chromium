@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/scheduler/scheduled_action.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -206,6 +207,40 @@ TEST_F(DOMTimerTest, setInterval_NestingResetsForLaterCalls) {
   auto times(ToDoubleArray(EvalExpression("times"), scope));
 
   EXPECT_THAT(times, ElementsAreArray(kExpectedTimings));
+}
+
+// Regression test: Dispose() must cancel the pending task even when action_ is
+// already null. During cppgc lazy sweeping, GC phase interactions can leave a
+// DOMTimer with a live TimerBase handle but a null action_. If Dispose() does
+// not call Stop(), the dangling Unretained(this) closure fires after the
+// destructor, causing a use-after-free.
+TEST_F(DOMTimerTest, DisposeWithNullActionCancelsTask) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope script_scope(script_state);
+
+  auto* action = MakeGarbageCollected<ScheduledAction>(
+      script_state, *GetDocument().GetExecutionContext(), String("void 0"));
+  auto* timer = MakeGarbageCollected<DOMTimer>(
+      *GetDocument().GetExecutionContext(), action, base::Milliseconds(50),
+      /*single_shot=*/true);
+  ASSERT_TRUE(timer->IsActive());
+
+  // Stop clears action_ and cancels the task.
+  timer->Stop();
+  ASSERT_FALSE(timer->IsActive());
+
+  // Re-arm the timer so there is a pending task while action_ is null.
+  timer->StartOneShot(base::Milliseconds(1), FROM_HERE);
+  ASSERT_TRUE(timer->IsActive());
+
+  // Simulate the pre-finalizer; must cancel the pending task.
+  timer->Dispose();
+
+  // Without the fix the uncancelled closure fires and crashes.
+  FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(timer->IsActive());
 }
 
 }  // namespace

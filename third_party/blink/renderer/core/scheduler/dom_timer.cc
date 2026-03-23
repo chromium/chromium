@@ -360,22 +360,24 @@ void DOMTimer::Dispose() {
 }
 
 void DOMTimer::Stop() {
-  if (!action_) {
-    return;
-  }
-
-  async_task_context_.Cancel();
-  const bool is_interval = RepeatInterval().has_value();
-  probe::BreakableLocation(GetExecutionContext(),
-                           is_interval ? "clearInterval" : "clearTimeout");
-
-  // Need to release JS objects potentially protected by ScheduledAction
-  // because they can form circular references back to the ExecutionContext
-  // which will cause a memory leak.
+  // TimerBase::Stop() must run even when action_ is null. During cppgc lazy
+  // sweeping the pre-finalizer (Dispose) may call Stop() after action_ has
+  // already been cleared by a previous Stop(). Skipping TimerBase::Stop() in
+  // that case would leave an Unretained(this) closure in the task queue whose
+  // captured pointer is poisoned by Oilpan right after Dispose() returns.
   if (action_) {
+    async_task_context_.Cancel();
+    const bool is_interval = RepeatInterval().has_value();
+    probe::BreakableLocation(GetExecutionContext(),
+                             is_interval ? "clearInterval" : "clearTimeout");
+
+    // Need to release JS objects potentially protected by ScheduledAction
+    // because they can form circular references back to the ExecutionContext
+    // which will cause a memory leak.
     action_->Dispose();
+    action_ = nullptr;
   }
-  action_ = nullptr;
+
   TimerBase::Stop();
 }
 

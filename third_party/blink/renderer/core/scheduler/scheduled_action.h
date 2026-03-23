@@ -33,6 +33,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -49,8 +50,9 @@ class ScriptStateProtectingContext;
 class ScriptValue;
 class V8Function;
 
-class ScheduledAction final : public GarbageCollected<ScheduledAction>,
-                              public NameClient {
+class CORE_EXPORT ScheduledAction final
+    : public GarbageCollected<ScheduledAction>,
+      public NameClient {
  public:
   ScheduledAction(ScriptState*,
                   ExecutionContext& target,
