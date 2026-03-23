@@ -315,6 +315,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   raw_ptr<content::WebContents> GetDevToolsWebContents();
   bool IsDocked() { return is_docked_; }
+  bool OpenNewWindowForPopups() const { return open_new_window_for_popups_; }
 
  private:
   friend class DevToolsWindowTesting;
