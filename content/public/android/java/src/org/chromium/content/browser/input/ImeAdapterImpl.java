@@ -1765,13 +1765,10 @@ public class ImeAdapterImpl
      */
     void updateCursorAnchorInfo(InputCursorAnchorInfo cursorAnchorInfo) {
         View containerView = getContainerView();
-        boolean isSelectionMove =
-                mCursorAnchorInfoController.updateCursorAnchorInfoData(
-                        cursorAnchorInfo, containerView);
+        mCursorAnchorInfoController.updateCursorAnchorInfoData(cursorAnchorInfo, containerView);
 
         // Request view system keep caret on screen when moved.
-        if (isSelectionMove
-                && cursorAnchorInfo.insertionMarker != null
+        if (cursorAnchorInfo.insertionMarker != null
                 && ContentFeatureList.sAccessibilityMagnificationFollowsFocus.isEnabled()) {
             // Convert caret bounds from CSS pixels to device pixels relative to root view.
             var caretCss = cursorAnchorInfo.insertionMarker;
