@@ -55,7 +55,6 @@ static_library("ranking") {
     "//chrome/browser/ash/app_list/search/util",
     "//chrome/browser/ash/app_list/search/util:proto",
     "//chrome/browser/profiles:profile",
-    "//chromeos/crosapi/mojom",
     "//components/omnibox/browser",
   ]
 }
@@ -92,7 +91,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
