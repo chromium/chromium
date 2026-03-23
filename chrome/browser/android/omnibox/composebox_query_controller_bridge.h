@@ -91,14 +91,17 @@ class ComposeboxQueryControllerBridge
   base::WeakPtr<ComposeboxQueryControllerBridge> AsWeakPtr();
 
  private:
-  void OnGetTabPageContext(
-      JNIEnv* env,
-      const base::UnguessableToken& context_token,
-      std::unique_ptr<lens::ContextualInputData> page_content_data);
   void OnGetPageContentFromCache(
       JNIEnv* env,
       const base::UnguessableToken& context_token,
+      base::TimeTicks start_time,
       std::optional<optimization_guide::proto::PageContext> page_context);
+  void StartTabContextUploadFlow(
+      JNIEnv* env,
+      const base::UnguessableToken& context_token,
+      bool was_cached,
+      base::TimeTicks start_time,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
   void OnInputStateChanged(const contextual_search::InputState& state);
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>

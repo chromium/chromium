@@ -1527,6 +1527,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ComposeboxQueryController.AddTabContextCachedDuration"
+    units="ms" expires_after="2026-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the duration between requesting and starting the upload of a tab's
+    context in the ComposeboxQueryController. Recorded whenever a tab with
+    cached context is added as an attachment to a query. Only recorded when the
+    retrieval from the cache is successful.
+  </summary>
+</histogram>
+
+<histogram name="Android.ComposeboxQueryController.AddTabContextDuration"
+    units="ms" expires_after="2026-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the duration between requesting and starting the upload of a tab's
+    context in the ComposeboxQueryController. Recorded whenever a tab without a
+    cached context is added as an attachment to a query and the context must be
+    extracted on-demand. Only recorded when the context extraction is
+    successful.
+  </summary>
+</histogram>
+
 <histogram name="Android.Compositor.IsRequestingOpaqueSurface" enum="Boolean"
     expires_after="2025-04-13">
   <owner>wenyufu@chromium.org</owner>
