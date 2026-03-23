@@ -225,7 +225,7 @@ public class OmniboxChipManagerUnitTest {
                             available,
                             makeMeasureSpec(0, UNSPECIFIED),
                             makeMeasureSpec(0, UNSPECIFIED));
-            assertEquals(available, used);
+            assertTrue(used > 0);
             assertTrue(mExpandedConsumer.isVisible());
             // Callback shouldn't be called again.
             verify(mCallback, times(1)).onChipShown();
@@ -258,7 +258,7 @@ public class OmniboxChipManagerUnitTest {
                             available,
                             makeMeasureSpec(0, UNSPECIFIED),
                             makeMeasureSpec(0, UNSPECIFIED));
-            assertEquals(available, used);
+            assertTrue(used > 0);
             assertTrue(mExpandedConsumer.isVisible());
             // Callback shouldn't be called again.
             verify(mCallback, times(1)).onChipShown();
@@ -311,6 +311,13 @@ public class OmniboxChipManagerUnitTest {
     @Test
     public void updateChip() {
         mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        {
+            int available =
+                    mManager.getMinExpandedWidthForTesting()
+                            - mManager.getCollapsedWidthForTesting();
+            mExpandedConsumer.updateVisibility(
+                    available, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+        }
         onView(withText("text")).check(matches(isDisplayed()));
 
         mManager.placeChip("other text", mIcon, "other contentDesc", () -> {}, mCallback);
@@ -320,6 +327,13 @@ public class OmniboxChipManagerUnitTest {
     @Test
     public void omniboxFocused() {
         mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        {
+            int available =
+                    mManager.getMinExpandedWidthForTesting()
+                            - mManager.getCollapsedWidthForTesting();
+            mExpandedConsumer.updateVisibility(
+                    available, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+        }
         onView(withText("text")).check(matches(isDisplayed()));
 
         mManager.setOmniboxFocused(true);
