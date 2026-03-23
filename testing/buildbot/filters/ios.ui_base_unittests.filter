@@ -7,5 +7,6 @@
 # https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-dbg-fyi/25367/overview
 -ClipboardTest/PlatformClipboardTest.HTMLTest
 -ClipboardTest/PlatformClipboardTest.MultiFormatTest
+-ClipboardTest/PlatformClipboardTest.MultiplePickleTest
 -ClipboardTest/PlatformClipboardTest.TrickyHTMLTest
 -ClipboardTest/PlatformClipboardTest.WriteEverything

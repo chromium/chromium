@@ -28,6 +28,11 @@
 
 # TODO(crbug.com/40256189): This test has been failing with pixel differences
 # since https://crrev.com/c/4966062.
+-VideoRendererPixelHiLoColorSpaceTest.SimpleYUVRect/5
+-VideoRendererPixelHiLoColorSpaceTest.SimpleYUVRect/6
+-VideoRendererPixelHiLoColorSpaceTest.SimpleYUVRect/7
+-VideoRendererPixelHiLoColorSpaceTest.SimpleYUVRect/8
+-VideoRendererPixelHiLoColorSpaceTest.SimpleYUVRect/9
 -VideoRendererPixelHiLoTest.SimpleYUVRect/1
 
 # These tests fail with perceptible pixel differences

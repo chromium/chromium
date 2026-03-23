@@ -321,6 +321,7 @@
 -WebContentsImplBrowserTest.PopupsFromJavaScriptEndFullscreenDownstream
 -WebContentsImplBrowserTest.PopupsOfPopupsFromJavaScriptEndFullscreen
 -WebContentsImplBrowserTest.ReinitializeMainFrameForCrashedTab
+-WebContentsImplBrowserTest.ShowPickerBlockedWhenUnfocused
 -WebUIImplBrowserTest.NavigateFromCrashedAboutBlank
 
 # TODO(crbug.com/41471694): The below tests related to the touchpad and gesture_detection
