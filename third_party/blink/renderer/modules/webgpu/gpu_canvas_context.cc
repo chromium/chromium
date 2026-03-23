@@ -919,7 +919,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   }
 
   gpu::SyncToken sync_token;
-  auto dst_client_si = resource_provider->BeginExternalWrite(sync_token);
+  auto dst_client_si =
+      resource_provider->BeginExternalWrite(sync_token, /*is_overwrite=*/false);
   if (!dst_client_si) {
     return false;
   }

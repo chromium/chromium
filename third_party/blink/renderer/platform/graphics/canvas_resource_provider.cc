@@ -883,7 +883,8 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
 
 scoped_refptr<gpu::ClientSharedImage>
 CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
-    gpu::SyncToken& internal_access_sync_token) {
+    gpu::SyncToken& internal_access_sync_token,
+    bool is_overwrite) {
   DCHECK(is_accelerated_);
 
   if (IsGpuContextLost()) {
@@ -897,7 +898,7 @@ CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
 
   // NOTE: Invoking WillDrawInternal() ensures that this invocation of
   // EndAccess() will generate a new sync token.
-  auto access = WillDrawInternal(/*is_overwrite=*/false);
+  auto access = WillDrawInternal(is_overwrite);
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
   return resource_->GetClientSharedImage();
