@@ -69,6 +69,11 @@ class VerticalTabStripView::ActivatedViewTracker : public views::ViewObserver {
   }
   views::View* view() { return view_; }
 
+  // Returns true if the tracked view height matches its preferred height.
+  bool IsViewAtPreferredHeight() {
+    return view_->size().height() == view_->GetPreferredSize().height();
+  }
+
   // Sets a callback that is run when the tracked view's height reaches its
   // preferred height.
   void SetOnReachedPreferredHeightCallback(
@@ -80,8 +85,7 @@ class VerticalTabStripView::ActivatedViewTracker : public views::ViewObserver {
  private:
   void CheckTrackedViewHeight() {
     CHECK(view_);
-    if ((view_->size().height() == view_->GetPreferredSize().height()) &&
-        on_reached_preferred_height_cb_) {
+    if (IsViewAtPreferredHeight() && on_reached_preferred_height_cb_) {
       std::move(on_reached_preferred_height_cb_).Run();
     }
   }
@@ -465,10 +469,16 @@ void VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout(
     // (i.e. it was activated as it is being animated in). In such a case
     // disable overflow visuals to prevent jank that can occur if content view
     // bounds are changed in quick succession.
-    DisableOverflowVisuals(scroll_view);
-    activated_view_tracker_->SetOnReachedPreferredHeightCallback(
-        base::BindOnce(&VerticalTabStripView::EnableOverflowVisuals,
-                       base::Unretained(this), scroll_view));
+    if (!activated_view_tracker_->IsViewAtPreferredHeight()) {
+      DisableOverflowVisuals(scroll_view);
+      activated_view_tracker_->SetOnReachedPreferredHeightCallback(
+          base::BindOnce(&VerticalTabStripView::
+                             EnsureVisibleInViewportPostActivationAndLayout,
+                         base::Unretained(this), scroll_view));
+    } else {
+      // Always exit with overflow visuals enabled.
+      EnableOverflowVisuals(scroll_view);
+    }
     return;
   }
 
