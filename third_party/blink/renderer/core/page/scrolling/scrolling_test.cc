@@ -402,9 +402,9 @@ TEST_P(ScrollingTest, fastScrollingForStickyPosition) {
     Element* element = document->getElementById(AtomicString("composited-top"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top);
-    EXPECT_EQ(gfx::RectF(100, 110, 10, 10),
+    EXPECT_EQ(gfx::RectF(0, 110, 0, 10),
               constraint.scroll_container_relative_sticky_box_rect);
-    EXPECT_EQ(gfx::RectF(100, 100, 200, 200),
+    EXPECT_EQ(gfx::RectF(0, 100, 0, 200),
               constraint.scroll_container_relative_containing_block_rect);
   }
 }

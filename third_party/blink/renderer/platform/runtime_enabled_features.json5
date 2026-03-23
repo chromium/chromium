@@ -5238,6 +5238,7 @@
     },
     {
       name: "SingleAxisScrollContainers",
+      status: "experimental",
     },
     {
       name: "SkipAd",
