@@ -29,9 +29,8 @@ public interface SuggestionsUiDelegate {
 
     // Feature/State checks
 
-    /** Registers a {@link DestructionObserver}, notified when the delegate's host goes away. */
-    void addDestructionObserver(DestructionObserver destructionObserver);
-
-    /** @return Whether the suggestions UI is currently visible. */
+    /**
+     * @return Whether the suggestions UI is currently visible.
+     */
     boolean isVisible();
 }

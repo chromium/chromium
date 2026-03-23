@@ -1121,6 +1121,10 @@ public class NewTabPage
 
         mCallbackController.destroy();
 
+        if (mNewTabPageCoordinator != null) {
+            mNewTabPageCoordinator.destroy();
+        }
+
         mNewTabPageManager.onDestroy();
         mTileGroupDelegate.destroy();
         mTemplateUrlService.removeObserver(this);

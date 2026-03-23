@@ -98,7 +98,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
     /**
      * Called before the TasksSurface is showing to initialize MV tiles. {@link
-     * MostVisitedTilesCoordinator#destroyMvtiles()} is called after the TasksSurface hides.
+     * MostVisitedTilesCoordinator#destroy()} is called after the TasksSurface hides.
      *
      * @param profile The Profile associated with the MV Tiles being displayed.
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
@@ -178,7 +178,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
-    public void destroyMvtiles() {
+    public void destroy() {
         mActivityLifecycleDispatcher.unregister(this);
 
         if (mOfflinePageBridge != null) mOfflinePageBridge = null;

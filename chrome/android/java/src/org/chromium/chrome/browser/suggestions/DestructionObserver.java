@@ -9,8 +9,6 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Object that is registered through the {@link SuggestionsUiDelegate}, and that will be notified
  * when its owner is destroyed.
- *
- * @see SuggestionsUiDelegate#addDestructionObserver(DestructionObserver)
  */
 @NullMarked
 public interface DestructionObserver {

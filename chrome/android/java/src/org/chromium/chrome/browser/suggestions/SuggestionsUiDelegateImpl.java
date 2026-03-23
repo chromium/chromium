@@ -9,13 +9,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** {@link SuggestionsUiDelegate} implementation. */
 @NullMarked
 public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
-    private final List<DestructionObserver> mDestructionObservers = new ArrayList<>();
     private final SuggestionsNavigationDelegate mSuggestionsNavigationDelegate;
     private final NativePageHost mHost;
     private final ImageFetcher mImageFetcher;
@@ -56,11 +52,6 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
     }
 
     @Override
-    public void addDestructionObserver(DestructionObserver destructionObserver) {
-        mDestructionObservers.add(destructionObserver);
-    }
-
-    @Override
     public boolean isVisible() {
         return mHost.isVisible();
     }
@@ -70,10 +61,6 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
         assert !mIsDestroyed;
 
         mImageFetcher.onDestroy();
-
-        for (DestructionObserver observer : mDestructionObservers) observer.onDestroy();
-        mDestructionObservers.clear();
-
         mIsDestroyed = true;
     }
 }

@@ -358,7 +358,6 @@ public class TileGroup implements MostVisitedSites.Observer {
         mObserver = observer;
         mTileRenderer = tileRenderer;
         mOfflineModelObserver = new OfflineModelObserver(offlinePageBridge);
-        mUiDelegate.addDestructionObserver(mOfflineModelObserver);
         mCustomTileModificationDelegate = new CustomTileModificationDelegateImpl();
     }
 
