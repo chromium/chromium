@@ -144,6 +144,11 @@ export abstract class SelectionOverlayBaseElement extends
         value: true,
         reflectToAttribute: true,
       },
+      activeRegionId: {
+        type: String,
+        value: '',
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -199,8 +204,9 @@ export abstract class SelectionOverlayBaseElement extends
   protected cursorOffsetX: number = 3;
   protected cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
-  private baseHandler: SelectionOverlayBaseHandler =
+  protected baseHandler: SelectionOverlayBaseHandler =
       SelectionOverlayBaseHandler.getInstance();
+  declare protected activeRegionId: string;
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition,
   // onPointerMove, and handleResize functions.
@@ -217,6 +223,11 @@ export abstract class SelectionOverlayBaseElement extends
       this.baseHandler.addNotifyOverlayClosingListener(() => {
         this.isClosing = true;
         this.removeDragListeners();
+      }),
+      this.baseHandler.addMultiRegionSelectionListener((regions) => {
+        if (regions.length > 0 && !this.activeRegionId) {
+          this.activeRegionId = regions[0].id;
+        }
       }),
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
@@ -291,6 +302,11 @@ export abstract class SelectionOverlayBaseElement extends
     super.ready();
     this.addEventListener('pointerdown', this.onPointerDown.bind(this));
     this.addEventListener('pointermove', this.updateCursorPosition.bind(this));
+  }
+
+  protected onActivateRegion(event: CustomEvent<{id: string}>) {
+    this.activeRegionId = event.detail.id;
+    event.stopPropagation();
   }
 
   private addDragListeners() {

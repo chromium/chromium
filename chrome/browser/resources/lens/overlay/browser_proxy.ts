@@ -11,6 +11,7 @@ import type {LensPageHandlerInterface} from './lens.mojom-webui.js';
 import {LensPageCallbackRouter, LensPageHandlerFactory, LensPageHandlerRemote, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
+import type {SelectedRegion} from './selection_overlay_base_handler.js';
 import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 
 let instance: BrowserProxy|null = null;
@@ -20,7 +21,7 @@ export interface BrowserProxy {
   handler: LensPageHandlerInterface;
 }
 
-class SelectionOverlayBaseHandlerImpl implements SelectionOverlayBaseHandler {
+class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
   addNotifyOverlayClosingListener(callback: () => void): number {
     return BrowserProxyImpl.getInstance()
         .callbackRouter.notifyOverlayClosing.addListener(callback);
@@ -43,6 +44,9 @@ class SelectionOverlayBaseHandlerImpl implements SelectionOverlayBaseHandler {
   }
 
   removeListener(id: number): boolean {
+    if (id === -1) {
+      return true;
+    }
     return BrowserProxyImpl.getInstance().callbackRouter.removeListener(id);
   }
 
@@ -83,12 +87,17 @@ class SelectionOverlayBaseHandlerImpl implements SelectionOverlayBaseHandler {
             this.postRegionSelectionCallback.bind(this, callback));
   }
 
+  addMultiRegionSelectionListener(
+      _callback: (regions: SelectedRegion[]) => void): number {
+    return -1;
+  }
+
   postRegionSelectionCallback(
       callback: (region: RectF) => void, region: CenterRotatedBox): void {
     callback(region.box);
   }
 
-  adjustRegionSelected(rect: RectF, source: RegionSource): void {
+  adjustRegionSelected(rect: RectF, source: RegionSource, _id?: string): void {
     let interaction = UserAction.kRegionSelection;
     let isClick = false;
     switch (source) {
