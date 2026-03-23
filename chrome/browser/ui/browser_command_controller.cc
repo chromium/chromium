@@ -196,7 +196,7 @@ void AppInfoDialogClosedCallback(SessionID session_id,
   // Ensure that the session id we have is still valid. It's possible
   // (though unlikely) that either the browser or session has been pulled
   // out from underneath us.
-  Browser* const browser = chrome::FindBrowserWithID(session_id);
+  BrowserWindowInterface* const browser = chrome::FindBrowserWithID(session_id);
   if (!browser) {
     return;
   }
@@ -204,7 +204,7 @@ void AppInfoDialogClosedCallback(SessionID session_id,
   // We want to focus the active web contents, which again, might not be the
   // original web contents (though it should be the vast majority of the time).
   content::WebContents* const active_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (active_contents) {
     active_contents->Focus();
   }

@@ -14,7 +14,6 @@
 #include "components/sessions/core/session_id.h"
 #include "ui/display/types/display_constants.h"
 
-class Browser;
 class BrowserWindowInterface;
 class GURL;
 class Profile;
@@ -74,7 +73,7 @@ class SettingsWindowManager : public ash::SettingsAppManager {
 
   // If a Browser settings window for |profile| has already been created,
   // returns it, otherwise returns NULL.
-  Browser* FindBrowserForProfile(Profile* profile);
+  BrowserWindowInterface* FindBrowserForProfile(Profile* profile);
 
   // Returns true if |browser| is a settings window.
   bool IsSettingsBrowser(BrowserWindowInterface* browser) const;

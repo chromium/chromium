@@ -255,6 +255,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -276,17 +277,18 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
   client->DoShowAppInfoFlow(profile(), app->id());
   browser_created_observer.Wait();
 
-  Browser* settings_app =
+  BrowserWindowInterface* settings_app =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
           profile());
   EXPECT_TRUE(content::WaitForLoadStop(
-      settings_app->tab_strip_model()->GetActiveWebContents()));
+      settings_app->GetTabStripModel()->GetActiveWebContents()));
 
-  EXPECT_EQ(
-      chromeos::settings::GetOSSettingsUrl(
-          base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
-                        "?id=", app->id()})),
-      settings_app->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(chromeos::settings::GetOSSettingsUrl(
+                base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
+                              "?id=", app->id()})),
+            settings_app->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL());
   // The app list should be dismissed when the dialog is shown.
   EXPECT_FALSE(client->app_list_visible());
   EXPECT_FALSE(client->GetAppListWindow());

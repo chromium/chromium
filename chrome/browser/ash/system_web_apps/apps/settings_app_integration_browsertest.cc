@@ -8,6 +8,7 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -82,13 +83,13 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, OmniboxNavigateToSettings) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Settings page should be opened in a new window.
-  Browser* settings_browser =
+  BrowserWindowInterface* settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
           browser()->profile());
   EXPECT_NE(browser(), settings_browser);
   EXPECT_EQ(
       GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
-      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+      settings_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,

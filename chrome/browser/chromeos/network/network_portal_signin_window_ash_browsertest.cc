@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
@@ -59,7 +59,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
 
   // Navigate within the captive portal signin window. The contents should be
   // opened in the same browser.
-  Browser* browser = portal_signin_window->GetBrowserForTesting();
+  BrowserWindowInterface* browser =
+      portal_signin_window->GetBrowserForTesting();
   NavigateParams params(browser, GURL("http://www.google.com"),
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   Navigate(&params);

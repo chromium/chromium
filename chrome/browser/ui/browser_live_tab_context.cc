@@ -440,7 +440,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::FindContextForWebContents(
 // static
 sessions::LiveTabContext* BrowserLiveTabContext::FindContextWithID(
     SessionID desired_id) {
-  Browser* const browser = chrome::FindBrowserWithID(desired_id);
+  BrowserWindowInterface* const browser = chrome::FindBrowserWithID(desired_id);
   return GetLiveTabContext(browser);
 }
 

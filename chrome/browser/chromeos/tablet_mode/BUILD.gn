@@ -72,6 +72,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/test:test_support",

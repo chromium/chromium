@@ -111,6 +111,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/mahi",
     "//chrome/test:test_support",
     "//chromeos/components/magic_boost/public/cpp",

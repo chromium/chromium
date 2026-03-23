@@ -135,6 +135,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/chromeos/network",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/network",

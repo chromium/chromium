@@ -37,6 +37,7 @@ include_rules = [
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/singleton_tabs.h",

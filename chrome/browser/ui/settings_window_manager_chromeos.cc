@@ -159,13 +159,13 @@ void SettingsWindowManager::ShowChromePageForProfile(
   }
 
   // Look for an existing browser window.
-  Browser* browser = FindBrowserForProfile(profile);
+  BrowserWindowInterface* browser = FindBrowserForProfile(profile);
   if (browser) {
-    DCHECK(browser->profile() == profile);
+    DCHECK(browser->GetProfile() == profile);
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetWebContentsAt(0);
+        browser->GetTabStripModel()->GetWebContentsAt(0);
     if (web_contents && web_contents->GetURL() == gurl) {
-      browser->window()->Show();
+      browser->GetWindow()->Show();
       if (callback) {
         std::move(callback).Run(apps::LaunchResult::kSuccess);
       }
@@ -191,15 +191,15 @@ void SettingsWindowManager::ShowChromePageForProfile(
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
   CHECK(params.browser);  // See https://crbug.com/1174525
-  browser = params.browser->GetBrowserForMigrationOnly();
+  browser = params.browser;
 
   // operator[] not used because SessionID has no default constructor.
   settings_session_map_.emplace(profile, SessionID::InvalidValue())
-      .first->second = browser->session_id();
-  DCHECK(browser->is_trusted_source());
+      .first->second = browser->GetSessionID();
+  DCHECK(browser->GetBrowserForMigrationOnly()->is_trusted_source());
 
   // Configure the created window property.
-  auto* window = browser->window()->GetNativeWindow();
+  auto* window = browser->GetWindow()->GetNativeWindow();
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   window->SetProperty(ash::kOverrideWindowIconResourceIdKey,
                       IDR_SETTINGS_LOGO_192);
@@ -240,7 +240,8 @@ void SettingsWindowManager::ShowOSSettings(
   ShowOSSettings(profile, path_with_setting_id, display_id);
 }
 
-Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {
+BrowserWindowInterface* SettingsWindowManager::FindBrowserForProfile(
+    Profile* profile) {
   if (!UseDeprecatedSettingsWindow(profile)) {
     return ash::FindSystemWebAppBrowser(profile,
                                         ash::SystemWebAppType::SETTINGS);

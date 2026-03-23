@@ -1799,14 +1799,14 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTest,
   settings_manager->ShowOSSettings(browser()->profile());
   browser_created_observer.Wait();
 
-  Browser* settings_browser =
+  BrowserWindowInterface* settings_browser =
       settings_manager->FindBrowserForProfile(browser()->profile());
 
   // Try to set the bounds to a tiny value.
-  settings_browser->window()->SetBounds(gfx::Rect(1, 1));
+  settings_browser->GetWindow()->SetBounds(gfx::Rect(1, 1));
 
   // The window has a reasonable size.
-  gfx::Rect actual_bounds = settings_browser->window()->GetBounds();
+  gfx::Rect actual_bounds = settings_browser->GetWindow()->GetBounds();
   EXPECT_LE(300, actual_bounds.width());
   EXPECT_LE(100, actual_bounds.height());
 }

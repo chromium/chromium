@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -62,10 +62,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
       NetworkPortalSigninController::SigninSource::kNotification);
   base::RunLoop().RunUntilIdle();
 
-  Browser* browser =
+  BrowserWindowInterface* browser =
       chromeos::NetworkPortalSigninWindow::Get()->GetBrowserForTesting();
   ASSERT_TRUE(browser);
-  EXPECT_NE(browser->profile(), ProfileManager::GetActiveUserProfile());
+  EXPECT_NE(browser->GetProfile(), ProfileManager::GetActiveUserProfile());
 }
 
 }  // namespace ash

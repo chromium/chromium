@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_service.h"
@@ -123,11 +124,12 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
   chrome::SettingsWindowManager* settings_manager =
       chrome::SettingsWindowManager::GetInstance();
 
-  Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
+  BrowserWindowInterface* settings_browser =
+      settings_manager->FindBrowserForProfile(profile);
   EXPECT_NE(nullptr, settings_browser);
 
   content::WebContents* web_contents =
-      settings_browser->tab_strip_model()->GetWebContentsAt(0);
+      settings_browser->GetTabStripModel()->GetWebContentsAt(0);
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
@@ -149,7 +151,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
       chrome::SettingsWindowManager::GetInstance();
 
   // Invalid subpage should not open settings window.
-  Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
+  BrowserWindowInterface* settings_browser =
+      settings_manager->FindBrowserForProfile(profile);
   EXPECT_EQ(nullptr, settings_browser);
 }
 

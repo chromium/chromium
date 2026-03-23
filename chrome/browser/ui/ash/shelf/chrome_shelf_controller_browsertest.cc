@@ -2353,13 +2353,14 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
       }).Then(run_loop.QuitClosure()));
   // Spin a run loop to sync Ash's ShelfModel change for the settings window.
   run_loop.Run();
-  Browser* settings_browser =
+  BrowserWindowInterface* settings_browser =
       settings_manager->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser);
   EXPECT_EQ(browser_count, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(item_count + 1, shelf_model()->item_count());
 
-  aura::Window* settings_window = settings_browser->window()->GetNativeWindow();
+  aura::Window* settings_window =
+      settings_browser->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(settings_window->GetProperty(ash::kAppIDKey));
   EXPECT_TRUE(crx_file::id_util::IdIsValid(
       *settings_window->GetProperty(ash::kAppIDKey)));

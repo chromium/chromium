@@ -214,6 +214,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/aura/accessibility",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//components/live_caption",

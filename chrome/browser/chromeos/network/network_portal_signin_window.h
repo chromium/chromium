@@ -11,7 +11,7 @@
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -33,7 +33,7 @@ class NetworkPortalSigninWindow {
   // Shows the signin window.
   void Show(const GURL& url);
 
-  Browser* GetBrowserForTesting();
+  BrowserWindowInterface* GetBrowserForTesting();
   content::WebContents* GetWebContentsForTesting();
 
   int portal_detection_requested_for_testing() const {

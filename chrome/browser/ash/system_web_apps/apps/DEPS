@@ -128,6 +128,7 @@ specific_include_rules = {
     "+ui/message_center/test/message_center_waiter.h",
   ],
   "settings_app_integration_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
   ".*test.*\\.cc": [
