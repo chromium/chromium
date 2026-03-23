@@ -49,6 +49,8 @@ enum class ModelBasedCapabilityKey {
   kContentAnnotation =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTENT_ANNOTATION,
   kFinds = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FINDS,
+  kAnnotationReducerOnePResolver = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_ONE_P_RESOLVER,
   kAnnotationReducerQueryClassifier = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_QUERY_CLASSIFIER,
 };
@@ -92,6 +94,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ContentAnnotation";
     case ModelBasedCapabilityKey::kFinds:
       return out << "Finds";
+    case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
+      return out << "AnnotationReducerOnePResolver";
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
       return out << "AnnotationReducerQueryClassifier";
   }
@@ -189,6 +193,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
           MODEL_EXECUTION_FEATURE_CONTENT_ANNOTATION;
     case ModelBasedCapabilityKey::kFinds:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FINDS;
+    case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_ONE_P_RESOLVER;
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_QUERY_CLASSIFIER;

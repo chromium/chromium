@@ -19,6 +19,8 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_service.pb.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/proto/features/annotation_reducer_one_p_resolver.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -44,6 +46,14 @@ enum class ServerResponseType {
 };
 
 enum class FeatureState { kEnabledWithUrl, kEnabledEmptyUrl, kDisabled };
+
+using ::optimization_guide::OptimizationGuideModelExecutionError;
+using ::optimization_guide::OptimizationGuideModelExecutionResult;
+using ::optimization_guide::OptimizationGuideModelExecutionResultCallback;
+using ::testing::_;
+using ::testing::Invoke;
+using ModelExecutionError = ::optimization_guide::
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 class OnePResolverImplTest : public ::testing::Test {
  public:
@@ -71,7 +81,8 @@ class OnePResolverImplTest : public ::testing::Test {
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
             /*network_service=*/nullptr, /*is_trusted=*/true);
     resolver_ = std::make_unique<OnePResolverImpl>(
-        url_loader_factory_, identity_test_environment_.identity_manager());
+        url_loader_factory_, identity_test_environment_.identity_manager(),
+        &mock_executor_);
   }
 
  protected:
@@ -95,6 +106,62 @@ class OnePResolverImplTest : public ::testing::Test {
     identity_test_environment_
         .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
             GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  }
+
+  void ExpectModelExecution(const std::string& expected_query,
+                            const std::string& expected_context,
+                            std::optional<std::string> answer) {
+    EXPECT_CALL(
+        mock_executor_,
+        ExecuteModel(
+            optimization_guide::ModelBasedCapabilityKey::
+                kAnnotationReducerOnePResolver,
+            testing::ResultOf(
+                [](const google::protobuf::MessageLite& m)
+                    -> const optimization_guide::proto::
+                        AnnotationReducerOnePResolverRequest& {
+                          return static_cast<
+                              const optimization_guide::proto::
+                                  AnnotationReducerOnePResolverRequest&>(m);
+                        },
+                testing::AllOf(
+                    testing::Property(
+                        &optimization_guide::proto::
+                            AnnotationReducerOnePResolverRequest::query,
+                        expected_query),
+                    testing::Property(
+                        &optimization_guide::proto::
+                            AnnotationReducerOnePResolverRequest::context,
+                        expected_context))),
+            _, _))
+        .WillOnce([answer](
+                      optimization_guide::ModelBasedCapabilityKey feature,
+                      const google::protobuf::MessageLite& request_metadata,
+                      const optimization_guide::ModelExecutionOptions& options,
+                      OptimizationGuideModelExecutionResultCallback callback) {
+          if (answer) {
+            optimization_guide::proto::AnnotationReducerOnePResolverResponse
+                response;
+            response.set_answer(*answer);
+            optimization_guide::proto::Any any;
+            any.set_type_url(
+                "type.googleapis.com/"
+                "optimization_guide.proto."
+                "AnnotationReducerOnePResolverResponse");
+            any.set_value(response.SerializeAsString());
+            std::move(callback).Run(
+                OptimizationGuideModelExecutionResult(any, nullptr), nullptr);
+          } else {
+            std::move(callback).Run(
+                OptimizationGuideModelExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
+                                ModelExecutionError::kGenericFailure)),
+                    nullptr),
+                nullptr);
+          }
+        });
   }
 
   [[nodiscard]] testing::AssertionResult VerifyCapturedRequest(
@@ -148,6 +215,7 @@ class OnePResolverImplTest : public ::testing::Test {
 
   // Accessed directly by tests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  optimization_guide::MockRemoteModelExecutor mock_executor_;
   std::unique_ptr<OnePResolverImpl> resolver_;
 
  private:
@@ -170,19 +238,19 @@ class OnePResolverImplTest : public ::testing::Test {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (response_type == ServerResponseType::kSuccess) {
       OnePAnnotationsResponse response_proto;
-      response_proto.set_response("{\"context\": \"fake context\"}");
+      response_proto.set_response(R"({"context": "fake context"})");
       response->set_code(net::HTTP_OK);
       response->set_content(response_proto.SerializeAsString());
       response->set_content_type("application/x-protobuf");
     } else if (response_type == ServerResponseType::kMalformed) {
       OnePAnnotationsResponse response_proto;
-      response_proto.set_response("{\"bad_json\": }");
+      response_proto.set_response(R"({"bad_json": })");
       response->set_code(net::HTTP_OK);
       response->set_content(response_proto.SerializeAsString());
       response->set_content_type("application/x-protobuf");
     } else if (response_type == ServerResponseType::kMissingContext) {
       OnePAnnotationsResponse response_proto;
-      response_proto.set_response("{\"other_field\": \"value\"}");
+      response_proto.set_response(R"({"other_field": "value"})");
       response->set_code(net::HTTP_OK);
       response->set_content(response_proto.SerializeAsString());
       response->set_content_type("application/x-protobuf");
@@ -206,14 +274,33 @@ class OnePResolverImplTest : public ::testing::Test {
   net::EmbeddedTestServer test_server_;
 };
 
-// Verifies that instantiating with a null IdentityManager degrades gracefully.
+// Verifies that an empty result is returned when IdentityManager is null.
 TEST_F(OnePResolverImplTest, NullIdentityManagerReturnsEmpty) {
-  auto resolver_without_identity =
-      std::make_unique<OnePResolverImpl>(url_loader_factory_, nullptr);
+  auto resolver_without_identity = std::make_unique<OnePResolverImpl>(
+      url_loader_factory_, nullptr, &mock_executor_);
 
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_without_identity->Query(u"any query", future.GetCallback());
 
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+}
+
+// Verifies that Query returns an empty result set if the RemoteModelExecutor is
+// null.
+TEST_F(OnePResolverImplTest, NullRemoteModelExecutorReturnsEmpty) {
+  // Initialize resolver with a null RemoteModelExecutor.
+  OnePResolverImpl resolver_no_executor(
+      url_loader_factory_, identity_test_environment_.identity_manager(),
+      nullptr);
+  SignIn();
+
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_no_executor.Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
 }
@@ -223,6 +310,7 @@ TEST_F(OnePResolverImplTest, NotSignedInReturnsEmpty) {
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
 }
@@ -233,8 +321,11 @@ TEST_F(OnePResolverImplTest, TokenFetchFailureReturnsEmpty) {
 
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
+
+  // Simulate an error during access token retrieval.
   IssueTokenError();
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
 }
@@ -246,14 +337,14 @@ class OnePResolverImplDisabledTest : public OnePResolverImplTest {
       : OnePResolverImplTest(FeatureState::kDisabled) {}
 };
 
-// Verifies that Query successfully executes its asynchronous callback,
-// but returns an empty result set when the OneP resolver feature is disabled.
+// Verifies that Query early-outs when the OneP resolver feature is disabled.
 TEST_F(OnePResolverImplDisabledTest, FeatureDisabledReturnsEmpty) {
   SignIn();
 
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
 }
@@ -265,21 +356,23 @@ class OnePResolverImplEmptyUrlTest : public OnePResolverImplTest {
       : OnePResolverImplTest(FeatureState::kEnabledEmptyUrl) {}
 };
 
-// Verifies that if no URL is provided in the feature parameters, the resolver
-// immediately returns an empty result without requesting a token.
+// Verifies that Query early-outs if the one_p_service_url parameter is empty.
 TEST_F(OnePResolverImplEmptyUrlTest, EmptyServiceUrlReturnsEmpty) {
   SignIn();
 
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
 }
 
-// Verifies that a concurrent request will cancel the previous one and execute
-// the previous callback explicitly with an empty result set.
+// Verifies that a concurrent request cancels the previous one, yielding empty
+// results for the first.
 TEST_F(OnePResolverImplTest, ConcurrentQueriesCancelPrevious) {
+  SetServerResponse(ServerResponseType::kError);
+
   SignIn();
 
   base::test::TestFuture<std::vector<MemorySearchResult>> future1;
@@ -290,90 +383,247 @@ TEST_F(OnePResolverImplTest, ConcurrentQueriesCancelPrevious) {
   // This will cancel the first request implicitly and fulfill its future.
   resolver_->Query(u"second query", future2.GetCallback());
 
+  // Wait for the first query to return empty results.
   std::vector<MemorySearchResult> results1 = future1.Take();
   EXPECT_TRUE(results1.empty());
 
-  // Respond to the token request and let the network request succeed for the
-  // second query.
+  // Respond to the token request and let the network request fail for the
+  // second query so we don't have to mock the remote model executor.
   IssueToken();
 
+  // Wait for the second query to return empty results.
   std::vector<MemorySearchResult> results2 = future2.Take();
   EXPECT_TRUE(results2.empty());
 }
 
-// TODO(b:487416734): Update to verify memory search results once the mapping is
-// implemented. Verifies that a successful response from the OneP service is
-// handled correctly.
-TEST_F(OnePResolverImplTest, ValidOnePServiceResponse) {
-  SignIn();
-
-  base::test::TestFuture<std::vector<MemorySearchResult>> future;
-  resolver_->Query(u"any query", future.GetCallback());
-  IssueToken();
-
-  std::vector<MemorySearchResult> results = future.Take();
-  EXPECT_TRUE(results.empty());
-  EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
-}
-
-// Verifies that a malformed response from the OneP service gracefully returns
-// an empty vector.
-TEST_F(OnePResolverImplTest, MalformedOnePServiceResponse) {
-  SetServerResponse(ServerResponseType::kMalformed);
-  SignIn();
-
-  base::test::TestFuture<std::vector<MemorySearchResult>> future;
-  resolver_->Query(u"any query", future.GetCallback());
-  IssueToken();
-
-  std::vector<MemorySearchResult> results = future.Take();
-  EXPECT_TRUE(results.empty());
-  EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
-}
-
-// Verifies that a response missing the context field returns an empty vector.
-TEST_F(OnePResolverImplTest, MissingContextInOnePServiceResponse) {
-  SetServerResponse(ServerResponseType::kMissingContext);
-  SignIn();
-
-  base::test::TestFuture<std::vector<MemorySearchResult>> future;
-  resolver_->Query(u"any query", future.GetCallback());
-  IssueToken();
-
-  std::vector<MemorySearchResult> results = future.Take();
-  EXPECT_TRUE(results.empty());
-  EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
-}
-
-// Verifies that an HTTP error from the OneP service returns an empty vector.
+// Verifies that an HTTP error from the OneP service yields an empty result set.
 TEST_F(OnePResolverImplTest, HttpErrorFromOnePService) {
   SetServerResponse(ServerResponseType::kError);
   SignIn();
 
+  // Trigger query against an endpoint that returns an HTTP error.
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
+
+  // Simulate successful token fetch to proceed to network request.
   IssueToken();
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
   EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
 }
 
-// Verifies that a response that fails to parse as a proto returns an empty
-// vector.
+// Verifies that a malformed JSON response from the OneP service yields an empty
+// result set.
+TEST_F(OnePResolverImplTest, MalformedOnePServiceResponse) {
+  SetServerResponse(ServerResponseType::kMalformed);
+  SignIn();
+
+  // Trigger query against an endpoint that returns malformed JSON.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+
+  // Simulate successful token fetch to proceed to network request.
+  IssueToken();
+
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+  EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
+}
+
+// Verifies that a OneP response missing the 'context' field yields an empty
+// result set.
+TEST_F(OnePResolverImplTest, MissingContextInOnePServiceResponse) {
+  SetServerResponse(ServerResponseType::kMissingContext);
+  SignIn();
+
+  // Trigger query against an endpoint that returns JSON without the 'context'
+  // field.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+
+  // Simulate successful token fetch to proceed to network request.
+  IssueToken();
+
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+  EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
+}
+
+// Verifies that an unparsable protobuf response from the OneP service yields
+// an empty result set.
 TEST_F(OnePResolverImplTest, BadProtoFromOnePService) {
   SetServerResponse(ServerResponseType::kBadProto);
   SignIn();
 
+  // Trigger query against an endpoint that returns a non-proto payload.
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   resolver_->Query(u"any query", future.GetCallback());
+
+  // Simulate successful token fetch to proceed to network request.
   IssueToken();
 
+  // Await and verify empty results.
   std::vector<MemorySearchResult> results = future.Take();
   EXPECT_TRUE(results.empty());
   EXPECT_TRUE(VerifyCapturedRequest(u"any query"));
 }
 
-}  // namespace
+// Verifies that a model execution error from the RemoteModelExecutor yields an
+// empty result set.
+TEST_F(OnePResolverImplTest, ModelExecutionError) {
+  // Mock the model executor to return a generic failure error.
+  ExpectModelExecution("any query", "fake context", std::nullopt);
 
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+}
+
+// Verifies that a malformed JSON response from the model yields an empty result
+// set.
+TEST_F(OnePResolverImplTest, ModelExecutionMalformedJsonResponse) {
+  // Mock the model executor to return a valid result containing invalid JSON
+  // structure.
+  ExpectModelExecution("any query", "fake context",
+                       R"({ "not_an_array": true })");
+
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+}
+
+// Verifies that a valid JSON response with incorrect schema from the model
+// yields an empty result set.
+TEST_F(OnePResolverImplTest, ModelExecutionInvalidJsonFormatResponse) {
+  // Mock the model executor to return a JSON array with missing required
+  // fields.
+  ExpectModelExecution("any query", "fake context", R"([
+              {
+                "value": "NEXJ8P"
+              }
+            ])");
+
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify empty results.
+  std::vector<MemorySearchResult> results = future.Take();
+  EXPECT_TRUE(results.empty());
+}
+
+// Verifies that a successful response from the OneP service is successfully
+// delegated to the remote model executor and parsed correctly into memory
+// search results.
+TEST_F(OnePResolverImplTest, ValidOnePServiceResponse) {
+  // Mock the model executor to return a properly formatted result.
+  ExpectModelExecution("any query", "fake context", R"([
+              {
+                "value": "NEXJ8P",
+                "title": "NEXJ8P",
+                "description": "Flight confirmation · SFO-ASE",
+                "ranking_score": 0.95
+              }
+            ])");
+
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify the fully parsed results.
+  std::vector<MemorySearchResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].value, u"NEXJ8P");
+  EXPECT_EQ(results[0].title, u"NEXJ8P");
+  EXPECT_EQ(results[0].description, u"Flight confirmation \u00B7 SFO-ASE");
+  EXPECT_DOUBLE_EQ(results[0].ranking_score, 0.95);
+}
+
+// Verifies that the parser successfully strips markdown code blocks from the
+// model's response.
+TEST_F(OnePResolverImplTest, ModelExecutionStripsMarkdown) {
+  // Mock the model executor to return a result enclosed in a markdown code
+  // block.
+  ExpectModelExecution("any query", "fake context", R"(```json
+[
+  {
+    "value": "NEXJ8P",
+    "title": "NEXJ8P",
+    "description": "Flight confirmation · SFO-ASE",
+    "ranking_score": 0.95
+  }
+]
+```)");
+
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify that the markdown is stripped and results are parsed.
+  std::vector<MemorySearchResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].value, u"NEXJ8P");
+}
+
+// Verifies that the parser correctly handles a model response containing
+// multiple valid results.
+TEST_F(OnePResolverImplTest, ModelExecutionParsesMultipleResults) {
+  // Mock the model executor to return an array of multiple results.
+  ExpectModelExecution("any query", "fake context", R"([
+              {
+                "value": "NEXJ8P",
+                "title": "NEXJ8P",
+                "description": "Flight",
+                "ranking_score": 0.95
+              },
+              {
+                "value": "ABC1234",
+                "title": "ABC1234",
+                "description": "Passport",
+                "ranking_score": 0.85
+              }
+            ])");
+
+  SignIn();
+
+  // Trigger query and issue token to proceed to model execution.
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  resolver_->Query(u"any query", future.GetCallback());
+  IssueToken();
+
+  // Await and verify that both results were fully parsed.
+  std::vector<MemorySearchResult> results = future.Take();
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_EQ(results[0].value, u"NEXJ8P");
+  EXPECT_EQ(results[1].value, u"ABC1234");
+}
+
+}  // namespace
 }  // namespace accessibility_annotator

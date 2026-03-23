@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("one_p_service_proto") {
@@ -20,6 +21,8 @@ source_set("one_p_resolver") {
     ":one_p_service_proto",
     "//base",
     "//components/accessibility_annotator/core:features",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//net",
@@ -42,10 +45,7 @@ source_set("annotation_reducer") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "one_p_resolver_impl_unittest.cc",
-    "query_classifier_unittest.cc",
-  ]
+  sources = [ "query_classifier_unittest.cc" ]
 
   deps = [
     ":annotation_reducer",
@@ -54,6 +54,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager:test_support",
     "//net:test_support",
     "//services/network:test_support",
@@ -61,4 +62,11 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(b:495069109): Remove conditional build with the alternate solution.
+  if (build_with_model_execution) {
+    sources += [ "one_p_resolver_impl_unittest.cc" ]
+    deps +=
+        [ "//components/optimization_guide/core:model_execution_test_support" ]
+  }
 }

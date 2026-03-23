@@ -13,10 +13,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
+
+namespace optimization_guide {
+class ModelQualityLogEntry;
+class RemoteModelExecutor;
+}  // namespace optimization_guide
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -26,15 +33,12 @@ class SimpleURLLoader;
 namespace accessibility_annotator {
 
 // Implementation of OnePResolver.
-// Note: Currently, this class only handles fetching accessibility annotations
-// for the feature from the OneP service. The next phase will resolve the query
-// and the annotations into meaningful memory search results using an
-// optimization keyed service.
 class OnePResolverImpl : public OnePResolver {
  public:
-  explicit OnePResolverImpl(
+  OnePResolverImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      optimization_guide::RemoteModelExecutor* remote_model_executor);
   OnePResolverImpl(const OnePResolverImpl&) = delete;
   OnePResolverImpl& operator=(const OnePResolverImpl&) = delete;
   ~OnePResolverImpl() override;
@@ -48,10 +52,17 @@ class OnePResolverImpl : public OnePResolver {
                             GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
 
-  void OnUrlLoadComplete(std::optional<std::string> response_body);
+  void OnUrlLoadComplete(std::string query_string,
+                         std::optional<std::string> response_body);
+
+  void OnModelExecutionComplete(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_ =
+      nullptr;
 
   // These are created and destroyed during the async Query() process.
   // They are destroyed early if a new Query() arrives before the previous

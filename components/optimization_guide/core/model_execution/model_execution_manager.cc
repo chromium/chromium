@@ -106,6 +106,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
     case ModelBasedCapabilityKey::kContentAnnotation:
     case ModelBasedCapabilityKey::kFinds:
+    case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
