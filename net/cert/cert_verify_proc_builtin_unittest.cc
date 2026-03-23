@@ -1296,7 +1296,7 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
     EXPECT_EQ(verify_result.policy_compliance,
               ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS);
     EXPECT_EQ(verify_result.ct_requirement_status,
-              ct::CTRequirementsStatus::CT_NOT_REQUIRED);
+              ct::CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN);
   }
 }
 

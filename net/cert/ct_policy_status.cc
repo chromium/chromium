@@ -35,6 +35,10 @@ const char* CTRequirementStatusToString(CTRequirementsStatus status) {
       return "CT_REQUIREMENTS_MET";
     case CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
       return "CT_REQUIREMENTS_NOT_MET";
+    case CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN:
+      return "CT_REQUIREMENT_OVERRIDDEN";
+    case CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES:
+      return "CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES";
   }
 
   NOTREACHED();

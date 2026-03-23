@@ -40,7 +40,10 @@ ct::CTRequirementsStatus RequireCTDelegate::CheckCTRequirements(
     case CTRequirementLevel::REQUIRED:
       return ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET;
     case CTRequirementLevel::NOT_REQUIRED:
-      return ct::CTRequirementsStatus::CT_NOT_REQUIRED;
+      return ct::CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN;
+    case CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES:
+      return ct::CTRequirementsStatus::
+          CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES;
   }
 }
 

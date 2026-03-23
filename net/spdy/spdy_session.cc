@@ -758,14 +758,21 @@ bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
   // record whether CT policy was used to bypass a CT error (as a separate enum
   // value in the ct_requirement_status), and then just always disallow pooling
   // in that case (assuming that doesn't affect perf too much).
-  switch (transport_security_state->CheckCTRequirements(
-      new_hostname, ssl_info.is_issued_by_known_root,
-      ssl_info.public_key_hashes, ssl_info.cert.get(),
-      ssl_info.ct_policy_compliance)) {
+  ct::CTRequirementsStatus ct_requirement_status =
+      transport_security_state->CheckCTRequirements(
+          new_hostname, ssl_info.is_issued_by_known_root,
+          ssl_info.public_key_hashes, ssl_info.cert.get(),
+          ssl_info.ct_policy_compliance);
+  base::UmaHistogramEnumeration("Net.CanPool.CTRequirementStatus",
+                                ct_requirement_status);
+  switch (ct_requirement_status) {
     case ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
       return false;
     case ct::CTRequirementsStatus::CT_REQUIREMENTS_MET:
     case ct::CTRequirementsStatus::CT_NOT_REQUIRED:
+    case ct::CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN:
+    case ct::CTRequirementsStatus::
+        CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES:
       // Intentional fallthrough; this case is just here to make sure that all
       // possible values of CheckCTRequirements() are handled.
       break;

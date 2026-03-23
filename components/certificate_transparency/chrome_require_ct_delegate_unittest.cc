@@ -92,7 +92,7 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedSPKIs) {
   delegate->UpdateCTPolicies({}, {net::HashValue(hashes_.front()).ToString()});
 
   // The new setting should take effect.
-  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
+  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES,
             delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 }
 
@@ -161,31 +161,33 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
       // Positive cases
       //
       // Exact match on the leaf SPKI (leaf has O)
-      {"leaf-o1.pem", nullptr, leaf_spki, CTRequirementLevel::NOT_REQUIRED},
+      {"leaf-o1.pem", nullptr, leaf_spki,
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Exact match on the leaf SPKI (leaf does not have O)
-      {"leaf-no-o.pem", nullptr, leaf_spki, CTRequirementLevel::NOT_REQUIRED},
+      {"leaf-no-o.pem", nullptr, leaf_spki,
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Exact match on the leaf SPKI (leaf has O), even when the
       // intermediate does not
       {"leaf-o1.pem", "int-cn.pem", leaf_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Matches (multiple) organization values in two SEQUENCEs+SETs
       {"leaf-o1-o2.pem", "int-o1-o2.pem", intermediate_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Matches (multiple) organization values in a single SEQUENCE+SET
       {"leaf-o1-o2.pem", "int-o1-plus-o2.pem", intermediate_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Matches nameConstrained O
       {"leaf-o1.pem", "nc-int-permit-o1.pem", intermediate_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Matches the second nameConstraint on the O, out of 3
       {"leaf-o1.pem", "nc-int-permit-o2-o1-o3.pem", intermediate_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
       // Leaf is in different string type than issuer (BMPString), but it is
       // in the issuer O field, not the nameConstraint
       // TODO(rsleevi): Make this fail, because it's not byte-for-byte
       // identical
       {"leaf-o1.pem", "int-bmp-o1.pem", intermediate_spki,
-       CTRequirementLevel::NOT_REQUIRED},
+       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES},
 
       // Negative cases
       // Leaf is missing O
@@ -346,7 +348,7 @@ TEST_F(ChromeRequireCTDelegateTest, OrgRestrictionsMatchCorrectCert) {
   // required.
   delegate->UpdateCTPolicies({}, {net::HashValue(i1_spki_hash).ToString()});
   EXPECT_EQ(
-      CTRequirementLevel::NOT_REQUIRED,
+      CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES,
       delegate->IsCTRequiredForHost(
           "google.com", leaf->GetX509CertificateFullChain().get(), hashes));
 

@@ -1004,17 +1004,20 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
     const ct::CTRequirementsStatus original_status = state.CheckCTRequirements(
         "www.example.com", true, hashes, cert.get(),
         ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
+    // If no delegate is set, this should be indicated as CT not required, and
+    // not considered as CT being overridden by the delegate.
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED, original_status);
 
     scoped_refptr<MockRequireCTDelegate> never_require_delegate =
         base::MakeRefCounted<MockRequireCTDelegate>();
     EXPECT_CALL(*never_require_delegate, IsCTRequiredForHost(_, _, _))
         .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
     state.SetRequireCTDelegate(never_require_delegate);
-    EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-    EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENT_OVERRIDDEN,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));

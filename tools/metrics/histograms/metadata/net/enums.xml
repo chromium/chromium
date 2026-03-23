@@ -227,6 +227,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Zstd"/>
 </enum>
 
+<enum name="CTRequirementStatus">
+  <int value="0" label="CT_NOT_REQUIRED"/>
+  <int value="1" label="CT_REQUIREMENTS_MET"/>
+  <int value="2" label="CT_REQUIREMENTS_NOT_MET"/>
+  <int value="3" label="CT_REQUIREMENT_OVERRIDDEN"/>
+  <int value="4" label="CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES"/>
+</enum>
+
 <!-- LINT.IfChange(DeviceBoundSessionDeletionReason) -->
 
 <enum name="DeviceBoundSessionDeletionReason">

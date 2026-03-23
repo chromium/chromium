@@ -1628,6 +1628,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.CanPool.CTRequirementStatus" enum="CTRequirementStatus"
+    expires_after="2026-09-13">
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Records the result of CheckCTRequirements when evaluating whether a SPDY or
+    QUIC connection can pool with an existing session.
+  </summary>
+</histogram>
+
 <histogram name="Net.Certificate.ChangeNotification"
     enum="CertificateChangeNotificationType" expires_after="never">
 <!-- expires-never: core cert verifier metric; monitored by Chirps -->
@@ -1730,6 +1740,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time needed to initialize the Android platform Trust store when using the
     builtin certificate verifier on Android.
+  </summary>
+</histogram>
+
+<histogram name="Net.CertVerifier.CTRequirementStatus"
+    enum="CTRequirementStatus" expires_after="2026-09-13">
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Records the result of CheckCTRequirements after a certificate verification.
   </summary>
 </histogram>
 
