@@ -74,7 +74,7 @@ void DomScenarioRunner::CreateInitialDOM(
   if (!input.stylesheet.empty()) {
     Element* style = document.CreateRawElement(
         html_names::TagToQualifiedName(html_names::HTMLTag::kStyle));
-    style->setTextContent(AtomicString::FromUTF8(input.stylesheet));
+    style->setTextContent(AtomicString::FromUtf8(input.stylesheet));
     document.head()->appendChild(style);
   }
 

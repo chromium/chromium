@@ -79,7 +79,7 @@ TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {
       String::FromUTF8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));
   input->setAttribute(
       html_names::kTitleAttr,
-      AtomicString::FromUTF8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));
+      AtomicString::FromUtf8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));
 
   String message = input->validationMessage().StripWhiteSpace();
   String sub_message = input->ValidationSubMessage().StripWhiteSpace();

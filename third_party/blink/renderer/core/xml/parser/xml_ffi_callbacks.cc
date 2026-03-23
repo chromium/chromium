@@ -10,7 +10,7 @@ namespace xml_ffi {
 namespace {
 
 blink::AtomicString RustStrToAtomicString(rust::Str str) {
-  return blink::AtomicString::FromUTF8(base::RustStrToStringView(str));
+  return blink::AtomicString::FromUtf8(base::RustStrToStringView(str));
 }
 }  // namespace
 

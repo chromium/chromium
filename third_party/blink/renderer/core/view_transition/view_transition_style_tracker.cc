@@ -458,7 +458,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   transition_names.ReserveInitialCapacity(captured_name_count_);
   for (const auto& transition_state_element : transition_state.elements) {
     auto name =
-        AtomicString::FromUTF8(transition_state_element.tag_name.c_str());
+        AtomicString::FromUtf8(transition_state_element.tag_name.c_str());
     transition_names.push_back(name);
 
     DCHECK(!element_data_map_.Contains(name));
@@ -508,13 +508,13 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
     for (const auto& class_name : transition_state_element.class_list) {
       element_data->class_list.push_back(
-          AtomicString::FromUTF8(class_name.c_str()));
+          AtomicString::FromUtf8(class_name.c_str()));
     }
 
     element_data->containing_group_name =
         transition_state_element.containing_group_name.empty()
             ? AtomicString()
-            : AtomicString::FromUTF8(
+            : AtomicString::FromUtf8(
                   transition_state_element.containing_group_name.c_str());
     element_data->CacheStateForOldSnapshot();
 
@@ -530,8 +530,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   }
 
   for (auto& p : transition_state.id_to_auto_name_map) {
-    id_to_auto_name_map_.Set(AtomicString::FromUTF8(p.first),
-                             AtomicString::FromUTF8(p.second));
+    id_to_auto_name_map_.Set(AtomicString::FromUtf8(p.first),
+                             AtomicString::FromUtf8(p.second));
   }
 
   // The aim of this flag is to serialize/deserialize SPA state using MPA

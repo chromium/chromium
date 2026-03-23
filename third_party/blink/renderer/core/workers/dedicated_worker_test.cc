@@ -116,7 +116,7 @@ CustomEventFactoryCallback(base::RepeatingClosure quit_closure,
       [quit_closure = std::move(quit_closure), out_event](
           ScriptState*, CustomEventMessage data) -> Event* {
         CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
-            AtomicString::FromUTF8(kCustomEventName), std::move(data.message));
+            AtomicString::FromUtf8(kCustomEventName), std::move(data.message));
         if (out_event) {
           *out_event = result;
         }
@@ -131,7 +131,7 @@ CrossThreadFunction<Event*(ScriptState*)> CustomEventFactoryErrorCallback(
   return CrossThreadBindRepeating(base::BindLambdaForTesting(
       [quit_closure = std::move(quit_closure), out_event](ScriptState*) {
         Event* result = MakeGarbageCollected<CustomEventWithData>(
-            AtomicString::FromUTF8(kCustomErrorEventName));
+            AtomicString::FromUtf8(kCustomErrorEventName));
         if (out_event) {
           *out_event = result;
         }
@@ -149,7 +149,7 @@ CustomEventWithPortsFactoryCallback(base::RepeatingClosure quit_closure,
         GCedMessagePortArray* ports = MessagePort::EntanglePorts(
             *ExecutionContext::From(script_state), std::move(message.ports));
         CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
-            AtomicString::FromUTF8(kCustomEventName),
+            AtomicString::FromUtf8(kCustomEventName),
             std::move(message.message), ports);
         if (out_event) {
           *out_event = result;

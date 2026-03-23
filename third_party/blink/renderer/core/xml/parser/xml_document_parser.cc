@@ -106,11 +106,11 @@ static inline String ToString(const xmlChar* string) {
 }
 
 static inline AtomicString ToAtomicString(base::span<const xmlChar> string) {
-  return AtomicString::FromUTF8(string);
+  return AtomicString::FromUtf8(string);
 }
 
 static inline AtomicString ToAtomicString(const xmlChar* string) {
-  return AtomicString::FromUTF8(reinterpret_cast<const char*>(string));
+  return AtomicString::FromUtf8(reinterpret_cast<const char*>(string));
 }
 
 static inline bool HasNoStyleInformation(Document* document) {

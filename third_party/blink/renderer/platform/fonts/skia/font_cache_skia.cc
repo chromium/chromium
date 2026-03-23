@@ -65,7 +65,7 @@
 namespace blink {
 
 AtomicString ToAtomicString(const SkString& str) {
-  return AtomicString::FromUTF8(base::as_string_view(str));
+  return AtomicString::FromUtf8(base::as_string_view(str));
 }
 
 namespace {

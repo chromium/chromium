@@ -94,7 +94,7 @@ class TokenStreamMatcherTest : public ::testing::Test {
     size_t i = 0;
     for (const Expectation& exp : exps) {
       SCOPED_TRACE(testing::Message() << "expectation index = " << i);
-      AtomicString tag_name = AtomicString::FromUTF8(exp.tag_name);
+      AtomicString tag_name = AtomicString::FromUtf8(exp.tag_name);
       EXPECT_TRUE(tag_name.Impl()->IsStatic());
 
       switch (exp.type) {

@@ -30,9 +30,9 @@ TEST(WeakResultTest, BasicOperations) {
 }
 
 TEST(WeakResultTest, UTF8) {
-  AtomicString foo = AtomicString::FromUTF8("foo");
-  AtomicString foo_latin1 = AtomicString::FromUTF8("foó");
-  AtomicString foo_unicode = AtomicString::FromUTF8("foo😀");
+  AtomicString foo = AtomicString::FromUtf8("foo");
+  AtomicString foo_latin1 = AtomicString::FromUtf8("foó");
+  AtomicString foo_unicode = AtomicString::FromUtf8("foo😀");
 
   EXPECT_EQ(foo.length(), 3u);
   EXPECT_EQ(foo_latin1.length(), 3u);
@@ -61,21 +61,21 @@ TEST(WeakResultTest, UTF8) {
 
   AtomicStringTable::WeakResult result_latin1 =
       AtomicStringTable::Instance().WeakFindLowercase(
-          AtomicString::FromUTF8("Foó"));
+          AtomicString::FromUtf8("Foó"));
   EXPECT_FALSE(result_latin1.IsNull());
 
   // Only ASCII is lowercased.
   result_latin1 = AtomicStringTable::Instance().WeakFindLowercase(
-      AtomicString::FromUTF8("FoÓ"));
+      AtomicString::FromUtf8("FoÓ"));
   EXPECT_TRUE(result_latin1.IsNull());
 
   AtomicStringTable::WeakResult result_unicode =
       AtomicStringTable::Instance().WeakFindLowercase(
-          AtomicString::FromUTF8("foO😀"));
+          AtomicString::FromUtf8("foO😀"));
   EXPECT_FALSE(result_unicode.IsNull());
 
   result_unicode = AtomicStringTable::Instance().WeakFindLowercase(
-      AtomicString::FromUTF8("Goo😀"));
+      AtomicString::FromUtf8("Goo😀"));
   EXPECT_TRUE(result_unicode.IsNull());
 }
 

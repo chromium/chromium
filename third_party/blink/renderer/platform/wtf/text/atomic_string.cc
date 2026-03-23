@@ -70,7 +70,7 @@ bool AtomicString::ContainsIgnoringAsciiCase(const StringView& value) const {
   return string_.FindIgnoringAsciiCase(value) != npos;
 }
 
-AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
+AtomicString AtomicString::FromUtf8(base::span<const uint8_t> bytes) {
   if (!bytes.data()) {
     return g_null_atom;
   }
@@ -80,7 +80,7 @@ AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
   return AtomicString(AtomicStringTable::Instance().AddUTF8(bytes));
 }
 
-AtomicString AtomicString::FromUTF8(const char* chars) {
+AtomicString AtomicString::FromUtf8(const char* chars) {
   if (!chars)
     return g_null_atom;
   if (!*chars)
@@ -89,8 +89,8 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
       base::as_byte_span(std::string_view(chars))));
 }
 
-AtomicString AtomicString::FromUTF8(std::string_view utf8_string) {
-  return FromUTF8(base::as_byte_span(utf8_string));
+AtomicString AtomicString::FromUtf8(std::string_view utf8_string) {
+  return FromUtf8(base::as_byte_span(utf8_string));
 }
 
 AtomicString AtomicString::ToAsciiLower(AtomicString source) {

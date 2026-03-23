@@ -71,7 +71,7 @@ ShadowRoot* EditingTestBase::CreateShadowRootForElementWithIDAndSetInnerHTML(
     const char* host_element_id,
     const char* shadow_root_content) {
   ShadowRoot& shadow_root =
-      scope.getElementById(AtomicString::FromUTF8(host_element_id))
+      scope.getElementById(AtomicString::FromUtf8(host_element_id))
           ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(
       String::FromUTF8(shadow_root_content), ASSERT_NO_EXCEPTION);

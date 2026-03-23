@@ -65,7 +65,7 @@ inline String RustStrToWtfString(rust::Str str) {
 }
 
 inline AtomicString RustStrToAtomicString(rust::Str str) {
-  return AtomicString::FromUTF8(base::RustStrToStringView(str));
+  return AtomicString::FromUtf8(base::RustStrToStringView(str));
 }
 
 inline bool HasNoStyleInformation(Document* document) {

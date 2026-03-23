@@ -3564,7 +3564,7 @@ TEST_F(EventHandlerSimTest, DiscardEventsToRecentlyMovedIframe) {
   EXPECT_NE(event_result, WebInputEventResult::kHandledSuppressed);
 
   Element* iframe =
-      GetDocument().getElementById(AtomicString::FromUTF8("iframe"));
+      GetDocument().getElementById(AtomicString::FromUtf8("iframe"));
   ASSERT_TRUE(iframe);
 
   // Move iframe, but within the threshold for discarding. Events should not be
