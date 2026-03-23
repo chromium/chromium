@@ -24,6 +24,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Optional;
 using ::testing::Property;
@@ -54,9 +55,23 @@ Matcher<const EntityInstance&> IsEntity(
                Property(&EntityInstance::attributes, attributes_matchers));
 }
 
+// Tests that kAllEntityTypesSharedWithAccessibilityAnnotator contains the
+// EntityTypes for which FromAccessibilityAnnotator() is not std::nullopt.
+TEST(FromAccessibilityAnnotatorTest,
+     kAllEntityTypesSharedWithAccessibilityAnnotator) {
+  EXPECT_THAT(kAllEntityTypesSharedWithAccessibilityAnnotator,
+              UnorderedElementsAre(
+                  aa::EntityType::kFlightReservation, aa::EntityType::kOrder,
+                  aa::EntityType::kDriversLicense, aa::EntityType::kPassport,
+                  aa::EntityType::kNationalId, aa::EntityType::kVehicle))
+      << "When a new EntityType is added to Accessibility Annotator and this "
+         "EntityType is supported by Autofill, it must be here.";
+}
+
 // Tests that a set of accessibility annotator entity types is correctly
 // mapped to a set of Autofill AI entity types.
 TEST(FromAccessibilityAnnotatorTest, EntityTypeEnumSet) {
+  EXPECT_THAT(FromAccessibilityAnnotator(aa::EntityTypeEnumSet{}), IsEmpty());
   EXPECT_THAT(
       FromAccessibilityAnnotator({aa::EntityType::kFlightReservation,
                                   aa::EntityType::kOrder,
@@ -64,6 +79,16 @@ TEST(FromAccessibilityAnnotatorTest, EntityTypeEnumSet) {
       UnorderedElementsAre(EntityType(EntityTypeName::kFlightReservation),
                            EntityType(EntityTypeName::kOrder),
                            EntityType(EntityTypeName::kDriversLicense)));
+  EXPECT_THAT(
+      FromAccessibilityAnnotator(aa::EntityTypeEnumSet::All()),
+      UnorderedElementsAre(EntityType(EntityTypeName::kFlightReservation),
+                           EntityType(EntityTypeName::kOrder),
+                           EntityType(EntityTypeName::kDriversLicense),
+                           EntityType(EntityTypeName::kNationalIdCard),
+                           EntityType(EntityTypeName::kPassport),
+                           EntityType(EntityTypeName::kVehicle)))
+      << "When a new EntityType is added to Accessibility Annotator and this "
+         "EntityType is supported by Autofill, it must be here.";
 }
 
 // Tests that an empty Accessibility Entity cannot be converted into an Autofill
