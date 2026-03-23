@@ -16914,6 +16914,25 @@
             ]
         }
     ],
+    "PasswordFormGroupedAffiliations": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LimitedManualOverridesChromeOn",
+                    "enable_features": [
+                        "PasswordFormGroupedAffiliations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordInfobarDisplayLength": [
         {
             "platforms": [
