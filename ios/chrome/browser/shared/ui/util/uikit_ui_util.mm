@@ -398,7 +398,7 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type) {
 NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
   NSString* string;
   if (count <= 0) {
-    string = @"";
+    string = IsChromeNextIaEnabled() ? @"0" : @"";
   } else if (count > 99) {
     string = @":)";
   } else {
