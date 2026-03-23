@@ -146,3 +146,15 @@ process without a standalone binary:
 1.  Update SelectMainRoutine in remoting/host/host_main.cc
 1.  Implement the the entry point in another file that is built into
     remoting_core.
+
+## AI Development Guidance
+
+When working within the `//remoting/host` directory, always refer to the local
+`GEMINI.md` files for process-specific navigation and "landmine" warnings:
+
+*   **Main Routing:** `//remoting/host/GEMINI.md`
+*   **Windows Implementation:** `//remoting/host/win/GEMINI.md`
+*   **Mojo IPC Interfaces:** `//remoting/host/mojom/GEMINI.md`
+
+Use these files to map the `--type` flags to implementation files and to
+understand the security constraints of the multi-process architecture.
