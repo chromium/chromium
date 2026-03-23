@@ -112,6 +112,7 @@ source_set("sync") {
     "//chrome/browser/webdata_services",
 
     # TODO(crbug.com/374910357): Investigate for a better dependency injection.
+    "//chrome/browser/account_settings",
     "//chrome/browser/autofill",
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//chrome/browser/favicon",

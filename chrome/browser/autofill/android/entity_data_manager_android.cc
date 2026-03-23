@@ -13,7 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
-#include "chrome/browser/autofill/account_setting_service_factory.h"
+#include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"

@@ -4,7 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/account_setting_service_factory.h"
+#include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -76,8 +76,7 @@ class SingleClientAccountSettingSyncTest
   }
 
   AccountSettingService* GetAccountSettingService() {
-    return autofill::AccountSettingServiceFactory::GetForBrowserContext(
-        GetProfile(0));
+    return AccountSettingServiceFactory::GetForBrowserContext(GetProfile(0));
   }
 
   void InjectSpecificsToServer(

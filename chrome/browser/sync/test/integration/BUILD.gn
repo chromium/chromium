@@ -18,6 +18,7 @@ source_set("sync_integration_tests_impl") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":sync_integration_test_support",
+    "//chrome/browser/account_settings",
     "//chrome/browser/autofill",
     "//chrome/browser/bookmarks",
     "//chrome/browser/glic",

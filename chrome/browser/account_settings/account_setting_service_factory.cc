@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/account_setting_service_factory.h"
+#include "chrome/browser/account_settings/account_setting_service_factory.h"
 
 #include <memory>
 
@@ -17,8 +17,6 @@
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store_service.h"
-
-namespace autofill {
 
 // static
 AccountSettingServiceFactory* AccountSettingServiceFactory::GetInstance() {
@@ -60,5 +58,3 @@ AccountSettingServiceFactory::BuildServiceInstanceForBrowserContext(
                     ->GetStoreFactory())
           : nullptr);
 }
-
-}  // namespace autofill

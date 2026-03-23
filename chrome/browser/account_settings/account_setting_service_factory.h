@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACCOUNT_SETTING_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_AUTOFILL_ACCOUNT_SETTING_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -15,8 +15,6 @@ class BrowserContext;
 namespace account_settings {
 class AccountSettingService;
 }
-
-namespace autofill {
 
 // Factory responsible for creating `AccountSettingService`, which is
 // responsible for managing settings synced via `syncer::ACCOUNT_SETTING`.
@@ -37,6 +35,4 @@ class AccountSettingServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace autofill
-
-#endif  // CHROME_BROWSER_AUTOFILL_ACCOUNT_SETTING_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
