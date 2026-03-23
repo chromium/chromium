@@ -174,7 +174,7 @@ TEST_P(PermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
   EXPECT_EQ(requesting_origin, permissions::PermissionUtil::GetCanonicalOrigin(
                                    ContentSettingsType::NOTIFICATIONS,
                                    requesting_origin, embedding_origin));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const GURL extensions_requesting_origin(
       "chrome-extension://abcdefghijklmnopqrstuvxyz");
   EXPECT_EQ(extensions_requesting_origin,
