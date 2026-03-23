@@ -1,0 +1,9 @@
+{
+    "archives": {
+        "file://index.html": {
+            "DEFAULT": "crossbench_android_gma_embedder_000.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for the cb GMA WebView test app embedder benchmark.",
+    "platform_specific": true
+}
