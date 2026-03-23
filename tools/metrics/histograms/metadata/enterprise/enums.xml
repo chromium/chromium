@@ -2386,6 +2386,7 @@ chromium-metrics-reviews@google.com.
   <int value="1433" label="IsolatedWebAppUserInstallationEnabled"/>
   <int value="1434" label="ExtensionDOMActivityLoggingEnabled"/>
   <int value="1435" label="SharedWorkerExtendedLifetimeEnabled"/>
+  <int value="1436" label="MaxConnectionsPerProxyForWebSocket"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

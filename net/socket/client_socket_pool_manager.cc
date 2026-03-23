@@ -196,10 +196,6 @@ void ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
   CHECK_GE(socket_count, 6u);
   CHECK_LE(socket_count, 256u);
   // LINT.ThenChange(/net/socket/client_socket_pool_manager.cc:SetMaxConnectionsPerProxyChain)
-  // Assert this case early on. The max number of sockets per group cannot
-  // exceed the max number of sockets per proxy chain.
-  DCHECK_LE(g_max_sockets_per_group[std::to_underlying(pool_type)],
-            socket_count);
   g_max_sockets_per_proxy_chain[std::to_underlying(pool_type)] = socket_count;
 }
 

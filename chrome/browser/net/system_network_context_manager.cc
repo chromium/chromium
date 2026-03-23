@@ -758,6 +758,8 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxy, -1);
 
+  registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxyForWebSocket, -1);
+
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -833,11 +835,23 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
                                      base::DoNothing());
   }
 
-  int max_connections_per_proxy =
+  int max_connections_normal =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy >= 0) {
+  int max_connections_websocket =
+      local_state_->GetInteger(prefs::kMaxConnectionsPerProxyForWebSocket);
+  std::optional<uint32_t> max_connections_normal_clamp =
+      max_connections_normal >= 0
+          ? std::optional<uint32_t>(
+                base::saturated_cast<uint32_t>(max_connections_normal))
+          : std::nullopt;
+  std::optional<uint32_t> max_connections_websocket_clamp =
+      max_connections_websocket >= 0
+          ? std::optional<uint32_t>(
+                base::saturated_cast<uint32_t>(max_connections_websocket))
+          : std::nullopt;
+  if (max_connections_normal_clamp || max_connections_websocket_clamp) {
     network_service->SetMaxConnectionsPerProxyChain(
-        base::saturated_cast<uint32_t>(max_connections_per_proxy));
+        max_connections_normal_clamp, max_connections_websocket_clamp);
   }
 
   network_service_network_context_.reset();

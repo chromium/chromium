@@ -184,7 +184,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_params) override;
   void SetRawHeadersAccess(network::RendererProcessId process_id,
                            const std::vector<url::Origin>& origins) override;
-  void SetMaxConnectionsPerProxyChain(uint32_t max_connections) override;
+  void SetMaxConnectionsPerProxyChain(
+      std::optional<uint32_t> max_connection_normal,
+      std::optional<uint32_t> max_connection_websocket) override;
   void GetNetworkChangeManager(
       mojo::PendingReceiver<mojom::NetworkChangeManager> receiver) override;
   void GetNetworkQualityEstimatorManager(

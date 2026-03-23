@@ -296,7 +296,10 @@ interface NetworkService {
   // Sets the maximum number of connections for a proxy chain.
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
-  SetMaxConnectionsPerProxyChain(uint32 max_connections);
+  // Normal and WebSocket pools are limited independently.
+  // If a parameter is nullopt it will not be changed.
+  SetMaxConnectionsPerProxyChain(uint32? max_connections_normal,
+                                 uint32? max_connections_websocket);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(

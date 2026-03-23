@@ -10,7 +10,7 @@
     "simple_policy_pref_mapping_test": {
       "default_value": -1,
       "pref_location":  "local_state",
-      "pref_name": "net.max_connections_per_proxy",
+      "pref_name": "net.max_connections_per_proxy_for_websocket",
       "values_to_test": [
         16,
         64

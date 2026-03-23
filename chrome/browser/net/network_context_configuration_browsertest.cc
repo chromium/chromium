@@ -2096,10 +2096,19 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
                  policy::POLICY_SOURCE_CLOUD,
                  base::Value(static_cast<int>(kTestMaxConnectionsPerProxy)),
                  /*external_data_fetcher=*/nullptr);
+    policies.Set(policy::key::kMaxConnectionsPerProxyForWebSocket,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(static_cast<int>(kTestMaxConnectionsPerProxy)),
+                 /*external_data_fetcher=*/nullptr);
     UpdateChromePolicy(policies);
   }
 
   size_t GetExpectedMaxConnectionsPerProxy() const override {
+    return kTestMaxConnectionsPerProxy;
+  }
+
+  size_t GetExpectedMaxConnectionsPerProxyForWebSocket() const override {
     return kTestMaxConnectionsPerProxy;
   }
 };

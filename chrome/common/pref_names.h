@@ -2751,6 +2751,8 @@ inline constexpr char kToastAlertLevel[] = "settings.toast.alert_level";
 // Preference to store proxy settings.
 inline constexpr char kMaxConnectionsPerProxy[] =
     "net.max_connections_per_proxy";
+inline constexpr char kMaxConnectionsPerProxyForWebSocket[] =
+    "net.max_connections_per_proxy_for_websocket";
 
 #if BUILDFLAG(IS_MAC)
 // A boolean that tracks whether to show a notification when trying to quit
