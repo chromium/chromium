@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -29,6 +30,7 @@ import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -63,6 +65,13 @@ public class DefaultBrowserPromoMessageControllerTest {
 
     @Test
     public void testOnPrimaryButtonClicked() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DefaultBrowserPromo.Click",
+                                DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType
+                                        .MESSAGES_PROMO)
+                        .build();
         PropertyModel messageProperties = mMessageController.buildPropertyModel();
 
         Assert.assertEquals(
@@ -70,9 +79,9 @@ public class DefaultBrowserPromoMessageControllerTest {
                 messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get());
 
         Intent intent = mShadowActivity.getNextStartedActivity();
-        Assert.assertThat(
-                intent.getAction(), equalTo(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
+        assertThat(intent.getAction(), equalTo(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
         verify(mTestTracker, times(1)).notifyEvent("default_browser_promo_messages_used");
+        histogramWatcher.assertExpected();
     }
 
     @Test

@@ -26,10 +26,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoBottomSheetContent;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.widget.ButtonCompat;
@@ -66,6 +68,12 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDefaultBrowserPromoCardBottomSheet_NonSetupList() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DefaultBrowserPromo.Click",
+                                DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO)
+                        .build();
         when(mSetupListManager.isSetupListModule(ModuleType.DEFAULT_BROWSER_PROMO))
                 .thenReturn(false);
 
@@ -74,11 +82,16 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
         // Should use bottom sheet for non-setup-list items.
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mActionDelegate, never()).maybeShowDefaultBrowserPromoWithRoleManager();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testDefaultBrowserPromoCardBottomSheet_RoleManagerFails() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.DefaultBrowserPromo.Click")
+                        .build();
         when(mSetupListManager.isSetupListModule(ModuleType.DEFAULT_BROWSER_PROMO))
                 .thenReturn(true);
         when(mActionDelegate.maybeShowDefaultBrowserPromoWithRoleManager()).thenReturn(false);
@@ -97,6 +110,7 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
         bottomSheetButton.performClick();
         verify(mBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
         verify(mOnModuleClickedCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test

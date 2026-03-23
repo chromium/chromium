@@ -16,6 +16,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardProvider.State;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator;
@@ -110,6 +112,8 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
 
     private void onPromoClicked(View view) {
         mTracker.notifyEvent("default_browser_promo_setting_card_used");
+        DefaultBrowserPromoMetrics.recordPromoClick(
+                DefaultBrowserPromoSourceType.SETTING_CARD_PROMO);
 
         Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
