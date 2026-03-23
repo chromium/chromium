@@ -3790,7 +3790,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kEnableRGBA4444Textures,
       blink::switches::kEnableRasterSideDarkModeForImages,
 #if BUILDFLAG(IS_CHROMEOS)
-      blink::switches::kEnableWebGLImageChromium,
+      blink::switches::kEnableOverlaysAndLowLatencyUsageForWebGL,
 #endif
       blink::switches::kForceGpuMemAvailableMb,
       blink::switches::

@@ -86,10 +86,14 @@ const char kEnableRasterSideDarkModeForImages[] =
     "enable-raster-side-dark-mode-for-images";
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables WebGL rendering into a scanout buffer for overlay support.
-// Restricted to ChromeOS, where this functionality is enabled on a per-board
-// basis.
-const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
+// Enables placing WebGL textures into overlays and giving them low-latency
+// usages. Restricted to ChromeOS, where this functionality is enabled on a
+// per-board basis. NOTE: The value for the switch name should not be renamed
+// for historical reasons (i.e., doing so would require updating this as well
+// and coordinating rollout:
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/login_manager/chromium_command_builder.cc;drc=ed9561e7ab8a71fe4a9d9946cea99df8ebfc9449;l=558).
+const char kEnableOverlaysAndLowLatencyUsageForWebGL[] =
+    "enable-webgl-image-chromium";
 #endif
 
 // Enable rasterizer that writes directly to GPU memory associated with tiles.

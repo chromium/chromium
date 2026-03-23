@@ -386,10 +386,9 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL(
 #elif BUILDFLAG(IS_CHROMEOS)
   // Whether WebGL canvases should be given low-latency usage is specified on a
   // per-board basis by passing (or not) the relevant command-line flag.
-  static const bool enable_web_gl_image_chromium =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          blink::switches::kEnableWebGLImageChromium);
-  return enable_web_gl_image_chromium;
+  static const bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      blink::switches::kEnableOverlaysAndLowLatencyUsageForWebGL);
+  return enabled;
 #elif BUILDFLAG(IS_WIN)
   return sii && sii->GetCapabilities().shared_image_swap_chain;
 #else
@@ -417,10 +416,9 @@ bool SharedGpuContext::UseOverlaysForWebGL() {
 #elif BUILDFLAG(IS_CHROMEOS)
   // Whether WebGL canvases should be placed in overlays is specified on a
   // per-board basis by passing (or not) the relevant command-line flag.
-  static const bool enable_web_gl_image_chromium =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          blink::switches::kEnableWebGLImageChromium);
-  return enable_web_gl_image_chromium;
+  static const bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      blink::switches::kEnableOverlaysAndLowLatencyUsageForWebGL);
+  return enabled;
 #else
   return false;
 #endif

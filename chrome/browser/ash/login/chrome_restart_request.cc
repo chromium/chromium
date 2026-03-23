@@ -180,7 +180,7 @@ void DeriveCommandLine(const GURL& start_url,
       blink::switches::kEnableRGBA4444Textures,
       blink::switches::kEnableRasterSideDarkModeForImages,
 #if BUILDFLAG(IS_CHROMEOS)
-      blink::switches::kEnableWebGLImageChromium,
+      blink::switches::kEnableOverlaysAndLowLatencyUsageForWebGL,
 #endif
       blink::switches::kEnableZeroCopy,
       blink::switches::kForceGpuMemAvailableMb,
