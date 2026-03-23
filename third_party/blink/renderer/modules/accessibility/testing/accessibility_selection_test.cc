@@ -73,28 +73,26 @@ class AXSelectionSerializer final {
       const int extent_offset = selection_.Focus().TextOffset();
 
       if (base_offset == extent_offset) {
-        builder_.Append(name.Left(base_offset));
+        builder_.Append(name.subview(0, base_offset));
         builder_.Append('|');
-        builder_.Append(name.Substring(base_offset));
+        builder_.Append(name.subview(base_offset));
         return;
       }
 
       if (base_offset < extent_offset) {
-        builder_.Append(name.Left(base_offset));
+        builder_.Append(name.subview(0, base_offset));
         builder_.Append('^');
-        builder_.Append(
-            name.Substring(base_offset, extent_offset - base_offset));
+        builder_.Append(name.subview(base_offset, extent_offset - base_offset));
         builder_.Append('|');
-        builder_.Append(name.Substring(extent_offset));
+        builder_.Append(name.subview(extent_offset));
         return;
       }
 
-      builder_.Append(name.Left(extent_offset));
+      builder_.Append(name.subview(0, extent_offset));
       builder_.Append('|');
-      builder_.Append(
-          name.Substring(extent_offset, base_offset - extent_offset));
+      builder_.Append(name.subview(extent_offset, base_offset - extent_offset));
       builder_.Append('^');
-      builder_.Append(name.Substring(base_offset));
+      builder_.Append(name.subview(base_offset));
       return;
     }
 
@@ -102,9 +100,9 @@ class AXSelectionSerializer final {
       DCHECK(selection_.Anchor().IsTextPosition());
       const int base_offset = selection_.Anchor().TextOffset();
 
-      builder_.Append(name.Left(base_offset));
+      builder_.Append(name.subview(0, base_offset));
       builder_.Append('^');
-      builder_.Append(name.Substring(base_offset));
+      builder_.Append(name.subview(base_offset));
       return;
     }
 
@@ -112,9 +110,9 @@ class AXSelectionSerializer final {
       DCHECK(selection_.Focus().IsTextPosition());
       const int extent_offset = selection_.Focus().TextOffset();
 
-      builder_.Append(name.Left(extent_offset));
+      builder_.Append(name.subview(0, extent_offset));
       builder_.Append('|');
-      builder_.Append(name.Substring(extent_offset));
+      builder_.Append(name.subview(extent_offset));
       return;
     }
 

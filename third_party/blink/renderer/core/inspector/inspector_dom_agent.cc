@@ -2248,8 +2248,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     case Node::kProcessingInstructionNode:
       node_value = node->nodeValue();
       if (node_value.length() > kMaxTextSize) {
-        node_value =
-            StrCat({node_value.Left(kMaxTextSize), StringView(kEllipsisUChar)});
+        node_value = StrCat(
+            {node_value.subview(0, kMaxTextSize), StringView(kEllipsisUChar)});
       }
       break;
     case Node::kAttributeNode:

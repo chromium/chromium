@@ -201,35 +201,35 @@ class Serializer final {
     const int focus_offset = selection_.Focus().ComputeOffsetInContainerNode();
     if (anchor_node == node && focus_node == node) {
       if (anchor_offset == focus_offset) {
-        builder_.Append(text.Left(anchor_offset));
+        builder_.Append(text.subview(0, anchor_offset));
         builder_.Append('|');
         builder_.Append(text.subview(anchor_offset));
         return;
       }
       if (anchor_offset < focus_offset) {
-        builder_.Append(text.Left(anchor_offset));
+        builder_.Append(text.subview(0, anchor_offset));
         builder_.Append('^');
         builder_.Append(
-            text.substr(anchor_offset, focus_offset - anchor_offset));
+            text.subview(anchor_offset, focus_offset - anchor_offset));
         builder_.Append('|');
         builder_.Append(text.subview(focus_offset));
         return;
       }
-      builder_.Append(text.Left(focus_offset));
+      builder_.Append(text.subview(0, focus_offset));
       builder_.Append('|');
-      builder_.Append(text.substr(focus_offset, anchor_offset - focus_offset));
+      builder_.Append(text.subview(focus_offset, anchor_offset - focus_offset));
       builder_.Append('^');
       builder_.Append(text.subview(anchor_offset));
       return;
     }
     if (anchor_node == node) {
-      builder_.Append(text.Left(anchor_offset));
+      builder_.Append(text.subview(0, anchor_offset));
       builder_.Append('^');
       builder_.Append(text.subview(anchor_offset));
       return;
     }
     if (focus_node == node) {
-      builder_.Append(text.Left(focus_offset));
+      builder_.Append(text.subview(0, focus_offset));
       builder_.Append('|');
       builder_.Append(text.subview(focus_offset));
       return;
