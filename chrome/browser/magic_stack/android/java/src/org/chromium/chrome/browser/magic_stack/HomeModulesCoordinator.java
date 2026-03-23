@@ -66,7 +66,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     private @Nullable Callback<Profile> mOnProfileAvailableObserver;
     private boolean mHasHomeModulesBeenScrolled;
-    private final RecyclerView.OnScrollListener mOnScrollListener;
+    private RecyclerView.@Nullable OnScrollListener mOnScrollListener;
     private CallbackController mCallbackController;
 
     /**
@@ -329,6 +329,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mHasHomeModulesBeenScrolled = false;
         mMediator.hide();
 
+        if (mIsSnapHelperAttached) {
+            mSnapHelper.attachToRecyclerView(null);
+        }
         destroyAdapter();
     }
 
@@ -402,7 +405,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Override
     public void prepareBuildAndShow() {
         maybeSetUpAdapter();
-        mRecyclerView.addOnScrollListener(mOnScrollListener);
+        mRecyclerView.addOnScrollListener(assumeNonNull(mOnScrollListener));
     }
 
     @Override
@@ -480,7 +483,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      */
     private void recordMagicStackScroll(boolean hasHomeModulesBeenScrolled) {
         mMediator.recordMagicStackScroll(hasHomeModulesBeenScrolled);
-        mRecyclerView.removeOnScrollListener(mOnScrollListener);
+        mRecyclerView.removeOnScrollListener(assumeNonNull(mOnScrollListener));
+        mOnScrollListener = null;
     }
 
     private void destroyAdapter() {

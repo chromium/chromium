@@ -219,10 +219,12 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
+        assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
 
         mCoordinator.destroy();
         verify(mUiConfig).removeObserver(mDisplayStyleObserver.capture());
         assertNull(mCoordinator.getHomeModulesContextMenuManagerForTesting());
+        assertFalse(mCoordinator.getIsSnapHelperAttachedForTesting());
     }
 
     @Test
