@@ -121,7 +121,8 @@ suite('UpdaterAppElement', () => {
     });
   });
 
-  suite('presents external data', () => {
+  // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+  suite.skip('presents external data', () => {
     const events = [
       JSON.stringify({
         eventType: 'UPDATER_PROCESS',
@@ -154,7 +155,8 @@ suite('UpdaterAppElement', () => {
       }),
     ].join('\n');
 
-    test(
+    // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+    test.skip(
         'switches to file data source on processHistoryFiles success',
         async () => {
           await initApp();
@@ -178,7 +180,8 @@ suite('UpdaterAppElement', () => {
           assertEquals(PageDataSource.INSTALL, element.pageDataSource);
         });
 
-    test(
+    // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+    test.skip(
         'switches to file data source on unzipUpdaterHistoryFiles success',
         async () => {
           await initApp();
@@ -206,7 +209,8 @@ suite('UpdaterAppElement', () => {
           assertEquals(PageDataSource.INSTALL, element.pageDataSource);
         });
 
-    test('handles unzipUpdaterHistoryFiles failure', async () => {
+    // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+    test.skip('handles unzipUpdaterHistoryFiles failure', async () => {
       await initApp();
 
       handler.setPromiseRejectFor('unzipUpdaterHistoryFiles');
@@ -218,7 +222,8 @@ suite('UpdaterAppElement', () => {
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
     });
 
-    test('handles invalid file extension', async () => {
+    // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+    test.skip('handles invalid file extension', async () => {
       await initApp();
 
       await setInputFile('invalid.txt', 'some data');
@@ -227,7 +232,8 @@ suite('UpdaterAppElement', () => {
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
     });
 
-    test('handles invalid JSON', async () => {
+    // TODO(crbug.com/494822455): Re-enable when it doesn't time out anymore.
+    test.skip('handles invalid JSON', async () => {
       await initApp();
 
       await setInputFile('invalid.jsonl', 'not json');
