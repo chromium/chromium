@@ -2353,7 +2353,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2555855727505718984">O preenchimento automático não vai ter estas informações neste dispositivo para ajudar a preencher formulários</translation>
 <translation id="25568951186001797">Frame bloqueado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Veja todos os marcadores aqui</translation>
-<translation id="2563924218974330506">Agora pode gerir os seus grupos de separadores aqui. Desafixe em qualquer altura.</translation>
+<translation id="2563924218974330506">Agora, pode gerir os seus grupos de separadores aqui. Desafixe em qualquer altura.</translation>
 <translation id="2564520396658920462">A opção de execução do JavaScript através do AppleScript está desativada. Para a ativar, na barra de menu aceda a Vista &gt; Programador &gt; Permitir JavaScript de eventos Apple. Para mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica melhorada</translation>
 <translation id="256481480019204378">ID da Conta Google</translation>
@@ -8192,6 +8192,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6563055593659435495">Não é possível manter uma ligação com o seu telemóvel. Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="6564343790052433242">Para criar uma chave de acesso para <ph name="APP_NAME" />, o Gestor de Palavras-passe da Google tem de estar ativado</translation>
 <translation id="6565144332292237355">Os sites podem usar esta funcionalidade para procurar e fazer ligação aos dispositivos na sua rede local</translation>
+<translation id="6565899972286925956">Crie o que quiser</translation>
 <translation id="656679903990115526">Faça a leitura deste código com o telemóvel para guardar e preencher automaticamente as suas palavras-passe e iniciar sessão facilmente em sites e apps</translation>
 <translation id="6568283005472142698">Pesquisa de separadores</translation>
 <translation id="6569931898053264308">Poupanças médias</translation>
@@ -9703,7 +9704,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="760197030861754408">Aceda a <ph name="LANDING_PAGE" /> para ligar.</translation>
 <translation id="7602079150116086782">Sem separadores de outros dispositivos</translation>
 <translation id="7602173054665172958">Gestão de impressões</translation>
-<translation id="7602805861133750578">Agora, pode gerir os seus grupos de separadores, chats do Gemini e discussões do Modo de IA num único local. Desafixe em qualquer altura.</translation>
+<translation id="7602805861133750578">Agora, pode gerir os seus grupos de separadores, chats do Gemini e discussões do Modo IA num único local. Desafixe em qualquer altura.</translation>
 <translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
 <translation id="7603785829538808504">Os sites indicados abaixo seguem uma definição personalizada</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 palavra-passe não importada}other{{NUM_PASSWORDS} palavras-passe não importadas}}</translation>

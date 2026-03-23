@@ -1104,7 +1104,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1714644264617423774">Aktivér hjælpefunktioner for at gøre din enhed nemmere at bruge. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Vil du slette websitedata og tilladelser for <ph name="SITE_NAME" /> samt websitets installerede apps?</translation>
 <translation id="171826447717908393">Isolerede webapps (beta)</translation>
-<translation id="1718835860248848330">Den seneste time</translation>
+<translation id="1718835860248848330">Seneste time</translation>
 <translation id="1719312230114180055">Bemærk! Adgang via fingeraftryk kan være mindre sikkert end adgang via en stærk adgangskode eller pinkode.</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
 <translation id="1720318856472900922">TLS WWW-servergodkendelse</translation>
@@ -8205,6 +8205,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6563055593659435495">Forbindelsen til din telefon kan ikke opretholdes. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="6564343790052433242">Google Adgangskodeadministrator skal være aktiveret for at oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="6565144332292237355">Websites kan bruge denne funktion til at søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
+<translation id="6565899972286925956">Opret hvad som helst</translation>
 <translation id="656679903990115526">Scan dette med din telefon for at gemme og automatisk udfylde dine adgangskoder, så du nemt kan logge ind på websites og i apps</translation>
 <translation id="6568283005472142698">Fanesøgning</translation>
 <translation id="6569931898053264308">Mellemstore hukommelsesbesparelser</translation>
