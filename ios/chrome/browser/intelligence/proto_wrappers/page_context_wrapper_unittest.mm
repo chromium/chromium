@@ -5063,6 +5063,42 @@ TEST_P(PageContextWrapperTest,
   EXPECT_FALSE(frame_data.has_paid_content_metadata());
 }
 
+// Tests that ARIA labels are extracted correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_AriaLabel) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "AriaLabel",
+      RawHtml("  <div id=\"label1\">Label 1</div>"
+              "  <div id=\"label2\">Label 2</div>"
+              "  <div id=\"label3\">Unused label</div>"
+              "  <button aria-label=\"Direct Label\" aria-labelledby=\"label1 "
+              "label2\">Click me</button>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 4);
+
+  const auto& button_node = root_node.children_nodes(3);
+  EXPECT_EQ(button_node.content_attributes().label(), "Label 1 Label 2");
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

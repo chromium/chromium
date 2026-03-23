@@ -238,6 +238,12 @@ type WebkitDocument = Document&{webkitFullscreenElement?: Element};
 // Math constants.
 const SECOND_TO_MS_RATIO = 1000;
 
+// ARIA Constants.
+const ARIA_LABELLEDBY = 'aria-labelledby';
+const ARIA_LABEL = 'aria-label';
+// Regex used to split aria-labelledby values.
+const ARIA_LABEL_SEPARATOR = /\s+/;
+
 /**
  * Maps a tag name to its corresponding PageContentAnnotatedRole.
  *
@@ -1321,6 +1327,61 @@ function getContentForIframeNode(
 }
 
 /**
+ * Populates the `label` attribute by extracting the accessible name
+ * from `aria-labelledby` or `aria-label`, following the W3C spec where
+ * `aria-labelledby` takes precedence.
+ *
+ * TODO(crbug.com/494224739): Remove the following note when desktop's
+ * implementation is updated to follow the W3C spec.
+ *
+ * Note: This differs from desktop's implementation which concatenates
+ * these two fields if both are present.
+ *
+ * @param element - The DOM element to extract labels from.
+ * @returns The resulting string or undefined if none found.
+ */
+function getAriaLabel(element: HTMLElement): string | undefined {
+  const accumulatedTexts: string[] = [];
+
+  // Process aria-labelledby.
+  const labelledBy = element.getAttribute(ARIA_LABELLEDBY)?.trim();
+  if (labelledBy) {
+    const ids = labelledBy.split(ARIA_LABEL_SEPARATOR);
+    // This will only work if the labelElement and the element share the same
+    // root. It won't work if the two elements are in different shadow DOMs.
+    // This follows the web standard.
+    const rootNode = element.getRootNode() as Document | ShadowRoot;
+
+    for (const id of ids) {
+      if (!id) {
+        continue;
+      }
+
+      const labelElement = rootNode.getElementById?.(id);
+      // We use textContent instead of innerText
+      // because elements referenced by aria-labelledby may not be visible.
+      const textContent = labelElement?.textContent;
+      if (textContent && textContent.trim().length > 0) {
+        accumulatedTexts.push(textContent);
+      }
+    }
+  }
+
+  // Process aria-label if aria-labelledby is not present.
+  if (accumulatedTexts.length === 0) {
+    const ariaLabel = element.getAttribute(ARIA_LABEL);
+    if (ariaLabel && ariaLabel.trim().length > 0) {
+      accumulatedTexts.push(ariaLabel);
+    }
+  }
+
+  if (accumulatedTexts.length > 0) {
+    return accumulatedTexts.join(' ');
+  }
+  return undefined;
+}
+
+/**
  * Extracts form control specific content attributes from a given DOM element.
  * Handles inputs, textareas, selects, and buttons.
  *
@@ -1702,6 +1763,11 @@ function getContentForElementNode(
     }
     if (interactionInfo) {
       contentNode.contentAttributes.nodeInteractionInfo = interactionInfo;
+    }
+
+    const ariaLabel = getAriaLabel(domNode);
+    if (ariaLabel) {
+      contentNode.contentAttributes.label = ariaLabel;
     }
   }
 

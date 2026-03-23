@@ -99,6 +99,7 @@ constexpr char kDurationMillisecondsKey[] = "durationMilliseconds";
 constexpr char kCurrentPositionMillisecondsKey[] =
     "currentPositionMilliseconds";
 constexpr char kIsPlayingKey[] = "isPlaying";
+constexpr char kLabelKey[] = "label";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -704,6 +705,11 @@ void PopulateAPCNodeFromContentTree(
       content_attributes->FindDict(kNodeInteractionInfoKey);
   if (interaction_info) {
     PopulateNodeInteractionInfo(*interaction_info, destination_node);
+  }
+
+  // Handle ARIA Label.
+  if (const std::string* label = content_attributes->FindString(kLabelKey)) {
+    destination_node->mutable_content_attributes()->set_label(*label);
   }
 
   // Handle Annotated Role.

@@ -719,3 +719,89 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
                 "contentAttributes.textInfo.textContent"))),
             "Visible Text");
 }
+
+// Test the extraction of the ARIA label and aria-labelledby.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_BothSourcesOfAriaLabels) {
+  const std::string html =
+      "<html><body>"
+      "  <div id=\"label1\">Label 1</div>"
+      "  <div id=\"label2\">Label 2</div>"
+      "  <div id=\"label3\">Unused label</div>"
+      "  <button aria-label=\"Direct Label\" aria-labelledby=\"label1 "
+      "label2\">Click me</button>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::test::TestFuture<base::Value> future;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(4),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::Value)> callback,
+             const base::Value* value) {
+            std::move(callback).Run(value ? value->Clone() : base::Value());
+          },
+          future.GetCallback()));
+
+  base::Value result_value = future.Take();
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  ASSERT_EQ(children->size(), 4u);
+
+  const base::DictValue& button_node = (*children)[3].GetDict();
+  const std::string* label =
+      button_node.FindStringByDottedPath("contentAttributes.label");
+  ASSERT_TRUE(label);
+  EXPECT_EQ(*label, "Label 1 Label 2");
+}
+
+// Test the extraction of the ARIA label when only aria-label is present.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_AriaLabelOnly) {
+  const std::string html =
+      "<html><body>"
+      "  <button aria-label=\"Direct Label\">Click me</button>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::test::TestFuture<base::Value> future;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(4),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::Value)> callback,
+             const base::Value* value) {
+            std::move(callback).Run(value ? value->Clone() : base::Value());
+          },
+          future.GetCallback()));
+
+  base::Value result_value = future.Take();
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  ASSERT_EQ(children->size(), 1u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const std::string* label =
+      button_node.FindStringByDottedPath("contentAttributes.label");
+  ASSERT_TRUE(label);
+  EXPECT_EQ(*label, "Direct Label");
+}
