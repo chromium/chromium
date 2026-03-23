@@ -79,7 +79,8 @@ class TestNetworkContext : public network::TestNetworkContext {
       mojo::PendingRemote<network::mojom::WebSocketAuthenticationHandler>
           auth_handler,
       mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client,
-      const std::optional<base::UnguessableToken>& throttling_profile_id)
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
+      const std::optional<base::UnguessableToken>& network_restrictions_id)
       override {
     CHECK(url.has_path());
 
@@ -684,7 +685,8 @@ class LateLinkingDevice : public authenticator::Transaction {
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
-        /*throttling_profile_id=*/std::nullopt);
+        /*throttling_profile_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt);
   }
 
  private:
@@ -904,7 +906,8 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
-        /*throttling_profile_id=*/std::nullopt);
+        /*throttling_profile_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt);
   }
 
  private:

@@ -27,6 +27,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -70,6 +71,8 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
     embedded_https_test_server().SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetupCrossSiteRedirector(&embedded_https_test_server());
+    net::test_server::InstallDefaultWebSocketHandlers(
+        &embedded_https_test_server());
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &ConnectionAllowlistTest::ServeResponses, base::Unretained(this)));
   }
@@ -678,6 +681,45 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, ReportOnlyHistogramForWorker) {
   histogram_tester.ExpectBucketCount(
       network::kConnectionAllowlistTypeHistogram,
       network::ConnectionAllowlistType::kReportOnly, 1);
+}
+
+// Verifies that WebSocket connections are subject to Connection-Allowlist
+// enforcement. A cross-origin WebSocket should be blocked when the page is
+// served with Connection-Allowlist: (response-origin).
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, WebSocketBlocked) {
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Same-origin WebSocket should be allowed.
+  GURL allowed_ws_url = net::test_server::GetWebSocketURL(
+      embedded_https_test_server(), "a.test", "/echo-with-no-extension");
+  EXPECT_EQ("open", EvalJs(shell()->web_contents(), JsReplace(R"(
+    new Promise(resolve => {
+      const ws = new WebSocket($1);
+      ws.onopen = () => { ws.close(); resolve('open'); };
+      ws.onerror = () => resolve('error');
+    });
+  )",
+                                                              allowed_ws_url)));
+
+  // Cross-origin WebSocket should be blocked by Connection-Allowlist.
+  GURL denied_ws_url = net::test_server::GetWebSocketURL(
+      embedded_https_test_server(), "b.test", "/echo-with-no-extension");
+  EXPECT_EQ("error", EvalJs(shell()->web_contents(), JsReplace(R"(
+    new Promise(resolve => {
+      const ws = new WebSocket($1);
+      ws.onopen = () => { ws.close(); resolve('open'); };
+      ws.onerror = () => resolve('error');
+    });
+  )",
+                                                               denied_ws_url)));
 }
 
 }  // namespace content

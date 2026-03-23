@@ -89,7 +89,8 @@ void WebSocketFactory::CreateWebSocket(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-    const std::optional<base::UnguessableToken>& throttling_profile_id) {
+    const std::optional<base::UnguessableToken>& throttling_profile_id,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
   if (isolation_info.request_type() !=
       net::IsolationInfo::RequestType::kOther) {
     mojo::ReportBadMessage(
@@ -124,6 +125,20 @@ void WebSocketFactory::CreateWebSocket(
   }
   if (isolation_info.nonce().has_value() &&
       !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info.nonce(), url)) {
+    mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
+        std::move(handshake_client));
+    handshake_client_remote->OnFailure("Network access revoked",
+                                       net::ERR_NETWORK_ACCESS_REVOKED, -1);
+    handshake_client_remote.reset();
+    return;
+  }
+  // Enforce Connection-Allowlist restrictions for WebSocket connections. Convert
+  // ws(s):// to http(s):// for allowlist matching, since the allowlist patterns
+  // use HTTP schemes.
+  if (network_restrictions_id.has_value() &&
+      !context_->IsNetworkForNonceAndUrlAllowed(
+          *network_restrictions_id,
+          net::ChangeWebSocketSchemeToHttpScheme(url))) {
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
         std::move(handshake_client));
     handshake_client_remote->OnFailure("Network access revoked",

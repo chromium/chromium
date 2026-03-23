@@ -89,7 +89,8 @@ class WebSocketFactoryTest : public testing::Test {
         /*client_security_state=*/nullptr, /*options=*/0,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),
-        std::nullopt);
+        /*throttling_profile_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt);
   }
 
  protected:

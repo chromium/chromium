@@ -390,7 +390,8 @@ class TunnelTransport : public Transport {
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
-        /*throttling_profile_id=*/std::nullopt);
+        /*throttling_profile_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt);
     FIDO_LOG(DEBUG) << "Creating WebSocket to " << target_.spec();
   }
 

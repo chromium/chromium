@@ -14801,7 +14801,8 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_),
-          last_committed_origin_, isolation_info_, BuildClientSecurityState()),
+          last_committed_origin_, isolation_info_, BuildClientSecurityState(),
+          GetNetworkRestrictionsID()),
       std::move(receiver));
 }
 

@@ -181,7 +181,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
             content::GlobalRenderFrameHostId(process->GetID(),
                                              frame->GetRoutingID())),
         /*auth_handler=*/mojo::NullRemote(), std::move(header_client),
-        /*throttling_profile_id=*/std::nullopt);
+        /*throttling_profile_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt);
   }
 
   void SetBlockThirdPartyCookies(bool blocked) {

@@ -153,7 +153,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*auth_handler=*/mojo::NullRemote(),
       /*header_client=*/mojo::NullRemote(),
-      /*throttling_profile_id=*/std::nullopt);
+      /*throttling_profile_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt);
 }
 
 FidoTunnelDevice::FidoTunnelDevice(
@@ -211,7 +212,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*auth_handler=*/mojo::NullRemote(),
       /*header_client=*/mojo::NullRemote(),
-      /*throttling_profile_id=*/std::nullopt);
+      /*throttling_profile_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt);
 }
 
 FidoTunnelDevice::~FidoTunnelDevice() {

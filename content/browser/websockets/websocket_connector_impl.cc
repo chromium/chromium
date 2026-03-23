@@ -65,11 +65,13 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     const content::GlobalRenderFrameHostId& frame_id,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
-    network::mojom::ClientSecurityStatePtr client_security_state)
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<base::UnguessableToken> network_restrictions_id)
     : frame_id_(frame_id),
       origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info),
-      client_security_state_(std::move(client_security_state)) {}
+      client_security_state_(std::move(client_security_state)),
+      network_restrictions_id_(std::move(network_restrictions_id)) {}
 
 WebSocketConnectorImpl::~WebSocketConnectorImpl() = default;
 
@@ -97,7 +99,8 @@ void WebSocketConnectorImpl::Connect(
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
                        storage_access_api_status, isolation_info_, frame_id_,
                        origin_, client_security_state_->Clone(), options,
-                       std::move(throttling_profile_id)),
+                       std::move(throttling_profile_id),
+                       network_restrictions_id_),
         url, isolation_info_.site_for_cookies(), user_agent,
         std::move(handshake_client));
     return;
@@ -126,7 +129,8 @@ void WebSocketConnectorImpl::Connect(
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       std::move(url_loader_network_service_observer), mojo::NullRemote(),
-      mojo::NullRemote(), std::move(throttling_profile_id));
+      mojo::NullRemote(), std::move(throttling_profile_id),
+      network_restrictions_id_);
 }
 
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
@@ -138,6 +142,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     network::mojom::ClientSecurityStatePtr client_security_state,
     uint32_t options,
     std::optional<base::UnguessableToken> throttling_profile_id,
+    std::optional<base::UnguessableToken> network_restrictions_id,
     const GURL& url,
     std::vector<network::mojom::HttpHeaderPtr> additional_headers,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -160,7 +165,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           frame_id),
       std::move(auth_handler), std::move(trusted_header_client),
-      std::move(throttling_profile_id));
+      std::move(throttling_profile_id), std::move(network_restrictions_id));
 }
 
 }  // namespace content

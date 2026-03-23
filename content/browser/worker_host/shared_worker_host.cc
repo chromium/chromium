@@ -686,7 +686,11 @@ void SharedWorkerHost::CreateWebSocketConnector(
           GlobalRenderFrameHostId(GetProcessHost()->GetID(),
                                   IPC::mojom::kRoutingIdNone),
           storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
-          worker_client_security_state_->Clone()),
+          worker_client_security_state_->Clone(),
+          // TODO(crbug.com/492462310): Pass network_restrictions_id so
+          // Connection-Allowlist is enforced for shared worker WebSocket
+          // connections.
+          /*network_restrictions_id=*/std::nullopt),
       std::move(receiver));
 }
 

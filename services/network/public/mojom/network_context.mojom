@@ -1462,7 +1462,8 @@ interface NetworkContext {
           url_loader_network_observer,
       pending_remote<WebSocketAuthenticationHandler>? auth_handler,
       pending_remote<TrustedHeaderClient>? header_client,
-      mojo_base.mojom.UnguessableToken? throttling_profile_id);
+      mojo_base.mojom.UnguessableToken? throttling_profile_id,
+      mojo_base.mojom.UnguessableToken? network_restrictions_id);
 
   // Creates a WebTransport connection to |url|. |origin| is used for the
   // client indication - see

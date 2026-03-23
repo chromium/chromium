@@ -106,7 +106,11 @@ void ServiceWorkerHost::CreateWebSocketConnector(
           content::GlobalRenderFrameHostId(worker_process_id_,
                                            IPC::mojom::kRoutingIdNone),
           storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
-          version_->BuildClientSecurityState()->Clone()),
+          version_->BuildClientSecurityState()->Clone(),
+          // TODO(crbug.com/492462310): Pass network_restrictions_id so
+          // Connection-Allowlist is enforced for service worker WebSocket
+          // connections.
+          /*network_restrictions_id=*/std::nullopt),
       std::move(receiver));
 }
 

@@ -1989,7 +1989,8 @@ void NetworkContext::CreateWebSocket(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-    const std::optional<base::UnguessableToken>& throttling_profile_id) {
+    const std::optional<base::UnguessableToken>& throttling_profile_id,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   if (!websocket_factory_) {
     websocket_factory_ = std::make_unique<WebSocketFactory>(this);
@@ -2003,7 +2004,8 @@ void NetworkContext::CreateWebSocket(
       std::move(client_security_state), options,
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(handshake_client), std::move(url_loader_network_observer),
-      std::move(auth_handler), std::move(header_client), throttling_profile_id);
+      std::move(auth_handler), std::move(header_client), throttling_profile_id,
+      network_restrictions_id);
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 }
 

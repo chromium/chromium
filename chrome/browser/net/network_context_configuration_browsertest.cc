@@ -2025,7 +2025,9 @@ class NetworkContextConfigurationProxySettingsBrowserTest
               ->CreateURLLoaderNetworkObserverForFrame(
                   content::GlobalRenderFrameHostId(process->GetID(),
                                                    frame->GetRoutingID())),
-          mojo::NullRemote(), mojo::NullRemote(), std::nullopt);
+          mojo::NullRemote(), mojo::NullRemote(),
+          /*throttling_profile_id=*/std::nullopt,
+          /*network_restrictions_id=*/std::nullopt);
       waiters.emplace_back(std::move(client));
     }
     expected_connections_run_loop.Run();

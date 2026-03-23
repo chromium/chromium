@@ -61,7 +61,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketFactory final {
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-      const std::optional<base::UnguessableToken>& throttling_profile_id);
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
+      const std::optional<base::UnguessableToken>& network_restrictions_id);
 
   // Returns a URLRequestContext associated with this factory.
   net::URLRequestContext* GetURLRequestContext();
