@@ -7,14 +7,10 @@
 
 #include <string>
 #include <string_view>
-#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/time/time.h"
-#include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/parse_name.h"
+#include "components/certificate_model/x509_certificate_model_base.h"
 
 // This namespace defines a set of functions to be used in UI-related bits of
 // X509 certificates.
@@ -25,11 +21,7 @@ struct Extension {
   std::string value;
 };
 
-struct NotPresent : std::monostate {};
-struct Error : std::monostate {};
-using OptionalStringOrError = std::variant<Error, NotPresent, std::string>;
-
-class X509CertificateModel {
+class X509CertificateModel : public X509CertificateModelBase {
  public:
   // Construct an X509CertificateModel from |cert_data|, which must must not be
   // nullptr.
@@ -54,9 +46,6 @@ class X509CertificateModel {
   // the hex SHA256 hash of the certificate data will be returned.
   std::string GetTitle() const;
 
-  CRYPTO_BUFFER* cert_buffer() const { return cert_data_.get(); }
-  bool is_valid() const { return parsed_successfully_; }
-
   // ---------------------------------------------------------------------------
   // The rest of the methods should only be called if |is_valid()| returns true.
 
@@ -65,24 +54,6 @@ class X509CertificateModel {
 
   std::string GetVersion() const;
   std::string GetSerialNumberHexified() const;
-
-  // Get the validity notBefore and notAfter times, returning true on success
-  // or false on error in parsing or converting to a base::Time.
-  bool GetTimes(base::Time* not_before, base::Time* not_after) const;
-
-  // These methods returns the issuer/subject commonName/orgName/orgUnitName
-  // formatted as a string, if present. Returns NotPresent if the attribute
-  // type was not present, or Error if there was a parsing error.
-  // The Get{Issuer,Subject}CommonName methods return the last (most specific)
-  // commonName, while the other methods return the first (most general) value.
-  // This matches the NSS behaviour of CERT_GetCommonName, CERT_GetOrgName,
-  // CERT_GetOrgUnitName.
-  OptionalStringOrError GetIssuerCommonName() const;
-  OptionalStringOrError GetIssuerOrgName() const;
-  OptionalStringOrError GetIssuerOrgUnitName() const;
-  OptionalStringOrError GetSubjectCommonName() const;
-  OptionalStringOrError GetSubjectOrgName() const;
-  OptionalStringOrError GetSubjectOrgUnitName() const;
 
   // Get the issuer/subject name as a text block with one line per
   // attribute-value pair. Will process IDN in commonName, showing original and
@@ -115,15 +86,6 @@ class X509CertificateModel {
   std::optional<std::string> ProcessExtensionData(
       const bssl::ParsedExtension& extension) const;
 
-  bool parsed_successfully_ = false;
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_data_;
-  bssl::der::Input tbs_certificate_tlv_;
-  bssl::der::Input signature_algorithm_tlv_;
-  bssl::der::BitString signature_value_;
-  bssl::ParsedTbsCertificate tbs_;
-
-  bssl::RDNSequence subject_rdns_;
-  bssl::RDNSequence issuer_rdns_;
   std::vector<bssl::ParsedExtension> extensions_;
 
   // Parsed SubjectAltName extension.

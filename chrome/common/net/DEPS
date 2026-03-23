@@ -1,5 +1,6 @@
 include_rules = [
   # Other libraries.
+  "+components/certificate_model",
   "+components/google/core/common",
   "+third_party/boringssl/src/pki",
 ]

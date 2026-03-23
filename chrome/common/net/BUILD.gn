@@ -35,6 +35,7 @@ static_library("net") {
       "x509_certificate_model.cc",
       "x509_certificate_model.h",
     ]
+    deps += [ "//components/certificate_model" ]
   }
 
   if (use_nss_certs) {
