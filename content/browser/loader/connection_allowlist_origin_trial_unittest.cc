@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -47,6 +48,14 @@ constexpr char kAnotherConnectionAllowlistToken[] =
     "uY29tOjQ0MyIsICJmZWF0dXJlIjogIkNvbm5lY3Rpb25BbGxvd2xpc3QiLCAiZXhwaXJ5IjogM"
     "jAwMDAwMDAwMH0=";
 
+// tools/origin_trials/generate_token.py https://subdomain.com
+// ConnectionAllowlist --expire-timestamp=2000000000 --is-subdomain
+constexpr char kSubdomainToken[] =
+    "A50yva786usSO09aP7EIXkJ7ZroA1x4+ej8rA/"
+    "avNMPcwKtjoUskem6plA7o9lneTRXKL1UsAXTFf5exbRO6+"
+    "goAAAB0eyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWJkb21haW4uY29tOjQ0MyIsICJmZWF0dXJlIjo"
+    "gIkNvbm5lY3Rpb25BbGxvd2xpc3QiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzU3ViZG9tY"
+    "WluIjogdHJ1ZX0=";
 }  // namespace
 
 // Tests for exercising connection allowlist's origin trial behaviors. It is
@@ -171,6 +180,49 @@ TEST_F(ConnectionAllowlistOriginTrialTest, ValidTokenTrialEnabled) {
   navigation->Commit();
 
   EXPECT_TRUE(HasConnectionAllowlist(navigation->GetFinalRenderFrameHost()));
+}
+
+// Token generated with `--is-subdomain` enables connection allowlist for all
+// subdomains that match the origin.
+TEST_F(ConnectionAllowlistOriginTrialTest, ValidSubdomainTokenTrialEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
+
+  struct Testcase {
+    std::string url;
+    bool trial_enabled;
+  };
+
+  std::vector<Testcase> test_cases{
+      {"https://subdomain.com", true},
+      {"https://a.subdomain.com", true},
+      {"https://b.subdomain.com", true},
+      {"https://a.b.subdomain.com", true},
+      {"https://cross.origin.com", false},
+      {"https://subdomain.info", false},
+      {"https://subdomain.com:1234", false},
+      {"https://subdomain.com/page.html", true},
+      {"https://a.subdomain.com/page.html", true},
+  };
+
+  for (const Testcase& test_case : test_cases) {
+    auto navigation = NavigationSimulator::CreateRendererInitiated(
+        GURL(test_case.url), main_rfh());
+
+    auto response_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    response_headers->SetHeader("Origin-Trial", kSubdomainToken);
+    response_headers->SetHeader("Connection-Allowlist", "(response-origin)");
+    navigation->SetResponseHeaders(response_headers);
+    navigation->Commit();
+
+    EXPECT_EQ(HasConnectionAllowlist(navigation->GetFinalRenderFrameHost()),
+              test_case.trial_enabled);
+
+    // Reset web contents so that the connection allowlist does not affect the
+    // next test case.
+    SetContents(CreateTestWebContents());
+  }
 }
 
 // Response contains a valid trial token but the "Connection-Allowlist" header
