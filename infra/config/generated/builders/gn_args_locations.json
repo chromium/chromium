@@ -828,7 +828,6 @@
     "gpu-try-linux-nvidia-dbg": "try/gpu-try-linux-nvidia-dbg/gn-args.json",
     "gpu-try-linux-nvidia-rel": "try/gpu-try-linux-nvidia-rel/gn-args.json",
     "leak_detection_linux": "try/leak_detection_linux/gn-args.json",
-    "linux-afl-asan-rel": "try/linux-afl-asan-rel/gn-args.json",
     "linux-annotator-rel": "try/linux-annotator-rel/gn-args.json",
     "linux-arm64-rel-fyi": "try/linux-arm64-rel-fyi/gn-args.json",
     "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",

@@ -191,12 +191,6 @@ is the directory to which GN configuration is written. If you wish, you can
 inspect the generated config by running `gn args out/libfuzzer`, once the
 `mb.py` script is done.
 
-You can also invoke [AFL] by using the `use_afl` GN argument, but we
-recommend libFuzzer for local development. Running libFuzzer locally doesn't
-require any special configuration and gives quick, meaningful output for speed,
-coverage, and other parameters.
-***
-
 It’s possible to run fuzz targets without sanitizers, but not recommended, as
 sanitizers help to detect errors which may not result in a crash otherwise.
 `use_libfuzzer` is supported in the following sanitizer configurations.
@@ -317,9 +311,9 @@ You can make it more effective with several easy steps:
 
   ClusterFuzz uses different strategies for different fuzzing sessions,
   including different random values. Also, ClusterFuzz uses different fuzzing
-  engines (e.g. AFL that doesn't have `-max_len` option). If your target has an
-  input length limit that you would like to *strictly enforce*, add a sanity
-  check to the beginning of your `LLVMFuzzerTestOneInput` function:
+  engines. If your target has an input length limit that you would like to
+  *strictly enforce*, add a sanity check to the beginning of your
+  `LLVMFuzzerTestOneInput` function:
 
   ```cpp
   if (size < kMinInputLength || size > kMaxInputLength)
@@ -425,7 +419,6 @@ value and trigger another code path, without providing any real guidance to the
 fuzzing engine.
 ***
 
-[AFL]: AFL_integration.md
 [AddressSanitizer]: http://clang.llvm.org/docs/AddressSanitizer.html
 [ClusterFuzz status]: libFuzzer_integration.md#Status-Links
 [Efficient Fuzzing Guide]: efficient_fuzzing.md

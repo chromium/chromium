@@ -7,13 +7,6 @@
 load("@chromium-luci//gn_args.star", "gn_args")
 
 gn_args.config(
-    name = "afl",
-    args = {
-        "use_afl": True,
-    },
-)
-
-gn_args.config(
     name = "amd64-generic",
     args_file = "//build/args/chromeos/amd64-generic.gni",
 )

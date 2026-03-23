@@ -22,7 +22,7 @@ The first step is to identify how the crash was found. Look at the ClusterFuzz
 bug report:
 
 *   If the report specifies a "Fuzz Target" and mentions a fuzzing engine
-    (like libFuzzer, AFL, Centipede, etc.), you should follow the steps under
+    (like libFuzzer, Centipede, etc.), you should follow the steps under
     [Reproducing a Crash from a Fuzzing Engine](#reproducing-a-crash-from-a-fuzzing-engine).
 
 *   Otherwise, the crash was likely caused by a blackbox fuzzer that produced

@@ -163,7 +163,6 @@ try/ios18-sdk-simulator
 try/ios26-beta-simulator
 try/ios26-sdk-simulator
 try/leak_detection_linux
-try/linux-afl-asan-rel
 try/linux-annotator-rel
 try/linux-asan-dbg
 try/linux-asan-media-rel
