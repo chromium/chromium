@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -42,6 +43,7 @@ import org.chromium.chrome.test.transit.webapps.PwaReviewAppEntryCarryOn;
 import org.chromium.chrome.test.transit.webapps.PwaReviewCarryOn;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -251,6 +253,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/495393410
     public void testButtonsInitiallyDisabled() throws Exception {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
