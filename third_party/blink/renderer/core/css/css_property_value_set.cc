@@ -101,15 +101,13 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
 
 MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     base::span<const CSSPropertyValue> properties)
-    : CSSPropertyValueSet(kHTMLStandardMode) {
-  property_vector_.ReserveInitialCapacity(properties.size());
-  for (const CSSPropertyValue& property : properties) {
-    property_vector_.UncheckedAppend(property);
-    bits_.set<MayHaveLogicalPropertiesField>(
-        bits_.get<MayHaveLogicalPropertiesField>() ||
-        kLogicalGroupProperties.Has(property.PropertyID()));
-  }
-}
+    : CSSPropertyValueSet(kHTMLStandardMode),
+      property_vector_(properties, [this](const CSSPropertyValue& property) {
+        bits_.set<MayHaveLogicalPropertiesField>(
+            bits_.get<MayHaveLogicalPropertiesField>() ||
+            kLogicalGroupProperties.Has(property.PropertyID()));
+        return property;
+      }) {}
 
 ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     PassKey,

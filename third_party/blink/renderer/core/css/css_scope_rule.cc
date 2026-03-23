@@ -106,14 +106,12 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
   }
   // Any '&' selectors in child rules must now point to new_style_scope's
   // internally-held style rule.
-  HeapVector<Member<StyleRuleBase>> new_child_rules;
-  new_child_rules.ReserveInitialCapacity(
-      GetStyleRuleScope().ChildRules().size());
-  for (StyleRuleBase* child_rule : GetStyleRuleScope().ChildRules()) {
-    new_child_rules.push_back(
-        child_rule->Clone(new_style_scope->RuleForNesting(),
-                          /*mixin_parameter_bindings=*/nullptr));
-  }
+  HeapVector<Member<StyleRuleBase>> new_child_rules(
+      GetStyleRuleScope().ChildRules(),
+      [new_style_scope](StyleRuleBase* child_rule) {
+        return child_rule->Clone(new_style_scope->RuleForNesting(),
+                                 /*mixin_parameter_bindings=*/nullptr);
+      });
   StyleRuleScope* new_group_rule = MakeGarbageCollected<StyleRuleScope>(
       *new_style_scope, std::move(new_child_rules));
 

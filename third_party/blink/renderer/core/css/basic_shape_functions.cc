@@ -770,11 +770,11 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
     return path_value->GetStylePath();
   } else if (const auto* shape_value =
                  DynamicTo<cssvalue::CSSShapeValue>(basic_shape_value)) {
-    Vector<StyleShape::Segment> segments;
-    segments.ReserveInitialCapacity(shape_value->Commands().size());
-    for (const cssvalue::CSSShapeCommand* command : shape_value->Commands()) {
-      segments.push_back(ShapeCommandToShapeSegment(*command, state));
-    }
+    Vector<StyleShape::Segment> segments(
+        shape_value->Commands(),
+        [&state](const cssvalue::CSSShapeCommand* command) {
+          return ShapeCommandToShapeSegment(*command, state);
+        });
     return MakeGarbageCollected<StyleShape>(
         shape_value->GetWindRule(),
         StyleBuilderConverter::ConvertPosition(state, shape_value->GetOrigin()),

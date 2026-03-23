@@ -289,12 +289,8 @@ static String BuildPolygonString(const WindRule& wind_rule,
 }
 
 String CSSBasicShapePolygonValue::CustomCSSText() const {
-  Vector<String> points;
-  points.ReserveInitialCapacity(values_.size());
-
-  for (wtf_size_t i = 0; i < values_.size(); ++i) {
-    points.push_back(values_.at(i)->CssText());
-  }
+  Vector<String> points(values_,
+                        [](const CSSValue* value) { return value->CssText(); });
 
   return BuildPolygonString(wind_rule_, points);
 }

@@ -74,10 +74,14 @@ class BasicHeapVector final
   // 3) GCs triggered through allocations in `Proj` will never find the backing
   //    store as it's only reachable from stack or an in-construction HeapVector
   //    which is always delayed till the end of GC.
-  template <typename Proj>
-    requires(std::is_invocable_v<Proj, typename BaseVector::const_reference>)
-  BasicHeapVector(const BasicHeapVector& other, Proj proj)
-      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
+  template <typename Range, typename Proj>
+    requires VectorCanAssignFromRange<T,
+                                      inlineCapacity,
+                                      HeapAllocator,
+                                      Range,
+                                      Proj>
+  BasicHeapVector(Range&& range, Proj proj)
+      : BaseVector(std::forward<Range>(range), std::move(proj)) {}
 
   template <internal::HeapCollectionType OtherCollectionType,
             typename U,

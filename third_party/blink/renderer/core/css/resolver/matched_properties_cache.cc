@@ -73,15 +73,13 @@ CachedMatchedProperties::CachedMatchedProperties(
     const ComputedStyle* originating_element_style,
     const MatchedPropertiesVector& properties,
     unsigned clock)
-    : entries({Entry{style, parent_style, originating_element_style, clock}}) {
-  matched_properties.ReserveInitialCapacity(properties.size());
-  for (const auto& new_matched_properties : properties) {
-    matched_properties.emplace_back(
-        new_matched_properties.properties,
-        new_matched_properties.mixin_parameter_bindings,
-        new_matched_properties.data_);
-  }
-}
+    : matched_properties(properties,
+                         [](const MatchedProperties& property) {
+                           return Key{property.properties,
+                                      property.mixin_parameter_bindings,
+                                      property.data_};
+                         }),
+      entries({Entry{style, parent_style, originating_element_style, clock}}) {}
 
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
