@@ -216,14 +216,16 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 }
 
 // Test to ensure the dialog goes away once the cancel button is clicked.
-// TODO(crbug.com/444093961): Test is flaky.
-- (void)FLAKY_testOtpInputDialogCancel {
+- (void)testOtpInputDialogCancel {
   [self showOtpInputDialog];
 
+  // Wait for the card unmask OTP input dialog view to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      CardUnmaskPromptNavigationBarTitle()];
   // Tap the cancel button.
   [[EarlGrey selectElementWithMatcher:CancelButton()] performAction:grey_tap()];
 
-  // Expect the card unmask OTP inpud dialog view to disappear.
+  // Expect the card unmask OTP input dialog view to disappear.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       CardUnmaskPromptNavigationBarTitle()];
 }
