@@ -1341,10 +1341,8 @@ void GpuImageDecodeCache::RecordStats() {
 
 void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
                                                scoped_refptr<ImageData> data) {
-  if (features::EnablePurgeGpuImageDecodeCache()) {
-    DCHECK(persistent_cache_.empty() || has_pending_purge_task());
-    PostPurgeOldCacheEntriesTask();
-  }
+  DCHECK(persistent_cache_.empty() || has_pending_purge_task());
+  PostPurgeOldCacheEntriesTask();
 
   WillAddCacheEntry(draw_image);
   persistent_cache_memory_size_ += data->GetTotalSize();
@@ -1424,9 +1422,7 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
   // fully static, then no flush will come, and no entries will actually be
   // deleted. We only need a shallow flush because no glFlush() is required, we
   // merely need the deletion commands to be processed service-side.
-  if (features::EnablePurgeGpuImageDecodeCache()) {
-    context_->RasterInterface()->ShallowFlushCHROMIUM();
-  }
+  context_->RasterInterface()->ShallowFlushCHROMIUM();
   if (context_->GetLock()) {
     CheckContextLockAcquiredIfNecessary();
     context_->GetLock()->Release();

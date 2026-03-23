@@ -756,11 +756,6 @@ bool IsSkiaGraphitePrecompilationEnabled(
   return base::FeatureList::IsEnabled(features::kSkiaGraphitePrecompilation);
 }
 
-// Set up such that service side purge depends on the client side purge feature
-// being enabled. And enabling service side purge disables client purge
-bool EnablePurgeGpuImageDecodeCache() {
-  return !base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
-}
 bool EnablePruneOldTransferCacheEntries() {
   return base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }

@@ -156,7 +156,6 @@ GPU_CONFIG_EXPORT bool IsSkiaGraphiteEnabled(
     const base::CommandLine* command_line);
 GPU_CONFIG_EXPORT bool IsSkiaGraphitePrecompilationEnabled(
     const base::CommandLine* command_line);
-GPU_CONFIG_EXPORT bool EnablePurgeGpuImageDecodeCache();
 GPU_CONFIG_EXPORT bool EnablePruneOldTransferCacheEntries();
 GPU_CONFIG_EXPORT bool IsLegacyIpcDisabled();
 
