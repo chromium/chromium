@@ -47,6 +47,7 @@
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
@@ -277,6 +278,8 @@ CreateInputDataFromAnnotatedPageContent(
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // The preference service.
   raw_ptr<PrefService> _prefService;
+  // Browser agent to manage the cobrowse context.
+  raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
 
   // Stores the page context wrappers for the duration of the APC retrieval.
   std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
@@ -342,6 +345,7 @@ CreateInputDataFromAnnotatedPageContent(
               aimEligibilityService:
                   (AimEligibilityService*)aimEligibilityService
                         prefService:(PrefService*)prefService
+               cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
                        sceneHandler:(id<SceneCommands>)sceneHandler
@@ -352,6 +356,7 @@ CreateInputDataFromAnnotatedPageContent(
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
     _prefService = prefService;
+    _cobrowseBrowserAgent = cobrowseBrowserAgent;
     _contextualSearchSession = std::move(contextualSearchSession);
     if (_contextualSearchSession) {
       _contextualSearchSession->NotifySessionStarted();
@@ -390,6 +395,7 @@ CreateInputDataFromAnnotatedPageContent(
   _templateURLService = nullptr;
   [self invalidateInputStateSubscription];
   _aimEligibilityService = nullptr;
+  _cobrowseBrowserAgent = nullptr;
   _inputStateModel = nullptr;
   _composeboxObserverBridge.reset();
   if (_contextualSearchSession) {
@@ -1347,8 +1353,11 @@ CreateInputDataFromAnnotatedPageContent(
     if (IsAimCobrowseEnabled() && [self isActiveTabAttached]) {
       CobrowseContext* context = [[CobrowseContext alloc] initWithURL:URL];
       context.attachedItems = _items.containedItems;
+      if (_cobrowseBrowserAgent) {
+        _cobrowseBrowserAgent->SetCobrowseContext(context);
+      }
       [_browserCoordinatorHandler hideComposebox];
-      [_sceneHandler showAssistantWithContext:context];
+      [_sceneHandler showAssistant];
       return;
     }
   }

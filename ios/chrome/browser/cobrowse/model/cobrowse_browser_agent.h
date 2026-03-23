@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
+@class CobrowseContext;
+
 // Browser agent that manages the CobrowseTabHelper delegate.
 class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
                              public CobrowseTabHelper::Delegate,
@@ -16,8 +18,15 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
  public:
   ~CobrowseBrowserAgent() override;
 
+  // Sets the context for the Cobrowse flow.
+  void SetCobrowseContext(CobrowseContext* context);
+
+  // Returns the current Cobrowse context.
+  CobrowseContext* GetCobrowseContext();
+
   // CobrowseTabHelper::Delegate:
   bool CanShowAssistantForWebState(web::WebState* web_state) override;
+  void ConfigureAssistantContextForWebState(web::WebState* web_state) override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -30,6 +39,9 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   friend class BrowserUserData<CobrowseBrowserAgent>;
 
   explicit CobrowseBrowserAgent(Browser* browser);
+
+  // The context for the Cobrowse flow.
+  __strong CobrowseContext* context_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_MODEL_COBROWSE_BROWSER_AGENT_H_

@@ -21,7 +21,7 @@ CobrowseTabHelper::~CobrowseTabHelper() = default;
 #pragma mark - Public
 
 void CobrowseTabHelper::SetSceneCommandsHandler(id<SceneCommands> handler) {
-  scene_commands_handler_ = handler;
+  scene_handler_ = handler;
 }
 
 void CobrowseTabHelper::SetDelegate(Delegate* delegate) {
@@ -33,20 +33,19 @@ void CobrowseTabHelper::SetDelegate(Delegate* delegate) {
 void CobrowseTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!delegate_ || !scene_commands_handler_) {
+  if (!delegate_ || !scene_handler_) {
     return;
   }
 
   // Dismiss the cobrowse AIM assistant sheet if navigating to the NTP.
   if (IsUrlNtp(navigation_context->GetUrl())) {
-    [scene_commands_handler_ hideAssistant];
+    [scene_handler_ hideAssistant];
     return;
   }
 
   if (delegate_->CanShowAssistantForWebState(web_state)) {
-    // TODO(crbug.com/489118971): Pass the correct cobrowse Context.
-    [scene_commands_handler_
-        showAssistantWithContext:[CobrowseContext defaultContext]];
+    delegate_->ConfigureAssistantContextForWebState(web_state);
+    [scene_handler_ showAssistant];
   }
 }
 

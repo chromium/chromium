@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
@@ -31,21 +33,11 @@
   AssistantAIMMediator* _mediator;
   ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
   ComposeboxModeHolder* _modeHolder;
-  CobrowseContext* _context;
 
   // Handler for container related interactions.
   __weak id<AssistantContainerCommands> _containerHandler;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                   context:(CobrowseContext*)context {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    _context = context;
-  }
-  return self;
-}
 
 - (void)start {
   if (self.browser->GetProfile()->IsOffTheRecord()) {
@@ -64,9 +56,14 @@
                                               delegate:self];
 
   web::WebState::CreateParams params(self.browser->GetProfile());
+  CobrowseContext* context =
+      CobrowseBrowserAgent::FromBrowser(self.browser)->GetCobrowseContext();
+  if (!context) {
+    context = [CobrowseContext defaultContext];
+  }
   _mediator = [[AssistantAIMMediator alloc]
       initWithWebState:web::WebState::Create(params)
-               context:_context
+               context:context
       containerHandler:_containerHandler];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;

@@ -932,9 +932,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                                                    kSymbolActionPointSize)
              identifier:nil
                 handler:^(UIAction* action) {
-                  [weakSelf.dispatcher
-                      showAssistantWithContext:[CobrowseContext
-                                                   defaultContext]];
+                  [weakSelf.dispatcher showAssistant];
                 }];
     [menuElements addObject:assistantAction];
   }

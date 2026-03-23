@@ -195,6 +195,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                      templateURLService:template_url_service()
                   aimEligibilityService:aim_eligibility_service_.get()
                             prefService:&pref_service_
+                   cobrowseBrowserAgent:nil
               browserCoordinatorHandler:nil
                            sceneHandler:nil
                              entrypoint:ComposeboxEntrypoint::kOther];

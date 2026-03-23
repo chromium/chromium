@@ -10,6 +10,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@class CobrowseContext;
 @protocol SceneCommands;
 
 // Tab helper that listens for new tabs to triggers or not the cobrowse view.
@@ -20,6 +21,8 @@ class CobrowseTabHelper : public web::WebStateObserver,
    public:
     virtual ~Delegate() = default;
     virtual bool CanShowAssistantForWebState(web::WebState* web_state) = 0;
+    virtual void ConfigureAssistantContextForWebState(
+        web::WebState* web_state) = 0;
   };
 
   CobrowseTabHelper(const CobrowseTabHelper&) = delete;
@@ -47,7 +50,7 @@ class CobrowseTabHelper : public web::WebStateObserver,
   raw_ptr<Delegate> delegate_ = nullptr;
 
   // The handler for scene commands.
-  __weak id<SceneCommands> scene_commands_handler_ = nil;
+  __weak id<SceneCommands> scene_handler_ = nil;
 
   // Scoped observation for the WebState.
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{

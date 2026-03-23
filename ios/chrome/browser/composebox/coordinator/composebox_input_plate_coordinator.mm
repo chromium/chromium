@@ -18,6 +18,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_cobrowse_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
@@ -200,6 +201,8 @@ const CGFloat kSnackbarBottomMargin = 10;
                    templateURLService:templateURLService
                 aimEligibilityService:_aimEligibilityService
                           prefService:self.profile->GetPrefs()
+                 cobrowseBrowserAgent:CobrowseBrowserAgent::FromBrowser(
+                                          self.browser)
             browserCoordinatorHandler:HandlerForProtocol(
                                           dispatcher,
                                           BrowserCoordinatorCommands)

@@ -108,8 +108,7 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  OCMExpect(
-      [mock_scene_commands_handler_ showAssistantWithContext:[OCMArg any]]);
+  OCMExpect([mock_scene_commands_handler_ showAssistant]);
 
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
 
@@ -151,7 +150,7 @@ TEST_F(CobrowseTabHelperTest, NoTriggerFromNonAimOpener) {
 
   OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
-  [[mock_scene_commands_handler_ reject] showAssistantWithContext:[OCMArg any]];
+  [[mock_scene_commands_handler_ reject] showAssistant];
 
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
 
@@ -171,7 +170,7 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInSameTab) {
 
   OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
-  [[mock_scene_commands_handler_ reject] showAssistantWithContext:[OCMArg any]];
+  [[mock_scene_commands_handler_ reject] showAssistant];
 
   tab_helper_->DidStartNavigation(fake_web_state_, &context);
 
@@ -222,7 +221,7 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
 
   OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
-  [[mock_scene_commands_handler_ reject] showAssistantWithContext:[OCMArg any]];
+  [[mock_scene_commands_handler_ reject] showAssistant];
 
   incognito_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
 

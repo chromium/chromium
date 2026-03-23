@@ -21,6 +21,7 @@
 
 @protocol BrowserCoordinatorCommands;
 @class CobrowseContext;
+class CobrowseBrowserAgent;
 @protocol ComposeboxDebuggerLogger;
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
@@ -82,6 +83,7 @@ class ContextualSearchSessionHandle;
               aimEligibilityService:
                   (AimEligibilityService*)aimEligibilityService
                         prefService:(PrefService*)prefService
+               cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
                        sceneHandler:(id<SceneCommands>)sceneHandler

@@ -410,8 +410,7 @@
       break;
     }
     case AppBarAssistantButtonState::kAIM: {
-      [self.sceneHandler
-          showAssistantWithContext:[CobrowseContext defaultContext]];
+      [self.sceneHandler showAssistant];
       break;
     }
   }

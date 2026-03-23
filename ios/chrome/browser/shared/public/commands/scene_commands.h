@@ -175,8 +175,8 @@ enum class TabGridOpeningMode {
 // Opens a debug menu for AI prototyping.
 - (void)openAIMenu;
 
-// Opens the assistant sheet with a specific context.
-- (void)showAssistantWithContext:(CobrowseContext*)context;
+// Displays the Assistant AIM interface.
+- (void)showAssistant;
 
 // Hides the assistant sheet if it is currently presented.
 - (void)hideAssistant;

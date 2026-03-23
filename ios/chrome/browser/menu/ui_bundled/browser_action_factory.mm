@@ -520,15 +520,13 @@
   CHECK(IsAIMCobrowseDebugEntrypointEnabled());
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  return
-      [self actionWithTitle:@"Open AIM prototype"
-                      image:DefaultSymbolWithPointSize(kSparklesSymbol,
-                                                       kSymbolActionPointSize)
-                       type:MenuActionType::AIPrototyping
-                      block:^{
-                        [handler showAssistantWithContext:[CobrowseContext
-                                                              defaultContext]];
-                      }];
+  return [self actionWithTitle:@"Open AIM prototype"
+                         image:DefaultSymbolWithPointSize(
+                                   kSparklesSymbol, kSymbolActionPointSize)
+                          type:MenuActionType::AIPrototyping
+                         block:^{
+                           [handler showAssistant];
+                         }];
 }
 
 #pragma mark - ActionFactory

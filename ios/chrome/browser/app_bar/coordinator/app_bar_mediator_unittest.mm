@@ -647,7 +647,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
                                 {kPageActionMenu});
   [mediator_ updateAssistantButton];
 
-  OCMExpect([mock_scene_handler_ showAssistantWithContext:[OCMArg any]]);
+  OCMExpect([mock_scene_handler_ showAssistant]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM];
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 }

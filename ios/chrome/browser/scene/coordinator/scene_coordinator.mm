@@ -606,15 +606,14 @@ void OnListFamilyMembersResponse(
   [_historyCoordinator start];
 }
 
-- (void)showAssistantWithContext:(CobrowseContext*)context {
+- (void)showAssistant {
   if (!IsAssistantContainerEnabled()) {
     return;
   }
-  [_assistantAIMCoordinator stop];
+  [self stopAssistantAIMCoordinator];
   _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
       initWithBaseViewController:self.activeViewController
-                         browser:self.currentBrowser
-                         context:context];
+                         browser:self.currentBrowser];
   [_assistantAIMCoordinator start];
 }
 
