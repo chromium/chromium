@@ -20830,7 +20830,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "o2YBX3ZJc0tK1KeaPYj0UveLWhmf"
+                        "en_site_id": "o2YBX3ZJc0tK1KeaPYj0UveLWhmf",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyBookmarkPromo"
@@ -20848,7 +20849,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "HhgAhQYhw0tK1KeaPYj0NeTaRKBh"
+                        "en_site_id": "HhgAhQYhw0tK1KeaPYj0NeTaRKBh",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyFirstRun"
@@ -20866,7 +20868,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "DujcsCGkZ0tK1KeaPYj0RGm9FgKX"
+                        "en_site_id": "DujcsCGkZ0tK1KeaPYj0RGm9FgKX",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyNtpAccountAvatarTap"
@@ -20884,7 +20887,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "15CWgMniG0tK1KeaPYj0RkWoZ4B9"
+                        "en_site_id": "15CWgMniG0tK1KeaPYj0RkWoZ4B9",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyNtpPromo"
@@ -20902,7 +20906,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "yirfCKnhD0tK1KeaPYj0P9BTzPNw"
+                        "en_site_id": "yirfCKnhD0tK1KeaPYj0P9BTzPNw",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyNtpSigninButton"
@@ -20920,7 +20925,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "en_site_id": "36F2N72TP0tK1KeaPYj0SdXcHEJ4"
+                        "en_site_id": "36F2N72TP0tK1KeaPYj0SdXcHEJ4",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ChromeAndroidIdentitySurveyWeb"
