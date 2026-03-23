@@ -445,9 +445,21 @@ int TransportClientSocketPool::RequestSocketInternal(
       if (preconnecting && !closed)
         return ERR_PRECONNECT_MAX_SOCKET_LIMIT;
     } else {
-      // We could check if we really have a stalled group here, but it
-      // requires a scan of all groups, so just flip a flag here, and do the
-      // check later.
+      // Checking for a stalled higher layer group here could result in
+      // reentrancy issues, so instead return an error for preconnects and
+      // ERR_IO_PENDING if invoked from another callsite.
+      //
+      // If RequestSocket() sees ERR_IO_PENDING, it will check if it should
+      // trigger an async task to try and close a socket in a higher layered
+      // pool, and then posts a task to do so, to avoid reentrancy issues. All
+      // other callers (other than RequestSockets(), which is only for
+      // preconnects) are only made on already pending requests, which have
+      // already made it through this check.
+      //
+      // This isn't a perfect system, since SpdySessions don't inform this class
+      // when they become idle, to potentially be closed, but it does mean a
+      // reload, at least, will check for any idle SPDY sessions it can close if
+      // stalled.
       request.net_log().AddEvent(
           NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS);
       return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
