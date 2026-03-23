@@ -109,18 +109,13 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
 // cannot be retrieved.
 std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
                                         std::string_view query_selector) {
-  std::optional<int> node_id = GetDOMNodeId(rfh, query_selector);
-  if (!node_id) {
-    return std::nullopt;
-  }
-  std::optional<std::string> document_identifier =
+  ASSIGN_OR_RETURN(int node_id, GetDOMNodeId(rfh, query_selector));
+  ASSIGN_OR_RETURN(
+      std::string document_identifier,
       optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken());
-  if (!document_identifier) {
-    return std::nullopt;
-  }
-  return DomNode{.node_id = *node_id,
-                 .document_identifier = std::move(*document_identifier)};
+          rfh.GetGlobalFrameToken()));
+  return DomNode{.node_id = node_id,
+                 .document_identifier = std::move(document_identifier)};
 }
 
 class MockExecutionEngine : public ExecutionEngine {
