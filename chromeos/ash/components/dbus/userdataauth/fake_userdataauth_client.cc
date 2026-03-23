@@ -94,6 +94,7 @@ constexpr char kCryptohomePublicMountLabel[] = "publicmount";
 // dependencies.
 constexpr char kCryptohomeRecoveryKeyLabel[] = "recovery";
 constexpr char kCryptohomeGaiaKeyLabel[] = "gaia";
+const char kCryptohomeLocalPasswordKeyLabel[] = "local-password";
 
 template <typename ReplyType>
 void SetErrorWrapperToReply(ReplyType& reply, cryptohome::ErrorWrapper error) {
@@ -356,6 +357,12 @@ bool ContainsFakeFactor(
   return it != std::end(factors);
 }
 
+bool ContainsFakeFactorWithLabel(
+    const base::flat_map<std::string, FakeAuthFactor>& factors,
+    std::string auth_factor_label) {
+  return factors.contains(auth_factor_label);
+}
+
 bool AuthInputMatchesFakeFactorType(
     const ::user_data_auth::AuthInput& auth_input,
     const FakeAuthFactor& fake_factor) {
@@ -603,6 +610,20 @@ bool FakeUserDataAuthClient::TestApi::HasPinFactor(
     const cryptohome::AccountIdentifier& account_id) {
   const UserCryptohomeState& user_state = GetUserState(account_id);
   return ContainsFakeFactor<PinFactor>(user_state.auth_factors);
+}
+
+bool FakeUserDataAuthClient::TestApi::HasLocalPasswordFactor(
+    const cryptohome::AccountIdentifier& account_id) {
+  const UserCryptohomeState& user_state = GetUserState(account_id);
+  return ContainsFakeFactorWithLabel(user_state.auth_factors,
+                                     kCryptohomeLocalPasswordKeyLabel);
+}
+
+bool FakeUserDataAuthClient::TestApi::HasGaiaPasswordFactor(
+    const cryptohome::AccountIdentifier& account_id) {
+  const UserCryptohomeState& user_state = GetUserState(account_id);
+  return ContainsFakeFactorWithLabel(user_state.auth_factors,
+                                     kCryptohomeGaiaKeyLabel);
 }
 
 std::pair<std::string, std::string> FakeUserDataAuthClient::TestApi::AddSession(

@@ -154,6 +154,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     bool HasPinFactor(const cryptohome::AccountIdentifier& account_id);
 
+    bool HasGaiaPasswordFactor(const cryptohome::AccountIdentifier& account_id);
+    bool HasLocalPasswordFactor(
+        const cryptohome::AccountIdentifier& account_id);
+
     // Returns {authsession_id, broadcast_id} pair.
     std::pair<std::string, std::string> AddSession(
         const cryptohome::AccountIdentifier& account_id,

@@ -48,6 +48,8 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   void SetPinLocked(const AccountId& user, bool locked);
   void SetPinType(const AccountId& user, bool legacy);
   bool HasPinFactor(const AccountId& user);
+  bool HasLocalPasswordFactor(const AccountId& user);
+  bool HasGaiaPasswordFactor(const AccountId& user);
   void AddRecoveryFactor(const AccountId& user);
   bool HasRecoveryFactor(const AccountId& user);
 

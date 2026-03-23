@@ -175,6 +175,16 @@ bool CryptohomeMixin::HasRecoveryFactor(const AccountId& user) {
       cryptohome::CreateAccountIdentifierFromAccountId(user));
 }
 
+bool CryptohomeMixin::HasLocalPasswordFactor(const AccountId& user) {
+  return TestApi::HasLocalPasswordFactor(
+      cryptohome::CreateAccountIdentifierFromAccountId(user));
+}
+
+bool CryptohomeMixin::HasGaiaPasswordFactor(const AccountId& user) {
+  return TestApi::HasGaiaPasswordFactor(
+      cryptohome::CreateAccountIdentifierFromAccountId(user));
+}
+
 void CryptohomeMixin::SendLegacyFingerprintSuccessScan() {
   CHECK(FakeUserDataAuthClient::TestApi::Get());
   FakeUserDataAuthClient::TestApi::Get()->SendLegacyFPAuthSignal(
