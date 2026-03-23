@@ -101,9 +101,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // enable these optimizations in WebView though they are not fundamentally
   // impossible.
   aw_feature_overrides.DisableFeature(
-      blink::features::kLowLatencyUsageSupportedForCanvas2D);
-  aw_feature_overrides.DisableFeature(
-      blink::features::kLowLatencyUsageSupportedForWebGL);
+      blink::features::kLowLatencyUsageSupportedForCanvas);
 
   // Disable Shared Storage on WebView.
   aw_feature_overrides.DisableFeature(network::features::kSharedStorageAPI);
