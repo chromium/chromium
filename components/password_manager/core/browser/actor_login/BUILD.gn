@@ -10,12 +10,13 @@ assert(!is_ios)
 # All actor_login code should be able to depend on this.
 source_set("common") {
   sources = [
-    "actor_login_permission_service.cc",
     "actor_login_permission_service.h",
     "actor_login_permissions_manager.h",
     "actor_login_quality_logger_interface.h",
     "actor_login_types.cc",
     "actor_login_types.h",
+    "federated_permission.cc",
+    "federated_permission.h",
   ]
 
   deps = [

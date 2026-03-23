@@ -153,9 +153,7 @@ void ActorLoginFederatedCredentialsFetcher::OnFetchComplete(
 
   for (Credential& credential : credentials) {
     for (const FederatedPermission& permission : permissions) {
-      if (credential.federation_detail->account_id ==
-              permission.chosen_account_id &&
-          credential.request_origin == permission.rp_embedder_origin) {
+      if (permission.MatchesFederatedCredential(credential)) {
         credential.has_persistent_permission = true;
         break;
       }
