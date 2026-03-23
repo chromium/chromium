@@ -264,7 +264,12 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   Watchers watchers_;
   Queue watcher_queue_;
   OpenedFiles opened_files_;
-  base::ObserverList<ProvidedFileSystemObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ProvidedFileSystemObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   base::WeakPtrFactory<ProvidedFileSystem> weak_ptr_factory_{this};
 };

@@ -560,7 +560,12 @@ class DriveIntegrationService : public KeyedService,
   std::unique_ptr<internal::ResourceMetadataStorage, util::DestroyHelper>
       metadata_storage_;
 
-  base::ObserverList<Observer, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
