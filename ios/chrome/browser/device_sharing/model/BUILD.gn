@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public/test",
+    "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",
