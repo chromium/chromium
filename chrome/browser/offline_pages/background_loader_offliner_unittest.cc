@@ -219,6 +219,7 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
   ~BackgroundLoaderOfflinerTest() override;
 
   void SetUp() override;
+  void TearDown() override;
 
   TestBackgroundLoaderOffliner* offliner() const { return offliner_.get(); }
   Offliner::CompletionCallback completion_callback() {
@@ -317,6 +318,12 @@ BackgroundLoaderOfflinerTest::BackgroundLoaderOfflinerTest()
       request_status_(Offliner::RequestStatus::UNKNOWN) {}
 
 BackgroundLoaderOfflinerTest::~BackgroundLoaderOfflinerTest() = default;
+
+void BackgroundLoaderOfflinerTest::TearDown() {
+  // Wait for the DeleteSoon tasks posted in ResetState() to complete
+  // before the BrowserContext/Profile is destroyed.
+  PumpLoop();
+}
 
 void BackgroundLoaderOfflinerTest::SetUp() {
   // Set the snapshot controller delay command line switch to short delays.

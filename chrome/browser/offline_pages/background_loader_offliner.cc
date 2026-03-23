@@ -451,7 +451,12 @@ void BackgroundLoaderOffliner::ResetState() {
   is_low_bar_met_ = false;
   did_snapshot_on_last_retry_ = false;
   content::WebContentsObserver::Observe(nullptr);
-  loader_.reset();
+
+  // Delete the `loader_` asynchronously. We don't want to delete it
+  // synchronously when ResetState() is called from CanDownload() as it results
+  // in deleting a caller instance.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(loader_));
 
   for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
     UNSAFE_TODO(stats_[i]).requested = 0;
