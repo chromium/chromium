@@ -2182,6 +2182,18 @@ TEST_F(
                    .IsAutofillHasSeenBnplPrefEnabled());
 }
 
+TEST_F(BnplManagerTest, OnSuggestionsShown_CreditCardFormEventLoggerNotified) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown());
+  bnpl_manager_->OnSuggestionsShown(suggestions, base::DoNothing());
+}
+
 TEST_F(
     BnplManagerTest,
     OnSuggestionsShown_BnplPrefNotUpdatedWhenAiBasedAmountExtractionDisabled) {
