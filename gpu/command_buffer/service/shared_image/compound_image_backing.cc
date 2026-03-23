@@ -1400,12 +1400,14 @@ CompoundImageBacking::ProduceSkiaGanesh(
   access_params.context_state = context_state;
   auto* backing =
       GetOrAllocateBacking(SharedImageAccessStream::kSkia, access_params);
-  if (!backing)
+  if (!backing) {
     return nullptr;
+  }
 
   auto real_rep = backing->ProduceSkiaGanesh(manager, tracker, context_state);
-  if (!real_rep)
+  if (!real_rep) {
     return nullptr;
+  }
 
   auto* gr_context = context_state ? context_state->gr_context() : nullptr;
   return std::make_unique<WrappedSkiaGaneshCompoundImageRepresentation>(
