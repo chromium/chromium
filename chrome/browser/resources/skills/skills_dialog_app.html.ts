@@ -72,11 +72,15 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
             ?error="${this.hasPromptError_()}">
             ${this.isRefineLoading_ ? html`
               <cr-loading-gradient id="instructionsLoader">
-                <svg width="100%" height="90">
+                <svg width="100%" height="175">
                   <clipPath>
                     <rect x="10" y="14" width="90%" height="12" rx="4"></rect>
                     <rect x="10" y="38" width="90%" height="12" rx="4"></rect>
-                    <rect x="10" y="62" width="60%" height="12" rx="4"></rect>
+                    <rect x="10" y="62" width="90%" height="12" rx="4"></rect>
+                    <rect x="10" y="86" width="90%" height="12" rx="4"></rect>
+                    <rect x="10" y="110" width="90%" height="12" rx="4"></rect>
+                    <rect x="10" y="134" width="90%" height="12" rx="4"></rect>
+                    <rect x="10" y="158" width="60%" height="12" rx="4"></rect>
                   </clipPath>
                 </svg>
               </cr-loading-gradient>
