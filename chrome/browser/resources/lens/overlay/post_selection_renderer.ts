@@ -16,6 +16,7 @@ import {getTemplate} from './post_selection_renderer.html.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
 import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
+import type {SelectedRegion} from './selection_overlay_base_handler.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import {toPercent, toPixels} from './values_converter.js';
@@ -27,6 +28,15 @@ export interface PostSelectionBoundingBox {
   left: number;
   width: number;
   height: number;
+}
+
+export interface StaticRegion {
+  id: string;
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+  clipPath: string;
 }
 
 // The target currently being dragged on by the user.
@@ -115,10 +125,22 @@ export class PostSelectionRendererElement extends
         type: Array,
         value: () => ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
       },
-      canvasHeight: Number,
-      canvasWidth: Number,
-      canvasPhysicalHeight: Number,
-      canvasPhysicalWidth: Number,
+      canvasHeight: {
+        type: Number,
+        reflectToAttribute: true,
+      },
+      canvasWidth: {
+        type: Number,
+        reflectToAttribute: true,
+      },
+      canvasPhysicalHeight: {
+        type: Number,
+        reflectToAttribute: true,
+      },
+      canvasPhysicalWidth: {
+        type: Number,
+        reflectToAttribute: true,
+      },
       regionSelectedGlowEnabled: {
         type: Boolean,
         reflectToAttribute: true,
@@ -140,7 +162,32 @@ export class PostSelectionRendererElement extends
         reflectToAttribute: true,
         value: false,
       },
+      multiRegionSelectionEnabled: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableMultiRegionSelection'),
+        reflectToAttribute: true,
+      },
+      staticRegions: {
+        type: Array,
+        value: () => [],
+      },
+      activeRegionId: {
+        type: String,
+        value: '',
+        reflectToAttribute: true,
+      },
+      selectedRegions: {
+        type: Array,
+        value: () => [],
+      },
     };
+  }
+
+  static get observers() {
+    return [
+      'calculateStaticRegions(' +
+          'selectedRegions.*, activeRegionId, multiRegionSelectionEnabled)',
+    ];
   }
 
   private eventTracker_: EventTracker = new EventTracker();
@@ -164,7 +211,13 @@ export class PostSelectionRendererElement extends
   declare private selectionOverlayRect: DOMRect;
   // Whether the background gradient should be hidden.
   declare private backgroundGradientHidden: boolean;
+  declare private multiRegionSelectionEnabled: boolean;
+  declare private staticRegions: StaticRegion[];
+  declare private activeRegionId: string;
+  declare private selectedRegions: SelectedRegion[];
 
+  private currentScreenshot: ImageBitmap|null = null;
+  private renderedCanvasElements_: Set<HTMLCanvasElement> = new Set();
   private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.
   private listenerIds: number[];
@@ -179,7 +232,7 @@ export class PostSelectionRendererElement extends
   private newBoxAnimation: Animation|null = null;
   private animateOnResize = false;
   // Whether to darken the post selection scrim.
-  declare private shouldDarkenScrim;
+  declare private shouldDarkenScrim: boolean;
   // Whether to enable corner sliders for keyboard control.
   declare private cornerSlidersEnabled: boolean;
   // Timeout for calling handleGestureEnd() after a slider change.
@@ -192,11 +245,22 @@ export class PostSelectionRendererElement extends
     super.connectedCallback();
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         (screenshot: ImageBitmap) => {
-          renderScreenshot(this.$.backgroundImageCanvas, screenshot);
+          this.currentScreenshot = screenshot;
+          // renderScreenshot detaches the bitmap, so we create a copy to keep
+          // the original alive for the static region canvases.
+          createImageBitmap(screenshot).then(bmp => {
+            renderScreenshot(this.$.backgroundImageCanvas, bmp);
+          });
+          this.renderStaticRegionCanvases();
         });
     ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
         (screenshot: ImageBitmap) => {
-          renderScreenshot(this.$.backgroundImageCanvas, screenshot);
+          this.currentScreenshot = screenshot;
+          this.renderedCanvasElements_.clear();
+          createImageBitmap(screenshot).then(bmp => {
+            renderScreenshot(this.$.backgroundImageCanvas, bmp);
+          });
+          this.renderStaticRegionCanvases();
         });
     this.eventTracker_.add(
         document, 'render-post-selection',
@@ -227,6 +291,8 @@ export class PostSelectionRendererElement extends
           this.clearRegionSelection.bind(this)),
       this.baseHandler.addSetPostRegionSelectionListener(
           this.setSelection.bind(this)),
+      this.baseHandler.addMultiRegionSelectionListener(
+          this.onMultiRegionSelectionUpdated.bind(this)),
     ];
   }
 
@@ -234,8 +300,101 @@ export class PostSelectionRendererElement extends
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
     this.resizeObserver.unobserve(this);
-    this.listenerIds.forEach(id => assert(this.baseHandler.removeListener(id)));
+    this.listenerIds.forEach(id => {
+      if (id !== -1) {
+        this.baseHandler.removeListener(id);
+      }
+    });
     this.listenerIds = [];
+  }
+
+  private onStaticRegionPointerdown(event: PointerEvent) {
+    const target = event.target as HTMLElement;
+    const id = target.dataset['id'];
+    if (id) {
+      this.dispatchEvent(new CustomEvent(
+          'activate-region', {bubbles: true, composed: true, detail: {id}}));
+      event.stopPropagation();
+    }
+  }
+
+  private onMultiRegionSelectionUpdated(regions: SelectedRegion[]) {
+    this.selectedRegions = regions;
+    this.calculateStaticRegions();
+  }
+
+  private calculateStaticRegions() {
+    if (!this.multiRegionSelectionEnabled) {
+      this.staticRegions = [];
+      return;
+    }
+
+    this.staticRegions =
+        this.selectedRegions.filter(r => r.id !== this.activeRegionId)
+            .map(r => this.selectedRegionToStaticRegion(r));
+
+    this.updateCornerDimensions();
+    // Ensure canvases are rendered for the new regions. We use
+    // requestAnimationFrame to allow the dom-repeat to stamp the new canvases
+    // before we try to draw to them.
+    requestAnimationFrame(() => {
+      this.renderStaticRegionCanvases();
+    });
+  }
+
+  private selectedRegionToStaticRegion(region: SelectedRegion): StaticRegion {
+    const widthPercent = region.region.width * 100;
+    const heightPercent = region.region.height * 100;
+    const leftPercent = (region.region.x - region.region.width / 2) * 100;
+    const topPercent = (region.region.y - region.region.height / 2) * 100;
+
+    const rightOffset = 100 - (leftPercent + widthPercent);
+    const bottomOffset = 100 - (topPercent + heightPercent);
+
+    const cornerWidth = 'var(--post-selection-corner-width)';
+    const cornerRadius = 'var(--post-selection-cutout-corner-radius, 8px)';
+
+    return {
+      id: region.id,
+      left: `calc(${leftPercent}% - ${cornerWidth})`,
+      top: `calc(${topPercent}% - ${cornerWidth})`,
+      width: `calc(${widthPercent}% + (2 * ${cornerWidth}))`,
+      height: `calc(${heightPercent}% + (2 * ${cornerWidth}))`,
+      clipPath: `inset(${topPercent}% ${rightOffset}% ${bottomOffset}% ${
+          leftPercent}% round ${cornerRadius})`,
+    };
+  }
+
+  private renderStaticRegionCanvases() {
+    if (!this.multiRegionSelectionEnabled || !this.currentScreenshot) {
+      return;
+    }
+
+    const canvases = this.shadowRoot!.querySelectorAll<HTMLCanvasElement>(
+        '.static-region-cutout');
+
+    // Prune any canvases that were removed from the DOM to prevent memory
+    // leaks.
+    const currentCanvasSet = new Set(canvases);
+    for (const canvas of this.renderedCanvasElements_) {
+      if (!currentCanvasSet.has(canvas)) {
+        this.renderedCanvasElements_.delete(canvas);
+      }
+    }
+
+    for (const canvas of canvases) {
+      if (!this.renderedCanvasElements_.has(canvas)) {
+        // Draw synchronously using a 2D context to avoid flickering and bitmap
+        // detachment.
+        canvas.width = this.currentScreenshot.width;
+        canvas.height = this.currentScreenshot.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(this.currentScreenshot, 0, 0);
+          this.renderedCanvasElements_.add(canvas);
+        }
+      }
+    }
   }
 
   setCanvasSizeTo(width: number, height: number) {

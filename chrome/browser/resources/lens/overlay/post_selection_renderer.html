@@ -160,8 +160,50 @@
     position: absolute;
     opacity: 0;
   }
+
+  .static-region {
+    position: absolute;
+    /* Uses the exact same Houdini paint worklet as the active Lens region.
+    This ensures the borders and corner handles look visually identical. */
+    background-image: paint(post-selection);
+    forced-color-adjust: none;
+    /* Enable pointer events so the user can click this static box to
+       re-activate it. */
+    pointer-events: auto;
+    z-index: 5;
+    cursor: pointer;
+  }
+
+  .static-region-cutout {
+    position: absolute;
+    /* It covers the entire overlay area. */
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    pointer-events: none;
+    object-fit: contain;
+  }
 </style>
 <div id="postSelectionScrim" style$="[[getScrimStyleProperties(height, width)]]"></div>
+<template is="dom-if" if="[[multiRegionSelectionEnabled]]">
+  <template is="dom-repeat" items="[[staticRegions]]">
+    <canvas
+      class="static-region-cutout"
+      data-id$="[[item.id]]"
+      height="[[canvasPhysicalHeight]]"
+      width="[[canvasPhysicalWidth]]"
+      style$="clip-path: [[item.clipPath]]; height: [[canvasHeight]]px;
+              width: [[canvasWidth]]px;">
+    </canvas>
+    <div class="static-region"
+        data-id$="[[item.id]]"
+        on-pointerdown="onStaticRegionPointerdown"
+        style$="left: [[item.left]]; top: [[item.top]];
+                width: [[item.width]]; height: [[item.height]];">
+    </div>
+  </template>
+</template>
 <div hidden$="[[!hasSelection(height, width)]]">
   <canvas
     id="backgroundImageCanvas"

@@ -31,6 +31,8 @@ export function getHtml(this: SelectionOverlayElementElement) {
         <post-selection-renderer id="postSelectionRenderer"
             .selectionOverlayRect="${this.selectionOverlayRect}"
             .regionSelectedGlowEnabled="${this.enableRegionSelectedGlow}"
+            .activeRegionId="${this.activeRegionId}"
+            @activate-region="${this.onActivateRegion}"
             background-gradient-hidden>
         </post-selection-renderer>
         <region-selection id="regionSelectionLayer" .theme="${this.theme}"
