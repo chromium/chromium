@@ -23,8 +23,6 @@ static_library("crosapi") {
     "document_scan_ash.h",
     "document_scan_ash_type_converters.cc",
     "document_scan_ash_type_converters.h",
-    "files_app_launcher.cc",
-    "files_app_launcher.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
     "primary_profile_creation_waiter.cc",
