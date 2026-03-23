@@ -211,11 +211,12 @@ class WindowDeletionWaiter : aura::WindowObserver {
   // WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     window->RemoveObserver(this);
+    window_ = nullptr;
     run_loop_.QuitWhenIdle();
   }
 
   base::RunLoop run_loop_;
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
