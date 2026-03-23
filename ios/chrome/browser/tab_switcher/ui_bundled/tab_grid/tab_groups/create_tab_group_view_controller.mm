@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_mutator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_gradient_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_snapshots_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
@@ -40,6 +41,7 @@ const CGFloat kDotAndFieldContainerMargin = 24;
 const CGFloat kDotTitleSeparationMargin = 12;
 const CGFloat kContainersMaxWidth = 400;
 const CGFloat kBackgroundAlpha = 0.7;
+const CGFloat kColoredBackgroundAlpha = 0.2;
 const CGFloat kCompactButtonTopMargin = 12;
 const CGFloat kDotAndFieldContainerWidthPercentage = 0.5;
 
@@ -149,6 +151,10 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   // Scrollview that containts color selection buttons.
   UIScrollView* _colorsScrollView;
+  // Container for the view's background.
+  TabGroupGradientView* _containerBackground;
+  // Container for the dot and title's textField.
+  UIView* _dotAndFieldContainer;
 }
 
 - (instancetype)initWithEditMode:(BOOL)editMode
@@ -491,6 +497,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   } else {
     [_dotView setBackgroundColor:tab_groups::ColorForTabGroupColorId(colorID)];
   }
+  [self updateSurfaceColors];
 }
 
 // Creates all the available color buttons.
@@ -649,8 +656,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
 // Configures the view and all subviews when there is enough space.
 - (void)createConfigurations {
-  UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
   UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
+  _dotAndFieldContainer = [self configuredDotAndFieldContainer];
   _snapshotsContainer = [self configuredSnapshotsContainer];
   _colorsScrollView = [self listOfColorView];
   _creationButton = [self configuredCreateGroupButtonCompacted:NO];
@@ -658,10 +665,15 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   _creationButtonCompact = [self configuredCreateGroupButtonCompacted:YES];
   _cancelButtonCompact = [self configuredCancelButtonCompacted:YES];
 
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    _containerBackground = [self configuredBackground];
+    [self.view addSubview:_containerBackground];
+  }
+
   UIView* container = [[UIView alloc] init];
   container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [container addSubview:dotAndFieldContainer];
+  [container addSubview:_dotAndFieldContainer];
   [container addSubview:_snapshotsContainer];
   [container addLayoutGuide:snapshotsContainerLayoutGuide];
   [container addSubview:_colorsScrollView];
@@ -682,46 +694,46 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   snapshotLayoutGuideConstraint.priority = UILayoutPriorityDefaultHigh + 1;
 
   _regularConstraints = @[
-    [dotAndFieldContainer.leadingAnchor
+    [_dotAndFieldContainer.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:container.leadingAnchor
                                     constant:kHorizontalMargin],
-    [dotAndFieldContainer.trailingAnchor
+    [_dotAndFieldContainer.trailingAnchor
         constraintLessThanOrEqualToAnchor:container.trailingAnchor
                                  constant:-kHorizontalMargin],
     [_creationButton.widthAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
+        constraintEqualToAnchor:_dotAndFieldContainer.widthAnchor],
     [_cancelButton.widthAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
+        constraintEqualToAnchor:_dotAndFieldContainer.widthAnchor],
     [_cancelButton.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
                                                constant:-kButtonsMargin],
   ];
 
   _compactConstraints = @[
-    [dotAndFieldContainer.widthAnchor
+    [_dotAndFieldContainer.widthAnchor
         constraintLessThanOrEqualToAnchor:self.view.widthAnchor
                                multiplier:kDotAndFieldContainerWidthPercentage],
     [_cancelButtonCompact.trailingAnchor
-        constraintLessThanOrEqualToAnchor:dotAndFieldContainer.leadingAnchor],
+        constraintLessThanOrEqualToAnchor:_dotAndFieldContainer.leadingAnchor],
     [_creationButtonCompact.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:dotAndFieldContainer
+        constraintGreaterThanOrEqualToAnchor:_dotAndFieldContainer
                                                  .trailingAnchor],
     [_colorsScrollView.bottomAnchor
         constraintEqualToAnchor:container.bottomAnchor
                        constant:-kColorListBottomMarginCompact],
   ];
 
-  NSLayoutConstraint* dotAndFieldWidth = [dotAndFieldContainer.widthAnchor
+  NSLayoutConstraint* dotAndFieldWidth = [_dotAndFieldContainer.widthAnchor
       constraintEqualToConstant:kContainersMaxWidth];
   dotAndFieldWidth.priority = UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
-    [dotAndFieldContainer.topAnchor
+    [_dotAndFieldContainer.topAnchor
         constraintEqualToAnchor:container.topAnchor
                        constant:kDotAndFieldContainerMargin],
-    [dotAndFieldContainer.heightAnchor
+    [_dotAndFieldContainer.heightAnchor
         constraintGreaterThanOrEqualToConstant:kButtonsHeight],
     dotAndFieldWidth,
-    [dotAndFieldContainer.centerXAnchor
+    [_dotAndFieldContainer.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [_colorsScrollView.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:container.leadingAnchor],
@@ -762,10 +774,10 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     [snapshotsContainerLayoutGuide.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [snapshotsContainerLayoutGuide.topAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
+        constraintEqualToAnchor:_dotAndFieldContainer.bottomAnchor
                        constant:kSnapshotViewVerticalMargin],
     [snapshotsContainerLayoutGuide.widthAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
+        constraintEqualToAnchor:_dotAndFieldContainer.widthAnchor],
     snapshotLayoutGuideConstraint,
 
     [_snapshotsContainer.centerXAnchor
@@ -780,6 +792,10 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                                               .widthAnchor],
     keyboardConstraint,
   ]];
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    AddSameConstraints(self.view, _containerBackground);
+    [self updateSurfaceColors];
+  }
 }
 
 // Returns the view which contains all the selected tabs' snapshot which will be
@@ -864,6 +880,31 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   } else {
     colorScrollView.contentInset = UIEdgeInsetsZero;
   }
+}
+
+// Updates the title, snapshot, and view background colors.
+- (void)updateSurfaceColors {
+  tab_groups::TabGroupColorId colorID =
+      static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
+
+  UIColor* titleAndSnapshotBackgroundColor = [[TabGroupColorPalette
+      commonColor:colorID] colorWithAlphaComponent:kColoredBackgroundAlpha];
+  _snapshotsContainer.backgroundColor = titleAndSnapshotBackgroundColor;
+  _dotAndFieldContainer.backgroundColor = titleAndSnapshotBackgroundColor;
+
+  [_containerBackground
+      setColors:[TabGroupColorPalette gradientBackgroundColors:colorID]];
+}
+
+// Returns the background with a gradient.
+- (TabGroupGradientView*)configuredBackground {
+  tab_groups::TabGroupColorId colorID =
+      static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
+  TabGroupGradientView* background = [[TabGroupGradientView alloc]
+      initWithColors:[TabGroupColorPalette gradientBackgroundColors:colorID]];
+  background.translatesAutoresizingMaskIntoConstraints = NO;
+
+  return background;
 }
 
 #pragma mark - TabGroupCreationConsumer

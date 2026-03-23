@@ -14,26 +14,26 @@
   UIColor* _endColor;
 }
 
-#pragma mark - Public
-
-+ (Class)layerClass {
-  return [GradientLayer class];
-}
-
-- (instancetype)initWithStartColor:(UIColor*)startColor
-                          endColor:(UIColor*)endColor
-                        startPoint:(CGPoint)startPoint
-                          endPoint:(CGPoint)endPoint
-                      gradientType:(GradientLayerType)gradientType {
+// Private initializer used to centralize the configuration of the gradient
+// layer and the registration for trait changes.
+- (instancetype)initWithColors:(NSArray*)colors
+                     locations:(NSArray*)locations
+                    startPoint:(CGPoint)startPoint
+                      endPoint:(CGPoint)endPoint
+                  gradientType:(GradientLayerType)gradientType {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    _startColor = startColor;
-    _endColor = endColor;
-    self.gradientLayer.gradientType = gradientType;
+    // kEaseInOut and kEaseInThenLinear can't work with more than 2 colors.
+    if (colors.count > 2 || locations.count > 2) {
+      CHECK(gradientType == GradientLayerType::kLinear);
+    }
+
     self.gradientLayer.startPoint = startPoint;
     self.gradientLayer.endPoint = endPoint;
+    self.gradientLayer.gradientType = gradientType;
+    self.gradientLayer.locations = locations;
+
     self.userInteractionEnabled = NO;
-    [self updateColors];
 
     NSArray<UITrait>* traits = @[
       UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
@@ -50,13 +50,55 @@
   return self;
 }
 
+#pragma mark - Public
+
++ (Class)layerClass {
+  return [GradientLayer class];
+}
+
+- (instancetype)initWithStartColor:(UIColor*)startColor
+                          endColor:(UIColor*)endColor
+                        startPoint:(CGPoint)startPoint
+                          endPoint:(CGPoint)endPoint
+                      gradientType:(GradientLayerType)gradientType {
+  self = [self initWithColors:@[ startColor, endColor ]
+                    locations:nil
+                   startPoint:startPoint
+                     endPoint:endPoint
+                 gradientType:gradientType];
+  if (self) {
+    [self setStartColor:startColor endColor:endColor];
+  }
+  return self;
+}
+
 - (instancetype)initWithTopColor:(UIColor*)topColor
                      bottomColor:(UIColor*)bottomColor {
-  return [self initWithStartColor:topColor
-                         endColor:bottomColor
-                       startPoint:CGPointMake(0.5, 0)
-                         endPoint:CGPointMake(0.5, 1)
-                     gradientType:GradientLayerType::kLinear];
+  self = [self initWithColors:@[ topColor, bottomColor ]
+                    locations:nil
+                   startPoint:CGPointMake(0.5, 0)
+                     endPoint:CGPointMake(0.5, 1)
+                 gradientType:GradientLayerType::kLinear];
+  if (self) {
+    [self setStartColor:topColor endColor:bottomColor];
+  }
+  return self;
+}
+
+- (instancetype)initWithMultipleColors:(NSArray*)colors
+                             locations:(NSArray*)locations
+                            startPoint:(CGPoint)startPoint
+                              endPoint:(CGPoint)endPoint {
+  self = [self initWithColors:colors
+                    locations:locations
+                   startPoint:startPoint
+                     endPoint:endPoint
+                 gradientType:GradientLayerType::kLinear];
+
+  if (self) {
+    [self setColors:colors];
+  }
+  return self;
 }
 
 - (GradientLayer*)gradientLayer {
@@ -67,6 +109,16 @@
   _startColor = startColor;
   _endColor = endColor;
   [self updateColors];
+}
+
+- (void)setColors:(NSArray<UIColor*>*)colors {
+  NSMutableArray* cgColors = [NSMutableArray arrayWithCapacity:colors.count];
+
+  for (UIColor* color in colors) {
+    [cgColors addObject:(id)color.CGColor];
+  }
+
+  self.gradientLayer.colors = cgColors;
 }
 
 #pragma mark - Private

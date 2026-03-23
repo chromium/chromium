@@ -20,18 +20,28 @@
                           endColor:(UIColor*)endColor
                         startPoint:(CGPoint)startPoint
                           endPoint:(CGPoint)endPoint
-                      gradientType:(GradientLayerType)gradientType
-    NS_DESIGNATED_INITIALIZER;
+                      gradientType:(GradientLayerType)gradientType;
 
 // Initializes the view with a vertical gradient.
 - (instancetype)initWithTopColor:(UIColor*)topColor
                      bottomColor:(UIColor*)bottomColor;
+
+// Initializes the view with a vertical gradient, supporting two or more colors
+// with custom stop locations.
+- (instancetype)initWithMultipleColors:(NSArray*)colors
+                             locations:(NSArray*)locations
+                            startPoint:(CGPoint)startPoint
+                              endPoint:(CGPoint)endPoint;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Updates the colors used in the gradient.
 - (void)setStartColor:(UIColor*)startColor endColor:(UIColor*)endColor;
+
+// Updates the colors used in the gradient, must be called when there is more
+// than 2 colors.
+- (void)setColors:(NSArray<UIColor*>*)colors;
 
 @end
 
