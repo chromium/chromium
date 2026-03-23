@@ -20,7 +20,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -28,20 +27,15 @@
 #include "base/files/safe_base_name.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/nix/xdg_util.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -53,7 +47,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/version_info.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -100,47 +93,8 @@ std::string GetFileContents(GKeyFile* key_file) {
 }
 #endif
 
-// Utility function to get the path to the version of a script shipped with
-// Chrome. |script| gives the name of the script. |chrome_version| returns the
-// path to the Chrome version of the script, and the return value of the
-// function is true if the function is successful and the Chrome version is
-// not the script found on the PATH.
-bool GetChromeVersionOfScript(const std::string& script,
-                              std::string* chrome_version) {
-  // Get the path to the Chrome version.
-  base::FilePath chrome_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &chrome_dir))
-    return false;
-
-  base::FilePath chrome_version_path = chrome_dir.Append(script);
-  *chrome_version = chrome_version_path.value();
-
-  // Check if this is different to the one on path.
-  std::vector<std::string> argv;
-  argv.push_back("which");
-  argv.push_back(script);
-  std::string path_version;
-  if (base::GetAppOutput(base::CommandLine(argv), &path_version)) {
-    // Remove trailing newline
-    path_version.erase(path_version.length() - 1, 1);
-    base::FilePath path_version_path(path_version);
-    return (chrome_version_path != path_version_path);
-  }
-  return false;
-}
-
-// Value returned by xdg-settings if it can't understand our request.
-const int EXIT_XDG_SETTINGS_SYNTAX_ERROR = 1;
-
 // We delegate the difficulty of setting the default browser and default url
 // scheme handler in Linux desktop environments to an xdg utility, xdg-settings.
-
-// When calling this script we first try to use the script on PATH. If that
-// fails we then try to use the script that we have included. This gives
-// scripts on the system priority over ours, as distribution vendors may have
-// tweaked the script, but still allows our copy to be used if the script on the
-// system fails, as the system copy may be missing capabilities of the Chrome
-// copy.
 
 // If |scheme| is empty this function sets Chrome as the default browser,
 // otherwise it sets Chrome as the default handler application for |scheme|.
@@ -163,11 +117,6 @@ bool SetDefaultWebClient(const std::string& scheme) {
 
   int exit_code;
   bool ran_ok = LaunchXdgUtility(argv, &exit_code);
-  if (ran_ok && exit_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
-    if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
-      ran_ok = LaunchXdgUtility(argv, &exit_code);
-    }
-  }
 
   return ran_ok && exit_code == EXIT_SUCCESS;
 #endif
@@ -201,12 +150,6 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
   int success_code;
   bool ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
                                                &success_code);
-  if (ran_ok && success_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
-    if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
-      ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
-                                              &success_code);
-    }
-  }
 
   if (!ran_ok || success_code != EXIT_SUCCESS) {
     // xdg-settings failed: we can't determine or set the default browser.
@@ -281,7 +224,6 @@ std::string QuoteCommandLineForDesktopFileExec(
 
 #if defined(USE_GLIB)
 const char kDesktopEntry[] = "Desktop Entry";
-const char kXdgOpenShebang[] = "#!/usr/bin/env xdg-open";
 
 void SetActionsForDesktopApplication(
     const base::CommandLine& command_line,
@@ -632,10 +574,6 @@ std::string GetDesktopFileContentsForCommand(
     std::string_view extra_mime_types,
     std::set<web_app::DesktopActionInfo> action_info) {
 #if defined(USE_GLIB)
-  // Although not required by the spec, Nautilus on Ubuntu Karmic creates its
-  // launchers with an xdg-open shebang. Follow that convention.
-  std::string output_buffer = std::string(kXdgOpenShebang) + "\n";
-
   // See http://standards.freedesktop.org/desktop-entry-spec/latest/
   GKeyFile* key_file = g_key_file_new();
 
@@ -709,7 +647,7 @@ std::string GetDesktopFileContentsForCommand(
   SetActionsForDesktopApplication(command_line, key_file,
                                   std::move(action_info));
 
-  output_buffer += GetFileContents(key_file);
+  std::string output_buffer = GetFileContents(key_file);
 
   base::ReplaceSubstringsAfterOffset(&output_buffer, 0, "@@URI_SCHEME@@",
                                      shell_integration::GetDirectLaunchUrlScheme());
@@ -736,10 +674,6 @@ std::string GetDesktopFileContentsForUrlShortcut(
   base::CommandLine command_line =
       shell_integration::CommandLineArgsForUrlShortcut(chrome_exe_path,
                                                        profile_path, url);
-
-  // Although not required by the spec, Nautilus on Ubuntu Karmic creates its
-  // launchers with an xdg-open shebang. Follow that convention.
-  std::string output_buffer = std::string(kXdgOpenShebang) + "\n";
 
   // See http://standards.freedesktop.org/desktop-entry-spec/latest/
   GKeyFile* key_file = g_key_file_new();
@@ -770,7 +704,7 @@ std::string GetDesktopFileContentsForUrlShortcut(
       IDS_DESKTOP_SHORTCUT_COMMENT, base::UTF8ToUTF16(url.spec()));
   g_key_file_set_string(key_file, kDesktopEntry, "Comment", comment.c_str());
 
-  output_buffer += GetFileContents(key_file);
+  std::string output_buffer = GetFileContents(key_file);
 
   g_key_file_free(key_file);
   return output_buffer;

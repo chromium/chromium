@@ -285,7 +285,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       // Real-world case.
       {"http://gmail.com", "GMail", "chrome-http__gmail.com", "", "", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -298,7 +297,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       // Make sure that empty icons are replaced by the chrome icon.
       {"http://gmail.com", "GMail", "", "", "", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -316,7 +314,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"http://gmail.com", "GMail", "chrome-http__gmail.com",
        "Graphics;Education;", "", true,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -332,7 +329,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"http://evil.com/evil --join-the-b0tnet", "Ownz0red\nExec=rm -rf /",
        "chrome-http__evil.com_evil", "", "", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -345,7 +341,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"http://evil.com/evil; rm -rf /; \"; rm -rf $HOME >ownz0red",
        "Innocent Title", "chrome-http__evil.com_evil", "", "", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -363,7 +358,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"http://evil.com/evil | cat `echo ownz0red` >/dev/null",
        "Innocent Title", "chrome-http__evil.com_evil", "", "", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -379,7 +373,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"https://paint.app", "Paint", "chrome-https__paint.app", "Image",
        "image/png;image/jpg", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -396,7 +389,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"https://paint.app", "Evil Paint", "chrome-https__paint.app", "Image",
        "image/png\nExec=rm -rf /", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -411,7 +403,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
       {"https://test.app", "Test App", "chrome-https__test.app", "App",
        "image/png;image/jpeg", false,
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -468,7 +459,6 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
                                       GURL("https://example.com/action%205")),
        },
 
-       "#!/usr/bin/env xdg-open\n"
        "[Desktop Entry]\n"
        "Version=1.0\n"
        "Terminal=false\n"
@@ -668,7 +658,6 @@ TEST(ShellIntegrationTest, WmClass) {
 
 TEST(ShellIntegrationTest, GetDesktopEntryStringValueFromFromDesktopFile) {
   const char* const kDesktopFileContents =
-      "#!/usr/bin/env xdg-open\n"
       "[Desktop Entry]\n"
       "Version=1.0\n"
       "Terminal=false\n"

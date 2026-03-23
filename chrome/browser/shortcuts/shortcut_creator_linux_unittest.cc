@@ -130,7 +130,6 @@ TEST_F(ShortcutCreatorLinuxTest, ShortcutCreatedWithCorrectFile) {
   ASSERT_TRUE(base::ReadFileToString(desktop_file, &file));
 
   std::string expected_file_prefix = R"(
-      #!/usr/bin/env xdg-open
       [Desktop Entry]
       Version=1.0
       Type=Application
