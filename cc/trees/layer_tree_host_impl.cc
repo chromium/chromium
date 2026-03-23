@@ -2650,8 +2650,8 @@ void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
   client_->OnCanDrawStateChanged(CanDraw());
 }
 
-TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects() {
-  TrackedElementRects rects;
+viz::TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects() {
+  viz::TrackedElementRects rects;
   // Get the drawable content rect of the root surface. This will be used to
   // determine if a clip_rect is effectively the full viewport and can be
   // omitted.
@@ -2664,7 +2664,7 @@ TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects() {
     for (const auto& [feature, tracked_element_list] :
          *layer->tracked_element_rects()) {
       for (const auto& rect_data : tracked_element_list) {
-        TrackedElementRect transformed_rect = rect_data;
+        viz::TrackedElementRect transformed_rect = rect_data;
         gfx::Rect visible_layer_rect =
             layer->draw_properties().visible_layer_rect;
         visible_layer_rect.Intersect(rect_data.visible_bounds);

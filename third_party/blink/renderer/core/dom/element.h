@@ -75,15 +75,15 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace cc {
-enum class TrackedElementFeature;
-}  // namespace cc
-
 namespace gfx {
 class QuadF;
 class RectF;
 class Vector2dF;
 }  // namespace gfx
+
+namespace viz {
+enum class TrackedElementFeature;
+}  // namespace viz
 
 namespace blink {
 
@@ -1001,17 +1001,17 @@ class CORE_EXPORT Element : public ContainerNode {
   // Associates the element with a TrackedElementSubRect, which is the object
   // internally backing a TrackedElement.
   // This method may be called at most once per feature.
-  void SetTrackedElementSubRect(cc::TrackedElementFeature feature,
+  void SetTrackedElementSubRect(viz::TrackedElementFeature feature,
                                 const TrackedElementSubRect& rect);
 
   // If SetTrackedElementSubRect() was previously called on `this` for
   // `feature`, returns the rect which it previously provided. Otherwise,
   // returns a nullptr.
   const TrackedElementSubRect* GetTrackedElementSubRect(
-      cc::TrackedElementFeature feature) const;
+      viz::TrackedElementFeature feature) const;
 
   // Clears the TrackedElementSubRect associated with the element for `feature`.
-  void ClearTrackedElementSubRect(cc::TrackedElementFeature feature);
+  void ClearTrackedElementSubRect(viz::TrackedElementFeature feature);
 
   // Returns a map that contains all the TrackedElementSubRects set on `this`.
   // Returns a nullptr if no TrackedElementSubRects were set.

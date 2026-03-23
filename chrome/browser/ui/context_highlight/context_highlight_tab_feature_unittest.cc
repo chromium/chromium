@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 
 #include "base/token.h"
-#include "cc/trees/tracked_element_rects.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/render_widget_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,18 +51,18 @@ TEST_F(ContextHighlightTabFeatureTest, CachedRectsUpdated) {
   auto feature = std::make_unique<ContextHighlightTabFeature>(tab);
 
   // Initially no cached rects.
-  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
+  EXPECT_EQ(feature->latest_rects(), viz::TrackedElementRects());
 
   // Test update with empty rects.
-  feature->OnTrackedElementRectsChanged(cc::TrackedElementRects(), 1.0f);
-  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
+  feature->OnTrackedElementRectsChanged(viz::TrackedElementRects(), 1.0f);
+  EXPECT_EQ(feature->latest_rects(), viz::TrackedElementRects());
 
   // Simulate rects change.
-  cc::TrackedElementRects rects;
+  viz::TrackedElementRects rects;
   base::Token id(1, 2);
-  cc::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
-  cc::TrackedElementFeature tracked_element_feature =
-      static_cast<cc::TrackedElementFeature>(
+  viz::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
+  viz::TrackedElementFeature tracked_element_feature =
+      static_cast<viz::TrackedElementFeature>(
           TrackedElementFeature::kAIHighlight);
   rects.insert({tracked_element_feature, {data}});
   float scale = 1.5f;
@@ -88,11 +88,11 @@ TEST_F(ContextHighlightTabFeatureTest, RectsResetOnDiscard) {
   auto feature = std::make_unique<ContextHighlightTabFeature>(tab);
 
   // Set some rects.
-  cc::TrackedElementRects rects;
+  viz::TrackedElementRects rects;
   base::Token id(1, 2);
-  cc::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
-  cc::TrackedElementFeature tracked_element_feature =
-      static_cast<cc::TrackedElementFeature>(
+  viz::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
+  viz::TrackedElementFeature tracked_element_feature =
+      static_cast<viz::TrackedElementFeature>(
           TrackedElementFeature::kAIHighlight);
   rects.insert({tracked_element_feature, {data}});
   feature->OnTrackedElementRectsChanged(rects, 1.0f);
@@ -102,7 +102,7 @@ TEST_F(ContextHighlightTabFeatureTest, RectsResetOnDiscard) {
   discard_callback.Run(&tab, web_contents(), nullptr);
 
   // Rects should be reset.
-  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
+  EXPECT_EQ(feature->latest_rects(), viz::TrackedElementRects());
 }
 
 }  // namespace tabs

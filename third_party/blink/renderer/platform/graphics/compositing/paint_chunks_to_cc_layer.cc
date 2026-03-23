@@ -1238,7 +1238,7 @@ class LayerPropertiesUpdater {
 #endif
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
-  cc::TrackedElementRects tracked_element_rects_;
+  viz::TrackedElementRects tracked_element_rects_;
 
   // Top-level (i.e., non-nested) non-composited scrolls. Nested non-composited
   // scrollers will force the containing top non-composited scroller to hit test
@@ -1562,7 +1562,7 @@ void LayerPropertiesUpdater::UpdateTrackedElementRects(
     for (const auto& element_rect : element_rects) {
       gfx::Rect rect =
           chunk_to_layer_mapper_.MapVisualRect(element_rect.bounds);
-      cc::TrackedElementRect rect_data(element_rect.id.value(), rect);
+      viz::TrackedElementRect rect_data(element_rect.id.value(), rect);
       tracked_element_rects_[feature].push_back(std::move(rect_data));
     }
   }

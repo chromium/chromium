@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
-#include "cc/trees/tracked_element_rects.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -251,7 +251,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementDiv) {
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature =
+      static_cast<viz::TrackedElementFeature>(1);
   target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
@@ -283,7 +284,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanInlineBox) {
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature =
+      static_cast<viz::TrackedElementFeature>(1);
   target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
@@ -322,7 +324,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanShouldForceInlineBox) {
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature =
+      static_cast<viz::TrackedElementFeature>(1);
   target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
@@ -355,7 +358,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
       TrackedElementSubRect::SubRect{
           gfx::Rect(10, 10, 20, 20),
           TrackedElementSubRect::SubRect::Type::kIntersectWithElementRect});
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature =
+      static_cast<viz::TrackedElementFeature>(1);
   target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
@@ -389,7 +393,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
       TrackedElementSubRect::SubRect{
           gfx::Rect(-10, -10, 100, 100),
           TrackedElementSubRect::SubRect::Type::kNoIntersection});
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature =
+      static_cast<viz::TrackedElementFeature>(1);
   target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 
 using ::page_content_annotations::TrackedElementFeature;
 
@@ -38,10 +39,10 @@ void ContextHighlightWindowFeature::CheckAndUpdateTrackedElementRects() {
 }
 
 void ContextHighlightWindowFeature::OnTrackedElementRectsChanged(
-    const cc::TrackedElementRects& rects,
+    const viz::TrackedElementRects& rects,
     float device_scale_factor) {
   // View is created lazyly
-  const auto kAIHighlightFeature = static_cast<cc::TrackedElementFeature>(
+  const auto kAIHighlightFeature = static_cast<viz::TrackedElementFeature>(
       TrackedElementFeature::kAIHighlight);
   bool has_highlight_rects = rects.contains(kAIHighlightFeature) &&
                              !rects.at(kAIHighlightFeature).empty();

@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace cc {
+namespace viz {
 enum class TrackedElementFeature;
-}  // namespace cc
+}  // namespace viz
 
 namespace blink {
 
@@ -66,7 +66,7 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
 // Multiple features can track the same element, so this is a map of feature to
 // the tracked element data for that feature.
 using TrackedElementSubRects =
-    base::flat_map<cc::TrackedElementFeature, TrackedElementSubRect>;
+    base::flat_map<viz::TrackedElementFeature, TrackedElementSubRect>;
 
 // Represents the data associated with a tracked element. This includes the
 // id of the element, the bounds of the element in screen space, and other
@@ -92,7 +92,7 @@ struct PLATFORM_EXPORT TrackedElementRect {
 // the HTML element in screen space.
 struct PLATFORM_EXPORT TrackedElementRects
     : public GarbageCollected<TrackedElementRects> {
-  base::flat_map<cc::TrackedElementFeature, std::vector<TrackedElementRect>>
+  base::flat_map<viz::TrackedElementFeature, std::vector<TrackedElementRect>>
       map;
 
   bool operator==(const TrackedElementRects& rhs) const {

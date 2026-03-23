@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/tracked_element_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -45,12 +46,12 @@ class ContextHighlightTabFeature : public content::TrackedElementObserver,
   // Returns the current RenderWidgetHost for the tab's WebContents.
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
-  const cc::TrackedElementRects& latest_rects() const { return latest_rects_; }
+  const viz::TrackedElementRects& latest_rects() const { return latest_rects_; }
 
   float latest_scale_factor() const { return latest_scale_factor_; }
 
   // content::TrackedElementObserver:
-  void OnTrackedElementRectsChanged(const cc::TrackedElementRects& rects,
+  void OnTrackedElementRectsChanged(const viz::TrackedElementRects& rects,
                                     float device_scale_factor) override;
 
   // content::WebContentsObserver:
@@ -83,7 +84,7 @@ class ContextHighlightTabFeature : public content::TrackedElementObserver,
   base::CallbackListSubscription discard_subscription_;
   base::CallbackListSubscription tab_activate_subscription_;
 
-  cc::TrackedElementRects latest_rects_;
+  viz::TrackedElementRects latest_rects_;
   float latest_scale_factor_ = 1.0f;
 
   ui::ScopedUnownedUserData<ContextHighlightTabFeature> scoped_data_;

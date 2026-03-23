@@ -5,8 +5,8 @@
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "cc/mojom/tracked_element_rects_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"

@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -27,12 +28,12 @@ ContextHighlightOverlayView::ContextHighlightOverlayView() {
 ContextHighlightOverlayView::~ContextHighlightOverlayView() = default;
 
 void ContextHighlightOverlayView::UpdateHighlightRects(
-    const cc::TrackedElementRects& rects,
+    const viz::TrackedElementRects& rects,
     float device_scale_factor) {
   highlight_rects_.clear();
   float dip_scale = 1.0 / device_scale_factor;
 
-  const auto kAIHighlightFeature = static_cast<cc::TrackedElementFeature>(
+  const auto kAIHighlightFeature = static_cast<viz::TrackedElementFeature>(
       TrackedElementFeature::kAIHighlight);
   if (rects.contains(kAIHighlightFeature)) {
     for (const auto& rect : rects.at(kAIHighlightFeature)) {

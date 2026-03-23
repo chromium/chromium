@@ -698,12 +698,12 @@ _CONFIG = [
             'cc::EventListenerClass',
             'cc::EventListenerProperties',
             'cc::HitTestOpaqueness',
-            'cc::TrackedElementFeature',
             'cc::WebVitalMetricType',
             'cc::HORIZONTAL',
             'cc::THUMB',
             'cc::TRACK_BUTTONS_TICKMARKS',
             'cc::VERTICAL',
+            'viz::TrackedElementFeature',
 
             # Animation
             "cc::PropertyChangeForcesCommitCriteria",

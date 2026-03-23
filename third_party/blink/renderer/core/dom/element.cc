@@ -7172,7 +7172,7 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
   return nullptr;
 }
 
-void Element::SetTrackedElementSubRect(cc::TrackedElementFeature feature,
+void Element::SetTrackedElementSubRect(viz::TrackedElementFeature feature,
                                        const TrackedElementSubRect& rect) {
   ElementRareDataVector& rare_data = EnsureRareData();
   CHECK(!rare_data.GetTrackedElementSubRect(feature));
@@ -7191,14 +7191,14 @@ void Element::SetTrackedElementSubRect(cc::TrackedElementFeature feature,
 }
 
 const TrackedElementSubRect* Element::GetTrackedElementSubRect(
-    cc::TrackedElementFeature feature) const {
+    viz::TrackedElementFeature feature) const {
   if (const ElementRareDataVector* data = RareData()) {
     return data->GetTrackedElementSubRect(feature);
   }
   return nullptr;
 }
 
-void Element::ClearTrackedElementSubRect(cc::TrackedElementFeature feature) {
+void Element::ClearTrackedElementSubRect(viz::TrackedElementFeature feature) {
   if (ElementRareDataVector* data = RareData()) {
     data->ClearTrackedElementSubRect(feature);
   }

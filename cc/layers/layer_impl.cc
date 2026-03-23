@@ -406,7 +406,7 @@ void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   }
 }
 
-void LayerImpl::SetTrackedElementRects(TrackedElementRects rects) {
+void LayerImpl::SetTrackedElementRects(viz::TrackedElementRects rects) {
   if (rare_properties_ || !rects.empty()) {
     EnsureRareProperties().tracked_element_rects = std::move(rects);
     SetNeedsPushProperties();

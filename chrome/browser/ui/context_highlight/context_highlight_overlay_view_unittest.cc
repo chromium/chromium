@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -38,7 +39,7 @@ TEST_F(ContextHighlightOverlayViewTest, Initialization) {
 TEST_F(ContextHighlightOverlayViewTest, UpdateHighlightRects) {
   auto view = std::make_unique<ContextHighlightOverlayView>();
 
-  cc::TrackedElementRects element_rects;
+  viz::TrackedElementRects element_rects;
 
   // Test with empty rects.
   view->UpdateHighlightRects(element_rects, 1.0f);
@@ -47,8 +48,8 @@ TEST_F(ContextHighlightOverlayViewTest, UpdateHighlightRects) {
 
   base::Token id(1, 2);
   gfx::Rect rect(10, 20, 100, 200);
-  cc::TrackedElementRect data(id, rect);
-  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(
+  viz::TrackedElementRect data(id, rect);
+  viz::TrackedElementFeature feature = static_cast<viz::TrackedElementFeature>(
       TrackedElementFeature::kAIHighlight);
   element_rects.insert({feature, {data}});
 

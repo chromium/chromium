@@ -66,7 +66,6 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/task_runner_provider.h"
 #include "cc/trees/throttle_decider.h"
-#include "cc/trees/tracked_element_rects.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -76,6 +75,7 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -754,7 +754,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ScheduleMicroBenchmark(std::unique_ptr<MicroBenchmarkImpl> benchmark);
 
   viz::RegionCaptureBounds CollectRegionCaptureBounds();
-  TrackedElementRects CollectTrackedElementRects();
+  viz::TrackedElementRects CollectTrackedElementRects();
 
   viz::CompositorFrameMetadata MakeCompositorFrameMetadata();
   RenderFrameMetadata MakeRenderFrameMetadata(FrameData* frame);

@@ -1187,7 +1187,7 @@ void Layer::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   SetSubtreePropertyChanged();
 }
 
-void Layer::SetTrackedElementRects(TrackedElementRects rects) {
+void Layer::SetTrackedElementRects(viz::TrackedElementRects rects) {
   DCHECK(IsPropertyChangeAllowed());
   const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
   if (!rare_inputs && rects.empty()) {

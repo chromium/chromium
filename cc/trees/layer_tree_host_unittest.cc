@@ -12015,7 +12015,8 @@ class LayerTreeHostTestTrackedElementRects
 
   const base::Token kId1 = base::Token(1, 2);
   const base::Token kId2 = base::Token(2, 3);
-  const TrackedElementFeature kFeature = static_cast<TrackedElementFeature>(1);
+  const viz::TrackedElementFeature kFeature =
+      static_cast<viz::TrackedElementFeature>(1);
 
   LayerTreeHostTestTrackedElementRects() { SetUseLayerLists(); }
 
@@ -12032,9 +12033,9 @@ class LayerTreeHostTestTrackedElementRects
     child_a_->SetIsDrawable(true);
     CopyProperties(root_, child_a_.get());
     CreateEffectNode(child_a_.get());
-    std::vector<TrackedElementRect> rect_data_list1 = {
-        TrackedElementRect(kId1, gfx::Rect(0, 0, 50, 50))};
-    TrackedElementRects trackedElementRects1 = {
+    std::vector<viz::TrackedElementRect> rect_data_list1 = {
+        viz::TrackedElementRect(kId1, gfx::Rect(0, 0, 50, 50))};
+    viz::TrackedElementRects trackedElementRects1 = {
         {kFeature, std::move(rect_data_list1)}};
     child_a_->SetTrackedElementRects(trackedElementRects1);
     root_->AddChild(child_a_);
@@ -12044,9 +12045,9 @@ class LayerTreeHostTestTrackedElementRects
     child_b_->SetIsDrawable(true);
     CopyProperties(root_, child_b_.get());
     CreateEffectNode(child_b_.get());
-    std::vector<TrackedElementRect> rect_data_list2 = {
-        TrackedElementRect(kId2, gfx::Rect(0, 0, 10, 20))};
-    TrackedElementRects trackedElementRects2 = {
+    std::vector<viz::TrackedElementRect> rect_data_list2 = {
+        viz::TrackedElementRect(kId2, gfx::Rect(0, 0, 10, 20))};
+    viz::TrackedElementRects trackedElementRects2 = {
         {kFeature, std::move(rect_data_list2)}};
     child_b_->SetTrackedElementRects(trackedElementRects2);
     root_->AddChild(child_b_);
@@ -12060,11 +12061,11 @@ class LayerTreeHostTestTrackedElementRects
     PostSetNeedsCommitToMainThread();
   }
 
-  void ExpectRectsOnThread(const TrackedElementRects& actual_rects) {
+  void ExpectRectsOnThread(const viz::TrackedElementRects& actual_rects) {
     EXPECT_EQ(actual_rects.size(), 1u);
     ASSERT_TRUE(actual_rects.contains(kFeature));
     const auto& element_list = actual_rects.at(kFeature);
-    base::flat_map<TrackedElementId, TrackedElementRect> element_map;
+    base::flat_map<viz::TrackedElementId, viz::TrackedElementRect> element_map;
     for (const auto& tracked_element_rect : element_list) {
       element_map.insert({tracked_element_rect.id, tracked_element_rect});
     }

@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/tracked_element_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -41,7 +42,7 @@ class ContextHighlightWindowFeature {
 
  private:
   // content::TrackedElementObserver:
-  void OnTrackedElementRectsChanged(const cc::TrackedElementRects& rects,
+  void OnTrackedElementRectsChanged(const viz::TrackedElementRects& rects,
                                     float device_scale_factor);
 
   // Called when the active tab in the browser window changes.

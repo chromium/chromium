@@ -6,7 +6,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
-#include "cc/trees/tracked_element_rects.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
@@ -2174,8 +2174,8 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
 TEST_P(PaintControllerTest, RecordTrackedElementData) {
   static const auto kId = TrackedElementId(base::Token::CreateRandom());
   static const gfx::Rect kBounds(1, 2, 640, 480);
-  const auto kFeature0 = static_cast<cc::TrackedElementFeature>(0);
-  const auto kFeature1 = static_cast<cc::TrackedElementFeature>(1);
+  const auto kFeature0 = static_cast<viz::TrackedElementFeature>(0);
+  const auto kFeature1 = static_cast<viz::TrackedElementFeature>(1);
   const auto kFeature0ElementSubRect = TrackedElementSubRect(kId);
   const auto kFeature1ElementSubRect = TrackedElementSubRect(kId);
   TrackedElementSubRects tracked_element_sub_rects;

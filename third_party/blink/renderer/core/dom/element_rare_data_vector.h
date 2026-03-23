@@ -20,9 +20,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-namespace cc {
+namespace viz {
 enum class TrackedElementFeature;
-}  // namespace cc
+}  // namespace viz
 
 namespace blink {
 
@@ -310,11 +310,11 @@ class CORE_EXPORT ElementRareDataVector final
       std::unique_ptr<RegionCaptureCropId> crop_id);
 
   const TrackedElementSubRect* GetTrackedElementSubRect(
-      cc::TrackedElementFeature feature) const;
+      viz::TrackedElementFeature feature) const;
   [[nodiscard]] ElementRareDataVector* SetTrackedElementSubRect(
-      cc::TrackedElementFeature feature,
+      viz::TrackedElementFeature feature,
       const TrackedElementSubRect& rect);
-  void ClearTrackedElementSubRect(cc::TrackedElementFeature feature);
+  void ClearTrackedElementSubRect(viz::TrackedElementFeature feature);
 
   const TrackedElementSubRects* GetTrackedElementSubRects() const;
 

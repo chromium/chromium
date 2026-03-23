@@ -36,7 +36,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/sticky_position_constraint.h"
-#include "cc/trees/tracked_element_rects.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
@@ -1438,10 +1438,10 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
 
   // Track the same element for two different features.
   auto element_id = base::Token(1, 2);
-  cc::TrackedElementFeature feature_0 =
-      static_cast<cc::TrackedElementFeature>(0);
-  cc::TrackedElementFeature feature_1 =
-      static_cast<cc::TrackedElementFeature>(1);
+  viz::TrackedElementFeature feature_0 =
+      static_cast<viz::TrackedElementFeature>(0);
+  viz::TrackedElementFeature feature_1 =
+      static_cast<viz::TrackedElementFeature>(1);
   auto feature_0_element = TrackedElementSubRect(TrackedElementId(element_id));
   auto feature_1_element = TrackedElementSubRect(TrackedElementId(element_id));
 

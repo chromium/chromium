@@ -31,6 +31,7 @@ static_library("context_highlight") {
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/views/interaction",
       "//components/page_content_annotations/core",
+      "//components/viz/common",
       "//skia",
       "//ui/base",
       "//ui/compositor",

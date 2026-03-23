@@ -200,6 +200,8 @@ viz_component("common") {
     "surfaces/surface_info.h",
     "surfaces/surface_range.cc",
     "surfaces/surface_range.h",
+    "surfaces/tracked_element_rects.cc",
+    "surfaces/tracked_element_rects.h",
     "surfaces/video_capture_target.cc",
     "surfaces/video_capture_target.h",
     "switches.cc",

@@ -476,7 +476,7 @@ ElementRareDataVector* ElementRareDataVector::SetRestrictionTargetId(
 }
 
 const TrackedElementSubRect* ElementRareDataVector::GetTrackedElementSubRect(
-    cc::TrackedElementFeature feature) const {
+    viz::TrackedElementFeature feature) const {
   if (auto* map = GetTrackedElementSubRects()) {
     auto it = map->find(feature);
     if (it != map->end()) {
@@ -487,7 +487,7 @@ const TrackedElementSubRect* ElementRareDataVector::GetTrackedElementSubRect(
 }
 
 void ElementRareDataVector::ClearTrackedElementSubRect(
-    cc::TrackedElementFeature feature) {
+    viz::TrackedElementFeature feature) {
   if (auto* map = GetWrappedField<TrackedElementSubRects>(
           FieldId::kTrackedElementRect)) {
     map->erase(feature);
@@ -499,7 +499,7 @@ void ElementRareDataVector::ClearTrackedElementSubRect(
 }
 
 ElementRareDataVector* ElementRareDataVector::SetTrackedElementSubRect(
-    cc::TrackedElementFeature feature,
+    viz::TrackedElementFeature feature,
     const TrackedElementSubRect& rect) {
   CHECK(!rect.id.value().is_zero());
   auto [map, vec] =

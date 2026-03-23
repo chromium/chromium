@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_TRACKED_ELEMENT_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "cc/trees/tracked_element_rects.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -16,7 +16,7 @@ class CONTENT_EXPORT TrackedElementObserver : public base::CheckedObserver {
  public:
   // This method is invoked when the tracked element rects have changed.
   virtual void OnTrackedElementRectsChanged(
-      const cc::TrackedElementRects& rects,
+      const viz::TrackedElementRects& rects,
       float device_scale_factor) = 0;
 };
 

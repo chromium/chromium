@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/tracked_element_rects.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 
 #include <sstream>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
-namespace cc {
+namespace viz {
 
 std::string TrackedElementRect::ToString() const {
   return base::StrCat({"{id: ", id.ToString(),
@@ -44,4 +44,4 @@ const TrackedElementRects& TrackedElementRectsEmpty() {
   return *empty_rects;
 }
 
-}  // namespace cc
+}  // namespace viz

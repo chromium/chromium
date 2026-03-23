@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_TRACKED_ELEMENT_RECTS_H_
-#define CC_TREES_TRACKED_ELEMENT_RECTS_H_
+#ifndef COMPONENTS_VIZ_COMMON_SURFACES_TRACKED_ELEMENT_RECTS_H_
+#define COMPONENTS_VIZ_COMMON_SURFACES_TRACKED_ELEMENT_RECTS_H_
 
 #include <cstdint>
 #include <optional>
@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/token.h"
-#include "cc/cc_export.h"
+#include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace cc {
+namespace viz {
 
 using TrackedElementId = base::Token;
 
@@ -32,7 +32,7 @@ enum class TrackedElementFeature : int32_t {
 // LINT.ThenChange(//components/page_content_annotations/core/tracked_element_feature.h:TrackedElementFeature)
 
 // New struct to hold the tracked element clipped/visible bounds and other data.
-struct CC_EXPORT TrackedElementRect {
+struct VIZ_COMMON_EXPORT TrackedElementRect {
   // The id of the element being tracked.
   TrackedElementId id;
 
@@ -53,14 +53,14 @@ struct CC_EXPORT TrackedElementRect {
 using TrackedElementRects =
     absl::flat_hash_map<TrackedElementFeature, std::vector<TrackedElementRect>>;
 
-CC_EXPORT std::string TrackedElementRectsToString(
+VIZ_COMMON_EXPORT std::string TrackedElementRectsToString(
     const TrackedElementRects& rects);
 
 // Returns a reference to a global empty TrackedElementRects. This should
 // only be used for functions that need to return a reference to a
 // TrackedElementRects, not instead of the default constructor.
-CC_EXPORT const TrackedElementRects& TrackedElementRectsEmpty();
+VIZ_COMMON_EXPORT const TrackedElementRects& TrackedElementRectsEmpty();
 
-}  // namespace cc
+}  // namespace viz
 
-#endif  // CC_TREES_TRACKED_ELEMENT_RECTS_H_
+#endif  // COMPONENTS_VIZ_COMMON_SURFACES_TRACKED_ELEMENT_RECTS_H_
