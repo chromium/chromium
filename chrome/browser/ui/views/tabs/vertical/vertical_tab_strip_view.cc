@@ -494,27 +494,40 @@ void VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout(
         views::View::ConvertRectToTarget(v, v->parent(), activated_view_bounds);
   }
 
-  // Get the visible bounds of the content view.
-  const gfx::Rect visible_contents_rect = scroll_view->GetVisibleRect();
-
   // Determine the adjustment required to fit the activated view into the
   // visible content view bounds.
   gfx::Rect adjusted_activated_view_bounds = activated_view_bounds;
-  adjusted_activated_view_bounds.AdjustToFit(visible_contents_rect);
+  adjusted_activated_view_bounds.AdjustToFit(scroll_view->GetVisibleRect());
 
   // Calculate the required scroll offset for the visible content bounds (the
   // reverse of the activated view adjustment).
-  int diff = activated_view_bounds.y() - adjusted_activated_view_bounds.y();
+  const int diff =
+      activated_view_bounds.y() - adjusted_activated_view_bounds.y();
+
+  // Calculate the required scroll offset for the visible content bounds taking
+  // into account configured overflow gradients. This is deliberately more than
+  // is needed and may or may not apply depending on view position.
+  gfx::Rect overflow_adjusted_activated_view_bounds = activated_view_bounds;
+  overflow_adjusted_activated_view_bounds.AdjustToFit(
+      scroll_view->GetOpaqueVisibleRect());
+  const int diff_avoid_overflow_gradient =
+      activated_view_bounds.y() - overflow_adjusted_activated_view_bounds.y();
 
   if (diff != 0) {
     // Disable overflow visuals to avoid visual artifacts while scrolling,
     // particularly for views towards the bottom of the scroll view.
     DisableOverflowVisuals(scroll_view);
-    scroll_view->ScrollByOffset({0, static_cast<float>(diff)});
+    scroll_view->ScrollByOffset(
+        {0, static_cast<float>(diff_avoid_overflow_gradient)});
     scroll_view->RegisterPostLayoutCallback(base::BindRepeating(
         &VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout,
         base::Unretained(this)));
+    scroll_view->InvalidateLayout();
   } else {
+    // Request a final scroll to ensure the activated view is moved beyond the
+    // overflow gradient if necessary.
+    scroll_view->ScrollByOffset(
+        {0, static_cast<float>(diff_avoid_overflow_gradient)});
     EnableOverflowVisuals(scroll_view);
   }
 }
@@ -537,6 +550,7 @@ void VerticalTabStripView::EnableOverflowVisuals(
   // Reset the active view as it is no longer needed after post-activation
   // adjustment for viewport visibility is complete.
   activated_view_tracker_->SetView(nullptr);
+  scroll_view->InvalidateLayout();
 }
 
 void VerticalTabStripView::DisableOverflowVisuals(
