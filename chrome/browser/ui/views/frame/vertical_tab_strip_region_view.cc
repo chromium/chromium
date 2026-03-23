@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
@@ -77,6 +78,10 @@ constexpr int kRegionVerticalPadding = 5;
 constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
 constexpr int kKeyboardResizeWidth = 50;
+
+// TODO(crbug.com/493593208): This value was chosen arbitrarily and should be
+// updated based on ux feedback.
+constexpr base::TimeDelta kExpandOnHoverDelay = base::Milliseconds(500);
 }  // namespace
 
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(VerticalTabStripRegionView,
@@ -95,7 +100,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           std::make_unique<TabHoverCardController>(this,
                                                    browser_view->browser())),
       hover_tab_selector_(std::make_unique<HoverTabSelector>(tab_strip_model_)),
-      resize_animation_(this) {
+      resize_animation_(this),
+      expand_on_hover_animation_(this) {
+  SetNotifyEnterExitOnChild(true);
   // For z-ordering purposes this needs to be on a layer.
   SetPaintToLayer();
   // Because corners may be transparent, this must be set to false.
@@ -138,14 +145,21 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       l10n_util::GetStringUTF16(IDS_VERTICAL_RESIZE_AREA));
   resize_area_->GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
 
-  resize_animation_.SetSlideDuration(gfx::Animation::RichAnimationDuration(
+  base::TimeDelta animation_duration = gfx::Animation::RichAnimationDuration(
       features::UseSidePanelFlyoverAnimation() ? base::Milliseconds(350)
-                                               : base::Milliseconds(450)));
-  resize_animation_.SetTweenType(
-      features::UseSidePanelFlyoverAnimation()
-          ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
-          : gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
+                                               : base::Milliseconds(450));
+  gfx::Tween::Type tween_type = features::UseSidePanelFlyoverAnimation()
+                                    ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
+                                    : gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED;
+  resize_animation_.SetSlideDuration(animation_duration);
+  resize_animation_.SetTweenType(tween_type);
   resize_animation_.Reset(!state_controller_->IsCollapsed());
+
+  // TODO(crbug.com/493595250): Once the animations are specced this should be
+  // revisited. Animation specs currently match the expand/collapse resize
+  // animation as a placeholder.
+  expand_on_hover_animation_.SetSlideDuration(animation_duration);
+  expand_on_hover_animation_.SetTweenType(tween_type);
 
   target_collapse_state_ = state_controller_->GetState();
   OnCollapsedStateChanged(state_controller_);
@@ -184,6 +198,10 @@ std::optional<double> VerticalTabStripRegionView::GetCollapseAnimationPercent()
   return resize_animation_.is_animating()
              ? std::make_optional(resize_animation_.GetCurrentValue())
              : std::nullopt;
+}
+
+double VerticalTabStripRegionView::GetExpandOnHoverAnimationPercent() const {
+  return expand_on_hover_animation_.GetCurrentValue();
 }
 
 void VerticalTabStripRegionView::AddedToWidget() {
@@ -340,6 +358,18 @@ bool VerticalTabStripRegionView::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   return TabStripRegionView::OnKeyPressed(event);
+}
+
+void VerticalTabStripRegionView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateExpandOnHoverState();
+}
+
+void VerticalTabStripRegionView::OnMouseMoved(const ui::MouseEvent& event) {
+  UpdateExpandOnHoverState();
+}
+
+void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateExpandOnHoverState();
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
@@ -577,7 +607,6 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
 
 void VerticalTabStripRegionView::AnimationProgressed(
     const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &resize_animation_);
   if (tab_strip_view_) {
     tab_strip_view_->SetIsAnimatingSize(true);
   }
@@ -586,17 +615,17 @@ void VerticalTabStripRegionView::AnimationProgressed(
 
 void VerticalTabStripRegionView::AnimationEnded(
     const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &resize_animation_);
   if (tab_strip_view_) {
     tab_strip_view_->SetIsAnimatingSize(false);
   }
-  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kAnimationCompletedEvent, this);
+  if (animation == &resize_animation_) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kAnimationCompletedEvent, this);
+  }
 }
 
 void VerticalTabStripRegionView::AnimationCanceled(
     const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &resize_animation_);
   if (tab_strip_view_) {
     tab_strip_view_->SetIsAnimatingSize(false);
   }
@@ -703,6 +732,10 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
     // state is different than the current target collapse state, which can
     // happen due to the collapse button being pressed.
     UpdateCollapseState(state_controller_->GetState());
+  }
+
+  if (!state_controller->IsCollapsed()) {
+    UpdateExpandOnHoverState();
   }
 
   const int padding = GetLayoutConstant(
@@ -822,6 +855,52 @@ void VerticalTabStripRegionView::OnChildrenRemoved() {
 
 void VerticalTabStripRegionView::OnChildMoved() {
   hover_tab_selector_->CancelTabTransition();
+}
+
+void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
+  if (!tabs::IsVerticalTabsExpandOnHoverFeatureEnabled()) {
+    return;
+  }
+  // If not collapsed, then we shouldn't be in or entering the expand on hover
+  // state.
+  if (!state_controller_->IsCollapsed()) {
+    expand_on_hover_timer_.Stop();
+    expand_on_hover_animation_.Reset(0.0);
+    return;
+  }
+
+  const bool should_expand = IsMouseHovered();
+  if (expand_on_hover_timer_.IsRunning()) {
+    if (should_expand) {
+      // If the timer is already running then we are already waiting to
+      // expand, so do nothing.
+      return;
+    } else {
+      // If the timer is running but we shouldn't be expanding, stop the timer.
+      expand_on_hover_timer_.Stop();
+    }
+  }
+
+  bool is_hover_expanding_or_expanded =
+      expand_on_hover_animation_.IsShowing() ||
+      expand_on_hover_animation_.GetCurrentValue() == 1.0;
+  bool is_hover_collapsing_or_collapsed =
+      expand_on_hover_animation_.IsClosing() ||
+      expand_on_hover_animation_.GetCurrentValue() == 0.0;
+  if (!is_hover_expanding_or_expanded && should_expand) {
+    expand_on_hover_timer_.Start(
+        FROM_HERE, kExpandOnHoverDelay,
+        base::BindOnce(&VerticalTabStripRegionView::ExpandOnHover,
+                       base::Unretained(this)));
+  } else if (!is_hover_collapsing_or_collapsed && !should_expand) {
+    expand_on_hover_animation_.Hide();
+    InvalidateLayout();
+  }
+}
+
+void VerticalTabStripRegionView::ExpandOnHover() {
+  expand_on_hover_animation_.Show();
+  InvalidateLayout();
 }
 
 TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(

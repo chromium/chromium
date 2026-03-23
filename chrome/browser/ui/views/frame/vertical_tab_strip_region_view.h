@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -105,6 +106,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // null if none.
   std::optional<double> GetCollapseAnimationPercent() const;
 
+  double GetExpandOnHoverAnimationPercent() const;
+
   // views::View:
   void AddedToWidget() override;
   void Layout(PassKey) override;
@@ -113,6 +116,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // TabStripRegionView
   void InitializeTabStrip() override;
@@ -191,6 +197,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void OnChildrenRemoved();
   void OnChildMoved();
 
+  void UpdateExpandOnHoverState();
+  void ExpandOnHover();
+
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
                               DropArrow::Direction* direction);
@@ -258,6 +267,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // Animation for collapsing (GetCurrentValue() -> 0) and expanding
   // (GetCurrentValue() -> 1).
   gfx::SlideAnimation resize_animation_;
+  gfx::SlideAnimation expand_on_hover_animation_;
+
+  base::OneShotTimer expand_on_hover_timer_;
 
   // Used to track the time needed to create a new tab from the new tab button.
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;

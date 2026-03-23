@@ -623,11 +623,23 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         collapsed_vertical_tab_strip_adjustment =
             horizontal_layout.vertical_tab_strip_width;
       }
+
+      // TODO(crbug.com/493595250): Once the expand on hover animations are
+      // specced this logic should be revisited, updated, and moved to
+      // CalculateVerticalTabStripAnimation.
+      const int vertical_tab_strip_hover_width =
+          (tabs::kVerticalTabStripDefaultUncollapsedWidth -
+           horizontal_layout.vertical_tab_strip_width) *
+          views()
+              .vertical_tab_strip_region_view
+              ->GetExpandOnHoverAnimationPercent();
+
       vertical_tab_strip_bounds =
           gfx::Rect(params.visual_client_area.x(),
                     params.visual_client_area.y() +
                         vertical_tab_strip_animation.top_offset,
-                    horizontal_layout.vertical_tab_strip_width,
+                    horizontal_layout.vertical_tab_strip_width +
+                        vertical_tab_strip_hover_width,
                     params.visual_client_area.height() -
                         vertical_tab_strip_animation.top_offset);
       // In vertical tabs mode, extra space is allocated next to the top element
