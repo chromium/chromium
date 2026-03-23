@@ -475,6 +475,18 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     // must reset it to a predictable state to prevent the tests from
     // influencing each other.
     ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(false);
+
+#if defined(LEAK_SANITIZER)
+    base::RunLoop run_loop;
+    // Since `video_capture_observer_` uses `base::OnTaskRunnerDeleter`, need
+    // to wait until the deleter task is finished. Otherwise, Lsan will report
+    // `video_capture_observer` as a direct leak.
+    // The following `QuitClosure` must be posted to the same task runner used
+    // for `cras_audio_handler_->GetVideoCaptureObserver()`.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+#endif
   }
 
   AudioNode GenerateAudioNode(const AudioNodeInfo* node_info) {
