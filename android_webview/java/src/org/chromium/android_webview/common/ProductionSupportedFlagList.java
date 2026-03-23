@@ -1365,6 +1365,9 @@ public final class ProductionSupportedFlagList {
                 "UseDynamicBackingAllocations",
                 "Allows CompoundImageBacking to allocate backings during runtime if a compatible"
                         + " backing to serve clients requested usage is not already present."),
+        Flag.baseFeature(
+                "DataUrlMimeTypeParameterPreservation",
+                "Preserve parameters in the MIME type of data: URLs."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
