@@ -978,13 +978,21 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
   } else
 #endif  // !WORK_AROUND_CRBUG_40064248
   if (result < 0) {
-    result = MapSystemError(errno);
+    // Save errno to prevent it from being clobbered by subsequent calls (e.g.,
+    // android::GetNetworkBlockedReason()).
+    int os_error = errno;
+    result = MapSystemError(os_error);
 #if BUILDFLAG(IS_ANDROID)
-    if (errno == EPERM || errno == EACCES) {
-      if (android::GetNetworkBlockedReason(socket_) ==
-          android::NetworkBlockedReason::kLnp) {
-        result = ERR_LOCAL_NETWORK_PERMISSION_MISSING;
-      }
+    // Android local network permission errors are surfaced as either EPERM or
+    // EACCESS when reading/writing to an UDP socket
+    // (https://developer.android.com/privacy-and-security/local-network-permission).
+    // Note that these errors are not unique to LNP. So, before returning the
+    // LNP-specific ERR_LOCAL_NETWORK_PERMISSION_MISSING, we must check whether
+    // LNP was really the cause.
+    if ((os_error == EPERM || os_error == EACCES) &&
+        android::GetNetworkBlockedReason(socket_) ==
+            android::NetworkBlockedReason::kLnp) {
+      result = ERR_LOCAL_NETWORK_PERMISSION_MISSING;
     }
 #endif
   } else {
