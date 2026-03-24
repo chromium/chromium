@@ -12,10 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_alert.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {

@@ -11,10 +11,10 @@
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "components/tabs/public/tab_alert.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 

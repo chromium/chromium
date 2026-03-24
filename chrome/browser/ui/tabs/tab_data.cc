@@ -12,7 +12,6 @@
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
+#include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 

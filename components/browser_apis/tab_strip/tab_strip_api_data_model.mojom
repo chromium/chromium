@@ -15,7 +15,7 @@ struct Image {
 };
 
 // Must contain the same values as `TabAlertState` in
-// chrome/browser/ui/tabs/alert/tab_alert.h Matching order is not important.
+// components/tabs/public/tab_alert.h Matching order is not important.
 enum AlertState {
   kAudioMuting,
   kAudioRecording,

@@ -9,6 +9,10 @@ import("//build/config/ui.gni")
 # WebKit. iOS on Blink uses content::WebContents, so assert `use_blink`.
 assert(use_blink)
 
+source_set("enum") {
+  sources = [ "public/tab_alert.h" ]
+}
+
 source_set("public") {
   sources = [
     "public/direct_child_walker.h",
@@ -32,6 +36,7 @@ source_set("public") {
   sources += [ "public/tab_collection_storage.h" ]
 
   public_deps = [
+    ":enum",
     "//base",
     "//components/split_tabs",
     "//components/tab_groups",
