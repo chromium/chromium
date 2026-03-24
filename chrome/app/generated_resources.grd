@@ -11026,7 +11026,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
         <message name="IDS_TAB_GROUPS_HOVER_CARD_FOOTER" desc="In Title Case: The number of tabs in the tab group that are not shown on the hover card, when hovering over the tab group header.">
-            +<ph name="NUM">$1<ex>2</ex></ph> More
+            + <ph name="NUM">$1<ex>2</ex></ph> More
         </message>
       </if>
       <if expr="not use_titlecase">
@@ -11040,7 +11040,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
         <message name="IDS_TAB_GROUPS_HOVER_CARD_FOOTER" desc="The number of tabs in the tab group that are not shown on the hover card, when hovering over the tab group header.">
-            +<ph name="NUM">$1<ex>2</ex></ph> more
+            + <ph name="NUM">$1<ex>2</ex></ph> more
         </message>
       </if>
       <message name="IDS_DISCARD_RING_PROMO_TITLE" desc="The title for the discard ring in-product promo bubble.">

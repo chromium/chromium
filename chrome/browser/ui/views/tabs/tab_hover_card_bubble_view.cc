@@ -74,13 +74,11 @@ constexpr int kTitleDomainSpacing = 4;
 // Margins space surrounding the text (title and domain) in the hover card.
 constexpr auto kTextMargins = gfx::Insets::VH(12, 12);
 
-// Margins space surrounding the titles for tabs in the hover card for tab
-// group headers.
-constexpr auto kGroupTitleMargins = gfx::Insets::VH(10, 20);
-
-// Margin space surrounding the text for the footer in the hover card for tab
-// group headers.
-constexpr auto kGroupFooterMargins = gfx::Insets::VH(12, 11);
+// Border spacing for the tab group header hovercard.
+constexpr auto kGroupHovercardBorderMargins = gfx::Insets::VH(6, 12);
+// Margins space surrounding each text element for the tab group header
+// hovercard.
+constexpr auto kGroupTitleMargins = gfx::Insets::VH(6, 0);
 
 // Calculates an appropriate size to display a preview image in the hover card.
 // For the vast majority of images, the `preferred_size` is used, but extremely
@@ -567,22 +565,20 @@ class TabHoverCardBubbleView::GroupCardView : public views::View {
         kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
         views::style::STYLE_BODY_3_EMPHASIS));
 
-    title_->SetProperty(views::kMarginsKey, kTextMargins);
-
-    gfx::Insets tab_title_margins = kGroupTitleMargins;
-    tab_title_margins.set_top(kTitleDomainSpacing);
+    SetBorder(views::CreateEmptyBorder(kGroupHovercardBorderMargins));
+    title_->SetProperty(views::kMarginsKey, kGroupTitleMargins);
 
     for (raw_ptr<FadeLabelView>& label : tab_titles_) {
       label = AddChildView(std::make_unique<FadeLabelView>(
           1, views::style::CONTEXT_DIALOG_BODY_TEXT,
           views::style::STYLE_BODY_4));
-      label->SetProperty(views::kMarginsKey, tab_title_margins);
+      label->SetProperty(views::kMarginsKey, kGroupTitleMargins);
       label->SetEnabledColor(kColorTabHoverCardSecondaryText);
     }
 
     footer_ = AddChildView(std::make_unique<FadeLabelView>(
         1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-    footer_->SetProperty(views::kMarginsKey, kGroupFooterMargins);
+    footer_->SetProperty(views::kMarginsKey, kGroupTitleMargins);
     footer_->SetEnabledColor(kColorTabHoverCardSecondaryText);
 
     views::FlexLayout* const layout =
