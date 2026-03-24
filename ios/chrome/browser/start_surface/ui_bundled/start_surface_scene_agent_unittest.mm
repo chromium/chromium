@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -418,6 +419,10 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
 }
 
 TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kBuildExternalPrivacyContext);
+
   // Set up fake identity with account capabilities.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);

@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -378,9 +379,12 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(_presentingSceneState);
 
-  // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
-  // loaded in iSL.
-  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
+  if (!base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
+    // Capabilities prefetching must happen after
+    // `SystemIdentityManager::BuildExternalPrivacyContext()`. This is handled
+    // by `SigninAccountCapabilitiesSceneAgent` instead.
+    RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
+  }
 
   FirstRunScreenProvider* provider =
       [[FirstRunScreenProvider alloc] initForProfile:profile];
