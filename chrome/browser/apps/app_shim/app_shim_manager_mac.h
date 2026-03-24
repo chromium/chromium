@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/badging/badge_manager.h"
@@ -26,13 +27,15 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
 class ProfileManager;
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 
 namespace base {
 class FilePath;
@@ -58,7 +61,7 @@ class AppShimManager
     : public AppShimHostBootstrap::Client,
       public AppShimHost::Client,
       public AppLifetimeMonitor::Observer,
-      public BrowserListObserver,
+      public BrowserCollectionObserver,
       public AvatarMenuObserver,
       public ProfileManagerObserver,
       public ProfileObserver,
@@ -251,10 +254,10 @@ class AppShimManager
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver overrides:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // ProfileObserver overrides:
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -486,6 +489,10 @@ class AppShimManager
   void OnNotificationAction(
       mac_notifications::mojom::NotificationActionInfoPtr info) override;
 
+  void OnAppsDeactivatedForBrowserClose(
+      Profile* profile,
+      std::vector<std::string> apps_to_deactivate);
+
   std::unique_ptr<Delegate> delegate_;
 
   // Weak, reset during OnProfileManagerDestroying.
@@ -527,6 +534,8 @@ class AppShimManager
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   base::WeakPtrFactory<AppShimManager> weak_factory_;
 };

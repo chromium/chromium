@@ -29,5 +29,6 @@ void BrowserProcessPlatformPartBase::AttemptExit(bool try_to_quit_application) {
 #endif
 }
 
-void BrowserProcessPlatformPartBase::PreMainMessageLoopRun() {
-}
+void BrowserProcessPlatformPartBase::PreMainMessageLoopRun() {}
+
+void BrowserProcessPlatformPartBase::PostDestroyThreads() {}

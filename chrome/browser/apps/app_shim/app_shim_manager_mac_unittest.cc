@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -213,6 +214,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
       delete;
 
   void DoTestLaunch(
+      mojo::Remote<chrome::mojom::AppShimHost>& mojo_host,
       chrome::mojom::AppShimLaunchType launch_type,
       const std::vector<base::FilePath>& files,
       const std::vector<GURL>& urls,
@@ -220,7 +222,6 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
       mojo::PendingReceiver<
           mac_notifications::mojom::MacNotificationActionHandler>
           notification_action_handler) {
-    mojo::Remote<chrome::mojom::AppShimHost> host;
     auto app_shim_info = chrome::mojom::AppShimInfo::New();
     app_shim_info->profile_path = profile_path_;
     app_shim_info->app_id = app_id_;
@@ -234,7 +235,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
     app_shim_info->notification_action_handler =
         std::move(notification_action_handler);
     OnShimConnected(
-        host.BindNewPipeAndPassReceiver(), std::move(app_shim_info),
+        mojo_host.BindNewPipeAndPassReceiver(), std::move(app_shim_info),
         base::BindOnce(&TestingAppShimHostBootstrap::DoTestLaunchDone,
                        launch_result_));
   }
@@ -257,6 +258,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   const base::FilePath profile_path_;
   const std::string app_id_;
   const bool is_from_bookmark_;
+
   // Note that |launch_result_| is optional so that we can track whether or not
   // the callback to set it has arrived.
   raw_ptr<std::optional<chrome::mojom::AppShimLaunchResult>> launch_result_ =
@@ -502,6 +504,8 @@ class AppShimManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    mojo_hosts_.clear();
+
     host_aa_unique_.reset();
     host_ab_unique_.reset();
     host_ba_unique_.reset();
@@ -542,8 +546,11 @@ class AppShimManagerTest : public testing::Test {
     if (host) {
       manager_->SetHostForCreate(std::move(host));
     }
-    bootstrap->DoTestLaunch(launch_type, files, urls, login_item_restore_state,
+    mojo::Remote<chrome::mojom::AppShimHost> mojo_host;
+    bootstrap->DoTestLaunch(mojo_host, launch_type, files, urls,
+                            login_item_restore_state,
                             std::move(notification_action_handler));
+    mojo_hosts_.push_back(std::move(mojo_host));
   }
 
   void NormalLaunch(base::WeakPtr<TestingAppShimHostBootstrap> bootstrap,
@@ -639,6 +646,8 @@ class AppShimManagerTest : public testing::Test {
   base::WeakPtr<TestHost> host_ab_;
   base::WeakPtr<TestHost> host_ba_;
   base::WeakPtr<TestHost> host_bb_;
+
+  std::vector<mojo::Remote<chrome::mojom::AppShimHost>> mojo_hosts_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -800,7 +809,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
       app_name, true, browser_window->GetBounds(), &profile_a_, true);
   params.window = browser_window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
-  manager_->OnBrowserAdded(browser.get());
+  manager_->OnBrowserCreated(browser.get());
 
   // Validate that OnAppLaunchCancelled does not close the app,
   // and that the state is still valid.
@@ -810,8 +819,10 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
 
   // Removing the browser should close the app.
   EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
-  manager_->OnBrowserRemoved(browser.get());
-  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+  manager_->OnBrowserClosed(browser.get());
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !host_aa_ && !manager_->FindHost(&profile_a_, kTestAppIdA);
+  }));
 }
 
 TEST_F(AppShimManagerTest, AppLifetime) {
@@ -1506,7 +1517,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
       app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
   params_a.window = browser_window_a.release();
   auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
-  manager_->OnBrowserAdded(browser_a.get());
+  manager_->OnBrowserCreated(browser_a.get());
 
   // Select profile B from the menu. This should request that the app be
   // launched.
@@ -1524,7 +1535,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
       app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
   params_b.window = browser_window_b.release();
   auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
-  manager_->OnBrowserAdded(browser_b.get());
+  manager_->OnBrowserCreated(browser_b.get());
 
   EXPECT_FALSE(browser_window_a_ptr->did_show);
   EXPECT_FALSE(browser_window_b_ptr->did_show);
@@ -1889,7 +1900,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
   // Validate no application dock menu items have been set yet.
   ValidateDockMenuItems(nullptr, 0);
 
-  // Create browser objects that can be passed via OnBrowserSetLastActive.
+  // Create browser objects that can be passed via OnBrowserActivated.
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
 
@@ -1916,7 +1927,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       .WillOnce(Return(testing::ByMove(
           MakeDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA))));
 
-  manager_->OnBrowserSetLastActive(browser_profile_a.get());
+  manager_->OnBrowserActivated(browser_profile_a.get());
   ValidateDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA);
 
   // Set profile B browser as last active, and validate the application dock
@@ -1926,7 +1937,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       .WillOnce(Return(testing::ByMove(
           MakeDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB))));
 
-  manager_->OnBrowserSetLastActive(browser_profile_b.get());
+  manager_->OnBrowserActivated(browser_profile_b.get());
   ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
 }
 

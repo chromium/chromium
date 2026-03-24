@@ -700,6 +700,8 @@ void BrowserProcessImpl::StartTearDown() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserProcessImpl::PostDestroyThreads() {
+  platform_part_->PostDestroyThreads();
+
   // With the file_thread_ flushed, we can release any icon resources.
   icon_manager_.reset();
 

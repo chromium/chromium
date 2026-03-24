@@ -26,6 +26,9 @@ class BrowserProcessPlatformPartBase {
 
   // Called at the end of BrowserProcessImpl::PreMainMessageLoopRun().
   virtual void PreMainMessageLoopRun();
+
+  // Called at the beginning of BrowserProcessImpl::PostDestroyThreads().
+  virtual void PostDestroyThreads();
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_

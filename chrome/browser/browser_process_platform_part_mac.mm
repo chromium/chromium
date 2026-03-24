@@ -74,6 +74,10 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   }
 }
 
+void BrowserProcessPlatformPart::PostDestroyThreads() {
+  app_shim_manager_.reset();
+}
+
 apps::AppShimManager* BrowserProcessPlatformPart::app_shim_manager() {
   return app_shim_manager_.get();
 }
