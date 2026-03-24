@@ -6,9 +6,9 @@ package org.chromium.net.urlconnection;
 
 import android.net.TrafficStats;
 import android.os.Build;
+import android.util.Log;
 import android.util.Pair;
 
-import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;

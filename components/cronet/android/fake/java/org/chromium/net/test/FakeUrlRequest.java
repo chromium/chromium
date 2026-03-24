@@ -4,10 +4,11 @@
 
 package org.chromium.net.test;
 
+import android.util.Log;
+
 import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.InlineExecutionProhibitedException;

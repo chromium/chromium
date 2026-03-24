@@ -8,6 +8,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import android.os.ConditionVariable;
+import android.util.Log;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
@@ -28,8 +29,6 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.CharsetUtil;
-
-import org.chromium.base.Log;
 
 /** A simple HTTP server for testing. */
 public class HttpTestServer implements TestSupport.TestServer {

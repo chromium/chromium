@@ -9,12 +9,12 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import android.net.Network;
 import android.net.http.HttpEngine;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
 
-import org.chromium.base.Log;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.RequestFinishedInfo;

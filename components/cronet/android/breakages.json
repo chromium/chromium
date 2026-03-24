@@ -16,6 +16,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "I42f1e374590d3f98cd27807e0091192d87121fc2",
+      "good_change_ids": ["Ie2b5255ae892ff0a0a7f3ec6e6e52d2a82ed9b1d"],
+      "bugs": ["b/494565814"],
+      "comment": "Added a dependency to org.chromium.base.Log without shipping it in the relevant jars"
+    },
+    {
       "bad_change_id": "Idf7dc285df910026e3fedb1136c4f266e0104e5a",
       "good_change_ids": ["I437630cbd8458bffe74e84e9b19e8ed6d788b2f3"],
       "bugs": ["b/489835176"],
