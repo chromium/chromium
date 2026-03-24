@@ -966,7 +966,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId"
-    units="rule_id" expires_after="2026-05-02">
+    units="rule_id" expires_after="2027-03-23">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
