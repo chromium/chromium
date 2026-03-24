@@ -1,6 +1,6 @@
 Name: Compose Testing manifest dependency
 Short Name: ui-test-manifest
-URL: https://androidx.dev/snapshots/builds/15070739/artifacts/repository/androidx/compose/ui/ui-test-manifest/1.12.0-SNAPSHOT/ui-test-manifest-1.12.0-20260323.122618-1.aar
+URL: https://androidx.dev/snapshots/builds/15073852/artifacts/repository/androidx/compose/ui/ui-test-manifest/1.12.0-SNAPSHOT/ui-test-manifest-1.12.0-20260323.212832-1.aar
 Version: 1.12.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
