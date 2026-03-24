@@ -113,6 +113,9 @@ static inline AtomicString ToAtomicString(base::span<const xmlChar> string) {
 }
 
 static inline AtomicString ToAtomicString(const xmlChar* string) {
+  if (!string) {
+    return AtomicString();
+  }
   return AtomicString::FromUtf8(reinterpret_cast<const char*>(string));
 }
 

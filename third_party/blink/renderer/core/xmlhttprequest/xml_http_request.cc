@@ -1553,7 +1553,7 @@ AtomicString XMLHttpRequest::FinalResponseMIMETypeInternal() const {
       net::ExtractMimeTypeFromMediaType(mime_type_override_.Utf8(),
                                         /*accept_comma_separated=*/false);
   if (overridden_type.has_value()) {
-    return AtomicString::FromUtf8(overridden_type->c_str());
+    return AtomicString::FromUtf8(overridden_type.value());
   }
 
   if (response_.IsHTTP()) {
@@ -1562,7 +1562,7 @@ AtomicString XMLHttpRequest::FinalResponseMIMETypeInternal() const {
         net::ExtractMimeTypeFromMediaType(header.Utf8(),
                                           /*accept_comma_separated=*/true);
     if (extracted_type.has_value()) {
-      return AtomicString::FromUtf8(extracted_type->c_str());
+      return AtomicString::FromUtf8(extracted_type.value());
     }
 
     return g_empty_atom;
