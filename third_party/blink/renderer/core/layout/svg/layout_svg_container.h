@@ -66,6 +66,13 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
   bool HasNonIsolatedBlendingDescendants() const final;
 
+  // Whether this container itself (excluding descendants) depends on the
+  // viewport dimensions. Computed during UpdateSVGLayout().
+  bool SelfHasViewportDependence() const {
+    NOT_DESTROYED();
+    return self_has_viewport_dependence_;
+  }
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGContainer";
@@ -141,6 +148,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   bool transform_uses_reference_box_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
+  bool self_has_viewport_dependence_ : 1 = false;
 };
 
 template <>

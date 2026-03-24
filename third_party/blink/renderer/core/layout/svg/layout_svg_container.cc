@@ -86,11 +86,13 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
     bounds_changed = true;
   }
 
-  const bool has_viewport_dependence =
-      content_result.has_viewport_dependence ||
+  self_has_viewport_dependence_ =
       GetElement()->SelfHasRelativeLengths() ||
       (transform_uses_reference_box_ &&
        StyleRef().TransformBox() == ETransformBox::kViewBox);
+
+  const bool has_viewport_dependence =
+      content_result.has_viewport_dependence || self_has_viewport_dependence_;
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();

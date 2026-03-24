@@ -5496,6 +5496,10 @@
       status: "stable",
     },
     {
+      name: "SvgFeImageSkipHiddenContainerViewportDependence",
+      status: "stable",
+    },
+    {
       name: "SvgFilterPaintsForHiddenContent",
       status: "stable",
     },
