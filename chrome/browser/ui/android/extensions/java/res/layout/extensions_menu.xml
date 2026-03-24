@@ -53,43 +53,12 @@ found in the LICENSE file.
             android:background="?android:attr/listDivider"
             android:layout_marginTop="8dp" />
 
-        <LinearLayout
-            android:id="@+id/extensions_menu_reload_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <TextView
-                android:id="@+id/extensions_menu_reload_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/extensions_menu_message_section_reload_container_description_text"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
-            <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/extensions_menu_reload_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/extensions_menu_message_section_reload_container_button_text"
-                android:contentDescription="@string/extensions_menu_message_section_reload_container_button_tooltip" />
-        </LinearLayout>
-
-        <!-- Wrap RecyclerView and zero state in a FrameLayout to easily toggle and anchor them together -->
+        <!-- State Container: Wraps both Active and Zero states to mutually exclude them -->
         <FrameLayout
-            android:id="@+id/extensions_menu_items_container"
+            android:id="@+id/extensions_menu_state_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_reload_section"
+            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer_divider"
@@ -97,17 +66,79 @@ found in the LICENSE file.
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintVertical_bias="0">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/extensions_menu_items"
+            <!-- Active State: Contains Reload, Access Requests, and Menu Items -->
+            <LinearLayout
+                android:id="@+id/extensions_menu_active_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minWidth="320dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:visibility="gone" />
+                android:orientation="vertical">
 
-            <!-- Restored original zero state UI from CL 7632587 -->
+                <LinearLayout
+                    android:id="@+id/extensions_menu_reload_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/extensions_menu_reload_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/extensions_menu_message_section_reload_container_description_text"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+                    <org.chromium.ui.widget.ButtonCompat
+                        android:id="@+id/extensions_menu_reload_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/extensions_menu_message_section_reload_container_button_text"
+                        android:contentDescription="@string/extensions_menu_message_section_reload_container_button_tooltip" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/extensions_request_access_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/extensions_request_access_section_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/extensions_menu_requests_access_section_title"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+                    <LinearLayout
+                        android:id="@+id/extensions_request_access_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/extensions_menu_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minWidth="320dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    />
+
+            </LinearLayout>
+
+            <!-- Zero State: Mutually exclusive with the active state -->
             <LinearLayout
                 android:id="@+id/extensions_menu_zero_state"
                 android:layout_width="match_parent"
@@ -157,7 +188,7 @@ found in the LICENSE file.
             android:id="@+id/extensions_menu_footer_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_items_container"
+            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_state_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer"

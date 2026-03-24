@@ -106,6 +106,16 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 /* dismissRunnable= */ null);
     }
 
+    /** Called when the allow extension button is clicked. */
+    public void onAllowExtensionClicked(String extensionId) {
+        mMenuBridge.onAllowExtensionClicked(extensionId);
+    }
+
+    /** Called when the dismiss extension button is clicked. */
+    public void onDismissExtensionClicked(String extensionId) {
+        mMenuBridge.onDismissExtensionClicked(extensionId);
+    }
+
     /** Called when the reload page button is clicked. */
     public void onReloadPageButtonClicked() {
         mMenuBridge.onReloadPageButtonClicked();
@@ -130,6 +140,18 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         if (isMainPageVisible()) {
             int optionalSection = mMenuBridge.getOptionalSection();
             mMenuPropertyModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
+
+            if (optionalSection
+                    == org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes
+                            .OptionalSectionType.HOST_ACCESS_REQUESTS) {
+                mMenuPropertyModel.set(
+                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
+                        mMenuBridge.getHostAccessRequests());
+            } else {
+                mMenuPropertyModel.set(
+                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new java.util.ArrayList<>());
+            }
+
             updateMenuEntries();
             return;
         }

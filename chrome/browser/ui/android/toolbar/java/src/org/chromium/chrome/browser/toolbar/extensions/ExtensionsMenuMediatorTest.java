@@ -879,6 +879,59 @@ public class ExtensionsMenuMediatorTest {
                 model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
     }
 
+    @Test
+    public void testOnModelChanged_HostAccessRequestsSection() {
+        // Mock that the main page is visible and the optional section is HOST_ACCESS_REQUESTS
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
+        requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+
+        mMenuMediator.onModelChanged();
+
+        verify(mMenuPropertyModel)
+                .set(
+                        ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
+                        ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
+    }
+
+    @Test
+    public void testOnModelChanged_ReloadSection() {
+        // Mock that the main page is visible and the optional section is RELOAD_PAGE
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.RELOAD_PAGE);
+
+        mMenuMediator.onModelChanged();
+
+        verify(mMenuPropertyModel)
+                .set(
+                        ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
+                        ExtensionsMenuTypes.OptionalSectionType.RELOAD_PAGE);
+
+        // Verify that the HOST_ACCESS_REQUESTS property is cleared to an empty list
+        ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mMenuPropertyModel)
+                .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), listCaptor.capture());
+        assertTrue(listCaptor.getValue().isEmpty());
+    }
+
+    @Test
+    public void testOnModelChanged_NoOptionalSection() {
+        // Mock that the main page is visible and there is no optional section
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.NONE);
+
+        mMenuMediator.onModelChanged();
+
+        // Verify that the HOST_ACCESS_REQUESTS property is cleared to an empty list
+        ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mMenuPropertyModel)
+                .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), listCaptor.capture());
+        assertTrue(listCaptor.getValue().isEmpty());
+    }
+
     /** Helper to assert that the item at the given index has the correct information. */
     private void assertItemAt(int index, String title, @Nullable Bitmap icon, int contextMenuIcon) {
         ListItem item = mActionModels.get(index);

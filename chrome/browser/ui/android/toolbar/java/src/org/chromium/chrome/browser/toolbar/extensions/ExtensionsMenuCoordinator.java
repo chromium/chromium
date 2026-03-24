@@ -233,6 +233,32 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
                 .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true)
                 .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true)
                 .with(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "")
+                .with(
+                        ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
+                        org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes
+                                .OptionalSectionType.NONE)
+                .with(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new java.util.ArrayList<>())
+                .with(
+                        ExtensionsMenuProperties.ALLOW_EXTENSION_CLICK_LISTENER,
+                        (extensionId) -> {
+                            if (mMediator != null) {
+                                mMediator.onAllowExtensionClicked(extensionId);
+                            }
+                        })
+                .with(
+                        ExtensionsMenuProperties.DISMISS_EXTENSION_CLICK_LISTENER,
+                        (extensionId) -> {
+                            if (mMediator != null) {
+                                mMediator.onDismissExtensionClicked(extensionId);
+                            }
+                        })
+                .with(
+                        ExtensionsMenuProperties.RELOAD_CLICK_LISTENER,
+                        (view) -> {
+                            if (mMediator != null) {
+                                mMediator.onReloadPageButtonClicked();
+                            }
+                        })
                 .build();
     }
 

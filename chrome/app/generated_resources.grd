@@ -6608,25 +6608,25 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP" desc="Tooltip text of the button in the message section to reload the page when the user has to reload the page to apply the updated user site settings." formatter_data="android_java">
         Reload page
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE" desc="Title of the requests access section that lists the extensions requesting site access">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE" desc="Title of the requests access section that lists the extensions requesting site access" formatter_data="android_java">
         Requests access
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT" desc="Title on the allow button for each extension in the requests access section that grants site access to such extension.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT" desc="Title on the allow button for each extension in the requests access section that grants site access to such extension." formatter_data="android_java">
         Allow
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TOOLTIP" desc="Tooltip text on the allow button for each extension in the requests access section that grants site access to such extension.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TOOLTIP" desc="Tooltip text on the allow button for each extension in the requests access section that grants site access to such extension." formatter_data="android_java">
         Allow extension to read and change this site
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_ACCESSIBLE_NAME" desc="Accessible string on the allow button for each extension in the requests access section that grants site access to such extension.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_ACCESSIBLE_NAME" desc="Accessible string on the allow button for each extension in the requests access section that grants site access to such extension." formatter_data="android_java">
         Allow <ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph> to read and change this site
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT" desc="Title on the dismiss button for each extension in the requests access section that dismiss the extensions's access requests on this tab's current origin.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT" desc="Title on the dismiss button for each extension in the requests access section that dismiss the extensions's access requests on this tab's current origin." formatter_data="android_java">
         Dismiss
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP" desc="Tooltip text on the dismiss button for each extension in the requests access section that dismiss the extensions's access requests on this tab's current origin.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP" desc="Tooltip text on the dismiss button for each extension in the requests access section that dismiss the extensions's access requests on this tab's current origin." formatter_data="android_java">
         Dismiss request
       </message>
-      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_ACCESSIBLE_NAME" desc="Accessibility string for the dismiss button for each extension in the requests access section that dismisses the extensions's access requests on this tab's current origin.">
+      <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_ACCESSIBLE_NAME" desc="Accessibility string for the dismiss button for each extension in the requests access section that dismisses the extensions's access requests on this tab's current origin." formatter_data="android_java">
         Dismiss request for <ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>
       </message>
       <message name="IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site access toggle of an extensions menu item when is on.">
