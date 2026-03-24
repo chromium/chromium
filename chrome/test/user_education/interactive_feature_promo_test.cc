@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/feature_list.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -66,20 +65,20 @@ void InteractiveFeaturePromoTestApi::RegisterTestFeature(
 
 InteractiveFeaturePromoTestApi::MultiStep
 InteractiveFeaturePromoTestApi::WaitForFeatureEngagementReady() {
-  // Use a refcounted value to pass information between steps, since there is no
-  // access to the browser proper in the pure API class.
-  auto browser = base::MakeRefCounted<base::RefCountedData<Browser*>>(nullptr);
+  INTERACTIVE_TEST_TEMPORARY_VALUE(raw_ptr<Browser>, kBrowser);
   auto steps = Steps(
       // Ensure that the correct tracker for the current context is used.
       WithView(kBrowserViewElementId,
-               [this, browser](BrowserView* browser_view) {
-                 browser->data = browser_view->browser();
-                 CHECK(!test_impl_->GetMockTrackerFor(browser->data));
+               [this, kBrowser](BrowserView* browser_view) {
+                 auto& browser =
+                     SetTemporaryValue(kBrowser, browser_view->browser());
+                 CHECK(!test_impl_->GetMockTrackerFor(browser));
                }),
       ObserveState(kFeatureEngagementInitializedState,
-                   [browser]() { return browser->data; }),
+                   [this, kBrowser]() { return GetTemporaryValue(kBrowser); }),
       WaitForState(kFeatureEngagementInitializedState, true),
-      StopObservingState(kFeatureEngagementInitializedState));
+      StopObservingState(kFeatureEngagementInitializedState),
+      Do([this, kBrowser] { ClearTemporaryValue(kBrowser); }));
   AddDescriptionPrefix(steps, "WaitForFeatureEngagementReady()");
   return steps;
 }
@@ -118,13 +117,13 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
         std::get<user_education::FeaturePromoResult>(show_promo_result);
   }
   const base::Feature& iph_feature = *params.feature;
-  using Result = base::RefCountedData<user_education::FeaturePromoResult>;
-  auto start_result = base::MakeRefCounted<Result>();
+  INTERACTIVE_TEST_TEMPORARY_VALUE(user_education::FeaturePromoResult,
+                                   kStartResult);
   auto steps = Steps(
       std::move(
           WithView(
               kBrowserViewElementId,
-              [this, start_result, params = std::move(params),
+              [this, kStartResult, params = std::move(params),
                expected_result](BrowserView* browser_view) mutable {
                 const base::Feature& iph_feature = *params.feature;
 
@@ -154,12 +153,12 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
                     views::ElementTrackerViews::GetInstance()
                         ->GetElementForView(browser_view));
                 params.show_promo_result_callback = base::BindLambdaForTesting(
-                    [el = std::move(browser_el),
+                    [this, el = std::move(browser_el),
                      old_cb = std::move(params.show_promo_result_callback),
-                     start_result](user_education::FeaturePromoResult
+                     kStartResult](user_education::FeaturePromoResult
                                        promo_result) mutable {
                       CHECK(el);
-                      start_result->data = promo_result;
+                      SetTemporaryValue(kStartResult, promo_result);
                       if (old_cb) {
                         std::move(old_cb).Run(promo_result);
                       }
@@ -197,8 +196,9 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
               })
               .SetDescription("Try to show promo")),
       WaitForEvent(kBrowserViewElementId, kShowPromoResultReceived),
-      CheckResult([start_result]() { return start_result->data; },
-                  expected_result));
+      CheckResult(
+          [this, kStartResult]() { return GetTemporaryValue(kStartResult); },
+          expected_result));
 
   // If success is expected, add steps to wait for the bubble to be shown and
   // verify that the correct promo is showing.

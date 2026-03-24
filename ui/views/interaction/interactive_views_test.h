@@ -28,6 +28,7 @@
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/interactive_test_temporary.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/test/ui_controls.h"
@@ -234,7 +235,7 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
   //   subsequent wait steps.
   template <typename V, typename R, typename M>
     requires internal::IsView<V>
-  [[nodiscard]] static MultiStep WaitForViewPropertyCallback(
+  [[nodiscard]] MultiStep WaitForViewPropertyCallback(
       ElementSpecifier view,
       R (V::*property)() const,
       base::CallbackListSubscription (V::*add_listener)(
@@ -761,7 +762,6 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
   return builder;
 }
 
-// static
 template <typename V, typename R, typename M>
   requires internal::IsView<V>
 ui::test::InteractiveTestApi::MultiStep
@@ -772,24 +772,19 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
         ui::metadata::PropertyChangedCallback),
     M&& matcher,
     ui::CustomElementEventType event_type) {
-  // Need to make this ref-counted to ensure it lives long enough to actually
-  // listen for the state change.
-  using RefCountedSubscription =
-      scoped_refptr<base::RefCountedData<base::CallbackListSubscription>>;
-  RefCountedSubscription subscription =
-      base::MakeRefCounted<RefCountedSubscription::element_type>();
-
+  INTERACTIVE_TEST_TEMPORARY_VALUE(base::CallbackListSubscription,
+                                   kSubscription);
   // The first step will check the property, and either immediately send the
   // event or install the observer that will send the event when the state
   // achieves the correct value.
   using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   auto observe_property = base::BindOnce(
-      [](RefCountedSubscription subscription, R (V::*property)() const,
+      [](InteractiveViewsTestApi* api, decltype(kSubscription) subscription,
+         R (V::*property)() const,
          base::CallbackListSubscription (V::*add_listener)(
              ui::metadata::PropertyChangedCallback),
          ui::CustomElementEventType event_type,
-         testing::Matcher<MatcherType> matcher,
-         ui::TrackedElement* el) {
+         testing::Matcher<MatcherType> matcher, ui::TrackedElement* el) {
         auto* const view = AsView<V>(el);
         if (matcher.Matches(MatcherType((view->*property)()))) {
           // Property is already in the desired state, send event immediately.
@@ -797,28 +792,27 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
               el, event_type);
         } else {
           // Watch the property for a value that satisfies the matcher.
-          subscription->data = (view->*add_listener)(base::BindRepeating(
-              [](V* view, R (V::*property)() const,
-                 ui::CustomElementEventType event_type,
-                 testing::Matcher<MatcherType> matcher) {
-                if (matcher.Matches(MatcherType((view->*property)()))) {
-                  ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-                      event_type, view);
-                }
-              },
-              view, property, event_type, std::move(matcher)));
+          api->SetTemporaryValue(
+              subscription,
+              (view->*add_listener)(base::BindRepeating(
+                  [](V* view, R (V::*property)() const,
+                     ui::CustomElementEventType event_type,
+                     testing::Matcher<MatcherType> matcher) {
+                    if (matcher.Matches(MatcherType((view->*property)()))) {
+                      ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+                          event_type, view);
+                    }
+                  },
+                  view, property, event_type, std::move(matcher))));
         }
       },
-      subscription, property, add_listener, event_type,
+      base::Unretained(this), kSubscription, property, add_listener, event_type,
       testing::Matcher<MatcherType>(std::forward<M>(matcher)));
 
   auto steps = Steps(
       AfterShow(view, std::move(observe_property)).SetMustRemainVisible(true),
-      AfterEvent(view, event_type, [subscription]() {
-        // Need to reference subscription by value so that it is
-        // not discarded until this step runs or the sequence
-        // fails.
-        subscription->data = base::CallbackListSubscription();
+      AfterEvent(view, event_type, [this, kSubscription]() {
+        ClearTemporaryValue(kSubscription);
       }));
   AddDescriptionPrefix(
       steps, base::StrCat({"WaitForProperty( ", event_type.GetName(), ", )"}));
@@ -832,7 +826,7 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
 // Do not use with the "Visible" property; use `WaitForShow()` or
 // `WaitForHide()` instead.
 #define WaitForViewProperty(view, Class, Property, matcher)                    \
-  []() {                                                                       \
+  [this]() {                                                                   \
     DEFINE_MACRO_CUSTOM_ELEMENT_EVENT_TYPE(__FILE__, __LINE__,                 \
                                            kWaitFor##Property##Event);         \
     return WaitForViewPropertyCallback((view), &Class::Get##Property,          \

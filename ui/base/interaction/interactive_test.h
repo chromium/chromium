@@ -70,6 +70,8 @@ class InteractiveTestApi {
       internal::InteractiveTestPrivate::OnIncompatibleAction;
   using AdditionalContext = internal::InteractiveTestPrivate::AdditionalContext;
   using ElementSpecifier = ::ui::ElementSpecifier;
+  template <typename T>
+  using TemporaryIdentifier = InteractiveTestTemporary<T>;
 
   // Construct a single MultiStep from one or more StepBuilders and/or
   // MultiSteps. This should only be necessary when packaging up steps in custom
@@ -668,6 +670,54 @@ class InteractiveTestApi {
   // `kFailTest`, in which case it may be empty.
   [[nodiscard]] StepBuilder SetOnIncompatibleAction(OnIncompatibleAction action,
                                                     const char* reason);
+
+  // Sets temporary value with `temporary_id` to `temporary_value`. Overwrites
+  // any existing value. Can be called any time after test startup and before
+  // teardown, and can be used inside step callbacks.
+  //
+  // Use this to share a value between steps in a custom verb; e.g.:
+  // ```
+  //  // Verifies that e1 contains e2.
+  //  auto CheckContains(ElementSpecifier e1, ElementSpecifier e2) {
+  //    INTERACTIVE_TEST_TEMPORARY_VALUE(gfx::Rect kEl1Bounds);
+  //    return Steps(
+  //        WithElement(e1, [this, kEl1Bounds](ui::TrackedElement* el) {
+  //          SetTemporaryValue(kEl1Bounds, el->GetScreenBounds());
+  //        }),
+  //        CheckElement(e2, [this, kEl1Bounds](ui::TrackedElement* el) {
+  //          return GetTemporaryValue(kEl1Bounds).Contains(
+  //              el->GetScreenBounds());
+  //        }));
+  //  }
+  // ```
+  template <typename V, typename U>
+  const V& SetTemporaryValue(TemporaryIdentifier<V> temporary_id,
+                             U&& temporary_value) {
+    return private_test_impl().temporary_storage().AddOrSet(
+        temporary_id, std::forward<U>(temporary_value));
+  }
+
+  // Gets the temporary value with `temporary_id`, which must have been set. Can
+  // be called any time after test startup and before teardown, and can be used
+  // inside step callbacks.
+  template <typename V>
+  [[nodiscard]] const V& GetTemporaryValue(TemporaryIdentifier<V> variable) {
+    return private_test_impl().temporary_storage().Get(variable);
+  }
+
+  // Frees temporary value with `temporary_id` if it has been set. Useful when
+  // the value holds a reference that you do not want to allow to dangle;
+  // otherwise all temporary data is freed on test teardown. Can be called
+  // inside step callbacks.
+  template <typename V>
+  void ClearTemporaryValue(TemporaryIdentifier<V> variable) {
+    private_test_impl().temporary_storage().Remove(variable);
+  }
+
+  // Frees all temporary values. See `ClearTemporaryValue()`.
+  void ClearAllTemporaryValues() {
+    return private_test_impl().temporary_storage().clear();
+  }
 
   // Used internally by methods in this class; do not call.
   internal::InteractiveTestPrivate& private_test_impl() {

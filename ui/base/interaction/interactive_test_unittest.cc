@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -68,6 +69,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId3);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId4);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestEvent1);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestEvent2);
+INTERACTIVE_TEST_TEMPORARY_VALUE(int, kIntVariable);
+INTERACTIVE_TEST_TEMPORARY_VALUE(std::string, kStringVariable);
+INTERACTIVE_TEST_TEMPORARY_VALUE(base::AutoReset<bool>, kAutoResetValue);
 
 constexpr char kSetOnIncompatibleActionMessage[] =
     "Explicitly testing incompatibility-handling.";
@@ -560,6 +564,35 @@ TEST_F(InteractiveTestTest, CheckVariable) {
                            }),
                            CheckVariable(x, testing::Gt(0)),
                            CheckVariable(text, kNewValue));
+}
+
+TEST_F(InteractiveTestTest, TemporaryValues) {
+  RunTestSequenceInContext(
+      kTestContext1, Do([this] {
+        EXPECT_EQ(1, SetTemporaryValue(kIntVariable, 1));
+        EXPECT_EQ(1, GetTemporaryValue(kIntVariable));
+        EXPECT_EQ(2, SetTemporaryValue(kIntVariable, 2));
+        EXPECT_EQ(2, GetTemporaryValue(kIntVariable));
+        SetTemporaryValue(kStringVariable, "foo");
+      }),
+      CheckResult([this] { return GetTemporaryValue(kStringVariable); },
+                  testing::HasSubstr("fo")));
+}
+
+TEST_F(InteractiveTestTest, ValueFreed) {
+  bool value = false;
+  RunTestSequenceInContext(kTestContext1, Do([this, &value] {
+                             EXPECT_EQ(false, value);
+                             SetTemporaryValue(kAutoResetValue,
+                                               base::AutoReset(&value, true));
+                             EXPECT_EQ(true, value);
+                           }),
+                           Do([this, &value] {
+                             EXPECT_EQ(true, value);
+                             ClearTemporaryValue(kAutoResetValue);
+                             EXPECT_EQ(false, value);
+                           }));
+  EXPECT_EQ(false, value);
 }
 
 TEST_F(InteractiveTestTest, CheckVariableFails) {

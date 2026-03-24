@@ -59,6 +59,8 @@ static_library("test_support") {
     "interactive_test_definitions.h",
     "interactive_test_internal.cc",
     "interactive_test_internal.h",
+    "interactive_test_temporary.cc",
+    "interactive_test_temporary.h",
     "polling_state_observer.h",
     "state_observer.h",
   ]

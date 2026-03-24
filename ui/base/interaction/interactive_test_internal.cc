@@ -291,6 +291,7 @@ std::vector<std::string> InteractiveTestPrivate::GetAdditionalContext() const {
 }
 
 void InteractiveTestPrivate::DoTestSetUp() {
+  temporary_storage_.emplace();
   for (auto& framework : framework_implementations_) {
     framework.DoTestSetUp();
   }
@@ -300,6 +301,7 @@ void InteractiveTestPrivate::DoTestTearDown() {
     framework.DoTestTearDown();
   }
   state_observer_elements_.clear();
+  temporary_storage_.reset();
 }
 
 void InteractiveTestPrivate::OnSequenceComplete() {

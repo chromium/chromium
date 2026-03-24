@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -131,53 +129,44 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
         Do([this] { RunScheduledLayouts(); }));
   }
 
-  using Bounds = base::RefCountedData<gfx::Rect>;
+  auto SaveBounds(ElementSpecifier spec,
+                  TemporaryIdentifier<gfx::Rect> temp_id) {
+    return WithElement(spec, [this, temp_id](ui::TrackedElement* el) {
+      SetTemporaryValue(temp_id, el->GetScreenBounds());
+    });
+  }
+
+  auto CheckContains(TemporaryIdentifier<gfx::Rect> rect,
+                     ElementSpecifier spec) {
+    return CheckElement(
+               spec,
+               [=, this](ui::TrackedElement* el) {
+                 return GetTemporaryValue(rect).Contains(el->GetScreenBounds());
+               })
+        .AddDescriptionPrefix(base::StringPrintf("CheckContains(%s)",
+                                                 rect.identifier().GetName()));
+  }
 
   auto VerifyLayout() {
-    auto browser_bounds = base::MakeRefCounted<Bounds>();
-    auto side_panel_bounds = base::MakeRefCounted<Bounds>();
-    auto content_bounds = base::MakeRefCounted<Bounds>();
-    auto toolbar_bounds = base::MakeRefCounted<Bounds>();
+    INTERACTIVE_TEST_TEMPORARY_VALUE(gfx::Rect, kBrowserBounds);
+    INTERACTIVE_TEST_TEMPORARY_VALUE(gfx::Rect, kSidePanelBounds);
     return Steps(
-        WithElement(kBrowserViewElementId,
-                    [browser_bounds](ui::TrackedElement* el) {
-                      browser_bounds->data = el->GetScreenBounds();
-                    }),
-        WithElement(kSidePanelElementId,
-                    [side_panel_bounds](ui::TrackedElement* el) {
-                      side_panel_bounds->data = el->GetScreenBounds();
-                    }),
-        WithElement(kMultiContentsViewElementId,
-                    [content_bounds](ui::TrackedElement* el) {
-                      content_bounds->data = el->GetScreenBounds();
-                    }),
-        WithElement(ToolbarView::kToolbarElementId,
-                    [toolbar_bounds](ui::TrackedElement* el) {
-                      toolbar_bounds->data = el->GetScreenBounds();
-                    }),
-        Check(
-            [=] {
-              return browser_bounds->data.Contains(side_panel_bounds->data);
-            },
-            "Side Panel in browser"),
-        Check(
-            [=] {
-              return !side_panel_bounds->data.Intersects(toolbar_bounds->data);
-            },
-            "Side Panel does not overlap Toolbar"),
-        Check(
-            [=] { return browser_bounds->data.Contains(toolbar_bounds->data); },
-            "Toolbar in browser"),
-        Check(
-            [=] { return browser_bounds->data.Contains(content_bounds->data); },
-            "Content in browser"),
+        SaveBounds(kBrowserViewElementId, kBrowserBounds),
+        SaveBounds(kSidePanelElementId, kSidePanelBounds),
+        CheckContains(kBrowserBounds, kSidePanelElementId),
+        CheckContains(kBrowserBounds, ToolbarView::kToolbarElementId),
+        CheckContains(kBrowserBounds, kMultiContentsViewElementId),
+        CheckElement(ToolbarView::kToolbarElementId,
+                     [=, this](ui::TrackedElement* el) {
+                       return !GetTemporaryValue(kSidePanelBounds)
+                                   .Intersects(el->GetScreenBounds());
+                     }),
         CheckView(
             ToolbarView::kToolbarElementId,
             [=](ToolbarView* toolbar) {
               LOG(INFO) << "Toolbar minimum size is "
                         << toolbar->GetMinimumSize().ToString();
-              return toolbar_bounds->data.width() >=
-                     toolbar->GetMinimumSize().width();
+              return toolbar->width() >= toolbar->GetMinimumSize().width();
             },
             "Toolbar is at least minimum size"));
   }
@@ -196,28 +185,30 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   auto ScreenshotSubregion(ui::ElementSpecifier spec,
                            const std::string& name,
                            F&& func) {
-    const auto bounds = base::MakeRefCounted<Bounds>();
+    INTERACTIVE_TEST_TEMPORARY_VALUE(gfx::Rect, kSubregion);
     return Steps(
         WithElement(spec,
-                    [bounds](ui::TrackedElement* el) {
-                      bounds->data = el->GetScreenBounds();
+                    [=, this](ui::TrackedElement* el) {
+                      SetTemporaryValue(kSubregion, el->GetScreenBounds());
                     })
             .AddDescriptionPrefix("Get element bounds"),
-        WithView(kBrowserViewElementId,
-                 [bounds, func = std::forward<F>(func)](
-                     BrowserView* browser_view) mutable {
-                   bounds->data = std::move(ui::test::internal::MaybeBind(
-                                                std::forward<F>(func)))
-                                      .Run(bounds->data);
-                   bounds->data.Intersect(browser_view->GetBoundsInScreen());
-                   bounds->data = views::View::ConvertRectFromScreen(
-                       browser_view, bounds->data);
-                 })
+        WithView(
+            kBrowserViewElementId,
+            [=, this,
+             func = std::forward<F>(func)](BrowserView* browser_view) mutable {
+              gfx::Rect bounds = GetTemporaryValue(kSubregion);
+              bounds = std::move(
+                           ui::test::internal::MaybeBind(std::forward<F>(func)))
+                           .Run(bounds);
+              bounds.Intersect(browser_view->GetBoundsInScreen());
+              SetTemporaryValue(kSubregion, views::View::ConvertRectFromScreen(
+                                                browser_view, bounds));
+            })
             .AddDescriptionPrefix("Apply clip function"),
         // Since the target area may go outside the bounds of the element,
         // target the BrowserView instead.
         Screenshot(kBrowserViewElementId, name, kBaselineCl,
-                   [bounds]() mutable { return bounds->data; }));
+                   [=, this]() { return GetTemporaryValue(kSubregion); }));
   }
 
   auto ScreenshotLeft(ui::ElementSpecifier spec,

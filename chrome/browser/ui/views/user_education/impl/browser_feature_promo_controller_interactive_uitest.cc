@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -213,23 +212,23 @@ class BrowserFeaturePromoControllerUiTestBase
   }
 
   auto PressEscAndWaitForClose(ElementSpecifier spec) {
-    auto widget =
-        base::MakeRefCounted<base::RefCountedData<const views::Widget*>>(
-            nullptr);
-    return Steps(
-        WaitForShow(spec),
-        IfView(
-            spec,
-            [widget](const views::View* view) {
-              widget.get()->data = view->GetWidget();
-              return !view->GetWidget()->IsActive();
-            },
-            Then(ObserveState(views::test::kCurrentWidgetFocus),
-                 WaitForState(views::test::kCurrentWidgetFocus,
-                              [widget]() { return widget.get()->data; }))),
-        SendAccelerator(spec,
-                        ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
-        WaitForHide(spec));
+    INTERACTIVE_TEST_TEMPORARY_VALUE(raw_ptr<const views::Widget>, kWidget);
+    return Steps(WaitForShow(spec),
+                 IfView(
+                     spec,
+                     [this, kWidget](const views::View* view) {
+                       SetTemporaryValue(kWidget, view->GetWidget());
+                       return !view->GetWidget()->IsActive();
+                     },
+                     Then(ObserveState(views::test::kCurrentWidgetFocus),
+                          WaitForState(views::test::kCurrentWidgetFocus,
+                                       [this, kWidget]() {
+                                         return GetTemporaryValue(kWidget);
+                                       }))),
+                 Do([this, kWidget] { ClearTemporaryValue(kWidget); }),
+                 SendAccelerator(
+                     spec, ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+                 WaitForHide(spec));
   }
 
   user_education::FeaturePromoController* promo_controller() const {

@@ -81,7 +81,7 @@ class WidgetFocusSupplierFrame {
 
 // Tracks widget focus as a `StateObserver`. Use ObserveState and WaitForState.
 // Can only be created inside of a `WidgetFocusSupplierFrame`.
-class WidgetFocusObserver : public ui::test::StateObserver<Widget*> {
+class WidgetFocusObserver : public ui::test::StateObserver<const Widget*> {
  public:
   WidgetFocusObserver();
   ~WidgetFocusObserver() override;
