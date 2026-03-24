@@ -2722,6 +2722,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kOpenEditGroupViewByTappingTitleName,
      flag_descriptions::kOpenEditGroupViewByTappingTitleDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOpenEditGroupViewByTappingTitle)},
+    {"ios-actuation-tools", flag_descriptions::kIOSActuationToolsName,
+     flag_descriptions::kIOSActuationToolsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kActuationTools)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

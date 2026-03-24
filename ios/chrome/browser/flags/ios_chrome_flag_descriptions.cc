@@ -734,6 +734,10 @@ const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
+const char kIOSActuationToolsName[] = "iOS Actuation Tools";
+const char kIOSActuationToolsDescription[] =
+    "Enables all actuation tools on iOS.";
+
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
