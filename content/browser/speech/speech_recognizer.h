@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include "base/check.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
@@ -21,6 +22,9 @@ class SpeechRecognitionEventListener;
 // Handles speech recognition for a session (identified by |session_id|).
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
+  // TODO(b/495229724): Remove this once the bug is fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id);
 
