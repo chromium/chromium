@@ -471,17 +471,22 @@ void ImageAnimationController::AnimationState::UpdateMetadata(
 
   if (data.repetition_count == kAnimationPaused) {
     current_state_.next_desired_frame_time = base::TimeTicks();
-    if (data.sync_animation_target_id != PaintImage::kInvalidId &&
-        sync_animation_sequence_id_ != data.sync_animation_sequence_id) {
+  }
+
+  if (sync_animation_sequence_id_ != data.sync_animation_sequence_id) {
+    current_state_.next_desired_frame_time = base::TimeTicks();
+    if (data.sync_animation_target_id != PaintImage::kInvalidId) {
       if (const auto& it =
               animation_state_map.find(data.sync_animation_target_id);
           it != animation_state_map.end()) {
-        sync_animation_sequence_id_ = data.sync_animation_sequence_id;
         current_state_.pending_index = it->second.active_index();
         animation_started_ = true;
-        PushPendingToActive();
       }
+    } else {
+      current_state_.pending_index = 0;
     }
+    sync_animation_sequence_id_ = data.sync_animation_sequence_id;
+    PushPendingToActive();
   }
 
   // Reset the animation if the sequence id received in this recording was

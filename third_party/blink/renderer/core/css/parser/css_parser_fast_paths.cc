@@ -1252,7 +1252,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kDense;
     case CSSPropertyID::kImageAnimation:
       return value_id == CSSValueID::kRunning ||
-             value_id == CSSValueID::kPaused || value_id == CSSValueID::kNormal;
+             value_id == CSSValueID::kPaused ||
+             value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kStopped;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||

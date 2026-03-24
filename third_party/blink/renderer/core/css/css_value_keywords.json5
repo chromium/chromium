@@ -981,6 +981,7 @@
     //
     "running",
     "paused",
+    "stopped",
 
     //
     // transform-style

@@ -1282,4 +1282,43 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationNoSyncWhenTargetInvalid) {
   controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
+TEST_F(ImageAnimationControllerTest,
+       PausedAnimationResetsWhenTargetInvalidAndSequenceIdChanges) {
+  std::vector<FrameMetadata> frames = {
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3)),
+      FrameMetadata(true, base::Milliseconds(4))};
+  DiscardableImageMap::AnimatedImageMetadata data(
+      PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
+      kAnimationLoopInfinite, 0,
+      PaintImage::kInvalidId /* sync_animation_target_id */,
+      0 /* sync_animation_sequence_id */);
+  controller_->UpdateAnimatedImage(data);
+  FakeAnimationDriver driver;
+  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
+  controller_->UpdateStateFromDrivers();
+
+  // Advance the target to frame 1.
+  LoopOnceNoDelay(data.paint_image_id, frames, 2u, 0);
+  EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
+                                               WhichTree::ACTIVE_TREE),
+            1u);
+
+  // Update the paused image again with a new sync_animation_sequence_id.
+  data.repetition_count = kAnimationPaused;
+  data.sync_animation_sequence_id = 1;
+  controller_->UpdateAnimatedImage(data);
+
+  // The frame index should be reset to the 0 since the sequence id
+  // changed and the target is invalid id.
+  EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
+                                               WhichTree::PENDING_TREE),
+            0u);
+  EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
+                                               WhichTree::ACTIVE_TREE),
+            0u);
+
+  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
+}
+
 }  // namespace cc

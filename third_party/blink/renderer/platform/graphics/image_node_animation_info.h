@@ -14,7 +14,8 @@ enum class ImageAnimationEnum : uint8_t {
   kNormal,
   kRunning,
   kPaused,
-  kMaxEnumValue = kPaused
+  kStopped,
+  kMaxEnumValue = kStopped
 };
 
 struct ImageNodeAnimationInfo {

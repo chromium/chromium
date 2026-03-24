@@ -64,7 +64,8 @@ int GetRepetitionCountWithPolicyOverride(
     const ImageAnimationEnum image_animation) {
   if (actual_count == kAnimationNone ||
       policy == mojom::blink::ImageAnimationPolicy::
-                    kImageAnimationPolicyNoAnimation) {
+                    kImageAnimationPolicyNoAnimation ||
+      image_animation == ImageAnimationEnum::kStopped) {
     return kAnimationNone;
   }
 
@@ -456,6 +457,13 @@ PaintImage BitmapImage::PaintImageForCurrentFrameWithInfo(
           sync_animation_sequence_id =
               animation_data->non_normal_sequence_id + 1;
           sync_animation_target_id = paint_image_id();
+        } else if (image_animation !=
+                       animation_data->previous_image_animation &&
+                   animation_data->previous_image_animation ==
+                       ImageAnimationEnum::kStopped) {
+          sync_animation_sequence_id =
+              animation_data->non_normal_sequence_id + 1;
+          sync_animation_target_id = PaintImage::kInvalidId;
         } else {
           sync_animation_sequence_id = animation_data->non_normal_sequence_id;
         }
