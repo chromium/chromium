@@ -204,16 +204,12 @@ LocationBarModelImpl::GetPageClassification(bool is_prefetch) const {
   if (!delegate_->GetURL(&gurl)) {
     return OmniboxEventProto::OTHER;
   }
-  if (delegate_->IsNewTabPage()) {
+  if (delegate_->IsNewTabPage() || delegate_->IsNewTabPageURL(gurl)) {
     return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
                : OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS;
   }
   if (!gurl.is_valid()) {
     return OmniboxEventProto::INVALID_SPEC;
-  }
-  if (delegate_->IsNewTabPageURL(gurl)) {
-    return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
-                       : OmniboxEventProto::NTP;
   }
   if (gurl.spec() == url::kAboutBlankURL) {
     return OmniboxEventProto::BLANK;

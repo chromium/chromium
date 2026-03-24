@@ -234,7 +234,8 @@ bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
 }
 
 bool ChromeLocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
-  return url.spec() == chrome::kChromeUINewTabURL;
+  GURL ntp_url(chrome::kChromeUINewTabURL);
+  return ntp_url.scheme() == url.scheme() && ntp_url.host() == url.host();
 }
 
 bool ChromeLocationBarModelDelegate::IsHomePage(const GURL& url) const {
