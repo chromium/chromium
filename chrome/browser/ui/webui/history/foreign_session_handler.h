@@ -15,11 +15,15 @@
 #include "base/values.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 
 namespace content {
-class WebUI;
-}
+class WebContents;
+}  // namespace content
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -46,69 +50,52 @@ enum class SyncedTabsHistogram {
   LIMIT = 12  // Should always be the last one.
 };
 
-class ForeignSessionHandler : public content::WebUIMessageHandler {
+class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
  public:
-  // WebUIMessageHandler implementation.
-  void RegisterMessages() override;
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-
-  ForeignSessionHandler();
+  ForeignSessionHandler(
+      mojo::PendingReceiver<history::mojom::ForeignSessionPageHandler>
+          pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents);
 
   ForeignSessionHandler(const ForeignSessionHandler&) = delete;
   ForeignSessionHandler& operator=(const ForeignSessionHandler&) = delete;
 
   ~ForeignSessionHandler() override;
 
+  // history::mojom::ForeignSessionPageHandler implementation.
+  void SetPage(mojo::PendingRemote<history::mojom::ForeignSessionPage>
+                   pending_page) override;
+  void GetForeignSessions(GetForeignSessionsCallback callback) override;
+  void OpenForeignSessionAllTabs(const std::string& session_tag) override;
+  void OpenForeignSessionTab(const std::string& session_tag,
+                             int32_t tab_id,
+                             ui::mojom::ClickModifiersPtr modifiers) override;
+  void DeleteForeignSession(const std::string& session_tag) override;
+  void SetForeignSessionCollapsed(const std::string& session_tag,
+                                  bool collapsed) override;
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  static void OpenForeignSessionTab(content::WebUI* web_ui,
-                                    const std::string& session_string_value,
-                                    SessionID tab_id,
-                                    const WindowOpenDisposition& disposition);
-
-  static void OpenForeignSessionWindows(
-      content::WebUI* web_ui,
-      const std::string& session_string_value);
 
   // Returns a pointer to the current session model associator or nullptr.
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
-      content::WebUI* web_ui);
-
-  void SetWebUIForTesting(content::WebUI* web_ui) { set_web_ui(web_ui); }
+      Profile* profile);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ForeignSessionHandlerTest,
-                           HandleOpenForeignSessionAllTabs);
-  FRIEND_TEST_ALL_PREFIXES(ForeignSessionHandlerTest,
-                           HandleOpenForeignSessionTab);
-
   void OnForeignSessionUpdated();
 
-  base::ListValue GetForeignSessions();
+  std::vector<history::mojom::ForeignSessionPtr> GetForeignSessionsInternal();
 
   // Returns a string used to show the user when a session was last modified.
   std::u16string FormatSessionTime(const base::Time& time);
 
-  // Opens all the tabs of a foreign session, potentially spanning multiple
-  // windows. This as a javascript callback handler.
-  void HandleOpenForeignSessionAllTabs(const base::ListValue& args);
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
 
-  // Opens a single foreign session tab. This is a javascript callback handler.
-  void HandleOpenForeignSessionTab(const base::ListValue& args);
-
-  // Determines whether foreign sessions should be obtained from the sync model.
-  // This is a javascript callback handler, and it is also called when the sync
-  // model has changed and the new tab page needs to reflect the changes.
-  void HandleGetForeignSessions(const base::ListValue& args);
-
-  // Delete a foreign session. This will remove it from the list of foreign
-  // sessions on all devices. It will reappear if the session is re-activated
-  // on the original device.
-  // This is a javascript callback handler.
-  void HandleDeleteForeignSession(const base::ListValue& args);
-
-  void HandleSetForeignSessionCollapsed(const base::ListValue& args);
+  // Interface to send information to the web ui page.
+  mojo::Remote<history::mojom::ForeignSessionPage> page_;
+  // Allows handling received messages from the web ui page.
+  mojo::Receiver<history::mojom::ForeignSessionPageHandler> receiver_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };

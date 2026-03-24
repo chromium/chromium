@@ -8,8 +8,14 @@ import("//ui/webui/resources/tools/build_webui.gni")
 assert(!is_android && !is_ios)
 
 mojom("mojo_bindings") {
-  sources = [ "history.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  sources = [
+    "foreign_sessions.mojom",
+    "history.mojom",
+  ]
+  public_deps = [
+    "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = ""
 }
 
@@ -18,7 +24,10 @@ build_webui("build") {
   ts_files = [ "constants.ts" ]
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
-  mojo_files = [ "$target_gen_dir/history.mojom-webui.ts" ]
+  mojo_files = [
+    "$target_gen_dir/foreign_sessions.mojom-webui.ts",
+    "$target_gen_dir/history.mojom-webui.ts",
+  ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/history"
   ts_composite = true

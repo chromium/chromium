@@ -273,10 +273,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'history-identity-state-changed',
         (identityState: HistoryIdentityState) =>
             this.onIdentityStateChanged_(identityState));
-    this.addWebUiListener(
-        'foreign-sessions-changed',
-        (sessionList: ForeignSession[]) =>
-            this.setForeignSessions_(sessionList));
+    this.browserService_.foreignSessionCallbackRouter.onForeignSessionsChanged
+        .addListener(
+            (sessionList: ForeignSession[]) =>
+                this.setForeignSessions_(sessionList));
     this.shadowRoot.querySelector('history-query-manager')!.initialize();
     this.browserService_.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));

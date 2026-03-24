@@ -201,7 +201,6 @@ export function createWindow(tabUrls: string[]): ForeignSessionWindow {
       sessionId: 456,
       timestamp: 0,
       title: tabUrl,
-      type: 'tab',
       url: tabUrl,
       windowId: 0,
     };

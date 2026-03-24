@@ -1,0 +1,61 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history.mojom;
+
+import "ui/base/mojom/window_open_disposition.mojom";
+import "url/mojom/url.mojom";
+
+struct ForeignSessionTab {
+  string direction;
+  string remote_icon_url_for_uma;
+  int32 session_id;
+  double timestamp;
+  string title;
+  url.mojom.Url url;
+  int32 window_id;
+};
+
+struct ForeignSessionWindow {
+  double timestamp;
+  int32 session_id;
+  array<ForeignSessionTab> tabs;
+};
+
+struct ForeignSession {
+  string tag;
+  string name;
+  string modified_time;
+  double timestamp;
+  bool collapsed;
+  array<ForeignSessionWindow> windows;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface ForeignSessionPageHandler {
+  // The BrowserProxy singleton calls this when it's first initialized.
+  SetPage(pending_remote<ForeignSessionPage> page);
+
+  // Queries for the list of foreign sessions.
+  GetForeignSessions() => (array<ForeignSession> sessions);
+
+  // Opens all tabs of a foreign session.
+  OpenForeignSessionAllTabs(string session_tag);
+
+  // Opens a single foreign session tab.
+  OpenForeignSessionTab(
+      string session_tag, int32 tab_id, ui.mojom.ClickModifiers modifiers);
+
+  // Delete a foreign session.
+  DeleteForeignSession(string session_tag);
+
+  // Sets the collapsed state of a foreign session.
+  SetForeignSessionCollapsed(string session_tag, bool collapsed);
+};
+
+// WebUI-side handler for requests from browser.
+interface ForeignSessionPage {
+  // Notifies the page that the foreign sessions have changed.
+  OnForeignSessionsChanged(array<ForeignSession> sessions);
+};

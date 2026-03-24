@@ -4,10 +4,8 @@
 
 import type {BrowserService, ForeignSession, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
-import {
-  PageCallbackRouter,
-  PageHandlerRemote,
-} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {ForeignSessionPageCallbackRouter, ForeignSessionPageHandlerRemote} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -19,6 +17,9 @@ export class TestBrowserService extends TestBrowserProxy implements
     BrowserService {
   handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
+  foreignSessionHandler: TestMock<ForeignSessionPageHandlerRemote>&
+      ForeignSessionPageHandlerRemote;
+  foreignSessionCallbackRouter: ForeignSessionPageCallbackRouter;
   pageRemote: PageRemote;
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
@@ -44,6 +45,9 @@ export class TestBrowserService extends TestBrowserProxy implements
 
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
+    this.foreignSessionHandler =
+        TestMock.fromClass(ForeignSessionPageHandlerRemote);
+    this.foreignSessionCallbackRouter = new ForeignSessionPageCallbackRouter();
     this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     this.initialIdentityState_ = {

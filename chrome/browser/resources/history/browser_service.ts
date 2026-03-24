@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ForeignSessionPageHandlerRemote} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import {ForeignSessionPageCallbackRouter, ForeignSessionPageHandler} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
-import type {ForeignSession} from './externs.js';
-import type {HistoryIdentityState} from './externs.js';
+import type {ForeignSession, HistoryIdentityState} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
@@ -22,6 +24,8 @@ export type RemoveVisitsRequest = Array<{
 export interface BrowserService {
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
+  foreignSessionHandler: ForeignSessionPageHandlerRemote;
+  foreignSessionCallbackRouter: ForeignSessionPageCallbackRouter;
   getForeignSessions(): Promise<ForeignSession[]>;
   openForeignSessionAllTabs(sessionTag: string): void;
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
@@ -41,10 +45,17 @@ export interface BrowserService {
 export class BrowserServiceImpl implements BrowserService {
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
+  foreignSessionHandler: ForeignSessionPageHandlerRemote;
+  foreignSessionCallbackRouter: ForeignSessionPageCallbackRouter;
 
-  constructor(handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
+  constructor(
+      handler: PageHandlerRemote, callbackRouter: PageCallbackRouter,
+      foreignSessionHandler: ForeignSessionPageHandlerRemote,
+      foreignSessionCallbackRouter: ForeignSessionPageCallbackRouter) {
     this.handler = handler;
     this.callbackRouter = callbackRouter;
+    this.foreignSessionHandler = foreignSessionHandler;
+    this.foreignSessionCallbackRouter = foreignSessionCallbackRouter;
   }
 
   static getInstance(): BrowserService {
@@ -55,7 +66,15 @@ export class BrowserServiceImpl implements BrowserService {
     const handler = PageHandler.getRemote();
     const callbackRouter = new PageCallbackRouter();
     handler.setPage(callbackRouter.$.bindNewPipeAndPassRemote());
-    return instance = new BrowserServiceImpl(handler, callbackRouter);
+
+    const foreignSessionHandler = ForeignSessionPageHandler.getRemote();
+    const foreignSessionCallbackRouter = new ForeignSessionPageCallbackRouter();
+    foreignSessionHandler.setPage(
+        foreignSessionCallbackRouter.$.bindNewPipeAndPassRemote());
+
+    return instance = new BrowserServiceImpl(
+               handler, callbackRouter, foreignSessionHandler,
+               foreignSessionCallbackRouter);
   }
 
   static setInstance(obj: BrowserService) {
@@ -63,27 +82,28 @@ export class BrowserServiceImpl implements BrowserService {
   }
 
   getForeignSessions() {
-    return sendWithPromise('getForeignSessions');
+    return this.foreignSessionHandler.getForeignSessions().then(
+        (result: {sessions: ForeignSession[]}) => result.sessions);
   }
 
   openForeignSessionAllTabs(sessionTag: string) {
-    chrome.send('openForeignSessionAllTabs', [sessionTag]);
+    this.foreignSessionHandler.openForeignSessionAllTabs(sessionTag);
   }
 
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent) {
-    chrome.send('openForeignSessionTab', [
-      sessionTag,
-      String(tabId),
-      e.button || 0,
-      e.altKey,
-      e.ctrlKey,
-      e.metaKey,
-      e.shiftKey,
-    ]);
+    const modifiers: ClickModifiers = {
+      middleButton: e.button === 1,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    };
+    this.foreignSessionHandler.openForeignSessionTab(
+        sessionTag, tabId, modifiers);
   }
 
   deleteForeignSession(sessionTag: string) {
-    chrome.send('deleteForeignSession', [sessionTag]);
+    this.foreignSessionHandler.deleteForeignSession(sessionTag);
   }
 
   recordHistogram(histogram: string, value: number, max: number) {

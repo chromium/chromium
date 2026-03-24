@@ -128,6 +128,7 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
@@ -248,7 +249,6 @@ void BindColorChangeListener(
 void PopulateChromeWebUIFrameBindersPartsDesktop(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
-
   RegisterWebUIControllerInterfaceBinder<
       search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(
       map);
@@ -299,6 +299,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
+  RegisterWebUIControllerInterfaceBinder<
+      history::mojom::ForeignSessionPageHandler, HistoryUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       infobar_internals::mojom::PageHandlerFactory, InfoBarInternalsUI>(map);
