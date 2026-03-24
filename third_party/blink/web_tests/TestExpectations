@@ -742,7 +742,7 @@ crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscree
 
 # ====== Layout team owned tests from here ======
 
-crbug.com/403617975 external/wpt/css/css-tables/crashtests/atomic-item-crash.html [ Crash ]
+crbug.com/403617975 external/wpt/css/css-tables/crashtests/atomic-item-crash.html [ Crash Timeout ]
 
 crbug.com/488203474 external/wpt/css/CSS2/abspos/static-inside-inline-002.html [ Failure ]
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule3-outside-left-002.xht [ Failure ]
@@ -1309,6 +1309,23 @@ crbug.com/387281256 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Fai
 # Custom highlights
 crbug.com/488137634 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-005.html [ Failure ]
 
+# Failing locally on gLinux
+crbug.com/495458814 [ Linux ] external/wpt/css/css-content/element-replacement-dynamic.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-flexbox/anonymous-flex-item-restyle.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-fonts/variations/at-font-face-descriptors.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/backdrop-filter-bad-mask-image.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/backdrop-filter-mask-image-while-loading.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/bad-mask-image-svg.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/bad-mask-image.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/mask-image-cors-001.sub.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-auto-scrolling-with-margin-and-transform.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-body-propagation-013.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/scroll-markers/root-scroll-button-activation.html [ Pass Timeout ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-pseudo/text-selection.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-ui/text-overflow-005.html [ Pass Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Tests only passing with SnapshotScrollTimelinesPostLayout enabled
@@ -1462,7 +1479,6 @@ crbug.com/415952276 [ Mac ] external/wpt/screen-capture/getdisplaymedia-restrict
 crbug.com/404597 [ Mac ] fast/forms/long-text-in-input.html [ Crash Failure Pass Timeout ]
 crbug.com/552494 virtual/prefer_compositing_to_lcd_text/scrollbars/overflow-scrollbar-combinations.html [ Failure Pass ]
 
-crbug.com/745905 external/wpt/css/css-ui/text-overflow-021.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-rtl-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-lr-001.html [ Failure ]
@@ -1512,8 +1528,6 @@ crbug.com/1162836 external/wpt/css/css-text/white-space/full-width-leading-space
 
 # Follow up the spec change for U+2010, U+2013
 crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-loose-hyphens-001.html [ Failure ]
-crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-normal-hyphens-002.html [ Failure ]
-crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-strict-hyphens-002.html [ Failure ]
 
 
 # Not yet investigated
@@ -3346,10 +3360,7 @@ crbug.com/431036875 [ Mac14 ] external/wpt/content-security-policy/report-hash/d
 crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
-crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-reference-box-004.html [ Failure ]
 crbug.com/431033198 external/wpt/css/css-pseudo/highlight-painting-shadows-vertical.html [ Failure ]
-crbug.com/431038526 external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html [ Failure ]
-crbug.com/431038526 external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html [ Failure ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/selectors/focus-in-focus-event-001.html [ Timeout ]
 crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap [ Skip Timeout ]
 crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=nowrap [ Skip Timeout ]
@@ -3673,8 +3684,6 @@ crbug.com/404571518 [ Mac12 ] virtual/gpu/external/wpt/mediacapture-record/Media
 crbug.com/403967924 external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
 [ Win11-arm64 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
 crbug.com/439640691 external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
-crbug.com/431157700 [ Linux ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure ]
-crbug.com/431157700 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-decorations-001.html [ Failure ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-shadow.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-023.html [ Failure ]
@@ -5041,8 +5050,6 @@ crbug.com/709227 external/wpt/html/browsers/history/the-location-interface/per-g
 # ====== Tests from enabling .any.js/.worker.js tests end here ========
 
 # ====== Begin of display: contents tests ======
-
-crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001-inline.html [ Failure ]
 
 # ====== End of display: contents tests ======
 

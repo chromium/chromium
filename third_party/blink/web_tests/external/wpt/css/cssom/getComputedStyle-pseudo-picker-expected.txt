@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] Invalid pseudo-element should return empty style: ::picker(div)
   assert_equals: expected 0 but got 483
 Harness: the test ran to completion.
+
