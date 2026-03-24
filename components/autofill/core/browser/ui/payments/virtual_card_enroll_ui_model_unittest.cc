@@ -15,6 +15,34 @@ namespace autofill {
 
 // Ensures default properties are set.
 TEST(VirtualCardEnrollUiModelTest, CreateDefaultProperties) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableWalletBrandingV2);
+
+  std::unique_ptr<VirtualCardEnrollUiModel> model =
+      std::make_unique<VirtualCardEnrollUiModel>(VirtualCardEnrollmentFields());
+
+  EXPECT_EQ(model->window_title(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL_V2));
+  EXPECT_EQ(
+      model->explanatory_message(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL_V2,
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL)));
+  EXPECT_EQ(model->accept_action_text(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL));
+  EXPECT_EQ(model->learn_more_link_text(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL));
+}
+
+// Ensures default properties are set when Wallet branding v2 is disabled.
+TEST(VirtualCardEnrollUiModelTest, CreateDefaultProperties_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
+
   std::unique_ptr<VirtualCardEnrollUiModel> model =
       std::make_unique<VirtualCardEnrollUiModel>(VirtualCardEnrollmentFields());
 
