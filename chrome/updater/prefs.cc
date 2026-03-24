@@ -39,14 +39,14 @@ namespace updater {
 
 namespace {
 
-const char kPrefQualified[] = "qualified";
-const char kPrefSwapping[] = "swapping";
-const char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
-const char kPrefActiveVersion[] = "active_version";
-const char kPrefServerStarts[] = "server_starts";
+constexpr char kPrefQualified[] = "qualified";
+constexpr char kPrefSwapping[] = "swapping";
+constexpr char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
+constexpr char kPrefActiveVersion[] = "active_version";
+constexpr char kPrefServerStarts[] = "server_starts";
 
 // Serializes access to prefs.
-const char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
+constexpr char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
 
 // Total time to wait when creating prefs.
 constexpr base::TimeDelta kCreatePrefsWait(base::Minutes(2));

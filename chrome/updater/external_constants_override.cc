@@ -42,7 +42,7 @@
 namespace {
 
 // Developer override file name, relative to app data directory.
-const char kDevOverrideFileName[] = "overrides.json";
+constexpr char kDevOverrideFileName[] = "overrides.json";
 
 std::vector<GURL> GURLVectorFromStringList(
     const base::ListValue& update_url_list) {

@@ -285,7 +285,7 @@ void InitLoggingForUnitTest(const base::FilePath& log_base_path) {
 
 #if BUILDFLAG(IS_WIN)
 namespace {
-const wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";
+constexpr wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";
 }  // namespace
 
 base::FilePath StartProcmonLogging() {

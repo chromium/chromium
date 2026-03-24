@@ -45,25 +45,25 @@ namespace {
 
 // The name of the tasks as will be visible in the scheduler so we know we can
 // safely delete them if they get stuck for whatever reason.
-const wchar_t kTaskName1[] = L"Chrome Updater Test task 1 (delete me)";
-const wchar_t kTaskName2[] = L"Chrome Updater Test task 2 (delete me)";
+constexpr wchar_t kTaskName1[] = L"Chrome Updater Test task 1 (delete me)";
+constexpr wchar_t kTaskName2[] = L"Chrome Updater Test task 2 (delete me)";
 
-const wchar_t kPrefixTaskName1[] = L"Chrome Updater Test task 1";
-const wchar_t kPrefixTaskName2[] = L"Chrome Updater Test task 2";
+constexpr wchar_t kPrefixTaskName1[] = L"Chrome Updater Test task 1";
+constexpr wchar_t kPrefixTaskName2[] = L"Chrome Updater Test task 2";
 
-const wchar_t kUpdaterTaskName1[] = L"Updater1.1{xxxxxxxx}";
-const wchar_t kUpdaterTaskName2[] = L"Updater1.11{xxxxxxxx}";
+constexpr wchar_t kUpdaterTaskName1[] = L"Updater1.1{xxxxxxxx}";
+constexpr wchar_t kUpdaterTaskName2[] = L"Updater1.11{xxxxxxxx}";
 
-const wchar_t kPrefixUpdaterTaskName1[] = L"Updater1.1";
+constexpr wchar_t kPrefixUpdaterTaskName1[] = L"Updater1.1";
 
 // Optional descriptions for the tasks above.
-const wchar_t kTaskDescription1[] =
+constexpr wchar_t kTaskDescription1[] =
     L"Task 1 used only for Chrome Updater unit testing.";
-const wchar_t kTaskDescription2[] =
+constexpr wchar_t kTaskDescription2[] =
     L"Task 2 used only for Chrome Updater unit testing.";
 
 // A command-line switch used in testing.
-const char kUnitTestSwitch[] = "a_switch";
+constexpr char kUnitTestSwitch[] = "a_switch";
 
 class TaskSchedulerTests : public ::testing::Test {
  public:

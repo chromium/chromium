@@ -529,7 +529,7 @@ bool BuildTestAppInstaller(const base::FilePath& installer_script,
   }
   const base::FilePath installer_dir = exe_path.Append(L"test_installer");
 #if defined(ADDRESS_SANITIZER)
-  static const char kAsanRuntime[] = "clang_rt.asan_dynamic-x86_64.dll";
+  static constexpr char kAsanRuntime[] = "clang_rt.asan_dynamic-x86_64.dll";
   const base::FilePath asan_runtime = exe_path.AppendUTF8(kAsanRuntime);
   EXPECT_TRUE(base::CopyFile(
       asan_runtime, output_installer.DirName().AppendUTF8(kAsanRuntime)));
@@ -1562,7 +1562,7 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& command_id,
                                        const base::ListValue& parameters,
                                        int expected_exit_code) {
-  const size_t kMaxParameters = 9;
+  constexpr size_t kMaxParameters = 9;
   ASSERT_LE(parameters.size(), kMaxParameters);
 
   base::ScopedTempDir temp_dir;

@@ -45,15 +45,15 @@ namespace updater {
 namespace {
 
 // Names of the TaskSchedulerV2 libraries so we can pin them below.
-const wchar_t kV2Library[] = L"taskschd.dll";
+constexpr wchar_t kV2Library[] = L"taskschd.dll";
 
 // Text for times used in the V2 API of the Task Scheduler.
-const wchar_t kOneHourText[] = L"PT1H";
-const wchar_t kFiveHoursText[] = L"PT5H";
-const wchar_t kOneDayText[] = L"P1D";
+constexpr wchar_t kOneHourText[] = L"PT1H";
+constexpr wchar_t kFiveHoursText[] = L"PT5H";
+constexpr wchar_t kOneDayText[] = L"P1D";
 
-const size_t kNumDeleteTaskRetry = 3;
-const size_t kDeleteRetryDelayInMs = 100;
+constexpr size_t kNumDeleteTaskRetry = 3;
+constexpr size_t kDeleteRetryDelayInMs = 100;
 
 // Returns true if `error` is HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) or
 // HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND).
