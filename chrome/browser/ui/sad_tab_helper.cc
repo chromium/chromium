@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -93,6 +94,14 @@ void SadTabHelper::PrimaryMainFrameRenderProcessGone(
       auto* tab_lifecycle_unit_external =
           resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
               web_contents());
+
+      if (!tab_lifecycle_unit_external &&
+          prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+              web_contents())) {
+        // No-state prefetch can be evicted for memory with prefetched web
+        // contents be hidden but not in a TabStripModel.
+        return;
+      }
       CHECK(tab_lifecycle_unit_external);
       if (tab_lifecycle_unit_external->DiscardTab(
               ::mojom::LifecycleUnitDiscardReason::URGENT)) {

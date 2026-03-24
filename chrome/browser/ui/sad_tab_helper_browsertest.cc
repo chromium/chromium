@@ -23,7 +23,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/process/process.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
 #include "chrome/common/chrome_result_codes.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #endif
 
 class SadTabHelperBrowserTest : public InProcessBrowserTest {
@@ -89,5 +94,80 @@ IN_PROC_BROWSER_TEST_F(
     // It's possible for the WebContents to be briefly null during the swap.
     return current_web_contents && current_web_contents->WasDiscarded();
   }));
+}
+
+// Windows only test, because of the way process termination is used.
+// Verifies that a no-state prefetch WebContents (which is not in a
+// TabStripModel) does not crash in SadTabHelper when its renderer is
+// terminated with TERMINATION_STATUS_EVICTED_FOR_MEMORY. Previously, a CHECK
+// in SadTabHelper::PrimaryMainFrameRenderProcessGone assumed that
+// TabLifecycleUnitExternal::FromWebContents always returned non-null, but
+// no-state prefetch WebContents are never added to a TabStripModel.
+IN_PROC_BROWSER_TEST_F(SadTabHelperBrowserTest,
+                       NoStatePrefetchEvictedForMemory_DoesNotCrash) {
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+  // Navigate the main tab to a real page so we have an active browser context.
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Start a no-state prefetch. This creates a hidden WebContents that is NOT
+  // in any TabStripModel but has SadTabHelper attached via
+  // TabHelpers::AttachTabHelpers.
+  prerender::NoStatePrefetchManager* prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+          browser()->profile());
+
+  // Set-up no-state prefetch test.
+  prerender::test_utils::TestNoStatePrefetchContentsFactory*
+      no_state_prefetch_contents_factory =
+          new prerender::test_utils::TestNoStatePrefetchContentsFactory();
+
+  std::unique_ptr<prerender::test_utils::TestPrerender> test_no_state_prefetch =
+      no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
+          prerender::FINAL_STATUS_RENDERER_CRASHED);
+
+  prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
+      no_state_prefetch_contents_factory);
+
+  // Navigate no-state prefetch to hung url to keep it alive before memory
+  // eviction, because if all subresources will be loaded NoStatePrefetchHelper
+  // in renderer will finish prefetching with calling
+  // CancelNoStatePrefetchAfterSubresourcesDiscovered.
+  const GURL prefetch_url(embedded_test_server()->GetURL("/hung"));
+  std::unique_ptr<prerender::NoStatePrefetchHandle> prefetch_handle =
+      prefetch_manager->StartPrefetchingFromLinkRelPrerender(
+          /*process_id=*/-1, /*route_id=*/-1, prefetch_url,
+          blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+          content::Referrer(), url::Origin::Create(prefetch_url),
+          gfx::Size(640, 480));
+
+  content::WebContents* prefetch_web_contents =
+      prefetch_handle->contents()->no_state_prefetch_contents();
+
+  // Verify this WebContents has a SadTabHelper but is hidden and has no
+  // TabLifecycleUnitExternal (not in a TabStripModel).
+  ASSERT_TRUE(SadTabHelper::FromWebContents(prefetch_web_contents));
+  ASSERT_EQ(prefetch_web_contents->GetVisibility(),
+            content::Visibility::HIDDEN);
+
+  // Wait for the render process with prefetch web contents to be ready before
+  // terminating it.
+  test_no_state_prefetch->WaitForStart();
+  content::RenderProcessHost* render_process_host =
+      prefetch_web_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(render_process_host->IsReady());
+
+  // Terminate the prefetch renderer with the exit code that maps to
+  // TERMINATION_STATUS_EVICTED_FOR_MEMORY.
+  content::RenderProcessHostWatcher crash_observer(
+      render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  render_process_host->GetProcess().Terminate(
+      CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE, false);
+  crash_observer.Wait();
+
+  // Should get there with crashed renderer with prefetch web contents, but
+  // without crashing browser process.
 }
 #endif  // BUILDFLAG(IS_WIN)
