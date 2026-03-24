@@ -109,33 +109,3 @@ source_set("extensions") {
     }
   }
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "api/extension_hooks_delegate_unittest.cc",
-    "api/identity_hooks_delegate_unittest.cc",
-    "api/tabs_hooks_delegate_unittest.cc",
-    "chrome_native_extension_bindings_system_unittest.cc",
-    "chrome_policy_activity_log_filter_delegate_unittest.cc",
-    "custom_types_unittest.cc",
-    "renderer_permissions_policy_delegate_unittest.cc",
-  ]
-
-  deps = [
-    ":extensions",
-    "//base/test:test_support",
-    "//chrome/common:chrome_features",
-    "//chrome/common:non_code_constants",
-    "//chrome/common/extensions",
-    "//chrome/renderer:process_state",
-    "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/renderer:unit_test_support",
-    "//testing/gtest",
-  ]
-
-  if (is_chromeos) {
-    sources += [ "api/accessibility_private_hooks_delegate_unittest.cc" ]
-  }
-}

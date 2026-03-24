@@ -9829,7 +9829,16 @@ test("unit_tests") {
       # Desktop Android does not support webview.
       "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
+      "../renderer/extensions/api/extension_hooks_delegate_unittest.cc",
+      "../renderer/extensions/api/identity_hooks_delegate_unittest.cc",
+      "../renderer/extensions/api/tabs_hooks_delegate_unittest.cc",
+      "../renderer/extensions/chrome_native_extension_bindings_system_unittest.cc",
+      "../renderer/extensions/chrome_policy_activity_log_filter_delegate_unittest.cc",
+      "../renderer/extensions/custom_types_unittest.cc",
+      "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
+
+    deps += [ "//chrome/browser/policy:policy_migrator" ]
 
     # Side panel is not yet supported on desktop Android.
     sources += [ "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc" ]
@@ -9873,7 +9882,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/affiliations",
-      "//chrome/browser/policy:policy_migrator",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/passwords/settings",
@@ -9887,7 +9895,6 @@ test("unit_tests") {
       "//chrome/common/extensions/api",
       "//chrome/renderer:process_state",
       "//chrome/renderer/extensions",
-      "//chrome/renderer/extensions:unit_tests",
       "//chrome/utility/image_writer:unit_tests",
       "//components/app_icon_loader",
       "//components/enterprise:test_support",
@@ -9963,6 +9970,7 @@ test("unit_tests") {
         "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
+        "../renderer/extensions/api/accessibility_private_hooks_delegate_unittest.cc",
       ]
 
       deps += [
