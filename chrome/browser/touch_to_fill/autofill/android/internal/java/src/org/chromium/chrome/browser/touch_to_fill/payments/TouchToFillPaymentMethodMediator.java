@@ -394,6 +394,16 @@ class TouchToFillPaymentMethodMediator {
     static final String ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED =
             ".IssuerSelectionScreen.SettingsLinkSelected";
 
+    @VisibleForTesting
+    static final String
+            ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_BOLD_FONT =
+                    ".IssuerSelectionScreen.AiBasedAmountExtractionTermsShown.InBoldFont";
+
+    @VisibleForTesting
+    static final String
+            ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_NORMAL_FONT =
+                    ".IssuerSelectionScreen.AiBasedAmountExtractionTermsShown.InNormalFont";
+
     @VisibleForTesting static final String PROGRESS_SCREEN_SHOWN = ".ProgressScreen.Shown";
 
     @VisibleForTesting static final String PROGRESS_SCREEN_DISMISSED = ".ProgressScreen.Dismissed";
@@ -1552,10 +1562,14 @@ class TouchToFillPaymentMethodMediator {
                     context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_ai_terms_label);
             if (didShowBoldedAiTerms) {
                 termsString = termsString.replace("<bold>", "").replace("</bold>", "");
+                recordTouchToFillBnplUserAction(
+                        ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_NORMAL_FONT);
             } else {
                 spanInfos.add(
                         new SpanApplier.SpanInfo(
                                 "<bold>", "</bold>", new StyleSpan(Typeface.BOLD)));
+                recordTouchToFillBnplUserAction(
+                        ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_BOLD_FONT);
             }
         } else {
             termsString = context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);

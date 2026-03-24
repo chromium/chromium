@@ -6357,6 +6357,14 @@ should be able to be added at any place in this file.
         summary="Linked Affirm issuer selected."/>
     <variant name=".IssuerSelectionScreen.AffirmUnlinkedSelected"
         summary="Unlinked Affirm issuer selected."/>
+    <variant
+        name=".IssuerSelectionScreen.AiBasedAmountExtractionTermsShown.InBoldFont"
+        summary="AI-based amount extraction terms are displayed in bold for
+                 first-time users."/>
+    <variant
+        name=".IssuerSelectionScreen.AiBasedAmountExtractionTermsShown.InNormalFont"
+        summary="AI-based amount extraction terms are displayed in normal
+                 text for returning users."/>
     <variant name=".IssuerSelectionScreen.BackButtonSelected"
         summary="Back button selected."/>
     <variant name=".IssuerSelectionScreen.Dismissed"

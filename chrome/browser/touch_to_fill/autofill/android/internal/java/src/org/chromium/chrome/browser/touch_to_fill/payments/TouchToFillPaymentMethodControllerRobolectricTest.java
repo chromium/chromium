@@ -28,6 +28,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ERROR_SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_BOLD_FONT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_NORMAL_FONT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_DISMISSED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED;
@@ -1289,6 +1291,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         // Verify no bold span for AI terms.
         StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
         assertEquals(0, styleSpans.length);
+        assertEquals(
+                1,
+                getUserActionCount(
+                        ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_NORMAL_FONT));
     }
 
     @Test
@@ -1332,6 +1338,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         .substring(
                                 spannable.getSpanStart(boldTextSpan),
                                 spannable.getSpanEnd(boldTextSpan)));
+        assertEquals(
+                1,
+                getUserActionCount(
+                        ISSUER_SELECTION_SCREEN_AI_BASED_AMOUNT_EXTRACTION_TERMS_SHOWN_IN_BOLD_FONT));
     }
 
     @Test
