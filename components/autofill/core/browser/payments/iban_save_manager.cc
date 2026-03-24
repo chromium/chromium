@@ -205,6 +205,11 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
 #if BUILDFLAG(IS_ANDROID)
   upload_request_details_.client_behavior_signals.push_back(
       ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+#else
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)) {
+    upload_request_details_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+  }
 #endif
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()

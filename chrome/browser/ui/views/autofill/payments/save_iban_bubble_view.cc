@@ -322,9 +322,15 @@ std::unique_ptr<views::View> SaveIbanBubbleView::CreateLegalMessageView() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
+  bool v2_branding_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2);
   legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
-      message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
-      GetProfileAvatar(controller()->GetAccountInfo()),
+      message_lines,
+      v2_branding_enabled
+          ? /*user_email=*/std::u16string()
+          : base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+      v2_branding_enabled ? /*user_avatar=*/ui::ImageModel()
+                          : GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveIbanBubbleView::LinkClicked,
                           base::Unretained(this))));
 
