@@ -12405,6 +12405,10 @@ void NavigationRequest::SetAsyncBeforeUnloadCommitResumeClosure(
 
 void NavigationRequest::StartAsyncBeforeUnloadTimer() {
   CHECK(!async_before_unload_pending_replies_.empty());
+  TRACE_EVENT_BEGIN(
+      "navigation", "AsyncBeforeUnload",
+      perfetto::NamedTrack::FromPointer("AsyncBeforeUnload", this),
+      "Initial URL", common_params_->url.spec());
   async_before_unload_timeout_.Start(
       FROM_HERE, features::kAsyncBeforeUnloadTimeout.Get(),
       base::BindOnce(
@@ -12444,6 +12448,8 @@ void NavigationRequest::MaybeResumeAsyncBeforeUnloadCommit(
     // Wait for the remaining reply for beforeunload.
     return;
   }
+  TRACE_EVENT_END("navigation",
+                  perfetto::NamedTrack::FromPointer("AsyncBeforeUnload", this));
   // Proceed with navigation commit.
   async_before_unload_timeout_.Stop();
   if (async_before_unload_commit_resume_closure_) {
