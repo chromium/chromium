@@ -4,16 +4,22 @@
 
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using media::PictureInPictureEventsInfo;
+using PromptResult = AutoPipSettingHelper::PromptResult;
+using testing::_;
 
 class AutoPictureInPictureHatsBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -37,8 +43,8 @@ class AutoPictureInPictureHatsBrowserTestBase : public InProcessBrowserTest {
                                           /*create_if_necessary=*/true));
   }
 
-  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
-    return {media::kAutoPictureInPictureSurveys};
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {{media::kAutoPictureInPictureSurveys, {}}};
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
@@ -46,7 +52,8 @@ class AutoPictureInPictureHatsBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
     InProcessBrowserTest::SetUp();
   }
 
@@ -61,12 +68,14 @@ class AutoPictureInPictureHatsBrowserTest
  public:
   bool is_surveys_feature_enabled() const { return GetParam(); }
 
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return is_surveys_feature_enabled()
                ? std::vector<
-                     base::test::FeatureRef>{media::
-                                                 kAutoPictureInPictureSurveys}
-               : std::vector<base::test::FeatureRef>{};
+                     base::test::
+                         FeatureRefAndParams>{{media::
+                                                   kAutoPictureInPictureSurveys,
+                                               {}}}
+               : std::vector<base::test::FeatureRefAndParams>{};
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
@@ -96,4 +105,36 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureHatsBrowserTest,
     EXPECT_EQ(nullptr,
               AutoPictureInPictureHatsServiceFactory::GetForProfile(profile));
   }
+}
+
+class AutoPictureInPictureHatsEnabledBrowserTest
+    : public AutoPictureInPictureHatsBrowserTestBase {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{media::kAutoPictureInPictureSurveys,
+             {{"autopip_reason", "VideoConferencing"},
+              {"prompt_result", "AllowOnce"}}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureHatsEnabledBrowserTest,
+                       TriggersSurveyOnWindowClose) {
+  Profile* profile = browser()->profile();
+  auto* hats_service = GetMockHatsService(profile);
+  ON_CALL(*hats_service, CanShowAnySurvey(false))
+      .WillByDefault(testing::Return(true));
+
+  auto* autopip_hats_service =
+      AutoPictureInPictureHatsServiceFactory::GetForProfile(profile);
+  ASSERT_NE(nullptr, autopip_hats_service);
+
+  autopip_hats_service->AutoPictureInPictureWindowOpened(
+      PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
+      GURL("https://example.com"));
+  autopip_hats_service->SetPromptResult(PromptResult::kAllowOnce);
+
+  EXPECT_CALL(*hats_service,
+              LaunchSurvey(kHatsSurveyTriggerAutoPipAllowed, _, _, _, _, _, _));
+
+  autopip_hats_service->AutoPictureInPictureWindowClosed();
 }

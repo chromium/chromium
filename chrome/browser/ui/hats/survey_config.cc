@@ -25,6 +25,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/variations/service/google_groups_manager.h"
+#include "media/base/media_switches.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
@@ -76,6 +77,10 @@ constexpr char kHatsSurveyTriggerManageTravelPerception[] =
     "autofill-manage-travel-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerAutoPipAllowed[] = "autopip-allowed";
+constexpr char kHatsSurveyTriggerAutoPipBlocked[] = "autopip-blocked";
+constexpr char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[] =
+    "autopip-permission-prompt-ignored";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
     "download-warning-bubble-bypass";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
@@ -538,6 +543,27 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &::autofill::features::kManageTravelPerceptionSurvey,
       kHatsSurveyTriggerManageTravelPerception, std::nullopt,
       data_management_psd_bits_fields);
+
+  std::vector<std::string> autopip_string_psd_fields{
+      "AutoPip Reason", "Opener site URL", "Pip window duration"};
+  survey_configs.emplace_back(&media::kAutoPictureInPictureSurveys,
+                              kHatsSurveyTriggerAutoPipPermissionPromptIgnored,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              std::vector<std::string>{},
+                              autopip_string_psd_fields);
+
+  survey_configs.emplace_back(
+      &media::kAutoPictureInPictureSurveys, kHatsSurveyTriggerAutoPipBlocked,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      autopip_string_psd_fields);
+
+  std::vector<std::string> autopip_allowed_string_psd_fields =
+      autopip_string_psd_fields;
+  autopip_allowed_string_psd_fields.push_back("Prompt Result");
+  survey_configs.emplace_back(
+      &media::kAutoPictureInPictureSurveys, kHatsSurveyTriggerAutoPipAllowed,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      autopip_allowed_string_psd_fields);
 
   // Wallpaper Search survey.
   survey_configs.emplace_back(

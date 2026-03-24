@@ -4,11 +4,17 @@
 
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "components/prefs/pref_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -22,12 +28,9 @@ constexpr base::FeatureParam<AutoPipReason>::Option kAutoPipReasonOptions[] = {
     {AutoPipReason::kMediaPlayback, "MediaPlayback"},
     {AutoPipReason::kBrowserInitiated, "BrowserInitiated"}};
 
-// TODO(crbug.com/485932914): Remove [[maybe_unused]] once the implementation is
-// complete.
-[[maybe_unused]] const base::FeatureParam<AutoPipReason>
-    kAutoPictureInPictureSurveyReason{&media::kAutoPictureInPictureSurveys,
-                                      "autopip_reason", AutoPipReason::kUnknown,
-                                      &kAutoPipReasonOptions};
+const base::FeatureParam<AutoPipReason> kAutoPictureInPictureSurveyTargetReason{
+    &media::kAutoPictureInPictureSurveys, "autopip_reason",
+    AutoPipReason::kUnknown, &kAutoPipReasonOptions};
 
 constexpr base::FeatureParam<PromptResult>::Option kPromptResultOptions[] = {
     {PromptResult::kIgnored, "Ignored"},
@@ -39,12 +42,61 @@ constexpr base::FeatureParam<PromptResult>::Option kPromptResultOptions[] = {
     {PromptResult::kNotShownBlocked, "NotShownBlocked"},
     {PromptResult::kNotShownIncognito, "NotShownIncognito"}};
 
-// TODO(crbug.com/485932914): Remove [[maybe_unused]] once the implementation is
-// complete.
-[[maybe_unused]] const base::FeatureParam<PromptResult>
-    kAutoPictureInPictureSurveyResult{&media::kAutoPictureInPictureSurveys,
-                                      "prompt_result", PromptResult::kIgnored,
-                                      &kPromptResultOptions};
+const base::FeatureParam<PromptResult>
+    kAutoPictureInPictureSurveyTargetPromptResult{
+        &media::kAutoPictureInPictureSurveys, "prompt_result",
+        PromptResult::kIgnored, &kPromptResultOptions};
+
+std::string AutoPipReasonToString(AutoPipReason reason) {
+  switch (reason) {
+    case AutoPipReason::kUnknown:
+      return "Unknown";
+    case AutoPipReason::kVideoConferencing:
+      return "VideoConferencing";
+    case AutoPipReason::kMediaPlayback:
+      return "MediaPlayback";
+    case AutoPipReason::kBrowserInitiated:
+      return "BrowserInitiated";
+  }
+}
+
+std::string PromptResultToString(PromptResult result) {
+  switch (result) {
+    case PromptResult::kIgnored:
+      return "Ignored";
+    case PromptResult::kBlock:
+      return "Block";
+    case PromptResult::kAllowOnEveryVisit:
+      return "AllowOnEveryVisit";
+    case PromptResult::kAllowOnce:
+      return "AllowOnce";
+    case PromptResult::kNotShownAllowedOnEveryVisit:
+      return "NotShownAllowedOnEveryVisit";
+    case PromptResult::kNotShownAllowedOnce:
+      return "NotShownAllowedOnce";
+    case PromptResult::kNotShownBlocked:
+      return "NotShownBlocked";
+    case PromptResult::kNotShownIncognito:
+      return "NotShownIncognito";
+  }
+}
+
+// Helper to map a PromptResult to its corresponding HaTS trigger group.
+std::string GetSurveyTrigger(PromptResult result) {
+  switch (result) {
+    case PromptResult::kIgnored:
+      return kHatsSurveyTriggerAutoPipPermissionPromptIgnored;
+    case PromptResult::kBlock:
+    case PromptResult::kNotShownBlocked:
+    case PromptResult::kNotShownIncognito:
+      return kHatsSurveyTriggerAutoPipBlocked;
+    case PromptResult::kAllowOnEveryVisit:
+    case PromptResult::kAllowOnce:
+    case PromptResult::kNotShownAllowedOnEveryVisit:
+    case PromptResult::kNotShownAllowedOnce:
+      return kHatsSurveyTriggerAutoPipAllowed;
+  }
+}
 
 }  // namespace
 
@@ -74,8 +126,63 @@ void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
     return;
   }
 
-  // TODO(crbug.com/485932914): Calculate PiP window duration and launch the
-  // appropriate HaTS survey based on the prompt result and the AutoPiP reason.
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    active_window_context_ = std::nullopt;
+    return;
+  }
+
+  AutoPipReason auto_pip_trigger_reason = active_window_context_->reason;
+  PromptResult permission_prompt_result =
+      *active_window_context_->prompt_result;
+
+  // We do not trigger surveys for browser-initiated AutoPip.
+  if (auto_pip_trigger_reason == AutoPipReason::kBrowserInitiated) {
+    active_window_context_ = std::nullopt;
+    return;
+  }
+
+  // Only trigger if reason and trigger group match the Finch-configured
+  // segments.
+  const std::string actual_trigger = GetSurveyTrigger(permission_prompt_result);
+  const std::string target_trigger =
+      GetSurveyTrigger(kAutoPictureInPictureSurveyTargetPromptResult.Get());
+
+  if (auto_pip_trigger_reason !=
+          kAutoPictureInPictureSurveyTargetReason.Get() ||
+      actual_trigger != target_trigger) {
+    active_window_context_ = std::nullopt;
+    return;
+  }
+
+  SurveyStringData product_specific_string_data;
+  product_specific_string_data["AutoPip Reason"] =
+      AutoPipReasonToString(auto_pip_trigger_reason);
+
+  base::TimeDelta duration =
+      clock_->NowTicks() - active_window_context_->start_time;
+  product_specific_string_data["Pip window duration"] =
+      base::NumberToString(duration.InSeconds()) + "s";
+
+  // Record Opener site URL only if UKM is enabled for this profile.
+  const bool is_ukm_enabled = profile_->GetPrefs()->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+  if (is_ukm_enabled) {
+    product_specific_string_data["Opener site URL"] =
+        active_window_context_->origin.spec();
+  } else {
+    product_specific_string_data["Opener site URL"] = "";
+  }
+
+  if (actual_trigger == kHatsSurveyTriggerAutoPipAllowed) {
+    product_specific_string_data["Prompt Result"] =
+        PromptResultToString(permission_prompt_result);
+  }
+
+  hats_service->LaunchSurvey(actual_trigger, base::DoNothing(),
+                             base::DoNothing(), {},
+                             product_specific_string_data);
 
   active_window_context_ = std::nullopt;
 }

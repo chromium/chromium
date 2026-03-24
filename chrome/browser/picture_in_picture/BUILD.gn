@@ -133,6 +133,7 @@ source_set("impl") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/hats",
       "//components/strings:components_strings",
+      "//components/unified_consent",
       "//components/url_formatter",
       "//net",
       "//third_party/blink/public/common:headers",
@@ -188,6 +189,7 @@ source_set("unit_tests") {
       "//chrome/browser",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/safety_hub:test_support",
+      "//components/unified_consent",
       "//ui/events:test_support",
     ]
   } else {
