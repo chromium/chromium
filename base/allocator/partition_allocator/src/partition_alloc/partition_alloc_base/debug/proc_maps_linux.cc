@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
 
 #include <fcntl.h>
 #include <stddef.h>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/files/file_util.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
@@ -150,9 +146,10 @@ bool ParseProcMaps(const std::string& input,
     // The final %n term captures the offset in the input string, which is used
     // to determine the path name. It *does not* increment the return value.
     // Refer to man 3 sscanf for details.
-    if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %n",
-               &region.start, &region.end, permissions, &region.offset,
-               &dev_major, &dev_minor, &inode, &path_index) < 7) {
+    if (PA_UNSAFE_TODO(
+            sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %n",
+                   &region.start, &region.end, permissions, &region.offset,
+                   &dev_major, &dev_minor, &inode, &path_index)) < 7) {
       PA_LOG(WARNING) << "sscanf failed for line: " << line;
       return false;
     }
@@ -186,7 +183,7 @@ bool ParseProcMaps(const std::string& input,
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);
-    regions.back().path.assign(line + path_index);
+    regions.back().path.assign(PA_UNSAFE_TODO(line + path_index));
   }
 
   regions_out->swap(regions);
