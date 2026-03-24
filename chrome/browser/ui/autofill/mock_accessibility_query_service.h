@@ -19,13 +19,13 @@ class MockAccessibilityQueryService
   MockAccessibilityQueryService();
   ~MockAccessibilityQueryService() override;
 
-  MOCK_METHOD(
-      void,
-      Query,
-      (std::u16string_view query,
-       base::RepeatingCallback<
-           void(accessibility_annotator::MemorySearchResults)> update_callback),
-      (override));
+  MOCK_METHOD(void,
+              Query,
+              (std::u16string_view query,
+               base::RepeatingCallback<void(
+                   std::vector<accessibility_annotator::MemorySearchResult>)>
+                   update_callback),
+              (override));
 };
 
 }  // namespace autofill

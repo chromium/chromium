@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -33,14 +32,6 @@ DenseSet<EntityType> FromAccessibilityAnnotator(
 // equivalent. In that case, the `DenseSet<EntityType>` has no such entry.
 std::optional<EntityInstance> FromAccessibilityAnnotator(
     const accessibility_annotator::Entity& entity);
-
-// Translates Autofill attribute names to entry types.
-accessibility_annotator::QueryIntentType AttributeTypeToEntryType(
-    AttributeType type);
-
-// Returns the localized name of the entry type.
-std::u16string GetEntryTypeNameForI18n(
-    accessibility_annotator::QueryIntentType type);
 
 }  // namespace autofill
 

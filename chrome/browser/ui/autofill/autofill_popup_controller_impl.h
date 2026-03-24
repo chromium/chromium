@@ -181,11 +181,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
       AutofillSuggestionTriggerSource trigger_source) const;
 
-  // Attempts to start an asynchronous search query if the current filling
-  // product supports it. Returns `true` if the search process was initiated or
-  // handled.
-  bool TryStartSearch();
-
   void UpdateFilteredSuggestions();
 
   UiSessionId ui_session_id_;

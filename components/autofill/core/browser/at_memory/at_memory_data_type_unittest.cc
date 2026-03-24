@@ -9,7 +9,6 @@
 
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +18,6 @@ namespace {
 
 using accessibility_annotator::QueryIntentType;
 using testing::Eq;
-using testing::IsEmpty;
 using testing::Optional;
 using testing::VariantWith;
 
@@ -108,25 +106,6 @@ TEST(AtMemoryDataTypeTest, ToAtMemoryDataType) {
                   AttributeType(AttributeTypeName::kOrderId))));
 
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kUnknown), Eq(std::nullopt));
-}
-
-TEST(AtMemoryDataTypeTest, AttributeTypeToEntryType) {
-  EXPECT_THAT(
-      AttributeTypeToEntryType(AttributeType(AttributeTypeName::kVehicleMake)),
-      Eq(accessibility_annotator::QueryIntentType::kVehicleMake));
-  EXPECT_THAT(AttributeTypeToEntryType(
-                  AttributeType(AttributeTypeName::kPassportNumber)),
-              Eq(accessibility_annotator::QueryIntentType::kPassportNumber));
-}
-
-TEST(AtMemoryDataTypeTest, GetEntryTypeNameForI18n) {
-  EXPECT_THAT(GetEntryTypeNameForI18n(QueryIntentType::kNameFull), Eq(u"Name"));
-  EXPECT_THAT(GetEntryTypeNameForI18n(QueryIntentType::kPhone), Eq(u"Phone"));
-  EXPECT_THAT(GetEntryTypeNameForI18n(QueryIntentType::kVehicle),
-              Eq(u"Vehicle"));
-  EXPECT_THAT(GetEntryTypeNameForI18n(QueryIntentType::kVehicleOwner),
-              Eq(u"Owner"));
-  EXPECT_THAT(GetEntryTypeNameForI18n(QueryIntentType::kUnknown), IsEmpty());
 }
 
 }  // namespace

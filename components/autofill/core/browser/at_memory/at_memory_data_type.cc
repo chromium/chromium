@@ -86,7 +86,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kOrderProductNames);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderGrandTotal);
     case accessibility_annotator::QueryIntentType::kUnknown:
-    case accessibility_annotator::QueryIntentType::kIbanNickname:
       return std::nullopt;
   }
 

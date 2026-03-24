@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/annotation_reducer/autofill_data_provider.h"
@@ -54,16 +55,20 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
 
-  MemorySearchResult result(QueryIntentType::kNameFull, u"Name", u"John Doe");
+  MemorySearchResult result;
+  result.value = u"John Doe";
+  result.title = u"John Doe";
+  result.description = u"Name";
   fake_data_provider->set_results({result});
 
   bool callback_called = false;
-  service->Query(u"what is my name",
-                 base::BindLambdaForTesting([&](MemorySearchResults results) {
-                   callback_called = true;
-                   ASSERT_EQ(results.entries.size(), 1u);
-                   EXPECT_EQ(results.entries[0].value, u"John Doe");
-                 }));
+  service->Query(
+      u"what is my name",
+      base::BindLambdaForTesting([&](std::vector<MemorySearchResult> results) {
+        callback_called = true;
+        ASSERT_EQ(results.size(), 1u);
+        EXPECT_EQ(results[0].value, u"John Doe");
+      }));
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(fake_data_provider->last_type(), QueryIntentType::kNameFull);
@@ -75,11 +80,12 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent) {
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
 
   bool callback_called = false;
-  service->Query(u"random query",
-                 base::BindLambdaForTesting([&](MemorySearchResults results) {
-                   callback_called = true;
-                   EXPECT_TRUE(results.entries.empty());
-                 }));
+  service->Query(
+      u"random query",
+      base::BindLambdaForTesting([&](std::vector<MemorySearchResult> results) {
+        callback_called = true;
+        EXPECT_TRUE(results.empty());
+      }));
   EXPECT_TRUE(callback_called);
 }
 
