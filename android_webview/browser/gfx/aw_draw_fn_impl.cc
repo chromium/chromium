@@ -264,6 +264,7 @@ void AwDrawFnImpl::OnContextDestroyed() {
         false /* abandon_context */);
   }
 
+  scoped_secondary_cb_draw_.reset();
   vulkan_context_provider_.reset();
 }
 
