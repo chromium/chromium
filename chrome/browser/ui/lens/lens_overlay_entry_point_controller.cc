@@ -420,7 +420,8 @@ bool LensOverlayEntryPointController::IsOverlayActive() const {
   // The side panel coordinator getter will throw a CHECK error if the
   // LensSearchController is not initialized. Check if it is active to avoid
   // crashing.
-  if (!search_controller || search_controller->IsOff()) {
+  if (!search_controller || search_controller->IsOff() ||
+      search_controller->IsClosing()) {
     return false;
   }
 
