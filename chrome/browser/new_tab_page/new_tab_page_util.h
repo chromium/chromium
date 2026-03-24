@@ -18,6 +18,18 @@ namespace variations {
 class VariationsService;
 }  // namespace variations
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(NtpShortcutsAutoRemovalReason)
+enum class NtpShortcutsAutoRemovalReason {
+  kManagedPreference = 0,
+  kNotVisible = 1,
+  kDisabled = 2,
+  kStaleDaysCount = 3,
+  kMaxValue = kStaleDaysCount,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpShortcutsAutoRemovalReason)
+
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
 bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile);
@@ -71,10 +83,15 @@ void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id);
 void DisableModuleListAutoRemoval(Profile* profile,
                                   const std::vector<std::string>& module_ids);
 
+// Logs the auto-removal metrics for shortcuts, including:
+// (1) The reason the shortcuts were not auto-removed
+// (2) The new staleness count for the shortcuts if applicable
+void RecordShortcutsAutoRemovalMetrics(Profile* profile, int prev_count);
+
 // Logs the auto-removal metrics for the module, including:
 // (1) The reason the module was not auto-removed
 // (2) The new staleness count for the module if applicable
-void LogModuleAutoRemovalMetrics(
+void RecordModuleAutoRemovalMetrics(
     Profile* profile,
     const base::DictValue& auto_removal_disabled_dict,
     const std::string& module_id,
