@@ -328,6 +328,10 @@ bool SharedGpuContext::UseOverlaysForCanvas2D() {
   // compositing (e.g., Windows).
   return IsDelegatedCompositingEnabled();
 #else
+  // NOTE: On ChromeOS, conceptually this could be gated on the same underlying
+  // capability as usage of overlays for WebGL (atomic DRM). However,
+  // historically usage of overlays for Canvas2D outside of low-latency was
+  // never enabled for ChromeOS.
   return false;
 #endif
 }
@@ -361,6 +365,9 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
   return LowLatencyUsageSupportedForCanvas();
 #elif BUILDFLAG(IS_CHROMEOS)
   // Low-latency usage is always supported for Canvas2D on ChromeOS.
+  // NOTE: Conceptually this should be gated on the same underlying capability
+  // as low-latency WebGL is gated on (atomic DRM). However, historically that
+  // gate was never applied for low-latency Canvas2D.
   return true;
 #else
   // NOTE: crbug.com/41435781 would need to be resolved in order to support
