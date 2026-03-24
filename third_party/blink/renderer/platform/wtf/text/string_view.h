@@ -440,16 +440,11 @@ inline StringView::StringView(const StringView& view,
                               size_type offset,
                               size_type length)
     : impl_(view.impl_), length_(length) {
-  SECURITY_DCHECK(offset <= view.length());
-  SECURITY_DCHECK(length <= view.length() - offset);
-  // SAFETY: Invariants are checked last two line.
-  UNSAFE_BUFFERS({
-    if (Is8Bit()) {
-      bytes_ = view.Span8().data() + offset;
-    } else {
-      bytes_ = view.Span16().data() + offset;
-    }
-  });
+  if (Is8Bit()) {
+    bytes_ = view.Span8().subspan(offset, length).data();
+  } else {
+    bytes_ = view.Span16().subspan(offset, length).data();
+  }
 }
 
 inline StringView::StringView(const StringImpl* impl) {
@@ -491,18 +486,13 @@ inline void StringView::Clear() {
 inline void StringView::Set(const StringImpl& impl,
                             size_type offset,
                             size_type length) {
-  SECURITY_DCHECK(offset <= impl.length());
-  SECURITY_DCHECK(length <= impl.length() - offset);
   length_ = length;
   impl_ = const_cast<StringImpl*>(&impl);
-  // SAFETY: Invariants are checked at beginning of this method.
-  UNSAFE_BUFFERS({
-    if (impl.Is8Bit()) {
-      bytes_ = impl.Characters8() + offset;
-    } else {
-      bytes_ = impl.Characters16() + offset;
-    }
-  });
+  if (impl.Is8Bit()) {
+    bytes_ = impl.Span8().subspan(offset, length).data();
+  } else {
+    bytes_ = impl.Span16().subspan(offset, length).data();
+  }
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might
