@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/metrics/statistics_recorder.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +22,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/navigation_entry.h"
@@ -27,6 +30,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 
 // Browser tests for report-unsafe-site dialog.
 class ReportUnsafeSiteDialogBrowserTest : public PlatformBrowserTest {
@@ -43,6 +47,47 @@ class ReportUnsafeSiteDialogBrowserTest : public PlatformBrowserTest {
     content::TitleWatcher title_watcher(web_contents(), expected_title);
     ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+
+  content::WebContents* OpenDialogAndGetWebContents() {
+    content::WebContentsAddedObserver web_contents_added_observer;
+    feedback::ReportUnsafeSiteDialog::Show(browser());
+    content::WebContents* dialog_contents =
+        web_contents_added_observer.GetWebContents();
+    content::WaitForLoadStop(dialog_contents);
+    return dialog_contents;
+  }
+
+  void ClickInDialog(content::WebContents* web_contents,
+                     const std::string& css_selector) {
+    content::ExecuteScriptAsync(
+        web_contents,
+        base::StringPrintf(
+            "document.querySelector('report-unsafe-site-app').shadowRoot."
+            "querySelector('%s').click()",
+            css_selector.c_str()));
+  }
+
+  void WaitUntilButtonEnabled(content::WebContents* web_contents,
+                              const std::string& css_selector) {
+    const std::string script = base::StringPrintf(
+        "new Promise(resolve => {"
+        "  const btn = document.querySelector('report-unsafe-site-app')"
+        "      .shadowRoot.querySelector('%s');"
+        "  if (!btn.disabled) {"
+        "    resolve(true);"
+        "  } else {"
+        "    const obs = new MutationObserver(() => {"
+        "      if (!btn.disabled) {"
+        "        obs.disconnect();"
+        "        resolve(true);"
+        "      }"
+        "    });"
+        "    obs.observe(btn, { attributes: true });"
+        "  }"
+        "});",
+        css_selector.c_str());
+    EXPECT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
   }
 
  private:
@@ -119,4 +164,50 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
   feedback::ReportUnsafeSiteDialog::Show(browser());
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest, CloseReason_Cancel) {
+  constexpr char kHistogramName[] =
+      "SafeBrowsing.ReportUnsafeSite.DialogClosedReason";
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter histogram_waiter(kHistogramName);
+
+  content::WebContents* dialog_contents = OpenDialogAndGetWebContents();
+  ClickInDialog(dialog_contents, "#cancel-button");
+
+  histogram_waiter.Wait();
+  histogram_tester.ExpectUniqueSample(
+      kHistogramName, views::Widget::ClosedReason::kCancelButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest, CloseReason_Send) {
+  constexpr char kHistogramName[] =
+      "SafeBrowsing.ReportUnsafeSite.DialogClosedReason";
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter histogram_waiter(kHistogramName);
+
+  content::WebContents* dialog_contents = OpenDialogAndGetWebContents();
+  WaitUntilButtonEnabled(dialog_contents, ".action-button");
+  ClickInDialog(dialog_contents, ".action-button");
+
+  histogram_waiter.Wait();
+  histogram_tester.ExpectUniqueSample(
+      kHistogramName, views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest, CloseReason_Escape) {
+  constexpr char kHistogramName[] =
+      "SafeBrowsing.ReportUnsafeSite.DialogClosedReason";
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter histogram_waiter(kHistogramName);
+
+  content::WebContents* dialog_contents = OpenDialogAndGetWebContents();
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      dialog_contents->GetTopLevelNativeWindow());
+  ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
+  EXPECT_TRUE(widget->client_view()->AcceleratorPressed(esc));
+
+  histogram_waiter.Wait();
+  histogram_tester.ExpectUniqueSample(
+      kHistogramName, views::Widget::ClosedReason::kEscKeyPressed, 1);
 }

@@ -34,6 +34,13 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteWebviewElementId);
 
 namespace {
 
+void OnWidgetClose(std::unique_ptr<views::Widget> widget,
+                   views::Widget::ClosedReason closed_reason) {
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ReportUnsafeSite.DialogClosedReason", closed_reason);
+  widget.reset();
+}
+
 // Report-unsafe-site WebUIBubbleDialogView.
 class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(ReportUnsafeSiteDialogView, WebUIBubbleDialogView)
@@ -49,6 +56,7 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
     set_parent_window(
         platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
     set_close_on_deactivate(false);
+    set_esc_should_cancel_dialog_override(false);
     SetShowCloseButton(false);
     SetProperty(views::kElementIdentifierKey,
                 ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId);
@@ -123,18 +131,22 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
   auto contents_wrapper = std::make_unique<WebUIContentsWrapperT<FeedbackUI>>(
       GURL(chrome::kChromeUIFeedbackReportUnsafeSiteURL), profile,
       IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE);
-  contents_wrapper->GetWebUIController()->set_triggering_web_contents(
-      web_contents);
-  contents_wrapper->GetWebUIController()->set_screenshot_taker(
+  FeedbackUI* feedback_ui = contents_wrapper->GetWebUIController();
+  feedback_ui->set_triggering_web_contents(web_contents);
+  feedback_ui->set_screenshot_taker(
       ScreenshotTaker::Start(web_contents->GetPrimaryMainFrame()->GetView()));
-
   auto bubble_dialog = std::make_unique<ReportUnsafeSiteDialogView>(
       std::move(contents_wrapper), browser);
-  views::Widget* widget =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
+  std::unique_ptr<views::Widget> widget =
+      base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+          std::move(bubble_dialog),
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+  feedback_ui->set_dialog_widget(widget.get());
 
   tab_interface->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
-      widget, std::make_unique<tabs::TabDialogManager::Params>());
+      widget.get(), std::make_unique<tabs::TabDialogManager::Params>());
+  widget->MakeCloseSynchronous(
+      base::BindOnce(&OnWidgetClose, std::move(widget)));
 }
 
 }  // namespace feedback

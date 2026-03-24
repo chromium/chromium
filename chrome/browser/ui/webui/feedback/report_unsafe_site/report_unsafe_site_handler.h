@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -26,8 +27,8 @@ class ReportUnsafeSitePageHandler
       GetTriggeringPageInfoCallback GetTriggeringPageInfoCallback;
 
   ReportUnsafeSitePageHandler(
-      base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
       base::WeakPtr<content::WebContents> triggering_web_contents,
+      base::WeakPtr<views::Widget> dialog,
       std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker,
       mojo::PendingReceiver<feedback::report_unsafe_site::mojom::PageHandler>
           receiver);
@@ -45,15 +46,17 @@ class ReportUnsafeSitePageHandler
   void CloseDialog() override;
 
  private:
-  const base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
-  const base::WeakPtr<content::WebContents> triggering_web_contents_;
-  std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
-  const mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandler>
-      receiver_;
-
   void OnGotScreenshot(
       base::OnceCallback<void(const std::string&, const GURL&)> callback,
       const SkBitmap& screenshot);
+
+
+  bool was_report_button_clicked_ = false;
+  const base::WeakPtr<content::WebContents> triggering_web_contents_;
+  const base::WeakPtr<views::Widget> dialog_;
+  std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
+  const mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandler>
+      receiver_;
 
   // Last committed URL.
   GURL page_url_;

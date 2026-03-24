@@ -2662,6 +2662,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ReportUnsafeSite.DialogClosedReason"
+    enum="WidgetClosedReason" expires_after="2026-09-01">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded when the report-unsafe-site dialog is closed. Records the reason
+    that the dialog was closed.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit"
     enum="BooleanTabIsSplit" expires_after="2026-09-01">
   <owner>nwokedi@chromium.org</owner>

@@ -27,16 +27,17 @@ class FeedbackUI
   static bool IsFeedbackEnabled(Profile* profile);
   static constexpr std::string_view GetWebUIName() { return "Feedback"; }
 
+  // Required by WebUIContentsWrapper.
   void set_embedder(
       base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
-    embedder_ = embedder;
-  }
-  base::WeakPtr<TopChromeWebUIController::Embedder> embedder() {
-    return embedder_;
   }
 
   void set_triggering_web_contents(content::WebContents* web_contents) {
     triggering_web_contents_ = web_contents->GetWeakPtr();
+  }
+
+  void set_dialog_widget(views::Widget* dialog) {
+    dialog_ = dialog->GetWeakPtr();
   }
 
   void set_screenshot_taker(
@@ -54,11 +55,11 @@ class FeedbackUI
           handler) override;
 
  private:
-  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   std::unique_ptr<ReportUnsafeSitePageHandler> report_unsafe_site_page_handler_;
   mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandlerFactory>
       report_unsafe_site_factory_receiver_{this};
   base::WeakPtr<content::WebContents> triggering_web_contents_;
+  base::WeakPtr<views::Widget> dialog_;
   std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

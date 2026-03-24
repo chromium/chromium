@@ -32,13 +32,13 @@ safe_browsing::ClientSideDetectionHost* GetClientSideDetectionHost(
 }  // anonymous namespace
 
 ReportUnsafeSitePageHandler::ReportUnsafeSitePageHandler(
-    base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
     base::WeakPtr<content::WebContents> triggering_web_contents,
+    base::WeakPtr<views::Widget> dialog,
     std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker,
     mojo::PendingReceiver<feedback::report_unsafe_site::mojom::PageHandler>
         receiver)
-    : embedder_(embedder),
-      triggering_web_contents_(triggering_web_contents),
+    : triggering_web_contents_(triggering_web_contents),
+      dialog_(dialog),
       screenshot_taker_(std::move(screenshot_taker)),
       receiver_(this, std::move(receiver)) {}
 
@@ -64,6 +64,8 @@ void ReportUnsafeSitePageHandler::GetTriggeringPageInfo(
 
 void ReportUnsafeSitePageHandler::SendReport(bool include_screenshot,
                                              SendReportCallback callback) {
+  was_report_button_clicked_ = true;
+
   // Dialog is tab modal and thus should close if the underlying page navigates
   // while the dialog is shown.
   if (!page_url_.is_valid() ||
@@ -85,9 +87,13 @@ void ReportUnsafeSitePageHandler::SendReport(bool include_screenshot,
 }
 
 void ReportUnsafeSitePageHandler::CloseDialog() {
-  if (embedder_) {
-    embedder_->CloseUI();
+  if (!dialog_) {
+    return;
   }
+  dialog_->CloseWithReason(
+      was_report_button_clicked_
+          ? views::Widget::ClosedReason::kAcceptButtonClicked
+          : views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 void ReportUnsafeSitePageHandler::OnGotScreenshot(
