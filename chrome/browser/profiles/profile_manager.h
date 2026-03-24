@@ -125,12 +125,21 @@ class ProfileManager : public Profile::Delegate {
   //
   // DEPRECATED on ChromeOS because of known issues that it may return non User
   // Profile instance. Please use:
-  //   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-  //       user_manager::UserManager::Get()->GetPrimaryUser())
+  //   ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+  //       session_manager::SessionManager::Get()->GetPrimarySession()
+  //           ->account_id());
   // or even simpler code if you need only limited parts of Profile.
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
-  //   user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs().
+  //   user_manager::UserManager::Get()->FindUser(
+  //       session_manager::SessionManager::Get()->GetPrimarySession()
+  //           ->account_id())->GetProfilePrefs();
+  // Note that, due to the current implementation, despite of its name, this
+  // may return non-user profile or null depending on the current session
+  // state. For migration, we must take care of when this is called from the
+  // callers. Specifically, if this may be called before login or during login
+  // process, the extra check is needed. Otherwise, we may want CHECK for
+  // the session state.
   // For the safer migration, we record the callers of unexpected use via
   // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
@@ -145,12 +154,21 @@ class ProfileManager : public Profile::Delegate {
   //
   // DEPRECATED on ChromeOS because of known issues that it may return non User
   // Profile instance. Please use:
-  //   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-  //       user_manager::UserManager::Get()->GetActiveUser())
+  //   ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+  //       session_manager::SessionManager::Get()->GetActiveSession()
+  //           ->account_id());
   // or simpler code if you need only limited parts of Profile.
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
-  //   user_manager::UserManager::Get()->GetActiveUser()->GetProfilePrefs().
+  //   user_manager::UserManager::Get()->FindUser(
+  //       session_manager::SessionManager::Get()->GetActiveSession()
+  //           ->account_id())->GetProfilePrefs();
+  // Note that, due to the current implementation, despite of its name, this
+  // may return non-user profile or null depending on the current session
+  // state. For migration, we must take care of when this is called from the
+  // callers. Specifically, if this may be called before login or during login
+  // process, the extra check is needed. Otherwise, we may want CHECK for
+  // the session state.
   // For the safer migration, we record the callers of unexpected use via
   // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
