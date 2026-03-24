@@ -139,11 +139,11 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
     assertEquals(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenSplitView')),
+            loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
         menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')),
@@ -255,11 +255,11 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
     assertEquals(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenSplitView')),
+            loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
         menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')),
@@ -333,7 +333,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 7);
-    const incognitoButton = menuItems[2] as HTMLButtonElement;
+    const incognitoButton = menuItems[3] as HTMLButtonElement;
     assertEquals(
         incognitoButton.textContent.includes(
             loadTimeData.getString('menuOpenIncognito')),

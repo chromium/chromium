@@ -166,6 +166,14 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       },
     ];
 
+    if (bookmarkCount === 1 && this.bookmarks_[0].url) {
+      menuItems.push({
+        id: MenuItemId.OPEN_SPLIT_VIEW,
+        label: loadTimeData.getString('menuOpenSplitView'),
+        disabled: this.isInSplitView_,
+      });
+    }
+
     if (!loadTimeData.getBoolean('incognitoMode') &&
         loadTimeData.getBoolean('isIncognitoModeAvailable')) {
       menuItems.push({
@@ -175,14 +183,6 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             loadTimeData.getStringF(
                 'menuOpenIncognitoWithCount', this.incognitoCount_),
         disabled: this.incognitoCount_ === 0,
-      });
-    }
-
-    if (bookmarkCount === 1 && this.bookmarks_[0].url) {
-      menuItems.push({
-        id: MenuItemId.OPEN_SPLIT_VIEW,
-        label: loadTimeData.getString('menuOpenSplitView'),
-        disabled: this.isInSplitView_,
       });
     }
 
