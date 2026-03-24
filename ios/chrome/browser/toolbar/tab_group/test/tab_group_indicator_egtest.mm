@@ -311,7 +311,7 @@ void CreateSharedGroupAndOpenMenu(
                                           IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+                                          IDS_IOS_CONTENT_CONTEXT_EDITGROUP)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
@@ -384,9 +384,9 @@ void CreateSharedGroupAndOpenMenu(
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
-  // Tap on the "Rename Group" button.
+  // Tap on the "Edit Group" button.
   [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+                                          IDS_IOS_CONTENT_CONTEXT_EDITGROUP)]
       performAction:grey_tap()];
 
   // Rename the tab group to `kGroupTitle`.

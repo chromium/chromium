@@ -545,11 +545,11 @@ void LongPressTabWithTitle(NSString* title) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
                                                           kGroupTitle1)];
 
-  // Long press the tab group and tap "Rename Group".
+  // Long press the tab group and tap "Edit Group".
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
       performAction:grey_longPress()];
   [[EarlGrey selectElementWithMatcher:ContextMenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+                                          IDS_IOS_CONTENT_CONTEXT_EDITGROUP)]
       performAction:grey_tap()];
 
   // Rename the tab group to `kGroupTitle2`.

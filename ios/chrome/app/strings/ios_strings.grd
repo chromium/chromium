@@ -1764,6 +1764,9 @@
       <message name="IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP" desc="The iOS context menu item for deleting a shared tab group. [iOS only]">
         Delete Group
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_EDITGROUP" desc="The iOS context menu item for editing a tab group. [iOS only]">
+        Edit Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_KEEPSHAREDGROUP" desc="The iOS context menu item for keeping a shared tab group. [iOS only]">
         Keep Group
       </message>
@@ -1823,9 +1826,6 @@
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP" desc="The iOS context menu item for removing a tab from a group. [iOS only]">
         Remove From Group
-      </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP" desc="The iOS context menu item for renaming a tab group. [iOS only]">
-        Rename Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
         Save in Photos

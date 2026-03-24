@@ -563,12 +563,11 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
-  UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)
-                      image:image
-                       type:MenuActionType::RenameTabGroup
-                      block:block];
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_EDITGROUP)
+                image:image
+                 type:MenuActionType::RenameTabGroup
+                block:block];
   return action;
 }
 

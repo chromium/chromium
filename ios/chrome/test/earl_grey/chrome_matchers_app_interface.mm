@@ -1900,7 +1900,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)renameGroupButton {
   return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
-                                         IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP];
+                                         IDS_IOS_CONTENT_CONTEXT_EDITGROUP];
 }
 
 + (id<GREYMatcher>)ungroupButton {
