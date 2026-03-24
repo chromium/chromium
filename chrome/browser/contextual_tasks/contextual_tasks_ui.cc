@@ -31,6 +31,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -81,7 +82,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
-#include "chrome/browser/profiles/profile_manager.h"  // nogncheck crbug.com/483442073
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -201,14 +201,10 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
     return;
   }
 
-  ProfileAttributesEntry* entry = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/483442073): Remove the ifdef block once we address the
-  // cyclic dependency.
-  entry = g_browser_process->profile_manager()
-              ->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile->GetPath());
-#endif
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
   if (!entry) {
     AddDefaultZeroStateStrings(source);
     return;

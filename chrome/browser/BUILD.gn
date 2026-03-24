@@ -1205,6 +1205,7 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
+    "//chrome/browser/contextual_tasks:ui_impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency once the
     # following headers get componentized:
@@ -3989,8 +3990,6 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging",
       "//chrome/browser/badging:impl",
-      "//chrome/browser/contextual_tasks",
-      "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/device_api",
       "//chrome/browser/device_api:impl",
       "//chrome/browser/device_identity",
@@ -4250,10 +4249,6 @@ static_library("browser") {
       # TODO(crbug.com/441649482): Remove this circular dependency with cleaning up
       # - c/b/apps/app_service/publishers.
       "//chrome/browser/apps/app_service/publishers",
-
-      # TODO(crbug.com/469850388): Decouple profile manager dependencies
-      # For contextual tasks usage here:
-      "//chrome/browser/contextual_tasks:ui_impl",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
