@@ -15,7 +15,9 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "base/types/optional_util.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -23,6 +25,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 
 namespace accessibility_annotator {
 
@@ -60,6 +63,8 @@ AccessibilityAnnotationSyncBridge::ApplyIncrementalSyncChanges(
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
 
+  const bool expired_any = DeleteExpiredAnnotations(batch.get());
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
 
@@ -80,11 +85,12 @@ AccessibilityAnnotationSyncBridge::ApplyIncrementalSyncChanges(
         break;
     }
   }
+
   data_type_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (!entity_changes.empty()) {
+  if (!entity_changes.empty() || expired_any) {
     for (Observer& observer : observers_) {
       observer.OnAccessibilityAnnotationChanged();
     }
@@ -216,6 +222,16 @@ void AccessibilityAnnotationSyncBridge::OnReadAllMetadata(
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      data_type_store_->CreateWriteBatch();
+  if (DeleteExpiredAnnotations(batch.get())) {
+    data_type_store_->CommitWriteBatch(
+        std::move(batch),
+        base::BindOnce(
+            &AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   for (auto& observer : observers_) {
     observer.OnAccessibilityAnnotationSyncBridgeLoaded();
   }
@@ -226,6 +242,32 @@ void AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit(
   if (error) {
     change_processor()->ReportError(*error);
   }
+}
+
+bool AccessibilityAnnotationSyncBridge::DeleteExpiredAnnotations(
+    syncer::DataTypeStore::WriteBatch* batch) {
+  base::Time now = base::Time::Now();
+  base::TimeDelta ttl = kAccessibilityAnnotationTTL.Get();
+  std::vector<std::string> expired_keys;
+  for (const auto& [storage_key, specifics] : annotation_entries_) {
+    base::Time modification_time =
+        change_processor()->GetEntityModificationTime(storage_key);
+
+    // modification_time should never legitimately be null if
+    // IsTrackingMetadata() is true (which it generally should be after
+    // ModelReadyToSync() is called).
+    if (now - modification_time > ttl) {
+      expired_keys.push_back(storage_key);
+    }
+  }
+
+  for (const std::string& storage_key : expired_keys) {
+    annotation_entries_.erase(storage_key);
+    batch->DeleteData(storage_key);
+    batch->GetMetadataChangeList()->ClearMetadata(storage_key);
+    change_processor()->UntrackEntityForStorageKey(storage_key);
+  }
+  return !expired_keys.empty();
 }
 
 void AccessibilityAnnotationSyncBridge::AddObserver(Observer* observer) {

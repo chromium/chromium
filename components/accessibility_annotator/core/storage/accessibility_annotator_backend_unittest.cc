@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/version_info/channel.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -24,8 +24,9 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     backend_ = std::make_unique<AccessibilityAnnotatorBackend>(
-        version_info::Channel::UNKNOWN, /*history_service=*/nullptr,
+        /*history_service=*/nullptr,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        std::make_unique<syncer::MockDataTypeLocalChangeProcessor>(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
 

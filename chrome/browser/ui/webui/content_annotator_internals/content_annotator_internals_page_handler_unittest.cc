@@ -14,7 +14,7 @@
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/version_info/channel.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,10 +52,11 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
                     -> std::unique_ptr<KeyedService> {
                   return std::make_unique<
                       accessibility_annotator::AccessibilityAnnotatorBackend>(
-                      version_info::Channel::UNKNOWN,
                       /*history_service=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
+                      std::make_unique<
+                          syncer::MockDataTypeLocalChangeProcessor>(),
                       path.Append(
                           FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
                 },

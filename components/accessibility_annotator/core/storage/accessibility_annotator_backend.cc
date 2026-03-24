@@ -17,15 +17,13 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 namespace accessibility_annotator {
 
 AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
-    version_info::Channel channel,
     history::HistoryService* history_service,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     const base::FilePath& db_path)
     : db_path_(db_path),
       db_(base::ThreadPool::CreateSequencedTaskRunnerForResource(
@@ -33,12 +31,9 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           db_path_)),
       content_annotations_cache_(kContentAnnotatorMaxCacheAnnotations.Get()) {
-  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-      syncer::ACCESSIBILITY_ANNOTATION,
-      base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
   accessibility_annotation_sync_bridge_ =
       std::make_unique<AccessibilityAnnotationSyncBridge>(
-          std::move(processor), data_type_store_factory);
+          std::move(change_processor), data_type_store_factory);
   sync_bridge_observation_.Observe(accessibility_annotation_sync_bridge_.get());
   if (history_service) {
     history_service_observation_.Observe(history_service);

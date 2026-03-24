@@ -13,6 +13,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -113,6 +114,12 @@ class AccessibilityAnnotationSyncBridge : public syncer::DataTypeSyncBridge {
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
+
+  // Deletes expired annotations from the store in the given write batch. An
+  // annotation is considered expired if its modification time is older than the
+  // `kAccessibilityAnnotationTTL` constant. Returns true if any annotations
+  // were expired and deleted.
+  bool DeleteExpiredAnnotations(syncer::DataTypeStore::WriteBatch* batch);
 
   std::unique_ptr<syncer::DataTypeStore> data_type_store_;
 

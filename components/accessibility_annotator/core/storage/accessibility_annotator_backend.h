@@ -22,11 +22,8 @@
 
 namespace syncer {
 class DataTypeControllerDelegate;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
-
-namespace version_info {
-enum class Channel;
-}  // namespace version_info
 
 namespace history {
 class DeletionInfo;
@@ -49,9 +46,9 @@ class AccessibilityAnnotatorBackend
   };
 
   AccessibilityAnnotatorBackend(
-      version_info::Channel channel,
       history::HistoryService* history_service,
       syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       const base::FilePath& db_path);
 
   ~AccessibilityAnnotatorBackend() override;

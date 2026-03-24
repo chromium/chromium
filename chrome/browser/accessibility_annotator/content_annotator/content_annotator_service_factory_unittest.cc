@@ -19,7 +19,7 @@
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/version_info/channel.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,10 +97,11 @@ class ContentAnnotatorServiceFactoryTest : public testing::Test {
                 [](base::FilePath path, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   return std::make_unique<AccessibilityAnnotatorBackend>(
-                      version_info::Channel::UNKNOWN,
                       /*history_service=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
+                      std::make_unique<
+                          syncer::MockDataTypeLocalChangeProcessor>(),
                       path.Append(
                           FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
                 },

@@ -7,14 +7,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/version_info/channel.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
-#include "components/sync/model/entity_change.h"
-#include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_data_type_store_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,12 +22,15 @@ namespace accessibility_annotator {
 namespace {
 
 using ::base::test::RunOnceClosure;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Ref;
+using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
@@ -66,10 +67,15 @@ class DirectServerEntityProviderTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    auto mock_processor =
+        std::make_unique<NiceMock<syncer::MockDataTypeLocalChangeProcessor>>();
+    ON_CALL(*mock_processor, GetEntityModificationTime(_))
+        .WillByDefault(Return(base::Time::Now()));
+
     backend_ = std::make_unique<AccessibilityAnnotatorBackend>(
-        version_info::Channel::UNKNOWN,
         /*history_service=*/nullptr,
         syncer::TestDataTypeStoreService().GetStoreFactory(),
+        std::move(mock_processor),
         temp_dir_.GetPath().AppendASCII("TestAccessibilityAnnotatorDatabase"));
     provider_ = std::make_unique<DirectServerEntityProvider>(*backend_);
   }
@@ -91,7 +97,8 @@ class DirectServerEntityProviderTest : public testing::Test {
         std::move(change_list));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AccessibilityAnnotatorBackend> backend_;
   std::unique_ptr<DirectServerEntityProvider> provider_;

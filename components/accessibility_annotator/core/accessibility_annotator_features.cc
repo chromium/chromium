@@ -88,4 +88,10 @@ BASE_FEATURE_PARAM(std::string,
                    "one_p_service_url",
                    "");
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAccessibilityAnnotationTTL,
+                   &kAccessibilityAnnotator,
+                   "accessibility_annotation_ttl",
+                   base::Days(7));
+
 }  // namespace accessibility_annotator
