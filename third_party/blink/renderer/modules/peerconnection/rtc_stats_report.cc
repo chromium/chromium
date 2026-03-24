@@ -241,6 +241,14 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
   // RTCReceivedRtpStreamStats
   SET_STAT(webrtc_stat.packets_lost, v8_stat->setPacketsLost);
   SET_STAT(webrtc_stat.jitter, v8_stat->setJitter);
+  SET_STAT(webrtc_stat.packets_received_with_ect1,
+           v8_stat->setPacketsReceivedWithEct1);
+  SET_STAT(webrtc_stat.packets_received_with_ce,
+           v8_stat->setPacketsReceivedWithCe);
+  SET_STAT(webrtc_stat.packets_reported_as_lost,
+           v8_stat->setPacketsReportedAsLost);
+  SET_STAT(webrtc_stat.packets_reported_as_lost_but_recovered,
+           v8_stat->setPacketsReportedAsLostButRecovered);
   // RTCRemoteInboundRtpStreamStats
   SET_STAT(webrtc_stat.local_id, v8_stat->setLocalId);
   SET_STAT(webrtc_stat.round_trip_time, v8_stat->setRoundTripTime);
