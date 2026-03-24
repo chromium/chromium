@@ -46,8 +46,11 @@ bool IsDelegatedCompositingEnabled() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsSurfaceControlEnabled() {
-  return ::features::IsAndroidSurfaceControlEnabled();
+bool LowLatencyUsageSupportedForCanvas() {
+  // Low-latency usage on Android is possible only with SurfaceControl.
+  return ::features::IsAndroidSurfaceControlEnabled() &&
+         base::FeatureList::IsEnabled(
+             features::kLowLatencyUsageSupportedForCanvas);
 }
 #endif
 
@@ -355,10 +358,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
       ->GetCapabilities()
       .shared_image_swap_chain;
 #elif BUILDFLAG(IS_ANDROID)
-  // Low-latency usage on Android is possible only with SurfaceControl.
-  return IsSurfaceControlEnabled() &&
-         base::FeatureList::IsEnabled(
-             features::kLowLatencyUsageSupportedForCanvas);
+  return LowLatencyUsageSupportedForCanvas();
 #elif BUILDFLAG(IS_CHROMEOS)
   // Low-latency usage is always supported for Canvas2D on ChromeOS.
   return true;
@@ -379,10 +379,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // Low-latency usage on Android is possible only with SurfaceControl.
-  return IsSurfaceControlEnabled() &&
-         base::FeatureList::IsEnabled(
-             features::kLowLatencyUsageSupportedForCanvas);
+  return LowLatencyUsageSupportedForCanvas();
 #elif BUILDFLAG(IS_CHROMEOS)
   // Whether WebGL canvases should be given low-latency usage is specified on a
   // per-board basis by passing (or not) the relevant command-line flag.
