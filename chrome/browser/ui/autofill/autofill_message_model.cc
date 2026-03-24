@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -51,8 +52,11 @@ AutofillMessageModel::CreateForSaveCardFailure() {
   message->SetTitle(ui_params.title_text);
   message->SetDescription(ui_params.description_text);
   message->SetPrimaryButtonText(ui_params.failure_ok_button_text);
-  message->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletBrandingV2)) {
+    message->SetIconResourceId(
+        ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
+  }
 
   return base::WrapUnique(
       new AutofillMessageModel(std::move(message), Type::kSaveCardFailure));

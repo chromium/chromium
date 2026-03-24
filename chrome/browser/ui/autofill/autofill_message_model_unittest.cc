@@ -7,9 +7,11 @@
 #include <string>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/autofill_message_model_test_api.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +41,35 @@ TEST(AutofillMessageModelTest, VerifyCallbacks) {
 }
 
 TEST(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletBrandingV2);
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveCardFailure(/*is_for_save_and_fill=*/false);
+
+  std::unique_ptr<AutofillMessageModel> message_model =
+      AutofillMessageModel::CreateForSaveCardFailure();
+
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetTitle(),
+            ui_params.title_text);
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetDescription(),
+            ui_params.description_text);
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryButtonText(),
+            ui_params.failure_ok_button_text);
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetIconResourceId(), 0);
+  EXPECT_EQ(message_model->GetType(),
+            AutofillMessageModel::Type::kSaveCardFailure);
+  EXPECT_EQ(message_model->GetTypeAsString(),
+            AutofillMessageModel::TypeToString(
+                AutofillMessageModel::Type::kSaveCardFailure));
+}
+
+TEST(AutofillMessageModelTest,
+     VerifySaveCardFailureAttributes_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
+
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveCardFailure(/*is_for_save_and_fill=*/false);
