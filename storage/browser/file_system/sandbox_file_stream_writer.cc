@@ -228,7 +228,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
   }
 
   if (total_bytes_written_ + write_response + initial_offset_ > file_size_) {
-    int overlapped = file_size_ - total_bytes_written_ - initial_offset_;
+    int64_t overlapped = file_size_ - total_bytes_written_ - initial_offset_;
     // If writing past the end of a file, the distance seeked past the file
     // needs to be accounted for. This adjustment should only be made for the
     // first such write (when |total_bytes_written_| is 0).
