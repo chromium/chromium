@@ -557,7 +557,8 @@ TEST_F(NearbyShareClientImplTest, FetchAccessTokenFailure) {
       future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+          GoogleServiceAuthError::FromServiceUnavailable(
+              "Service unavailable."));
 
   EXPECT_EQ(ash::nearby::NearbyHttpError::kAuthenticationError, future.Get());
 }
