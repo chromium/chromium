@@ -6484,6 +6484,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5843" label="CSSTimelineScopeAttachedMultiple"/>
   <int value="5844" label="SVGForeignObjectInImage"/>
   <int value="5845" label="SVGForeignObjectDrawnIntoCanvas"/>
+  <int value="5846" label="HTMLPatching"/>
+  <int value="5847" label="HTMLStreaming"/>
+  <int value="5848" label="HTMLPositionalSetters"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

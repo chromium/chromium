@@ -1037,6 +1037,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
           current_insertion_location.parent,
           template_element->FastGetAttribute(html_names::kForAttr))) {
     CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
     template_element->SetPatch(patch);
     return;
   }

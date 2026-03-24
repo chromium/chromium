@@ -120,16 +120,16 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
 
     // https://github.com/whatwg/html/issues/11669
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamPrependHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTML(optional SetHTMLOptions options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamHTML(optional SetHTMLOptions options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamPrependHTML(optional SetHTMLOptions options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void appendHTML(DOMString html, optional SetHTMLOptions options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void appendHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void prependHTML(DOMString html, optional SetHTMLOptions options = {});
-    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void prependHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamAppendHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamPrependHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamAppendHTML(optional SetHTMLOptions options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamHTML(optional SetHTMLOptions options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException, MeasureAs=HTMLStreaming] WritableStream streamPrependHTML(optional SetHTMLOptions options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException, MeasureAs=HTMLPositionalSetters] void appendHTML(DOMString html, optional SetHTMLOptions options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException, MeasureAs=HTMLPositionalSetters] void appendHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException, MeasureAs=HTMLPositionalSetters] void prependHTML(DOMString html, optional SetHTMLOptions options = {});
+    [RuntimeEnabled=NewHTMLSettingMethods, RaisesException, MeasureAs=HTMLPositionalSetters] void prependHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
 
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
