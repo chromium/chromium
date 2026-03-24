@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -51,9 +50,6 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   ~MediaRouterUIBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    action_controller_ =
-        MediaRouterUIService::Get(browser()->profile())->action_controller();
-
     routes_ = {MediaRoute("routeId1",
                           MediaSource("urn:x-org.chromium.media:source:tab:*"),
                           "sinkId1", "description", true)};
@@ -86,25 +82,26 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
         ->GetCastButton();
   }
 
+  CastToolbarButtonController* action_controller() {
+    return MediaRouterUIService::Get(browser()->profile())->action_controller();
+  }
+
   Issue issue_;
 
   // A vector of MediaRoutes that includes a local route.
   std::vector<MediaRoute> routes_;
-
-  raw_ptr<CastToolbarButtonController, DanglingUntriaged> action_controller_ =
-      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
                        EphemeralToolbarIconForRoutesAndIssues) {
-  action_controller_->OnIssue(issue_);
+  action_controller()->OnIssue(issue_);
   EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnIssuesCleared();
+  action_controller()->OnIssuesCleared();
   EXPECT_FALSE(ToolbarIconExists());
 
-  action_controller_->OnRoutesUpdated(routes_);
+  action_controller()->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>());
+  action_controller()->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());
 
   SetAlwaysShowActionPref(true);
@@ -115,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
                        EphemeralToolbarIconWithMultipleWindows) {
-  action_controller_->OnRoutesUpdated(routes_);
+  action_controller()->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
 
   // Opening and closing a window shouldn't affect the state of the ephemeral
@@ -123,9 +120,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   // also work.
   Browser* browser2 = CreateBrowser(browser()->profile());
   EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>());
+  action_controller()->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(routes_);
+  action_controller()->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
   browser2->window()->Close();
   EXPECT_TRUE(ToolbarIconExists());
