@@ -1240,6 +1240,10 @@ BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 // Chrome OS.
 BASE_FEATURE(kNativeNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables installation of the content script for chrome/browser/indigo/ via
+// component update.
+BASE_FEATURE(kIndigoComponent, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSystemNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
