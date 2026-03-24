@@ -9,7 +9,7 @@ import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
+import {removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -95,7 +95,7 @@ export class PrintPreviewDestinationListItemElement extends CrLitElement {
     const matches = !this.searchQuery ?
         [] :
         this.destination.extraPropertiesToMatch.filter(
-            p => p.match(this.searchQuery!));
+            p => stripDiacritics(p).match(this.searchQuery!));
     this.searchHint_ = matches.length === 0 ?
         (this.destination.extraPropertiesToMatch.find(p => !!p) || '') :
         matches.join(' ');
