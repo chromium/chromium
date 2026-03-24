@@ -2452,7 +2452,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2635164452434513092">Nu te avertizează cu privire la site-urile private, cum ar fi rețeaua intranet a companiei tale</translation>
 <translation id="2635276683026132559">Semnare</translation>
 <translation id="2636266464805306348">Titlurile ferestrelor</translation>
-<translation id="2637313651144986786">Caută în file...</translation>
+<translation id="2637313651144986786">Caută file...</translation>
 <translation id="2637400434494156704">Codul PIN este incorect. Mai ai o încercare.</translation>
 <translation id="263796568413910992">Întreabă <ph name="SEARCH_ENGINE_NAME" /> sau introdu o adresă URL</translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>
@@ -3579,7 +3579,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3415580428903497523">Folosește certificate locale importate din sistemul de operare</translation>
 <translation id="341589277604221596">Subtitrări live - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Afișează întotdeauna adresele URL complete</translation>
-<translation id="3417835166382867856">Caută în file</translation>
+<translation id="3417835166382867856">Caută file</translation>
 <translation id="3417836307470882032">Formatul militar</translation>
 <translation id="3418798368381485936">Nu te poți conecta folosind acest cont</translation>
 <translation id="3421387094817716717">Cheia publică a curburii eliptice</translation>
@@ -7638,7 +7638,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6181431612547969857">Descărcarea a fost blocată</translation>
 <translation id="6182100780603067202">Permite accesul și la conținutul audio al aplicației (din toate ferestrele sale).</translation>
 <translation id="6183369864942961155">Temă luminoasă / întunecată automată</translation>
-<translation id="6184099524311454384">Caută în file</translation>
+<translation id="6184099524311454384">Caută file</translation>
 <translation id="6185132558746749656">Locația dispozitivului</translation>
 <translation id="6185151644843671709">Cheia de acces salvată și codul PIN creat</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{O parolă și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}few{{PASSWORD_COUNT} parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}other{{PASSWORD_COUNT} de parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}}</translation>
@@ -11592,7 +11592,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8864104359314908853">Parola s-a salvat</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> a fost eliminat de pe acest dispozitiv</translation>
 <translation id="8865112428068029930">Folosești un computer comun? Încearcă să deschizi o fereastră incognito.</translation>
-<translation id="8867102760244540173">Caută în file...</translation>
+<translation id="8867102760244540173">Caută file...</translation>
 <translation id="8867228703146808825">Copiază detaliile versiunii în clipboard</translation>
 <translation id="8868333925931032127">Se pornește modul demonstrativ</translation>
 <translation id="8868626022555786497">În uz</translation>

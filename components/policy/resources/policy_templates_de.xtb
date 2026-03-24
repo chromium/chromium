@@ -4030,7 +4030,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 <translation id="3760148113224469113">Bei Aufforderungen externer Protokolle immer eine Bestätigung des Nutzers erfordern</translation>
 <translation id="3760231600118073732">Aktuelle Sitzung sperren.</translation>
 <translation id="3761222804122755011">WebRTC verwendet nur die Schnittstelle, die mit dem öffentlichen Internet verbunden ist, kann aber über private IP-Adressen eine Verbindung herstellen.</translation>
-<translation id="3762520180381586267">Wenn die Richtlinie aktiviert ist, löst <ph name="PRODUCT_OS_NAME" /> einen Neustart aus, wenn der Nutzer das Gerät herunterfährt. <ph name="PRODUCT_OS_NAME" /> ersetzt alle Schaltflächen zum Herunterfahren in der Benutzeroberfläche durch Schaltflächen zum Neustarten. Wenn der Nutzer das Gerät über die Ein-/Aus-Taste herunterfährt, wird es nicht automatisch neu gestartet, auch wenn die Richtlinie aktiviert ist.
+<translation id="3762520180381586267">Wenn die Richtlinie aktiviert ist, löst <ph name="PRODUCT_OS_NAME" /> einen Neustart aus, wenn der Nutzer das Gerät herunterfährt. <ph name="PRODUCT_OS_NAME" /> ersetzt alle Buttons zum Herunterfahren in der Benutzeroberfläche durch Buttons zum Neustarten. Wenn der Nutzer das Gerät über die Ein-/Aus-Taste herunterfährt, wird es nicht automatisch neu gestartet, auch wenn die Richtlinie aktiviert ist.
 
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> dem Nutzer, das Gerät herunterzufahren.</translation>
 <translation id="376375951585423504">Persistentes Kontingent deaktivieren.</translation>

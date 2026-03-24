@@ -40,7 +40,7 @@
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Keine nächste Überschrift der Ebene 4</translation>
 <translation id="1212770441379271564">Bei den nächsten Tastaturbefehlen handelt es sich zwar nicht um ChromeVox-Befehle, aber sie sind für die optimale Bedienung von Chrome dennoch sehr hilfreich.
-    Wenn du durch ausführbare Elemente, z. B. Schaltflächen und Links, vorwärtsgehen möchtest, drücke die Tabulatortaste. Rückwärts gelangst du mit Umschalttaste + Tab.
+    Wenn du durch ausführbare Elemente, z. B. Buttons und Links, vorwärtsgehen möchtest, drücke die Tabulatortaste. Rückwärts gelangst du mit Umschalttaste + Tab.
     Wenn du auf die Adressleiste des Chrome-Browsers, auch als Omnibox bezeichnet, zugreifen möchtest, drücke Strg + L.
     Um einen neuen Tab zu öffnen und automatisch dorthin zu wechseln, drücke Strg + T. Dein Cursor befindet sich dann in der Omnibox.
     Wenn du einen Tab schließen möchtest, drücke Strg + W.
@@ -974,7 +974,7 @@
 <translation id="7313717760367325059">Hilfe</translation>
 <translation id="7317017974771324508">teilweise ausgewählt</translation>
 <translation id="7322442671176251901">Bei Berühren vorlesen</translation>
-<translation id="7344012264516629579">Weitere Sprungbefehle ermöglichen das Springen zwischen Links, Schaltflächen und Kästchen, um nur einige zu nennen. Eine vollständige Liste der Sprungbefehle findest du in den ChromeVox-Menüs, die du durch Drücken von „Suchtaste + Punkt“ öffnen kannst.</translation>
+<translation id="7344012264516629579">Weitere Sprungbefehle ermöglichen das Springen zwischen Links, Buttons und Kästchen, um nur einige zu nennen. Eine vollständige Liste der Sprungbefehle findest du in den ChromeVox-Menüs, die du durch Drücken von „Suchtaste + Punkt“ öffnen kannst.</translation>
 <translation id="7356165926712028380">Zu 8-Punkt-Braille wechseln</translation>
 <translation id="7356610683936413584">Beschreibungslistendetail</translation>
 <translation id="737396357417333429">clk</translation>

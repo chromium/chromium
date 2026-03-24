@@ -1040,7 +1040,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1682195225331129001">Şimdi deneyin</translation>
 <translation id="1682548588986054654">Yeni Gizli Pencere</translation>
 <translation id="1682696837763999627">Büyük fare imleci</translation>
-<translation id="1682867089915960590">Klavyeye Göz Atma Açılsın mı?</translation>
+<translation id="1682867089915960590">Klavyeyle Göz Atma Açılsın mı?</translation>
 <translation id="1686550358074589746">Kaydırarak yazmayı aç</translation>
 <translation id="1686785653877010442">Siteler genellikle son dakika haberleri veya sohbet mesajları konusunda sizi bilgilendirmek için bildirim gönderir.</translation>
 <translation id="168715261339224929">Yer işaretlerinize tüm cihazlarınızda ulaşmak için senkronizasyonu açın.</translation>
@@ -4985,7 +4985,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" uygulamasıyla iletişim kurmak istiyor</translation>
 <translation id="4340799661701629185">Sitelerin bildirim göndermesine izin verme</translation>
 <translation id="4341280816303414009">Ekranınız kaydedilebilir</translation>
-<translation id="4341577178275615435">Metin imleciyle göz atmayı açmak veya kapatmak için F7 kısayolunu kullanın</translation>
+<translation id="4341577178275615435">Klavyeyle göz atmayı açmak veya kapatmak için F7 kısayolunu kullanın</translation>
 <translation id="4341905082470253054">TPM durumu kontrol ediliyor...</translation>
 <translation id="434198521554309404">Hızlı. Güvenli. Zahmetsiz.</translation>
 <translation id="4342417854108207000">Cihazınızdaki dosyaları veya klasörleri düzenlemesine izin verilenler</translation>
@@ -5166,7 +5166,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />'da arayın veya URL'yi yazın</translation>
 <translation id="4457472090507035117">Geçerli sesi seçin:</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> gün önce etkindi</translation>
-<translation id="4460014764210899310">Grubu Çöz</translation>
+<translation id="4460014764210899310">Grubu çöz</translation>
 <translation id="4461483878391246134">Asla çeviri önerme listesine dil ekleyin</translation>
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> için <ph name="TIME" /> süreli zaman sınırı ayarla</translation>
@@ -8141,7 +8141,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6547354035488017500">En az 512 MB alan boşaltmazsanız cihazınız yanıt vermemeye başlayacaktır. Yer açmak için cihazın depolama alanındaki dosyaları silin.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google'ın konum hizmeti, cihazınızın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ayarlar &gt; Uygulamalar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Güvenlik ve konum &gt; Konum bölümüne giderek cihazınızdaki Android konumunu istediğiniz zaman kapatabilirsiniz. Ayrıca aynı menüden "Google Konum Doğruluğu" ayarını kapatarak kablosuz, mobil ağlar ve Android konum sensörlerinin kullanılmasını da devre dışı bırakabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="654871471440386944">Klavyeye göz atma açılsın mı?</translation>
+<translation id="654871471440386944">Klavyeyle göz atma açılsın mı?</translation>
 <translation id="6548945820758901244">Google Arama yan panelini açın</translation>
 <translation id="6549038875972762904">Kurulumu yeniden yap</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
