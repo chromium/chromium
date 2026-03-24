@@ -120,29 +120,22 @@ UIColor* CreateDynamicProviderFromRGB(int lightColor,
 
 }  // namespace
 
-@implementation TabGroupColorPalette
+@implementation TabGroupColorPalette {
+  // The colors of the background gradient.
+  UIColor* _firstBackgroundGradientColor;
+  UIColor* _secondBackgroundGradientColor;
+}
 
+// Returns the common color.
 + (UIColor*)commonColor:(TabGroupColorId)tabGroupColorID {
   const ColorGroup& group = kColorGroupMap.at(tabGroupColorID);
 
   return UIColorFromRGB(group.tone70);
 }
 
-+ (NSArray<UIColor*>*)gradientBackgroundColors:
-    (tab_groups::TabGroupColorId)tabGroupColorID {
-  const ColorGroup& group = kColorGroupMap.at(tabGroupColorID);
-
-  return @[
-    UIColor.blackColor,
-    UIColorFromRGB(group.tone20),
-    UIColorFromRGB(group.tone30),
-  ];
-}
-
 - (instancetype)initWithColorId:(TabGroupColorId)tabGroupColorID {
   self = [super init];
   if (self) {
-    _tabGroupColorID = tabGroupColorID;
     const ColorGroup& group = kColorGroupMap.at(tabGroupColorID);
 
     _backgroundColor = CreateDynamicProviderFromRGB(group.tone95, group.tone30);
@@ -151,9 +144,19 @@ UIColor* CreateDynamicProviderFromRGB(int lightColor,
     _barColor = CreateDynamicProviderFromRGB(
         group.tone70, group.tone30, kLightBarToneAlpha, kDarkBarToneAlpha);
     _commonColor = UIColorFromRGB(group.tone70);
+    _firstBackgroundGradientColor = UIColorFromRGB(group.tone20);
+    _secondBackgroundGradientColor = UIColorFromRGB(group.tone30);
   }
 
   return self;
+}
+
+- (NSArray*)backgroundGradientColors {
+  return @[
+    (id)UIColor.blackColor.CGColor,
+    (id)_firstBackgroundGradientColor.CGColor,
+    (id)_secondBackgroundGradientColor.CGColor,
+  ];
 }
 
 @end
