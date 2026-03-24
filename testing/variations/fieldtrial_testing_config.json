@@ -7527,8 +7527,7 @@
         {
             "platforms": [
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
@@ -7543,7 +7542,6 @@
     "DefaultBrowserFramework": [
         {
             "platforms": [
-                "windows",
                 "mac",
                 "linux"
             ],
@@ -7613,6 +7611,39 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultBrowserPromoIpadInstructions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DefaultBrowserRound3Phase1": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ModalDialog",
+                    "params": {
+                        "prompt_surface": "modal_dialog_with_settings_illustration"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserChangedOsNotification",
+                        "DefaultBrowserFramework",
+                        "DefaultBrowserPromptSurfaces",
+                        "PerformDefaultBrowserCheckValidations"
+                    ]
+                },
+                {
+                    "name": "BubbleDialog",
+                    "params": {
+                        "prompt_surface": "bubble_dialog"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserChangedOsNotification",
+                        "DefaultBrowserFramework",
+                        "DefaultBrowserPromptSurfaces",
+                        "PerformDefaultBrowserCheckValidations"
                     ]
                 }
             ]
@@ -17243,21 +17274,6 @@
                         "MemoryCacheChangeStrongReferencePruneDelay",
                         "MemoryCacheStrongReference",
                         "SuppressMemoryListeners"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PerformDefaultBrowserCheckValidations": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PerformDefaultBrowserCheckValidations"
                     ]
                 }
             ]
