@@ -406,7 +406,9 @@ std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
     return nullptr;
   }
 
-  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_RAW_DRAW});
+  // TODO(b/349290188): Add back this enforcement when we plan on shipping
+  // RawDraw.
+  // EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_RAW_DRAW});
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
   return backing->ProduceRaster(this, tracker);
