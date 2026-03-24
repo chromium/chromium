@@ -168,6 +168,20 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Entrypoint.{Result}"
+    enum="ContextualSearchSource" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the entrypoint used when a session ended in {Result}. Recorded at
+    the end of the session.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned"/>
+    <variant name="Navigated"/>
+  </token>
+</histogram>
+
 <histogram name="ContextualSearch.ErrorPageShown.{ContextualSearchSource}"
     enum="ContextualSearchErrorPage" expires_after="2026-09-13">
   <owner>nguyenbryan@google.com</owner>
@@ -227,6 +241,14 @@ chromium-metrics-reviews@google.com.
     metric is recorded only once the user has submitted the query and navigated
     to AIM.
   </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.Models.Shown.{ContextualSearchSource}"
+    enum="ContextualSearchAimModel" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>Recorded when an AIM model is shown in the composebox menu.</summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
@@ -675,6 +697,53 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.SessionEnd.NavigationResult.{ContextualSearchFileTypes}.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    When a session ends either by successful navigation to the response (True)
+    or abandonment (False), this metric logs the result for the file state
+    associated with {ContextualSearchFileTypes} that was present in the compose
+    context.
+  </summary>
+  <token key="ContextualSearchFileTypes" variants="ContextualSearchFileTypes"/>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.SessionEnd.{Result}.ModelMode.{ContextualSearchSource}"
+    enum="ContextualSearchAimModel" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active model mode used when a composebox session ended in
+    {Result}. Recorded at the end of the session.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned"/>
+    <variant name="Navigated"/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.SessionEnd.{Result}.ToolMode.{ContextualSearchSource}"
+    enum="ContextualSearchAimTool" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active tool mode used when a composebox session ended in
+    {Result}. Recorded at the end of the session.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned"/>
+    <variant name="Navigated"/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.TabContextAdded.V2.{ContextualSearchSource}"
     units="count" expires_after="2026-08-09">
   <owner>hujasonx@google.com</owner>
@@ -736,6 +805,14 @@ chromium-metrics-reviews@google.com.
     metric is recorded only once the user has submitted the query and navigated
     to AIM.
   </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.Tools.Shown.{ContextualSearchSource}"
+    enum="ContextualSearchAimTool" expires_after="2027-04-01">
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>Recorded when an AIM tool is shown in the composebox menu.</summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 

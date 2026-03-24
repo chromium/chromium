@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_DELEGATE_H_
 
+#import <vector>
+
 enum class AiModeActivationSource;
 enum class ComposeboxDragAndDropType;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxMode;
+enum class FuseboxAttachmentButtonType;
 
 /// Delegate for the composebox input plate view controller.
 @protocol ComposeboxInputPlateViewControllerDelegate
@@ -39,6 +42,13 @@ enum class ComposeboxMode;
 /// Informs the delegate that a user did tap on the gallery button.
 - (void)composeboxViewControllerMayShowGalleryPicker:
     (ComposeboxInputPlateViewController*)composeboxViewController;
+
+/// Informs the delegate that the plus menu opened and passes the visible
+/// attachment buttons.
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+    didOpenPlusMenuWithVisibleInternalButtons:
+        (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons;
 
 /// Informs the delegate that a user did tap on the file button.
 - (void)composeboxViewControllerDidTapFileButton:

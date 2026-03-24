@@ -10,8 +10,10 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
@@ -29,11 +31,12 @@ namespace contextual_search {
 // LINT.IfChange(ContextualSearchSource)
 
 enum class ContextualSearchSource {
-  kUnknown,
-  kNewTabPage,
-  kOmnibox,
-  kContextualTasks,
-  kLens,
+  kUnknown = 0,
+  kNewTabPage = 1,
+  kOmnibox = 2,
+  kContextualTasks = 3,
+  kLens = 4,
+  kMaxValue = kLens,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchSource,//tools/metrics/actions/actions.xml)
@@ -156,6 +159,30 @@ class ContextualSearchMetricsRecorder {
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
   virtual void RecordModelMode(omnibox::ModelMode model_mode);
+
+  // Records that a specific tool mode is available for use.
+  virtual void RecordToolModeShown(omnibox::ToolMode tool_mode);
+
+  // Records that a specific model mode is available for use.
+  virtual void RecordModelModeShown(omnibox::ModelMode model_mode);
+
+  // Recorded when the user ends the contextual search session, sliced by
+  // whether they navigated to the AI response or abandoned it. Records
+  // independent booleans for each file type present.
+  virtual void RecordFileTypesOnSessionEnd(
+      const std::vector<lens::MimeType>& types,
+      bool navigated);
+
+  // Recorded when the user ends the contextual search session, sliced by
+  // whether they navigated to the AI response or abandoned it. Records
+  // the active tool and model mode at session end.
+  virtual void RecordActiveModesOnSessionEnd(omnibox::ToolMode tool_mode,
+                                             omnibox::ModelMode model_mode,
+                                             bool navigated);
+
+  // Records whether a contextual search session initiated eventually
+  // resulted in a successful navigation or was abandoned.
+  virtual void RecordNavigationResult(bool navigated);
 
   // Records tool mode and model mode on query submission.
   virtual void RecordModesOnSubmission(omnibox::ToolMode tool_mode,

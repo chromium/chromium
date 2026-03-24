@@ -167,7 +167,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _viewController =
       [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
-  _viewController.metricsRecorder = _metricsRecorder;
 
   if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
     [_metricsRecorder
@@ -354,7 +353,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapLensButton:(UIButton*)lensButton {
   [_metricsRecorder recordLensSearchButtonUsed];
-
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::Composebox
@@ -422,6 +420,15 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   config.filter = [PHPickerFilter imagesFilter];
   _picker = [[PHPickerViewController alloc] initWithConfiguration:config];
   _picker.delegate = self;
+}
+
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+    didOpenPlusMenuWithVisibleInternalButtons:
+        (const std::vector<FuseboxAttachmentButtonType>&)
+            visibleInternalButtons {
+  [_mediator
+      recordPlusMenuOpenedWithVisibleInternalButtons:visibleInternalButtons];
 }
 
 - (void)composeboxViewControllerDidTapFileButton:
@@ -678,7 +685,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)showComposeboxTabPicker {
   [_metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kTabPicker];
-
   _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser

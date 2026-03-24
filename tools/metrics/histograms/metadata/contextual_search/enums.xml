@@ -81,6 +81,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Text and File"/>
 </enum>
 
+<!-- LINT.IfChange(ContextualSearchSource) -->
+
+<enum name="ContextualSearchSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="NewTabPage"/>
+  <int value="2" label="Omnibox"/>
+  <int value="3" label="ContextualTasks"/>
+  <int value="4" label="Lens"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->
+
 </enums>
 
 </histogram-configuration>

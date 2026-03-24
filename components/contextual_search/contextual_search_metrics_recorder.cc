@@ -574,6 +574,54 @@ void ContextualSearchMetricsRecorder::RecordModelMode(
       model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
 }
 
+void ContextualSearchMetricsRecorder::RecordToolModeShown(
+    omnibox::ToolMode tool_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Tools.Shown", ".", metrics_suffix_}),
+      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordModelModeShown(
+    omnibox::ModelMode model_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Models.Shown", ".", metrics_suffix_}),
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordFileTypesOnSessionEnd(
+    const std::vector<lens::MimeType>& types,
+    bool navigated) {
+  for (lens::MimeType type : types) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"ContextualSearch.SessionEnd.NavigationResult.",
+                      MimeTypeToString(type), ".", metrics_suffix_}),
+        navigated);
+  }
+}
+
+void ContextualSearchMetricsRecorder::RecordActiveModesOnSessionEnd(
+    omnibox::ToolMode tool_mode,
+    omnibox::ModelMode model_mode,
+    bool navigated) {
+  std::string result_str = navigated ? "Navigated" : "Abandoned";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.SessionEnd.", result_str, ".ToolMode",
+                    ".", metrics_suffix_}),
+      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.SessionEnd.", result_str, ".ModelMode",
+                    ".", metrics_suffix_}),
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordNavigationResult(bool navigated) {
+  std::string result_str = navigated ? "Navigated" : "Abandoned";
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Entrypoint.", result_str}), source_);
+}
+
 void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
     omnibox::ToolMode tool_mode,
     omnibox::ModelMode model_mode) {
