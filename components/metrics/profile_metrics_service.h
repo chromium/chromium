@@ -49,6 +49,15 @@ class ProfileMetricsService : public KeyedService {
     }
   }
 
+  template <typename T>
+  void UmaHistogramEnumeration(std::string_view name, T sample, T enum_size) {
+    base::UmaHistogramEnumeration(name, sample, enum_size);
+    if (!histogram_suffix_.empty()) {
+      base::UmaHistogramEnumeration(base::StrCat({name, histogram_suffix_}),
+                                    sample, enum_size);
+    }
+  }
+
  private:
   const ProfileMetricsContext profile_metrics_context_;
 

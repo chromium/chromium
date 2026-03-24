@@ -480,19 +480,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </token>
 </histogram>
 
-<histogram name="Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-regionalcapabilities@google.com</owner>
-  <summary>
-    Records the type of the default search engine that was chosen by the user.
-    Recorded the first time a user in the EEA region changes their default
-    search engine in the search engine choice screen or in the settings page.
-    The enum is shared with Search.DefaultSearchProviderType2.
-  </summary>
-</histogram>
-
-<histogram name="Search.ChoiceScreenDefaultSearchEngineType2"
+<histogram name="Search.ChoiceScreenDefaultSearchEngineType2{Profile}"
     enum="OmniboxSearchEngineType" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -503,7 +491,25 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Search.ChoiceScreenDefaultSearchEngineType, it does not record choices made
     in the settings page. The enum is shared with
     Search.DefaultSearchProviderType2.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
+<histogram name="Search.ChoiceScreenDefaultSearchEngineType{Profile}"
+    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the type of the default search engine that was chosen by the user.
+    Recorded the first time a user in the EEA region changes their default
+    search engine in the search engine choice screen or in the settings page.
+    The enum is shared with Search.DefaultSearchProviderType2.
+
+    {Profile}
+  </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents{Context}{Profile}"

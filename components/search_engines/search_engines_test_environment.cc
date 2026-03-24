@@ -166,8 +166,8 @@ policy::ManagementService& SearchEnginesTestEnvironment::management_service() {
 metrics::ProfileMetricsService&
 SearchEnginesTestEnvironment::profile_metrics_service() {
   if (!profile_metrics_service_) {
-    profile_metrics_service_ =
-        std::make_unique<metrics::ProfileMetricsService>();
+    profile_metrics_service_ = std::make_unique<metrics::ProfileMetricsService>(
+        metrics::ProfileMetricsContext(1));
   }
   return *profile_metrics_service_;
 }

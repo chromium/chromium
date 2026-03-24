@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -71,6 +72,25 @@ namespace search_engines {
 namespace {
 
 const CountryId kBelgiumCountryId = CountryId("BE");
+
+// Checks for the given histogram name and the Profile1 and PUMA variants.
+void ExpectHistogramsSampleCount(const base::HistogramTester& histogram_tester,
+                                 const std::string& base_histogram_name,
+                                 SearchEngineType engine_type,
+                                 int expected_count,
+                                 const base::Location& location = FROM_HERE) {
+  histogram_tester.ExpectUniqueSample(base_histogram_name, engine_type,
+                                      expected_count, location);
+
+  std::string profile1_name = base::StrCat({base_histogram_name, ".Profile1"});
+  histogram_tester.ExpectUniqueSample(profile1_name, engine_type,
+                                      expected_count, location);
+
+  std::string puma_name =
+      base::StrCat({"PUMA.RegionalCapabilities.", base_histogram_name});
+  histogram_tester.ExpectUniqueSample(puma_name, engine_type, expected_count,
+                                      location);
+}
 
 }  // namespace
 
@@ -149,20 +169,14 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
 
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -179,20 +193,14 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
   search_engine_choice_service().RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -217,20 +225,14 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
             kModifiedTimestamp);
 
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }
 
@@ -269,21 +271,15 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation_Waffle) {
 
     search_engine_choice_service().RecordChoiceMade(choice_location,
                                                     &template_url_service());
-    histogram_tester_.ExpectBucketCount(
+    ExpectHistogramsSampleCount(
+        histogram_tester_,
         search_engines::
             kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
         SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
-    histogram_tester_.ExpectBucketCount(
-        search_engines::
-            kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
-    histogram_tester_.ExpectUniqueSample(
+    ExpectHistogramsSampleCount(
+        histogram_tester_,
         search_engines::
             kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
-    histogram_tester_.ExpectBucketCount(
-        search_engines::
-            kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
         SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
     WipeSearchEngineChoicePrefs(*pref_service(),
                                 SearchEngineChoiceWipeReason::kCommandLineFlag);
@@ -372,20 +368,14 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
   search_engine_choice_service().RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
-  histogram_tester_.ExpectBucketCount(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectBucketCount(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -418,20 +408,14 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
   search_engine_choice_service().RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
-  histogram_tester_.ExpectBucketCount(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectBucketCount(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::
-          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
