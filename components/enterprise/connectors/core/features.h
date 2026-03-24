@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kGlicBulkDataEntrySupport);
 BASE_DECLARE_FEATURE(kEnableDownloadEnterpriseScanOnClank);
 #endif
 
+// Controls whether cancellation of uploads is enabled for content analysis.
+BASE_DECLARE_FEATURE(kEnableCancelUploadOnContentAnalysis);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

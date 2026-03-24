@@ -47,4 +47,8 @@ BASE_FEATURE(kEnableDownloadEnterpriseScanOnClank,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Controls whether cancellation of uploads is enabled for content analysis.
+BASE_FEATURE(kEnableCancelUploadOnContentAnalysis,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors
