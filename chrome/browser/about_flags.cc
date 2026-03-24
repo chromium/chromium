@@ -7275,11 +7275,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
 
-    {"ntp-realbox-use-google-g-icon",
-     flag_descriptions::kNtpRealboxUseGoogleGIconName,
-     flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxUseGoogleGIcon)},
-
     {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
      flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,

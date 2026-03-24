@@ -7049,11 +7049,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "ntp-realbox-use-google-g-icon",
-    "owners": [ "mahmadi@chromium.org", "mfacey@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "ntp-safe-browsing-module",
     "owners": [ "tiborg@chromium.org" ],
     "expiry_milestone": 105
