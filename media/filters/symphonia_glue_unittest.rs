@@ -190,7 +190,7 @@ fn test_unsupported_buffer_type() {
 fn test_decoder_init_failure() {
     let config = ffi::SymphoniaDecoderConfig {
         codec: ffi::SymphoniaAudioCodec::Flac,
-        extra_data: vec![], // Empty extra data might be enough to fail some decoders.
+        extra_data: &[], // Empty extra data might be enough to fail some decoders.
         bytes_per_sample: 2,
         channel_mask: 0,
         max_frames_per_packet: 0,
@@ -265,11 +265,8 @@ fn test_error_mapping() {
 // Verify that FFI packets are correctly converted to Symphonia packets.
 #[gtest(SymphoniaGlueTest, PacketConversion)]
 fn test_packet_conversion() {
-    let ffi_packet = ffi::SymphoniaPacket {
-        timestamp_us: 12345,
-        duration_us: 6789,
-        data: vec![0xAA, 0xBB, 0xCC],
-    };
+    let ffi_packet =
+        ffi::SymphoniaPacket { timestamp_us: 12345, duration_us: 6789, data: &[0xAA, 0xBB, 0xCC] };
     let sym_packet = symphonia::core::formats::Packet::from(&ffi_packet);
 
     expect_eq!(sym_packet.ts(), 12345);

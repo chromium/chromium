@@ -22,6 +22,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/to_address.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
@@ -43,16 +44,6 @@ namespace {
 // PCM specific property for the maximum number of frames per packet. This
 // value covers up to ~85ms of audio per chunk.
 constexpr int kDefaultMaxFramesPerPcmPacket = 4096;
-
-// TODO(crbug.com/40074653): consider using a view type instead where possible.
-rust::Vec<uint8_t> ToRustVec(base::span<const uint8_t> data) {
-  rust::Vec<uint8_t> vec;
-  vec.reserve(data.size());
-  for (const uint8_t value : data) {
-    vec.push_back(value);
-  }
-  return vec;
-}
 
 SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec,
                                      SampleFormat sample_format) {
@@ -125,7 +116,9 @@ constexpr int GetBytesPerSample(AudioCodec codec, SampleFormat sample_format) {
 SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
   SymphoniaDecoderConfig out;
   out.codec = ToSymphoniaCodec(config.codec(), config.sample_format());
-  out.extra_data = ToRustVec(config.extra_data());
+
+  const auto& extra = config.extra_data();
+  out.extra_data = rust::Slice<const uint8_t>(extra.data(), extra.size());
   out.bytes_per_sample =
       GetBytesPerSample(config.codec(), config.sample_format());
   out.channel_mask = ChannelLayoutToMask(config.channel_layout());
@@ -148,14 +141,16 @@ SymphoniaPacket ToSymphoniaPacket(
   SymphoniaPacket packet;
   if (buffer.end_of_stream()) {
     // Represent EOS as an empty data vector.
-    packet.data = rust::Vec<uint8_t>();
+    packet.data = rust::Slice<const uint8_t>();
 
     // EOS buffers do not have a valid timestamp or duration.
     packet.timestamp_us = 0;
     packet.duration_us = 0;
   } else {
     CHECK_GT(buffer.size(), 0u);
-    packet.data = ToRustVec(buffer);
+    packet.data = rust::Slice<const uint8_t>(
+        buffer.empty() ? nullptr : base::to_address(buffer.begin()),
+        buffer.size());
     packet.timestamp_us =
         (buffer.timestamp() - first_frame_timestamp.value()).InMicroseconds();
     packet.duration_us = buffer.duration().InMicroseconds();

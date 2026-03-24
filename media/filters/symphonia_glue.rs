@@ -94,11 +94,11 @@ pub mod ffi {
 
     /// Configuration parameters required to initialize a Symphonia decoder.
     /// This struct is created and populated on the C++ side.
-    struct SymphoniaDecoderConfig {
+    struct SymphoniaDecoderConfig<'a> {
         /// The codec of the audio stream (e.g., AAC, MP3, Opus).
         codec: SymphoniaAudioCodec,
         /// Codec-specific initialization data (e.g., AAC headers).
-        extra_data: Vec<u8>,
+        extra_data: &'a [u8],
         /// Expected bytes per sample from the container/config.
         bytes_per_sample: u8,
 
@@ -113,13 +113,13 @@ pub mod ffi {
 
     /// Represents a single, encoded audio packet to be sent to the decoder.
     /// This struct is populated on the C++ side for each call to `decode`.
-    struct SymphoniaPacket {
+    struct SymphoniaPacket<'a> {
         /// The presentation timestamp of the packet in microseconds.
         timestamp_us: u64,
         /// The duration of the packet in microseconds.
         duration_us: u64,
         /// The buffer containing the encoded packet data.
-        data: Vec<u8>,
+        data: &'a [u8],
     }
 
     /// Represents a buffer of decoded audio data.
@@ -429,9 +429,9 @@ fn to_symphonia_codec_type(
 }
 
 /// Converts an FFI `SymphoniaPacket` to a Symphonia `Packet`.
-impl From<&ffi::SymphoniaPacket> for Packet {
-    fn from(value: &ffi::SymphoniaPacket) -> Self {
-        Packet::new_from_slice(0, value.timestamp_us, value.duration_us, &value.data)
+impl<'a> From<&ffi::SymphoniaPacket<'a>> for Packet {
+    fn from(value: &ffi::SymphoniaPacket<'a>) -> Self {
+        Packet::new_from_slice(0, value.timestamp_us, value.duration_us, value.data)
     }
 }
 
@@ -512,12 +512,12 @@ pub fn unpack_xiph_vorbis_extradata(extradata: &[u8]) -> Result<Vec<u8>, String>
 }
 
 /// Converts an FFI `SymphoniaDecoderConfig` to Symphonia `CodecParameters`.
-impl TryFrom<&ffi::SymphoniaDecoderConfig> for CodecParameters {
+impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
     type Error = String;
 
-    fn try_from(value: &ffi::SymphoniaDecoderConfig) -> Result<Self, Self::Error> {
+    fn try_from(value: &ffi::SymphoniaDecoderConfig<'a>) -> Result<Self, Self::Error> {
         let bits_per_sample: u32 = (value.bytes_per_sample as u32) * u8::BITS;
-        let mut extra_data = value.extra_data.clone();
+        let mut extra_data = value.extra_data.to_vec();
 
         // Chromium's demuxers often pack Vorbis extradata using the Xiph format, which
         // is a byproduct of using FFmpeg.
