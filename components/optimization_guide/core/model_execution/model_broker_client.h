@@ -57,7 +57,6 @@ class ModelClient final : public TextSafetyClient {
     return *feature_adapter_;
   }
 
-  uint32_t max_tokens() const { return max_tokens_; }
   // The intersection of model capabilities and device capabilities.
   const on_device_model::Capabilities& capabilities() const {
     return capabilities_;
@@ -65,6 +64,19 @@ class ModelClient final : public TextSafetyClient {
 
   const proto::FeatureTextSafetyConfiguration& safety_config() const {
     return safety_config_;
+  }
+
+  const TokenLimits& token_limits() const {
+    return feature_adapter_->GetTokenLimits();
+  }
+
+  const std::optional<SamplingParamsConfig> GetSamplingParamsConfig() const {
+    return feature_adapter_->GetSamplingParamsConfig();
+  }
+
+  const std::optional<const optimization_guide::proto::Any> GetFeatureMetadata()
+      const {
+    return feature_adapter_->GetFeatureMetadata();
   }
 
  private:
@@ -77,8 +89,6 @@ class ModelClient final : public TextSafetyClient {
   scoped_refptr<const OnDeviceModelFeatureAdapter> feature_adapter_;
   proto::FeatureTextSafetyConfiguration safety_config_;
   proto::OnDeviceModelVersions model_versions_;
-  // The full combined limit for input and output tokens.
-  uint32_t max_tokens_ = 0;
   on_device_model::Capabilities capabilities_;
   mojom::OnDeviceFeature feature_;
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};

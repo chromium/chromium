@@ -176,13 +176,4 @@ void OnDeviceCapability::GetOnDeviceModelEligibilityAsync(
   std::move(callback).Run(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
-std::optional<SamplingParamsConfig> OnDeviceCapability::GetSamplingParamsConfig(
-    mojom::OnDeviceFeature feature) {
-  return std::nullopt;
-}
-
-std::optional<const optimization_guide::proto::Any>
-OnDeviceCapability::GetFeatureMetadata(mojom::OnDeviceFeature feature) {
-  return std::nullopt;
-}
 }  // namespace optimization_guide

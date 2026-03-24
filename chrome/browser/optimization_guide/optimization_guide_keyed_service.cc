@@ -758,16 +758,3 @@ void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
   GetGlobalState().on_device_capability().GetOnDeviceModelEligibilityAsync(
       feature, capabilities, std::move(callback));
 }
-
-std::optional<optimization_guide::SamplingParamsConfig>
-OptimizationGuideKeyedService::GetSamplingParamsConfig(
-    optimization_guide::mojom::OnDeviceFeature feature) {
-  return GetGlobalState().on_device_capability().GetSamplingParamsConfig(
-      feature);
-}
-
-std::optional<const optimization_guide::proto::Any>
-OptimizationGuideKeyedService::GetFeatureMetadata(
-    optimization_guide::mojom::OnDeviceFeature feature) {
-  return GetGlobalState().on_device_capability().GetFeatureMetadata(feature);
-}

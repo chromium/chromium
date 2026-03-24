@@ -128,16 +128,6 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
                base::OnceCallback<
                    void(optimization_guide::OnDeviceModelEligibilityReason)>),
               (override));
-
-  MOCK_METHOD(std::optional<optimization_guide::SamplingParamsConfig>,
-              GetSamplingParamsConfig,
-              (optimization_guide::mojom::OnDeviceFeature),
-              (override));
-
-  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
-              GetFeatureMetadata,
-              (optimization_guide::mojom::OnDeviceFeature),
-              (override));
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

@@ -80,7 +80,6 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
                           .As<proto::FeatureTextSafetyConfiguration>()),
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
-      max_tokens_(config->max_tokens),
       capabilities_(config->model_capabilities),
       feature_(*ToOnDeviceFeature(feature_adapter_->config().feature())) {
   // Tool use is assumed supported since it is gated by RuntimeEnabledFeatures

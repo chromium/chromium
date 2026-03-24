@@ -337,53 +337,6 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   ASSERT_TRUE(session);
 }
 
-// Verify that GetSamplingParamsConfig returns nullopt when adapter is not
-// available.
-TEST_F(ModelBrokerAndroidTest, GetSamplingParamsConfigNoAdapter) {
-  auto result =
-      EnsureBroker().GetSamplingParamsConfig(mojom::OnDeviceFeature::kTest);
-  EXPECT_FALSE(result.has_value());
-}
-
-// Verify that GetSamplingParamsConfig returns value when adapter is available.
-TEST_F(ModelBrokerAndroidTest, GetSamplingParamsConfigWithAdapter) {
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  // Ensure the model and adaptation are fully downloaded.
-  auto session =
-      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
-  ASSERT_TRUE(session);
-
-  // GetSamplingParamsConfig should now return a value.
-  auto result =
-      EnsureBroker().GetSamplingParamsConfig(mojom::OnDeviceFeature::kTest);
-  EXPECT_TRUE(result.has_value());
-}
-
-// Verify that GetFeatureMetadata returns nullopt when adapter is not available.
-TEST_F(ModelBrokerAndroidTest, GetFeatureMetadataNoAdapter) {
-  auto result =
-      EnsureBroker().GetFeatureMetadata(mojom::OnDeviceFeature::kTest);
-  EXPECT_FALSE(result.has_value());
-}
-
-// Verify that GetFeatureMetadata returns value when adapter is available.
-TEST_F(ModelBrokerAndroidTest, GetFeatureMetadataWithAdapter) {
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  // Ensure the model and adaptation are fully downloaded.
-  auto session =
-      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
-  ASSERT_TRUE(session);
-
-  // GetFeatureMetadata should now return a value.
-  auto result =
-      EnsureBroker().GetFeatureMetadata(mojom::OnDeviceFeature::kTest);
-  EXPECT_TRUE(result.has_value());
-}
-
 class ModelBrokerAndroidRequirePersistentModeEnabledTest
     : public ModelBrokerAndroidTest {
  public:
@@ -435,22 +388,6 @@ TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
            mojom::ModelUnavailableReason::kNotSupported;
   });
   EXPECT_EQ(future.Get(), nullptr);
-}
-
-// Verify that GetSamplingParamsConfig returns nullopt when feature is disabled.
-TEST_F(ModelBrokerAndroidFeatureDisabledTest,
-       GetSamplingParamsConfigFeatureDisabled) {
-  auto result =
-      EnsureBroker().GetSamplingParamsConfig(mojom::OnDeviceFeature::kTest);
-  EXPECT_FALSE(result.has_value());
-}
-
-// Verify that GetFeatureMetadata returns nullopt when feature is disabled.
-TEST_F(ModelBrokerAndroidFeatureDisabledTest,
-       GetFeatureMetadataFeatureDisabled) {
-  auto result =
-      EnsureBroker().GetFeatureMetadata(mojom::OnDeviceFeature::kTest);
-  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace

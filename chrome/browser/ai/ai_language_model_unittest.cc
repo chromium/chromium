@@ -289,15 +289,18 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
       override {
     optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_can_skip_text_safety(true);
-    optimization_guide::proto::SamplingParams sampling_params;
-    sampling_params.set_top_k(kTestMaxTopK);
-    sampling_params.set_temperature(kTestMaxTemperature);
-    *config.mutable_sampling_params() = sampling_params;
+    optimization_guide::proto::SamplingParams default_sampling_params;
+    default_sampling_params.set_top_k(kTestDefaultTopK);
+    default_sampling_params.set_temperature(kTestDefaultTemperature);
+    *config.mutable_sampling_params() = default_sampling_params;
 
     config.mutable_input_config()->set_max_context_tokens(kTestMaxTokens);
 
     optimization_guide::proto::PromptApiMetadata metadata;
-    *metadata.mutable_max_sampling_params() = sampling_params;
+    optimization_guide::proto::SamplingParams max_sampling_params;
+    max_sampling_params.set_top_k(kTestMaxTopK);
+    max_sampling_params.set_temperature(kTestMaxTemperature);
+    *metadata.mutable_max_sampling_params() = max_sampling_params;
     *config.mutable_feature_metadata() =
         optimization_guide::AnyWrapProto(metadata);
 
@@ -311,22 +314,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
     auto config = CreateConfig();
     config.set_can_skip_text_safety(false);
     return config;
-  }
-
-  void SetupMockOptimizationGuideKeyedService() override {
-    AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
-    ON_CALL(*mock_optimization_guide_keyed_service_,
-            GetSamplingParamsConfig(
-                optimization_guide::mojom::OnDeviceFeature::kPromptApi))
-        .WillByDefault([]() {
-          return optimization_guide::SamplingParamsConfig{
-              .default_top_k = kTestDefaultTopK,
-              .default_temperature = kTestDefaultTemperature};
-        });
-    ON_CALL(*mock_optimization_guide_keyed_service_,
-            GetFeatureMetadata(
-                optimization_guide::mojom::OnDeviceFeature::kPromptApi))
-        .WillByDefault([&]() { return CreateConfig().feature_metadata(); });
   }
 
   mojo::Remote<blink::mojom::AILanguageModel> CreateSession(
@@ -1714,6 +1701,33 @@ TEST_F(AILanguageModelTest, Priority) {
 
   main_rfh()->GetRenderWidgetHost()->GetView()->Show();
   EXPECT_THAT(Prompt(*session, MakeInput("baz")), ElementsAre("hi"));
+}
+
+// Test that GetLanguageModelParams returns null when sampling config is
+// not available (model not downloaded yet).
+TEST_F(AILanguageModelTest, GetLanguageModelParamsReturnsNullWhenNotAvailable) {
+  base::test::TestFuture<blink::mojom::AILanguageModelParamsPtr> future;
+  ai_manager_->GetLanguageModelParams(future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+// Test that GetLanguageModelParams returns params when config is available
+TEST_F(AILanguageModelTest,
+       GetLanguageModelParamsReturnsValidParamsWhenAvailable) {
+  EnsureModelIsReady();
+
+  base::test::TestFuture<blink::mojom::AILanguageModelParamsPtr> future;
+  ai_manager_->GetLanguageModelParams(future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  const auto& params = future.Get();
+
+  ASSERT_TRUE(!params.is_null());
+  ASSERT_TRUE(!params->default_sampling_params.is_null());
+  EXPECT_EQ(kTestDefaultTopK, params->default_sampling_params->top_k);
+  EXPECT_FLOAT_EQ(kTestDefaultTemperature,
+                  params->default_sampling_params->temperature);
 }
 
 // Test class for `Tool Use` functionality.

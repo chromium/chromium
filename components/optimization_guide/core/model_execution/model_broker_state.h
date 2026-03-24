@@ -67,10 +67,6 @@ class ModelBrokerState final : public OnDeviceCapability {
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback)
       override;
-  std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
-      mojom::OnDeviceFeature feature) override;
-  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
-      mojom::OnDeviceFeature feature) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
       mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer) override;

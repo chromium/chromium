@@ -40,16 +40,6 @@ class MockOnDeviceCapability : public OnDeviceCapability {
                const on_device_model::Capabilities&,
                base::OnceCallback<void(OnDeviceModelEligibilityReason)>),
               (override));
-
-  MOCK_METHOD(std::optional<SamplingParamsConfig>,
-              GetSamplingParamsConfig,
-              (mojom::OnDeviceFeature),
-              (override));
-
-  MOCK_METHOD(std::optional<const proto::Any>,
-              GetFeatureMetadata,
-              (mojom::OnDeviceFeature feature),
-              (override));
 };
 
 class MockSession : public OnDeviceSession {

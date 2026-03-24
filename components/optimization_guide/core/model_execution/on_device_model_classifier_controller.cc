@@ -75,7 +75,6 @@ class OnDeviceModelClassifierController::Solution
   // Hardcoded dummy config.
   mojom::ModelSolutionConfigPtr MakeConfig() const override {
     auto config = mojom::ModelSolutionConfig::New();
-    config->max_tokens = kOnDeviceModelMaxTokens;
     config->feature_config = mojo_base::ProtoWrapper(CreateFeatureConfig());
     config->text_safety_config =
         mojo_base::ProtoWrapper(proto::FeatureTextSafetyConfiguration());

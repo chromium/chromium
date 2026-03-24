@@ -789,12 +789,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
            OnDeviceModelEligibilityReason::kSuccess;
   })) << "Timeout waiting for model to be marked eligible.";
 
-  auto sampling_config =
-      GetOptimizationGuideKeyedService()->GetSamplingParamsConfig(
-          mojom::OnDeviceFeature::kCompose);
+  auto& metadata = broker_state()->base_model_controller().GetFeatureMetadata(
+      mojom::OnDeviceFeature::kCompose);
+  auto sampling_config = metadata->adapter()->GetSamplingParamsConfig();
 
-  EXPECT_EQ(sampling_config->default_top_k, kTestDefaultTopK);
-  EXPECT_EQ(sampling_config->default_temperature, kTestDefaultTemperature);
+  EXPECT_EQ(sampling_config.default_top_k, kTestDefaultTopK);
+  EXPECT_EQ(sampling_config.default_temperature, kTestDefaultTemperature);
 }
 
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)

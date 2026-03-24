@@ -599,10 +599,10 @@ uint32_t GetMaxTokens(optimization_guide::ModelClient* model_client) {
   }
   // Max should allow for the output buffer.
   uint32_t result = std::min(
-      model_client->feature_adapter().GetTokenLimits().max_context_tokens,
-      model_client->max_tokens() -
+      model_client->token_limits().max_context_tokens,
+      model_client->token_limits().max_tokens -
           std::min(
-              model_client->max_tokens(),
+              model_client->token_limits().max_tokens,
               static_cast<uint32_t>(
                   features::kAILanguageModelOverrideConfigurationOutputBuffer
                       .Get())));

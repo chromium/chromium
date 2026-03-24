@@ -351,10 +351,6 @@ class OnDeviceCapability {
       mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback);
-  virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
-      mojom::OnDeviceFeature feature);
-  virtual std::optional<const optimization_guide::proto::Any>
-  GetFeatureMetadata(mojom::OnDeviceFeature feature);
 };
 
 }  // namespace optimization_guide

@@ -170,11 +170,6 @@ class OptimizationGuideKeyedService
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
       override;
-  std::optional<optimization_guide::SamplingParamsConfig>
-  GetSamplingParamsConfig(
-      optimization_guide::mojom::OnDeviceFeature feature) override;
-  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
-      optimization_guide::mojom::OnDeviceFeature feature) override;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on

@@ -29,7 +29,6 @@ struct ModelSolutionConfig {
   mojo_base.mojom.ProtoWrapper feature_config;
   mojo_base.mojom.ProtoWrapper text_safety_config;
   mojo_base.mojom.ProtoWrapper model_versions;
-  int32 max_tokens;
   on_device_model.mojom.Capabilities model_capabilities;
 };
 

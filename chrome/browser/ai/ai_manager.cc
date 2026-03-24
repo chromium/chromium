@@ -504,7 +504,7 @@ void AIManager::CreateLanguageModelInternal(
   }
 
   blink::mojom::AILanguageModelParamsPtr language_model_params =
-      GetLanguageModelParams();
+      GetLanguageModelParams(model_client.get());
   blink::mojom::AILanguageModelSamplingParamsPtr sampling_params =
       std::move(options->sampling_params);
   auto params = on_device_model::mojom::SessionParams::New();
@@ -735,15 +735,12 @@ void AIManager::CreateProofreader(
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 
-blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
-  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
-  if (!service) {
+blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams(
+    optimization_guide::ModelClient* model_client) {
+  if (!model_client) {
     return nullptr;
   }
-  auto sampling_params_config = service->GetSamplingParamsConfig(
-      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
-
+  auto sampling_params_config = model_client->GetSamplingParamsConfig();
   if (!sampling_params_config.has_value()) {
     return nullptr;
   }
@@ -761,8 +758,7 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
       optimization_guide::features::GetOnDeviceModelMaxTopK();
   model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
 
-  auto metadata = service->GetFeatureMetadata(
-      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
+  auto metadata = model_client->GetFeatureMetadata();
   if (metadata.has_value()) {
     auto parsed_metadata = AILanguageModel::ParseMetadata(metadata.value());
     if (parsed_metadata.has_max_sampling_params()) {
@@ -783,7 +779,16 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
 // This is the method to get the info for AILanguageModel.
 void AIManager::GetLanguageModelParams(
     GetLanguageModelParamsCallback callback) {
-  std::move(callback).Run(GetLanguageModelParams());
+  if (!model_broker_client_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  auto& subscriber = model_broker_client_->GetSubscriber(
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
+  optimization_guide::ModelClient* client =
+      subscriber.client().has_value() ? &subscriber.client().value() : nullptr;
+  std::move(callback).Run(GetLanguageModelParams(client));
 }
 
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,

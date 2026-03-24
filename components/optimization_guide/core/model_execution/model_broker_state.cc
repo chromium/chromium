@@ -146,40 +146,6 @@ void ModelBrokerState::GetOnDeviceModelEligibilityAsync(
                      std::move(callback)));
 }
 
-std::optional<optimization_guide::SamplingParamsConfig>
-ModelBrokerState::GetSamplingParamsConfig(mojom::OnDeviceFeature feature) {
-  if (!features::IsOnDeviceExecutionEnabled()) {
-    return std::nullopt;
-  }
-
-  const auto& solution =
-      model_broker_impl_.GetSolutionProvider(feature).solution();
-  if (!solution.has_value()) {
-    return std::nullopt;
-  }
-
-  // Solution owns the scoped_refptr to the adapter, so the return pointer of
-  // GetAdapter() is always safe to use.
-  return solution.value()->GetAdapter()->GetSamplingParamsConfig();
-}
-
-std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
-    mojom::OnDeviceFeature feature) {
-  if (!features::IsOnDeviceExecutionEnabled()) {
-    return std::nullopt;
-  }
-
-  const auto& solution =
-      model_broker_impl_.GetSolutionProvider(feature).solution();
-  if (!solution.has_value()) {
-    return std::nullopt;
-  }
-
-  // Solution owns the scoped_refptr to the adapter, so the return pointer of
-  // GetAdapter() is always safe to use.
-  return solution.value()->GetAdapter()->GetFeatureMetadata();
-}
-
 void ModelBrokerState::EnsureInitialization(
     ModelBrokerImpl::InitCallback callback) {
   performance_classifier_.EnsurePerformanceClassAvailable(

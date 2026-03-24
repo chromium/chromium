@@ -63,9 +63,6 @@ class AIManager : public base::SupportsUserData::Data,
     return context_bound_object_set_.GetSize();
   }
 
-  // Return the default and max sampling params for the LanguageModel API.
-  blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams();
-
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(
       blink::mojom::AILanguageModelCreateOptionsPtr options,
@@ -128,6 +125,10 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       blink::mojom::AILanguageModelCreateOptionsPtr options,
       base::WeakPtr<optimization_guide::ModelClient> model_client);
+
+  // Return the default and max sampling params for the LanguageModel API.
+  blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams(
+      optimization_guide::ModelClient* model_client);
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
