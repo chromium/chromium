@@ -17,7 +17,7 @@
 namespace default_browser {
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7638566";
+constexpr char kScreenshotBaselineCL[] = "7695153";
 
 class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
  protected:

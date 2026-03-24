@@ -91,7 +91,8 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: var(--cr-fallback-color-inverse-primary);
+  background-color: var(--color-button-background-prominent,
+        var(--cr-fallback-color-primary));
   border-radius: 8px;
 }
 
