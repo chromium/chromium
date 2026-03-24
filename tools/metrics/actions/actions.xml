@@ -40411,6 +40411,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ScrollToNavigate_NextTab">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="ScrollToNavigate_PreviousTab">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="SeaPen_FeedbackPressed">
   <owner>pzliu@google.com</owner>
   <owner>assistive-eng@google.com</owner>

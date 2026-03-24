@@ -380,6 +380,7 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
                          event.time_stamp()));
+        base::RecordAction(base::UserMetricsAction("ScrollToNavigate_NextTab"));
         return true;
       }
 
@@ -390,6 +391,8 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
                          event.time_stamp()));
+        base::RecordAction(
+            base::UserMetricsAction("ScrollToNavigate_PreviousTab"));
         return true;
       }
     }
