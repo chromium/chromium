@@ -2798,6 +2798,10 @@ crbug.com/494341371 [ Linux ] external/wpt/html/cross-origin-opener-policy/ifram
 crbug.com/438309773 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-005.html [ Failure ]
+external/wpt/css/css-text/text-autospace/text-autospace-ideograph-numeric-001.html [ Failure ]
+external/wpt/quirks/tables-inherit-color-from-body-quirk-004.html [ Failure ]
+external/wpt/quirks/tables-inherit-color-from-body-quirk-005.html [ Failure ]
 crbug.com/494377597 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html [ Failure ]
 crbug.com/494377597 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic.html [ Failure ]
 crbug.com/494377597 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html [ Failure ]

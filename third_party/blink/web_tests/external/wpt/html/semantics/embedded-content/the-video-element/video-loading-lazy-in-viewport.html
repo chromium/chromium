@@ -17,12 +17,11 @@
       windowLoadFired = true;
     });
 
-    video.addEventListener("loadstart", () => {
-      assert_true(windowLoadFired, "Window load event should fire before loadstart for lazy video in viewport");
-      t.done();
-    });
+    video.addEventListener("loadeddata", t.step_func_done(() => {
+      assert_true(windowLoadFired, "Window load event should fire before lazy video in viewport finishes loading");
+    }));
 
     document.body.appendChild(video);
-  }, "In-viewport video with loading='lazy' fires window load before loadstart");
+  }, "In-viewport video with loading='lazy' does not block window load");
 </script>
 </body>

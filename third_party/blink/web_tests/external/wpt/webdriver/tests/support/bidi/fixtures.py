@@ -221,6 +221,24 @@ def send_blocking_command(bidi_session):
     return send_blocking_command
 
 
+@pytest_asyncio.fixture
+async def wait_for_bidi_events(bidi_session, configuration):
+    async def wait_for_bidi_events(events, count, timeout=2, equal_check=True):
+        def check_bidi_events(_, events, count):
+            assert len(
+                events) >= count, f"Did not receive at least {count} BiDi event(s)"
+
+        final_timeout = timeout * configuration["timeout_multiplier"]
+
+        wait = AsyncPoll(bidi_session, timeout=final_timeout)
+        await wait.until(check_bidi_events, events, count)
+
+        if equal_check:
+            assert len(events) == count, f"Did not receive {count} BiDi event(s)"
+
+    return wait_for_bidi_events
+
+
 @pytest.fixture
 def wait_for_event(bidi_session, event_loop):
     """Wait until the BiDi session emits an event and resolve the event data."""

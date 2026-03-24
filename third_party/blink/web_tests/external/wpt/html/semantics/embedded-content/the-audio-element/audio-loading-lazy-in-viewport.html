@@ -18,12 +18,11 @@
       windowLoadFired = true;
     });
 
-    audio.addEventListener("loadstart", () => {
-      assert_true(windowLoadFired, "Window load event should fire before loadstart for lazy audio in viewport");
-      t.done();
-    });
+    audio.addEventListener("loadeddata", t.step_func_done(() => {
+      assert_true(windowLoadFired, "Window load event should fire before lazy audio in viewport finishes loading");
+    }));
 
     document.body.appendChild(audio);
-  }, "In-viewport audio with loading='lazy' fires window load before loadstart");
+  }, "In-viewport audio with loading='lazy' does not block window load");
 </script>
 </body>

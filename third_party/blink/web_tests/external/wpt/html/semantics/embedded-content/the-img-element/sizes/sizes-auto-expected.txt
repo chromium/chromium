@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <img loading="lazy" sizes="(max-width: 0px) 10px, auto" style="width: 10px" data-ref="ref2" srcset="/images/green-1x1.png?img35 50w, /images/green-16x16.png?img35 51w">
+  assert_equals: expected "http://web-platform.test:8001/images/green-16x16.png" but got "http://web-platform.test:8001/images/green-1x1.png"
+[FAIL] <picture><source sizes="(max-width: 0px) 10px, auto" srcset="/images/green-1x1.png?picture35 50w, /images/green-16x16.png?picture35 51w"><img loading="lazy" style="width: 10px" data-ref="ref2"></picture>
+  assert_equals: expected "http://web-platform.test:8001/images/green-16x16.png" but got "http://web-platform.test:8001/images/green-1x1.png"
+Harness: the test ran to completion.
+

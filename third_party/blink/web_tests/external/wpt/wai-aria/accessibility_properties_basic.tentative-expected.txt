@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] ARIA checkbox with aria-checked true
+  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+[FAIL] HTML checkbox with checked true
+  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+[FAIL] tablist subtree
+  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+Harness: the test ran to completion.
+
