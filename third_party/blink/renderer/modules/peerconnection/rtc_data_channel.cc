@@ -734,7 +734,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
     NOTREACHED();
   } else {
     String text =
-        buffer.data.size() > 0 ? String::FromUTF8(buffer.data) : g_empty_string;
+        buffer.data.size() > 0 ? String::FromUtf8(buffer.data) : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;

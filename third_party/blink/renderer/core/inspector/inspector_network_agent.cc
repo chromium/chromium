@@ -356,7 +356,7 @@ class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
     }
 
     // Try to decode as UTF-8 first.
-    String text_attempt = String::FromUTF8(base::as_byte_span(combined));
+    String text_attempt = String::FromUtf8(base::as_byte_span(combined));
 
     String result;
     bool base64_encoded = false;
@@ -693,7 +693,7 @@ std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
       .setOpcode(op_code)
       .setMask(masked)
       // Only interpret the payload as UTF-8 when it's a text message
-      .setPayloadData(op_code == 1 ? String::FromUTF8WithLatin1Fallback(payload)
+      .setPayloadData(op_code == 1 ? String::FromUtf8WithLatin1Fallback(payload)
                                    : Base64Encode(payload))
       .build();
 }
@@ -915,7 +915,7 @@ static bool FormDataToString(
 
   Vector<char> bytes;
   body->Flatten(bytes);
-  *content = String::FromUTF8WithLatin1Fallback(base::as_byte_span(bytes));
+  *content = String::FromUtf8WithLatin1Fallback(base::as_byte_span(bytes));
   return true;
 }
 

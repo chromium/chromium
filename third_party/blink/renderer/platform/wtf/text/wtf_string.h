@@ -77,21 +77,28 @@ class WTF_EXPORT String {
   [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
   [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
 
-  // String::FromUTF8 will return a null string if
+  // String::FromUtf8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
   // Does not strip BOMs.
-  [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8(const char* s);
+  [[nodiscard]] static String FromUtf8(base::span<const uint8_t>);
+  [[nodiscard]] static String FromUtf8(std::string_view s) {
+    return FromUtf8(base::as_byte_span(s));
+  }
+  // FromUTF8() is deprecated. Use FromUtf8() instead.
+  [[nodiscard]] static String FromUTF8(base::span<const uint8_t> chars) {
+    return FromUtf8(chars);
+  }
+  // FromUTF8() is deprecated. Use FromUtf8() instead.
   [[nodiscard]] static String FromUTF8(std::string_view s) {
-    return FromUTF8(base::as_byte_span(s));
+    return FromUtf8(base::as_byte_span(s));
   }
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(
+  [[nodiscard]] static String FromUtf8WithLatin1Fallback(
       base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
-    return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
+  [[nodiscard]] static String FromUtf8WithLatin1Fallback(std::string_view s) {
+    return FromUtf8WithLatin1Fallback(base::as_byte_span(s));
   }
 
   template <typename CharType>

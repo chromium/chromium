@@ -14,7 +14,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::test::TaskEnvironment task_environment;
   // SAFETY: Wrapping arguments from libFuzzer in a span.
   blink::String input_string =
-      blink::String::FromUTF8WithLatin1Fallback(UNSAFE_BUFFERS({data, size}));
+      blink::String::FromUtf8WithLatin1Fallback(UNSAFE_BUFFERS({data, size}));
   blink::SVGPathStringSource source(input_string);
   class NullConsumer {
    public:

@@ -369,7 +369,7 @@ String String::Make16BitFrom8BitSource(base::span<const LChar> source) {
   return result;
 }
 
-String String::FromUTF8(base::span<const uint8_t> bytes) {
+String String::FromUtf8(base::span<const uint8_t> bytes) {
   const uint8_t* string_start = bytes.data();
   size_type length = base::checked_cast<size_type>(bytes.size());
 
@@ -394,15 +394,8 @@ String String::FromUTF8(base::span<const uint8_t> bytes) {
   return StringImpl::Create(result.converted);
 }
 
-String String::FromUTF8(const char* s) {
-  if (!s) {
-    return String();
-  }
-  return FromUTF8(std::string_view(s));
-}
-
-String String::FromUTF8WithLatin1Fallback(base::span<const uint8_t> bytes) {
-  String utf8 = FromUTF8(bytes);
+String String::FromUtf8WithLatin1Fallback(base::span<const uint8_t> bytes) {
+  String utf8 = FromUtf8(bytes);
   if (!utf8)
     return String(bytes);
   return utf8;

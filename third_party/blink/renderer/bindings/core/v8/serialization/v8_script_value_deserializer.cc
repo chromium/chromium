@@ -406,7 +406,7 @@ bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
       !ReadRawBytesToSpan(utf8_length, &utf8_data)) {
     return false;
   }
-  *string = String::FromUTF8(utf8_data);
+  *string = String::FromUtf8(utf8_data);
 
   // Decoding must have failed; this encoding does not distinguish between null
   // and empty strings.

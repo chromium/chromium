@@ -174,7 +174,7 @@ String FontPlatformData::FontFamilyName() const {
          !localized_string.fString.size()) {
   }
   font_family_iterator->unref();
-  return String::FromUTF8(base::as_byte_span(localized_string.fString));
+  return String::FromUtf8(base::as_byte_span(localized_string.fString));
 }
 
 SkTypeface* FontPlatformData::Typeface() const {

@@ -325,7 +325,7 @@ void DevToolsSession::FallThrough(int call_id,
                                   crdtp::span<uint8_t> method,
                                   crdtp::span<uint8_t> message) {
   // There's no other layer to handle the command.
-  NOTREACHED() << String::FromUTF8(crdtp::SpanFrom(method)).Utf8().data();
+  NOTREACHED() << String::FromUtf8(crdtp::SpanFrom(method)).Utf8().data();
 }
 
 void DevToolsSession::sendResponse(

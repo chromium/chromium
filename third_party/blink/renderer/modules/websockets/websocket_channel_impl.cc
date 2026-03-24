@@ -1205,7 +1205,7 @@ String WebSocketChannelImpl::GetTextMessage(
     span = chunks[0];
   }
   DCHECK_EQ(span.size(), size);
-  return String::FromUTF8(span);
+  return String::FromUtf8(span);
 }
 
 void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,

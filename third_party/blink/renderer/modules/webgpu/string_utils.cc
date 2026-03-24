@@ -9,7 +9,7 @@
 namespace blink {
 
 String StringFromASCIIAndUTF8(std::string_view message) {
-  return String::FromUTF8WithLatin1Fallback(message);
+  return String::FromUtf8WithLatin1Fallback(message);
 }
 
 std::string UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(

@@ -122,7 +122,7 @@ void InspectorAgentState::Serialize(const blink::String& v,
 bool InspectorAgentState::Deserialize(span<uint8_t> in, blink::String* v) {
   CBORTokenizer tokenizer(in);
   if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
-    *v = blink::String::FromUTF8(tokenizer.GetString8());
+    *v = blink::String::FromUtf8(tokenizer.GetString8());
     return true;
   }
   if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
