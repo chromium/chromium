@@ -266,7 +266,7 @@ BASE_FEATURE_PARAM(bool,
 //
 // Spec: https://wicg.github.io/local-network-access/
 BASE_FEATURE(kLocalNetworkAccessChecksWebSockets,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Local Network Access checks for WebTransport.
 // Blocks local network requests without user permission to prevent exploitation
@@ -274,7 +274,7 @@ BASE_FEATURE(kLocalNetworkAccessChecksWebSockets,
 //
 // Spec: https://wicg.github.io/local-network-access/
 BASE_FEATURE(kLocalNetworkAccessChecksWebTransport,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Splits the Local Network Access permission into 2 permissions. See
 // crbug.com/465491626.
