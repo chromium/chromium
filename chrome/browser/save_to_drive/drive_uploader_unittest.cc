@@ -144,7 +144,7 @@ TEST_F(DriveUploaderTest, FetchAccessTokenFailure) {
 
   uploader->Start();
   test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 }
 
 TEST_F(DriveUploaderTest, NoRefreshToken) {
