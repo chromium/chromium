@@ -2329,14 +2329,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 // Test that details for sticky feature are captured.
-// TODO(crbug.com/40241677): WebSocket server is flaky Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_StickyFeaturesWithDetails DISABLED_StickyFeaturesWithDetails
-#else
-#define MAYBE_StickyFeaturesWithDetails StickyFeaturesWithDetails
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_StickyFeaturesWithDetails) {
+                       StickyFeaturesWithDetails) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a_no_store(embedded_test_server()->GetURL(
       "a.com", "/set-header?Cache-Control: no-store"));
@@ -2348,16 +2342,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Call this to access tree result later.
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
-  // Open a WebSocket.
+  // Open a WebRTC connection.
   const char script[] = R"(
       new Promise(resolve => {
-        const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve(42));
+        const pc = new RTCPeerConnection();
+        pc.addIceCandidate({ candidate: "test", sdpMLineIndex: 0 }).finally(()=>{
+          resolve(42);
+        });
       });)";
-  ASSERT_EQ(42, EvalJs(rfh_a.get(),
-                       JsReplace(script, net::test_server::GetWebSocketURL(
-                                             *embedded_test_server(),
-                                             "/echo-with-no-extension"))));
+  ASSERT_EQ(42, EvalJs(rfh_a.get(), script));
 
   // 3) Navigate away to `url_b`.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -2366,24 +2359,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket,
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
        blink::scheduler::WebSchedulerTrackedFeature::
            kMainResourceHasCacheControlNoStore,
-       blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky},
+       blink::scheduler::WebSchedulerTrackedFeature::kWebRTCSticky},
       {}, {}, {}, FROM_HERE);
   auto& map = GetTreeResult()->GetBlockingDetailsMap();
   EXPECT_EQ(map.size(), 3u);
   EXPECT_TRUE(
-      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebRTC));
   EXPECT_TRUE(map.contains(
-      blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky));
-  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+      blink::scheduler::WebSchedulerTrackedFeature::kWebRTCSticky));
+  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebRTC),
               testing::UnorderedElementsAre(MatchesBlockingDetails(
-                  MatchesSourceLocation(GURL::EmptyGURL(), "", 3, 24))));
+                  MatchesSourceLocation(GURL::EmptyGURL(), "", 4, 12))));
   EXPECT_THAT(
-      map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky),
+      map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebRTCSticky),
       testing::UnorderedElementsAre(MatchesBlockingDetails(
-          MatchesSourceLocation(GURL::EmptyGURL(), "", 3, 24))));
+          MatchesSourceLocation(GURL::EmptyGURL(), "", 4, 12))));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
