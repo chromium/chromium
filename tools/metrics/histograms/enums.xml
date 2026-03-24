@@ -10855,6 +10855,7 @@ from previous Chrome versions.
       label="ClientSideDetectionBrandAndIntentForScamDetection:disabled"/>
   <int value="-1055998734" label="MahiPanelResizable:disabled"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
+  <int value="-1055531052" label="EnablePixInCct:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1055289598"
       label="NotificationOneTapUnsubscribeOnDesktop:enabled"/>
@@ -12054,6 +12055,7 @@ from previous Chrome versions.
   <int value="-655608107" label="MediaAppCustomColors:enabled"/>
   <int value="-655294302"
       label="UseMlServiceForNonLongformHandwritingOnAllBoards:disabled"/>
+  <int value="-654749277" label="EnablePixInCct:disabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654254555" label="ClayBlocking:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>

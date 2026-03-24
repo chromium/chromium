@@ -1635,6 +1635,11 @@ inline constexpr char kEnablePixAccountLinkingDescription[] =
     "When enabled, users without linked Pix accounts will be prompted to link "
     "their Pix accounts to Google Wallet.";
 
+inline constexpr char kEnablePixInCctName[] =
+    "Enable Pix code detection in Chrome custom tabs";
+inline constexpr char kEnablePixInCctDescription[] =
+    "When enabled, Pix codes will be detected in Chrome custom tabs.";
+
 inline constexpr char kEnablePixPaymentsInLandscapeModeName[] =
     "Enable Pix payments in landscape mode";
 inline constexpr char kEnablePixPaymentsInLandscapeModeDescription[] =

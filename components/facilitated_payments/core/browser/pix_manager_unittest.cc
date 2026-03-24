@@ -1687,7 +1687,9 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
-       ChromeCustomTabWithGboardAsDefaultIme_PixFlowNotTriggered) {
+       ChromeCustomTabWithGboardAsDefaultIme_FlagDisabled_PixFlowNotTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnablePixInCct);
   ON_CALL(*client_, IsInChromeCustomTabMode())
       .WillByDefault(testing::Return(true));
   ON_CALL(*client_, GetDeviceDelegate)
@@ -1710,7 +1712,34 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
-       ChromeCustomTabWithGboardNotAsDefaultIme_PixFlowTriggered) {
+       PixCodeCopiedInChromeCustomTab_PixFlowTriggered) {
+  base::test::ScopedFeatureList feature_list{kEnablePixInCct};
+  ON_CALL(*client_, IsInChromeCustomTabMode())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*client_, GetDeviceDelegate)
+      .WillByDefault(testing::Return(mock_device_delegate_.get()));
+  ON_CALL(*mock_device_delegate_, IsPixSupportAvailableViaGboard)
+      .WillByDefault(testing::Return(true));
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  test_api(*pix_manager_)
+      .OnPixCodeValidated(PixCodeRustValidationResult::kDynamic,
+                          /*pix_code=*/std::string(), base::TimeTicks::Now(),
+                          /*pix_qr_code_type=*/mojom::PixQrCodeType::kDynamic);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kCctWithGboardAsDefaultIme,
+      /*expected_bucket_count=*/0);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       ChromeCustomTabWithGboardNotAsDefaultIme_FlagDisabled_PixFlowTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnablePixInCct);
   ON_CALL(*client_, IsInChromeCustomTabMode())
       .WillByDefault(testing::Return(true));
   ON_CALL(*client_, GetDeviceDelegate)

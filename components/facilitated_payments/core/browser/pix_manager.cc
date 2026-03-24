@@ -256,7 +256,8 @@ void PixManager::OnValidPixCode(std::string pix_code,
     return;
   }
 
-  if (client_->IsInChromeCustomTabMode() &&
+  if (!base::FeatureList::IsEnabled(kEnablePixInCct) &&
+      client_->IsInChromeCustomTabMode() &&
       client_->GetDeviceDelegate()->IsPixSupportAvailableViaGboard()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kCctWithGboardAsDefaultIme);
     return;

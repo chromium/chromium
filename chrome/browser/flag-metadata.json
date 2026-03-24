@@ -3957,6 +3957,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-pix-in-cct",
+    "owners": [ "siashah@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-pix-payments-in-landscape-mode",
     "owners": [ "siashah@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160
