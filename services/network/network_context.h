@@ -1087,9 +1087,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
         enforced_allowlisted_patterns;
     std::optional<std::string> enforced_reporting_endpoint;
+    ConnectionAllowlist::RedirectBehavior enforced_redirect_behavior =
+        ConnectionAllowlist::RedirectBehavior::kBlock;
     std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
         report_only_allowlisted_patterns;
     std::optional<std::string> report_only_reporting_endpoint;
+    ConnectionAllowlist::RedirectBehavior report_only_redirect_behavior =
+        ConnectionAllowlist::RedirectBehavior::kBlock;
   };
   std::map<base::UnguessableToken, NetworkRestriction>
       network_revocation_nonces_;

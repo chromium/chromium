@@ -3535,25 +3535,30 @@ void NetworkContext::FlushClientCertCache() {
 void NetworkContext::RevokeNetworkForNonces(
     std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patterns,
     RevokeNetworkForNoncesCallback callback) {
-  auto parse_allowlist = [](auto& source, auto& dest_endpoint,
-                            auto& dest_patterns) {
-    if (!source) {
-      return;
-    }
-    dest_endpoint = std::move(source->reporting_endpoint);
-    for (const std::string& pattern : source->allowlist) {
-      // TODO(crbug.com/447954811): We can safely DCHECK here, as we've done
-      // pattern validation already while validating the header's syntax. That
-      // said, parsing the pattern twice has performance overhead, and it
-      // would be ideal to change our infrastructure to allow passing a
-      // SimpleUrlPatternMatcher directly rather than creating it anew here.
-      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
-          pattern, /*base_url=*/nullptr);
+  auto parse_allowlist =
+      [](std::optional<ConnectionAllowlist>& source,
+         std::optional<std::string>& dest_endpoint,
+         std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>&
+             dest_patterns,
+         ConnectionAllowlist::RedirectBehavior& dest_redirect_behavior) {
+        if (!source) {
+          return;
+        }
+        dest_endpoint = std::move(source->reporting_endpoint);
+        dest_redirect_behavior = source->redirect_behavior;
+        for (const std::string& pattern : source->allowlist) {
+          // TODO(crbug.com/447954811): We can safely DCHECK here, as we've done
+          // pattern validation already while validating the header's syntax.
+          // That said, parsing the pattern twice has performance overhead, and
+          // it would be ideal to change our infrastructure to allow passing a
+          // SimpleUrlPatternMatcher directly rather than creating it anew here.
+          auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+              pattern, /*base_url=*/nullptr);
 
-      DCHECK(matcher.has_value());
-      dest_patterns.insert(std::move(matcher.value()));
-    }
-  };
+          DCHECK(matcher.has_value());
+          dest_patterns.insert(std::move(matcher.value()));
+        }
+      };
 
   for (auto& entry : nonces_to_patterns) {
     const base::UnguessableToken& nonce = entry->nonce;
@@ -3566,10 +3571,12 @@ void NetworkContext::RevokeNetworkForNonces(
 
     parse_allowlist(entry->allowlists.enforced,
                     restriction.enforced_reporting_endpoint,
-                    restriction.enforced_allowlisted_patterns);
+                    restriction.enforced_allowlisted_patterns,
+                    restriction.enforced_redirect_behavior);
     parse_allowlist(entry->allowlists.report_only,
                     restriction.report_only_reporting_endpoint,
-                    restriction.report_only_allowlisted_patterns);
+                    restriction.report_only_allowlisted_patterns,
+                    restriction.report_only_redirect_behavior);
 
     // CancelRequestsIfNonceMatchesAndUrlNotExempted is not needed for
     // connection allowlist since there should not be any ongoing
@@ -3701,11 +3708,18 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
   if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     const NetworkRestriction& restriction =
         network_revocation_nonces_.find(nonce)->second;
+
+    // TODO(crbug.com/492439215): Implement reporting via
+    // restriction.report_only_redirect_behavior.
+    if (is_redirect) {
+      return restriction.enforced_redirect_behavior ==
+             ConnectionAllowlist::RedirectBehavior::kAllow;
+    }
+
     for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
          restriction.enforced_allowlisted_patterns) {
       if (pattern->Match(url)) {
-        // Redirects are blocked for URLs allowed through connection allowlists.
-        return !is_redirect;
+        return true;
       }
     }
   }
