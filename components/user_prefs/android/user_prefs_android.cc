@@ -17,11 +17,8 @@ namespace user_prefs {
 static bool JNI_UserPrefs_AreNativePrefsLoaded(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  content::BrowserContext* browser_context =
-      content::BrowserContextFromJavaHandle(jbrowser_context_handle);
-  return browser_context && UserPrefs::IsInitialized(browser_context) &&
-         UserPrefs::Get(browser_context)->GetInitializationStatus() ==
-             PrefService::INITIALIZATION_STATUS_SUCCESS;
+  return UserPrefs::ArePrefsLoaded(
+      content::BrowserContextFromJavaHandle(jbrowser_context_handle));
 }
 
 static base::android::ScopedJavaLocalRef<jobject> JNI_UserPrefs_Get(

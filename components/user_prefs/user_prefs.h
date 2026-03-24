@@ -28,6 +28,9 @@ class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
   // Returns true if there is a PrefService attached to the given context.
   static bool IsInitialized(base::SupportsUserData* context);
 
+  // Returns true if the PrefService for the given context has finished loading.
+  static bool ArePrefsLoaded(base::SupportsUserData* context);
+
   // Retrieves the PrefService for a given context.
   static PrefService* Get(base::SupportsUserData* context);
 

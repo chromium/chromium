@@ -16,3 +16,15 @@ component("user_prefs") {
     "//components/prefs",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "user_prefs_unittest.cc" ]
+  deps = [
+    ":user_prefs",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}
