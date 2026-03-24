@@ -8,6 +8,8 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("skills") {
   sources = [
+    "skills_glic_mojom_util.cc",
+    "skills_glic_mojom_util.h",
     "skills_metrics_provider.cc",
     "skills_metrics_provider.h",
     "skills_service_factory.cc",
@@ -16,7 +18,9 @@ source_set("skills") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/glic:mojo_bindings",
     "//components/keyed_service/content",
+    "//components/sync/protocol",
   ]
 
   deps = [
