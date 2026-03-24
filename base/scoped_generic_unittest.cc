@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -153,6 +154,42 @@ TEST(ScopedGenericTest, Receive) {
     EXPECT_DEATH_IF_SUPPORTED(a.reset(), "");
     EXPECT_DEATH_IF_SUPPORTED(ScopedInt::Receiver(*a).get(), "");
   }
+}
+
+TEST(ScopedGenericTest, ReceiverMoveConstruct) {
+  std::vector<int> values_freed;
+  IntTraits traits(&values_freed);
+  ScopedInt a(0, traits);
+
+  {
+    ScopedInt::Receiver r1(a);
+    ScopedInt::Receiver r2(std::move(r1));
+    EXPECT_TRUE(values_freed.empty());
+    EXPECT_EQ(0, a.get());
+  }
+
+  EXPECT_THAT(values_freed, testing::ElementsAre(0));
+}
+
+TEST(ScopedGenericTest, ReceiverMoveAssign) {
+  std::vector<int> values_freed;
+  IntTraits traits(&values_freed);
+
+  constexpr int kFirst = 0;
+  constexpr int kSecond = 1;
+
+  ScopedInt a(kFirst, traits);
+  ScopedInt b(kSecond, traits);
+
+  {
+    ScopedInt::Receiver r1(a);
+    ScopedInt::Receiver r2(b);
+    r2 = std::move(r1);
+    ASSERT_EQ(kSecond, values_freed[0]);
+    EXPECT_EQ(kFirst, a.get());
+  }
+
+  EXPECT_THAT(values_freed, testing::ElementsAre(kSecond, kFirst));
 }
 
 namespace {
