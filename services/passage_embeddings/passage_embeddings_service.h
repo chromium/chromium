@@ -5,7 +5,6 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
@@ -31,12 +30,10 @@ class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
 
   mojo::Receiver<mojom::PassageEmbeddingsService> receiver_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Called when the embedder remote disconnects.
   void OnEmbedderDisconnect();
 
   std::unique_ptr<PassageEmbedder> embedder_;
-#endif
 };
 
 }  // namespace passage_embeddings
