@@ -1378,6 +1378,10 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
   options.auto_send = auto_send;
   options.fre_override = fre_override;
   host_.PanelWillOpen(invocation_source, std::move(options));
+
+  if (base::FeatureList::IsEnabled(features::kGlicClearTurnIdOnPanelWillOpen)) {
+    conversation_info_->turn_id = std::nullopt;
+  }
 }
 
 void GlicInstanceImpl::OnWebClientCleared() {
