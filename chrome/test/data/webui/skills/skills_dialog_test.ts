@@ -749,7 +749,7 @@ suite('SkillsDialogAppPage', function() {
       id: '',
       sourceSkillId: '',
       name: '',
-      icon: '⚡',  // Default
+      icon: '',
       prompt: 'Instruction that triggers auto-gen',
       description: '',
       source: SkillSource.kUserCreated,

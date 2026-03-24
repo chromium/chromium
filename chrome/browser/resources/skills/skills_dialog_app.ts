@@ -476,7 +476,8 @@ export class SkillsDialogAppElement extends CrLitElement {
                 refinedSkill.name :
                 this.skill_.name;
             const newIcon =
-                (this.skill_.icon === DEFAULT_EMOJI && refinedSkill.icon) ?
+                ((this.skill_.icon === DEFAULT_EMOJI || !this.skill_.icon) &&
+                 refinedSkill.icon) ?
                 refinedSkill.icon :
                 this.skill_.icon;
             if (newName !== this.skill_.name || newIcon !== this.skill_.icon) {
