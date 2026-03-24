@@ -2126,7 +2126,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public boolean shouldPersistAcrossReboots() {
-        return ChromeFeatureList.sPersistAcrossReboots.isEnabled();
+        return DeviceInfo.isDesktop() && ChromeFeatureList.sPersistAcrossReboots.isEnabled();
     }
 
     private void handleDebugIntent(Intent intent) {
