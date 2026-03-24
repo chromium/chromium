@@ -7,7 +7,7 @@ function runTests() {
     function onVolumeListChanged() {
       chrome.fileSystem.getVolumeList(
           chrome.test.callbackPass(function(volumeList) {
-            let origLength = volumeList.length;
+            const origLength = volumeList.length;
 
            // Confirm that adding a newly mounted volume emits an event, and
            // that the volume list is updated.

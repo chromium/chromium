@@ -19,7 +19,7 @@ chrome.test.runTests([
           chrome.test.assertEq(restoredEntry, entry);
           chrome.test.assertEq(
               chrome.fileSystem.retainEntry(restoredEntry), id);
-          var reader = entry.createReader();
+          const reader = entry.createReader();
           reader.readEntries(chrome.test.callback(function(entries) {
             chrome.test.assertEq(entries.length, 1);
             checkEntry(entries[0], 'open_existing.txt', false, false);

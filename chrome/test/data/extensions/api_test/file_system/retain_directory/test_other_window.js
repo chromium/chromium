@@ -4,7 +4,7 @@
 
 chrome.fileSystem.chooseEntry({type: 'openDirectory'},
     chrome.test.callbackPass(function(entry) {
-  var id = chrome.fileSystem.retainEntry(entry);
+  const id = chrome.fileSystem.retainEntry(entry);
   chrome.test.assertNe(null, id);
   chrome.fileSystem.isRestorable(id, chrome.test.callbackPass(
       function(isRestorable) {

@@ -20,7 +20,7 @@ chrome.test.runTests([
         }));
   },
   // Verify that it's impossible to get a writable access to a file system which
-  // was requested without "write: true" option. Otherwise, users would see the
+  // was requested without 'write: true' option. Otherwise, users would see the
   // dialog for granting read-only access, but the access would be R/W.
   function writableRootOnlyViaRequestFileSystem() {
     chrome.fileSystem.requestFileSystem(

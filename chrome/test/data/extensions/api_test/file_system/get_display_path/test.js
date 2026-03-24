@@ -9,8 +9,8 @@ chrome.test.runTests([
       // Test that we can get the display path of the file.
       chrome.fileSystem.getDisplayPath(entry, chrome.test.callbackPass(
           function(path) {
-        chrome.test.assertTrue(path.indexOf("file_system") >= 0);
-        chrome.test.assertTrue(path.indexOf("gold.txt") >= 0);
+        chrome.test.assertTrue(path.indexOf('file_system') >= 0);
+        chrome.test.assertTrue(path.indexOf('gold.txt') >= 0);
       }));
     }));
   }

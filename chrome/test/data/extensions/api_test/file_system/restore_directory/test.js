@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   function restoreEntryWorks() {
-    var id = 'magic id';
+    const id = 'magic id';
     chrome.fileSystem.isRestorable(id, chrome.test.callbackPass(
         function(isRestorable) {
       chrome.test.assertTrue(isRestorable);

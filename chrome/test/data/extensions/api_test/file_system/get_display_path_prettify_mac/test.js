@@ -13,7 +13,7 @@ chrome.test.runTests([
       // the '.localized' suffix.
       chrome.fileSystem.getDisplayPath(entry, chrome.test.callbackPass(
           function(path) {
-        var suffix = '/test/gold.txt';
+        const suffix = '/test/gold.txt';
         chrome.test.assertEq(suffix,
             path.substring(path.length - suffix.length));
       }));
