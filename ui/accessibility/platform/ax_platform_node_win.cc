@@ -803,8 +803,19 @@ void AXPlatformNodeWin::OnActiveComposition(
 void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
     const std::wstring& active_composition_text,
     bool is_composition_committed) {
+  // When a composition is committed, the standard text change events
+  // (VALUE_IN_TEXT_FIELD_CHANGED / EDITABLE_TEXT_CHANGED) will fire
+  // separately and report the same change via UIA_Text_TextChangedEventId.
+  // Firing both causes Narrator to announce the text twice — the same
+  // class of duplicate that text_changed_nodes_ deduplicates for
+  // same-type events, but across event types.
+  // See https://crbug.com/493951242.
+  if (is_composition_committed) {
+    return;
+  }
+
   if (!AXPlatform::GetInstance().IsUiaProviderEnabled() ||
-      !HasEventListenerForEvent(UIA_Text_TextChangedEventId)) {
+      !HasEventListenerForEvent(UIA_TextEdit_TextChangedEventId)) {
     return;
   }
 

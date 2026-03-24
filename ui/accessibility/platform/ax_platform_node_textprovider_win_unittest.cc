@@ -827,6 +827,55 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
 }
 
+// Verify that OnActiveComposition with is_composition_committed=true still
+// caches the composition range. The TextEdit event is suppressed for committed
+// compositions (crbug.com/493951242), but the range must remain accessible.
+TEST_F(AXPlatformNodeTextProviderTest,
+       ITextProviderGetActiveCompositionCommitted) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea name="Document"
+    ++++2 kStaticText name="some-text"
+  )HTML"));
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> root_text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+
+  ComPtr<ITextEditProvider> root_text_edit_provider;
+  EXPECT_HRESULT_SUCCEEDED(root_node->GetPatternProvider(
+      UIA_TextEditPatternId, &root_text_edit_provider));
+
+  ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
+  root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
+
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kFocus;
+  action_data.target_node_id = 1;
+  AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
+  owner->GetDelegate()->AccessibilityPerformAction(action_data);
+
+  // Call with is_composition_committed=true. The TextEdit event is suppressed,
+  // but the composition range should still be cached.
+  const std::u16string active_composition_text = u"hello";
+  owner->OnActiveComposition(gfx::Range(0, 5), active_composition_text, true);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  root_text_edit_provider->GetActiveComposition(&text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider);
+  ComPtr<AXPlatformNodeTextRangeProviderWin> actual_range;
+  AXNodePosition::AXPositionInstance expected_start =
+      owner->GetDelegate()->CreateTextPositionAt(0);
+  AXNodePosition::AXPositionInstance expected_end =
+      owner->GetDelegate()->CreateTextPositionAt(5);
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
+  EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
+}
+
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
   TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kRootWebArea name="Document"
