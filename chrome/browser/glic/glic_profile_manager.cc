@@ -191,11 +191,6 @@ void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
     return;
   }
 
-  if (last_loaded_glic_ && last_loaded_glic_.get() != glic &&
-      !GlicEnabling::IsMultiInstanceEnabled()) {
-    last_loaded_glic_->CloseAndShutdown();
-  }
-
   if (glic) {
     last_loaded_glic_ = glic->GetWeakPtr();
   } else {

@@ -3405,8 +3405,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
             if (auto* rfh = GetRenderFrameHost()) {
               glic_service->Close(rfh->GetOutermostMainFrame());
             }
-          } else {
-            glic_service->CloseAndShutdown();
           }
         }
       }

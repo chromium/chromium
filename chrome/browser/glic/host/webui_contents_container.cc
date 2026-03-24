@@ -127,8 +127,6 @@ void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
   if (GlicEnabling::IsMultiInstanceEnabled()) {
     // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
     keyed_service->CloseAndShutdown(web_contents_->GetPrimaryMainFrame());
-  } else {
-    keyed_service->CloseAndShutdown();
   }
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }

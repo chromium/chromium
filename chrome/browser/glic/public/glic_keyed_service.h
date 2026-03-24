@@ -142,13 +142,6 @@ class GlicKeyedService : public KeyedService,
   virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                      mojom::InvocationSource source);
 
-  // Forcibly close the UI. This is similar to Shutdown in that it causes the
-  // window controller to shutdown (and clear cached state), but unlike
-  // Shutdown, it doesn't unregister as the "active glic" with the profile
-  // manager.
-  // TODO(crbug.com/454112198): Remove when multi-instance launches.
-  void CloseAndShutdown();
-
   // Close the active embedder and clear contents for an instance associated
   // with this render frame host.
   void CloseAndShutdown(content::RenderFrameHost* render_frame_host);

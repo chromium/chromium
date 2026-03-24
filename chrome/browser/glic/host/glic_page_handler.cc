@@ -1050,9 +1050,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ClosePanelAndShutdown() override {
     if (GlicEnabling::IsMultiInstanceEnabled()) {
       ClosePanel();
-    } else {
-      // This call will tear down the web client after closing the window.
-      glic_service_->CloseAndShutdown();
     }
   }
 

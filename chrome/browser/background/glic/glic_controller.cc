@@ -35,8 +35,6 @@ void GlicController::Close() {
   if (GlicEnabling::IsMultiInstanceEnabled()) {
     glic_keyed_service->ToggleUI(nullptr, /*prevent_close=*/false,
                                  mojom::InvocationSource::kOsButton);
-  } else {
-    glic_keyed_service->CloseAndShutdown();
   }
 }
 
