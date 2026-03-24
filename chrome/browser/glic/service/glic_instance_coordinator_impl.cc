@@ -314,6 +314,7 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
       *instance, std::move(options),
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
+  invoke_handlers_[instance]->Invoke();
 }
 
 void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(

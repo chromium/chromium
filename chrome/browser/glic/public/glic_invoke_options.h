@@ -34,6 +34,13 @@ enum class AllowedInflightNavigation {
   kAll,
 };
 
+// Possible errors that can occur during a Glic invocation.
+enum class GlicInvokeError {
+  kUnknown,
+  // The invocation timed out before completion.
+  kTimeout,
+};
+
 // Configuration options for invoking Glic.
 struct GlicInvokeOptions {
   explicit GlicInvokeOptions(glic::mojom::InvocationSource invocation_source);
@@ -88,7 +95,7 @@ struct GlicInvokeOptions {
   base::OnceClosure on_success;
 
   // Browser-specific callback for when the invocation fails.
-  base::OnceClosure on_error;
+  base::OnceCallback<void(GlicInvokeError)> on_error;
 };
 
 }  // namespace glic
