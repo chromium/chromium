@@ -32,7 +32,6 @@ struct AdaptiveRefreshRateInfo {
 };
 
 // The DisplayPrivate is used by privileged clients to talk to Display.
-[DirectReceiver]
 interface DisplayPrivate {
   SetDisplayVisible(bool visible);
 

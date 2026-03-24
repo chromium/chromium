@@ -116,7 +116,6 @@ enum BufferFormatPreference {
 // should suspend, Stop() is called. After that point, Start() can be called
 // again to resume capture; or the mojo binding can be dropped to auto-terminate
 // the capturer.
-[DirectReceiver]
 interface FrameSinkVideoCapturer {
   // Specifies the pixel format to use. Please note when format is
   // PIXEL_FORMAT_ARGB, the frame might be BGRA or RGBA depends on platform
@@ -236,7 +235,6 @@ interface FrameSinkVideoCapturer {
 // Control interface for a small image to be composited on top of each captured
 // video frame. This allows clients to, for example, have the capturer render
 // mouse cursors or debug info boxes on top of the captured content.
-[DirectReceiver]
 interface FrameSinkVideoCaptureOverlay {
   // Sets/Changes the overlay |image| and its position and size, relative to the
   // source content. |bounds| consists of coordinates where the range [0.0,1.0)

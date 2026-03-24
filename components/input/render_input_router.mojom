@@ -66,7 +66,6 @@ struct TouchTransferState {
 
 // Implemented by Viz, an interface between Browser and Viz. It defines methods
 // used to communicate input event handling related state from Browser to Viz.
-[DirectReceiver]
 interface RenderInputRouterDelegate {
   // Send |TouchTransferState| from Browser upon a successful touch transfer.
   // Viz needs this to do input handling on it's side.
