@@ -155,6 +155,12 @@ TEST(AboutFlagsTest, OwnersLookValid) {
   flags_ui::testing::EnsureOwnersLookValid();
 }
 
+// Ensures that every flag in `flag-never-expire-list.json` has a matching entry
+// in `flag-metadata.json`.
+TEST(AboutFlagsTest, NeverExpireFlagsExist) {
+  flags_ui::testing::EnsureNeverExpireFlagsExist();
+}
+
 // For some bizarre reason, far too many people see a file filled with
 // alphabetically-ordered items and think "hey, let me drop this new item into a
 // random location!" Prohibit such behavior in the flags files.

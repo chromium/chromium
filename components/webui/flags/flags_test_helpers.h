@@ -27,6 +27,10 @@ void EnsureEveryFlagHasNonEmptyOwners();
 // Ensures that owners conform to rules in flag-metadata.json.
 void EnsureOwnersLookValid();
 
+// Ensures that every flag in `flag-never-expire-list.json` has a matching entry
+// in `flag-metadata.json`.
+void EnsureNeverExpireFlagsExist();
+
 // Ensures that flags are listed in alphabetical order in flag-metadata.json and
 // flag-never-expire-list.json.
 void EnsureFlagsAreListedInAlphabeticalOrder();

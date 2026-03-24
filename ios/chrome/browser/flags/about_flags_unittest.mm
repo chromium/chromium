@@ -32,6 +32,12 @@ TEST_F(AboutFlagsTest, OwnersLookValid) {
   flags_ui::testing::EnsureOwnersLookValid();
 }
 
+// Ensures that every flag in `flag-never-expire-list.json` has a matching entry
+// in `flag-metadata.json`.
+TEST_F(AboutFlagsTest, NeverExpireFlagsExist) {
+  flags_ui::testing::EnsureNeverExpireFlagsExist();
+}
+
 // Ensures that flags are listed in alphabetical order in flag-metadata.json and
 // flag-never-expire-list.json.
 TEST_F(AboutFlagsTest, FlagsListedInAlphabeticalOrder) {

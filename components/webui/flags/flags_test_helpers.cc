@@ -324,6 +324,23 @@ void EnsureOwnersLookValid() {
       << "Flags with invalid owners: " << base::JoinString(sad_flags, "\n");
 }
 
+void EnsureNeverExpireFlagsExist() {
+  FlagMetadataMap metadata = LoadFlagMetadata();
+  std::vector<std::string> sad_flags;
+
+  for (const auto& flag : LoadFlagNeverExpireList()) {
+    if (!metadata.contains(flag)) {
+      sad_flags.push_back(flag);
+    }
+  }
+
+  EXPECT_EQ(0u, sad_flags.size())
+      << "Flags in chrome/browser/" << kNeverExpireFileName
+      << " must have matching entries in chrome/browser/" << kMetadataFileName
+      << ".\n"
+      << "Flags missing metadata: " << base::JoinString(sad_flags, "\n  ");
+}
+
 void EnsureFlagsAreListedInAlphabeticalOrder() {
   {
     auto json = ReadFileContentsAsJSON(kMetadataFileName);
