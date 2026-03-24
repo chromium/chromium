@@ -78,12 +78,14 @@ cr-composebox {
   position: relative;
 }
 
-cr-composebox[searchbox-layout-mode='Compact'] {
+cr-composebox[searchbox-layout-mode='Compact'],
+cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_]) {
   --input-bottom-spacing: 14px;
   --cr-composebox-context-margin-top: -12px;
 }
 
-cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon) {
+cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon),
+cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_])::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 28px;
   left: 12px;
@@ -123,7 +125,8 @@ cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomCo
   margin-inline-end: 6px;
 }
 
-:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon) {
+:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon),
+:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_])::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
 }

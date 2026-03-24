@@ -297,10 +297,6 @@ class AimEligibilityService
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
-  // Updates `fallback_config_` based on `most_recent_response_` and the server
-  // eligibility state.
-  void UpdateFallbackConfig();
-
   // Returns whether the primary account is valid and can be used for OAuth.
   bool HasValidPrimaryAccount() const;
 
@@ -461,9 +457,6 @@ class AimEligibilityService
 
   // Used to debounce server eligibility requests to prevent multiple requests.
   base::OneShotTimer request_debounce_timer_;
-
-  // Used to store the default config when the response doesn't have one.
-  omnibox::SearchboxConfig fallback_config_;
 
   // A configuration for the service.
   const Configuration configuration_;
