@@ -16192,6 +16192,21 @@
             ]
         }
     ],
+    "OnlyUseWindowResizeHelperOnResize": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnlyUseWindowResizeHelperOnResize"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptGuideBatchSRPTuning": [
         {
             "platforms": [
