@@ -186,12 +186,15 @@ void TreeScope::AddImageMap(HTMLMapElement& image_map) {
   }
 }
 
-void TreeScope::RemoveImageMap(HTMLMapElement& image_map) {
+void TreeScope::RemoveImageMap(HTMLMapElement& image_map,
+                               const AtomicString& name,
+                               const AtomicString& id) {
   if (!image_maps_by_name_)
     return;
-  if (const AtomicString& name = image_map.GetName())
+  if (name) {
     image_maps_by_name_->Remove(name, image_map);
-  if (const AtomicString& id = image_map.GetIdAttribute()) {
+  }
+  if (id) {
     image_maps_by_name_->Remove(id, image_map);
   }
 }

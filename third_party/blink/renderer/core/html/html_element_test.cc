@@ -7,11 +7,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -413,6 +415,41 @@ TEST_F(HTMLElementTest, InterestForLongPressCrash) {
   GestureEvent* blink_gesture_event =
       GestureEvent::Create(GetDocument().domWindow(), gesture_event);
   btn->DispatchEvent(*blink_gesture_event);
+}
+
+TEST_F(HTMLElementTest, MapElementDynamicIdAndNameChanges) {
+  SetBodyInnerHTML(R"HTML(
+    <map id="map_id" name="map_name"></map>
+  )HTML");
+
+  auto* map =
+      To<HTMLMapElement>(GetDocument().getElementById(AtomicString("map_id")));
+  ASSERT_TRUE(map);
+
+  TreeScope& scope = GetDocument();
+  EXPECT_EQ(map, scope.GetImageMap("#map_id"));
+  EXPECT_EQ(map, scope.GetImageMap("#map_name"));
+
+  // Change id, should be accessible by new id and old name
+  map->setAttribute(html_names::kIdAttr, AtomicString("new_id"));
+  EXPECT_EQ(nullptr, scope.GetImageMap("#map_id"));
+  EXPECT_EQ(map, scope.GetImageMap("#map_name"));
+  EXPECT_EQ(map, scope.GetImageMap("#new_id"));
+
+  // Change name, should only be accessible by new id and new name
+  map->setAttribute(html_names::kNameAttr, AtomicString("new_name"));
+  EXPECT_EQ(nullptr, scope.GetImageMap("#map_name"));
+  EXPECT_EQ(map, scope.GetImageMap("#new_id"));
+  EXPECT_EQ(map, scope.GetImageMap("#new_name"));
+
+  // Clear name, should only be accessible by id
+  map->removeAttribute(html_names::kNameAttr);
+  EXPECT_EQ(nullptr, scope.GetImageMap("#new_name"));
+  EXPECT_EQ(map, scope.GetImageMap("#new_id"));
+
+  // Clear id, should not be accessible by anything
+  map->removeAttribute(html_names::kIdAttr);
+  EXPECT_EQ(nullptr, scope.GetImageMap("#new_id"));
 }
 
 }  // namespace blink

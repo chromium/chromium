@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -82,21 +83,34 @@ void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {
   // https://html.spec.whatwg.org/multipage/#image-map-processing-model
   if (params.name == html_names::kIdAttr ||
       params.name == html_names::kNameAttr) {
+    if (isConnected()) {
+      // Note that GetIdAttribute() will already return the new value of the
+      // `id` attribute, while GetName() won't change until the `name_` member
+      // is changed below.
+      AtomicString old_name = GetName();
+      AtomicString old_id = params.name == html_names::kIdAttr
+                                ? params.old_value
+                                : GetIdAttribute();
+      GetTreeScope().RemoveImageMap(*this, old_name, old_id);
+    }
+
     if (params.name == html_names::kIdAttr) {
       // Call base class so that hasID bit gets set.
       HTMLElement::ParseAttribute(params);
+    } else {
+      String map_name = params.new_value;
+      if (!map_name.empty() && map_name[0] == '#') {
+        map_name = map_name.substr(1);
+      }
+      if (RuntimeEnabledFeatures::FixMapElementEmptyNameBugEnabled() ||
+          !map_name.empty()) {
+        name_ = AtomicString(map_name);
+      }
     }
-    if (isConnected())
-      GetTreeScope().RemoveImageMap(*this);
-    String map_name = params.new_value;
-    if (map_name[0] == '#')
-      map_name = map_name.substr(1);
-    // name_ is the parsed name attribute value that is not empty.
-    if (!map_name.empty() && params.name == html_names::kNameAttr) {
-      name_ = AtomicString(map_name);
-    }
-    if (isConnected())
+
+    if (isConnected()) {
       GetTreeScope().AddImageMap(*this);
+    }
 
     return;
   }
@@ -116,8 +130,9 @@ Node::InsertionNotificationRequest HTMLMapElement::InsertedInto(
 }
 
 void HTMLMapElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (insertion_point.isConnected())
-    GetTreeScope().RemoveImageMap(*this);
+  if (insertion_point.isConnected()) {
+    GetTreeScope().RemoveImageMap(*this, GetName(), GetIdAttribute());
+  }
   HTMLElement::RemovedFrom(insertion_point);
 }
 

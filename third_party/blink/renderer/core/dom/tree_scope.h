@@ -117,7 +117,9 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Node* AncestorInThisScope(Node*) const;
 
   void AddImageMap(HTMLMapElement&);
-  void RemoveImageMap(HTMLMapElement&);
+  void RemoveImageMap(HTMLMapElement&,
+                      const AtomicString& name,
+                      const AtomicString& id);
   HTMLMapElement* GetImageMap(const String& url) const;
 
   Element* ElementFromPoint(double x, double y) const;

@@ -2738,6 +2738,12 @@
       status: "stable",
     },
     {
+      // Fix a bug in the <map> element's caching of the name attribute. This
+      // flag was added in M148, and can be removed in M150.
+      name: "FixMapElementEmptyNameBug",
+      status: "stable",
+    },
+    {
       // This fixes the suppression of markers for <details> and
       // list items for appearance:auto.
       // This was added in M146 and can be removed after M148.
