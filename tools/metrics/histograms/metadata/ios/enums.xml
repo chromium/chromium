@@ -498,11 +498,12 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="IOSDockingPromoAction">
-  <int value="0" label="Toggle appearance"/>
+  <int value="0" label="Toggle appearance (deprecated)"/>
   <int value="1" label="Primary Action Button (Got It)"/>
-  <int value="2" label="Secondary Action Button (Remind Me Later)"/>
+  <int value="2"
+      label="Secondary Action Button (Remind Me Later) (deprecated)"/>
   <int value="3" label="Dismiss via Swipe"/>
-  <int value="4" label="Dismiss via No Thanks"/>
+  <int value="4" label="Dismiss via No Thanks (deprecated)"/>
 </enum>
 
 <enum name="IOSDockingPromoEligibility">

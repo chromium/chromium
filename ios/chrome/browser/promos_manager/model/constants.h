@@ -39,14 +39,14 @@ enum class Promo {
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
   // OmniboxPosition = 10,  // Obsolete. Choose between top and bottom omnibox.
-  DockingPromo = 11,               // Docking Promo.
-  DockingPromoRemindMeLater = 12,  // Docking Promo (Remind Me Later version).
-  AllTabsDefaultBrowser = 13,      // "All Tabs" default browser promo.
-  MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
-  StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
-  PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
-  FullscreenSignin = 17,           // Fullscreen sign-in promo.
-  WelcomeBack = 18,                // Welcome Back promo.
+  DockingPromo = 11,  // Docking Promo.
+  // DockingPromoRemindMeLater = 12,  //  Obsolete. Docking Promo (Reminder).
+  AllTabsDefaultBrowser = 13,     // "All Tabs" default browser promo.
+  MadeForIOSDefaultBrowser = 14,  // "Made For iOS" default browser promo.
+  StaySafeDefaultBrowser = 15,    // "Stay Safe" default browser promo.
+  PostDefaultAbandonment = 16,    // Post-default browser abandonment alert.
+  FullscreenSignin = 17,          // Fullscreen sign-in promo.
+  WelcomeBack = 18,               // Welcome Back promo.
   // BWGPromo = 19,                   // Obsolete. BWG promo.
   SafariImportRemindMeLater =
       20,                       // Reminder for the Safari import entry point.

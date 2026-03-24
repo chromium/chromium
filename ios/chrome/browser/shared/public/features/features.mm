@@ -55,27 +55,6 @@ bool IsDockingPromoV2Enabled() {
   return base::FeatureList::IsEnabled(kIOSDockingPromoV2);
 }
 
-const char kIOSDockingPromoExperimentType[] = "IOSDockingPromoExperimentType";
-const char kIOSDockingPromoNewUserInactiveThresholdHours[] =
-    "IOSDockingPromoNewUserInactiveThresholdHours";
-const char kIOSDockingPromoOldUserInactiveThresholdHours[] =
-    "IOSDockingPromoOldUserInactiveThresholdHours";
-const char kIOSDockingPromoNewUserInactiveThreshold[] =
-    "IOSDockingPromoNewUserInactiveThreshold";
-const char kIOSDockingPromoOldUserInactiveThreshold[] =
-    "IOSDockingPromoOldUserInactiveThreshold";
-
-BASE_FEATURE(kIOSDockingPromo, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSDockingPromoForEligibleUsersOnly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -246,59 +225,6 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
-
-bool IsDockingPromoEnabled() {
-  return base::FeatureList::IsEnabled(kIOSDockingPromo);
-}
-
-bool IsDockingPromoForEligibleUsersOnlyEnabled() {
-  return base::FeatureList::IsEnabled(kIOSDockingPromoForEligibleUsersOnly);
-}
-
-BASE_FEATURE_PARAM(int,
-                   kIOSDockingPromoExperimentTypeFeatureParam,
-                   &kIOSDockingPromo,
-                   kIOSDockingPromoExperimentType,
-                   static_cast<int>(DockingPromoDisplayTriggerArm::kAfterFRE));
-
-DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
-  return static_cast<DockingPromoDisplayTriggerArm>(
-      kIOSDockingPromoExperimentTypeFeatureParam.Get());
-}
-
-const base::TimeDelta InactiveThresholdForNewUsersUntilDockingPromoShown() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kIOSDockingPromo, kIOSDockingPromoNewUserInactiveThreshold,
-      /*default_value=*/
-      base::Hours(HoursInactiveForNewUsersUntilShowingDockingPromo()));
-}
-
-const base::TimeDelta InactiveThresholdForOldUsersUntilDockingPromoShown() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kIOSDockingPromo, kIOSDockingPromoOldUserInactiveThreshold,
-      /*default_value=*/
-      base::Hours(HoursInactiveForOldUsersUntilShowingDockingPromo()));
-}
-
-BASE_FEATURE_PARAM(int,
-                   kIOSDockingPromoNewUserInactiveThresholdHoursFeatureParam,
-                   &kIOSDockingPromo,
-                   kIOSDockingPromoNewUserInactiveThresholdHours,
-                   24);
-
-BASE_FEATURE_PARAM(int,
-                   kIOSDockingPromoOldUserInactiveThresholdHoursFeatureParam,
-                   &kIOSDockingPromo,
-                   kIOSDockingPromoOldUserInactiveThresholdHours,
-                   72);
-
-int HoursInactiveForNewUsersUntilShowingDockingPromo() {
-  return kIOSDockingPromoNewUserInactiveThresholdHoursFeatureParam.Get();
-}
-
-int HoursInactiveForOldUsersUntilShowingDockingPromo() {
-  return kIOSDockingPromoOldUserInactiveThresholdHoursFeatureParam.Get();
-}
 
 bool IsWebChannelsEnabled() {
   return false;

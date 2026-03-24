@@ -211,7 +211,6 @@ using base::UserMetricsAction;
                                accessPoint:self.accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
-    case kDockingPromo:
     case kBestFeatures:
     case kLensInteractivePromo:
     case kLensAnimatedPromo:

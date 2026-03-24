@@ -768,11 +768,6 @@ const char kIOSDateToCalendarSignedOutDescription[] =
     "When enabled, signed-out users can long-press detected dates to access "
     "the 'Add to Google Calendar' feature.";
 
-const char kIOSDockingPromoName[] = "Docking Promo";
-const char kIOSDockingPromoDescription[] =
-    "When enabled, the user will be presented an animated, instructional "
-    "promo showing how to move Chrome to their native iOS dock.";
-
 const char kIOSDockingPromoV2Name[] = "Docking Promo V2";
 const char kIOSDockingPromoV2Description[] =
     "When enabled, the user will be presented an animated, instructional "

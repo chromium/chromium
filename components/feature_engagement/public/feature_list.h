@@ -312,8 +312,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeRightForIncognito,
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoFeature, "IPH_iOSDockingPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoEligibilityFeature,
                        "IPH_iOSDockingPromoEligibility");
-DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoRemindMeLaterFeature,
-                       "IPH_iOSDockingPromoRemindMeLater");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAllTabsFeature, "IPH_iOSPromoAllTabs");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoMadeForIOSFeature, "IPH_iOSPromoMadeForIOS");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoStaySafeFeature, "IPH_iOSPromoStaySafe");
@@ -735,7 +733,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSReplaceSyncPromosWithSignInPromos),
         VARIATION_ENTRY(kIPHiOSTabGridSwipeRightForIncognito),
         VARIATION_ENTRY(kIPHiOSDockingPromoFeature),
-        VARIATION_ENTRY(kIPHiOSDockingPromoRemindMeLaterFeature),
         VARIATION_ENTRY(kIPHiOSPromoAllTabsFeature),
         VARIATION_ENTRY(kIPHiOSPromoMadeForIOSFeature),
         VARIATION_ENTRY(kIPHiOSPromoStaySafeFeature),

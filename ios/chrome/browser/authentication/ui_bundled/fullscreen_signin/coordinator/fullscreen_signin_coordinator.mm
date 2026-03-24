@@ -166,7 +166,6 @@
     case kHistorySync:
     case kDefaultBrowserPromo:
     case kChoice:
-    case kDockingPromo:
     case kBestFeatures:
     case kLensInteractivePromo:
     case kLensAnimatedPromo:

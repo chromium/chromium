@@ -103,7 +103,6 @@ const char kBlueDotPromoOverflowMenuDismissed[] =
 
 const char kCredentialProviderExtensionPromoSnoozed[] =
     "credential_provider_extension_promo_snoozed";
-const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";
 const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kSettingsOnOverflowMenuUsed[] = "settings_on_overflow_menu_used";

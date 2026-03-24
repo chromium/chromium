@@ -752,9 +752,6 @@ BASE_FEATURE(kIPHiOSDockingPromoFeature,
 BASE_FEATURE(kIPHiOSDockingPromoEligibilityFeature,
              "IPH_iOSDockingPromoEligibility",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature,
-             "IPH_iOSDockingPromoRemindMeLater",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoAllTabsFeature,
              "IPH_iOSPromoAllTabs",
              base::FEATURE_ENABLED_BY_DEFAULT);

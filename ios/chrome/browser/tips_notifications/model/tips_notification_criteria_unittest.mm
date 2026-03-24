@@ -333,46 +333,6 @@ TEST_F(TipsNotificationCriteriaTest, TestShouldSendDocking_Triggered) {
       criteria_->ShouldSendNotification(TipsNotificationType::kDocking));
 }
 
-// Tests that the Docking notification should be sent if the Feature Engagement
-// Tracker has not been triggered for either the main promo or the "Remind Me
-// Later" feature.
-TEST_F(TipsNotificationCriteriaTest, TestShouldSendDocking_NotTriggered) {
-  EXPECT_CALL(
-      *mock_tracker_,
-      HasEverTriggered(
-          testing::Ref(feature_engagement::kIPHiOSDockingPromoFeature), true))
-      .WillOnce(testing::Return(false));
-  EXPECT_CALL(
-      *mock_tracker_,
-      HasEverTriggered(
-          testing::Ref(
-              feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature),
-          true))
-      .WillOnce(testing::Return(false));
-  EXPECT_TRUE(
-      criteria_->ShouldSendNotification(TipsNotificationType::kDocking));
-}
-
-// Tests that the Docking notification should not be sent if the Feature
-// Engagement Tracker has been triggered for the "Remind Me Later" feature.
-TEST_F(TipsNotificationCriteriaTest,
-       TestShouldSendDocking_RemindMeLaterTriggered) {
-  EXPECT_CALL(
-      *mock_tracker_,
-      HasEverTriggered(
-          testing::Ref(feature_engagement::kIPHiOSDockingPromoFeature), true))
-      .WillOnce(testing::Return(false));
-  EXPECT_CALL(
-      *mock_tracker_,
-      HasEverTriggered(
-          testing::Ref(
-              feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature),
-          true))
-      .WillOnce(testing::Return(true));
-  EXPECT_FALSE(
-      criteria_->ShouldSendNotification(TipsNotificationType::kDocking));
-}
-
 #pragma mark - ShouldSendOmniboxPosition
 
 // Tests that the Omnibox Position notification should not be sent when the user

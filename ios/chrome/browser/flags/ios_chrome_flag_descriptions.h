@@ -484,9 +484,6 @@ extern const char kIOSCustomFileUploadMenuDescription[];
 extern const char kIOSDateToCalendarSignedOutName[];
 extern const char kIOSDateToCalendarSignedOutDescription[];
 
-extern const char kIOSDockingPromoName[];
-extern const char kIOSDockingPromoDescription[];
-
 extern const char kIOSDockingPromoV2Name[];
 extern const char kIOSDockingPromoV2Description[];
 

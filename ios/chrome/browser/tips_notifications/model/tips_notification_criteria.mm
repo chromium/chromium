@@ -165,9 +165,7 @@ bool TipsNotificationCriteria::ShouldSendSetUpListContinuation() {
 }
 
 bool TipsNotificationCriteria::ShouldSendDocking() {
-  return !FETHasEverTriggered(feature_engagement::kIPHiOSDockingPromoFeature) &&
-         !FETHasEverTriggered(
-             feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
+  return !FETHasEverTriggered(feature_engagement::kIPHiOSDockingPromoFeature);
 }
 
 bool TipsNotificationCriteria::ShouldSendOmniboxPosition() {

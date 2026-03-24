@@ -311,8 +311,6 @@ chromium-metrics-reviews@google.com.
                browser video promo have been met."/>
   <variant name="IPH_iOSDockingPromo"
       summary="Showing the Docking Promo on iOS"/>
-  <variant name="IPH_iOSDockingPromoRemindMeLater"
-      summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
   <variant name="IPH_iOSDownloadAutoDeletion"
       summary="Showing the Auto Deletion IPH on iOS."/>
   <variant name="IPH_iOSEnhancedBrowsingDesktop"

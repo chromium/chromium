@@ -392,19 +392,6 @@ const FeatureEntry::FeatureVariation kIOSDockingPromoV2Variations[] = {
     {"Display Header #3 without Subheader", kIOSDockingPromoV2Header3,
      nullptr}};
 
-const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
-    {kIOSDockingPromoExperimentType, "0"}};
-const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAtAppLaunch[] = {
-    {kIOSDockingPromoExperimentType, "1"}};
-const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedDuringFRE[] = {
-    {kIOSDockingPromoExperimentType, "2"}};
-
-const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
-    {"Display promo after FRE", kIOSDockingPromoDisplayedAfterFRE, nullptr},
-    {"Display promo at app launch", kIOSDockingPromoDisplayedAtAppLaunch,
-     nullptr},
-    {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE, nullptr}};
-
 // Uses int values from Lens filters ablation mode enum.
 const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
     {kLensFiltersAblationMode, "0"}};
@@ -1647,11 +1634,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSBrowserEditMenuMetricsName,
      flag_descriptions::kIOSBrowserEditMenuMetricsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSBrowserEditMenuMetrics)},
-    {"ios-docking-promo", flag_descriptions::kIOSDockingPromoName,
-     flag_descriptions::kIOSDockingPromoDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromo,
-                                    kIOSDockingPromoVariations,
-                                    "IOSDockingPromo")},
     {"ios-docking-promo-v2", flag_descriptions::kIOSDockingPromoV2Name,
      flag_descriptions::kIOSDockingPromoV2Description, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromoV2,

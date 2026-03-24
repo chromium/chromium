@@ -12,7 +12,6 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   kHistorySync,
   kDefaultBrowserPromo,
   kChoice,
-  kDockingPromo,
   kBestFeatures,
   kLensInteractivePromo,
   kLensAnimatedPromo,

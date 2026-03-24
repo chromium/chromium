@@ -117,14 +117,6 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
     [screens addObject:@(kLensAnimatedPromo)];
   }
 
-  DockingPromoDisplayTriggerArm experimentArm =
-      DockingPromoExperimentTypeEnabled();
-
-  if (IsDockingPromoEnabled() &&
-      experimentArm == DockingPromoDisplayTriggerArm::kDuringFRE) {
-    [screens addObject:@(kDockingPromo)];
-  }
-
   [screens addObject:@(kStepsCompleted)];
   return screens;
 }

@@ -430,7 +430,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     case kHistorySync:
     case kDefaultBrowserPromo:
     case kChoice:
-    case kDockingPromo:
     case kBestFeatures:
     case kLensInteractivePromo:
     case kLensAnimatedPromo:

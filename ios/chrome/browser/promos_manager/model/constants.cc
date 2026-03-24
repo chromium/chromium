@@ -60,10 +60,6 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::DockingPromo;
   }
 
-  if (promo == "promos_manager::Promo::DockingPromoRemindMeLater") {
-    return promos_manager::Promo::DockingPromoRemindMeLater;
-  }
-
   if (promo == "promos_manager::Promo::AllTabsDefaultBrowser") {
     return promos_manager::Promo::AllTabsDefaultBrowser;
   }
@@ -130,8 +126,6 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "DefaultBrowserRemindMeLater";
     case promos_manager::Promo::DockingPromo:
       return "DockingPromo";
-    case promos_manager::Promo::DockingPromoRemindMeLater:
-      return "DockingPromoRemindMeLater";
     case promos_manager::Promo::AllTabsDefaultBrowser:
       return "AllTabsDefaultBrowser";
     case promos_manager::Promo::MadeForIOSDefaultBrowser:

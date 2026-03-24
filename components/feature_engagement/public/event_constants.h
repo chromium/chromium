@@ -173,9 +173,6 @@ extern const char kBlueDotPromoOverflowMenuDismissed[];
 // The user snoozed the Credential Provider Extension Promo.
 extern const char kCredentialProviderExtensionPromoSnoozed[];
 
-// The user tapped Remind Me Later on the Docking Promo.
-extern const char kDockingPromoRemindMeLater[];
-
 // The user opened an url from omnibox.
 extern const char kOpenUrlFromOmnibox[];
 

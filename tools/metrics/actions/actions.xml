@@ -465,7 +465,7 @@ should be able to be added at any place in this file.
   <variant name="_iOSDockingPromoFeature"
       summary="For iOSDockingPromo feature"/>
   <variant name="_iOSDockingPromoRemindMeLaterFeature"
-      summary="For iOSDockingPromoRemindMeLater feature"/>
+      summary="For iOSDockingPromoRemindMeLater feature (Obsolete)"/>
   <variant name="_iOSDownloadAutoDeletion"
       summary="For iOS Auto-deletion half-sheet IPH."/>
   <variant name="_iOSEnhancedBrowsingDesktop"
