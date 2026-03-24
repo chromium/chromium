@@ -51,6 +51,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
@@ -71,6 +73,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -81,12 +85,14 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -119,12 +125,18 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock Tracker mTracker;
     @Mock InsetObserver mInsetObserver;
     @Mock TabGroupSharingController mTabGroupSharingController;
+    @Mock SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    @Mock ActivityResultTracker mActivityResultTracker;
+    @Mock ModalDialogManager mModalDialogManager;
+    @Mock SnackbarManager mSnackbarManager;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
     private PayloadCallbackHelper<Tab> mPrintCallback;
     private AndroidShareSheetController mController;
     private Bitmap mTestWebFavicon;
+    private final SettableMonotonicObservableSupplier<ModalDialogManager>
+            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic(mModalDialogManager);
 
     @Before
     public void setup() {
@@ -182,7 +194,11 @@ public class AndroidShareSheetControllerUnitTest {
                         mProfile,
                         mPrintCallback::notifyCalled,
                         mTabGroupSharingController,
-                        null);
+                        null,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
     }
 
     @After
@@ -277,7 +293,11 @@ public class AndroidShareSheetControllerUnitTest {
                 mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
-                mDeviceLockActivityLauncher);
+                mDeviceLockActivityLauncher,
+                mSigninAndHistorySyncActivityLauncher,
+                mActivityResultTracker,
+                mModalDialogManagerSupplier,
+                mSnackbarManager);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         chooseCustomAction(intent, R.string.print_share_activity_title, ShareCustomAction.PRINT);
@@ -536,7 +556,11 @@ public class AndroidShareSheetControllerUnitTest {
                 mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
-                mDeviceLockActivityLauncher);
+                mDeviceLockActivityLauncher,
+                mSigninAndHistorySyncActivityLauncher,
+                mActivityResultTracker,
+                mModalDialogManagerSupplier,
+                mSnackbarManager);
 
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
@@ -588,7 +612,11 @@ public class AndroidShareSheetControllerUnitTest {
                 mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
-                mDeviceLockActivityLauncher);
+                mDeviceLockActivityLauncher,
+                mSigninAndHistorySyncActivityLauncher,
+                mActivityResultTracker,
+                mModalDialogManagerSupplier,
+                mSnackbarManager);
 
         // Since link to share failed, the content being shared is a plain text.
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();

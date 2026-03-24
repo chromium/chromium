@@ -170,6 +170,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -713,7 +714,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             mTabModelProfileSupplier,
                             new ShareDelegateImpl.ShareSheetDelegate(),
                             isCustomTab(),
-                            mRootUiCoordinator.getDataSharingTabManager());
+                            mRootUiCoordinator.getDataSharingTabManager(),
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            getActivityResultTracker(),
+                            getModalDialogManagerSupplier(),
+                            getSnackbarManager());
             mShareDelegateSupplier.set(shareDelegate);
             TabBookmarker tabBookmarker =
                     new TabBookmarker(

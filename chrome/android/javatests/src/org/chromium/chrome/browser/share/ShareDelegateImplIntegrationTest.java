@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -23,8 +24,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -33,6 +37,8 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -131,7 +137,13 @@ public class ShareDelegateImplIntegrationTest {
                                         TabGroupSharingController tabGroupSharingController,
                                         int shareOrigin,
                                         long shareStartTime,
-                                        boolean sharingHubEnabled) {
+                                        boolean sharingHubEnabled,
+                                        SigninAndHistorySyncActivityLauncher
+                                                signinAndHistorySyncActivityLauncher,
+                                        ActivityResultTracker activityResultTracker,
+                                        MonotonicObservableSupplier<ModalDialogManager>
+                                                modalDialogManagerSupplier,
+                                        SnackbarManager snackbarManager) {
                                     paramsRef.set(params);
                                     helper.notifyCalled();
                                 }
@@ -152,7 +164,11 @@ public class ShareDelegateImplIntegrationTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
-                                            .getDataSharingTabManager())
+                                            .getDataSharingTabManager(),
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    mActivityTestRule.getActivity().getActivityResultTracker(),
+                                    mActivityTestRule.getActivity().getModalDialogManagerSupplier(),
+                                    mActivityTestRule.getActivity().getSnackbarManager())
                             .share(
                                     mActivityTestRule.getActivity().getActivityTab(),
                                     false,

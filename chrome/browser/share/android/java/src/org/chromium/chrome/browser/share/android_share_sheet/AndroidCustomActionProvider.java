@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -31,14 +32,18 @@ import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordin
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +92,10 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param linkToTextCoordinator Link to text generator used for this share.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param shareStartTime The start time of the current share.
+     * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
+     * @param activityResultTracker The launcher to track activity results.
+     * @param mModalDialogManagerSupplier The manager supplier for modal dialogs.
+     * @param snackbarManager The manager for snackbars.
      */
     AndroidCustomActionProvider(
             Activity activity,
@@ -105,7 +114,11 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             boolean isMultiWindow,
             @Nullable LinkToTextCoordinator linkToTextCoordinator,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            long shareStartTime) {
+            long shareStartTime,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager) {
         super(
                 activity,
                 windowAndroid,
@@ -118,7 +131,11 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 featureEngagementTracker,
                 url,
                 profile,
-                deviceLockActivityLauncher);
+                deviceLockActivityLauncher,
+                signinAndHistorySyncActivityLauncher,
+                activityResultTracker,
+                modalDialogManagerSupplier,
+                snackbarManager);
         mChromeShareExtras = chromeShareExtras;
         mLinkToTextCoordinator = linkToTextCoordinator;
         mShareStartTime = shareStartTime;

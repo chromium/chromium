@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
@@ -52,7 +53,9 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -62,8 +65,10 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -97,12 +102,18 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Mock private ShareParams.TargetChosenCallback mTargetChosenCallback;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private TestActivity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
     private final SettableNullableObservableSupplier<Tab> mTabProvider =
             ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<ModalDialogManager>
+            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic(mModalDialogManager);
 
     @Before
     public void setUp() {
@@ -509,7 +520,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         new LinkToggleMetricsDetails(
                                 LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
                         mProfile,
-                        mDeviceLockActivityLauncher);
+                        mDeviceLockActivityLauncher,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {

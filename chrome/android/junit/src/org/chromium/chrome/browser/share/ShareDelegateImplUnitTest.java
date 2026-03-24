@@ -34,6 +34,8 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
@@ -53,6 +55,8 @@ import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -60,7 +64,9 @@ import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -93,6 +99,10 @@ public class ShareDelegateImplUnitTest {
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Tracker mTracker;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    @Mock ActivityResultTracker mActivityResultTracker;
+    @Mock ModalDialogManager mModalDialogManager;
+    @Mock SnackbarManager mSnackbarManager;
 
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
 
@@ -118,6 +128,9 @@ public class ShareDelegateImplUnitTest {
     private int mDelegateShareSheetHubEnabledCallCount;
     private int mShareHelperCallCount;
 
+    private final SettableMonotonicObservableSupplier<ModalDialogManager>
+            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic(mModalDialogManager);
+
     private void createShareDelegate(boolean isCustomTab, ShareSheetDelegate shareSheetDelegate) {
         mShareDelegate =
                 new ShareDelegateImpl(
@@ -129,7 +142,11 @@ public class ShareDelegateImplUnitTest {
                         () -> mProfile,
                         shareSheetDelegate,
                         isCustomTab,
-                        mDataSharingTabManager);
+                        mDataSharingTabManager,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
     }
 
     @Before
@@ -458,7 +475,11 @@ public class ShareDelegateImplUnitTest {
                         any(),
                         anyInt(),
                         anyLong(),
-                        anyBoolean());
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     private void testShareExpectNotAllowed(
@@ -478,7 +499,11 @@ public class ShareDelegateImplUnitTest {
                         any(),
                         anyInt(),
                         anyLong(),
-                        anyBoolean());
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     @Test
@@ -694,7 +719,11 @@ public class ShareDelegateImplUnitTest {
                         any(),
                         anyInt(),
                         anyLong(),
-                        anyBoolean());
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
 
         ShareParams params = mShareParamsCaptor.getValue();
         Assert.assertEquals(

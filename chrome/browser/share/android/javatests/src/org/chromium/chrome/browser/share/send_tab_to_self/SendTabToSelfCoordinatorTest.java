@@ -31,6 +31,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -122,7 +123,12 @@ public class SendTabToSelfCoordinatorTest {
                                     BottomSheetControllerProvider.from(windowAndroid),
                                     ProfileManager.getLastUsedRegularProfile(),
                                     mDeviceLockActivityLauncher,
-                                    activity::getActivityTab);
+                                    activity::getActivityTab,
+                                    activity,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    activity.getActivityResultTracker(),
+                                    activity.getModalDialogManagerSupplier(),
+                                    activity.getSnackbarManager());
                     coordinator.show();
                 });
     }

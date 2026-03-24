@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -40,6 +41,8 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
@@ -52,8 +55,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -76,6 +81,10 @@ public class ShareDelegateImpl implements ShareDelegate {
     private final ShareSheetDelegate mDelegate;
     private final boolean mIsCustomTab;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final SnackbarManager mSnackbarManager;
     private long mShareStartTime;
 
     private static @Nullable Callback<Boolean> sShowShareSheetHookForTesting;
@@ -94,6 +103,10 @@ public class ShareDelegateImpl implements ShareDelegate {
      * @param delegate The ShareSheetDelegate for the current activity.
      * @param isCustomTab This share delegate is associated with a CCT.
      * @param dataSharingTabManager Tab data sharing helpers, for collaboration actions.
+     * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
+     * @param activityResultTracker The launcher to track activity results.
+     * @param mModalDialogManagerSupplier The manager supplier for modal dialogs.
+     * @param snackbarManager The manager for snackbars.
      */
     public ShareDelegateImpl(
             Context context,
@@ -104,7 +117,11 @@ public class ShareDelegateImpl implements ShareDelegate {
             Supplier<@Nullable Profile> profileSupplier,
             ShareSheetDelegate delegate,
             boolean isCustomTab,
-            @Nullable DataSharingTabManager dataSharingTabManager) {
+            @Nullable DataSharingTabManager dataSharingTabManager,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager) {
         mContext = context;
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -114,6 +131,10 @@ public class ShareDelegateImpl implements ShareDelegate {
         mDelegate = delegate;
         mIsCustomTab = isCustomTab;
         mDataSharingTabManager = dataSharingTabManager;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
+        mActivityResultTracker = activityResultTracker;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
     }
 
     // ShareDelegate implementation.
@@ -141,7 +162,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                             new TabGroupSharingControllerImpl(mDataSharingTabManager),
                             shareOrigin,
                             mShareStartTime,
-                            isSharingHubEnabled());
+                            isSharingHubEnabled(),
+                            mSigninAndHistorySyncActivityLauncher,
+                            mActivityResultTracker,
+                            mModalDialogManagerSupplier,
+                            mSnackbarManager);
                     mShareStartTime = 0;
                 });
     }
@@ -420,7 +445,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                 TabGroupSharingController tabGroupSharingController,
                 @ShareOrigin int shareOrigin,
                 long shareStartTime,
-                boolean sharingHubEnabled) {
+                boolean sharingHubEnabled,
+                SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+                ActivityResultTracker activityResultTracker,
+                MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+                SnackbarManager snackbarManager) {
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
                 return;
@@ -451,7 +480,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                                     isIncognito,
                                     TrackerFactory.getTrackerForProfile(profile),
                                     profile,
-                                    DeviceLockActivityLauncherImpl.get());
+                                    DeviceLockActivityLauncherImpl.get(),
+                                    signinAndHistorySyncActivityLauncher,
+                                    activityResultTracker,
+                                    modalDialogManagerSupplier,
+                                    snackbarManager);
                     coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
                 }
             } else {
@@ -471,7 +504,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                             profile,
                             printCallback,
                             tabGroupSharingController,
-                            DeviceLockActivityLauncherImpl.get());
+                            DeviceLockActivityLauncherImpl.get(),
+                            signinAndHistorySyncActivityLauncher,
+                            activityResultTracker,
+                            modalDialogManagerSupplier,
+                            snackbarManager);
                 }
             }
             RecordHistogram.recordEnumeratedHistogram(

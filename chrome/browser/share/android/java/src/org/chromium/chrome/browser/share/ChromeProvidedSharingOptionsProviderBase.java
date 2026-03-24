@@ -14,6 +14,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -28,13 +29,17 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +78,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected final Tracker mFeatureEngagementTracker;
     protected final Profile mProfile;
     protected final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    protected final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    protected final ActivityResultTracker mActivityResultTracker;
+    protected final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    protected final SnackbarManager mSnackbarManager;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProviderBase}.
@@ -85,11 +94,15 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * @param printTab A {@link Callback} that will print a given Tab.
      * @param isIncognito Whether incognito mode is enabled.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
-     * Chrome-provided sharing options.
+     *     Chrome-provided sharing options.
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
+     * @param activityResultTracker The launcher to track activity results.
+     * @param mModalDialogManagerSupplier The manager supplier for modal dialogs.
+     * @param snackbarManager The manager for snackbars.
      */
     protected ChromeProvidedSharingOptionsProviderBase(
             Activity activity,
@@ -103,7 +116,11 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             Tracker featureEngagementTracker,
             String url,
             Profile profile,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mTabProvider = tabProvider;
@@ -116,6 +133,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mUrl = url;
         mProfile = profile;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
+        mActivityResultTracker = activityResultTracker;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
 
         mOrderedFirstPartyOptions = new ArrayList<>();
     }
@@ -442,7 +463,12 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                                             mBottomSheetController,
                                             mProfile,
                                             mDeviceLockActivityLauncher,
-                                            mTabProvider);
+                                            mTabProvider,
+                                            mActivity,
+                                            mSigninAndHistorySyncActivityLauncher,
+                                            mActivityResultTracker,
+                                            mModalDialogManagerSupplier,
+                                            mSnackbarManager);
                             sttsCoordinator.show();
                         })
                 .build();

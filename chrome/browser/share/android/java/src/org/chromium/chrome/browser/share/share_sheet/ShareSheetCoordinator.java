@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
@@ -38,6 +39,8 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -47,9 +50,11 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -93,6 +98,10 @@ public class ShareSheetCoordinator
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final SnackbarManager mSnackbarManager;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -104,6 +113,10 @@ public class ShareSheetCoordinator
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
+     * @param activityResultTracker The launcher to track activity results.
+     * @param mModalDialogManagerSupplier The manager supplier for modal dialogs.
+     * @param snackbarManager The manager for snackbars.
      */
     // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(
@@ -115,13 +128,21 @@ public class ShareSheetCoordinator
             boolean isIncognito,
             Tracker featureEngagementTracker,
             Profile profile,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mTabProvider = tabProvider;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
+        mActivityResultTracker = activityResultTracker;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     @Override
@@ -365,7 +386,11 @@ public class ShareSheetCoordinator
                         mLinkGenerationStatusForMetrics,
                         mLinkToggleMetricsDetails,
                         mProfile,
-                        mDeviceLockActivityLauncher);
+                        mDeviceLockActivityLauncher,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
         mIsMultiWindow = activity.isInMultiWindowMode();
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
