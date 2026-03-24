@@ -163,8 +163,8 @@ Browser* GetExistingBrowserForOpenBehavior(
             return true;
           }
 
-          if (!browser_window->IsVisibleOnAllWorkspaces() &&
-              browser_window->GetWorkspace() != current_workspace) {
+          if (browser_window->IsVisibleOnAllWorkspaces() ||
+              browser_window->GetWorkspace() == current_workspace) {
             workspace_browser = candidate;
             return false;
           }
