@@ -551,7 +551,7 @@ namespace automation {
     uncheck
   };
 
-    // Types of markers on text. See <code>AutomationNode.markerTypes</code>.
+  // Types of markers on text. See <code>AutomationNode.markerTypes</code>.
   enum MarkerType {
     spelling,
     grammar,
@@ -561,7 +561,8 @@ namespace automation {
     highlight
   };
 
-  // The following three enums are associated with an $(ref:automation.AutomationIntent).
+  // The following three enums are associated with an
+  // $(ref:automation.AutomationIntent).
 
   // A command associated with an $(ref:automation.AutomationIntent).
   enum IntentCommandType {
@@ -577,8 +578,9 @@ namespace automation {
     setSelection
   };
 
-  // The type of an input event associated with an $(ref:automation.AutomationIntent). It describes an edit
-  // command, e.g. IntentCommandType.insert, in more detail.
+  // The type of an input event associated with an
+  // $(ref:automation.AutomationIntent). It describes an edit command, e.g.
+  // IntentCommandType.insert, in more detail.
   enum IntentInputEventType {
     // Insertion.
     insertText,

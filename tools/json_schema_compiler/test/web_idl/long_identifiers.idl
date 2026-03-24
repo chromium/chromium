@@ -1,0 +1,44 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary LongIdentifierType {
+  // Description for longIdentifierMember.
+  required DOMString
+      longIdentifierMember;
+
+  // Description for memberWithExtendedAttribute.
+  [instanceOf=Foo]
+      long
+      memberWithExtendedAttribute;
+};
+
+// |param|: Description for param.
+callback OnLongIdentifierListener =
+    undefined (DOMString param);
+
+interface OnLongIdentifierEvent : ExtensionEvent {
+  static undefined addListener(OnLongIdentifierListener listener);
+  static undefined removeListener(OnLongIdentifierListener listener);
+  static boolean hasListener(OnLongIdentifierListener listener);
+};
+
+// Schema for testing comment extraction for edge cases involving new lines on
+// definitions, general found where there are very long identifiers and names
+// involved which require line wrapping.
+interface LongIdentifiers {
+  // Description for longIdentifierFunction.
+  // |longIdentifierParameter|: Description for longIdentifierParameter.
+  static undefined
+      longIdentifierFunction(
+          DOMString
+              longIdentifierParameter);
+
+  // Description for onLongIdentifierEvent.
+  static attribute OnLongIdentifierEvent
+      onLongIdentifierEvent;
+};
+
+partial interface Browser {
+  static attribute LongIdentifiers longIdentifiers;
+};

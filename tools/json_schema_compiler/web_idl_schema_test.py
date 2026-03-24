@@ -1474,6 +1474,43 @@ class WebIdlSchemaTest(unittest.TestCase):
         SchemaCompilerError, expected_error_regex, web_idl_schema.Load,
         'test/web_idl/stub_extension_manifest_missing_namespace.idl')
 
+  # Tests that descriptions are correctly extracted for nodes where the
+  # identifier or type might be pushed onto a new line due to length.
+  def testLongIdentifierComments(self):
+    loaded = web_idl_schema.Load('test/web_idl/long_identifiers.idl')
+    self.assertEqual(1, len(loaded))
+    schema = loaded[0]
+
+    # Check dictionary member.
+    long_identifier_type = getType(schema, 'LongIdentifierType')
+    long_identifier_member = long_identifier_type['properties'][
+        'longIdentifierMember']
+    self.assertEqual('Description for longIdentifierMember.',
+                     long_identifier_member.get('description'))
+
+    member_with_ext_attr = long_identifier_type['properties'][
+        'memberWithExtendedAttribute']
+    self.assertEqual('Description for memberWithExtendedAttribute.',
+                     member_with_ext_attr.get('description'))
+
+    # Check event.
+    long_identifier_event = getEvent(schema, 'onLongIdentifierEvent')
+    self.assertEqual('Description for onLongIdentifierEvent.',
+                     long_identifier_event.get('description'))
+    self.assertEqual(1, len(long_identifier_event['parameters']))
+    self.assertEqual('Description for param.',
+                     long_identifier_event['parameters'][0].get('description'))
+
+    # Check function.
+    long_identifier_function = getFunction(schema, 'longIdentifierFunction')
+    self.assertEqual('Description for longIdentifierFunction.',
+                     long_identifier_function.get('description'))
+    self.assertEqual(1, len(long_identifier_function['parameters']))
+    self.assertEqual(
+        'Description for longIdentifierParameter.',
+        long_identifier_function['parameters'][0].get('description'),
+    )
+
 
 if __name__ == '__main__':
   unittest.main()
