@@ -157,6 +157,9 @@ class Host : public GlicSharingManagerProvider {
 
   class Observer : public base::CheckedObserver {
    public:
+    // Called when Glic is connected to the WebClient.
+    virtual void WebClientConnected() {}
+
     // Called when the client is ready to show, invoked sometime after
     // `Host::PanelWillOpen()` is called.
     virtual void ClientReadyToShow(const mojom::OpenPanelInfo&) {}
