@@ -25,6 +25,7 @@ GlicInvokeHandler::GlicInvokeHandler(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     CompletionCallback completion_callback)
     : instance_(instance),
+      tab_(tab),
       options_(std::move(options)),
       auto_submit_passkey_(auto_submit_passkey),
       completion_callback_(std::move(completion_callback)) {
@@ -46,10 +47,13 @@ void GlicInvokeHandler::Invoke() {
 
   // If we weren't able to set up tab destruction subscription, we should
   // treat this as an error.
-  if (!tab_destruction_subscription_) {
+  if (!tab_destruction_subscription_ || !tab_) {
     OnError(GlicInvokeError::kInvalidTab);
     return;
   }
+
+  instance_->Show(ShowOptions::ForSidePanel(
+      *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source));
 
   if (instance_->host().IsReady()) {
     SendToClient();
@@ -83,6 +87,7 @@ void GlicInvokeHandler::SendToClient() {
 }
 
 void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
+  tab_ = nullptr;
   OnError(GlicInvokeError::kTabClosed);
 }
 
