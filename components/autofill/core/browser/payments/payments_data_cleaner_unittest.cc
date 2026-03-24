@@ -41,8 +41,8 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
         prefs_.get(), identity_test_env_.identity_manager(),
         /*history_service=*/nullptr, &sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr, "en-US",
-        "US", /*autofill_optimization_guide=*/nullptr);
+        /*image_fetcher=*/nullptr, "en-US", "US",
+        /*autofill_optimization_guide=*/nullptr);
     PersonalDataChangedWaiter(*personal_data_).Wait();
     payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
         &personal_data_->payments_data_manager());

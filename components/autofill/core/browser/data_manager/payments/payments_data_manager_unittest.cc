@@ -134,10 +134,9 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
                                 sync_service_);
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
         profile_database_service_, account_database_service_,
-        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
-        prefs_.get(), &sync_service_, identity_test_env_.identity_manager(),
-        GeoIpCountryCode(country_code), app_locale,
-        autofill_client()->GetAutofillOptimizationGuideDecider());
+        /*image_fetcher=*/nullptr, prefs_.get(), &sync_service_,
+        identity_test_env_.identity_manager(), GeoIpCountryCode(country_code),
+        app_locale, autofill_client()->GetAutofillOptimizationGuideDecider());
     payments_data_manager_->Refresh();
     WaitForOnPaymentsDataChanged();
   }
@@ -3010,7 +3009,6 @@ TEST_F(PaymentsDataManagerTest,
       /*profile_database=*/nullptr,
       /*account_database=*/nullptr,
       /*image_fetcher=*/nullptr,
-      /*shared_storage_handler=*/nullptr,
       /*pref_service=*/nullptr,
       /*sync_service=*/nullptr,
       /*identity_manager=*/nullptr,

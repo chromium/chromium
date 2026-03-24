@@ -24,7 +24,6 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*sync_service=*/nullptr,
           /*strike_database=*/nullptr,
           /*image_fetcher=*/nullptr,
-          /*shared_storage_handler=*/nullptr,
           "en-US",
           "US",
           /*autofill_optimization_guide=*/nullptr) {

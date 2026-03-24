@@ -15,7 +15,6 @@
 #include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/content/browser/content_autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -101,19 +100,10 @@ PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
   auto* autofill_optimization_guide_decider =
       AutofillOptimizationGuideDeciderFactory::GetForProfile(profile);
 
-  auto* shared_storage_manager =
-      profile->GetDefaultStoragePartition()->GetSharedStorageManager();
-  auto shared_storage_handler =
-      shared_storage_manager
-          ? std::make_unique<ContentAutofillSharedStorageHandler>(
-                *shared_storage_manager)
-          : nullptr;
-
   return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, profile->GetPrefs(),
       g_browser_process->local_state(), identity_manager, history_service,
       sync_service, strike_database, image_fetcher,
-      std::move(shared_storage_handler),
       g_browser_process->GetApplicationLocale(), GetCountryCodeFromVariations(),
       autofill_optimization_guide_decider);
 }

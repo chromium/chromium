@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -85,7 +84,6 @@ class PersonalDataManager : public KeyedService,
       syncer::SyncService* sync_service,
       strike_database::StrikeDatabaseBase* strike_database,
       AutofillImageFetcherBase* image_fetcher,
-      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       std::string app_locale,
       std::string country_code,
       AutofillOptimizationGuideDecider* autofill_optimization_guide_decider);

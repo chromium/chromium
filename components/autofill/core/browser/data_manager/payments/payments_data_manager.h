@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
@@ -84,7 +83,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
       AutofillImageFetcherBase* image_fetcher,
-      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
@@ -777,9 +775,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
-
-  // The shared storage handler this instance uses.
-  std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
 
   // The sync service this instance uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;

@@ -141,7 +141,6 @@ static_library("browser") {
     "autofill_format_string.h",
     "autofill_server_prediction.cc",
     "autofill_server_prediction.h",
-    "autofill_shared_storage_handler.h",
     "autofill_trigger_source.cc",
     "autofill_trigger_source.h",
     "autofill_type.cc",

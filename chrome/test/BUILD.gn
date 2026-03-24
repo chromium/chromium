@@ -3418,7 +3418,6 @@ if (!is_android) {
       "../browser/accessibility/page_colors_controller_browsertest.cc",
       "../browser/accessibility/phrase_segmentation/dependency_parser_model_loader_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
-      "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/browsing_data_model_browsertest.cc",

@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -234,7 +233,6 @@ PaymentsDataManager::PaymentsDataManager(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
     AutofillImageFetcherBase* image_fetcher,
-    std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     PrefService* pref_service,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
@@ -243,7 +241,6 @@ PaymentsDataManager::PaymentsDataManager(
     AutofillOptimizationGuideDecider* autofill_optimization_guide_decider)
     : image_fetcher_(image_fetcher),
       autofill_optimization_guide_decider_(autofill_optimization_guide_decider),
-      shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       variations_country_code_(std::move(variations_country_code)),
@@ -2187,9 +2184,6 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
 
 void PaymentsDataManager::OnServerCreditCardsRefreshed() {
   ProcessCardArtUrlChanges();
-  if (shared_storage_handler_) {
-    shared_storage_handler_->OnServerCardDataRefreshed(server_credit_cards_);
-  }
 }
 
 size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {

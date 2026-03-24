@@ -74,7 +74,7 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
-      autofill_image_fetcher, /*shared_storage_handler=*/nullptr,
+      autofill_image_fetcher,
       ApplicationContext::GetInstance()->GetApplicationLocale(),
       /*country_code=*/"", /*autofill_optimization_guide=*/nullptr);
 }
