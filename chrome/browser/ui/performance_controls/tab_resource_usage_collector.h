@@ -57,9 +57,11 @@ class TabResourceUsageCollector
   resource_attribution::ScopedResourceUsageQuery scoped_query_;
   resource_attribution::ScopedQueryObservation query_observer_{this};
   base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/495384890): remove when the TabResourceUsageCollector is no
+  // longer outliving the resource_coordinator::TabLoadTracker it observes.
   base::ScopedObservation<resource_coordinator::TabLoadTracker,
-                          resource_coordinator::TabLoadTracker::Observer>
-      load_state_observer_{this};
+                          resource_coordinator::TabLoadTracker::Observer>::
+      LeakedDanglingUntriaged load_state_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_COLLECTOR_H_
