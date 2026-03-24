@@ -5333,12 +5333,6 @@ targets.bundle(
         "angle_unittests": targets.mixin(
             use_isolated_scripts_api = True,
         ),
-        "base_unittests": targets.mixin(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
-            ],
-        ),
         "blink_platform_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
@@ -6947,12 +6941,6 @@ targets.bundle(
         "media_unittests",
     ],
     per_test_modifications = {
-        "base_unittests": targets.mixin(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
-            ],
-        ),
         "components_browsertests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
