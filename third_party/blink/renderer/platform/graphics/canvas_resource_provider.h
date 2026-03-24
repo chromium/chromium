@@ -419,8 +419,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   // Indicates that the compositing path is single buffered, meaning that
   // ProduceCanvasResource() return a reference to the same resource each time,
@@ -590,6 +588,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      ImageOrientation = ImageOrientationEnum::kDefault) override;
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
                               size_t row_bytes,
@@ -685,6 +685,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   ~CanvasNon2DResourceProviderSharedImage() override = default;
 
   // CanvasResourceProvider:
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      ImageOrientation = ImageOrientationEnum::kDefault) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,

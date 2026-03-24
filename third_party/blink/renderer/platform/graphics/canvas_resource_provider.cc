@@ -1001,9 +1001,9 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
   return Snapshot(orientation);
 }
 
-scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
+scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
     ImageOrientation orientation) {
-  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::Snapshot");
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::Snapshot");
   if (!IsValid()) {
     return nullptr;
   }
@@ -1027,8 +1027,46 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
     // cached_snapshot_ was created and we wouldn't be able to
     // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
     // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
-    // other contexts know to flush to avoid
-    // CanvasResourceProviderSharedImage::unnecessary copy-on-writes.
+    // other contexts know to flush to avoid unnecessary copy-on-writes.
+    if (cached_snapshot_) {
+      cached_content_id_ =
+          cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
+              0u);
+    }
+  }
+
+  DCHECK(cached_snapshot_);
+  DCHECK(!current_resource_has_write_access_);
+  return cached_snapshot_;
+}
+
+scoped_refptr<StaticBitmapImage>
+CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
+  TRACE_EVENT0("blink", "CanvasNon2DResourceProviderSharedImage::Snapshot");
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  // We don't need to EndWriteAccess here since that's required to upload the
+  // rendering results to the resource's SharedImage (e.g., for GPU compositing)
+  // while in this case we are simply returning the rendered CPU-side results to
+  // the client.
+  if (!is_accelerated_) {
+    return UnacceleratedSnapshot(orientation);
+  }
+
+  if (!cached_snapshot_) {
+    FlushCanvas(FlushReason::kOther);
+    EndWriteAccess();
+    cached_snapshot_ = resource_->Bitmap();
+
+    // We'll record its content_id to be used by the FlushForImageListener.
+    // This will be needed in WillDrawInternal, but we are doing it now, as we
+    // don't know if later on we will be in the same thread the
+    // cached_snapshot_ was created and we wouldn't be able to
+    // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
+    // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
+    // other contexts know to flush to avoid unnecessary copy-on-writes.
     if (cached_snapshot_) {
       cached_content_id_ =
           cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
