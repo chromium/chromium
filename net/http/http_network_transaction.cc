@@ -25,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -2102,6 +2103,29 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         ResetConnectionAndRequestForResend(*retry_reason);
+        // Workaround for priority starvation: If the Network Service Task
+        // Scheduler is enabled, high-priority retries can repeatedly bypass the
+        // DEFAULT-priority tasks that detect connection closure and clean the
+        // session pool. This creates a cycle where we keep picking the same
+        // stale session. See crbug.com/482074640 for details.
+        //
+        // By yielding (PostTask) at DEFAULT priority after several attempts, we
+        // restore FIFO ordering relative to the cleanup tasks, allowing the
+        // pool to be scrubbed before the next retry.
+        if (base::FeatureList::IsEnabled(
+                features::kAsyncRetryOnTooManyConnectionErrors) &&
+            // For performance reasons, we initially retry synchronously.
+            // However, after a threshold of attempts
+            // (= kMaxRetryAttemptsOnConnectionErrors / 2), we switch to
+            // asynchronous retry to break potential priority starvation loops
+            // as described above.
+            retry_attempts_on_connection_errors_ >=
+                kMaxRetryAttemptsOnConnectionErrors / 2) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(&HttpNetworkTransaction::OnIOComplete,
+                                        base::Unretained(this), OK));
+          return ERR_IO_PENDING;
+        }
         error = OK;
       }
       break;

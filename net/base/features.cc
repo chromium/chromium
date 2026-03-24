@@ -26,6 +26,9 @@ namespace net::features {
 
 BASE_FEATURE(kAlpsForHttp2, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAsyncRetryOnTooManyConnectionErrors,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAvoidH2Reprioritization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCapReferrerToOriginOnCrossOrigin,
