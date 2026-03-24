@@ -182,8 +182,9 @@ class TabManagerTest : public InProcessBrowserTest,
  public:
   TabManagerTest()
       : scoped_set_clocks_for_testing_(&test_clock_, &test_tick_clock_) {
-    scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
-                                              IsRetainedWebContents());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kWebContentsDiscard, IsRetainedWebContents()},
+         {performance_manager::features::kTransientKeepAlivePolicy, false}});
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
     test_tick_clock_.Advance(kShortDelay);
@@ -252,7 +253,9 @@ class TabManagerTestWithTwoTabs : public TabManagerTest {
  public:
   TabManagerTestWithTwoTabs() {
     // Tests using two tabs assume that each tab has a dedicated process.
-    feature_list_.InitAndEnableFeature(features::kDisableProcessReuse);
+    feature_list_.InitWithFeatures(
+        {features::kDisableProcessReuse},
+        {performance_manager::features::kTransientKeepAlivePolicy});
   }
 
   TabManagerTestWithTwoTabs(const TabManagerTestWithTwoTabs&) = delete;
