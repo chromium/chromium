@@ -733,8 +733,10 @@ void AdsPageLoadMetricsObserver::OnMainFrameAdRectsChanged(
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #if BUILDFLAG(IS_ANDROID)
   const int kMaxMobileAdDensityByHeight = 30;
-  if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
-      kMaxMobileAdDensityByHeight) {
+  std::optional<int> max_page_ad_density_by_height =
+      page_ad_density_tracker_.MaxPageAdDensityByHeight();
+  if (max_page_ad_density_by_height &&
+      *max_page_ad_density_by_height > kMaxMobileAdDensityByHeight) {
     // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
     // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
     // this should use the associated page rather than the primary page.
@@ -916,28 +918,28 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
     ukm::SourceId source_id) {
   const auto& resource_data = aggregate_frame_data_->resource_data();
 
-  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  page_ad_density_tracker_.Finalize();
 
   // AdPageLoadCustomSampling4 is recorded on all pages
   ukm::builders::AdPageLoadCustomSampling4 custom_sampling_builder(source_id);
 
-  page_ad_density_tracker_.Finalize();
+  if (auto moments =
+          page_ad_density_tracker_.GetViewportAdDensityByAreaStats()) {
+    custom_sampling_builder.SetAverageViewportAdDensity(
+        std::llround(moments->mean));
+    custom_sampling_builder.SetVarianceViewportAdDensity(
+        GetExponentialBucketForDistributionMoment(moments->variance));
+    custom_sampling_builder.SetSkewnessViewportAdDensity(
+        GetExponentialBucketForDistributionMoment(moments->skewness));
+    custom_sampling_builder.SetKurtosisViewportAdDensity(
+        GetExponentialBucketForDistributionMoment(moments->excess_kurtosis));
 
-  TimeWeightedUnivariateStats::DistributionMoments moments =
-      page_ad_density_tracker_.GetViewportAdDensityByAreaStats();
+    ADS_HISTOGRAM("AverageViewportAdDensity", base::UmaHistogramPercentage,
+                  FrameVisibility::kAnyVisibility, std::llround(moments->mean));
+  }
 
-  custom_sampling_builder.SetAverageViewportAdDensity(
-      std::llround(moments.mean));
-  custom_sampling_builder.SetVarianceViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.variance));
-  custom_sampling_builder.SetSkewnessViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.skewness));
-  custom_sampling_builder.SetKurtosisViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
   custom_sampling_builder.Record(ukm_recorder->Get());
-
-  ADS_HISTOGRAM("AverageViewportAdDensity", base::UmaHistogramPercentage,
-                FrameVisibility::kAnyVisibility, std::llround(moments.mean));
 
   // Only records histograms on pages that have some ad bytes.
   if (resource_data.ad_bytes().is_zero()) {
@@ -959,10 +961,17 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
       .SetMainframeAdBytes(ukm::GetExponentialBucketMinForBytes(
           aggregate_frame_data_->outermost_main_frame_resource_data()
               .ad_network_bytes()
-              .InBytes()))
-      .SetMaxAdDensityByArea(page_ad_density_tracker_.MaxPageAdDensityByArea())
-      .SetMaxAdDensityByHeight(
-          page_ad_density_tracker_.MaxPageAdDensityByHeight());
+              .InBytes()));
+
+  if (std::optional<int> max_ad_density_by_area =
+          page_ad_density_tracker_.MaxPageAdDensityByArea()) {
+    builder.SetMaxAdDensityByArea(*max_ad_density_by_area);
+  }
+
+  if (std::optional<int> max_ad_density_by_height =
+          page_ad_density_tracker_.MaxPageAdDensityByHeight()) {
+    builder.SetMaxAdDensityByHeight(*max_ad_density_by_height);
+  }
 
   // Record cpu metrics for the page.
   builder.SetAdCpuTime(

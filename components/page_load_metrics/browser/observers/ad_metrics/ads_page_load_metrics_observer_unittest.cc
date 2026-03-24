@@ -1351,15 +1351,15 @@ TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
   histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes", 10, 1);
 
-  // Verify that the average-viewport-ad-density was recorded as zero.
-  histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0, 1);
+  // AverageViewportAdDensity should not be recorded for a page with no density
+  // data.
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0);
 
   // There are three FrameCounts.AdFrames.Total histograms (one for each
-  // visibility type), three AllPages histograms, and one
-  // AverageViewportAdDensity histogram recorded for each page load. There
-  // shouldn't be any other histograms for a page with no ad resources.
-  EXPECT_EQ(7u, histogram_tester()
+  // visibility type) and three AllPages histograms. There shouldn't be any
+  // other histograms for a page with no ad resources.
+  EXPECT_EQ(6u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Ads.")
                     .size());
   EXPECT_EQ(0u, test_ukm_recorder()
@@ -1376,11 +1376,13 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoBytesLoaded_NoHistogramsRecorded) {
 
   NavigateMainFrame(kNonAdUrl);
 
-  histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0, 1);
+  // AverageViewportAdDensity should not be recorded for a page with no density
+  // data.
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0);
 
   // Other histograms should not be recorded for a page with no bytes.
-  EXPECT_EQ(1u, histogram_tester()
+  EXPECT_EQ(0u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Ads.")
                     .size());
   EXPECT_EQ(0u, test_ukm_recorder()
@@ -1835,23 +1837,38 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
       SuffixedHistogram("AverageViewportAdDensity"), 20, 1);
 }
 
-TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
+TEST_P(AdsPageLoadMetricsObserverTest,
+       AdDensityDistributionMoments_ZeroDensity) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
-  // No ad resource so that only AdPageLoadCustomSampling4 is recorded in the
-  // end.
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
+  tester_->SimulateMetadataUpdate(metadata, main_frame);
 
-  AdvancePageDuration(base::Seconds(1));
+  // Main frame update (No ad/subframe rects provided)
+  page_load_metrics::mojom::FrameMetadata metadata2;
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
 
+  // Omit ad bytes to explicitly verify that viewport ad density metrics are
+  // recorded on pages without any ad bytes.
+
+  // Advance time to simulate the user staying on the page with 0 ad density.
+  AdvancePageDuration(base::Seconds(4));
+
+  // Trigger metric recording.
   NavigateFrame(kNonAdUrl, main_frame);
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdPageLoadCustomSampling4::kEntryName);
   EXPECT_EQ(1u, entries.size());
+
+  // We expect all statistical moments to be default values since the density
+  // was 0 the whole time.
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
       ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdDensityName,
@@ -1871,6 +1888,31 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("AverageViewportAdDensity"), 0, 1);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutRectUpdate) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  OverrideWithMockClock();
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  AdvancePageDuration(base::Seconds(1));
+
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+
+  // The event was emitted.
+  EXPECT_EQ(1u, entries.size());
+
+  // The emitted event has no metrics recorded inside it.
+  EXPECT_TRUE(entries.front()->metrics.empty());
+
+  // The histogram is also not recorded.
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AverageViewportAdDensity"), 0);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {

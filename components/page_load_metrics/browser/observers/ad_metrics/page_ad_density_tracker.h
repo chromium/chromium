@@ -68,25 +68,26 @@ class PageAdDensityTracker {
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects);
 
   // Returns the density by height, as a value from 0-100. If the density
-  // calculation fails (i.e. no main frame size), this returns -1. Percentage
-  // density by height is calculated as the the combined height of ads divided
-  // by the page's height.
-  int MaxPageAdDensityByHeight() const;
+  // calculation fails (i.e. no main frame size), this returns std::nullopt.
+  // Percentage density by height is calculated as the the combined height of
+  // ads divided by the page's height.
+  std::optional<int> MaxPageAdDensityByHeight() const;
 
   // Returns the density by area, as a value from 0-100. If the density
-  // calculation fails (i.e. no main frame size), this returns -1.
-  int MaxPageAdDensityByArea() const;
+  // calculation fails (i.e. no main frame size), this returns std::nullopt.
+  std::optional<int> MaxPageAdDensityByArea() const;
 
   // Returns the distribution moments of the viewport ad density by area.
-  // Returns default value (i.e. 0s) if the density calculation didn't happen
-  // (i.e. no main frame viewport) or if the elapsed time is 0.
-  TimeWeightedUnivariateStats::DistributionMoments
+  // Returns std::nullopt if the density calculation didn't happen (i.e. no main
+  // frame viewport).
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments>
   GetViewportAdDensityByAreaStats();
 
-  // Returns the distribution moments of the viewport ad count.
-  // Returns default value (i.e. 0s) if the calculation didn't happen (i.e. no
-  // main frame viewport) or if the elapsed time is 0.
-  TimeWeightedUnivariateStats::DistributionMoments GetViewportAdCountStats();
+  // Returns the distribution moments of the viewport ad count. Returns
+  // std::nullopt if the calculation didn't happen (i.e. no main frame
+  // viewport).
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments>
+  GetViewportAdCountStats();
 
   // Called at the end of the page load to finalize metrics measurement.
   void Finalize();

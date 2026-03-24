@@ -60,8 +60,12 @@ void TimeWeightedUnivariateStats::Resume() {
   last_time_ = clock_->NowTicks();
 }
 
-TimeWeightedUnivariateStats::DistributionMoments
+std::optional<TimeWeightedUnivariateStats::DistributionMoments>
 TimeWeightedUnivariateStats::CalculateStats() {
+  if (!maximum_value_.has_value()) {
+    return std::nullopt;
+  }
+
   AccumulateOutstanding();
 
   DistributionMoments result;

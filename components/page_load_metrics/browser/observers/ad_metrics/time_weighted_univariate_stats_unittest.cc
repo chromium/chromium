@@ -21,32 +21,18 @@ class TimeWeightedUnivariateStatsTest : public testing::Test {
 
 TEST_F(TimeWeightedUnivariateStatsTest, NoData) {
   TimeWeightedUnivariateStats stats;
-  TimeWeightedUnivariateStats::DistributionMoments moments =
-      stats.CalculateStats();
-
-  EXPECT_DOUBLE_EQ(moments.mean, 0);
-  EXPECT_DOUBLE_EQ(moments.variance, 0);
-  EXPECT_DOUBLE_EQ(moments.skewness, 0);
-  EXPECT_DOUBLE_EQ(moments.excess_kurtosis, -3);
+  EXPECT_FALSE(stats.CalculateStats().has_value());
   EXPECT_FALSE(stats.maximum_value().has_value());
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, ImplicitZeroInitialValue) {
   TimeWeightedUnivariateStats stats;
 
-  // Advance time without calling AddSample. This treats the starting value
-  // as 0 for moments calculations.
+  // Advance time without calling AddSample.
   task_environment_.FastForwardBy(base::Microseconds(1));
 
-  TimeWeightedUnivariateStats::DistributionMoments moments =
-      stats.CalculateStats();
-
-  EXPECT_DOUBLE_EQ(moments.mean, 0);
-  EXPECT_DOUBLE_EQ(moments.variance, 0);
-  EXPECT_DOUBLE_EQ(moments.skewness, 0);
-  EXPECT_DOUBLE_EQ(moments.excess_kurtosis, -3);
-
-  // Maximum value should still be explicitly std::nullopt if no value is set.
+  // Results should still be explicitly std::nullopt if no value is set.
+  EXPECT_FALSE(stats.CalculateStats().has_value());
   EXPECT_FALSE(stats.maximum_value().has_value());
 }
 
@@ -56,13 +42,14 @@ TEST_F(TimeWeightedUnivariateStatsTest, OneDataPoint) {
   stats.AddSample(1);
   task_environment_.FastForwardBy(base::Microseconds(1));
 
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
 
-  EXPECT_DOUBLE_EQ(moments.mean, 1);
-  EXPECT_DOUBLE_EQ(moments.variance, 0);
-  EXPECT_DOUBLE_EQ(moments.skewness, 0);
-  EXPECT_DOUBLE_EQ(moments.excess_kurtosis, -3);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 1);
+  EXPECT_DOUBLE_EQ(moments->variance, 0);
+  EXPECT_DOUBLE_EQ(moments->skewness, 0);
+  EXPECT_DOUBLE_EQ(moments->excess_kurtosis, -3);
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, TwoDataPoints_EqualWeight) {
@@ -74,13 +61,14 @@ TEST_F(TimeWeightedUnivariateStatsTest, TwoDataPoints_EqualWeight) {
   stats.AddSample(2);
   task_environment_.FastForwardBy(base::Microseconds(1));
 
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
 
-  EXPECT_DOUBLE_EQ(moments.mean, 1.5);
-  EXPECT_DOUBLE_EQ(moments.variance, 0.25);
-  EXPECT_DOUBLE_EQ(moments.skewness, 0);
-  EXPECT_DOUBLE_EQ(moments.excess_kurtosis, -2);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 1.5);
+  EXPECT_DOUBLE_EQ(moments->variance, 0.25);
+  EXPECT_DOUBLE_EQ(moments->skewness, 0);
+  EXPECT_DOUBLE_EQ(moments->excess_kurtosis, -2);
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, TwoDataPoints_UnequalWeight) {
@@ -92,13 +80,14 @@ TEST_F(TimeWeightedUnivariateStatsTest, TwoDataPoints_UnequalWeight) {
   stats.AddSample(2);
   task_environment_.FastForwardBy(base::Microseconds(1));
 
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
 
-  EXPECT_DOUBLE_EQ(moments.mean, 5.0 / 4);
-  EXPECT_DOUBLE_EQ(moments.variance, 3.0 / 16);
-  EXPECT_DOUBLE_EQ(moments.skewness, 2.0 / std::sqrt(3));
-  EXPECT_DOUBLE_EQ(moments.excess_kurtosis, -2.0 / 3);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 5.0 / 4);
+  EXPECT_DOUBLE_EQ(moments->variance, 3.0 / 16);
+  EXPECT_DOUBLE_EQ(moments->skewness, 2.0 / std::sqrt(3));
+  EXPECT_DOUBLE_EQ(moments->excess_kurtosis, -2.0 / 3);
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, MaximumValue) {
@@ -134,9 +123,10 @@ TEST_F(TimeWeightedUnivariateStatsTest, PauseAndResume) {
   task_environment_.FastForwardBy(base::Microseconds(2));
 
   // Total active time is 4 microseconds at value 1.
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
-  EXPECT_DOUBLE_EQ(moments.mean, 1);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 1);
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, AddSampleWhilePaused) {
@@ -158,10 +148,11 @@ TEST_F(TimeWeightedUnivariateStatsTest, AddSampleWhilePaused) {
 
   // Total active time: 2us at value 1, and 2us at value 3.
   // Paused time (10us) is completely ignored.
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
 
-  EXPECT_DOUBLE_EQ(moments.mean, 2.0);  // (1*2 + 3*2) / 4 = 8 / 4 = 2
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 2.0);  // (1*2 + 3*2) / 4 = 8 / 4 = 2
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, RedundantPauseAndResume) {
@@ -181,9 +172,10 @@ TEST_F(TimeWeightedUnivariateStatsTest, RedundantPauseAndResume) {
   task_environment_.FastForwardBy(base::Microseconds(2));
 
   // Total active time: 4us at value 2.
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
-  EXPECT_DOUBLE_EQ(moments.mean, 2.0);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 2.0);
 }
 
 TEST_F(TimeWeightedUnivariateStatsTest, CalculateStatsFlushesOutstandingTime) {
@@ -194,9 +186,10 @@ TEST_F(TimeWeightedUnivariateStatsTest, CalculateStatsFlushesOutstandingTime) {
 
   // CalculateStats should automatically accumulate the 4us without us
   // needing to call a manual update, pause, or set new value.
-  TimeWeightedUnivariateStats::DistributionMoments moments =
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
       stats.CalculateStats();
-  EXPECT_DOUBLE_EQ(moments.mean, 5.0);
+  ASSERT_TRUE(moments.has_value());
+  EXPECT_DOUBLE_EQ(moments->mean, 5.0);
 }
 
 }  // namespace page_load_metrics

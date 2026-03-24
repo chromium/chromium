@@ -20,12 +20,9 @@ namespace page_load_metrics {
 //
 // This calculates time-weighted statistics: each sample is weighted by the
 // amount of time that elapses between when it is recorded and when the next
-// sample is added (or the stats are calculated).
-//
-// Note: For the maximum value, we explicitly return std::nullopt if no value
-// is seen. However, for calculating moments, we treat the starting value as 0.
-// This inconsistency arises from legacy decisions and should be cleaned up
-// (crbug.com/493315764).
+// sample is added (or the stats are calculated). Time accumulation begins
+// immediately upon construction. Any time that elapses before the first
+// AddSample() call is weighted with an implicit value of 0.
 class TimeWeightedUnivariateStats {
  public:
   struct DistributionMoments {
@@ -52,11 +49,15 @@ class TimeWeightedUnivariateStats {
   // Resumes the time accumulation.
   void Resume();
 
-  // Calculate the population distribution mean, variance, skewness, and
-  // kurtosis of the observed data. This flushes any unaccumulated time
-  // for the current value into the stats.
-  DistributionMoments CalculateStats();
+  // Calculates the population distribution mean, variance, skewness, and
+  // kurtosis of the observed data. This flushes any unaccumulated time for the
+  // current value into the stats. Returns std::nullopt if no samples were
+  // added.
+  std::optional<TimeWeightedUnivariateStats::DistributionMoments>
+  CalculateStats();
 
+  // Returns the maximum sample value observed, or std::nullopt if no samples
+  // were added.
   std::optional<double> maximum_value() const { return maximum_value_; }
 
  private:
@@ -64,7 +65,10 @@ class TimeWeightedUnivariateStats {
   // `last_time_`, then advances `last_time_`.
   void AccumulateOutstanding();
 
+  // Stores the time-weighted sums of x, x^2, x^3, and x^4 used to calculate the
+  // distribution moments.
   std::array<double, 4> sum_x_ = {};
+
   double total_weight_ = 0;
   double last_sample_ = 0;
   std::optional<double> maximum_value_;

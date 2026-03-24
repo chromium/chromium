@@ -29,14 +29,19 @@ void LogAdDensityStats(std::string_view name,
                        int last_density,
                        TimeWeightedUnivariateStats& stats) {
   if (VLOG_IS_ON(2)) {
-    TimeWeightedUnivariateStats::DistributionMoments moments =
+    std::optional<TimeWeightedUnivariateStats::DistributionMoments> moments =
         stats.CalculateStats();
+    std::optional<double> maximum_value = stats.maximum_value();
+
+    CHECK(moments);
+    CHECK(maximum_value);
+
     VLOG(2) << name << ": " << last_density
-            << " (max: " << stats.maximum_value().value_or(-1)
-            << ", mean: " << base::ClampRound(moments.mean)
-            << ", variance: " << base::ClampRound(moments.variance)
-            << ", skewness: " << base::ClampRound(moments.skewness)
-            << ", kurtosis: " << base::ClampRound(moments.excess_kurtosis)
+            << " (max: " << base::ClampRound(*maximum_value)
+            << ", mean: " << base::ClampRound(moments->mean)
+            << ", variance: " << base::ClampRound(moments->variance)
+            << ", skewness: " << base::ClampRound(moments->skewness)
+            << ", kurtosis: " << base::ClampRound(moments->excess_kurtosis)
             << ")";
   }
 }
@@ -212,23 +217,27 @@ PageAdDensityTracker::PageAdDensityTracker(bool is_in_foreground,
 
 PageAdDensityTracker::~PageAdDensityTracker() = default;
 
-int PageAdDensityTracker::MaxPageAdDensityByHeight() const {
-  return static_cast<int>(
-      page_ad_density_by_height_stats_.maximum_value().value_or(-1));
+std::optional<int> PageAdDensityTracker::MaxPageAdDensityByHeight() const {
+  if (auto max_value = page_ad_density_by_height_stats_.maximum_value()) {
+    return static_cast<int>(*max_value);
+  }
+  return std::nullopt;
 }
 
-int PageAdDensityTracker::MaxPageAdDensityByArea() const {
-  return static_cast<int>(
-      page_ad_density_by_area_stats_.maximum_value().value_or(-1));
+std::optional<int> PageAdDensityTracker::MaxPageAdDensityByArea() const {
+  if (auto max_value = page_ad_density_by_area_stats_.maximum_value()) {
+    return static_cast<int>(*max_value);
+  }
+  return std::nullopt;
 }
 
-TimeWeightedUnivariateStats::DistributionMoments
+std::optional<TimeWeightedUnivariateStats::DistributionMoments>
 PageAdDensityTracker::GetViewportAdDensityByAreaStats() {
   DCHECK(finalize_called_);
   return viewport_ad_density_by_area_stats_.CalculateStats();
 }
 
-TimeWeightedUnivariateStats::DistributionMoments
+std::optional<TimeWeightedUnivariateStats::DistributionMoments>
 PageAdDensityTracker::GetViewportAdCountStats() {
   DCHECK(finalize_called_);
   return viewport_ad_count_stats_.CalculateStats();
