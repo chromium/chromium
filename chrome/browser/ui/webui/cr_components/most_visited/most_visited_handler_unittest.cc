@@ -177,8 +177,9 @@ TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTileNavigation) {
 
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://bar.com"));
-  handler_->OnMostVisitedTileNavigation(std::move(tile), 0, 0, false, false,
-                                        false, false);
+  handler_->OnMostVisitedTileNavigation(
+      std::move(tile), /*index=*/0, /*mouse_button=*/0, /*alt_key=*/false,
+      /*ctrl_key=*/false, /*meta_key=*/false, /*shift_key=*/false);
 
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
