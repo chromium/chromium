@@ -1872,7 +1872,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         True,
         [
             # Implements BASE_DECLARE_FEATURE().
-            r'^base/feature_list\.h',
+            r'^base/feature\.h',
         ],
     ),
     BanRule(

@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
+#include "base/feature.h"
 #endif
 
 namespace base {

@@ -297,6 +297,8 @@ component("base") {
     "environment.cc",
     "environment.h",
     "export_template.h",
+    "feature.h",
+    "feature_internal.h",
     "feature_list.cc",
     "feature_list.h",
     "feature_visitor.h",
@@ -1129,7 +1131,7 @@ component("base") {
     ":cfi_buildflags",
     ":clang_profiling_buildflags",
     ":debugging_buildflags",
-    ":feature_list_buildflags",
+    ":feature_buildflags",
     ":ios_cronet_buildflags",
     ":orderfile_buildflags",
     ":power_monitor_buildflags",
@@ -2891,8 +2893,8 @@ buildflag_header("debugging_buildflags") {
   ]
 }
 
-buildflag_header("feature_list_buildflags") {
-  header = "feature_list_buildflags.h"
+buildflag_header("feature_buildflags") {
+  header = "feature_buildflags.h"
 
   if (is_chromeos) {
     flags = [
@@ -3994,7 +3996,7 @@ test("base_unittests") {
     ":base_stack_sampling_profiler_test_util",
     ":build_time",
     ":check_version_internal",
-    ":feature_list_buildflags",
+    ":feature_buildflags",
     ":hardening_tests",
     ":i18n",
     ":path_service_unittest",

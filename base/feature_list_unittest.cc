@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list_buildflags.h"
+#include "base/feature_buildflags.h"
 #include "base/feature_visitor.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"

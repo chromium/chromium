@@ -153,7 +153,7 @@ def _calculate_targets_for_file(relpath: str, arg_extra_targets: List[str],
         target_dir, short_target_name = full_target_name.split(':', 1)
         # __ is used for sub-targets in GN, only focus on top-level ones. Also
         # skip targets using other toolchains, e.g.
-        # base:feature_list_buildflags(//build/toolchain/linux:clang_x64)
+        # base:feature_buildflags(//build/toolchain/linux:clang_x64)
         if (target_dir == dirpath and '__' not in short_target_name
                 and '(' not in short_target_name):
             file_extra_targets.append(full_target_name)
