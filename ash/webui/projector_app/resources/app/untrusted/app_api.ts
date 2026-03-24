@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Account, JsNetErrorCode, NewScreencastPrecondition, PendingScreencast} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
+import type {Account, JsNetErrorCode, NewScreencastPrecondition, PendingScreencast} from './mojom/projector_types.mojom-webui.js';
 
 /**
  * Structure for XHR response.

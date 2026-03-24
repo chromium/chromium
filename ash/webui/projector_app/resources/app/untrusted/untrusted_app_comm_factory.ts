@@ -6,8 +6,8 @@ import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_compone
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 
 import type {AppApi, ClientDelegate, Video, XhrResponseResult} from './app_api.js';
-import {Account, NewScreencastPrecondition, PendingScreencast} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
 import {installLaunchHandler} from './launch.js';
+import {Account, NewScreencastPrecondition, PendingScreencast} from './mojom/projector_types.mojom-webui.js';
 import {browserProxy} from './untrusted_projector_browser_proxy.js';
 
 

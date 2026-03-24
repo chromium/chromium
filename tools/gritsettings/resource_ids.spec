@@ -1055,7 +1055,7 @@
    "includes": [6500],
   },
 
- "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/app/untrusted/ash_projector_app_untrusted_resources.grd": {
+ "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/app/untrusted/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [6520],
   },

@@ -90,9 +90,8 @@ async function launchVideoFile(fileId: string, handle: FileSystemHandle) {
     sendVideoFile(fileId, file, /*error=*/ null);
   } catch (e) {
     if (e instanceof DOMException) {
-      const domException = e as DOMException;
-      console.error(`${handle.name}: ${domException.message}`);
-      sendVideoFile(fileId, /*file=*/ null, /*error=*/ domException);
+      console.error(`${handle.name}: ${e.message}`);
+      sendVideoFile(fileId, /*file=*/ null, /*error=*/ e);
     } else {
       console.error(e);
     }

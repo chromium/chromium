@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {JsNetErrorCode} from 'chrome-untrusted://projector/ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
+import {JsNetErrorCode} from 'chrome-untrusted://projector/mojom/projector_types.mojom-webui.js';
 import {browserProxy} from 'chrome-untrusted://projector/untrusted_projector_browser_proxy.js';
 import {assertDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
