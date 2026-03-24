@@ -1198,7 +1198,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // z-index is only applicable if positioned, or if a flex/grid/etc item.
   if (builder.GetPosition() != EPosition::kStatic ||
       LayoutParentStyleForcesZIndexToCreateStackingContext(
-          layout_parent_style)) {
+          layout_parent_style) ||
+      ForceStackingAndContainingBlockForCanvasLayoutSubtree(element)) {
     builder.SetAllowsZIndex(true);
     if (!builder.HasAutoZIndex()) {
       builder.SetForcesStackingContext(true);
