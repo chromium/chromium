@@ -51,9 +51,11 @@ constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 
 void OpenUrlWithDisposition(Profile* profile,
                             const GURL& url,
-                            WindowOpenDisposition disposition) {
+                            WindowOpenDisposition disposition,
+                            BrowserWindowInterface* browser) {
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = disposition;
+  params.browser = browser;
   Navigate(&params);
 }
 
@@ -257,7 +259,8 @@ void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
 
 void ContextualTasksPageHandler::OpenMyActivityUi() {
   OpenUrlWithDisposition(web_ui_controller_->GetProfile(), GURL(kMyActivityUrl),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         web_ui_controller_->GetBrowser());
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
@@ -288,12 +291,14 @@ void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
   OpenUrlWithDisposition(
       web_ui_controller_->GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      web_ui_controller_->GetBrowser());
 }
 
 void ContextualTasksPageHandler::OpenUrl(const GURL& url,
                                          WindowOpenDisposition disposition) {
-  OpenUrlWithDisposition(web_ui_controller_->GetProfile(), url, disposition);
+  OpenUrlWithDisposition(web_ui_controller_->GetProfile(), url, disposition,
+                         web_ui_controller_->GetBrowser());
 }
 
 void ContextualTasksPageHandler::MoveTaskUiToNewTab() {

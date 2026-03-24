@@ -636,7 +636,17 @@ bool ContextualTasksUI::IsShownInTab() {
 }
 
 BrowserWindowInterface* ContextualTasksUI::GetBrowser() {
-  return FromWebContents(web_ui()->GetWebContents());
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  BrowserWindowInterface* window = FromWebContents(web_contents);
+  if (window) {
+    return window;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab) {
+    return tab->GetBrowserWindowInterface();
+  }
+  return nullptr;
 }
 
 Profile* ContextualTasksUI::GetProfile() {
