@@ -33,6 +33,7 @@ std::vector<glic::mojom::SkillPtr> ConvertSkillsListToSkills(
     skill_preview->name = skill_proto.name();
     skill_preview->icon = skill_proto.icon();
     skill_preview->source = glic::mojom::SkillSource::kFirstParty;
+    skill_preview->description = skill_proto.description();
 
     glic::mojom::SkillPtr skill = glic::mojom::Skill::New();
     skill->preview = std::move(skill_preview);
