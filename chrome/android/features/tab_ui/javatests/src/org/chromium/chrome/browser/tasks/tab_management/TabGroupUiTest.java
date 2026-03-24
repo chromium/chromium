@@ -435,6 +435,7 @@ public class TabGroupUiTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "crbug.com/493878143")
     public void testStripShownOnGroupTabPage_BottomControlsSceneLayer() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
