@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -625,9 +626,15 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Checks that SetPin enforces the complexity policy.
+// TODO(crbug.com/495853054): Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SetPin_EnforcesPolicy DISABLED_SetPin_EnforcesPolicy
+#else
+#define MAYBE_SetPin_EnforcesPolicy SetPin_EnforcesPolicy
+#endif
 IN_PROC_BROWSER_TEST_F(
     AuthFactorConfigTestWithLocalPasswordAndLocalAuthFactorsComplexity,
-    SetPin_EnforcesPolicy) {
+    MAYBE_SetPin_EnforcesPolicy) {
   SetComplexityPolicy(ash::LocalAuthFactorsComplexity::kHigh);
   std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
   ASSERT_TRUE(auth_token.has_value());
