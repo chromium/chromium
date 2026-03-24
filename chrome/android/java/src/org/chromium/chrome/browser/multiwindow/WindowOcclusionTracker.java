@@ -18,7 +18,11 @@ public class WindowOcclusionTracker {
     private static final boolean DEBUG_LOGGING = false;
     private static @Nullable WindowOcclusionTracker sInstance;
 
-    private WindowOcclusionTracker() {}
+    private final WindowZOrderTracker mWindowZOrderTracker;
+
+    private WindowOcclusionTracker() {
+        mWindowZOrderTracker = new WindowZOrderTracker(this::recalculateOcclusion);
+    }
 
     public static WindowOcclusionTracker getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -39,8 +43,7 @@ public class WindowOcclusionTracker {
      */
     public void track(ActivityWindowAndroid windowAndroid) {
         ThreadUtils.assertOnUiThread();
-        if (DEBUG_LOGGING) Log.i(TAG, "Tracking window: %s", windowAndroid);
-        // TODO(488905916) - Implement tracking.
+        mWindowZOrderTracker.track(windowAndroid);
     }
 
     /**
@@ -50,7 +53,10 @@ public class WindowOcclusionTracker {
      */
     public void untrack(ActivityWindowAndroid windowAndroid) {
         ThreadUtils.assertOnUiThread();
-        if (DEBUG_LOGGING) Log.i(TAG, "Untracking window: %s", windowAndroid);
-        // TODO(488905916) - Implement tracking.
+        mWindowZOrderTracker.untrack(windowAndroid);
+    }
+
+    private void recalculateOcclusion() {
+        if (DEBUG_LOGGING) Log.i(TAG, "Recalculating occlusion");
     }
 }
