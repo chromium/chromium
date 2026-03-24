@@ -63,6 +63,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
         AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT,
+        AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -79,7 +80,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Profiles fragment in Chrome settings. */
         int AUTOFILL_PROFILES_FRAGMENT = 3;
 
-        int COUNT = 4;
+        /** Autofill and passwords in Chrome settings. */
+        int AUTOFILL_AND_PASSWORDS_FRAGMENT = 4;
+
+        int COUNT = 5;
     }
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =

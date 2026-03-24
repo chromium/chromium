@@ -17,9 +17,12 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -81,7 +84,13 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         findPreference(PREF_AUTOFILL_SETTINGS)
                 .setOnPreferenceClickListener(
                         preference -> {
-                            // TODO(crbug.com/482995752): Launch autofill settings.
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(
+                                            getContext(),
+                                            AutofillOptionsFragment.class,
+                                            AutofillOptionsFragment.createRequiredArgs(
+                                                    AutofillOptionsReferrer
+                                                            .AUTOFILL_AND_PASSWORDS_FRAGMENT));
                             return true;
                         });
     }

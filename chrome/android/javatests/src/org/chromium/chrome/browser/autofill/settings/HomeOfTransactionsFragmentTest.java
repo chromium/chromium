@@ -130,7 +130,7 @@ public class HomeOfTransactionsFragmentTest {
         onView(withText(R.string.autofill_payments_title)).perform(click());
 
         onView(withText(R.string.autofill_enable_credit_cards_toggle_label))
-            .check(matches(isDisplayed()));
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -142,6 +142,18 @@ public class HomeOfTransactionsFragmentTest {
         onView(withText(R.string.autofill_contact_info_title)).perform(click());
 
         onView(withText(R.string.autofill_enable_profiles_toggle_label))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testClickAutofillSettingsLaunchesAutofillOptions() {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_settings_title)).perform(click());
+
+        onView(withText(R.string.autofill_third_party_filling_default))
                 .check(matches(isDisplayed()));
     }
 }
