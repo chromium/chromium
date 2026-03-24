@@ -256,6 +256,8 @@ class NET_EXPORT URLRequestContext final {
 
   // If != handles::kInvalidNetworkHandle, the network which this
   // context has been bound to.
+  // TODO(crbug.com/495684670): Remove this once multi-network Cronet and CCT
+  // no longer depend on network-bound URLRequestContexts.
   handles::NetworkHandle bound_network() const { return bound_network_; }
 
   void AssertCalledOnValidThread() {

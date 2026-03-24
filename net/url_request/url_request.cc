@@ -28,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cert/x509_certificate.h"
@@ -641,6 +642,7 @@ URLRequest::URLRequest(base::PassKey<URLRequestContext> pass_key,
                        const URLRequestContext* context,
                        NetworkTrafficAnnotationTag traffic_annotation,
                        bool is_for_websockets,
+                       handles::NetworkHandle target_network,
                        std::optional<net::NetLogSource> net_log_source)
     : context_(context),
       net_log_(CreateNetLogWithSource(context->net_log(), net_log_source)),
@@ -648,6 +650,7 @@ URLRequest::URLRequest(base::PassKey<URLRequestContext> pass_key,
       method_("GET"),
       delegate_(delegate),
       is_for_websockets_(is_for_websockets),
+      target_network_(target_network),
       redirect_limit_(kMaxRedirects),
       priority_(priority),
       creation_time_(base::TimeTicks::Now()),

@@ -147,9 +147,12 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     NetworkTrafficAnnotationTag traffic_annotation,
     bool is_for_websockets,
     const std::optional<net::NetLogSource> net_log_source) const {
+  // TODO(crbug.com/495684670): Expose target_network once URLRequest fully
+  // supports network binding.
   return std::make_unique<URLRequest>(
       base::PassKey<URLRequestContext>(), url, priority, delegate, this,
-      traffic_annotation, is_for_websockets, net_log_source);
+      traffic_annotation, is_for_websockets, handles::kInvalidNetworkHandle,
+      net_log_source);
 }
 
 void URLRequestContext::AssertNoURLRequests() const {
