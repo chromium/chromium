@@ -186,7 +186,7 @@ class AudioDecoderTest
 
   void SetUp() override {
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-    std::vector<base::test::FeatureRef> features = {
+    const std::vector<base::test::FeatureRef> features = {
         { kSymphoniaAudioDecoding,
           kSymphoniaMp3Decoding,
           kSymphoniaPcmDecoding,

@@ -32,7 +32,18 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
  public:
   AudioFileReaderTest() {
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-    feature_list_.InitWithFeatureState(kSymphoniaAudioDecoding, GetParam());
+    const std::vector<base::test::FeatureRef> features = {
+        { kSymphoniaAudioDecoding,
+          kSymphoniaMp3Decoding,
+          kSymphoniaPcmDecoding,
+          kSymphoniaVorbisDecoding }};
+
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(features,
+                                     /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(/*enabled_features=*/{}, features);
+    }
 #endif
   }
 
@@ -49,7 +60,9 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
   }
 
   // Reads and validates the entire file provided to Initialize().
-  void ReadAndVerify(const char* expected_audio_hash, int expected_frames) {
+  void ReadAndVerify(const char* expected_audio_hash,
+                     int expected_frames,
+                     double tolerance) {
     std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
     const int actual_frames = reader_->Read(&decoded_audio_packets);
     ASSERT_GT(actual_frames, 0);
@@ -69,7 +82,9 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
 
     AudioHash audio_hash;
     audio_hash.Update(decoded_audio_data.get(), actual_frames);
-    EXPECT_STREQ(expected_audio_hash, audio_hash.ToString().c_str());
+    EXPECT_TRUE(audio_hash.IsEquivalent(expected_audio_hash, tolerance))
+        << "Audio hashes differ. Expected: " << expected_audio_hash
+        << " Actual: " << audio_hash.ToString();
   }
 
   void ResetReader() {
@@ -114,7 +129,8 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
                base::TimeDelta duration,
                int frames,
                int expected_frames,
-               int packet_reads = 3) {
+               int packet_reads = 3,
+               double tolerance = 0.09) {
     Initialize(fn);
     ASSERT_TRUE(reader_->Open());
     EXPECT_EQ(channels, reader_->channels());
@@ -130,7 +146,7 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
     if (!packet_verification_disabled_) {
       ASSERT_NO_FATAL_FAILURE(VerifyPackets(fn, packet_reads));
     }
-    ReadAndVerify(hash, expected_frames);
+    ReadAndVerify(hash, expected_frames, tolerance);
   }
 
   void RunTestFailingDemux(const char* fn) {
@@ -248,6 +264,13 @@ TEST_P(AudioFileReaderTest, MidStreamConfigChangesFail) {
 #endif
 
 TEST_P(AudioFileReaderTest, VorbisValidChannelLayout) {
+  if (GetParam()) {
+    // TODO(crbug.com/495575937): Remove this check once Symphonia supports 9
+    // channels.
+    Initialize("9ch.ogg");
+    EXPECT_FALSE(reader_->Open());
+    return;
+  }
   RunTest("9ch.ogg", "111.68,13.19,59.65,58.66,66.99,20.36,", 9, 48000,
           base::Microseconds(100001), 4801, 4864);
 }

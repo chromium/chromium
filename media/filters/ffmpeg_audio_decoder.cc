@@ -28,6 +28,11 @@
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 #include "media/filters/ffmpeg_glue.h"
 
+// Used to check static IsCodecSupported().
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
+
 namespace media {
 
 namespace {
@@ -62,27 +67,7 @@ bool IsCodecDisabledByFeatures(AudioCodec codec) {
   }
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-  switch (codec) {
-    case AudioCodec::kFLAC:
-      return base::FeatureList::IsEnabled(kSymphoniaAudioDecoding);
-
-    case AudioCodec::kMP3:
-      return base::FeatureList::IsEnabled(kSymphoniaMp3Decoding);
-
-    case AudioCodec::kPCM:
-    case AudioCodec::kPCM_MULAW:
-    case AudioCodec::kPCM_S16BE:
-    case AudioCodec::kPCM_S24BE:
-    case AudioCodec::kPCM_ALAW:
-      return base::FeatureList::IsEnabled(kSymphoniaPcmDecoding);
-
-    case AudioCodec::kVorbis:
-      return base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding);
-
-    // Symphonia does not implement any other codecs currently.
-    default:
-      return false;
-  }
+  return SymphoniaAudioDecoder::IsCodecSupported(codec);
 #else
   return false;
 #endif
