@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 
 import java.io.File;
-import java.util.List;
 
 /** Policy that handles the Activity specific behaviors regarding the persistence of tab data. */
 @NullMarked
@@ -102,15 +101,7 @@ public interface TabPersistencePolicy {
             int index, Callback<TabPersistenceFileInfo> tabDataToDelete) {}
 
     /**
-     * Clears the persisted state for all windows except for those whose tags are provided.
-     *
-     * @param windowTags The list of window tags to keep.
-     */
-    default void clearAllWindowsExceptFor(List<String> windowTags) {}
-
-    /**
      * Sets the {@link TabContentManager} to use.
-     *
      * @param cache The {@link TabContentManager} to use.
      */
     void setTabContentManager(TabContentManager cache);
