@@ -13,7 +13,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/cable/pairing.h"
@@ -76,7 +75,7 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*client_name=*/"client_name",
       /*chrome_version=*/"chrome_version",
       /*sync_user_agent=*/"sync_user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::DeviceType::kLinux,
       syncer::DeviceInfo::OsType::kLinux,
       syncer::DeviceInfo::FormFactor::kDesktop,
       /*signin_scoped_device_id=*/"signin_scoped_device_id",
@@ -88,8 +87,7 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*send_tab_to_self_receiving_enabled=*/
       false,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt, paask_info_opt,
       /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
       /*auto_sign_out_last_signin_timestamp=*/base::Time::Now(),

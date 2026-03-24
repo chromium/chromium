@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -209,7 +208,7 @@ const syncer::DeviceInfo kSampleForeignDeviceInfo{
     kSampleForeignDeviceClientName,
     "",
     "",
-    sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+    syncer::DeviceInfo::DeviceType::kWindows,
     syncer::DeviceInfo::OsType::kWindows,
     syncer::DeviceInfo::FormFactor::kDesktop,
     "",
@@ -219,8 +218,7 @@ const syncer::DeviceInfo kSampleForeignDeviceInfo{
     base::Time::Now(),
     base::Seconds(1),
     false,
-    sync_pb::
-        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+    syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
     std::nullopt,
     std::nullopt,
     "",

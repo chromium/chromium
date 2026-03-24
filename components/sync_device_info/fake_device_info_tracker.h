@@ -14,11 +14,6 @@
 #include "base/observer_list.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
-namespace sync_pb {
-enum SharingSpecificFields_EnabledFeatures : int;
-enum SyncEnums_DeviceType : int;
-}  // namespace sync_pb
-
 namespace syncer {
 
 class DeviceInfo;

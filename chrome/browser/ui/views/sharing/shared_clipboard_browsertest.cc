@@ -57,10 +57,10 @@ using SharedClipboardUIFeatureDisabledBrowserTest =
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardUIFeatureDisabledBrowserTest,
                        ContextMenu_UIFeatureDisabled) {
-  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
-       sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
+  Init(syncer::DeviceInfo::SharingFeature::kSharedClipboardV2,
+       syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
+      syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
   ASSERT_EQ(2u, devices.size());
 
   std::unique_ptr<TestRenderViewContextMenu> menu =

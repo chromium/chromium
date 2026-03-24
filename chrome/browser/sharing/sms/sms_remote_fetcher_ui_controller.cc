@@ -43,9 +43,9 @@ SmsRemoteFetcherUiController::SmsRemoteFetcherUiController(
 
 SmsRemoteFetcherUiController::~SmsRemoteFetcherUiController() = default;
 
-sync_pb::SharingSpecificFields::EnabledFeatures
+syncer::DeviceInfo::SharingFeature
 SmsRemoteFetcherUiController::GetRequiredFeature() const {
-  return sync_pb::SharingSpecificFields::SMS_FETCHER;
+  return syncer::DeviceInfo::SharingFeature::kSmsFetcher;
 }
 
 void SmsRemoteFetcherUiController::DoUpdateApps(UpdateAppsCallback callback) {

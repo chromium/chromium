@@ -22,8 +22,6 @@
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
 
-using sync_pb::SharingSpecificFields;
-
 namespace {
 
 bool IsStale(const syncer::DeviceInfo& device) {
@@ -78,7 +76,7 @@ std::optional<SharingTargetDeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
 
 std::vector<SharingTargetDeviceInfo>
 SharingDeviceSourceSync::GetDeviceCandidates(
-    SharingSpecificFields::EnabledFeatures required_feature) {
+    syncer::DeviceInfo::SharingFeature required_feature) {
   if (!IsSyncEnabledForSharing(sync_service_) || !IsReady()) {
     return {};
   }
@@ -120,8 +118,8 @@ void SharingDeviceSourceSync::OnLocalDeviceInfoProviderReady() {
 std::vector<const syncer::DeviceInfo*>
 SharingDeviceSourceSync::FilterDeviceCandidates(
     std::vector<const syncer::DeviceInfo*> devices,
-    sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const {
-  std::set<SharingSpecificFields::EnabledFeatures> accepted_features{
+    syncer::DeviceInfo::SharingFeature required_feature) const {
+  std::set<syncer::DeviceInfo::SharingFeature> accepted_features{
       required_feature};
   bool can_send_via_sender_id = CanSendViaSenderID(sync_service_);
 
@@ -149,7 +147,7 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
 
     // Checks whether `device` supports any of `accepted_features`.
     return base::STLSetIntersection<
-               std::vector<SharingSpecificFields::EnabledFeatures>>(
+               std::vector<syncer::DeviceInfo::SharingFeature>>(
                device->sharing_info()->enabled_features, accepted_features)
         .empty();
   });

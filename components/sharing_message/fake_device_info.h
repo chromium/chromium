@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {
@@ -22,8 +21,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
     const std::string& name = "name",
     const std::optional<syncer::DeviceInfo::SharingInfo>& sharing_info =
         std::nullopt,
-    sync_pb::SyncEnums_DeviceType device_type =
-        sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+    syncer::DeviceInfo::DeviceType device_type =
+        syncer::DeviceInfo::DeviceType::kLinux,
     syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux,
     syncer::DeviceInfo::FormFactor form_factor =
         syncer::DeviceInfo::FormFactor::kDesktop,

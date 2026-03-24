@@ -40,8 +40,7 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
   }
 
   void SetEnabledFeaturesForTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
-      override {}
+      std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override {}
 };
 
 MockSharingService::MockSharingService()

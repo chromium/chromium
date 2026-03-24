@@ -9,8 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/protocol/device_info_specifics.pb.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/version_info/version_string.h"
@@ -31,9 +29,8 @@ const char kSharingSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
 const char kSharingChimeRepresentativeTargetId[] =
     "chime_representative_target_id";
-const sync_pb::SharingSpecificFields::EnabledFeatures
-    kSharingEnabledFeatures[] = {
-        sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
+const DeviceInfo::SharingFeature kSharingEnabledFeatures[] = {
+    DeviceInfo::SharingFeature::kClickToCallV2};
 
 using testing::NiceMock;
 using testing::NotNull;
@@ -50,7 +47,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
   MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
-  MOCK_METHOD(sync_pb::SyncEnums_SendTabReceivingType,
+  MOCK_METHOD(DeviceInfo::SendTabReceivingType,
               GetSendTabToSelfReceivingType,
               (),
               (const override));
@@ -206,28 +203,22 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingEnabled) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingType) {
   ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingType())
-      .WillByDefault(Return(
-          sync_pb::
-              SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED));
+      .WillByDefault(
+          Return(DeviceInfo::SendTabReceivingType::kChromeOrUnspecified));
 
   InitializeProvider();
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_EQ(
-      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
+            DeviceInfo::SendTabReceivingType::kChromeOrUnspecified);
 
   ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingType())
-      .WillByDefault(Return(
-          sync_pb::
-              SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION));
+      .WillByDefault(
+          Return(DeviceInfo::SendTabReceivingType::kChromeAndPushNotification));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_EQ(
-      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
+            DeviceInfo::SendTabReceivingType::kChromeAndPushNotification);
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, DesktopToIOSPromoReceivingEnabled) {
@@ -268,7 +259,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_FALSE(provider_->GetLocalDeviceInfo()->sharing_info());
 
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features(
+  std::set<DeviceInfo::SharingFeature> enabled_features(
       std::begin(kSharingEnabledFeatures), std::end(kSharingEnabledFeatures));
   std::optional<DeviceInfo::SharingInfo> sharing_info =
       std::make_optional<DeviceInfo::SharingInfo>(
@@ -328,14 +319,13 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       SamplePhoneAsASecurityKeyInfo();
   const DeviceInfo device_info_restored_from_store(
       kLocalDeviceGuid, "name", "chrome_version", "user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, DeviceInfo::OsType::kLinux,
+      DeviceInfo::DeviceType::kLinux, DeviceInfo::OsType::kLinux,
       DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
       "full_hardware_class", base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/
       true,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes,
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,

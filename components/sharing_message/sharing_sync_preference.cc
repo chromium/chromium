@@ -70,8 +70,6 @@ std::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
 
 }  // namespace
 
-using sync_pb::SharingSpecificFields;
-
 SharingSyncPreference::FCMRegistration::FCMRegistration(base::Time timestamp)
     : timestamp(timestamp) {}
 
@@ -148,9 +146,9 @@ void SharingSyncPreference::SetLocalSharingInfo(
       TargetInfoToValue(sharing_info.sender_id_target_info);
 
   base::ListValue list_value;
-  for (SharingSpecificFields::EnabledFeatures feature :
+  for (syncer::DeviceInfo::SharingFeature feature :
        sharing_info.enabled_features) {
-    list_value.Append(feature);
+    list_value.Append(static_cast<int>(feature));
   }
 
   ScopedDictPrefUpdate local_sharing_info_update(
@@ -197,7 +195,7 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
     return std::nullopt;
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features;
   for (auto& value : *enabled_features_value) {
     DCHECK(value.is_int());
     int feature_value = value.GetInt();
@@ -208,7 +206,7 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
     }
 
     enabled_features.insert(
-        static_cast<SharingSpecificFields::EnabledFeatures>(feature_value));
+        static_cast<syncer::DeviceInfo::SharingFeature>(feature_value));
   }
 
   // Pass in null for chime_representative_target_id field because currently

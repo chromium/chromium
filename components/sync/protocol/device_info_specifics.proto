@@ -138,6 +138,7 @@ message SharingSpecificFields {
   reserved "vapid_fcm_token", "vapid_p256dh", "vapid_auth_secret";
 
   // Enum defining available Sharing features.
+  // LINT.IfChange(EnabledFeatures)
   enum EnabledFeatures {
     reserved 5;
     reserved "PEER_CONNECTION";
@@ -159,6 +160,7 @@ message SharingSpecificFields {
     // Supports receiving notifications about new OneTimeTokens in the backend.
     ONE_TIME_TOKEN_BACKEND_NOTIFICATION = 10;
   }
+  // LINT.ThenChange(/components/sync_device_info/device_info.h:SharingFeature)
 
   // A list of enabled Sharing features.
   repeated EnabledFeatures enabled_features = 4;

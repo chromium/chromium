@@ -12,7 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sharing_message/sharing_target_device_info.h"
-#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 class SharingDeviceSource {
  public:
@@ -35,7 +35,7 @@ class SharingDeviceSource {
   // out older devices and returns them in (not strictly) decreasing order of
   // last updated timestamp.
   virtual std::vector<SharingTargetDeviceInfo> GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::EnabledFeatures required_feature) = 0;
+      syncer::DeviceInfo::SharingFeature required_feature) = 0;
 
   // Adds a callback to be run when the SharingDeviceSource is ready. If a
   // callback is added when it is already ready, it will be run immediately.

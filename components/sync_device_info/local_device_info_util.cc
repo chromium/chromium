@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -81,26 +81,26 @@ void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
 
 }  // namespace
 
-sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
+DeviceInfo::DeviceType GetLocalDeviceType() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return sync_pb::SyncEnums_DeviceType_TYPE_CROS;
+  return DeviceInfo::DeviceType::kChromeOS;
 #elif BUILDFLAG(IS_LINUX)
-  return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
+  return DeviceInfo::DeviceType::kLinux;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   switch (ui::GetDeviceFormFactor()) {
     case ui::DEVICE_FORM_FACTOR_TABLET:
-      return sync_pb::SyncEnums_DeviceType_TYPE_TABLET;
+      return DeviceInfo::DeviceType::kTablet;
     case ui::DEVICE_FORM_FACTOR_PHONE:
-      return sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+      return DeviceInfo::DeviceType::kPhone;
     default:
-      return sync_pb::SyncEnums_DeviceType_TYPE_OTHER;
+      return DeviceInfo::DeviceType::kOther;
   }
 #elif BUILDFLAG(IS_MAC)
-  return sync_pb::SyncEnums_DeviceType_TYPE_MAC;
+  return DeviceInfo::DeviceType::kMac;
 #elif BUILDFLAG(IS_WIN)
-  return sync_pb::SyncEnums_DeviceType_TYPE_WIN;
+  return DeviceInfo::DeviceType::kWindows;
 #else
-  return sync_pb::SyncEnums_DeviceType_TYPE_OTHER;
+  return DeviceInfo::DeviceType::kOther;
 #endif
 }
 

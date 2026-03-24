@@ -17,7 +17,6 @@
 #include "base/uuid.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +42,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
     const std::string& chrome_version) {
   return std::make_unique<syncer::DeviceInfo>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, chrome_version,
-      "user_agent", sync_pb::SyncEnums::TYPE_UNSET,
+      "user_agent", syncer::DeviceInfo::DeviceType::kUnset,
       syncer::DeviceInfo::OsType::kUnknown,
       syncer::DeviceInfo::FormFactor::kUnknown, "device_id",
       "manufacturer_name", "model_name", "full_hardware_class",
@@ -51,8 +50,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
       /*send_tab_to_self_receiving_enabled=*/
       false,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
       fcm_registration_token, interested_data_types,
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,

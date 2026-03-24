@@ -170,35 +170,34 @@ class SharingDeviceRegistrationImplTest : public testing::Test {
     fake_instance_id_.SetFCMResult(result);
   }
 
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
-  GetExpectedEnabledFeatures() {
-    std::set<sync_pb::SharingSpecificFields::EnabledFeatures> features;
+  std::set<syncer::DeviceInfo::SharingFeature> GetExpectedEnabledFeatures() {
+    std::set<syncer::DeviceInfo::SharingFeature> features;
 
     // IsClickToCallSupported() involves JNI call which is hard to test.
     if (sharing_device_registration_.IsClickToCallSupported()) {
-      features.insert(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+      features.insert(syncer::DeviceInfo::SharingFeature::kClickToCallV2);
     }
 
     // Shared clipboard should always be supported.
-    features.insert(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
+    features.insert(syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
 
     if (sharing_device_registration_.IsRemoteCopySupported()) {
-      features.insert(sync_pb::SharingSpecificFields::REMOTE_COPY);
+      features.insert(syncer::DeviceInfo::SharingFeature::kRemoteCopy);
     }
 
     if (sharing_device_registration_.IsSmsFetcherSupported()) {
-      features.insert(sync_pb::SharingSpecificFields::SMS_FETCHER);
+      features.insert(syncer::DeviceInfo::SharingFeature::kSmsFetcher);
     }
 
     if (supports_opt_guide()) {
-      features.insert(
-          sync_pb::SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
+      features.insert(syncer::DeviceInfo::SharingFeature::
+                          kOptimizationGuidePushNotification);
     }
 
     if (sharing_device_registration_
             .IsOneTimeTokenBackendNotificationSupported()) {
       features.insert(
-          sync_pb::SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION);
+          syncer::DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification);
     }
 
     return features;
@@ -275,7 +274,7 @@ TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Success) {
 
   RegisterDeviceSync();
 
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features =
       GetExpectedEnabledFeatures();
   syncer::DeviceInfo::SharingInfo expected_sharing_info(
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
@@ -297,7 +296,7 @@ TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_SenderIDOnly) {
 
   RegisterDeviceSync();
 
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features =
       GetExpectedEnabledFeatures();
   syncer::DeviceInfo::SharingInfo expected_sharing_info(
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
@@ -372,7 +371,7 @@ TEST_F(SharingDeviceRegistrationImplTest, UnregisterDeviceTest_Success) {
   RegisterDeviceSync();
 
   // Device should be registered with the new FCM token.
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features =
       GetExpectedEnabledFeatures();
   syncer::DeviceInfo::SharingInfo expected_sharing_info(
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},

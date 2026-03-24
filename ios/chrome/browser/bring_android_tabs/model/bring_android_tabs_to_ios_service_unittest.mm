@@ -173,7 +173,7 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   // Returns a fake session with modified time `modified_time_` and form factor
   // type `device_form_factor`.
   sync_sessions::SyncedSession* Session(
-      sync_pb::SyncEnums::DeviceType device_type,
+      syncer::DeviceInfo::DeviceType device_type,
       syncer::DeviceInfo::FormFactor device_form_factor) {
     sync_sessions::SyncedSession* session = new sync_sessions::SyncedSession();
     session->SetDeviceTypeAndFormFactor(device_type, device_form_factor);
@@ -192,12 +192,12 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
                                        VectorExperimental>>* sessions) {
               for (size_t i = 0; i < kPhoneSessionCount; i++) {
                 sessions->push_back(
-                    Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+                    Session(syncer::DeviceInfo::DeviceType::kPhone,
                             syncer::DeviceInfo::FormFactor::kPhone));
               }
               for (size_t i = 0; i < kTabletSessionCount; i++) {
                 sessions->push_back(
-                    Session(sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+                    Session(syncer::DeviceInfo::DeviceType::kTablet,
                             syncer::DeviceInfo::FormFactor::kTablet));
               }
               return true;

@@ -24,7 +24,6 @@
 #include "components/sharing_message/sharing_device_registration.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
-#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "net/base/backoff_entry.h"
 
@@ -86,7 +85,7 @@ class SharingService : public KeyedService,
   // Returns a list of devices that is available to receive messages.
   // All returned devices have the specified |required_feature|.
   virtual SharingDeviceList GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const;
+      syncer::DeviceInfo::SharingFeature required_feature) const;
 
   // Sends a Sharing message to remote device.
   // |device|: The receiver device.
@@ -133,7 +132,7 @@ class SharingService : public KeyedService,
 
   // Used to register devices with required capabilities in tests.
   void RegisterDeviceInTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features,
+      std::set<syncer::DeviceInfo::SharingFeature> enabled_features,
       SharingDeviceRegistration::RegistrationCallback callback);
 
   SharingDeviceSource* GetDeviceSource() const;

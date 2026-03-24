@@ -14,7 +14,6 @@
 #import "base/memory/weak_ptr.h"
 #import "components/gcm_driver/instance_id/instance_id.h"
 #import "components/sharing_message/sharing_device_registration.h"
-#import "components/sync/protocol/device_info_specifics.pb.h"
 #import "components/sync_device_info/device_info.h"
 
 class PrefService;
@@ -63,8 +62,7 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   bool IsOptimizationGuidePushNotificationSupported() const override;
   bool IsOneTimeTokenBackendNotificationSupported() const override;
   void SetEnabledFeaturesForTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
-      override;
+      std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(IOSSharingDeviceRegistrationImplTest,
@@ -95,14 +93,13 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
                          instance_id::InstanceID::Result result);
 
   // Computes and returns a set of all enabled features on the device.
-  std::set<sync_pb::SharingSpecificFields_EnabledFeatures> GetEnabledFeatures()
-      const;
+  std::set<syncer::DeviceInfo::SharingFeature> GetEnabledFeatures() const;
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<SharingSyncPreference> sharing_sync_preference_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<syncer::SyncService> sync_service_;
-  std::optional<std::set<sync_pb::SharingSpecificFields_EnabledFeatures>>
+  std::optional<std::set<syncer::DeviceInfo::SharingFeature>>
       enabled_features_testing_value_;
 
   base::WeakPtrFactory<IOSSharingDeviceRegistrationImpl> weak_ptr_factory_{

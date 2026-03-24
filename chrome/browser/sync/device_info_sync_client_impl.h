@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 
 class Profile;
@@ -31,7 +30,7 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   bool GetSendTabToSelfReceivingEnabled() const override;
 
   // syncer::DeviceInfoSyncClient:
-  sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
+  syncer::DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const override;
 
   // syncer::DeviceInfoSyncClient:

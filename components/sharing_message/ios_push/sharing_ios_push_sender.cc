@@ -113,8 +113,8 @@ bool SharingIOSPushSender::CanSendSendTabPushMessage(
       sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   return target_device_info.send_tab_to_self_receiving_enabled() &&
          target_device_info.send_tab_to_self_receiving_type() ==
-             sync_pb::SyncEnums::
-                 SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION &&
+             syncer::DeviceInfo::SendTabReceivingType::
+                 kChromeAndPushNotification &&
          !custom_passphrase_enabled;
 }
 

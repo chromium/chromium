@@ -91,7 +91,7 @@ class SharingFCMHandlerTest : public testing::Test {
         syncer::DeviceInfo::SharingInfo(
             {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
             /*chime_representative_target_id=*/std::string(),
-            std::set<sync_pb::SharingSpecificFields::EnabledFeatures>()));
+            std::set<syncer::DeviceInfo::SharingFeature>()));
   }
 
   // Creates a gcm::IncomingMessage with SharingMessage and defaults.

@@ -203,7 +203,7 @@ class SyncedSetUpMediatorTest : public PlatformTest {
       syncer::DeviceInfo::OsType os_type,
       base::Time last_updated_timestamp = base::Time::Now()) {
     return CreateFakeDeviceInfo(guid, "Device Name", std::nullopt,
-                                sync_pb::SyncEnums::TYPE_UNSET, os_type,
+                                syncer::DeviceInfo::DeviceType::kUnset, os_type,
                                 form_factor, "manufacturer", "model",
                                 std::string(), last_updated_timestamp);
   }
@@ -214,8 +214,8 @@ class SyncedSetUpMediatorTest : public PlatformTest {
       const std::string& name = "name",
       const std::optional<syncer::DeviceInfo::SharingInfo>& sharing_info =
           std::nullopt,
-      sync_pb::SyncEnums_DeviceType device_type =
-          sync_pb::SyncEnums_DeviceType_TYPE_UNSET,
+      syncer::DeviceInfo::DeviceType device_type =
+          syncer::DeviceInfo::DeviceType::kUnset,
       syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown,
       syncer::DeviceInfo::FormFactor form_factor =
           syncer::DeviceInfo::FormFactor::kUnknown,
@@ -229,9 +229,7 @@ class SyncedSetUpMediatorTest : public PlatformTest {
         full_hardware_class, last_updated_timestamp,
         syncer::DeviceInfoUtil::GetPulseInterval(),
         /*send_tab_to_self_receiving_enabled=*/
-        false,
-        sync_pb::
-            SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+        false, syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
         sharing_info,
         /*paask_info=*/std::nullopt,
         /*fcm_registration_token=*/std::string(),

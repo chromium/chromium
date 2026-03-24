@@ -139,6 +139,7 @@ message SyncEnums {
   // New enums to describe the device type were introduced; OsType and
   // FormFactor. Deprecated 12/2022.
   // TODO(crbug.com/40882073): Remove deprecated values from DeviceType enum.
+  // LINT.IfChange(DeviceType)
   enum DeviceType {
     TYPE_UNSET = 0 [deprecated = true];
     TYPE_WIN = 1 [deprecated = true];
@@ -149,6 +150,7 @@ message SyncEnums {
     TYPE_PHONE = 6 [deprecated = true];
     TYPE_TABLET = 7 [deprecated = true];
   }
+  // LINT.ThenChange(/components/sync_device_info/device_info.h:DeviceType)
 
   // Types of device OS.
   enum OsType {
@@ -232,6 +234,7 @@ message SyncEnums {
 
   // Type of message sent to the receiving device for the send tab to self
   // feature.
+  // LINT.IfChange(SendTabReceivingType)
   enum SendTabReceivingType {
     // Send tab notification can be received as an in-app message. This is the
     // default value.
@@ -240,6 +243,7 @@ message SyncEnums {
     // in-app message.
     SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION = 1;
   }
+  // LINT.ThenChange(/components/sync_device_info/device_info.h:SendTabReceivingType)
 
   // Type of promos for the Desktop to iOS feature.
   // LINT.IfChange(MobilePromoOnDesktopPromoType)

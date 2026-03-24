@@ -86,9 +86,10 @@ std::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
     return std::nullopt;
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
+  std::set<DeviceInfo::SharingFeature> enabled_features;
   for (int i = 0; i < specifics.sharing_fields().enabled_features_size(); ++i) {
-    enabled_features.insert(specifics.sharing_fields().enabled_features(i));
+    enabled_features.insert(ToDeviceInfoSharingFeature(
+        specifics.sharing_fields().enabled_features(i)));
   }
   return DeviceInfo::SharingInfo(
       {specifics.sharing_fields().sender_id_fcm_token_v2(),
@@ -187,13 +188,15 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
   return DeviceInfo(
       specifics.cache_guid(), specifics.client_name(),
       GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
-      specifics.device_type(), os_type, device_form_factor,
-      specifics.signin_scoped_device_id(), specifics.manufacturer(),
-      specifics.model(), specifics.full_hardware_class(),
+      ToDeviceInfoDeviceType(specifics.device_type()), os_type,
+      device_form_factor, specifics.signin_scoped_device_id(),
+      specifics.manufacturer(), specifics.model(),
+      specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),
       GetPulseIntervalFromSpecifics(specifics),
       specifics.feature_fields().send_tab_to_self_receiving_enabled(),
-      specifics.feature_fields().send_tab_to_self_receiving_type(),
+      ToDeviceInfoSendTabReceivingType(
+          specifics.feature_fields().send_tab_to_self_receiving_type()),
       SpecificsToSharingInfo(specifics),
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
       specifics.invalidation_fields().instance_id_token(),
@@ -236,7 +239,7 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->mutable_chrome_version_info()->set_version_number(
       info.chrome_version());
   specifics->set_sync_user_agent(info.sync_user_agent());
-  specifics->set_device_type(info.device_type());
+  specifics->set_device_type(ToDeviceTypeProto(info.device_type()));
   specifics->set_os_type(ToOsTypeProto(info.os_type()));
   specifics->set_device_form_factor(
       ToDeviceFormFactorProto(info.form_factor()));
@@ -259,7 +262,7 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   feature_fields->set_send_tab_to_self_receiving_enabled(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
-      info.send_tab_to_self_receiving_type());
+      ToSendTabReceivingTypeProto(info.send_tab_to_self_receiving_type()));
 
   // The `desktop_to_ios_promo_receiving_enabled` boolean is a legacy field.
   // Older Desktop clients (e.g. M145) only check this boolean and assume it
@@ -297,9 +300,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
         sharing_info->sender_id_target_info.auth_secret);
     sharing_fields->set_chime_representative_target_id(
         sharing_info->chime_representative_target_id);
-    for (sync_pb::SharingSpecificFields::EnabledFeatures feature :
-         sharing_info->enabled_features) {
-      sharing_fields->add_enabled_features(feature);
+    for (DeviceInfo::SharingFeature feature : sharing_info->enabled_features) {
+      sharing_fields->add_enabled_features(ToSharingFeatureProto(feature));
     }
   }
 

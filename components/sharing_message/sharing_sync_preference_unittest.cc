@@ -42,8 +42,8 @@ class SharingSyncPreferenceTest : public testing::Test {
         {kDeviceSenderIdFcmToken, kDeviceSenderIdP256dh,
          kDeviceSenderIdAuthToken},
         /*chime_representative_target_id=*/std::string(),
-        std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
-            sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2});
+        std::set<syncer::DeviceInfo::SharingFeature>{
+            syncer::DeviceInfo::SharingFeature::kClickToCallV2});
   }
 
   void AddEnabledFeature(int feature) {

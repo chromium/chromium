@@ -42,6 +42,7 @@
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_prefs.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,8 +84,7 @@ using WriteBatch = DataTypeStore::WriteBatch;
 
 const int kLocalSuffix = 0;
 
-const sync_pb::SyncEnums_DeviceType kLocalDeviceType =
-    sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
+const DeviceInfo::DeviceType kLocalDeviceType = DeviceInfo::DeviceType::kLinux;
 const DeviceInfo::OsType kLocalDeviceOS = DeviceInfo::OsType::kLinux;
 const DeviceInfo::FormFactor kLocalDeviceFormFactor =
     DeviceInfo::FormFactor::kDesktop;
@@ -126,8 +126,8 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
     }
 
     for (int i = 0; i < expected_fields.enabled_features_size(); ++i) {
-      if (!arg_info.enabled_features.count(
-              expected_fields.enabled_features(i))) {
+      if (!arg_info.enabled_features.count(ToDeviceInfoSharingFeature(
+              expected_fields.enabled_features(i)))) {
         return false;
       }
     }
@@ -142,7 +142,8 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
   // Note that we ignore the device name here to avoid having to inject the
   // local device's.
   return expected_specifics.cache_guid() == arg.guid() &&
-         expected_specifics.device_type() == arg.device_type() &&
+         ToDeviceInfoDeviceType(expected_specifics.device_type()) ==
+             arg.device_type() &&
          expected_specifics.sync_user_agent() == arg.sync_user_agent() &&
          expected_specifics.chrome_version() == arg.chrome_version() &&
          expected_specifics.signin_scoped_device_id() ==
@@ -152,8 +153,9 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .send_tab_to_self_receiving_enabled() ==
              arg.send_tab_to_self_receiving_enabled() &&
-         expected_specifics.feature_fields()
-                 .send_tab_to_self_receiving_type() ==
+         ToDeviceInfoSendTabReceivingType(
+             expected_specifics.feature_fields()
+                 .send_tab_to_self_receiving_type()) ==
              arg.send_tab_to_self_receiving_type() &&
          expected_specifics.feature_fields()
                  .desktop_to_ios_promo_receiving_enabled() ==
@@ -296,7 +298,7 @@ DeviceInfoSpecifics CreateSpecifics(
   DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
   specifics.set_client_name(ClientNameForSuffix(suffix));
-  specifics.set_device_type(kLocalDeviceType);
+  specifics.set_device_type(ToDeviceTypeProto(kLocalDeviceType));
   specifics.set_sync_user_agent(SyncUserAgentForSuffix(suffix));
   specifics.set_chrome_version(ChromeVersionForSuffix(suffix));
   specifics.set_signin_scoped_device_id(SigninScopedDeviceIdForSuffix(suffix));
@@ -412,8 +414,9 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
           device_info_restored_from_store->interested_data_types();
     }
 
-    std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
-        sharing_enabled_features{SharingEnabledFeaturesForSuffix(kLocalSuffix)};
+    std::set<DeviceInfo::SharingFeature> sharing_enabled_features{
+        ToDeviceInfoSharingFeature(
+            SharingEnabledFeaturesForSuffix(kLocalSuffix))};
     local_device_info_ = std::make_unique<DeviceInfo>(
         cache_guid, session_name, ChromeVersionForSuffix(kLocalSuffix),
         SyncUserAgentForSuffix(kLocalSuffix), kLocalDeviceType, kLocalDeviceOS,
@@ -423,8 +426,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         /*send_tab_to_self_receiving_enabled=*/
         true,
         /*send_tab_to_self_receiving_type=*/
-        sync_pb::
-            SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+        DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
         DeviceInfo::SharingInfo(
             {SharingSenderIdFcmTokenForSuffix(kLocalSuffix),
              SharingSenderIdP256dhForSuffix(kLocalSuffix),

@@ -108,8 +108,8 @@ struct SyncedSession {
   sync_pb::SessionHeader ToSessionHeaderProto() const;
 
   void SetDeviceTypeAndFormFactor(
-      const sync_pb::SyncEnums::DeviceType& local_device_type,
-      const syncer::DeviceInfo::FormFactor& local_device_form_factor);
+      syncer::DeviceInfo::DeviceType local_device_type,
+      syncer::DeviceInfo::FormFactor local_device_form_factor);
 
   syncer::DeviceInfo::FormFactor GetDeviceFormFactor() const;
 
@@ -130,9 +130,10 @@ struct SyncedSession {
   base::Time modified_time_;
 
   // Type of device this session is from.
-  // It's used only to populate deprecated device_type by
+  // Used to populate the deprecated device_type field in
   // ToSessionHeaderProto().
-  sync_pb::SyncEnums::DeviceType device_type;
+  syncer::DeviceInfo::DeviceType device_type =
+      syncer::DeviceInfo::DeviceType::kUnset;
 
   // Form Factor of device this session is from.
   syncer::DeviceInfo::FormFactor device_form_factor =

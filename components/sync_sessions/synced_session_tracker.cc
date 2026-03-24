@@ -142,8 +142,9 @@ void PopulateSyncedSessionFromSpecifics(
         syncer::DeriveFormFactorFromDeviceType(header_specifics.device_type());
   }
   if (device_form_factor != syncer::DeviceInfo::FormFactor::kUnknown) {
-    synced_session->SetDeviceTypeAndFormFactor(header_specifics.device_type(),
-                                               device_form_factor);
+    synced_session->SetDeviceTypeAndFormFactor(
+        syncer::ToDeviceInfoDeviceType(header_specifics.device_type()),
+        device_form_factor);
   }
   synced_session->SetModifiedTime(
       std::max(mtime, synced_session->GetModifiedTime()));
@@ -179,7 +180,7 @@ SyncedSessionTracker::~SyncedSessionTracker() = default;
 void SyncedSessionTracker::InitLocalSession(
     const std::string& local_session_tag,
     const std::string& local_session_name,
-    sync_pb::SyncEnums::DeviceType local_device_type,
+    syncer::DeviceInfo::DeviceType local_device_type,
     syncer::DeviceInfo::FormFactor local_device_form_factor) {
   DCHECK(local_session_tag_.empty());
   DCHECK(!local_session_tag.empty());

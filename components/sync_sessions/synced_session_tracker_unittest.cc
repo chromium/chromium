@@ -35,8 +35,8 @@ const char kSessionName[] = "sessionname";
 // Monday, September 2, 2024 13:31:31 GMT+2.
 const base::Time kSessionStartTime =
     base::Time::FromSecondsSinceUnixEpoch(1725283891);
-const sync_pb::SyncEnums::DeviceType kDeviceType =
-    sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+const syncer::DeviceInfo::DeviceType kDeviceType =
+    syncer::DeviceInfo::DeviceType::kPhone;
 const syncer::DeviceInfo::FormFactor kFormFactor =
     syncer::DeviceInfo::FormFactor::kPhone;
 const char kTag[] = "tag";
@@ -319,7 +319,7 @@ TEST_F(SyncedSessionTrackerTest, Complex) {
   ASSERT_EQ(2U, tracker_.num_synced_sessions());
   SyncedSession* session3 = tracker_.GetSession(kTag3);
   session3->SetDeviceTypeAndFormFactor(
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::DeviceType::kLinux,
       syncer::DeviceInfo::FormFactor::kDesktop);
   ASSERT_EQ(3U, tracker_.num_synced_sessions());
 

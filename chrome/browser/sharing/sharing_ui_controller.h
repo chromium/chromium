@@ -21,7 +21,6 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_target_device_info.h"
-#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -49,8 +48,7 @@ class SharingUiController {
   virtual void OnDeviceChosen(const SharingTargetDeviceInfo& device) = 0;
   // Called when user chooses a local app to complete the task.
   virtual void OnAppChosen(const SharingApp& app) = 0;
-  virtual sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
-      const = 0;
+  virtual syncer::DeviceInfo::SharingFeature GetRequiredFeature() const = 0;
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
   // If true, shows a loading icon on omnibox when sending out the message.
   virtual bool ShouldShowLoadingIcon() const;

@@ -33,7 +33,6 @@ class SequencedTaskRunner;
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
-enum SyncEnums_DeviceType : int;
 }  // namespace sync_pb
 
 namespace syncer {

@@ -34,7 +34,8 @@ class SessionStore {
   struct SessionInfo {
     std::string session_tag;
     std::string client_name;
-    sync_pb::SyncEnums::DeviceType device_type = sync_pb::SyncEnums::TYPE_UNSET;
+    syncer::DeviceInfo::DeviceType device_type =
+        syncer::DeviceInfo::DeviceType::kUnset;
     syncer::DeviceInfo::FormFactor device_form_factor =
         syncer::DeviceInfo::FormFactor::kUnknown;
   };

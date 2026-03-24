@@ -144,8 +144,7 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
   }
 
   void SetEnabledFeaturesForTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
-      override {}
+      std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override {}
 
   void SetResult(SharingDeviceRegistrationResult result) { result_ = result; }
 
@@ -267,20 +266,19 @@ bool ProtoEquals(const google::protobuf::MessageLite& expected,
 
 TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
-      .WillOnce(
-          [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature)
-              -> std::vector<SharingTargetDeviceInfo> { return {}; });
+      .WillOnce([](syncer::DeviceInfo::SharingFeature required_feature)
+                    -> std::vector<SharingTargetDeviceInfo> { return {}; });
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+          syncer::DeviceInfo::SharingFeature::kClickToCallV2);
   EXPECT_TRUE(candidates.empty());
 }
 
 TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
       .WillOnce(
-          [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature) {
+          [](syncer::DeviceInfo::SharingFeature required_feature) {
             std::vector<SharingTargetDeviceInfo> device_candidates;
             device_candidates.push_back(CreateFakeSharingTargetDeviceInfo(
                 base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -290,7 +288,7 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+          syncer::DeviceInfo::SharingFeature::kClickToCallV2);
 
   ASSERT_EQ(1u, candidates.size());
 }

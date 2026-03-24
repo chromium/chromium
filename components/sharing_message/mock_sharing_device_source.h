@@ -26,10 +26,9 @@ class MockSharingDeviceSource : public SharingDeviceSource {
   MOCK_METHOD1(GetDeviceByGuid,
                std::optional<SharingTargetDeviceInfo>(const std::string& guid));
 
-  MOCK_METHOD1(
-      GetDeviceCandidates,
-      std::vector<SharingTargetDeviceInfo>(
-          sync_pb::SharingSpecificFields::EnabledFeatures required_feature));
+  MOCK_METHOD1(GetDeviceCandidates,
+               std::vector<SharingTargetDeviceInfo>(
+                   syncer::DeviceInfo::SharingFeature required_feature));
 
   void MaybeRunReadyCallbacksForTesting() { MaybeRunReadyCallbacks(); }
 };

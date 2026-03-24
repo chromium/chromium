@@ -109,7 +109,7 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   auto tab = std::make_unique<sessions::SessionTab>();
 
   session->SetSessionName(session_name);
-  session->SetDeviceTypeAndFormFactor(sync_pb::SyncEnums::TYPE_UNSET,
+  session->SetDeviceTypeAndFormFactor(syncer::DeviceInfo::DeviceType::kUnset,
                                       form_factor);
 
   window->wrapped_window.tabs.push_back(std::move(tab));

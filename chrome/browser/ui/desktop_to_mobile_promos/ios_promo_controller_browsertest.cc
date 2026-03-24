@@ -63,15 +63,14 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
         desktop_to_ios_promo_receiving_types = {}) {
   auto device_info = std::make_unique<syncer::DeviceInfo>(
       guid, "name", "chrome_version", "user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_PHONE, os_type, form_factor,
-      "scoped_id", "manufacturer", "model", "full_hardware_class",
+      syncer::DeviceInfo::DeviceType::kPhone, os_type, form_factor, "scoped_id",
+      "manufacturer", "model", "full_hardware_class",
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/
       false,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),

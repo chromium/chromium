@@ -23,10 +23,9 @@ class MockSharingService : public SharingService {
 
   ~MockSharingService() override;
 
-  MOCK_CONST_METHOD1(
-      GetDeviceCandidates,
-      std::vector<SharingTargetDeviceInfo>(
-          sync_pb::SharingSpecificFields::EnabledFeatures required_feature));
+  MOCK_CONST_METHOD1(GetDeviceCandidates,
+                     std::vector<SharingTargetDeviceInfo>(
+                         syncer::DeviceInfo::SharingFeature required_feature));
 
   MOCK_METHOD4(
       SendMessageToDevice,

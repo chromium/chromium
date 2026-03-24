@@ -67,8 +67,8 @@ void SharingBrowserTest::SetUpOnMainThread() {
 }
 
 void SharingBrowserTest::Init(
-    sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
-    sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
+    syncer::DeviceInfo::SharingFeature first_device_feature,
+    syncer::DeviceInfo::SharingFeature second_device_feature) {
   ASSERT_TRUE(SetupSync());
 
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());
@@ -88,8 +88,8 @@ void SharingBrowserTest::Init(
 }
 
 void SharingBrowserTest::SetUpDevices(
-    sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
-    sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
+    syncer::DeviceInfo::SharingFeature first_device_feature,
+    syncer::DeviceInfo::SharingFeature second_device_feature) {
   ASSERT_EQ(2u, GetSyncClients().size());
 
   RegisterDevice(0, first_device_feature);
@@ -117,7 +117,7 @@ void SharingBrowserTest::SetUpDevices(
 
 void SharingBrowserTest::RegisterDevice(
     int profile_index,
-    sync_pb::SharingSpecificFields_EnabledFeatures feature) {
+    syncer::DeviceInfo::SharingFeature feature) {
   SharingService* service =
       SharingServiceFactory::GetForBrowserContext(GetProfile(profile_index));
   static_cast<SharingDeviceSourceSync*>(service->GetDeviceSource())
@@ -125,7 +125,7 @@ void SharingBrowserTest::RegisterDevice(
 
   base::RunLoop run_loop;
   service->RegisterDeviceInTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures>{feature},
+      std::set<syncer::DeviceInfo::SharingFeature>{feature},
       base::BindLambdaForTesting([&](SharingDeviceRegistrationResult r) {
         ASSERT_EQ(SharingDeviceRegistrationResult::kSuccess, r);
         run_loop.Quit();

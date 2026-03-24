@@ -34,7 +34,7 @@
 #endif
 
 using instance_id::InstanceID;
-using sync_pb::SharingSpecificFields;
+using SharingFeature = syncer::DeviceInfo::SharingFeature;
 
 SharingDeviceRegistrationImpl::SharingDeviceRegistrationImpl(
     PrefService* pref_service,
@@ -133,8 +133,7 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
-      GetEnabledFeatures();
+  std::set<SharingFeature> enabled_features = GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
       sharing_target_info ? std::move(*sharing_target_info)
                           : syncer::DeviceInfo::SharingTargetInfo(),
@@ -196,36 +195,34 @@ void SharingDeviceRegistrationImpl::OnFCMTokenDeleted(
   NOTREACHED();
 }
 
-std::set<SharingSpecificFields::EnabledFeatures>
-SharingDeviceRegistrationImpl::GetEnabledFeatures() const {
+std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
+    const {
   // Used in tests
   if (enabled_features_testing_value_) {
     return enabled_features_testing_value_.value();
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
+  std::set<SharingFeature> enabled_features;
   if (IsClickToCallSupported()) {
-    enabled_features.insert(SharingSpecificFields::CLICK_TO_CALL_V2);
+    enabled_features.insert(SharingFeature::kClickToCallV2);
   }
   if (IsSharedClipboardSupported()) {
-    enabled_features.insert(SharingSpecificFields::SHARED_CLIPBOARD_V2);
+    enabled_features.insert(SharingFeature::kSharedClipboardV2);
   }
   if (IsSmsFetcherSupported()) {
-    enabled_features.insert(SharingSpecificFields::SMS_FETCHER);
+    enabled_features.insert(SharingFeature::kSmsFetcher);
   }
   if (IsRemoteCopySupported()) {
-    enabled_features.insert(SharingSpecificFields::REMOTE_COPY);
+    enabled_features.insert(SharingFeature::kRemoteCopy);
   }
   if (IsOptimizationGuidePushNotificationSupported()) {
-    enabled_features.insert(
-        SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
+    enabled_features.insert(SharingFeature::kOptimizationGuidePushNotification);
   }
 #if BUILDFLAG(ENABLE_DISCOVERY)
-  enabled_features.insert(SharingSpecificFields::DISCOVERY);
+  enabled_features.insert(SharingFeature::kDiscovery);
 #endif
   if (IsOneTimeTokenBackendNotificationSupported()) {
-    enabled_features.insert(
-        SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION);
+    enabled_features.insert(SharingFeature::kOneTimeTokenBackendNotification);
   }
 
   return enabled_features;
@@ -278,7 +275,7 @@ bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
 }
 
 void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
-    std::set<SharingSpecificFields::EnabledFeatures> enabled_features) {
+    std::set<SharingFeature> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);
 }
 

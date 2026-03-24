@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -29,6 +30,24 @@ syncer::DeviceInfo::OsType ToDeviceInfoOsType(
     const sync_pb::SyncEnums_OsType& os_type);
 
 sync_pb::SyncEnums_OsType ToOsTypeProto(const DeviceInfo::OsType& os_type);
+
+// Conversion functions for DeviceInfo::DeviceType <-> proto.
+DeviceInfo::DeviceType ToDeviceInfoDeviceType(
+    sync_pb::SyncEnums_DeviceType device_type);
+sync_pb::SyncEnums_DeviceType ToDeviceTypeProto(
+    DeviceInfo::DeviceType device_type);
+
+// Conversion functions for DeviceInfo::SendTabReceivingType <-> proto.
+DeviceInfo::SendTabReceivingType ToDeviceInfoSendTabReceivingType(
+    sync_pb::SyncEnums_SendTabReceivingType type);
+sync_pb::SyncEnums_SendTabReceivingType ToSendTabReceivingTypeProto(
+    DeviceInfo::SendTabReceivingType type);
+
+// Conversion functions for DeviceInfo::SharingFeature <-> proto.
+DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
+    sync_pb::SharingSpecificFields_EnabledFeatures feature);
+sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
+    DeviceInfo::SharingFeature feature);
 
 }  // namespace syncer
 

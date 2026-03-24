@@ -7,7 +7,6 @@
 #include "base/rand_util.h"
 #include "base/token.h"
 #include "build/build_config.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,15 +113,14 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     syncer::DeviceInfo::FormFactor form_factor) {
   return std::make_unique<syncer::DeviceInfo>(
       guid, "name", "chrome_version", "user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, os_type, form_factor,
-      "scoped_id", "manufacturer", "model", "full_hardware_class",
+      syncer::DeviceInfo::DeviceType::kLinux, os_type, form_factor, "scoped_id",
+      "manufacturer", "model", "full_hardware_class",
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/
       false,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),

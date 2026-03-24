@@ -60,9 +60,8 @@ class SharingBrowserTest : public SyncTest {
 
   void SetUpOnMainThread() override;
 
-  void Init(
-      sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
-      sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature);
+  void Init(syncer::DeviceInfo::SharingFeature first_device_feature,
+            syncer::DeviceInfo::SharingFeature second_device_feature);
 
   virtual std::string GetTestPageURL() const = 0;
 
@@ -82,12 +81,11 @@ class SharingBrowserTest : public SyncTest {
   PageActionIconView* GetPageActionIconView(PageActionIconType type);
 
  private:
-  void SetUpDevices(
-      sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
-      sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature);
+  void SetUpDevices(syncer::DeviceInfo::SharingFeature first_device_feature,
+                    syncer::DeviceInfo::SharingFeature second_device_feature);
 
   void RegisterDevice(int profile_index,
-                      sync_pb::SharingSpecificFields_EnabledFeatures feature);
+                      syncer::DeviceInfo::SharingFeature feature);
   void AddDeviceInfo(const syncer::DeviceInfo& original_device,
                      int fake_device_id);
 

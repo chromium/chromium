@@ -102,9 +102,9 @@ std::u16string ClickToCallUiController::GetTitle(
   }
 }
 
-sync_pb::SharingSpecificFields::EnabledFeatures
-ClickToCallUiController::GetRequiredFeature() const {
-  return sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2;
+syncer::DeviceInfo::SharingFeature ClickToCallUiController::GetRequiredFeature()
+    const {
+  return syncer::DeviceInfo::SharingFeature::kClickToCallV2;
 }
 
 void ClickToCallUiController::DoUpdateApps(UpdateAppsCallback callback) {

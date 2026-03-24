@@ -120,7 +120,7 @@ class LocalSessionEventHandlerImplTest : public testing::Test {
             Return(ByMove(std::make_unique<NiceMock<MockWriteBatch>>())));
 
     session_tracker_.InitLocalSession(kSessionTag, kSessionName,
-                                      sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+                                      syncer::DeviceInfo::DeviceType::kPhone,
                                       syncer::DeviceInfo::FormFactor::kPhone);
   }
 

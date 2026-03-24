@@ -29,7 +29,6 @@
 #import "components/sync_device_info/device_info.h"
 
 using instance_id::InstanceID;
-using sync_pb::SharingSpecificFields;
 
 IOSSharingDeviceRegistrationImpl::IOSSharingDeviceRegistrationImpl(
     PrefService* pref_service,
@@ -128,7 +127,7 @@ void IOSSharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features =
       GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
       sharing_target_info ? std::move(*sharing_target_info)
@@ -191,18 +190,18 @@ void IOSSharingDeviceRegistrationImpl::OnFCMTokenDeleted(
   NOTREACHED();
 }
 
-std::set<SharingSpecificFields::EnabledFeatures>
+std::set<syncer::DeviceInfo::SharingFeature>
 IOSSharingDeviceRegistrationImpl::GetEnabledFeatures() const {
   // Used in tests
   if (enabled_features_testing_value_) {
     return enabled_features_testing_value_.value();
   }
 
-  std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
+  std::set<syncer::DeviceInfo::SharingFeature> enabled_features;
 
   if (IsOptimizationGuidePushNotificationSupported()) {
     enabled_features.insert(
-        SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
+        syncer::DeviceInfo::SharingFeature::kOptimizationGuidePushNotification);
   }
 
   return enabled_features;
@@ -236,6 +235,6 @@ bool IOSSharingDeviceRegistrationImpl::
 }
 
 void IOSSharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
-    std::set<SharingSpecificFields::EnabledFeatures> enabled_features) {
+    std::set<syncer::DeviceInfo::SharingFeature> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);
 }

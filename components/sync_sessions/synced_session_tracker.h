@@ -25,7 +25,6 @@
 namespace sync_pb {
 class SessionSpecifics;
 enum SyncEnums_BrowserType : int;
-enum SyncEnums_DeviceType : int;
 }  // namespace sync_pb
 
 namespace sync_sessions {
@@ -173,7 +172,7 @@ class SyncedSessionTracker {
   void InitLocalSession(
       const std::string& local_session_tag,
       const std::string& local_session_name,
-      sync_pb::SyncEnums_DeviceType local_device_type,
+      syncer::DeviceInfo::DeviceType local_device_type,
       syncer::DeviceInfo::FormFactor local_device_form_factor);
 
   // Populate the start-time of the local session. This should be called once,

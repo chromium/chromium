@@ -15,7 +15,6 @@
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
@@ -32,11 +31,9 @@ using testing::NiceMock;
 using OsType = syncer::DeviceInfo::OsType;
 using DeviceCountByOsTypeMap = std::map<OsType, int>;
 using syncer::FakeDeviceInfoTracker;
-using DeviceType = sync_pb::SyncEnums::DeviceType;
-using DeviceCountByOsTypeMap = std::map<DeviceInfo::OsType, int>;
+using DeviceType = DeviceInfo::DeviceType;
 
-const sync_pb::SyncEnums_DeviceType kLocalDeviceType =
-    sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
+const DeviceInfo::DeviceType kLocalDeviceType = DeviceInfo::DeviceType::kLinux;
 const DeviceInfo::OsType kLocalDeviceOS = DeviceInfo::OsType::kLinux;
 const DeviceInfo::FormFactor kLocalDeviceFormFactor =
     DeviceInfo::FormFactor::kDesktop;
@@ -54,9 +51,7 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       /*send_tab_to_self_receiving_enabled=*/
       false,
       /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
-      std::nullopt,
+      DeviceInfo::SendTabReceivingType::kChromeOrUnspecified, std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet(),

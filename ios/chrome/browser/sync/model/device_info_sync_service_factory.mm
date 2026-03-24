@@ -64,7 +64,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
+  syncer::DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
     GaiaId gaia_id =
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -73,11 +73,10 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSendTab, gaia_id);
     if (send_tab_notifications_enabled) {
-      return sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION;
+      return syncer::DeviceInfo::SendTabReceivingType::
+          kChromeAndPushNotification;
     }
-    return sync_pb::
-        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
+    return syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified;
   }
 
   // syncer::DeviceInfoSyncClient:
@@ -97,7 +96,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(
         syncer::DeviceInfo::SharingTargetInfo(), representative_target_id,
-        std::set<sync_pb::SharingSpecificFields_EnabledFeatures>());
+        std::set<syncer::DeviceInfo::SharingFeature>());
   }
 
   // syncer::DeviceInfoSyncClient:

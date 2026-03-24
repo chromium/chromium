@@ -4,7 +4,9 @@
 
 #include "components/sync_device_info/device_info_proto_enum_util.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -137,6 +139,126 @@ sync_pb::SyncEnums_OsType ToOsTypeProto(const DeviceInfo::OsType& os_type) {
     case DeviceInfo::OsType::kFuchsia:
       return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_FUCHSIA;
   }
+}
+
+DeviceInfo::DeviceType ToDeviceInfoDeviceType(
+    sync_pb::SyncEnums_DeviceType device_type) {
+  switch (device_type) {
+    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
+      return DeviceInfo::DeviceType::kUnset;
+    case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
+      return DeviceInfo::DeviceType::kWindows;
+    case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
+      return DeviceInfo::DeviceType::kMac;
+    case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
+      return DeviceInfo::DeviceType::kLinux;
+    case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
+      return DeviceInfo::DeviceType::kChromeOS;
+    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
+      return DeviceInfo::DeviceType::kOther;
+    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
+      return DeviceInfo::DeviceType::kPhone;
+    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
+      return DeviceInfo::DeviceType::kTablet;
+  }
+  NOTREACHED();
+}
+
+sync_pb::SyncEnums_DeviceType ToDeviceTypeProto(
+    DeviceInfo::DeviceType device_type) {
+  switch (device_type) {
+    case DeviceInfo::DeviceType::kUnset:
+      return sync_pb::SyncEnums_DeviceType_TYPE_UNSET;
+    case DeviceInfo::DeviceType::kWindows:
+      return sync_pb::SyncEnums_DeviceType_TYPE_WIN;
+    case DeviceInfo::DeviceType::kMac:
+      return sync_pb::SyncEnums_DeviceType_TYPE_MAC;
+    case DeviceInfo::DeviceType::kLinux:
+      return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
+    case DeviceInfo::DeviceType::kChromeOS:
+      return sync_pb::SyncEnums_DeviceType_TYPE_CROS;
+    case DeviceInfo::DeviceType::kOther:
+      return sync_pb::SyncEnums_DeviceType_TYPE_OTHER;
+    case DeviceInfo::DeviceType::kPhone:
+      return sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+    case DeviceInfo::DeviceType::kTablet:
+      return sync_pb::SyncEnums_DeviceType_TYPE_TABLET;
+  }
+  NOTREACHED();
+}
+
+DeviceInfo::SendTabReceivingType ToDeviceInfoSendTabReceivingType(
+    sync_pb::SyncEnums_SendTabReceivingType type) {
+  switch (type) {
+    case sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED:
+      return DeviceInfo::SendTabReceivingType::kChromeOrUnspecified;
+    case sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION:
+      return DeviceInfo::SendTabReceivingType::kChromeAndPushNotification;
+  }
+  NOTREACHED();
+}
+
+sync_pb::SyncEnums_SendTabReceivingType ToSendTabReceivingTypeProto(
+    DeviceInfo::SendTabReceivingType type) {
+  switch (type) {
+    case DeviceInfo::SendTabReceivingType::kChromeOrUnspecified:
+      return sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
+    case DeviceInfo::SendTabReceivingType::kChromeAndPushNotification:
+      return sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION;
+  }
+  NOTREACHED();
+}
+
+DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
+    sync_pb::SharingSpecificFields_EnabledFeatures feature) {
+  switch (feature) {
+    case sync_pb::SharingSpecificFields::UNKNOWN:
+      return DeviceInfo::SharingFeature::kUnknown;
+    case sync_pb::SharingSpecificFields::SMS_FETCHER:
+      return DeviceInfo::SharingFeature::kSmsFetcher;
+    case sync_pb::SharingSpecificFields::REMOTE_COPY:
+      return DeviceInfo::SharingFeature::kRemoteCopy;
+    case sync_pb::SharingSpecificFields::DISCOVERY:
+      return DeviceInfo::SharingFeature::kDiscovery;
+    case sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2:
+      return DeviceInfo::SharingFeature::kClickToCallV2;
+    case sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2:
+      return DeviceInfo::SharingFeature::kSharedClipboardV2;
+    case sync_pb::SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION:
+      return DeviceInfo::SharingFeature::kOptimizationGuidePushNotification;
+    case sync_pb::SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION:
+      return DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification;
+  }
+  NOTREACHED();
+}
+
+sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
+    DeviceInfo::SharingFeature feature) {
+  switch (feature) {
+    case DeviceInfo::SharingFeature::kUnknown:
+      return sync_pb::SharingSpecificFields::UNKNOWN;
+    case DeviceInfo::SharingFeature::kSmsFetcher:
+      return sync_pb::SharingSpecificFields::SMS_FETCHER;
+    case DeviceInfo::SharingFeature::kRemoteCopy:
+      return sync_pb::SharingSpecificFields::REMOTE_COPY;
+    case DeviceInfo::SharingFeature::kDiscovery:
+      return sync_pb::SharingSpecificFields::DISCOVERY;
+    case DeviceInfo::SharingFeature::kClickToCallV2:
+      return sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2;
+    case DeviceInfo::SharingFeature::kSharedClipboardV2:
+      return sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2;
+    case DeviceInfo::SharingFeature::kOptimizationGuidePushNotification:
+      return sync_pb::SharingSpecificFields::
+          OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
+    case DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification:
+      return sync_pb::SharingSpecificFields::
+          ONE_TIME_TOKEN_BACKEND_NOTIFICATION;
+  }
+  NOTREACHED();
 }
 
 }  // namespace syncer

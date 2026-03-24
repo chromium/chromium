@@ -213,7 +213,8 @@ sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
 }
 
 SyncedSession::SyncedSession()
-    : session_tag_("invalid"), device_type(sync_pb::SyncEnums::TYPE_UNSET) {}
+    : session_tag_("invalid"),
+      device_type(syncer::DeviceInfo::DeviceType::kUnset) {}
 
 SyncedSession::~SyncedSession() = default;
 
@@ -250,8 +251,8 @@ const base::Time& SyncedSession::GetModifiedTime() const {
 }
 
 void SyncedSession::SetDeviceTypeAndFormFactor(
-    const sync_pb::SyncEnums::DeviceType& local_device_type,
-    const syncer::DeviceInfo::FormFactor& local_device_form_factor) {
+    syncer::DeviceInfo::DeviceType local_device_type,
+    syncer::DeviceInfo::FormFactor local_device_form_factor) {
   device_type = local_device_type;
   device_form_factor = local_device_form_factor;
 }
@@ -271,7 +272,7 @@ sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
         start_time_->InMillisecondsSinceUnixEpoch());
   }
   header.set_client_name(session_name_);
-  header.set_device_type(device_type);
+  header.set_device_type(syncer::ToDeviceTypeProto(device_type));
   header.set_device_form_factor(ToDeviceFormFactorProto(device_form_factor));
   return header;
 }

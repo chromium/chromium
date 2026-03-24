@@ -31,6 +31,8 @@
 
 namespace {
 
+using SharingFeature = syncer::DeviceInfo::SharingFeature;
+
 const char kSenderIdFCMToken[] = "sharing_fcm_token";
 const char kSenderIdP256dh[] = "sharing_p256dh";
 const char kSenderIdAuthSecret[] = "sharing_auth_secret";
@@ -38,7 +40,7 @@ const char kChimeRepresentativeTargetId[] = "chime_rep_id";
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     const std::string& client_name,
-    sync_pb::SharingSpecificFields::EnabledFeatures enabled_feature,
+    SharingFeature enabled_feature,
     const std::string& manufacturer_name = "manufacturer",
     const std::string& model_name = "model",
     syncer::DeviceInfo::SharingTargetInfo sender_id_target_info =
@@ -49,7 +51,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
 
   return CreateFakeDeviceInfo(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), client_name,
-      std::move(sharing_info), sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      std::move(sharing_info), syncer::DeviceInfo::DeviceType::kLinux,
       syncer::DeviceInfo::OsType::kLinux,
       syncer::DeviceInfo::FormFactor::kDesktop, manufacturer_name, model_name);
 }
@@ -139,12 +141,12 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_SyncDisabled) {
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Ready) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
-  auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto device_info =
+      CreateDeviceInfo("client_name", SharingFeature::kClickToCallV2);
   fake_device_info_tracker_.Add(device_info.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   ASSERT_EQ(1u, devices.size());
   EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
@@ -152,13 +154,11 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Ready) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NotReady) {
   fake_local_device_info_provider_.SetReady(false);
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/false);
-  auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto device_info =
+      CreateDeviceInfo("client_name", SharingFeature::kClickToCallV2);
   fake_device_info_tracker_.Add(device_info.get());
   // Local device needs to be ready for deduplication.
-  EXPECT_TRUE(device_source
-                  ->GetDeviceCandidates(
-                      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2)
+  EXPECT_TRUE(device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2)
                   .empty());
 }
 
@@ -167,37 +167,34 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Deduplicated) {
 
   // Add two devices with the same |client_name| without hardware info.
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_1 = CreateDeviceInfo(
-      "client_name_1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto device_info_1 =
+      CreateDeviceInfo("client_name_1", SharingFeature::kClickToCallV2);
   fake_device_info_tracker_.Add(device_info_1.get());
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_2 = CreateDeviceInfo(
-      "client_name_1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto device_info_2 =
+      CreateDeviceInfo("client_name_1", SharingFeature::kClickToCallV2);
   fake_device_info_tracker_.Add(device_info_2.get());
 
   // Add two devices with the same hardware info.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_3 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 1", "model 1");
+      "model 1", SharingFeature::kClickToCallV2, "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_3.get());
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 1", "model 1");
+      "model 1", SharingFeature::kClickToCallV2, "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_4.get());
 
   // Add a device with the same info as the local device.
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_5 =
-      CreateDeviceInfo(local_device_info_->client_name(),
-                       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-                       local_device_info_->manufacturer_name(),
-                       local_device_info_->model_name());
+  auto device_info_5 = CreateDeviceInfo(local_device_info_->client_name(),
+                                        SharingFeature::kClickToCallV2,
+                                        local_device_info_->manufacturer_name(),
+                                        local_device_info_->model_name());
   fake_device_info_tracker_.Add(device_info_5.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   ASSERT_EQ(2u, devices.size());
   EXPECT_EQ(device_info_4->guid(), devices[0].guid());
   EXPECT_EQ(device_info_2->guid(), devices[1].guid());
@@ -207,30 +204,27 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_DeviceNaming) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_1 = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto device_info_1 =
+      CreateDeviceInfo("client_name", SharingFeature::kClickToCallV2);
   fake_device_info_tracker_.Add(device_info_1.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_2 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 1", "model 1");
+      "model 1", SharingFeature::kClickToCallV2, "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_2.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_3 = CreateDeviceInfo(
-      "model 2", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 1", "model 2");
+      "model 2", SharingFeature::kClickToCallV2, "manufacturer 1", "model 2");
   fake_device_info_tracker_.Add(device_info_3.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 2", "model 1");
+      "model 1", SharingFeature::kClickToCallV2, "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info_4.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   ASSERT_EQ(4u, devices.size());
   EXPECT_EQ(syncer::GetDeviceDisplayNames(device_info_4.get()).short_name,
             devices[0].client_name());
@@ -246,9 +240,8 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
   // Create device in advance so we can forward time before calling
   // GetDeviceCandidates.
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
-  auto device_info = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 2", "model 1");
+  auto device_info = CreateDeviceInfo("model 1", SharingFeature::kClickToCallV2,
+                                      "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info.get());
 
   // Forward time until device expires.
@@ -256,8 +249,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
                                   base::Milliseconds(1));
 
   std::vector<SharingTargetDeviceInfo> candidates =
-      device_source->GetDeviceCandidates(
-          sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
 
   EXPECT_TRUE(candidates.empty());
 }
@@ -265,15 +257,13 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   // Create device in with Click to call feature.
-  auto device_info = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 2", "model 1");
+  auto device_info = CreateDeviceInfo("model 1", SharingFeature::kClickToCallV2,
+                                      "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info.get());
 
   // Requires shared clipboard feature.
   std::vector<SharingTargetDeviceInfo> candidates =
-      device_source->GetDeviceCandidates(
-          sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
+      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
 
   EXPECT_TRUE(candidates.empty());
 }
@@ -284,33 +274,30 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
   // This device will be filtered out because its older than |min_updated_time|.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 = CreateDeviceInfo(
-      "model 3", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 2", "model 3");
+      "model 3", SharingFeature::kClickToCallV2, "manufacturer 2", "model 3");
   fake_device_info_tracker_.Add(device_info_1.get());
 
   // This device will be displayed with its short name.
   task_environment_.FastForwardBy(kSharingDeviceExpiration);
   auto device_info_2 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 1", "model 1");
+      "model 1", SharingFeature::kClickToCallV2, "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_2.get());
 
   // This device will be filtered out since click to call is not enabled.
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_3 = CreateDeviceInfo(
-      "model 1", sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
-      "manufacturer 1", "model 1");
+  auto device_info_3 =
+      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+                       "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_3.get());
 
   // This device will be displayed with its short name.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 = CreateDeviceInfo(
-      "model 2", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer 2", "model 2");
+      "model 2", SharingFeature::kClickToCallV2, "manufacturer 2", "model 2");
   fake_device_info_tracker_.Add(device_info_4.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   ASSERT_EQ(2u, devices.size());
   EXPECT_EQ(device_info_4->guid(), devices[0].guid());
   EXPECT_EQ(syncer::GetDeviceDisplayNames(device_info_4.get()).short_name,
@@ -323,26 +310,24 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NoChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer", "model",
+      "client_name", SharingFeature::kClickToCallV2, "manufacturer", "model",
       /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   EXPECT_TRUE(devices.empty());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer", "model",
+      "client_name", SharingFeature::kClickToCallV2, "manufacturer", "model",
       /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
 
   // FCM channel is not supported.
   ASSERT_EQ(0u, devices.size());
@@ -351,13 +336,12 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-      "manufacturer", "model",
+      "client_name", SharingFeature::kClickToCallV2, "manufacturer", "model",
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret});
   fake_device_info_tracker_.Add(device_info.get());
 
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  auto devices =
+      device_source->GetDeviceCandidates(SharingFeature::kClickToCallV2);
   ASSERT_EQ(1u, devices.size());
   EXPECT_EQ(device_info->guid(), devices[0].guid());
 }

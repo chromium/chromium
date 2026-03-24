@@ -99,7 +99,7 @@ TEST_F(SharingUtilsTest, GetFCMChannel) {
       syncer::DeviceInfo::SharingInfo(
           {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
           /*chime_representative_target_id=*/std::string(),
-          std::set<sync_pb::SharingSpecificFields::EnabledFeatures>()));
+          std::set<syncer::DeviceInfo::SharingFeature>()));
 
   auto fcm_channel = GetFCMChannel(*device_info);
 
@@ -112,28 +112,28 @@ TEST_F(SharingUtilsTest, GetFCMChannel) {
 TEST_F(SharingUtilsTest, GetDevicePlatform) {
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_CROS,
+                syncer::DeviceInfo::DeviceType::kChromeOS,
                 syncer::DeviceInfo::OsType::kChromeOsAsh,
                 syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kChromeOS);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+                syncer::DeviceInfo::DeviceType::kLinux,
                 syncer::DeviceInfo::OsType::kLinux,
                 syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kLinux);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_MAC,
+                syncer::DeviceInfo::DeviceType::kMac,
                 syncer::DeviceInfo::OsType::kMac,
                 syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kMac);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+                syncer::DeviceInfo::DeviceType::kWindows,
                 syncer::DeviceInfo::OsType::kWindows,
                 syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kWindows);
@@ -141,40 +141,40 @@ TEST_F(SharingUtilsTest, GetDevicePlatform) {
   EXPECT_EQ(
       GetDevicePlatform(*CreateFakeDeviceInfo(
           kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+          syncer::DeviceInfo::DeviceType::kPhone,
           syncer::DeviceInfo::OsType::kIOS,
           syncer::DeviceInfo::FormFactor::kPhone, "Apple Inc.", "iPhone 50")),
       SharingDevicePlatform::kIOS);
   EXPECT_EQ(
       GetDevicePlatform(*CreateFakeDeviceInfo(
           kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+          syncer::DeviceInfo::DeviceType::kTablet,
           syncer::DeviceInfo::OsType::kIOS,
           syncer::DeviceInfo::FormFactor::kTablet, "Apple Inc.", "iPad 99")),
       SharingDevicePlatform::kIOS);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+                syncer::DeviceInfo::DeviceType::kPhone,
                 syncer::DeviceInfo::OsType::kAndroid,
                 syncer::DeviceInfo::FormFactor::kPhone, "Google", "Pixel 777")),
             SharingDevicePlatform::kAndroid);
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+                syncer::DeviceInfo::DeviceType::kTablet,
                 syncer::DeviceInfo::OsType::kAndroid,
                 syncer::DeviceInfo::FormFactor::kTablet, "Google", "Pixel Z")),
             SharingDevicePlatform::kAndroid);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_UNSET,
+                syncer::DeviceInfo::DeviceType::kUnset,
                 syncer::DeviceInfo::OsType::kUnknown,
                 syncer::DeviceInfo::FormFactor::kUnknown)),
             SharingDevicePlatform::kUnknown);
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_OTHER,
+                syncer::DeviceInfo::DeviceType::kOther,
                 syncer::DeviceInfo::OsType::kUnknown,
                 syncer::DeviceInfo::FormFactor::kUnknown)),
             SharingDevicePlatform::kUnknown);
