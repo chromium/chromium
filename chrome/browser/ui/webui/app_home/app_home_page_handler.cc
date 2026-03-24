@@ -587,6 +587,22 @@ void AppHomePageHandler::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
   page_->UpdateApp(CreateAppInfoPtrFromWebApp(app_id, /*is_update=*/true));
 }
 
+void AppHomePageHandler::OnWebAppMigrated(const webapps::AppId& source_app_id,
+                                          const webapps::AppId& target_app_id) {
+  // The target app HAS to be in a valid state to be shown to the user. Whether
+  // the source app exists or not is of no concern, as `RemoveApp()` will clean
+  // it up anyway, even if it's left behind.
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          target_app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
+
+  auto source_app_info = app_home::mojom::AppInfo::New();
+  source_app_info->id = source_app_id;
+  page_->RemoveApp(std::move(source_app_info));
+  page_->AddApp(CreateAppInfoPtrFromWebApp(target_app_id));
+}
+
 void AppHomePageHandler::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
 }

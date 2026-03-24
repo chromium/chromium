@@ -73,6 +73,8 @@ class AppHomePageHandler
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
+  void OnWebAppMigrated(const webapps::AppId& source_app_id,
+                        const webapps::AppId& target_app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // extensions::ExtensionRegistryObserver:
