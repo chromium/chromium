@@ -73,7 +73,10 @@ class HandoffObserver : public BrowserCollectionObserver,
   // activated browser, or nullptr if no browsers exist.
   raw_ptr<BrowserWindowInterface> active_browser_ = nullptr;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/495682093): remove when the HandoffObserver is no
+  // longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
 
   // Instances of this class should be owned by their |delegate_|.
