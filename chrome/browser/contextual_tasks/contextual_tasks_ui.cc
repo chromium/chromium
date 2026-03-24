@@ -1357,7 +1357,7 @@ void ContextualTasksUI::CreatePageHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   contextual_tasks_internals_page_handler_ =
       std::make_unique<ContextualTasksInternalsPageHandler>(
-          contextual_tasks_service, optimization_guide_keyed_service,
+          profile, contextual_tasks_service, optimization_guide_keyed_service,
           std::move(receiver), std::move(page));
 }
 

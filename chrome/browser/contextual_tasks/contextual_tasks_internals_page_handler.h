@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
 
 class OptimizationGuideKeyedService;
 
@@ -23,6 +26,7 @@ class ContextualTasksInternalsPageHandler
       public OptimizationGuideLogger::Observer {
  public:
   ContextualTasksInternalsPageHandler(
+      Profile* profile,
       contextual_tasks::ContextualTasksContextService* context_service,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
       mojo::PendingReceiver<contextual_tasks_internals::mojom::
@@ -44,6 +48,7 @@ class ContextualTasksInternalsPageHandler
   void SetForcedEmbeddedPageHost(const GURL& host) override;
   void GetForcedEmbeddedPageHost(
       GetForcedEmbeddedPageHostCallback callback) override;
+  void GetEligibilityState(GetEligibilityStateCallback callback) override;
 
   // OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,
@@ -53,6 +58,7 @@ class ContextualTasksInternalsPageHandler
                          const std::string& message) override;
 
  private:
+  raw_ptr<Profile> profile_;
   raw_ptr<contextual_tasks::ContextualTasksContextService> context_service_;
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
   mojo::Receiver<

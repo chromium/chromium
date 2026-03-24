@@ -238,3 +238,66 @@ tbody tr:hover {
   border: 1px solid var(--cr-separator-color);
   word-break: break-all;
 }
+
+/* Eligibility Tab */
+.eligibility-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eligibility-status {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.eligibility-status.eligible {
+  background-color: rgba(52, 168, 83, 0.1);
+  color: rgb(24, 128, 56);
+  border: 1px solid rgba(52, 168, 83, 0.3);
+}
+
+.eligibility-status.ineligible {
+  background-color: rgba(234, 67, 53, 0.1);
+  color: rgb(197, 34, 31);
+  border: 1px solid rgba(234, 67, 53, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .eligibility-status.eligible {
+    background-color: rgba(129, 201, 149, 0.15);
+    color: rgb(129, 201, 149);
+    border-color: rgba(129, 201, 149, 0.3);
+  }
+
+  .eligibility-status.ineligible {
+    background-color: rgba(242, 139, 130, 0.15);
+    color: rgb(242, 139, 130);
+    border-color: rgba(242, 139, 130, 0.3);
+  }
+}
+
+.eligibility-reasons h3 {
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--cr-primary-text-color);
+}
+
+.eligibility-reasons ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.eligibility-reasons li {
+  padding: 4px 0;
+  border: none;
+  font-size: 13px;
+}
+
+.eligibility-reasons li:hover {
+  background-color: transparent;
+}
