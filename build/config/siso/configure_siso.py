@@ -62,6 +62,9 @@ def main():
   parser.add_argument("--reapi_backend_config_path",
                       help="REAPI backend config path. relative to " +
                       "backend_config dir or absolute path.")
+  parser.add_argument("--credential-helper",
+                      help="The credential helper to use for authenticating. " +
+                      "May be a binary on the PATH or an absolute path.")
   parser.add_argument("--get-siso-project",
                       help="Print the currently configured siso project to "
                       "stdout",
@@ -92,6 +95,8 @@ def main():
     f.write("SISO_REAPI_INSTANCE=%s\n" % reapi_instance)
     if reapi_address:
       f.write("SISO_REAPI_ADDRESS=%s\n" % reapi_address)
+    if args.credential_helper:
+      f.write("SISO_CREDENTIAL_HELPER=%s\n" % args.credential_helper)
 
   reapi_backend_config_path = args.reapi_backend_config_path
   if project and not reapi_backend_config_path:
