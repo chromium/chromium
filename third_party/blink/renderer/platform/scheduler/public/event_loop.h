@@ -101,6 +101,8 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   class PLATFORM_EXPORT PauseMicrotasksHandle {
    public:
     ~PauseMicrotasksHandle();
+    PauseMicrotasksHandle(const PauseMicrotasksHandle& r) = delete;
+    PauseMicrotasksHandle& operator=(const PauseMicrotasksHandle& r) = delete;
 
    private:
     friend class EventLoop;
