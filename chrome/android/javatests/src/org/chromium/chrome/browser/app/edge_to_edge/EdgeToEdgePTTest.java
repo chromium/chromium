@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -66,6 +67,7 @@ public class EdgeToEdgePTTest {
     /** Test that show the bottom controls by showing tab in group from context menu. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/490315962")
     public void openNewTabInGroupAtPageBottom() {
         ThreadUtils.runOnUiThread(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
