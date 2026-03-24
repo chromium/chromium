@@ -271,7 +271,9 @@ void PaintTiming::MarkPaintTimingInternal() {
   pending_paint_events_.clear();
 
   FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  if (!widget) {
+  // Unit tests with a `callback_manager_` don't have a `widget`, but they rely
+  // on getting presentation time feedback.
+  if (!widget && !callback_manager_) {
     return;
   }
 
@@ -280,9 +282,10 @@ void PaintTiming::MarkPaintTimingInternal() {
   // (RecordRenderingUpdateEndTime resets the |current frame timing info| inside
   // AnimationFrameTimingMonitor, so it reads a bit different from the spec).
   AnimationFrameTimingInfo* frame_timing_info =
-      GetFrame()->IsLocalRoot() ? widget->RecordRenderingUpdateEndTime(
-                                      last_rendering_update_end_time_)
-                                : nullptr;
+      widget && GetFrame()->IsLocalRoot()
+          ? widget->RecordRenderingUpdateEndTime(
+                last_rendering_update_end_time_)
+          : nullptr;
 
   if (paint_timing_record.paint_events.empty() && !frame_timing_info &&
       !add_painted_images_element_timing_entries && !add_painted_text_entries &&
@@ -467,6 +470,7 @@ void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
 
 void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(fmp_detector_);
+  visitor->Trace(callback_manager_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -543,8 +547,17 @@ void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
   // ReportPresentationTime will queue a presentation-promise, the callback is
   // called when the compositor submission of the current render frame completes
   // or fails to happen.
-  if (!GetFrame() || !GetFrame()->GetPage())
+  if (!GetFrame() || !GetFrame()->GetPage()) {
     return;
+  }
+
+  // `callback_manager_` is set in some unit tests to control when presentation
+  // callbacks run.
+  if (callback_manager_) {
+    callback_manager_->RegisterCallback(std::move(callback));
+    return;
+  }
+
   GetFrame()->GetPage()->GetChromeClient().NotifyPresentationTime(
       *GetFrame(), std::move(callback));
 }

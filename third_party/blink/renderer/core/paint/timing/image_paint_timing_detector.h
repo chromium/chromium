@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Copyright 2018 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_
 
@@ -19,7 +15,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -40,7 +35,6 @@ class LayoutObject;
 class LocalFrameView;
 class PropertyTreeStateOrAlias;
 class Image;
-class PaintTimingCallbackManager;
 class StyleImage;
 struct DOMPaintTimingInfo;
 
@@ -233,9 +227,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // do nothing after this method is called, and is now just waiting to be
   // GarbageCollected.
   void StopRecordEntries();
-  void ResetCallbackManager(PaintTimingCallbackManager* manager) {
-    callback_manager_ = manager;
-  }
 
   void ReportPresentationTime(uint32_t last_queued_frame_index,
                               base::TimeTicks);
@@ -299,7 +290,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   ImageRecordsManager records_manager_;
   Member<LocalFrameView> frame_view_;
-  Member<PaintTimingCallbackManager> callback_manager_;
 };
 }  // namespace blink
 

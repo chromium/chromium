@@ -112,6 +112,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   }
   TextRecord* LargestTextForTest() const { return largest_text_; }
 
+  void SetDelegateForTest(Delegate* delegate) { delegate_ = delegate; }
+
  private:
   friend class LargestContentfulPaintCalculatorTest;
 

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
@@ -70,16 +69,9 @@ OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
   SendRectsToHud();
 
   added_entry_in_latest_frame_ = false;
-  auto callback =
-      blink::BindOnce(&TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
-                      WrapWeakPersistent(this), frame_index_++);
-  if (!callback_manager_) {
-    return callback;
-  }
-
-  // This is for unit-tests only.
-  callback_manager_->RegisterCallback(std::move(callback));
-  return std::nullopt;
+  return blink::BindOnce(
+      &TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
+      WrapWeakPersistent(this), frame_index_++);
 }
 
 void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
@@ -237,7 +229,6 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 }
 
 void TextPaintTimingDetector::Trace(Visitor* visitor) const {
-  visitor->Trace(callback_manager_);
   visitor->Trace(frame_view_);
   visitor->Trace(text_element_timing_);
   visitor->Trace(rewalkable_set_);
