@@ -280,8 +280,11 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
 
 void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
                                          GlicInvokeOptions options) {
-  if (!tab) {
-    // TODO(crbug.com/483387751): Add error handling for empty tab case.
+  if (!tab || !GlicInstanceHelper::From(tab)) {
+    if (options.on_error) {
+      std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
+    }
+    // TODO(crbug.com/483387751): Show default toast here once implemented.
     return;
   }
 
