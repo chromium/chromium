@@ -77,7 +77,8 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment"
         android:key="autofill_payment_methods"
         android:order="14"
-        android:title="@string/autofill_payment_methods"/>
+        android:title="@string/autofill_payment_methods"
+        app:keywords="@string/autofill_payment_methods_keywords"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment"
         android:key="autofill_addresses"

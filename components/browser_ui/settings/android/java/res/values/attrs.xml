@@ -29,4 +29,13 @@ found in the LICENSE file.
         <!-- The layout resource ID to inflate into the expanded area. -->
         <attr name="expandedContentLayout" format="reference" />
     </declare-styleable>
+
+    <!-- Attributes for preference settings. -->
+    <declare-styleable name="Settings">
+        <attr name="android:title" />
+        <attr name="android:key" />
+        <attr name="android:summary" />
+        <attr name="android:fragment" />
+        <attr name="keywords" format="string" />
+    </declare-styleable>
 </resources>

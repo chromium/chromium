@@ -17,6 +17,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.R;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class PreferenceParser {
     public static final String METADATA_TITLE = "title";
     public static final String METADATA_SUMMARY = "summary";
     public static final String METADATA_FRAGMENT = "fragment";
+    public static final String METADATA_KEYWORDS = "keywords";
 
     private static final String TAG = "PreferenceParser";
     private static final String ID_DELIMITER = "#";
@@ -77,34 +79,27 @@ public class PreferenceParser {
                     && !"PreferenceScreen".equals(tagName)
                     && !tagName.equals(TEXT_MESSAGE_PREFERENCE_CLASS)) {
                 AttributeSet attrs = Xml.asAttributeSet(parser);
-                int[] androidAttrIds =
-                        new int[] {
-                            android.R.attr.title,
-                            android.R.attr.key,
-                            android.R.attr.summary,
-                            android.R.attr.fragment
-                        };
-                TypedArray androidAttributes =
-                        context.obtainStyledAttributes(attrs, androidAttrIds);
+                TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.Settings);
                 try {
-                    String title = androidAttributes.getString(0);
+                    String title = ta.getString(R.styleable.Settings_android_title);
                     if ("PreferenceCategory".equals(tagName)) {
                         header = title;
                     } else {
-                        String key = androidAttributes.getString(1);
-                        String summary = androidAttributes.getString(2);
-                        String fragment = androidAttributes.getString(3);
-
+                        String key = ta.getString(R.styleable.Settings_android_key);
+                        String summary = ta.getString(R.styleable.Settings_android_summary);
+                        String fragment = ta.getString(R.styleable.Settings_android_fragment);
+                        String keywords = ta.getString(R.styleable.Settings_keywords);
                         Bundle preferenceBundle = new Bundle();
                         preferenceBundle.putString(METADATA_HEADER, header);
                         preferenceBundle.putString(METADATA_KEY, key);
                         preferenceBundle.putString(METADATA_TITLE, title);
                         preferenceBundle.putString(METADATA_SUMMARY, summary);
                         preferenceBundle.putString(METADATA_FRAGMENT, fragment);
+                        preferenceBundle.putString(METADATA_KEYWORDS, keywords);
                         preferenceBundles.add(preferenceBundle);
                     }
                 } finally {
-                    androidAttributes.recycle();
+                    ta.recycle();
                 }
             }
             eventType = parser.next();
@@ -169,6 +164,7 @@ public class PreferenceParser {
                             .setHeader(bundle.getString(METADATA_HEADER))
                             .setSummary(bundle.getString(METADATA_SUMMARY))
                             .setFragment(bundle.getString(METADATA_FRAGMENT))
+                            .setKeywords(bundle.getString(METADATA_KEYWORDS))
                             .setArguments(finalExtras)
                             .setIsSearchable(isSearchable)
                             .build());

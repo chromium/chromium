@@ -39,6 +39,7 @@ public class SettingsIndexData {
     public static final int EXACT_TITLE_MATCH = 10;
     public static final int PARTIAL_TITLE_MATCH = 5;
     public static final int PARTIAL_SUMMARY_MATCH = 3;
+    public static final int PARTIAL_KEYWORD_MATCH = 2;
 
     // Regular expression to remove diacritics.
     private static final Pattern STRIP_ACCENTS_PATTERN = Pattern.compile("\\p{M}");
@@ -118,6 +119,9 @@ public class SettingsIndexData {
         /** Package path name if the entry is Fragment. Otherwise {@code null}. */
         public final @Nullable String fragment;
 
+        /** List of keywords relevant to the preference entry. */
+        public final @Nullable String @Nullable [] keywords;
+
         /** Key of the preference/fragment to highlight if it is not the same as {@code key}. */
         public final @Nullable String highlightKey;
 
@@ -149,6 +153,7 @@ public class SettingsIndexData {
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
+                @Nullable String @Nullable [] keywords,
                 @Nullable String highlightKey,
                 int subViewPos,
                 Bundle extras,
@@ -162,6 +167,7 @@ public class SettingsIndexData {
             this.header = header;
             this.summary = summary;
             this.fragment = fragment;
+            this.keywords = keywords;
             this.highlightKey = highlightKey;
             this.subViewPos = subViewPos;
             this.extras = extras;
@@ -178,6 +184,7 @@ public class SettingsIndexData {
             title = in.readString();
             summary = in.readString();
             fragment = in.readString();
+            keywords = in.createStringArray();
             highlightKey = in.readString();
             subViewPos = in.readInt();
             header = in.readString();
@@ -197,6 +204,7 @@ public class SettingsIndexData {
             dest.writeString(title);
             dest.writeString(summary);
             dest.writeString(fragment);
+            dest.writeStringArray(keywords);
             dest.writeString(highlightKey);
             dest.writeInt(subViewPos);
             dest.writeString(header);
@@ -236,6 +244,7 @@ public class SettingsIndexData {
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
+            private @Nullable String @Nullable [] mKeywords;
             private @Nullable String mHighlightKey;
             private int mSubViewPos;
             private Bundle mExtras;
@@ -271,6 +280,7 @@ public class SettingsIndexData {
                 mHeader = original.header;
                 mSummary = original.summary;
                 mFragment = original.fragment;
+                mKeywords = original.keywords;
                 mHighlightKey = original.highlightKey;
                 mSubViewPos = original.subViewPos;
                 mExtras = original.extras;
@@ -296,6 +306,14 @@ public class SettingsIndexData {
 
             public Builder setFragment(@Nullable String fragment) {
                 mFragment = fragment;
+                return this;
+            }
+
+            public Builder setKeywords(@Nullable String keywords) {
+                mKeywords =
+                        keywords != null
+                                ? assumeNonNull(normalizeString(keywords)).split("\\s*,\\s*")
+                                : null;
                 return this;
             }
 
@@ -335,6 +353,7 @@ public class SettingsIndexData {
                         mHeader,
                         mSummary,
                         mFragment,
+                        mKeywords,
                         mHighlightKey,
                         mSubViewPos,
                         mExtras,
@@ -975,6 +994,16 @@ public class SettingsIndexData {
 
             if (entry.mSummaryNormalized != null && entry.mSummaryNormalized.contains(query)) {
                 results.addItem(entry, PARTIAL_SUMMARY_MATCH);
+                continue;
+            }
+
+            if (entry.keywords != null) {
+                for (String keyword : entry.keywords) {
+                    if (keyword != null && keyword.contains(query)) {
+                        results.addItem(entry, PARTIAL_KEYWORD_MATCH);
+                        break;
+                    }
+                }
             }
         }
         return results;
