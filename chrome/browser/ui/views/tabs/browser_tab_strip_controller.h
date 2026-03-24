@@ -142,7 +142,7 @@ class BrowserTabStripController : public TabStripController,
   const BrowserFrameView* GetFrameView() const;
 
   // Adds tabs to the view model.
-  void AddTabs(std::vector<std::pair<tabs::TabInterface*, int>> contents_list);
+  void AddTabs(const std::vector<TabStrip::AddTabData>& tabs_data);
 
   void OnDiscardRingTreatmentEnabledChanged();
 
