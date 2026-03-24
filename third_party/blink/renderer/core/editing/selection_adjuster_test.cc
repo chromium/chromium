@@ -584,4 +584,68 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionWithNextNonEditableNode) {
   EXPECT_EQ(adjusted_selection.Focus(), editing_selection.Focus());
 }
 
+// Regression test for crbug.com/491521135: AdjustSelectionType should not
+// crash with inverted positions from slotted contenteditable elements.
+TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithSlottedEditableContent) {
+  SetBodyContent(R"HTML(
+    <div id="host">
+      <span id="slotted2" slot="s2" contenteditable="plaintext-only">Slotted2</span>
+      <span id="slotted1" slot="s1">Slotted1</span>
+    </div>)HTML");
+  SetShadowContent(R"HTML(
+    <slot name="s1"></slot>
+    <slot name="s2"></slot>)HTML",
+                   "host");
+
+  Element* slotted1 = GetElementById("slotted1");
+  Element* slotted2 = GetElementById("slotted2");
+  const Position& base = Position(slotted1->firstChild(), 0);
+  // Use the full text length of "Slotted2" as the extent offset.
+  const Position& extent = Position(
+      slotted2->firstChild(), slotted2->firstChild()->textContent().length());
+  const SelectionInDOMTree& selection =
+      SelectionInDOMTree::Builder().Collapse(base).Extend(extent).Build();
+
+  const SelectionInDOMTree& editing_selection =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+
+  const SelectionInDOMTree& adjusted =
+      SelectionAdjuster::AdjustSelectionType(editing_selection);
+  EXPECT_FALSE(adjusted.IsNone());
+}
+
+// Flat-tree variant of the above regression test.
+TEST_F(SelectionAdjusterTest,
+       AdjustSelectionTypeWithSlottedEditableContentInFlatTree) {
+  SetBodyContent(R"HTML(
+    <div id="host">
+      <span id="slotted2" slot="s2" contenteditable="plaintext-only">Slotted2</span>
+      <span id="slotted1" slot="s1">Slotted1</span>
+    </div>)HTML");
+  SetShadowContent(R"HTML(
+    <slot name="s1"></slot>
+    <slot name="s2"></slot>)HTML",
+                   "host");
+
+  Element* slotted1 = GetElementById("slotted1");
+  Element* slotted2 = GetElementById("slotted2");
+  const PositionInFlatTree& base =
+      PositionInFlatTree(*slotted1->firstChild(), 0);
+  // Use the full text length of "Slotted2" as the extent offset.
+  const PositionInFlatTree& extent = PositionInFlatTree(
+      *slotted2->firstChild(), slotted2->firstChild()->textContent().length());
+  const SelectionInFlatTree& selection =
+      SelectionInFlatTree::Builder().Collapse(base).Extend(extent).Build();
+
+  const SelectionInFlatTree& editing_selection =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+
+  // Should not crash.
+  const SelectionInFlatTree& adjusted =
+      SelectionAdjuster::AdjustSelectionType(editing_selection);
+  EXPECT_FALSE(adjusted.IsNone());
+}
+
 }  // namespace blink

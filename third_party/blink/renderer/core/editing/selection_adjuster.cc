@@ -801,6 +801,13 @@ class SelectionTypeAdjuster final {
         CanonicalPositionOf(backward_end_position).IsNull()) {
       backward_end_position = range.EndPosition();
     }
+    // After the canonicalization above, the start and end positions may become
+    // inverted when the selection crosses editing boundaries in shadow DOM with
+    // slotted content. Fall back to the original range positions in this case.
+    if (forward_start_position > backward_end_position) {
+      forward_start_position = range.StartPosition();
+      backward_end_position = range.EndPosition();
+    }
     const EphemeralRangeTemplate<Strategy> minimal_range(forward_start_position,
                                                          backward_end_position);
     if (minimal_range.IsCollapsed() || selection.IsAnchorFirst()) {
