@@ -4,18 +4,24 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -30,18 +36,46 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
+namespace {
+
+MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
+
+}  // namespace
+
 // Fixture for testing ToolbarMediator.
 class ToolbarMediatorTest : public PlatformTest,
                             public testing::WithParamInterface<BOOL> {
  protected:
   ToolbarMediatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
 
+    scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
+
+    browser_coordinator_handler_ =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browser_coordinator_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    page_side_swipe_handler_ =
+        OCMProtocolMock(@protocol(PageSideSwipeCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:page_side_swipe_handler_
+                     forProtocol:@protocol(PageSideSwipeCommands)];
+
+    BrowserActionFactory* action_factory_ =
+        [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
+                                             scenario:kTestMenuScenario];
     mediator_ = [[ToolbarMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()
+               actionFactory:action_factory_
         fullscreenController:TestFullscreenController::FromBrowser(
                                  browser_.get())
                  topPosition:GetParam()];
@@ -50,12 +84,6 @@ class ToolbarMediatorTest : public PlatformTest,
 
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     [mediator_ setConsumer:consumer_];
-
-    page_side_swipe_handler_ =
-        OCMProtocolMock(@protocol(PageSideSwipeCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:page_side_swipe_handler_
-                     forProtocol:@protocol(PageSideSwipeCommands)];
   }
 
   // Returns a new fake web state and set the fake navigation manager to the
@@ -86,12 +114,15 @@ class ToolbarMediatorTest : public PlatformTest,
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ToolbarMediator* mediator_;
   id consumer_;
   id page_side_swipe_handler_;
+  id scene_handler_;
+  id browser_coordinator_handler_;
   raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
 };
 

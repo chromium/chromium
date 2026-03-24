@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_drs_view_controller.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -1116,8 +1118,13 @@
   CHECK(IsChromeNextIaEnabled());
 
   Browser* browser = self.browser;
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:browser
+             scenario:kMenuScenarioHistogramToolbarMenu];
+
   ToolbarMediator* toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
+             actionFactory:actionFactory
       fullscreenController:FullscreenController::FromBrowser(browser)
                topPosition:topPosition];
   toolbarMediator.incognito = self.profile->IsOffTheRecord();

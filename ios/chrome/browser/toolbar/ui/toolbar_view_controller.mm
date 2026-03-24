@@ -45,7 +45,9 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   ToolbarButton* _stopButton;
   ToolbarButton* _shareButton;
   ToolbarButton* _assistantButton;
+  UIMenu* _assistantButtonMenu;
   ToolbarButton* _tabGridButton;
+  UIMenu* _tabGridButtonMenu;
   ToolbarButton* _toolsMenuButton;
 
   // Dynamic container for the `_backButton` and `_forwardButton` Toolbar
@@ -218,15 +220,21 @@ constexpr CGFloat kAnimationDuration = 0.2f;
       _forwardButtonMenu = menu;
       _forwardButton.menu = menu;
       return;
+    case ToolbarButtonTypeAssistant:
+      /// TODO(crbug.com/484000556): Add a context menu for the assistant button
+      /// when it is implemented (iPad).
+      _assistantButtonMenu = menu;
+      _assistantButton.menu = menu;
+      return;
+    case ToolbarButtonTypeTabGrid:
+      /// TODO:(crbug.com/493948951): Support this menu when the implementation
+      /// is working.
+      _tabGridButtonMenu = menu;
+      _tabGridButton.menu = menu;
+      return;
     case ToolbarButtonTypeReload:
     case ToolbarButtonTypeStop:
     case ToolbarButtonTypeShare:
-    case ToolbarButtonTypeAssistantButton:
-      /// TODO(crbug.com/484000556): Add a context menu for the assistant button
-      /// when it is implemented (iPad).
-    case ToolbarButtonTypeTabGrid:
-      /// TODO(crbug.com/493948951): Add a context menu for the tab grid button
-      /// (iPad).
     case ToolbarButtonTypeTools:
       NOTIMPLEMENTED() << "This button does not have a context menu";
       return;

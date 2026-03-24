@@ -85,11 +85,20 @@
   FullscreenController* incognitoFullscreenController =
       FullscreenController::FromBrowser(_incognitoBrowser);
 
+  BrowserActionFactory* regularActionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:_regularBrowser
+             scenario:kMenuScenarioHistogramToolbarMenu];
+  BrowserActionFactory* incognitoActionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:_incognitoBrowser
+             scenario:kMenuScenarioHistogramToolbarMenu];
+
   _mediator = [[AppBarMediator alloc]
         initWithRegularWebStateList:_regularBrowser->GetWebStateList()
               incognitoWebStateList:_incognitoBrowser->GetWebStateList()
         regularFullscreenController:regularFullscreenController
       incognitoFullscreenController:incognitoFullscreenController
+               regularActionFactory:regularActionFactory
+             incognitoActionFactory:incognitoActionFactory
                         prefService:profile->GetPrefs()
                  templateURLService:ios::TemplateURLServiceFactory::
                                         GetForProfile(
@@ -105,12 +114,6 @@
                                         _regularBrowser)
                        tabGridState:sceneState.tabGridState
                      incognitoState:sceneState.incognitoState];
-  _mediator.regularActionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:_regularBrowser
-             scenario:kMenuScenarioHistogramToolbarMenu];
-  _mediator.incognitoActionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:_incognitoBrowser
-             scenario:kMenuScenarioHistogramToolbarMenu];
   _mediator.sceneHandler = sceneHandler;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.settingsHandler =
@@ -187,11 +190,12 @@
                                            ? FullscreenController::FromBrowser(
                                                  incognitoBrowser)
                                            : nullptr];
-  _mediator.incognitoActionFactory =
-      incognitoBrowser ? [[BrowserActionFactory alloc]
-                             initWithBrowser:incognitoBrowser
-                                    scenario:kMenuScenarioHistogramToolbarMenu]
-                       : nil;
+  [_mediator setIncognitoActionFactory:
+                 incognitoBrowser
+                     ? [[BrowserActionFactory alloc]
+                           initWithBrowser:incognitoBrowser
+                                  scenario:kMenuScenarioHistogramToolbarMenu]
+                     : nil];
   CommandDispatcher* incognitoDispatcher =
       incognitoBrowser ? _incognitoBrowser->GetCommandDispatcher() : nil;
   _mediator.incognitoTabGroupsCommands =

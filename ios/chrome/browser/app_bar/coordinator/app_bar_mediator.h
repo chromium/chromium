@@ -65,12 +65,6 @@ class WebStateList;
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer, FullscreenUIElement> consumer;
 
-// The regular actions factory.
-@property(nonatomic, strong) BrowserActionFactory* regularActionFactory;
-
-// The incognito actions factory.
-@property(nonatomic, strong) BrowserActionFactory* incognitoActionFactory;
-
 // Initializes the mediator with the two web state lists.
 - (instancetype)
       initWithRegularWebStateList:(WebStateList*)regularWebStateList
@@ -79,6 +73,8 @@ class WebStateList;
           (FullscreenController*)regularFullscreenController
     incognitoFullscreenController:
         (FullscreenController*)incognitoFullscreenController
+             regularActionFactory:(BrowserActionFactory*)regularActionFactory
+           incognitoActionFactory:(BrowserActionFactory*)incognitoActionFactory
                       prefService:(PrefService*)prefService
                templateURLService:(TemplateURLService*)templateURLService
             authenticationService:(AuthenticationService*)authenticationService
@@ -98,6 +94,9 @@ class WebStateList;
 // Resets the incognito fullscreen controller.
 - (void)setIncognitoFullscreenController:
     (FullscreenController*)fullscreenController;
+
+// Resets the incognito action factory.
+- (void)setIncognitoActionFactory:(BrowserActionFactory*)incognitoActionFactory;
 
 // Disconnects the mediator from the coordinator.
 - (void)disconnect;

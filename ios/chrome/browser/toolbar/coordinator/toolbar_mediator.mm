@@ -4,34 +4,30 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
-#import "base/strings/sys_string_conversions.h"
+#import "base/notimplemented.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/favicon/favicon_status.h"
-#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 @interface ToolbarMediator () <BooleanObserver,
                                CRWWebStateObserver,
+                               ToolbarButtonMenuFactoryDelegate,
                                WebStateListObserving>
 @end
 
@@ -41,6 +37,7 @@
   std::unique_ptr<ActiveWebStateObservationForwarder>
       _activeWebStateObservationForwarder;
   std::unique_ptr<web::WebStateObserverBridge> _activeWebStateObserver;
+  ToolbarButtonMenuFactory* _buttonMenuFactory;
   // Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
   // Whether this mediator is tracking a toolbar at the top position.
@@ -52,6 +49,7 @@
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                       actionFactory:(BrowserActionFactory*)actionFactory
                 fullscreenController:(FullscreenController*)fullscreenController
                          topPosition:(BOOL)topPosition {
   self = [super init];
@@ -65,6 +63,12 @@
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
             webStateList, _activeWebStateObserver.get());
+
+    _buttonMenuFactory = [[ToolbarButtonMenuFactory alloc]
+        initForToolbarWithIncognito:_incognito
+                       webStateList:_webStateList
+                      actionFactory:actionFactory];
+    _buttonMenuFactory.delegate = self;
 
     _fullscreenController = fullscreenController;
     _topPosition = topPosition;
@@ -105,15 +109,20 @@
   GURL visibleURL = webState->GetVisibleURL();
 
   [self.consumer setShareEnabled:!visibleURL.is_empty()];
-  [self.consumer setMenu:[self createContextMenuForNavigationButton:
-                                   webState->GetNavigationManager()
-                                       ->GetBackwardItems()]
-           forButtonType:ToolbarButtonTypeBack];
   [self.consumer
-            setMenu:[self
-                        createContextMenuForNavigationButton:
-                            webState->GetNavigationManager()->GetForwardItems()]
+            setMenu:[_buttonMenuFactory
+                        menuForNavigationButton:webState->GetNavigationManager()
+                                                    ->GetBackwardItems()]
+      forButtonType:ToolbarButtonTypeBack];
+  [self.consumer
+            setMenu:[_buttonMenuFactory
+                        menuForNavigationButton:webState->GetNavigationManager()
+                                                    ->GetForwardItems()]
       forButtonType:ToolbarButtonTypeForward];
+  [self.consumer setMenu:[_buttonMenuFactory menuForAssistantButton]
+           forButtonType:ToolbarButtonTypeAssistant];
+  /// TODO(crbug.com/493948951): Support context menu for tab grid button in the
+  /// Toolbar (iPad).
 }
 
 - (void)disconnect {
@@ -122,6 +131,7 @@
   _webStateList->RemoveObserver(_webStateListObserver.get());
   _webStateListObserver.reset();
   _webStateList = nullptr;
+  _buttonMenuFactory = nil;
   _fullscreenController = nullptr;
 }
 
@@ -160,6 +170,52 @@
   if (self.navigationBrowserAgent) {
     self.navigationBrowserAgent->StopLoading();
   }
+}
+
+#pragma mark - ToolbarButtonMenuFactoryDelegate
+
+- (void)navigateToPageForItem:(web::NavigationItem*)item {
+  if (!_webStateList) {
+    return;
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  int index = activeWebState->GetNavigationManager()->GetIndexOfItem(item);
+  DCHECK_NE(index, -1);
+  activeWebState->GetNavigationManager()->GoToIndex(index);
+}
+
+- (void)createNewTabFromView:(UIView*)sender {
+  // Toolbar button menus do not have this functionality.
+  NOTREACHED();
+}
+
+- (void)createNewTabGroupFromView:(UIView*)sender {
+  // Toolbar button menus do not have this functionality.
+  NOTREACHED();
+}
+
+- (void)addNewTabInCurrentTabGroup {
+  // Toolbar button menus do not have this functionality.
+  NOTREACHED();
+}
+
+- (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup {
+  /// TODO(crbug.com/493948951): Implement this (iPad).
+  NOTIMPLEMENTED();
+}
+
+- (void)removeCurrentTabFromGroup {
+  /// TODO(crbug.com/493948951): Implement this (iPad).
+  NOTIMPLEMENTED();
+}
+
+- (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup {
+  /// TODO(crbug.com/493948951): Implement this (iPad).
+  NOTIMPLEMENTED();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -285,65 +341,6 @@
         .keyboardVisible;
   }
   return NO;
-}
-
-// Returns the context menu for a forward/back navigation button.
-- (UIMenu*)createContextMenuForNavigationButton:
-    (const std::vector<web::NavigationItem*>)navigationItems {
-  NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
-
-  for (web::NavigationItem* navigationItem : navigationItems) {
-    NSString* title;
-    UIImage* image;
-
-    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
-                                                       ->GetVirtualURL()]) {
-      title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      image = SymbolWithPalette(
-          CustomSymbolWithPointSize(kIncognitoSymbol, kInfobarSymbolPointSize),
-          @[ UIColor.whiteColor ]);
-    } else {
-      title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-      const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;
-      if (!gfxImage.IsEmpty()) {
-        image = gfxImage.ToUIImage();
-      } else {
-        image = DefaultSymbolWithPointSize(kDocSymbol, kInfobarSymbolPointSize);
-      }
-    }
-
-    __weak __typeof(self) weakSelf = self;
-    UIAction* navigateToPageAction =
-        [UIAction actionWithTitle:title
-                            image:image
-                       identifier:nil
-                          handler:^(UIAction* uiAction) {
-                            [weakSelf navigateToPageForItem:navigationItem];
-                          }];
-    [actions addObject:navigateToPageAction];
-  }
-  return [UIMenu menuWithTitle:@"" children:actions];
-}
-
-// Returns YES if incognito NTP title and image should be used for back/forward
-// item associated with `url`.
-- (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)url {
-  return IsURLNewTabPage(url) && self.isIncognito;
-}
-
-// Navigates to the page associated with `item`.
-- (void)navigateToPageForItem:(web::NavigationItem*)item {
-  if (!_webStateList) {
-    return;
-  }
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
-    return;
-  }
-
-  int index = activeWebState->GetNavigationManager()->GetIndexOfItem(item);
-  DCHECK_NE(index, -1);
-  activeWebState->GetNavigationManager()->GoToIndex(index);
 }
 
 @end

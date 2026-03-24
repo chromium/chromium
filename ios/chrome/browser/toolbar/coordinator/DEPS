@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h",
+  "+ios/chrome/browser/menu/ui_bundled/browser_action_factory.h",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/omnibox/model/omnibox_position",
   "+ios/chrome/browser/omnibox/ui/omnibox_drs_view_controller.h",

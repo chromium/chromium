@@ -88,6 +88,7 @@ MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
 class AppBarMediatorTest : public PlatformTest {
  protected:
   AppBarMediatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -176,6 +177,14 @@ class AppBarMediatorTest : public PlatformTest {
 
     TestFullscreenController::CreateForBrowser(regular_browser_.get());
     TestFullscreenController::CreateForBrowser(incognito_browser_.get());
+
+    BrowserActionFactory* regular_action_factory_ =
+        [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
+                                             scenario:kTestMenuScenario];
+    BrowserActionFactory* incognito_action_factory_ =
+        [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
+                                             scenario:kTestMenuScenario];
+
     ClipboardRecentContent::SetInstance(
         std::make_unique<FakeClipboardRecentContent>());
 
@@ -186,6 +195,8 @@ class AppBarMediatorTest : public PlatformTest {
                                           regular_browser_.get())
         incognitoFullscreenController:TestFullscreenController::FromBrowser(
                                           incognito_browser_.get())
+                 regularActionFactory:regular_action_factory_
+               incognitoActionFactory:incognito_action_factory_
                           prefService:regular_profile_->GetTestingPrefService()
                    templateURLService:search_engines_test_environment_
                                           .template_url_service()
@@ -197,12 +208,7 @@ class AppBarMediatorTest : public PlatformTest {
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
                        incognitoState:incognito_state_];
-    mediator_.regularActionFactory =
-        [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
-                                             scenario:kTestMenuScenario];
-    mediator_.incognitoActionFactory =
-        [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
-                                             scenario:kTestMenuScenario];
+
     consumer_ = OCMProtocolMock(@protocol(TestAppBarConsumer));
     mediator_.consumer = consumer_;
     mediator_.sceneHandler = mock_scene_handler_;
@@ -255,6 +261,7 @@ class AppBarMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   IOSChromeScopedTestingVariationsService scoped_variations_service_;
   std::unique_ptr<TestProfileIOS> regular_profile_;

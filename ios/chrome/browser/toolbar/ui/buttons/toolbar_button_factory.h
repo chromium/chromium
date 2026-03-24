@@ -9,9 +9,6 @@
 
 @class ToolbarButton;
 
-/// TODO(crbug.com/493566685): Update toolbar button shapes. Buttons should be
-/// square in iPhone portrait orientation and circular otherwise.
-
 // Factory for creating toolbar buttons.
 @interface ToolbarButtonFactory : NSObject
 

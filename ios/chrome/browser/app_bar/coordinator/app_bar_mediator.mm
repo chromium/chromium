@@ -5,14 +5,11 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 
 #import <memory>
-#import <optional>
 #import <set>
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -25,10 +22,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
-#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
-#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -44,25 +38,23 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 @interface AppBarMediator () <AuthenticationServiceObserving,
                               IdentityManagerObserverBridgeDelegate,
                               IncognitoStateObserver,
                               TabGridStateObserver,
+                              ToolbarButtonMenuFactoryDelegate,
                               WebStateListObserving>
 
 // The web state list currently observed by this mediator.
@@ -93,6 +85,8 @@
   TabGridPage _currentPage;
   TabGridState* _tabGridState;
   IncognitoState* _incognitoState;
+  ToolbarButtonMenuFactory* _regularButtonMenuFactory;
+  ToolbarButtonMenuFactory* _incognitoButtonMenuFactory;
 }
 
 - (instancetype)
@@ -102,6 +96,8 @@
           (FullscreenController*)regularFullscreenController
     incognitoFullscreenController:
         (FullscreenController*)incognitoFullscreenController
+             regularActionFactory:(BrowserActionFactory*)regularActionFactory
+           incognitoActionFactory:(BrowserActionFactory*)incognitoActionFactory
                       prefService:(PrefService*)prefService
                templateURLService:(TemplateURLService*)templateURLService
             authenticationService:(AuthenticationService*)authenticationService
@@ -143,6 +139,22 @@
     _incognitoState = incognitoState;
     [_incognitoState addObserver:self];
 
+    _regularButtonMenuFactory = [[ToolbarButtonMenuFactory alloc]
+        initForAppBarWithIncognito:NO
+                      webStateList:_regularWebStateList
+                     actionFactory:regularActionFactory
+                templateURLService:_templateURLService
+                      tabGridState:_tabGridState];
+    _regularButtonMenuFactory.delegate = self;
+
+    _incognitoButtonMenuFactory = [[ToolbarButtonMenuFactory alloc]
+        initForAppBarWithIncognito:YES
+                      webStateList:_incognitoWebStateList
+                     actionFactory:incognitoActionFactory
+                templateURLService:_templateURLService
+                      tabGridState:_tabGridState];
+    _incognitoButtonMenuFactory.delegate = self;
+
     if (_tabGridState.tabGridVisible) {
       [self updateForTabGridPage:_tabGridState.currentPage];
     } else {
@@ -171,6 +183,7 @@
 
 - (void)setIncognitoWebStateList:(WebStateList*)incognitoWebStateList {
   _incognitoWebStateList = incognitoWebStateList;
+  _incognitoButtonMenuFactory = nil;
   if (_tabGridState.tabGridVisible &&
       _currentPage == TabGridPageIncognitoTabs) {
     self.currentWebStateList = _incognitoWebStateList;
@@ -189,8 +202,26 @@
   }
 }
 
+- (void)setIncognitoActionFactory:
+    (BrowserActionFactory*)incognitoActionFactory {
+  if (incognitoActionFactory) {
+    _incognitoButtonMenuFactory = [[ToolbarButtonMenuFactory alloc]
+        initForAppBarWithIncognito:YES
+                      webStateList:_incognitoWebStateList
+                     actionFactory:incognitoActionFactory
+                templateURLService:_templateURLService
+                      tabGridState:_tabGridState];
+    _incognitoButtonMenuFactory.delegate = self;
+  } else {
+    _incognitoButtonMenuFactory = nil;
+  }
+  [self updateConsumer];
+}
+
 - (void)disconnect {
   self.consumer = nil;
+  _regularButtonMenuFactory = nil;
+  _incognitoButtonMenuFactory = nil;
   self.currentTabGroup = nullptr;
   if (self.currentWebStateList) {
     self.currentWebStateList->RemoveObserver(_observerBridge.get());
@@ -416,6 +447,62 @@
   }
 }
 
+#pragma mark - ToolbarButtonMenuFactoryDelegate
+
+- (void)addNewTabInCurrentTabGroup {
+  if (!self.currentTabGroup) {
+    return;
+  }
+
+  GURL URL(kChromeUINewTabURL);
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = _incognitoState.incognitoContentVisible;
+  params.load_in_group = true;
+  params.tab_group = self.currentTabGroup->GetWeakPtr();
+  _URLLoader->Load(params);
+  [self updateConsumer];
+}
+
+- (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK([self activeWebStateInGroup]);
+  int tabIndex = self.currentWebStateList->active_index();
+  self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
+  [self updateConsumer];
+}
+
+- (void)removeCurrentTabFromGroup {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK([self activeWebStateInGroup]);
+  int tabIndex = self.currentWebStateList->active_index();
+  self.currentWebStateList->RemoveFromGroups({tabIndex});
+  [self updateConsumer];
+}
+
+- (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK(![self activeWebStateInGroup]);
+  int tabIndex = self.currentWebStateList->active_index();
+  if (destinationGroup) {
+    self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
+  } else {
+    web::WebState* currentWebState =
+        self.currentWebStateList->GetActiveWebState();
+    if (!currentWebState) {
+      return;
+    }
+    std::set<web::WebStateID> identifiers = {
+        currentWebState->GetUniqueIdentifier()};
+    [self createNewTabGroupWithTabs:identifiers];
+  }
+  [self updateConsumer];
+}
+
+- (void)navigateToPageForItem:(web::NavigationItem*)item {
+  // App bar does not have web navigation functionality in its button menus.
+  NOTREACHED();
+}
+
 #pragma mark - Properties
 
 - (void)setCurrentWebStateList:(WebStateList*)currentWebStateList {
@@ -423,6 +510,7 @@
     _currentWebStateList->RemoveObserver(_observerBridge.get());
   }
   _currentWebStateList = currentWebStateList;
+
   if (_currentWebStateList) {
     _currentWebStateList->AddObserver(_observerBridge.get());
   }
@@ -456,11 +544,15 @@
   [self.consumer setTabGroupVisible:_tabGridState.visibleTabGroup];
   [self.consumer setInTabGroup:[self activeWebStateInGroup]];
 
-  [self.consumer setMenu:[self createContextMenuForAssistantButton]
+  BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
+  ToolbarButtonMenuFactory* buttonMenuFactory =
+      incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
+
+  [self.consumer setMenu:[buttonMenuFactory menuForAssistantButton]
            forButtonType:AppBarButtonTypeAssistant];
-  [self.consumer setMenu:[self createContextMenuForNewTabButton]
+  [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
            forButtonType:AppBarButtonTypeNewTab];
-  [self.consumer setMenu:[self createContextMenuForTabGridButton]
+  [self.consumer setMenu:[buttonMenuFactory menuForTabGridButton]
            forButtonType:AppBarButtonTypeTabGrid];
   [self updateAssistantButton];
   [self updateButtonsForCurrentTabGridPage];
@@ -606,21 +698,6 @@
   return webStateListCount != webStateList->count();
 }
 
-// Adds a new tab to the current tab group.
-- (void)addNewTabInCurrentTabGroup {
-  if (!self.currentTabGroup) {
-    return;
-  }
-
-  GURL URL(kChromeUINewTabURL);
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.in_incognito = _incognitoState.incognitoContentVisible;
-  params.load_in_group = true;
-  params.tab_group = self.currentTabGroup->GetWeakPtr();
-  _URLLoader->Load(params);
-  [self updateConsumer];
-}
-
 // Returns whether the active web state in the current web state list is in a
 // tab group.
 - (BOOL)activeWebStateInGroup {
@@ -632,272 +709,6 @@
     return NO;
   }
   return self.currentWebStateList->GetGroupOfWebStateAt(activeIndex) != nullptr;
-}
-
-// Returns the context menu for the Assistant button.
-// TODO(crbug.com/484000556) Implement this menu.
-- (UIMenu*)createContextMenuForAssistantButton {
-  return nil;
-}
-
-// Returns the context menu for the New Tab button.
-- (UIMenu*)createContextMenuForNewTabButton {
-  CHECK(self.regularActionFactory);
-  CHECK(self.incognitoActionFactory);
-
-  BOOL isTabGroupsPageVisible = _currentPage == TabGridPageTabGroups;
-  BOOL isTabGroupVisible = _tabGridState.visibleTabGroup;
-
-  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
-                                            ? self.incognitoActionFactory
-                                            : self.regularActionFactory;
-
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock createNewTabBlock = ^{
-    [weakSelf createNewTabFromView:nil];
-  };
-  UIAction* newTabAction =
-      _incognitoState.incognitoContentVisible
-          ? [actionFactory
-                actionToOpenNewIncognitoTabWithBlock:createNewTabBlock]
-          : [actionFactory actionToOpenNewTabWithBlock:createNewTabBlock];
-  newTabAction.image =
-      DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
-
-  // Context menu for when a tab group is open in the tab grid.
-  if (isTabGroupVisible) {
-    UIAction* newTabInCurrentGroupAction =
-        [actionFactory actionToAddNewTabInGroupWithBlock:^{
-          [weakSelf addNewTabInCurrentTabGroup];
-        }];
-
-    return
-        [UIMenu menuWithChildren:@[ newTabAction, newTabInCurrentGroupAction ]];
-  }
-
-  // Context menu for when the tab groups page is visible in the tab grid.
-  if (isTabGroupsPageVisible) {
-    UIAction* newTabGroupAction =
-        [actionFactory actionToCreateEmptyTabGroupWithBlock:^{
-          [weakSelf createNewTabGroupFromView:nil];
-        }];
-    newTabGroupAction.title =
-        l10n_util::GetNSString(IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP);
-
-    return [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
-  }
-
-  // The New Tab button should not have a context menu while viewing the regular
-  // or incognito tab pages (unless looking inside a tab group).
-  if (_tabGridState.tabGridVisible) {
-    return nil;
-  }
-
-  // Context menu for while browsing.
-  CHECK(_templateURLService);
-  const bool useLens =
-      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-          LensEntrypoint::PlusButton,
-          search::DefaultSearchProviderIsGoogle(_templateURLService));
-
-  UIAction* newSearchAction = [actionFactory actionToStartNewSearch];
-  UIAction* newIncognitoSearchAction =
-      [actionFactory actionToStartNewIncognitoSearch];
-  UIAction* voiceSearchAction = [actionFactory actionToStartVoiceSearch];
-  UIAction* cameraSearchAction =
-      useLens
-          ? [actionFactory
-                actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton]
-          : [actionFactory actionToShowQRScanner];
-
-  NSMutableArray* staticActions = [NSMutableArray arrayWithArray:@[
-    newSearchAction, newIncognitoSearchAction, voiceSearchAction,
-    cameraSearchAction
-  ]];
-
-  if (IsAIMCobrowseDebugEntrypointEnabled()) {
-    UIAction* openAIMode = [actionFactory actionToOpenAIMode];
-    [staticActions addObject:openAIMode];
-  }
-
-  if (experimental_flags::EnableAIPrototypingMenu()) {
-    UIAction* openAIMenu = [actionFactory actionToOpenAIMenu];
-    [staticActions addObject:openAIMenu];
-  }
-
-  UIMenuElement* clipboardAction = [self createMenuElementForPasteboard];
-  if (clipboardAction) {
-    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
-                                         image:nil
-                                    identifier:nil
-                                       options:UIMenuOptionsDisplayInline
-                                      children:staticActions];
-    return [UIMenu menuWithChildren:@[ staticMenu, clipboardAction ]];
-  }
-
-  return [UIMenu menuWithTitle:@""
-                         image:nil
-                    identifier:nil
-                       options:UIMenuOptionsDisplayInline
-                      children:staticActions];
-}
-
-// Returns the context menu for the Tab Grid button.
-- (UIMenu*)createContextMenuForTabGridButton {
-  CHECK(self.regularActionFactory);
-  CHECK(self.incognitoActionFactory);
-
-  // If the tab grid is showing, the context menu should be disabled.
-  if (_tabGridState.tabGridVisible) {
-    return nil;
-  }
-
-  NSMutableArray* staticActions = [[NSMutableArray alloc] init];
-
-  UIAction* closeCurrentTabAction =
-      _incognitoState.incognitoContentVisible
-          ? [self.incognitoActionFactory actionToCloseCurrentTab]
-          : [self.regularActionFactory actionToCloseCurrentTab];
-  [staticActions addObject:closeCurrentTabAction];
-
-  if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
-    UIMenuElement* tabGroupActionsMenu = [self createMenuElementForTabGroups];
-    if (tabGroupActionsMenu) {
-      [staticActions addObject:tabGroupActionsMenu];
-    }
-  }
-
-  // From an incognito tab, the `openNewTabAction` should open a non-incognito
-  // tab. From a non-incognito tab, it should open an incognito tab.
-  UIAction* openNewTabAction =
-      _incognitoState.incognitoContentVisible
-          ? [self.regularActionFactory actionToOpenNewTab]
-          : [self.incognitoActionFactory actionToOpenNewIncognitoTab];
-  [staticActions addObject:openNewTabAction];
-
-  return [UIMenu menuWithTitle:@""
-                         image:nil
-                    identifier:nil
-                       options:UIMenuOptionsDisplayInline
-                      children:staticActions];
-}
-
-// Returns the UIMenuElement for the content of the pasteboard. Can return
-// `nil`.
-- (UIMenuElement*)createMenuElementForPasteboard {
-  CHECK(self.regularActionFactory);
-  CHECK(self.incognitoActionFactory);
-
-  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
-                                            ? self.incognitoActionFactory
-                                            : self.regularActionFactory;
-
-  std::optional<std::set<ClipboardContentType>> clipboardContentType =
-      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
-
-  if (clipboardContentType.has_value()) {
-    std::set<ClipboardContentType> clipboardContentTypeValues =
-        clipboardContentType.value();
-
-    if (clipboardContentTypeValues.contains(ClipboardContentType::Image)) {
-      if (base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage)) {
-        if (search_engines::SupportsSearchImageWithLens(_templateURLService) &&
-            ios::provider::IsLensSupported()) {
-          return [actionFactory actionToLensCopiedImage];
-        }
-      } else {
-        if (search_engines::SupportsSearchByImage(_templateURLService)) {
-          return [actionFactory actionToSearchCopiedImage];
-        }
-      }
-    } else if (clipboardContentTypeValues.contains(ClipboardContentType::URL)) {
-      return [actionFactory actionToSearchCopiedURL];
-    } else if (clipboardContentTypeValues.contains(
-                   ClipboardContentType::Text)) {
-      return [actionFactory actionToSearchCopiedText];
-    }
-  }
-  return nil;
-}
-
-// Returns the UIMenuElement for the content of the Add/Move Tab to Group Menu.
-- (UIMenuElement*)createMenuElementForTabGroups {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(self.currentWebStateList);
-  CHECK(self.regularActionFactory);
-  CHECK(self.incognitoActionFactory);
-
-  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
-                                            ? self.incognitoActionFactory
-                                            : self.regularActionFactory;
-
-  int activeIndex = self.currentWebStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex) {
-    return nil;
-  }
-
-  std::set<const TabGroup*> allGroups = self.currentWebStateList->GetGroups();
-  const TabGroup* currentGroup =
-      self.currentWebStateList->GetGroupOfWebStateAt(activeIndex);
-
-  __weak __typeof(self) weakSelf = self;
-  /// If the current tab is in a group, display the "Move Tab to Group" menu.
-  /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
-  /// any Tab Groups, the "Add Tab to Group" menu will just be an "Add Tab to
-  /// New Group" button.
-  if (currentGroup) {
-    return [actionFactory menuToMoveTabToGroupWithGroups:allGroups
-        currentGroup:currentGroup
-        moveBlock:^(const TabGroup* destinationGroup) {
-          [weakSelf moveTabToGroupBlock:destinationGroup];
-        }
-        removeBlock:^{
-          [weakSelf removeTabFromGroupBlock];
-        }];
-  } else {
-    return [actionFactory
-        menuToAddTabToGroupWithGroups:allGroups
-                         numberOfTabs:1
-                                block:^(const TabGroup* destinationGroup) {
-                                  [weakSelf
-                                      addTabToGroupBlock:destinationGroup];
-                                }];
-  }
-}
-
-// Creates a Move Tab to Group block for the Move Tab to Group menu.
-- (void)moveTabToGroupBlock:(const TabGroup*)destinationGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK([self activeWebStateInGroup]);
-  int tabIndex = self.currentWebStateList->active_index();
-  self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
-}
-
-// Creates a Remove Tab from Group block for the Move Tab to Group menu.
-- (void)removeTabFromGroupBlock {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK([self activeWebStateInGroup]);
-  int tabIndex = self.currentWebStateList->active_index();
-  self.currentWebStateList->RemoveFromGroups({tabIndex});
-}
-
-// Creates an Add Tab to Group block for the Add Tab to Group menu.
-- (void)addTabToGroupBlock:(const TabGroup*)destinationGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(![self activeWebStateInGroup]);
-  int tabIndex = self.currentWebStateList->active_index();
-  if (destinationGroup) {
-    self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
-  } else {
-    web::WebState* currentWebState =
-        self.currentWebStateList->GetActiveWebState();
-    if (!currentWebState) {
-      return;
-    }
-    std::set<web::WebStateID> identifiers = {
-        currentWebState->GetUniqueIdentifier()};
-    [self createNewTabGroupWithTabs:identifiers];
-  }
 }
 
 // Triggers the creation of a New Tab Group with 'identifiers'.

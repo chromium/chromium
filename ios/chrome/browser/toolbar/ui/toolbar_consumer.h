@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
-
 // The types of button for which a menu can be provided.
 typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
   ToolbarButtonTypeBack,
@@ -16,13 +14,13 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
   ToolbarButtonTypeReload,
   ToolbarButtonTypeStop,
   ToolbarButtonTypeShare,
-  ToolbarButtonTypeAssistantButton,
+  ToolbarButtonTypeAssistant,
   ToolbarButtonTypeTabGrid,
   ToolbarButtonTypeTools,
 };
 
 // Protocol for implementing the toolbar view.
-@protocol ToolbarConsumer <NSObject>
+@protocol ToolbarConsumer
 
 // Sets whether the back button is enabled.
 - (void)setCanGoBack:(BOOL)canGoBack;

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -43,6 +46,7 @@
 class AppBarCoordinatorTest : public PlatformTest {
  protected:
   AppBarCoordinatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -61,9 +65,11 @@ class AppBarCoordinatorTest : public PlatformTest {
                               BwgServiceFactory::GetDefaultFactory());
     regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
-    regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    regular_browser_ =
+        std::make_unique<TestBrowser>(regular_profile_.get(), scene_state_);
     incognito_browser_ =
-        std::make_unique<TestBrowser>(incognito_profile_.get());
+        std::make_unique<TestBrowser>(incognito_profile_.get(), scene_state_);
 
     TestFullscreenController::CreateForBrowser(regular_browser_.get());
     TestFullscreenController::CreateForBrowser(incognito_browser_.get());
@@ -136,10 +142,12 @@ class AppBarCoordinatorTest : public PlatformTest {
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> regular_profile_;
   std::unique_ptr<TestProfileIOS> incognito_profile_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
   AppBarCoordinator* coordinator_;
