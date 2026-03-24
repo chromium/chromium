@@ -228,14 +228,19 @@ void ActorLoginDelegateImpl::AttemptLogin(
     CHECK(acting_task->IsUnderActorControl());
     acting_task_id_ = acting_task->id();
 
+    ActorLoginPermissionService* permission_service =
+        ActorLoginPermissionServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+    CHECK(permission_service);
+
     siwg_controller_ = std::make_unique<ActorLoginSiwgController>(
-        &GetWebContents(),
+        &GetWebContents(), credential, should_store_permission,
+        *permission_service,
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                            weak_ptr_factory_.GetWeakPtr())),
         std::move(federated_login_outcome_callback));
-    siwg_controller_->StartFederatedLogin(credential,
-                                          std::move(metrics_helper_));
+    siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
@@ -304,7 +309,16 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_done_callback_);
   credential_filler_.reset();
-  siwg_controller_.reset();
+  // `kRequiresButtonClick` means that the federated login is not yet done.
+  // We need to keep the controller alive so it can receive the result of the
+  // login and store permissions if needed. It will be cleaned up together with
+  // the delegate or on the next federated login attempt.
+  // TODO(crbug.com/495745319): Use an observer on the click tool's status to
+  // clean up SiwG controller once we get the click status.
+  if (result.has_value() &&
+      result.value() != LoginStatusResult::kRequiresButtonClick) {
+    siwg_controller_.reset();
+  }
 
   // Record metrics by resetting the metrics helper.
   metrics_helper_.reset();

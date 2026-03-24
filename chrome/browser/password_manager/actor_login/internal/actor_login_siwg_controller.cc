@@ -8,7 +8,9 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -74,42 +76,53 @@ LoginStatusResult FromFederatedLoginResult(
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
+    const Credential& credential,
+    bool should_store_permission,
+    ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
     LoginStatusResultCallback federated_login_outcome_callback)
     : ActorLoginSiwgController(
           web_contents,
+          credential,
           base::BindRepeating(&optimization_guide::GetAIPageContent),
+          should_store_permission,
+          permission_service,
           std::move(on_finished_callback),
           std::move(federated_login_outcome_callback)) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
+    const Credential& credential,
     GetPageContentProvider get_page_content_provider,
+    bool should_store_permission,
+    ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
     LoginStatusResultCallback federated_login_outcome_callback)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
       on_finished_callback_(std::move(on_finished_callback)),
       federated_login_outcome_callback_(
-          std::move(federated_login_outcome_callback)) {}
+          std::move(federated_login_outcome_callback)),
+      credential_(credential),
+      should_store_permission_(should_store_permission),
+      permission_service_(permission_service) {}
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
 void ActorLoginSiwgController::StartFederatedLogin(
-    const Credential& credential,
     std::unique_ptr<ActorLoginMetricsHelper> metrics_helper) {
-  CHECK(credential.federation_detail);
+  CHECK(credential_.federation_detail);
 
   auto* source = content::webid::IdentityCredentialSource::FromPage(
       web_contents()->GetPrimaryPage());
 
   auto* metrics_helper_raw = metrics_helper.get();
   source->SetEmbedderLoginRequest(
-      credential.federation_detail->idp_origin,
-      credential.federation_detail->account_id,
+      credential_.federation_detail->idp_origin,
+      credential_.federation_detail->account_id,
       base::BindOnce(&ActorLoginSiwgController::OnFederatedLoginResultReceived,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(metrics_helper),
-                     std::move(federated_login_outcome_callback_)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(metrics_helper)));
 
   // There may be an existing FedCM dialog; if so, select an account in that
   // dialog instead of clicking the signin button.
@@ -117,8 +130,8 @@ void ActorLoginSiwgController::StartFederatedLogin(
     metrics_helper_raw->RecordFederatedHangingFedCmRequestExists(
         source->HasPendingRequest());
   }
-  if (!source->SelectAccount(credential.federation_detail->idp_origin,
-                             credential.federation_detail->account_id)) {
+  if (!source->SelectAccount(credential_.federation_detail->idp_origin,
+                             credential_.federation_detail->account_id)) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kActorLoginFederatedClickFromActor)) {
       std::move(on_finished_callback_)
@@ -138,11 +151,8 @@ void ActorLoginSiwgController::ClickSiwgButton() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-// static
 void ActorLoginSiwgController::OnFederatedLoginResultReceived(
-    base::WeakPtr<ActorLoginSiwgController> controller,
     std::unique_ptr<ActorLoginMetricsHelper> metrics_helper,
-    LoginStatusResultCallback federated_login_outcome_callback,
     content::webid::FederatedLoginResult result) {
   if (metrics_helper) {
     if (result == content::webid::FederatedLoginResult::kContinuation) {
@@ -152,12 +162,28 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
     }
   }
 
-  LoginStatusResult status = FromFederatedLoginResult(result);
-  if (federated_login_outcome_callback) {
-    std::move(federated_login_outcome_callback).Run(status);
+  if (result == content::webid::FederatedLoginResult::kSuccess &&
+      should_store_permission_) {
+    FederatedPermission permission;
+    permission.idp_origin = credential_.federation_detail->idp_origin;
+    permission.rp_embedder_origin = credential_.request_origin;
+    // Assuming identical to rp_embedder_origin since cross-origin iframes
+    // aren't supported.
+    permission.rp_requester_origin = permission.rp_embedder_origin;
+    permission.chosen_account_id = credential_.federation_detail->account_id;
+    permission.chosen_account_email = base::UTF16ToUTF8(credential_.username);
+
+    // `DoNothing()` for the response callback because there is nothing we can
+    // do with failed requests.
+    permission_service_->GrantPermission(permission, base::DoNothing());
   }
-  if (controller && controller->on_finished_callback_) {
-    std::move(controller->on_finished_callback_).Run(status);
+
+  LoginStatusResult status = FromFederatedLoginResult(result);
+  if (federated_login_outcome_callback_) {
+    std::move(federated_login_outcome_callback_).Run(status);
+  }
+  if (on_finished_callback_) {
+    std::move(on_finished_callback_).Run(status);
   }
 }
 

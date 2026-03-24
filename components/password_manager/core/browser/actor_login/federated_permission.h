@@ -13,7 +13,7 @@
 
 namespace actor_login {
 
-// Represents a user's federated credential (FedCM, OpenID Connect) permission.
+// Represents a permission to use a federated (FedCM) credential.
 struct FederatedPermission {
   FederatedPermission();
   FederatedPermission(const FederatedPermission&);
@@ -35,6 +35,11 @@ struct FederatedPermission {
   std::string chosen_account_email;
   // Output only. Lists origins that are affiliated with the requester origin.
   std::vector<std::string> affiliated_requester_origins;
+
+#if defined(UNIT_TEST)
+  friend bool operator==(const FederatedPermission&,
+                         const FederatedPermission&) = default;
+#endif
 };
 
 }  // namespace actor_login
