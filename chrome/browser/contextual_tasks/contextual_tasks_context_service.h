@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
@@ -29,6 +30,7 @@ class WebContents;
 
 namespace optimization_guide::proto {
 class ContextualTasksContextQuality;
+class ContextualTasksTabContext;
 }  // namespace optimization_guide::proto
 
 namespace page_content_annotations {
@@ -94,6 +96,24 @@ class ContextualTasksContextService
   void SetClockForTesting(const base::TickClock* tick_clock);
 
  private:
+  struct QueryState {
+    QueryState();
+    ~QueryState();
+    QueryState(const QueryState&);
+    QueryState& operator=(const QueryState&);
+
+    std::string query;
+    passage_embeddings::Embedding query_embedding;
+    int query_word_count = 0;
+
+    base::WeakPtr<content::WebContents> active_tab;
+    std::vector<page_content_annotations::PassageEmbedding> active_tab_embeddings;
+
+    std::optional<passage_embeddings::Embedding> active_tab_title_embedding;
+    std::optional<float> active_tab_title_similarity;
+    std::vector<ScoredPassage> active_tab_passage_similarities;
+  };
+
   // EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
@@ -117,6 +137,16 @@ class ContextualTasksContextService
   // Returns all tabs for the profile that are eligible for selection.
   std::vector<content::WebContents*> GetAllEligibleTabs();
 
+  // Creates the QueryState including active tab context.
+  QueryState CreateQueryState(
+      const std::string& query,
+      const passage_embeddings::Embedding& query_embedding);
+
+  // Computes TabSignals for a candidate tab.
+  TabSignals ComputeTabSignals(
+      content::WebContents* web_contents,
+      const QueryState& query_state);
+
   // Returns the relevant tabs for `query`. Collects and logs all the signals
   // irrespective of chosen `tab_selection_mode`.
   std::vector<content::WebContents*> SelectRelevantTabs(
@@ -126,6 +156,15 @@ class ContextualTasksContextService
       const std::vector<content::WebContents*>& all_tabs,
       const std::vector<GURL>& explicit_urls,
       optimization_guide::proto::ContextualTasksContextQuality* quality_log);
+
+  // Helper method to populate query state context. These are common for all
+  // candidate tabs.
+  void PopulateQueryContext(
+      const QueryState& query_state,
+      optimization_guide::proto::ContextualTasksContextQuality* quality_log);
+
+  // Returns the WebContents of the currently active tab.
+  content::WebContents* GetActiveTabWebContents();
 
   // Returns the duration since the tab was last active.
   std::optional<base::TimeDelta> GetDurationSinceLastActive(

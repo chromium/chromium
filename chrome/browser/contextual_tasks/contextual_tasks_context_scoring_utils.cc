@@ -9,6 +9,21 @@
 
 namespace contextual_tasks {
 
+QueryStateSignals::QueryStateSignals() = default;
+QueryStateSignals::QueryStateSignals(QueryStateSignals&&) = default;
+QueryStateSignals& QueryStateSignals::operator=(QueryStateSignals&&) = default;
+QueryStateSignals::~QueryStateSignals() = default;
+
+TabSignals::TabSignals() = default;
+TabSignals::TabSignals(TabSignals&&) = default;
+TabSignals& TabSignals::operator=(TabSignals&&) = default;
+TabSignals::~TabSignals() = default;
+
+TabSimilarityScores::TabSimilarityScores() = default;
+TabSimilarityScores::~TabSimilarityScores() = default;
+TabSimilarityScores::TabSimilarityScores(const TabSimilarityScores&) = default;
+TabSimilarityScores& TabSimilarityScores::operator=(const TabSimilarityScores&) = default;
+
 namespace {
 
 // Probabilistic OR - any high score leads to high score.
@@ -32,13 +47,13 @@ std::optional<double> ComputeContentScore(const TabSignals& signals) {
   if (signals.embedding_score.has_value()) {
     score = ProbOr(score.value_or(0.0f), *(signals.embedding_score));
   }
-  if (signals.num_query_title_matching_words.has_value()) {
-    // Monotonically increasing; Always < 1.
-    // 0 matches = 0 score; 1 match = 0.57; 2 matches = 0.81 and so on.
-    float lexical_match_score =
-        1.0f - std::exp(-0.85 * *(signals.num_query_title_matching_words));
-    score = ProbOr(score.value_or(0.0f), lexical_match_score);
-  }
+
+  // Monotonically increasing; Always < 1.
+  // 0 matches = 0 score; 1 match = 0.57; 2 matches = 0.81 and so on.
+  float lexical_match_score =
+      1.0f - std::exp(-0.85 * signals.num_query_title_matching_words);
+  score = ProbOr(score.value_or(0.0f), lexical_match_score);
+
   return score;
 }
 

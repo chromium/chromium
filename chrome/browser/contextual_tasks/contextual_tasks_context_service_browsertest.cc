@@ -37,6 +37,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace contextual_tasks {
 
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -514,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
   // Test Page is the title of valid_url().
   OverrideVisibilityScoresForTesting({{"Test Page", 0.9f}});
 
@@ -563,9 +564,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
        {std::make_pair(
             "passage 2",
             page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)},
+       {std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
         CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<void> logging_future;
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
@@ -608,9 +612,24 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
                                  ->uploaded_logs()[0]
                                  ->contextual_tasks_context()
                                  .quality();
+  EXPECT_EQ(uploaded_quality_log.number_of_query_words(), 4);
+  EXPECT_GT(uploaded_quality_log.query_active_tab_title_similarity(), 0.99f);
+  EXPECT_EQ(
+      uploaded_quality_log.query_active_tab_passage_similarities().size(), 2);
+  EXPECT_GT(uploaded_quality_log.query_active_tab_passage_similarities()[0],
+            0.99f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
   EXPECT_GT(uploaded_quality_log.eligible_tabs()[0].best_embedding_score(),
             0.99f);
+  EXPECT_GT(uploaded_quality_log.eligible_tabs()[0].query_title_similarity(),
+            0.0f);
+  EXPECT_GT(uploaded_quality_log.eligible_tabs()[0]
+                .query_passage_similarities()
+                .size(),
+            0);
+  EXPECT_GT(
+      uploaded_quality_log.eligible_tabs()[0].active_tab_title_similarity(),
+      0.99f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].seconds_since_last_active(),
             3);
   EXPECT_GE(uploaded_quality_log.eligible_tabs()[0].seconds_of_last_visit(),
@@ -659,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -707,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(-1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -745,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(-1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -811,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(-1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   // Recently active tab.
   test_clock_.Advance(base::Seconds(1800));
@@ -844,6 +863,122 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
       "ContextualTasks.Context.ContextCalculationLatency", 0);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SignalPopulation_MissingTitleEmbeddings) {
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+  NotifyEmbedderMetadata();
+
+  // Mock embeddings: Provide only page content, no kTitle passage.
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)}};
+
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<void> logging_future;
+  logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+
+  ASSERT_TRUE(logging_future.Wait());
+
+  optimization_guide::proto::ContextualTasksContextQuality
+      uploaded_quality_log = logs_uploader()
+                                 ->uploaded_logs()[0]
+                                 ->contextual_tasks_context()
+                                 .quality();
+
+  EXPECT_EQ(uploaded_quality_log.query_active_tab_title_similarity(), 0.0f);
+  ASSERT_EQ(
+      uploaded_quality_log.query_active_tab_passage_similarities().size(), 1);
+
+  ASSERT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
+  auto& tab_context = uploaded_quality_log.eligible_tabs()[0];
+
+  // Verify that missing title embeddings default to 0.0f without crashing.
+  EXPECT_EQ(tab_context.query_title_similarity(), 0.0f);
+  EXPECT_EQ(tab_context.active_tab_title_similarity(), 0.0f);
+
+  // Verify that passage similarities are still correctly extracted and
+  // populated.
+  ASSERT_EQ(tab_context.query_passage_similarities().size(), 1);
+  EXPECT_NEAR(tab_context.query_passage_similarities()[0], 1.0f, 0.01f);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SignalPopulation_CandidateDifferentFromActiveTab) {
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+
+  // Tab 1 (will become background candidate tab)
+  NavigateToValidURL();
+
+  // Tab 2 (will become the active foreground tab)
+  GURL url2 = embedded_test_server()->GetURL("b.test",
+                                             "/optimization_guide/hello.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  NotifyEmbedderMetadata();
+
+  // Mock different embeddings to differentiate Active Tab vs Candidate Tab.
+  int call_count = 0;
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly([this, &call_count](content::Page& page) {
+        std::vector<page_content_annotations::PassageEmbedding> embeddings;
+        if (call_count++ == 0) {
+          // First call is for the Active Tab (in CreateQueryState)
+          embeddings.emplace_back(
+              std::make_pair(
+                   "active title",
+                   page_content_annotations::EmbeddingPassageType::kTitle),
+              CreateFakeEmbedding(-1.0f));
+        } else {
+          // Subsequent calls are for the candidate tabs in the all_tabs loop
+          embeddings.emplace_back(
+              std::make_pair(
+                   "candidate title",
+                   page_content_annotations::EmbeddingPassageType::kTitle),
+              CreateFakeEmbedding(1.0f));
+        }
+        return embeddings;
+      });
+
+  base::test::TestFuture<void> logging_future;
+  logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "test query", /*explicit_urls=*/{}, future.GetCallback());
+
+  ASSERT_TRUE(logging_future.Wait());
+
+  optimization_guide::proto::ContextualTasksContextQuality
+      uploaded_quality_log = logs_uploader()
+                                 ->uploaded_logs()[0]
+                                 ->contextual_tasks_context()
+                                 .quality();
+
+  ASSERT_GE(uploaded_quality_log.eligible_tabs().size(), 1);
+
+  EXPECT_NEAR(uploaded_quality_log.query_active_tab_title_similarity(), -1.0f,
+              0.001f);
+
+  // The cosine similarity between vectors of -1.0f and 1.0f is exactly -1.0f.
+  // This proves it's computing the cross-tab title similarity correctly.
+  EXPECT_NEAR(
+      uploaded_quality_log.eligible_tabs()[0].active_tab_title_similarity(),
+      -1.0f, 0.001f);
+}
+
 class ContextualTasksContextServiceTitlesOnlyTest
     : public ContextualTasksContextServiceTest {
  public:
@@ -873,11 +1008,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
             page_content_annotations::EmbeddingPassageType::kPageContent),
         CreateFakeEmbedding(1.0f)},
        // Added - title passage matches.
-       {std::make_pair("passage 3",
+       {std::make_pair("page title",
                        page_content_annotations::EmbeddingPassageType::kTitle),
         CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
-      .WillOnce(Return(fake_page_embeddings));
+      .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
