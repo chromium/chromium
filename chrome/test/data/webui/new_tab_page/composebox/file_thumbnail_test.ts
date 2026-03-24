@@ -87,14 +87,14 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals((icon as any).icon, 'thumbnail:pdf');
   });
 
-  test('display document file (flag enabled)', async () => {
+  test('display document file (flag enabled) for non-pdf', async () => {
     loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fileThumbnailElement = new ComposeboxFileThumbnailElement();
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(0);
+    fileThumbnailElement.file = createComposeboxFile(0, {type: 'text/plain'});
     await microtasksFinished();
 
     // Assert one document file.
@@ -105,9 +105,34 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals(title.textContent, fileThumbnailElement.file.name);
 
     // Assert document icon is shown.
-    const icon = fileThumbnailElement.shadowRoot.querySelector('.document-icon');
+    const icon =
+        fileThumbnailElement.shadowRoot.querySelector('.document-icon');
     assertTrue(!!icon);
     assertEquals((icon as any).icon, 'thumbnail:document');
+  });
+
+  test('display pdf file (flag enabled)', async () => {
+    loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    document.body.appendChild(fileThumbnailElement);
+
+    // Arrange.
+    fileThumbnailElement.file =
+        createComposeboxFile(0, {type: 'application/pdf'});
+    await microtasksFinished();
+
+    // Assert one document file.
+    const title =
+        fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
+    assertTrue(!!title);
+    assertEquals(title.tagName, 'P');
+    assertEquals(title.textContent, fileThumbnailElement.file.name);
+
+    // Assert pdf icon is shown.
+    const icon = fileThumbnailElement.shadowRoot.querySelector('.pdf-icon');
+    assertTrue(!!icon);
+    assertEquals((icon as any).icon, 'thumbnail:pdf');
   });
 
   test('display tab file', async () => {
@@ -125,8 +150,8 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector<HTMLElement>('.title');
     assertTrue(!!title);
     assertEquals(title.innerText, 'some tab');
-    const favicon =
-        fileThumbnailElement.shadowRoot.querySelector('cr-composebox-tab-favicon');
+    const favicon = fileThumbnailElement.shadowRoot.querySelector(
+        'cr-composebox-tab-favicon');
     assertTrue(!!favicon);
     assertEquals(favicon.url, 'https://example.com/some/path');
   });

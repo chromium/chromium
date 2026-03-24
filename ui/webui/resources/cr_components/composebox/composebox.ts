@@ -1037,7 +1037,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       name: fileInfo.fileName,
       dataUrl: fileInfo.imageDataUrl ?? null,
       objectUrl: null,
-      type: fileInfo.imageDataUrl ? 'image' : 'pdf',
+      type: fileInfo.mimeType || (fileInfo.imageDataUrl ? 'image' : ''),
       inputType: fileInfo.imageDataUrl ? InputType.kLensImage :
                                          InputType.kLensFile,
       status: fileInfo.imageDataUrl ? ContextUploadStatus.kUploadSuccessful :
