@@ -11113,24 +11113,6 @@
             ]
         }
     ],
-    "GlicUseMainPartitionForUnifiedFre": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicUseMainPartitionForUnifiedFre"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicUserStatusCheckDogfood": [
         {
             "platforms": [
