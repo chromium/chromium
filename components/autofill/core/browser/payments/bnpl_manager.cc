@@ -111,6 +111,15 @@ bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
 void BnplManager::OnUserDecisionToUseBnpl(
     std::optional<int64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
+  if (ongoing_flow_state_ != nullptr &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    // User has already navigated to Pay Later tab before in this popup. This
+    // means that either there is an ongoing flow already, or the user is in an
+    // error state, both of which mean a new flow should not be started.
+    return;
+  }
+
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
   ongoing_flow_state_->final_checkout_amount = std::move(final_checkout_amount);
   ongoing_flow_state_->app_locale =
@@ -352,40 +361,47 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
   if (!result.has_value()) {
     CHECK(payments_autofill_client().GetBnplUiDelegate());
     CHECK(payments_autofill_client().GetBnplStrategy());
-    using enum BnplStrategy::BeforeSwitchingViewAction;
-    switch (payments_autofill_client()
-                .GetBnplStrategy()
-                ->GetBeforeViewSwitchAction()) {
-      // This case is for platforms (i.e. Android) that will flip to the error
-      // screen within the same view, so no need to remove the current view.
-      case kDoNothing:
-        break;
-      case kCloseCurrentUi:
-        HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
-        break;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnablePayNowPayLaterTabs)) {
+      std::vector<BnplIssuerContext> issuer_contexts =
+          GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
+                                     /*checkout_amount=*/std::nullopt,
+                                     result.error());
+      UpdateSuggestionsOnAiAmountExtractionResponse(issuer_contexts);
+    } else {
+      using enum BnplStrategy::BeforeSwitchingViewAction;
+      switch (payments_autofill_client()
+                  .GetBnplStrategy()
+                  ->GetBeforeViewSwitchAction()) {
+        // This case is for platforms (i.e. Android) that will flip to the
+        // error screen within the same view, so no need to remove the current
+        // view.
+        case kDoNothing:
+          break;
+        case kCloseCurrentUi:
+          HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
+          break;
+      }
+
+      switch (result.error()) {
+        case AiAmountExtractionResult::Error::kFailureToGenerateApc:
+        case AiAmountExtractionResult::Error::kMissingServerResponse:
+        case AiAmountExtractionResult::Error::kNegativeAmount:
+        case AiAmountExtractionResult::Error::kAmountMissing:
+        case AiAmountExtractionResult::Error::kMissingCurrency:
+        case AiAmountExtractionResult::Error::kTimeout:
+          payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+              AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                  /*is_permanent_error=*/false));
+          break;
+        case AiAmountExtractionResult::Error::kUnsupportedCurrency:
+          payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+              AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError());
+          break;
+      }
+      Reset();
     }
 
-    // TODO(crbug.com/477689220): Ensure error handling is done in a way
-    // where a new flow is not re-initiated if the user goes back to pay later
-    // tab.
-    switch (result.error()) {
-      case AiAmountExtractionResult::Error::kFailureToGenerateApc:
-      case AiAmountExtractionResult::Error::kMissingServerResponse:
-      case AiAmountExtractionResult::Error::kNegativeAmount:
-      case AiAmountExtractionResult::Error::kAmountMissing:
-      case AiAmountExtractionResult::Error::kMissingCurrency:
-      case AiAmountExtractionResult::Error::kTimeout:
-        payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
-            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-                /*is_permanent_error=*/false));
-        break;
-      case AiAmountExtractionResult::Error::kUnsupportedCurrency:
-        payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
-            AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError());
-        break;
-    }
-
-    Reset();
     return;
   }
 

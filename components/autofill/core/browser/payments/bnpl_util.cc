@@ -57,6 +57,19 @@ bool BnplIssuerContext::IsEligible() const {
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
     case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow:
     case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorFailureToGenerateApc:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorMissingServerResponse:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorNegativeAmount:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorAmountMissing:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorMissingCurrency:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorUnsupportedCurrency:
+    case BnplIssuerEligibilityForPage::kNotEligibleAmountExtractionErrorTimeout:
       return false;
   }
   NOTREACHED();
@@ -78,7 +91,8 @@ bool BnplTosModel::operator==(const BnplTosModel&) const = default;
 
 std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     const AutofillClient& client,
-    std::optional<int64_t> checkout_amount) {
+    std::optional<int64_t> checkout_amount,
+    std::optional<AiAmountExtractionResult::Error> amount_extraction_error) {
   AutofillOptimizationGuideDecider* autofill_optimization_guide =
       client.GetAutofillOptimizationGuideDecider();
   const GURL& merchant_url =
@@ -91,8 +105,8 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
       client.GetPaymentsAutofillClient()
           ->GetPaymentsDataManager()
           .GetBnplIssuers(),
-      [&autofill_optimization_guide, &merchant_url,
-       checkout_amount](const BnplIssuer& issuer) -> BnplIssuerContext {
+      [&autofill_optimization_guide, &merchant_url, checkout_amount,
+       amount_extraction_error](const BnplIssuer& issuer) -> BnplIssuerContext {
         // For MVP, BNPL will only target US users and support USD.
         const base::optional_ref<const BnplIssuer::EligiblePriceRange>
             price_range =
@@ -105,6 +119,37 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
                 issuer.issuer_id(), merchant_url)) {
           eligibility = BnplIssuerEligibilityForPage::
               kNotEligibleIssuerDoesNotSupportMerchant;
+        } else if (amount_extraction_error.has_value()) {
+          switch (amount_extraction_error.value()) {
+            case AiAmountExtractionResult::Error::kFailureToGenerateApc:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorFailureToGenerateApc;
+              break;
+            case AiAmountExtractionResult::Error::kMissingServerResponse:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorMissingServerResponse;
+              break;
+            case AiAmountExtractionResult::Error::kNegativeAmount:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorNegativeAmount;
+              break;
+            case AiAmountExtractionResult::Error::kAmountMissing:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorAmountMissing;
+              break;
+            case AiAmountExtractionResult::Error::kMissingCurrency:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorMissingCurrency;
+              break;
+            case AiAmountExtractionResult::Error::kUnsupportedCurrency:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorUnsupportedCurrency;
+              break;
+            case AiAmountExtractionResult::Error::kTimeout:
+              eligibility = BnplIssuerEligibilityForPage::
+                  kNotEligibleAmountExtractionErrorTimeout;
+              break;
+          }
         } else if (!checkout_amount) {
           // The only case this code gets hit is if the BNPL issuer needs to be
           // shown before the LLM call returns a valid checkout amount.
@@ -264,6 +309,27 @@ std::u16string GetBnplIssuerSelectionOptionText(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
           formatter.Format(base::NumberToString(
               eligible_price_range->price_upper_bound / 1'000'000.0)));
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorFailureToGenerateApc:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorMissingServerResponse:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorNegativeAmount:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorAmountMissing:
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorMissingCurrency:
+      // TODO(crbug.com/477689220): Use the correct error message for each
+      // error type once strings are aligned by UX.
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorUnsupportedCurrency:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE);
+    case BnplIssuerEligibilityForPage::kNotEligibleAmountExtractionErrorTimeout:
+      // TODO(crbug.com/477689220): Use the correct error message for each
+      // error type once strings are aligned by UX.
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
   }
   NOTREACHED();
 }

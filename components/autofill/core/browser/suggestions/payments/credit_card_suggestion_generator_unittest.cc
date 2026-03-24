@@ -1674,7 +1674,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
             extracted_amount_in_micros);
   std::vector<BnplIssuer> bnpl_issuers = payments_data().GetBnplIssuers();
   EXPECT_THAT(
-      updated_suggestions[current_suggestion_index++],
+      updated_suggestions[current_suggestion_index],
       AllOf(EqualsSuggestion(
                 SuggestionType::kBnplEntry,
                 l10n_util::GetStringUTF16(
@@ -1685,6 +1685,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                     bnpl_issuers[1].GetDisplayName(),
                     bnpl_issuers[0].GetDisplayName()))}}),
             EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
+  EXPECT_EQ(updated_suggestions[current_suggestion_index++].acceptability,
+            Suggestion::Acceptability::kAcceptable);
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
@@ -1694,6 +1696,24 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
               AllOf(EqualsSuggestion(SuggestionType::kManageCreditCard),
                     EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
+}
+
+// Ensures that `GetSuggestionsForBnpl` sets the acceptability to
+// `kUnacceptableWithDeactivatedStyle` when there is an amount extraction error.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetSuggestionsForBnpl_AmountExtractionError) {
+  payments::BnplIssuerContext issuer_context(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+      payments::BnplIssuerEligibilityForPage::
+          kNotEligibleAmountExtractionErrorUnsupportedCurrency);
+
+  std::vector<Suggestion> suggestions =
+      GetSuggestionsForBnpl({issuer_context}, /*app_locale=*/"en-US",
+                            /*is_card_number_field_empty=*/true);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0].acceptability,
+            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
 }
 
 // Ensures that the separator and pay over time option is generated with

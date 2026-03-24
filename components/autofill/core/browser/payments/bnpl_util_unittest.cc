@@ -471,5 +471,71 @@ TEST_F(BnplUtilTest, IsEligibleForBnpl_UrlSupportedByOneIssuer) {
   EXPECT_TRUE(IsEligibleForBnpl(autofill_client()));
 }
 
+struct AmountExtractionErrorParams {
+  AiAmountExtractionResult::Error error;
+  BnplIssuerEligibilityForPage expected_eligibility;
+  int expected_string_id;
+};
+
+class BnplUtilAmountExtractionErrorTest
+    : public BnplUtilTest,
+      public testing::WithParamInterface<AmountExtractionErrorParams> {};
+
+TEST_P(BnplUtilAmountExtractionErrorTest, GetSortedBnplIssuerContext) {
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+
+  const AmountExtractionErrorParams& params = GetParam();
+  std::vector<BnplIssuerContext> contexts = GetSortedBnplIssuerContext(
+      autofill_client(), /*checkout_amount=*/std::nullopt, params.error);
+  ASSERT_EQ(contexts.size(), 1U);
+  EXPECT_EQ(contexts[0].eligibility, params.expected_eligibility);
+  EXPECT_FALSE(contexts[0].IsEligible());
+  EXPECT_EQ(GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+                                             contexts),
+            l10n_util::GetStringUTF16(params.expected_string_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BnplUtilAmountExtractionErrorTest,
+    testing::Values(
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kFailureToGenerateApc,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorFailureToGenerateApc,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kMissingServerResponse,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorMissingServerResponse,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kNegativeAmount,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorNegativeAmount,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kAmountMissing,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorAmountMissing,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kMissingCurrency,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorMissingCurrency,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kUnsupportedCurrency,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorUnsupportedCurrency,
+            IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE},
+        AmountExtractionErrorParams{
+            AiAmountExtractionResult::Error::kTimeout,
+            BnplIssuerEligibilityForPage::
+                kNotEligibleAmountExtractionErrorTimeout,
+            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE}));
+
 }  // namespace
 }  // namespace autofill::payments

@@ -382,6 +382,10 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
         Suggestion::Text(issuer_context.issuer.GetDisplayName(),
                          Suggestion::Text::IsPrimary(true));
     if (is_card_number_field_empty) {
+      bnpl_suggestion.acceptability =
+          issuer_context.IsEligible()
+              ? Suggestion::Acceptability::kAcceptable
+              : Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
       bnpl_suggestion.labels = {
           {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
               issuer_context.issuer.issuer_id(), app_locale,

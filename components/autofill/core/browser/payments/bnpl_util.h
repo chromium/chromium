@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "ui/gfx/range/range.h"
@@ -31,7 +33,14 @@ enum class BnplIssuerEligibilityForPage {
   kNotEligibleCheckoutAmountTooLow = 3,
   kNotEligibleCheckoutAmountTooHigh = 4,
   kTemporarilyEligibleCheckoutAmountNotYetKnown = 5,
-  kMaxValue = kTemporarilyEligibleCheckoutAmountNotYetKnown
+  kNotEligibleAmountExtractionErrorFailureToGenerateApc = 6,
+  kNotEligibleAmountExtractionErrorMissingServerResponse = 7,
+  kNotEligibleAmountExtractionErrorNegativeAmount = 8,
+  kNotEligibleAmountExtractionErrorAmountMissing = 9,
+  kNotEligibleAmountExtractionErrorMissingCurrency = 10,
+  kNotEligibleAmountExtractionErrorUnsupportedCurrency = 11,
+  kNotEligibleAmountExtractionErrorTimeout = 12,
+  kMaxValue = kNotEligibleAmountExtractionErrorTimeout
 };
 
 // A struct containing a BNPL issuer and the context necessary to display it.
@@ -87,7 +96,9 @@ struct BnplTosModel {
 // uneligible + unlinked.
 std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     const AutofillClient& client,
-    std::optional<int64_t> checkout_amount);
+    std::optional<int64_t> checkout_amount,
+    std::optional<AiAmountExtractionResult::Error> amount_extraction_error =
+        std::nullopt);
 
 // Returns the appropriate suggestion icon based on the issuer and its link
 // status.

@@ -2020,6 +2020,30 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
 }
 
+// Test that when amount extraction error is provided,
+// `GetSortedBnplIssuerContext` returns BnplIssuerContext containing the
+// Issuer and corresponding error eligibility.
+TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_AmountExtractionError) {
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(true));
+
+  std::vector<BnplIssuerContext> issuer_contexts = GetSortedBnplIssuerContext(
+      autofill_client(), /*checkout_amount=*/std::nullopt,
+      AiAmountExtractionResult::Error::kTimeout);
+
+  EXPECT_THAT(issuer_contexts,
+              ElementsAre(EqualsBnplIssuerContext(
+                  IssuerId::kBnplAfterpay,
+                  BnplIssuerEligibilityForPage::
+                      kNotEligibleAmountExtractionErrorTimeout)));
+}
+
 // Tests that the `kBnplSuggestionAccepted` event is logged once when
 // `OnUserDecisionToUseBnpl()` is called.
 TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_SuggestionAcceptedLogged) {
@@ -2036,6 +2060,22 @@ TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_SuggestionAcceptedLogged) {
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
+}
+
+// Tests that if `OnUserDecisionToUseBnpl()` is called when there is already
+// an ongoing flow and the feature `kAutofillEnablePayNowPayLaterTabs` is
+// enabled, the method returns early without resetting the flow state.
+TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_AlreadyOngoing) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
+  bnpl_manager_->OnUserDecisionToUseBnpl(kAmount, base::DoNothing());
+  auto* expected_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  EXPECT_NE(expected_state, nullptr);
+
+  // Invoking again should return early and not replace the flow state.
+  bnpl_manager_->OnUserDecisionToUseBnpl(kAmount, base::DoNothing());
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), expected_state);
 }
 
 TEST_F(BnplManagerTest,
