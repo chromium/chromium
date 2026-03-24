@@ -13,7 +13,7 @@ entries and metrics.
 import argparse
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 import chromium_src.tools.metrics.ukm.builders_template as builders_template

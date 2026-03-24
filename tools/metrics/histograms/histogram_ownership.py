@@ -13,7 +13,7 @@ import os
 import sys
 from xml.etree import ElementTree as ET
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths

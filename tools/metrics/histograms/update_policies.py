@@ -15,7 +15,7 @@ import os
 import sys
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.third_party.pyyaml as pyyaml
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model

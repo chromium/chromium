@@ -9,7 +9,7 @@ import re
 import sys
 import xml.dom.minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model

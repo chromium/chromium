@@ -9,7 +9,7 @@ from typing import List, Any
 from dataclasses import dataclass
 from parameterized import parameterized
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.extract_actions as extract_actions

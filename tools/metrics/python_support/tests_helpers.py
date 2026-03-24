@@ -9,7 +9,7 @@ from typing import Iterable, List, Set, Dict
 from dataclasses import dataclass
 import tempfile
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))

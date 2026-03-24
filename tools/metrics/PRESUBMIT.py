@@ -18,7 +18,7 @@ from typing import Iterable, Any, Type, List, Dict
 #                            test as recommended by presubmit docs:
 # https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 sys.path.append('.')
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 sys.path.remove('.')
 

@@ -12,7 +12,7 @@ for those entries and metrics.
 import argparse
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
 import chromium_src.tools.metrics.private_metrics.dkm_builders_template as dkm_builders_template

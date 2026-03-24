@@ -7,7 +7,7 @@ import contextlib
 import os
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import typ
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers

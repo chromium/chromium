@@ -10,7 +10,7 @@ import os
 import shutil
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.python.google.path_utils as path_utils
 import chromium_src.tools.metrics.common.diff_util as diff_util

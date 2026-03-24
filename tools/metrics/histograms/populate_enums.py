@@ -7,7 +7,7 @@
 from collections import namedtuple
 import xml.dom.minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
 import chromium_src.tools.metrics.common.xml_utils as xml_utils

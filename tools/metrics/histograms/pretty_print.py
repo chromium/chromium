@@ -17,7 +17,7 @@ from __future__ import with_statement
 import argparse
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.etree_util as etree_util
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util

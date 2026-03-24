@@ -5,7 +5,7 @@
 into definitions for different targets."""
 
 from abc import ABC, abstractmethod
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 from chromium_src.tools.metrics.structured.codegen_util import Util
 

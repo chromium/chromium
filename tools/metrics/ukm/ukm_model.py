@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 # """Model objects for ukm.xml contents."""
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.models as models
 import chromium_src.tools.metrics.common.model_shared as model_shared

@@ -12,7 +12,7 @@ import sys
 import typing
 
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 # Import the shared codegen library for its hashing function, which is the
 # same hashing function as used for flag names.

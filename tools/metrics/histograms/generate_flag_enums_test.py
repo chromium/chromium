@@ -5,7 +5,7 @@
 
 import unittest
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.generate_flag_enums as generate_flag_enums
 

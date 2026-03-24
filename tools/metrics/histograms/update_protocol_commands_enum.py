@@ -11,7 +11,7 @@ import ctypes
 
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.third_party.inspector_protocol.pdl as pdl
 import chromium_src.tools.metrics.common.path_util as path_util

@@ -13,7 +13,7 @@ import textwrap as tw
 import xml.etree.ElementTree as ET
 import re
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.structured.sync.model_util as util
 

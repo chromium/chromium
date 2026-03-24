@@ -7,7 +7,7 @@
 import os
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
 

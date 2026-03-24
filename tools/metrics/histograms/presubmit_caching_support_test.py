@@ -8,7 +8,7 @@ import unittest
 
 from typing import Optional
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.presubmit_caching_support as presubmit_caching_support
 

@@ -8,7 +8,7 @@ import sys
 import argparse
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_validations as private_metrics_validations
 

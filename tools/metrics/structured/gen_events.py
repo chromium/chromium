@@ -11,7 +11,7 @@ header and implementation file exposing builders for those events.
 import argparse
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
 import chromium_src.tools.metrics.structured.code_generator_ts as code_generator_ts

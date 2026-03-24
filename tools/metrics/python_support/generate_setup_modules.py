@@ -37,7 +37,7 @@ _TARGET_FILE_TEMPLATE = """# Copyright 2026 The Chromium Authors
 # file which should be imported at the top of each script, like so:
 #
 # ```
-# import setup_modules
+# import setup_modules  # pylint: disable=unused-import
 #
 # # Example import afterwards: Importing src/tools/metrics/common/models.py
 # import chrome_src.tools.metrics.common.models as models

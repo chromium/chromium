@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 from typing import Callable, Iterable, Tuple, List, Dict, Optional, Set, Union
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.pretty_print_xml as pretty_print_xml
 

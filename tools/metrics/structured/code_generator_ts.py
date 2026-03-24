@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
 from chromium_src.tools.metrics.structured.code_generator import (

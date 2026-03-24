@@ -5,7 +5,7 @@
 import unittest
 import xml.dom.minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths

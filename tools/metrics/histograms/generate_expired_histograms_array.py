@@ -10,7 +10,7 @@ import os
 import re
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml

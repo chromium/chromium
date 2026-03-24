@@ -6,7 +6,7 @@
 import unittest
 import os
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 from chromium_src.tools.metrics.ukm.codegen import EventInfo
 from chromium_src.tools.metrics.ukm.codegen import MetricInfo
