@@ -781,7 +781,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       isInterlaced?: boolean): void {
     // Truncate at two decimal places for display. If the refresh rate
     // is a whole number, remove the mantissa.
-    let refreshRate = Number(rate).toFixed(2);
+    let refreshRate = rate.toFixed(2);
     if (refreshRate.endsWith('.00')) {
       refreshRate = refreshRate.substring(0, refreshRate.length - 3);
     }
@@ -789,7 +789,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const id = isInterlaced ? 'displayRefreshRateInterlacedMenuItem' :
                               'displayRefreshRateMenuItem';
 
-    const refreshRateOption = this.i18n(id, refreshRate.toString());
+    const refreshRateOption = this.i18n(id, refreshRate);
 
     this.parentModeToRefreshRateMap_.get(parentModeIndex)!.push({
       name: refreshRateOption,

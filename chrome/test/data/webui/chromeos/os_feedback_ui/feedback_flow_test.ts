@@ -133,10 +133,7 @@ suite('FeedbackFlowTestSuite', () => {
 
       window.history.replaceState(null, '', '?' + queryParams.toString());
     } else {
-      window.history.replaceState(
-          null, '',
-          '?' +
-              '');
+      window.history.replaceState(null, '', '?');
     }
   }
 
@@ -939,10 +936,7 @@ suite('FeedbackFlowTestSuite', () => {
       'AdditionalContextParametersNotProvidedInUrl_FeedbackContext_UsesDefault',
       async () => {
         // Replace current querystring with the new one.
-        window.history.replaceState(
-            null, '',
-            '?' +
-                '');
+        window.history.replaceState(null, '', '?');
         await initializePage();
         page.setCurrentStateForTesting(FeedbackFlowState.SEARCH);
         const descriptionElement =

@@ -1981,8 +1981,7 @@ suite('scanningAppTest', function() {
     await changeSelectedValue(
         getSettingSelect('#scannerSelect'), secondScannerId);
     await changeSelectedValue(
-        getSettingSelect('#sourceSelect'),
-        scannerSetting.sourceName.toString());
+        getSettingSelect('#sourceSelect'), scannerSetting.sourceName);
     await changeSelectedValue(
         getSettingSelect('#fileTypeSelect'),
         scannerSetting.fileType.toString());
@@ -1996,8 +1995,7 @@ suite('scanningAppTest', function() {
         getSettingSelect('#resolutionSelect'),
         scannerSetting.resolutionDpi.toString());
 
-    assertEquals(
-        scannerSetting.sourceName.toString(), scanningApp.selectedSource);
+    assertEquals(scannerSetting.sourceName, scanningApp.selectedSource);
     assertEquals(
         scannerSetting.fileType.toString(), scanningApp.selectedFileType);
     assertEquals(

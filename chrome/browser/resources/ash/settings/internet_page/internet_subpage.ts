@@ -419,7 +419,7 @@ export class SettingsInternetSubpageElement extends
       if (this.shouldShowCellularNetworkList_() && this.isDeviceInhibited_()) {
         this.showSpinner = false;
       } else {
-        this.showSpinner = !!this.deviceState.scanning;
+        this.showSpinner = this.deviceState.scanning;
       }
     }
 
@@ -811,12 +811,12 @@ export class SettingsInternetSubpageElement extends
     }
 
     if (state.type === NetworkType.kCellular) {
-      return !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
+      return this.globalPolicy.allowOnlyPolicyCellularNetworks;
     }
 
-    return !!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
-        (!!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
-         !!this.deviceState && !!this.deviceState.managedNetworkAvailable) ||
+    return this.globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
+        (this.globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
+         !!this.deviceState && this.deviceState.managedNetworkAvailable) ||
         (!!this.globalPolicy.blockedHexSsids &&
          this.globalPolicy.blockedHexSsids.includes(
              state.typeState.wifi!.hexSsid));

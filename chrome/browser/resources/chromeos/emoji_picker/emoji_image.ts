@@ -80,7 +80,7 @@ export class EmojiImageComponent extends PolymerElement {
 
     // Moves focus to the correct sibling.
     if (event.code === 'Tab') {
-      const siblingIndex = this.index + (event.shiftKey ? -1 : +1);
+      const siblingIndex = this.index + (event.shiftKey ? -1 : 1);
       const sibling = this.findSiblingEmojiImageByIndex(siblingIndex);
 
       if (sibling !== null) {

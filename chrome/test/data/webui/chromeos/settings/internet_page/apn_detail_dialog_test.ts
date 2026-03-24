@@ -251,7 +251,7 @@ suite('<apn-detail-dialog>', () => {
         };
         assertFalse(isAdvancedSettingShowing());
         toggleAdvancedSettings();
-        assertTrue(!!isAdvancedSettingShowing());
+        assertTrue(isAdvancedSettingShowing());
         toggleAdvancedSettings();
         assertFalse(isAdvancedSettingShowing());
         toggleAdvancedSettings();

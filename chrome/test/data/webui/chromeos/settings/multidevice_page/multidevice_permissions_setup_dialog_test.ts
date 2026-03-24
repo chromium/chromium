@@ -256,8 +256,8 @@ suite('<settings-multidevice-permissions-setup-dialog>', () => {
     const title =
         permissionsSetupDialog.shadowRoot!.querySelector<HTMLElement>('#title');
     assertTrue(!!title);
-    assertTrue(!!title.hasAttribute('aria-live'));
-    assertTrue(!!title.hasAttribute('aria-describedby'));
+    assertTrue(title.hasAttribute('aria-live'));
+    assertTrue(title.hasAttribute('aria-describedby'));
 
     assertEquals(0, browserProxy.getCallCount('setFeatureEnabledState'));
 

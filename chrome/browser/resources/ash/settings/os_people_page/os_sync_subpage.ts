@@ -536,7 +536,7 @@ export class OsSettingsSyncSubpageElement extends
   private computeShowExistingPassphraseBelowAccount_(): boolean {
     return this.syncStatus !== undefined &&
         this.syncStatus.signedInState === SignedInState.SYNCING &&
-        this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
+        this.syncPrefs !== undefined && this.syncPrefs.passphraseRequired;
   }
 
   private onSyncAdvancedClick_(): void {

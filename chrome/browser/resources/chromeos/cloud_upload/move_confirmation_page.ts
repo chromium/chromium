@@ -8,6 +8,7 @@ import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
@@ -60,8 +61,11 @@ export class MoveConfirmationPageElement extends HTMLElement {
     document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
-  $<T extends HTMLElement>(query: string): T {
-    return this.shadowRoot!.querySelector(query)!;
+  $<T extends HTMLElement = HTMLElement>(query: string): T {
+    const el = this.shadowRoot!.querySelector<T>(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
   }
 
   async setDialogAttributes(
@@ -89,7 +93,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.updateAnimation();
 
     // Title.
-    const titleElement = this.$<HTMLElement>('#title');
+    const titleElement = this.$('#title');
     if (isCopyOperation) {
       titleElement.innerText = loadTimeData.getStringF(
           isPlural ? 'moveConfirmationCopyTitlePlural' :
@@ -133,7 +137,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
     }
 
     // Action button.
-    const actionButton = this.$<HTMLElement>('.action-button');
+    const actionButton = this.$('.action-button');
     actionButton.innerText =
         loadTimeData.getString(isCopyOperation ? 'copyAndOpen' : 'moveAndOpen');
   }
@@ -152,8 +156,8 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.animationPlayer.setAttribute('dynamic', 'true');
     this.animationPlayer.setAttribute('aria-hidden', 'true');
     this.animationPlayer.autoplay = true;
-    const animationWrapper = this.$<HTMLElement>('.animation-wrapper');
-    const playPauseIcon = this.$<HTMLElement>('#playPauseIcon');
+    const animationWrapper = this.$('.animation-wrapper');
+    const playPauseIcon = this.$('#playPauseIcon');
     animationWrapper.insertBefore(this.animationPlayer, playPauseIcon);
   }
 
@@ -169,7 +173,10 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onActionButtonClick(): void {
-    const checkbox = this.$<CrCheckboxElement>('#always-copy-or-move-checkbox');
+    // Note: Not using $() here, since the checkbox could have been removed from
+    // the DOM in setDialogAttributes.
+    const checkbox = this.shadowRoot!.querySelector<CrCheckboxElement>(
+        '#always-copy-or-move-checkbox');
     const setAlwaysMove = !!(checkbox && checkbox.checked);
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       this.proxy.handler.setAlwaysMoveOfficeFilesToOneDrive(setAlwaysMove);
@@ -197,19 +204,20 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onPlayPauseButtonClick(): void {
+    assert(this.playPauseButton);
     const animation = this.$<LottieRenderer>('#animation');
-    const shouldPlay = this.playPauseButton!.className === 'play';
+    const shouldPlay = this.playPauseButton.className === 'play';
     if (shouldPlay) {
       animation.play();
       // Update button to Pause.
-      this.playPauseButton!.className = 'pause';
-      this.playPauseButton!.ariaLabel =
+      this.playPauseButton.className = 'pause';
+      this.playPauseButton.ariaLabel =
           loadTimeData.getString('animationPauseText');
     } else {
       animation.pause();
       // Update button to Play.
-      this.playPauseButton!.className = 'play';
-      this.playPauseButton!.ariaLabel =
+      this.playPauseButton.className = 'play';
+      this.playPauseButton.ariaLabel =
           loadTimeData.getString('animationPlayText');
     }
   }

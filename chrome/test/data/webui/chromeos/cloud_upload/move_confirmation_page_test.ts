@@ -121,7 +121,7 @@ suite('<move-confirmation-page>', () => {
       },
       officeMoveConfirmationShownForDrive: false,
     });
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
+    const checkbox = moveConfirmationPageApp.shadowRoot!.querySelector(
         '#always-copy-or-move-checkbox');
     assertFalse(!!checkbox);
 
@@ -168,8 +168,9 @@ suite('<move-confirmation-page>', () => {
           alwaysMoveOfficeFilesToOneDrive: true,
           officeMoveConfirmationShownForDrive: true,
         });
-        const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-            '#always-copy-or-move-checkbox');
+        const checkbox = moveConfirmationPageApp.shadowRoot!
+                             .querySelector<CrCheckboxElement>(
+                                 '#always-copy-or-move-checkbox');
         assertTrue(!!checkbox);
 
         // Click checkbox.
@@ -226,8 +227,9 @@ suite('<move-confirmation-page>', () => {
           alwaysMoveOfficeFilesToOneDrive: true,
           officeMoveConfirmationShownForDrive: true,
         });
-        const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-            '#always-copy-or-move-checkbox');
+        const checkbox = moveConfirmationPageApp.shadowRoot!
+                             .querySelector<CrCheckboxElement>(
+                                 '#always-copy-or-move-checkbox');
         assertTrue(!!checkbox);
 
         // Don't click checkbox.
@@ -276,8 +278,9 @@ suite('<move-confirmation-page>', () => {
           officeMoveConfirmationShownForDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
         });
-        const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-                                '#always-copy-or-move-checkbox') !== null;
+        const hasCheckbox = moveConfirmationPageApp.shadowRoot!
+                                .querySelector<CrCheckboxElement>(
+                                    '#always-copy-or-move-checkbox') !== null;
         assertFalse(hasCheckbox);
       });
 
@@ -299,8 +302,9 @@ suite('<move-confirmation-page>', () => {
       },
       officeMoveConfirmationShownForOneDrive: false,
     });
-    const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-                            '#always-copy-or-move-checkbox') !== null;
+    const hasCheckbox =
+        moveConfirmationPageApp.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#always-copy-or-move-checkbox') !== null;
     assertFalse(hasCheckbox);
 
     moveConfirmationPageApp.$('.action-button').click();
@@ -348,8 +352,9 @@ suite('<move-confirmation-page>', () => {
           alwaysMoveOfficeFilesToOneDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
         });
-        const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-            '#always-copy-or-move-checkbox');
+        const checkbox = moveConfirmationPageApp.shadowRoot!
+                             .querySelector<CrCheckboxElement>(
+                                 '#always-copy-or-move-checkbox');
         assertTrue(!!checkbox);
 
         // Click checkbox.
@@ -409,8 +414,9 @@ suite('<move-confirmation-page>', () => {
           alwaysMoveOfficeFilesToOneDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
         });
-        const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-            '#always-copy-or-move-checkbox');
+        const checkbox = moveConfirmationPageApp.shadowRoot!
+                             .querySelector<CrCheckboxElement>(
+                                 '#always-copy-or-move-checkbox');
         assertTrue(!!checkbox);
 
         // Don't click checkbox.
@@ -459,8 +465,9 @@ suite('<move-confirmation-page>', () => {
           },
           officeMoveConfirmationShownForOneDrive: false,
         });
-        const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-                                '#always-copy-or-move-checkbox') !== null;
+        const hasCheckbox = moveConfirmationPageApp.shadowRoot!
+                                .querySelector<CrCheckboxElement>(
+                                    '#always-copy-or-move-checkbox') !== null;
         assertFalse(hasCheckbox);
       });
 
@@ -484,8 +491,9 @@ suite('<move-confirmation-page>', () => {
       alwaysMoveOfficeFilesToOneDrive: false,
       officeMoveConfirmationShownForDrive: true,
     });
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
+    const checkbox =
+        moveConfirmationPageApp.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
     assertTrue(checkbox.checked);
   });
@@ -509,8 +517,9 @@ suite('<move-confirmation-page>', () => {
       alwaysMoveOfficeFilesToOneDrive: true,
       officeMoveConfirmationShownForOneDrive: true,
     });
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
+    const checkbox =
+        moveConfirmationPageApp.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
     assertTrue(checkbox.checked);
   });
@@ -540,8 +549,9 @@ suite('<move-confirmation-page>', () => {
     assertTrue(bodyText.innerText.includes('Google Drive'));
 
     // Checkbox.
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
+    const checkbox =
+        moveConfirmationPageApp.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
     assertTrue(checkbox.innerText.includes('Don\'t ask again'));
   });
@@ -571,8 +581,9 @@ suite('<move-confirmation-page>', () => {
     assertTrue(bodyText.innerText.includes('OneDrive'));
 
     // Checkbox.
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
+    const checkbox =
+        moveConfirmationPageApp.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
     assertTrue(checkbox.innerText.includes('Don\'t ask again'));
   });

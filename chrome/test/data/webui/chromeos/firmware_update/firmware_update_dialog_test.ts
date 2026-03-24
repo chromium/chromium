@@ -455,8 +455,8 @@ suite('FirmwareUpdateDialogTest', () => {
       assertTrue(isVisible(
           updateDialogElement.shadowRoot.querySelector('#updateProgressBar')));
       assertTrue(
-          !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar')!
-                .hasAttribute('disabled'));
+          updateDialogElement.shadowRoot.querySelector('#updateProgressBar')!
+              .hasAttribute('disabled'));
       // Indeterminate progress should not be shown.
       assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
           '#indeterminateProgressBar')));

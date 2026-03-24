@@ -92,7 +92,7 @@ suite('SeaPenImagesElementTest', function() {
         'should be at least 4 loading placeholders available.');
     assertTrue(
         Array.from(loadingThumbnailPlaceholders)
-            .every(placeholder => !!placeholder.active),
+            .every(placeholder => placeholder.active),
         'all placeholders should be active.');
   });
 
@@ -114,7 +114,7 @@ suite('SeaPenImagesElementTest', function() {
         4, loadingThumbnailPlaceholders.length,
         'should be 4 loading placeholders available.');
     assertTrue(Array.from(loadingThumbnailPlaceholders)
-                   .every(placeholder => !!placeholder.active));
+                   .every(placeholder => placeholder.active));
   });
 
   test('thumbnail placeholders not active when hidden', async () => {
@@ -436,7 +436,7 @@ suite('SeaPenImagesElementTest', function() {
         'should be at least 4 loading placeholders available.');
     assertTrue(
         Array.from(loadingThumbnailPlaceholders)
-            .every(placeholder => !!placeholder.active),
+            .every(placeholder => placeholder.active),
         'all placeholders should be active.');
 
     SeaPenRouterElement.instance().selectSeaPenTemplate(

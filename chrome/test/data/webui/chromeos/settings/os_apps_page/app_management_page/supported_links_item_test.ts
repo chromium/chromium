@@ -390,7 +390,7 @@ suite('AppManagementSupportedLinksItemElement', function() {
         supportedLinksItem.shadowRoot!.querySelector<CrRadioGroupElement>(
             '#radioGroup');
     assertTrue(!!radioGroup);
-    assertTrue(!!radioGroup.disabled);
+    assertTrue(radioGroup.disabled);
   });
 
   test('can open and close supported links list dialog', async () => {

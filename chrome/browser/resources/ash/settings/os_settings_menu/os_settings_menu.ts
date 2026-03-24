@@ -438,7 +438,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       },
     ];
 
-    return menuItems.filter(({section}) => !!this.pageAvailability[section]);
+    return menuItems.filter(({section}) => this.pageAvailability[section]);
   }
 
   /**

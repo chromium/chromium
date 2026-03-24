@@ -180,7 +180,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   /** Stamp page in the DOM depending on page availability */
   private shouldStampPage_(
       pageAvailability: OsPageAvailability, pageName: Section): boolean {
-    return !!pageAvailability[pageName];
+    return pageAvailability[pageName];
   }
 
   private computeShowSecondaryUserBanner_(): boolean {

@@ -210,7 +210,7 @@ export class SettingsTrafficCountersElement extends
     }
     let totalBytes = BigInt(0);
     for (const sourceDict of network.counters) {
-      totalBytes += BigInt(sourceDict.rxBytes) + BigInt(sourceDict.txBytes);
+      totalBytes += sourceDict.rxBytes + sourceDict.txBytes;
     }
     return getDataInfoString(totalBytes);
   }

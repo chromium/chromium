@@ -142,14 +142,14 @@ export class FakeNetworkConfig {
     this.globalPolicy_ =
         /** @type {!GlobalPolicy} */ ({
           allowApnModification: true,
-          allow_cellular_sim_lock: true,
-          allow_only_policy_cellular_networks: false,
-          allow_only_policy_networks_to_autoconnect: false,
-          allow_only_policy_wifi_networks_to_connect: false,
-          allow_only_policy_wifi_networks_to_connect_if_available: false,
-          dns_queries_monitored: false,
-          report_xdr_events_enabled: false,
-          blocked_hex_ssids: [],
+          allowCellularSimLock: true,
+          allowOnlyPolicyCellularNetworks: false,
+          allowOnlyPolicyNetworksToAutoconnect: false,
+          allowOnlyPolicyWifiNetworksToConnect: false,
+          allowOnlyPolicyWifiNetworksToConnectIfAvailable: false,
+          dnsQueriesMonitored: false,
+          reportXdrEventsEnabled: false,
+          blockedHexSsids: [],
         });
 
     const eth0 = OncMojo.getDefaultNetworkState(NetworkType.kEthernet, 'eth0');
@@ -810,8 +810,8 @@ export class FakeNetworkConfig {
     const trafficCounters = this.trafficCountersMap_.get(guid);
     assert(!!trafficCounters, 'Network not found: ' + guid);
     trafficCounters.forEach(function(counter) {
-      counter.rxBytes = 0;
-      counter.txBytes = 0;
+      counter.rxBytes = 0n;
+      counter.txBytes = 0n;
     });
     this.methodCalled('resetTrafficCounters');
   }

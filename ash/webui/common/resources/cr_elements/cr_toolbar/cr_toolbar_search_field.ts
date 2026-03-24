@@ -124,7 +124,7 @@ export class CrToolbarSearchFieldElement extends
   }
 
   private computeIconAriaHidden_(narrow: boolean): string {
-    return Boolean(!narrow || this.hasSearchText).toString();
+    return (!narrow || this.hasSearchText).toString();
   }
 
   private computeIsSpinnerShown_(): boolean {

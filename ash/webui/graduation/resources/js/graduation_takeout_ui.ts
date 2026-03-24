@@ -148,8 +148,7 @@ export class GraduationTakeoutUi extends PolymerElement {
 
     this.webviewReloadHelper = new WebviewReloadHelper();
 
-    this.startTransferUrl =
-        loadTimeData.getString('startTransferUrl').toString();
+    this.startTransferUrl = loadTimeData.getString('startTransferUrl');
   }
 
   onAuthComplete(result: AuthResult): void {

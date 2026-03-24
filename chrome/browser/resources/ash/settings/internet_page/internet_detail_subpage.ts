@@ -805,7 +805,7 @@ export class SettingsInternetDetailPageElement extends
       return;
     }
     const config = this.getDefaultConfigProperties_();
-    config.autoConnect = {value: !!this.autoConnectPref_.value};
+    config.autoConnect = {value: this.autoConnectPref_.value};
     this.setMojoNetworkProperties_(config);
   }
 
@@ -814,7 +814,7 @@ export class SettingsInternetDetailPageElement extends
       return;
     }
     recordSettingChange(
-        Setting.kWifiHidden, {boolValue: !!this.hiddenPref_.value});
+        Setting.kWifiHidden, {boolValue: this.hiddenPref_.value});
     const config = this.getDefaultConfigProperties_();
     config.typeConfig.wifi!.hiddenSsid = this.hiddenPref_.value ?
         HiddenSsidMode.kEnabled :
@@ -1252,7 +1252,7 @@ export class SettingsInternetDetailPageElement extends
     }
 
     if (managedProperties.type === NetworkType.kCellular &&
-        !!globalPolicy.allowOnlyPolicyCellularNetworks) {
+        globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;
     }
 
@@ -1261,9 +1261,9 @@ export class SettingsInternetDetailPageElement extends
     }
     const hexSsid =
         OncMojo.getActiveString(managedProperties.typeProperties.wifi!.hexSsid);
-    return !!globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
-        (!!globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
-         !!managedNetworkAvailable) ||
+    return globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
+        (globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
+         managedNetworkAvailable) ||
         (!!hexSsid && !!globalPolicy.blockedHexSsids &&
          globalPolicy.blockedHexSsids.includes(hexSsid));
   }
@@ -1754,7 +1754,7 @@ export class SettingsInternetDetailPageElement extends
 
   private showHiddenNetworkWarning_(): boolean {
     return loadTimeData.getBoolean('showHiddenNetworkWarning') &&
-        !!this.autoConnectPref_.value && !!this.managedProperties_ &&
+        this.autoConnectPref_.value && !!this.managedProperties_ &&
         this.managedProperties_.type === NetworkType.kWiFi &&
         !!OncMojo.getActiveValue(
             this.managedProperties_.typeProperties.wifi!.hiddenSsid);

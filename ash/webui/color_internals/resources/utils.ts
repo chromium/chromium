@@ -4,5 +4,5 @@
 
 export function getRGBAFromComputedStyle(element: HTMLElement): string {
   const computedStyle = window.getComputedStyle(element);
-  return computedStyle.backgroundColor.toString();
+  return computedStyle.backgroundColor;
 }

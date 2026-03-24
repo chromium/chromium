@@ -124,7 +124,7 @@ suite('<main-page-container>', () => {
     ];
 
     pages.forEach(({pageName, elementName}) => {
-      test(`${String(pageName)} page is controlled by pageAvailability`, () => {
+      test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available
         mainPageContainer.pageAvailability = {
           ...mainPageContainer.pageAvailability,

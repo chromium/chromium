@@ -951,7 +951,7 @@ suite('<settings-internet-page>', () => {
         'settings-internet-detail-subpage');
     assertTrue(!!detailPage);
     assertTrue(!!detailPage.globalPolicy);
-    assertFalse(!!detailPage.globalPolicy.allowOnlyPolicyCellularNetworks);
+    assertFalse(detailPage.globalPolicy.allowOnlyPolicyCellularNetworks);
 
     // Set global policy should also update the global policy
     mojoApi.setGlobalPolicy({

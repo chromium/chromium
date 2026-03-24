@@ -62,7 +62,7 @@ suite('SeaPenFreeformElementTest', function() {
     const tabContainer =
         freeformElement.shadowRoot!.querySelector<HTMLElement>('#tabContainer');
     assertTrue(!!tabContainer);
-    assertTrue(!!tabContainer.hidden, 'tab container is not shown');
+    assertTrue(tabContainer.hidden, 'tab container is not shown');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector('#promptingGuide'),
         'Prompting guide is shown');
@@ -100,7 +100,7 @@ suite('SeaPenFreeformElementTest', function() {
             freeformElement.shadowRoot!.querySelector<HTMLElement>(
                 '#tabContainer');
         assertTrue(!!tabContainer);
-        assertFalse(!!tabContainer.hidden, 'tab container is shown');
+        assertFalse(tabContainer.hidden, 'tab container is shown');
         assertTrue(
             !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
                 SeaPenImagesElement.is),

@@ -1260,7 +1260,7 @@ class ChoobeDrivePinningScreenTester extends ScreenElementApi {
   isFileSyncEnabled(): boolean {
     const drivePinningToggle = this.drivePinningToggle.element();
     assert(drivePinningToggle instanceof CrToggleElement);
-    return !!drivePinningToggle.checked;
+    return drivePinningToggle.checked;
   }
 
   getSpaceInformationString(): string {

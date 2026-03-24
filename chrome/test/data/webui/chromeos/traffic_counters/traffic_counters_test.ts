@@ -9,6 +9,8 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {NetworkHealthContainerElement} from 'chrome://resources/ash/common/network_health/network_health_container.js';
 import type {TrafficCountersElement} from 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
+import {TrafficCounterSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {TrafficCounter} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -38,52 +40,53 @@ suite('TrafficCountersTest', function() {
    */
   const FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 1:14:18 PM';
 
-  function generateTrafficCounters(rxBytes: number, txBytes: number): Object[] {
+  function generateTrafficCounters(
+      rxBytes: bigint, txBytes: bigint): TrafficCounter[] {
     return [
       {
-        'source': 'Unknown',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kUnknown,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Chrome',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kChrome,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'User',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kUser,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Arc',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kArc,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Crosvm',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kCrosvm,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Pluginvm',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kPluginvm,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Update Engine',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kUpdateEngine,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'Vpn',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kVpn,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
       {
-        'source': 'System',
-        'rxBytes': rxBytes,
-        'txBytes': txBytes,
+        source: TrafficCounterSource.kSystem,
+        rxBytes: rxBytes,
+        txBytes: txBytes,
       },
     ];
   }
@@ -112,9 +115,17 @@ suite('TrafficCountersTest', function() {
         .textContent.trim();
   }
 
-  function trafficCountersAreEqual(expectedTrafficCounters: Object[]): boolean {
+  function bigIntReplacer(_key: string, value: unknown) {
+    if (typeof value === 'bigint') {
+      return value.toString();
+    }
+    return value;
+  }
+
+  function trafficCountersAreEqual(expectedTrafficCounters: TrafficCounter[]):
+      boolean {
     return JSON.stringify(JSON.parse(getValueFor('counters'))) ===
-        JSON.stringify(expectedTrafficCounters);
+        JSON.stringify(expectedTrafficCounters, bigIntReplacer);
   }
 
   /**
@@ -172,7 +183,7 @@ suite('TrafficCountersTest', function() {
 
     // Set traffic counters.
     networkConfigRemote.setTrafficCountersForTest(
-        'cellular_guid', generateTrafficCounters(100, 100));
+        'cellular_guid', generateTrafficCounters(100n, 100n));
     // Remove default network.
     networkConfigRemote.setNetworkConnectionStateForTest(
         'eth0_guid', ConnectionStateType.kNotConnected);
@@ -207,7 +218,7 @@ suite('TrafficCountersTest', function() {
     assertEquals(
         getLabelFor('counters'),
         trafficCounters.i18n('TrafficCountersTrafficCounters'));
-    assertTrue(trafficCountersAreEqual(generateTrafficCounters(100, 100)));
+    assertTrue(trafficCountersAreEqual(generateTrafficCounters(100n, 100n)));
     // Verify correct last reset time.
     assertEquals(
         getLabelFor('time'),
@@ -240,7 +251,7 @@ suite('TrafficCountersTest', function() {
     assertEquals(
         getLabelFor('counters'),
         trafficCounters.i18n('TrafficCountersTrafficCounters'));
-    assertTrue(trafficCountersAreEqual(generateTrafficCounters(0, 0)));
+    assertTrue(trafficCountersAreEqual(generateTrafficCounters(0n, 0n)));
     // Verify correct last reset time.
     assertEquals(
         getLabelFor('time'),

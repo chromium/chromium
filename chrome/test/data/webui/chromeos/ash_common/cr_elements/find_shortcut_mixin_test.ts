@@ -41,7 +41,7 @@ suite('find-shortcut', () => {
     pressShortcut();
     const args = await wait.promise;
     assertEquals(expectedSelf, args.self);
-    assertEquals(!!expectedModalContextOpen, args.modalContextOpen);
+    assertEquals(expectedModalContextOpen, args.modalContextOpen);
   }
 
   /**

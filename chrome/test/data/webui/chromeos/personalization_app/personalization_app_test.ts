@@ -1304,7 +1304,7 @@ suite('dynamic color', () => {
 
   test('clicks toggle', async () => {
     const toggle = getDynamicColorToggle();
-    assertTrue(!!toggle.checked, 'toggle starts checked');
+    assertTrue(toggle.checked, 'toggle starts checked');
 
     {
       const {staticColor} = await themeProvider.getStaticColor();

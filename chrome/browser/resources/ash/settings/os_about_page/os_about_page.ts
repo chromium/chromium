@@ -353,11 +353,11 @@ export class OsAboutPageElement extends OsAboutPageBase {
     });
 
     this.aboutBrowserProxy_.getEndOfLifeInfo().then(result => {
-      this.hasEndOfLife_ = !!result.hasEndOfLife;
+      this.hasEndOfLife_ = result.hasEndOfLife;
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
-      this.isExtendedUpdatesDatePassed_ = !!result.isExtendedUpdatesDatePassed;
+      this.isExtendedUpdatesDatePassed_ = result.isExtendedUpdatesDatePassed;
       this.isExtendedUpdatesOptInRequired_ =
-          !!result.isExtendedUpdatesOptInRequired;
+          result.isExtendedUpdatesOptInRequired;
     });
 
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {

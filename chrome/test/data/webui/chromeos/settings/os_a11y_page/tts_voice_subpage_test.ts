@@ -155,8 +155,7 @@ suite('<settings-tts-voice-subpage>', function() {
     // Check one of the language option details.
     const secondVoice = subpage.shadowRoot!.querySelector('option[value=B]');
     assertTrue(!!secondVoice);
-    assertEquals(
-        'Goa\'uld - Star Gate', String(secondVoice.textContent).trim());
+    assertEquals('Goa\'uld - Star Gate', secondVoice.textContent.trim());
   });
 
   test('Preview voice select omits internal speaker name', () => {

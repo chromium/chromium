@@ -194,10 +194,10 @@ suite('ApnListItemTest', function() {
     });
     await flushTasks();
     assertTrue(!!getRemoveButton());
-    assertFalse(!!getRemoveButton().disabled);
+    assertFalse(getRemoveButton().disabled);
 
     apnListItem.shouldDisallowApnModification = true;
-    assertTrue(!!getRemoveButton().disabled);
+    assertTrue(getRemoveButton().disabled);
 
     apnListItem.shouldDisallowApnModification = false;
     mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
@@ -254,11 +254,11 @@ suite('ApnListItemTest', function() {
     apnListItem.apn = disabledApn;
     await flushTasks();
     assertTrue(!!getEnableButton());
-    assertFalse(!!getEnableButton().disabled);
+    assertFalse(getEnableButton().disabled);
     assertFalse(!!getDisableButton());
 
     apnListItem.shouldDisallowApnModification = true;
-    assertTrue(!!getEnableButton().disabled);
+    assertTrue(getEnableButton().disabled);
 
     apnListItem.shouldDisallowApnModification = false;
     getEnableButton().click();
@@ -272,11 +272,11 @@ suite('ApnListItemTest', function() {
     apnListItem.apn = createApn(/*disabled=*/ false);
     await flushTasks();
     assertTrue(!!getDisableButton());
-    assertFalse(!!getDisableButton().disabled);
+    assertFalse(getDisableButton().disabled);
     assertFalse(!!getEnableButton());
 
     apnListItem.shouldDisallowApnModification = true;
-    assertTrue(!!getDisableButton().disabled);
+    assertTrue(getDisableButton().disabled);
 
     apnListItem.shouldDisallowApnModification = false;
     getDisableButton().click();

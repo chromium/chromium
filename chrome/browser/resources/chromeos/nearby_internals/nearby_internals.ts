@@ -81,8 +81,7 @@ class NearbyInternalsElement extends PolymerElement {
    * Updates the selection property on path change.
    */
   private pathChanged_(newValue: string): void {
-    this.selectedTabIndex_ =
-        Number(this.selectedTabFromPath_(newValue.substr(1)));
+    this.selectedTabIndex_ = this.selectedTabFromPath_(newValue.substr(1));
   }
 }
 

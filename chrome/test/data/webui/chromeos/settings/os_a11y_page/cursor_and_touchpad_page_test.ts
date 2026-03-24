@@ -366,7 +366,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     page.set('prefs.settings.accessibility.value', false);
     flush();
 
-    assertFalse(!!navButtonsToggle.disabled);
+    assertFalse(navButtonsToggle.disabled);
     assertFalse(navButtonsToggle.checked);
     assertFalse(
         page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
@@ -375,7 +375,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     navButtonsToggle.click();
     flush();
 
-    assertFalse(!!navButtonsToggle.disabled);
+    assertFalse(navButtonsToggle.disabled);
     assertTrue(navButtonsToggle.checked);
     assertTrue(
         page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);

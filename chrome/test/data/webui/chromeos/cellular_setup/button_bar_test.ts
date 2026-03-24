@@ -41,7 +41,7 @@ suite('CellularSetupButtonBarTest', function() {
   }
 
   function isButtonHidden(button: CrButtonElement): boolean {
-    return !!button.hidden;
+    return button.hidden;
   }
 
   test('individual buttons appear if enabled', function() {

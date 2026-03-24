@@ -93,9 +93,8 @@ export class ScanDoneSectionElement extends ScanDoneSectionElementBase {
   private setFileSavedTextContent(): void {
     this.browserProxy.getPluralString('fileSavedText', this.numFilesSaved)
         .then((pluralString: string): void => {
-          const fileSavedTextContent =
-              this.getAriaLabelledContent(loadTimeData.substituteString(
-                  pluralString.toString(), this.selectedFolder));
+          const fileSavedTextContent = this.getAriaLabelledContent(
+              loadTimeData.substituteString(pluralString, this.selectedFolder));
           this.fileSavedTextContent = sanitizeInnerHtml(
               fileSavedTextContent,
               {attrs: ['id', 'aria-hidden', 'aria-labelledby']});

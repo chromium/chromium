@@ -215,7 +215,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   private userCanContinue_(
       retailerNameInput: string, storeNumberInput: string,
       isCountrySelected: boolean): boolean {
-    return !!retailerNameInput && !!isCountrySelected && !!storeNumberInput &&
+    return !!retailerNameInput && isCountrySelected && !!storeNumberInput &&
         isCountrySelected &&
         storeNumberInput.length <= STORE_NUMBER_INPUT_MAX_LENGTH &&
         retailerNameInput.length <= RETAILER_NAME_INPUT_MAX_LENGTH &&

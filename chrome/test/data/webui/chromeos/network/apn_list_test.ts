@@ -174,7 +174,7 @@ suite('ApnListTest', () => {
     assertFalse(!!descriptionWithLink);
     assertTrue(!!descriptionWithoutLink);
     assertEquals(
-        apnList.i18n('apnSettingsDescriptionNoLink').toString(),
+        apnList.i18n('apnSettingsDescriptionNoLink'),
         descriptionWithoutLink.innerHTML.trim());
     const apnDescription =
         apnList.shadowRoot!.querySelector<HTMLElement>('#apnDescription');
@@ -785,10 +785,10 @@ suite('ApnListTest', () => {
       assertEquals(1, apns.length);
       assertTrue(!!apns[0]);
       assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
-      assertFalse(!!apns[0].shouldDisallowApnModification);
+      assertFalse(apns[0].shouldDisallowApnModification);
 
       apnList.shouldDisallowApnModification = true;
-      assertTrue(!!apns[0].shouldDisallowApnModification);
+      assertTrue(apns[0].shouldDisallowApnModification);
     });
   });
 });

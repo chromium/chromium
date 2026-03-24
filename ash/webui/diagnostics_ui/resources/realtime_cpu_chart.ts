@@ -243,11 +243,11 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
     plotGroup.select('.user-area')
         .transition()
         .duration(this.frameDuration)
-        .ease((t: number) => +t);  // Linear transition
+        .ease((t: number) => t);  // Linear transition
     plotGroup.select('.system-area')
         .transition()
         .duration(this.frameDuration)
-        .ease((t: number) => +t);  // Linear transition
+        .ease((t: number) => t);  // Linear transition
 
     // Draw initial data and kick off the rendering process.
     this.getDataSnapshotAndRedraw();

@@ -395,7 +395,7 @@ suite('AppManagementPermissionItemTest', function() {
   test('App Management Toggle Row with aria description', () => {
     const ariaDescription = permissionItem.shadowRoot!
                                 .querySelector<AppManagementToggleRowElement>(
-                                    '#toggle-row')!.ariaDescription!.toString();
+                                    '#toggle-row')!.ariaDescription;
     const expectedAriaDescription = loadTimeData.getString(
         'appManagementPermissionItemClickTogglePermission');
 

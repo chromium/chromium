@@ -86,7 +86,7 @@ export class LocalizedLinkElement extends PolymerElement {
     };
   }
 
-  localizedString: string;
+  localizedString: string|TrustedHTML;
   linkUrl: string;
   linkDisabled: boolean;
   private containerInnerHTML_: string;
