@@ -450,9 +450,10 @@ class CupsPrintersManagerImpl
 
     // If the printer is being installed now, stop the process.
     std::vector<PrinterSetupCallback> callbacks;
-    if (printers_being_setup_.contains(printer_id)) {
-      callbacks = std::move(printers_being_setup_[printer_id].callbacks);
-      printers_being_setup_.erase(printer_id);
+    if (auto it = printers_being_setup_.find(printer_id);
+        it != printers_being_setup_.end()) {
+      callbacks = std::move(it->second.callbacks);
+      printers_being_setup_.erase(it);
     }
     for (auto& callback : callbacks) {
       std::move(callback).Run(PrinterSetupResult::kPrinterRemoved);
@@ -1063,12 +1064,12 @@ class CupsPrintersManagerImpl
                                const Printer& printer) {
     printers_.Insert(printer_class, printer);
 
+    bool inserted = detected_printers_seen_.insert(printer.id()).second;
     // If we've seen this printer before, don't trigger a new detection event.
-    if (detected_printers_seen_.contains(printer.id())) {
+    if (!inserted) {
       return;
     }
 
-    detected_printers_seen_.insert(printer.id());
     NotifyLocalPrinterObservers();
   }
 
