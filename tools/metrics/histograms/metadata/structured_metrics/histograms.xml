@@ -120,8 +120,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2026-03-22">
-  <owner>andrewbregger@google.com</owner>
+    expires_after="2027-03-22">
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
