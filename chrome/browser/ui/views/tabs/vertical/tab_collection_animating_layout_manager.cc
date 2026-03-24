@@ -379,7 +379,8 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   // Ensure `kPreviousCollectionBounds` metadata is set before adding
   // `view_to_reparent` to ensure view-added lifecycle hooks have the necessary
   // information to determine whether the view was reparented or newly-added.
-  if (!delegate_->IsViewDragging(*view_to_reparent)) {
+  if (!delegate_->IsViewDragging(*view_to_reparent) &&
+      !previous_bounds_in_screen.IsEmpty()) {
     view_to_reparent->SetPaintToLayer();
     view_to_reparent->SetProperty(kPreviousCollectionBounds,
                                   previous_bounds_in_screen);
