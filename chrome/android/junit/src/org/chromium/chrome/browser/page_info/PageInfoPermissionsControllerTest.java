@@ -18,7 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -45,6 +46,7 @@ import java.util.Arrays;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PageInfoPermissionsControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock private PageInfoMainController mMainController;
@@ -61,7 +63,6 @@ public class PageInfoPermissionsControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PermissionUtilJni.setInstanceForTesting(mPermissionUtilJni);
 
         when(mRowView.getContext()).thenReturn(mContext);

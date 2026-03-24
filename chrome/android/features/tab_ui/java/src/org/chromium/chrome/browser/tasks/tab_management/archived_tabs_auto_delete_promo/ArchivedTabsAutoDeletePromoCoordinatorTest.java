@@ -66,7 +66,7 @@ public class ArchivedTabsAutoDeletePromoCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoJUnit.rule();
+
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
         mCoordinator =

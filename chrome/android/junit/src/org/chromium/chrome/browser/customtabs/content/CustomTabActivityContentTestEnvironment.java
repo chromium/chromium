@@ -140,6 +140,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     @Override
     protected void starting(Description description) {
+        // MockitoRule is not processed recursively in JUnit 4, and these are
+        // TestRule or TestWatcher implementations. Manual initialization is
+        // required.
         MockitoAnnotations.initMocks(this);
 
         CustomTabsConnection.setInstanceForTesting(connection);

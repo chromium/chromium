@@ -17,12 +17,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,6 +41,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link PermissionBlockedDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PermissionBlockedDialogTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PermissionBlockedDialog.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -51,7 +54,6 @@ public class PermissionBlockedDialogTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PermissionBlockedDialogJni.setInstanceForTesting(mNativeMock);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();

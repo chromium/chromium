@@ -27,7 +27,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
@@ -72,6 +73,8 @@ import java.util.concurrent.TimeoutException;
 
 /** This is a base class for various Contextual Search instrumentation tests. */
 public class ContextualSearchInstrumentationBase {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
@@ -413,8 +416,6 @@ public class ContextualSearchInstrumentationBase {
         // again.
         // If Related Searches is enabled we need to also set that it's OK to send page content.
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
-
-        MockitoAnnotations.openMocks(this);
     }
 
     @After

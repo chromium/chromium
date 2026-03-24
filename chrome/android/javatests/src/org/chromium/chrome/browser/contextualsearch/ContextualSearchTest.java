@@ -8,12 +8,9 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -32,7 +29,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ContextualSearchManager.Natives mContextualSearchManagerJniMock;
 
     @Override

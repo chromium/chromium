@@ -157,6 +157,9 @@ public class PartialCustomTabTestRule implements TestRule {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void setUp() {
+        // MockitoRule is not processed recursively in JUnit 4, and these are
+        // TestRule or TestWatcher implementations. Manual initialization is
+        // required.
         MockitoAnnotations.initMocks(this);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);

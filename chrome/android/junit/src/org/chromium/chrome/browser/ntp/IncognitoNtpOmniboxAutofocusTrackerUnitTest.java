@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -38,7 +37,6 @@ public class IncognitoNtpOmniboxAutofocusTrackerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTab.getView()).thenReturn(mTabView);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);

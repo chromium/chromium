@@ -13,12 +13,14 @@ import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Unit tests for {@link TabStateThemeResourceProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabStateThemeResourceProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private Tab mIncognitoTab;
@@ -45,7 +48,6 @@ public class TabStateThemeResourceProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
 
         doReturn(true).when(mIncognitoTab).isIncognitoBranded();
         doReturn(false).when(mRegularTab).isIncognitoBranded();

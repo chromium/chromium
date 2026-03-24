@@ -19,14 +19,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -90,6 +90,7 @@ import java.util.concurrent.TimeoutException;
 })
 @Batch(Batch.PER_CLASS)
 public class WebsitePermissionsFetcherTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock private SiteSettingsDelegate mSiteSettingsDelegate;
@@ -365,11 +366,6 @@ public class WebsitePermissionsFetcherTest {
         public Collection<Website> getSites() {
             return mSites;
         }
-    }
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
     }
 
     @After

@@ -26,12 +26,14 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
@@ -44,6 +46,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_DATA_IMPORTER_SERVICE)
 public class TargetServiceTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private TargetService mService;
 
@@ -60,7 +63,6 @@ public class TargetServiceTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mService = new TargetService();
         mService.mBridge = mBridge;
     }
