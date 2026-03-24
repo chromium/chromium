@@ -1689,7 +1689,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
   if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
       recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
       [[unlikely]] {
-    FlushCanvas();
+    FlushCanvas2D();
   }
 }
 
@@ -1875,6 +1875,12 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   }
 
   return recording;
+}
+
+std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
+    FlushReason reason /*=FlushReason::kOther*/) {
+  CHECK(IsCanvas2D());
+  return FlushCanvas(reason);
 }
 
 void CanvasResourceProvider::UnacceleratedRasterRecord(
