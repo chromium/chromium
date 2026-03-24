@@ -24,23 +24,18 @@ import java.util.concurrent.atomic.AtomicReference;
  * primary stream is not ready within a certain timeout.
  */
 final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirectionalStream {
-    /**
-     * The time we wait until we give up the connection attempt and start the backup stream. This
-     * value is 3x the initial retransmit timeout for TCP, we assume that a connection with
-     * reasonable performance will be open within this timeframe. TODO(crbug.com/474048542): This
-     * should be a constructor parameter hooked up to flag.
-     */
-    private static final long READY_FAILOVER_MS = 3000;
-
-    private ExperimentalBidirectionalStream mPrimaryStream;
+    private CronetBidirectionalStream mPrimaryStream;
     private final AtomicBoolean mOnlyOneStreamRemains;
-    private @Nullable ExperimentalBidirectionalStream mFallbackStream;
+    private @Nullable CronetBidirectionalStream mFallbackStream;
 
     private final ScheduledExecutorService mExecutor;
     private final AtomicReference<BidirectionalStream> mActiveStream = new AtomicReference<>(null);
 
     /** The developer facing callback. */
     private final BidirectionalStream.Callback mBackendCallback;
+
+    private final CronetAdaptiveRequestContext mAdaptiveRequestContext;
+    private final String mUrl;
 
     /** The callback passed to both streams - picking the winner and calling mBackendCallback. */
     private final BidirectionalStream.Callback mRedirectingCallback =
@@ -56,6 +51,10 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                         if (stream == mFallbackStream) {
                             // The primary stream was not ready in time, let's cancel it.
                             mPrimaryStream.cancel();
+                            long networkHandle = mFallbackStream.getTargetNetworkHandle();
+                            if (networkHandle != CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
+                                mAdaptiveRequestContext.reportFallbackUsed(mUrl, networkHandle);
+                            }
                         } else if (mFallbackStream != null) {
                             // We have a fallback stream, but it's not needed.
                             // Explicitly cancel it to avoid it being used later.
@@ -142,7 +141,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 @Override
                 public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
                     checkValidStream(stream);
-                    // The active stream was cancelled failed.
+                    // The active stream was cancelled.
                     if (mActiveStream.get() == stream) {
                         mBackendCallback.onCanceled(
                                 CronetAdaptiveNetworkBidirectionalStream.this, info);
@@ -150,7 +149,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                     }
                     // Either the primary stream just cancelled and we have no fallback
                     // or we are the second stream to cancel.
-                    //  Signal the cancel.
+                    // Signal the cancel.
                     if (mFallbackStream == null || mOnlyOneStreamRemains.getAndSet(true)) {
                         mBackendCallback.onCanceled(
                                 CronetAdaptiveNetworkBidirectionalStream.this, info);
@@ -161,9 +160,13 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     public CronetAdaptiveNetworkBidirectionalStream(
             BidirectionalStream.Callback backendCallback,
-            ScheduledExecutorService scheduledExecutor) {
+            ScheduledExecutorService scheduledExecutor,
+            CronetAdaptiveRequestContext adaptiveRequestContext,
+            String url) {
         mExecutor = scheduledExecutor;
         mBackendCallback = backendCallback;
+        mAdaptiveRequestContext = adaptiveRequestContext;
+        mUrl = url;
         mFallbackStream = null;
         mOnlyOneStreamRemains = new AtomicBoolean(false);
     }
@@ -181,11 +184,15 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
         Objects.requireNonNull(mPrimaryStream).start();
         // If a fallback stream was created, schedule a potential future switch to it.
         if (mFallbackStream != null) {
-            mExecutor.schedule(() -> maybeScheduleFastFailover(), READY_FAILOVER_MS, MILLISECONDS);
+            mExecutor.schedule(
+                    () -> maybeScheduleFastFailover(),
+                    mAdaptiveRequestContext.getReadyFailoverMs(),
+                    MILLISECONDS);
         }
     }
 
     private void maybeScheduleFastFailover() {
+        // TODO(b/474048542): What happens if we cancel() and then this method runs?
         if (mActiveStream.get() == null) {
             mFallbackStream.start();
         }

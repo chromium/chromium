@@ -49,6 +49,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
     private CronetBidirectionalStream mPrimaryStream;
     private CronetBidirectionalStream mFallbackStream;
     private CronetAdaptiveNetworkBidirectionalStream mAdaptiveStream;
+    private CronetAdaptiveRequestContext mMockAdaptiveRequestContext;
+    private static final String TEST_URL = "https://example.com/path";
 
     @Before
     public void setUp() throws Exception {
@@ -56,9 +58,18 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mMockCallback = mock(BidirectionalStream.Callback.class);
         mPrimaryStream = mock(CronetBidirectionalStream.class);
         mFallbackStream = mock(CronetBidirectionalStream.class);
+        when(mPrimaryStream.getTargetNetworkHandle())
+                .thenReturn(CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        when(mFallbackStream.getTargetNetworkHandle())
+                .thenReturn(CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        mMockAdaptiveRequestContext = mock(CronetAdaptiveRequestContext.class);
+        when(mMockAdaptiveRequestContext.getReadyFailoverMs()).thenReturn(3000L);
         mAdaptiveStream =
                 new CronetAdaptiveNetworkBidirectionalStream(
-                        mMockCallback, mMockScheduledExecutorService);
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL);
     }
 
     @Test
@@ -186,6 +197,22 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.read(buffer);
         verify(mPrimaryStream).read(buffer);
         verify(mFallbackStream, never()).read(any());
+    }
+
+    @Test
+    @SmallTest
+    public void onStreamReady_onFallback_reportsFallbackUsed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        long networkHandle = 123456789L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(networkHandle);
+
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        verify(mMockAdaptiveRequestContext).reportFallbackUsed(eq(TEST_URL), eq(networkHandle));
     }
 
     @Test
@@ -501,7 +528,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void testComputeAlternativeNetwork_noNetworks_returnsDefault() {
+    public void testComputeAlternativeNetwork_noNetworks_returnsNull() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         ConnectivityManagerWrapper mockConnectivityManagerWrapper =
@@ -512,14 +539,12 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
-        assertEquals(
-                CronetEngineBase.DEFAULT_NETWORK_HANDLE,
-                adaptiveRequestContext.computeAlternativeNetwork());
+        assertEquals(null, adaptiveRequestContext.computeAlternativeNetworkHandle());
     }
 
     @Test
     @SmallTest
-    public void testComputeAlternativeNetwork_onlyDefaultNetwork_returnsDefault() {
+    public void testComputeAlternativeNetwork_onlyDefaultNetwork_returnsNull() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         ConnectivityManagerWrapper mockConnectivityManagerWrapper =
@@ -533,9 +558,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
-        assertEquals(
-                CronetEngineBase.DEFAULT_NETWORK_HANDLE,
-                adaptiveRequestContext.computeAlternativeNetwork());
+        assertEquals(null, adaptiveRequestContext.computeAlternativeNetworkHandle());
     }
 
     @Test
@@ -547,17 +570,18 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 mock(ConnectivityManagerWrapper.class);
         Network defaultNetwork = mock(Network.class);
         Network alternativeNetwork = mock(Network.class);
-        long alternativeHandle = 12345L;
+        long alternativeHandle = 987654321L;
+        when(alternativeNetwork.getNetworkHandle()).thenReturn(alternativeHandle);
 
         when(mockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(defaultNetwork);
         when(mockConnectivityManagerWrapper.getAllNetworks(defaultNetwork))
                 .thenReturn(new Network[] {alternativeNetwork});
-        when(alternativeNetwork.getNetworkHandle()).thenReturn(alternativeHandle);
 
         CronetAdaptiveRequestContext adaptiveRequestContext =
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
-        assertEquals(alternativeHandle, adaptiveRequestContext.computeAlternativeNetwork());
+        assertEquals(
+                alternativeHandle, (long) adaptiveRequestContext.computeAlternativeNetworkHandle());
     }
 }

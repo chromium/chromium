@@ -1079,6 +1079,10 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         return !methodName.equals("GET") && !methodName.equals("HEAD");
     }
 
+    long getTargetNetworkHandle() {
+        return mNetworkHandle;
+    }
+
     private static ArrayList<Map.Entry<String, String>> headersListFromStrings(String[] headers) {
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>(headers.length / 2);
         for (int i = 0; i < headers.length; i += 2) {

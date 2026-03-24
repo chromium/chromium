@@ -540,7 +540,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     mAdaptiveRequestContext.isAdaptiveNetworkUrl(url)
                             ? new CronetAdaptiveNetworkBidirectionalStream(
                                     callback,
-                                    mAdaptiveRequestContext.getOrCreateScheduledExecutor())
+                                    mAdaptiveRequestContext.getOrCreateScheduledExecutor(),
+                                    mAdaptiveRequestContext,
+                                    url)
                             : null;
             CronetBidirectionalStream stream =
                     new CronetBidirectionalStream(

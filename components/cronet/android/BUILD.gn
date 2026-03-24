@@ -1497,6 +1497,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/impl/AndroidCallbackWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetAdaptiveNetworkBidirectionalStreamTest.java",
+    "test/javatests/src/org/chromium/net/impl/CronetAdaptiveRequestContextTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
     "test/javatests/src/org/chromium/net/impl/UserAgentIntegrationTest.java",
