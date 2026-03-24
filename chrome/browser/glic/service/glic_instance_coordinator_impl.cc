@@ -130,6 +130,15 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
+  // Delete all open invoke handlers, first triggering error handling.
+  auto handlers = std::exchange(invoke_handlers_, {});
+  for (auto& [instance, handler] : handlers) {
+    // Will result in erase from invoke_handlers_, which is safe because we
+    // exchanged.
+    handler->OnError(GlicInvokeError::kInstanceDestroyed);
+  }
+  handlers.clear();
+
   // Delete all instances before destruction. Destroying web contents can result
   // in various calls to dependencies.
   active_instance_ = nullptr;
