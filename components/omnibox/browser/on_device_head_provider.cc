@@ -22,6 +22,8 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
+#include "components/omnibox/browser/on_device_tail_model_executor.h"
+#include "components/omnibox/browser/on_device_tail_model_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/search_terms_data.h"
@@ -29,11 +31,6 @@
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/on_device_tail_model_executor.h"
-#include "components/omnibox/browser/on_device_tail_model_service.h"
-#endif
 
 namespace {
 const int kBaseRelevanceForUrlInput = 99;
@@ -244,7 +241,6 @@ void OnDeviceHeadProvider::DoSearch(
 void OnDeviceHeadProvider::HeadModelSearchDone(
     std::unique_ptr<OnDeviceHeadProviderParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!ShouldFetchTailSuggestions(*params, client()->GetApplicationLocale()) ||
       client()->GetOnDeviceTailModelService() == nullptr) {
     AllSearchDone(std::move(params));
@@ -267,12 +263,8 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
   client()->GetOnDeviceTailModelService()->GetPredictionsForInput(
       input, base::BindOnce(&OnDeviceHeadProvider::TailModelSearchDone,
                             weak_ptr_factory_.GetWeakPtr(), std::move(params)));
-#else
-  AllSearchDone(std::move(params));
-#endif
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void OnDeviceHeadProvider::TailModelSearchDone(
     std::unique_ptr<OnDeviceHeadProviderParams> params,
     std::vector<OnDeviceTailModelExecutor::Prediction> predictions) {
@@ -283,7 +275,6 @@ void OnDeviceHeadProvider::TailModelSearchDone(
   }
   AllSearchDone(std::move(params));
 }
-#endif
 
 void OnDeviceHeadProvider::AllSearchDone(
     std::unique_ptr<OnDeviceHeadProviderParams> params) {

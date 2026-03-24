@@ -13,20 +13,16 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history_embeddings/core/history_embeddings_search.h"
+#include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
+#include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search_engines/search_engines_test_environment.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
-#include "components/omnibox/browser/fake_on_device_tail_model_service.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace bookmarks {
 class BookmarkModel;
@@ -82,11 +78,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::string ProfileUserName() const override;
   AimEligibilityService* GetAimEligibilityService() const override;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   FakeAutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Test-only setters
   void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
@@ -141,10 +135,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
       fake_tab_group_sync_service_;
   std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;
   std::unique_ptr<FakeAutocompleteScoringModelService> scoring_model_service_;
-#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

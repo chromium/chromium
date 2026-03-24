@@ -18,8 +18,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/autocomplete/provider_state_service_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -66,14 +68,15 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/on_device_tail_model_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -120,13 +123,6 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #endif
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
-#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
-#include "components/omnibox/browser/on_device_tail_model_service.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
 
@@ -444,20 +440,12 @@ signin::IdentityManager* ChromeAutocompleteProviderClient::GetIdentityManager()
 
 AutocompleteScoringModelService*
 ChromeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return AutocompleteScoringModelServiceFactory::GetForProfile(profile_);
-#else
-  return nullptr;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 OnDeviceTailModelService*
 ChromeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return OnDeviceTailModelServiceFactory::GetForProfile(profile_);
-#else
-  return nullptr;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 ProviderStateService*

@@ -29,7 +29,6 @@
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/search.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -827,11 +826,7 @@ bool AreScoringSignalsAnnotatorsEnabled() {
   return GetMLConfig().enable_scoring_signals_annotators;
 }
 bool IsMlUrlScoringEnabled() {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return IsUrlScoringModelEnabled() && GetMLConfig().ml_url_scoring;
-#else
-  return false;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 bool IsMlUrlScoringCounterfactual() {
   return IsMlUrlScoringEnabled() && GetMLConfig().ml_url_scoring_counterfactual;

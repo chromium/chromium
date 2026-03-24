@@ -2,17 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("autocomplete") {
   sources = [
     "autocomplete_classifier_factory.h",
+    "autocomplete_scoring_model_service_factory.h",
     "chrome_autocomplete_provider_client.h",
     "chrome_autocomplete_scheme_classifier.h",
     "document_suggestions_service_factory.h",
     "enterprise_search_aggregator_suggestions_service_factory.h",
     "in_memory_url_index_factory.h",
+    "on_device_tail_model_service_factory.h",
     "provider_state_service_factory.h",
     "remote_suggestions_service_factory.h",
     "shortcuts_backend_factory.h",
@@ -53,23 +54,18 @@ source_set("autocomplete") {
     sources += [ "shortcuts_extensions_manager.h" ]
     public_deps += [ "//extensions/browser" ]
   }
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "autocomplete_scoring_model_service_factory.h",
-      "on_device_tail_model_service_factory.h",
-    ]
-  }
 }
 
 source_set("impl") {
   sources = [
     "autocomplete_classifier_factory.cc",
+    "autocomplete_scoring_model_service_factory.cc",
     "chrome_autocomplete_provider_client.cc",
     "chrome_autocomplete_scheme_classifier.cc",
     "document_suggestions_service_factory.cc",
     "enterprise_search_aggregator_suggestions_service_factory.cc",
     "in_memory_url_index_factory.cc",
+    "on_device_tail_model_service_factory.cc",
     "provider_state_service_factory.cc",
     "remote_suggestions_service_factory.cc",
     "shortcuts_backend_factory.cc",
@@ -88,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/profiles",
@@ -115,7 +112,6 @@ source_set("impl") {
     "//components/history_embeddings/core",
     "//components/language/core/browser",
     "//components/lens",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/translate/core/browser",
     "//components/unified_consent",
     "//components/variations/service",
@@ -161,14 +157,6 @@ source_set("impl") {
 
   if (enable_extensions) {
     sources += [ "shortcuts_extensions_manager.cc" ]
-  }
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "autocomplete_scoring_model_service_factory.cc",
-      "on_device_tail_model_service_factory.cc",
-    ]
-    deps += [ "//chrome/browser/optimization_guide" ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
