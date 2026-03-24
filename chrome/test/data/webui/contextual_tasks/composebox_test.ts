@@ -1236,4 +1236,138 @@ suite('ContextualTasksComposeboxTest', () => {
 
     await microtasksFinished();
   });
+
+  test('ClearInputAndFocusClearsMatchesOnSubmit', () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    contextualComposebox.isZeroState = true;
+    contextualComposebox.clearInputAndFocus(true);
+    assertEquals(
+        1, clearAutocompleteMatchesCallCount,
+        'querySubmitted = true should clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount,
+        'querySubmitted = true should not query');
+  });
+
+  test('ClearInputAndFocusClearsMatchesWhenNotZeroState', () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    contextualComposebox.isZeroState = false;
+    contextualComposebox.clearInputAndFocus(false);
+    assertEquals(
+        1, clearAutocompleteMatchesCallCount,
+        'isZeroState = false should clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount, 'isZeroState = false should not query');
+  });
+
+  test('ClearInputAndFocusIgnoresEmptyZeroState', () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    contextualComposebox.isZeroState = true;
+    innerComposebox.getInputElement().$.input.value = '';
+    contextualComposebox.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = false should not clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount, 'hadContent = false should not query');
+  });
+
+  test('ClearInputAndFocusQueriesZeroStateWithText', () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+    let queryAutocompleteClearMatchesArg = false;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
+      queryAutocompleteCallCount++;
+      queryAutocompleteClearMatchesArg = clearMatches;
+    };
+
+    contextualComposebox.isZeroState = true;
+    innerComposebox.getInputText = () => 'test';
+    contextualComposebox.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = true should not clear matches');
+    assertEquals(
+        1, queryAutocompleteCallCount, 'hadContent = true should query');
+    assertTrue(
+        queryAutocompleteClearMatchesArg, 'should pass clearMatches = true');
+  });
+
+  test('ClearInputAndFocusQueriesZeroStateWithFiles', () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+    let queryAutocompleteClearMatchesArg = false;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
+      queryAutocompleteCallCount++;
+      queryAutocompleteClearMatchesArg = clearMatches;
+    };
+
+    contextualComposebox.isZeroState = true;
+    innerComposebox.getInputText = () => '';
+    innerComposebox.hasFiles = () => true;
+    contextualComposebox.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = true (files) should not clear matches');
+    assertEquals(
+        1, queryAutocompleteCallCount,
+        'hadContent = true (files) should query');
+    assertTrue(
+        queryAutocompleteClearMatchesArg, 'should pass clearMatches = true');
+  });
 });

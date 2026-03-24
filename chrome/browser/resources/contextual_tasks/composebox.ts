@@ -395,11 +395,29 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   clearInputAndFocus(querySubmitted: boolean = false): void {
+    const hadContent = this.$.composebox.getInputText().trim().length > 0 ||
+        this.$.composebox.hasFiles();
+
     // Clear text from composebox and focus.
     this.$.composebox.clearAllInputs(
         querySubmitted, /* shouldBlockAutoSuggestedTabs= */ false);
     this.$.composebox.focusInput();
-    this.$.composebox.clearAutocompleteMatches();
+
+    // Unconditionally clearing matches wipes out the zero state suggestions
+    // when transitioning into or updating the zero state. Therefore, only clear
+    // matches if the query was submitted or if the composebox is not in zero
+    // state.
+    if (querySubmitted || !this.isZeroState) {
+      this.$.composebox.clearAutocompleteMatches();
+      return;
+    }
+
+    // Since the composebox is being rendered in zero state, fetch new zero
+    // state suggestions IFF there weren't already suggestions to prevent a
+    // flicker.
+    if (hadContent) {
+      this.$.composebox.queryAutocomplete(/*clearMatches=*/ true);
+    }
   }
 
   setIsLoadingForTesting(isLoading: boolean) {
