@@ -415,10 +415,6 @@
 [submodule "third_party/material_color_utilities/src"]
 	path = third_party/material_color_utilities/src
 	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-color-utilities
-[submodule "third_party/material_design_icons/src"]
-	path = third_party/material_design_icons/src
-	url = https://chromium.googlesource.com/external/github.com/google/material-design-icons
-	gclient-condition = checkout_ios
 [submodule "third_party/microsoft_dxheaders/src"]
 	path = third_party/microsoft_dxheaders/src
 	url = https://chromium.googlesource.com/external/github.com/microsoft/DirectX-Headers
