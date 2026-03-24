@@ -23,28 +23,23 @@ namespace accessibility_annotator {
 
 namespace {
 
-// Check if the 'words' contains 'seq' as a sub-sequence.
-bool ContainsSequence(base::span<const std::u16string> words,
-                      base::span<const std::u16string> seq) {
-  if (seq.empty()) {
-    return true;
-  }
-  auto result = std::ranges::search(words, seq);
-  return !result.empty();
-}
-
-QueryIntentType CompositeClassify(std::vector<QueryClassifier> classifiers,
+ClassifiedQuery CompositeClassify(base::span<const QueryClassifier> classifiers,
                                   std::u16string_view query) {
-  for (const auto& classifier : classifiers) {
-    QueryIntentType intent = classifier.Run(query);
-    if (intent != QueryIntentType::kUnknown) {
-      return intent;
+  for (const QueryClassifier& classifier : classifiers) {
+    ClassifiedQuery classified_query = classifier.Run(query);
+    if (classified_query.intent != QueryIntentType::kUnknown) {
+      return classified_query;
     }
   }
-  return QueryIntentType::kUnknown;
+  return ClassifiedQuery(QueryIntentType::kUnknown);
 }
 
-QueryIntentType RegExpQueryClassify(std::u16string_view query) {
+// Classifies the query by performing substring matching against a predefined
+// set of keyword phrases. Normalizes the query by lowercasing, removing
+// punctuation, and stripping stop words before attempting matches. If a
+// keyword phrase is found as a standalone phrase, it sets the corresponding
+// intent and extracts the remaining words in the query as required words.
+ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
   // Hardcoded list of stop words.
   // TODO(crbug.com/485682510): Load stopwords from a single JSON.
   static constexpr auto kStopWords =
@@ -78,252 +73,225 @@ QueryIntentType RegExpQueryClassify(std::u16string_view query) {
           u"tell",    u"get",      u"detail",     u"details",    u"whats",
       });
 
-  std::u16string lower_query = base::ToLowerASCII(query);
-  // Split by space and common punctuation that might not be part of words.
-  std::vector<std::u16string> all_words = base::SplitString(
-      lower_query, u" ;?,.'", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // Remove stop words from all_words in place.
-  std::erase_if(all_words, [](const std::u16string& word) {
+  // Normalize the query by:
+  // - lowercasing,
+  // - removing common punctuation,
+  // - removing stop words,
+  // - trimming sequences of whitespaces.
+  std::u16string normalized_query = base::ToLowerASCII(query);
+  std::vector<std::u16string_view> all_words =
+      base::SplitStringPiece(normalized_query, u" ;?,.'", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  std::erase_if(all_words, [](std::u16string_view word) {
     return kStopWords.contains(word);
   });
+  normalized_query = base::JoinString(all_words, u" ");
 
-  if (all_words.empty()) {
-    return QueryIntentType::kUnknown;
+  if (normalized_query.empty()) {
+    return ClassifiedQuery(QueryIntentType::kUnknown);
   }
 
-  auto contains = [&](auto... keyword_phrases) {
-    auto contains_single_phrase = [&](const std::u16string& phrase) {
-      std::vector<std::u16string> seq_words = base::SplitString(
-          phrase, u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      return !seq_words.empty() && ContainsSequence(all_words, seq_words);
+  QueryIntentType matched_intent = QueryIntentType::kUnknown;
+  std::u16string_view matched_keyword_phrase;
+
+  // Attempts to find any of the `keyword_phrases` in `normalized_query`.
+  // If a match is found, `matched_intent` and `matched_keyword_phrase`
+  // are updated. Only the first successful match across all calls to
+  // `try_match` is kept.
+  auto try_match = [&](QueryIntentType intent, auto... keyword_phrases) {
+    if (matched_intent != QueryIntentType::kUnknown) {
+      return;
+    }
+
+    // Checks if a keyword phrase (which may contain multiple words) is present
+    // in `normalized_query` as a contiguous sequence of whole words. This
+    // prevents false positives where a keyword is a substring of another word
+    // (e.g., "vin" matching "province").
+    auto check_phrase = [&](std::u16string_view phrase) {
+      DCHECK(base::IsStringASCII(phrase));
+      DCHECK_EQ(phrase, base::ToLowerASCII(phrase));
+      if (internal::ContainsStandalonePhrase(normalized_query, phrase)) {
+        matched_intent = intent;
+        matched_keyword_phrase = phrase;
+        return true;
+      }
+      return false;
     };
-    return (contains_single_phrase(keyword_phrases) || ...);
+    (check_phrase(keyword_phrases) || ...);
   };
 
+  // IMPORTANT: Always place super-strings before sub-strings in the argument
+  // list to ensure the longest phrase is matched first (e.g., "license plate
+  // state" before "plate state").
+  // Note that all search phrases need to be lowercase and ASCII only at
+  // the moment.
   // Vehicle
-  if (contains(u"vin")) {
-    return QueryIntentType::kVehicleVin;
-  }
-  if (contains(u"vehicle make", u"car make")) {
-    return QueryIntentType::kVehicleMake;
-  }
-  if (contains(u"vehicle model", u"car model")) {
-    return QueryIntentType::kVehicleModel;
-  }
-  if (contains(u"vehicle year", u"car year")) {
-    return QueryIntentType::kVehicleYear;
-  }
-  if (contains(u"vehicle owner", u"car owner")) {
-    return QueryIntentType::kVehicleOwner;
-  }
-  if (contains(u"plate state", u"license plate state")) {
-    return QueryIntentType::kVehiclePlateState;
-  }
-  if (contains(u"vehicle", u"car")) {
-    return QueryIntentType::kVehicle;
-  }
-  if (contains(u"license plate", u"plate number", u"plate")) {
-    return QueryIntentType::kVehiclePlateNumber;
-  }
+  try_match(QueryIntentType::kVehicleVin, u"vin");
+  try_match(QueryIntentType::kVehicleMake, u"vehicle make", u"car make");
+  try_match(QueryIntentType::kVehicleModel, u"vehicle model", u"car model");
+  try_match(QueryIntentType::kVehicleYear, u"vehicle year", u"car year");
+  try_match(QueryIntentType::kVehicleOwner, u"vehicle owner", u"car owner");
+  try_match(QueryIntentType::kVehiclePlateState, u"license plate state",
+            u"plate state");
+  try_match(QueryIntentType::kVehicle, u"vehicle", u"car");
+  try_match(QueryIntentType::kVehiclePlateNumber, u"license plate",
+            u"plate number", u"plate");
 
   // Passport
-  if (contains(u"passport number")) {
-    return QueryIntentType::kPassportNumber;
-  }
-  if (contains(u"passport expiration", u"passport expiry")) {
-    return QueryIntentType::kPassportExpirationDate;
-  }
-  if (contains(u"passport issue")) {
-    return QueryIntentType::kPassportIssueDate;
-  }
-  if (contains(u"passport country")) {
-    return QueryIntentType::kPassportCountry;
-  }
-  if (contains(u"passport name")) {
-    return QueryIntentType::kPassportName;
-  }
-  if (contains(u"passport")) {
-    return QueryIntentType::kPassportFull;
-  }
+  try_match(QueryIntentType::kPassportNumber, u"passport number");
+  try_match(QueryIntentType::kPassportExpirationDate, u"passport expiration",
+            u"passport expiry");
+  try_match(QueryIntentType::kPassportIssueDate, u"passport issue");
+  try_match(QueryIntentType::kPassportCountry, u"passport country");
+  try_match(QueryIntentType::kPassportName, u"passport name");
+  try_match(QueryIntentType::kPassportFull, u"passport");
 
   // Flight Reservation
-  if (contains(u"flight number")) {
-    return QueryIntentType::kFlightReservationFlightNumber;
-  }
-  if (contains(u"ticket number")) {
-    return QueryIntentType::kFlightReservationTicketNumber;
-  }
-  if (contains(u"confirmation code", u"flight confirmation")) {
-    return QueryIntentType::kFlightReservationConfirmationCode;
-  }
-  if (contains(u"passenger name", u"flight passenger")) {
-    return QueryIntentType::kFlightReservationPassengerName;
-  }
-  if (contains(u"departure airport", u"from airport")) {
-    return QueryIntentType::kFlightReservationDepartureAirport;
-  }
-  if (contains(u"arrival airport", u"to airport")) {
-    return QueryIntentType::kFlightReservationArrivalAirport;
-  }
-  if (contains(u"departure date", u"flight date")) {
-    return QueryIntentType::kFlightReservationDepartureDate;
-  }
-  if (contains(u"flight reservation", u"flight", u"reservation")) {
-    return QueryIntentType::kFlightReservationFull;
-  }
+  try_match(QueryIntentType::kFlightReservationFlightNumber, u"flight number");
+  try_match(QueryIntentType::kFlightReservationTicketNumber, u"ticket number");
+  try_match(QueryIntentType::kFlightReservationConfirmationCode,
+            u"confirmation code", u"flight confirmation");
+  try_match(QueryIntentType::kFlightReservationPassengerName, u"passenger name",
+            u"flight passenger");
+  try_match(QueryIntentType::kFlightReservationDepartureAirport,
+            u"departure airport", u"from airport");
+  try_match(QueryIntentType::kFlightReservationArrivalAirport,
+            u"arrival airport", u"to airport");
+  try_match(QueryIntentType::kFlightReservationDepartureDate, u"departure date",
+            u"flight date");
+  try_match(QueryIntentType::kFlightReservationFull, u"flight reservation",
+            u"flight", u"reservation");
 
   // Order
-  if (contains(u"order id", u"order number")) {
-    return QueryIntentType::kOrderId;
-  }
-  if (contains(u"order account")) {
-    return QueryIntentType::kOrderAccount;
-  }
-  if (contains(u"order date")) {
-    return QueryIntentType::kOrderDate;
-  }
-  if (contains(u"merchant name", u"store name", u"order merchant")) {
-    return QueryIntentType::kOrderMerchantName;
-  }
-  if (contains(u"merchant domain")) {
-    return QueryIntentType::kOrderMerchantDomain;
-  }
-  if (contains(u"product names", u"order products")) {
-    return QueryIntentType::kOrderProductNames;
-  }
-  if (contains(u"grand total", u"order total", u"total amount")) {
-    return QueryIntentType::kOrderGrandTotal;
-  }
-  if (contains(u"order")) {
-    return QueryIntentType::kOrderFull;
-  }
+  try_match(QueryIntentType::kOrderId, u"order id", u"order number");
+  try_match(QueryIntentType::kOrderAccount, u"order account");
+  try_match(QueryIntentType::kOrderDate, u"order date");
+  try_match(QueryIntentType::kOrderMerchantName, u"merchant name",
+            u"store name", u"order merchant");
+  try_match(QueryIntentType::kOrderMerchantDomain, u"merchant domain");
+  try_match(QueryIntentType::kOrderProductNames, u"product names",
+            u"order products");
+  try_match(QueryIntentType::kOrderGrandTotal, u"grand total", u"order total",
+            u"total amount");
+  try_match(QueryIntentType::kOrderFull, u"order");
 
   // National ID Card
-  if (contains(u"national id number")) {
-    return QueryIntentType::kNationalIdCardNumber;
-  }
-  if (contains(u"national id expiration", u"national id expiry")) {
-    return QueryIntentType::kNationalIdCardExpirationDate;
-  }
-  if (contains(u"national id issue")) {
-    return QueryIntentType::kNationalIdCardIssueDate;
-  }
-  if (contains(u"national id country")) {
-    return QueryIntentType::kNationalIdCardCountry;
-  }
-  if (contains(u"national id name")) {
-    return QueryIntentType::kNationalIdCardName;
-  }
-  if (contains(u"id")) {
-    return QueryIntentType::kNationalIdCardFull;
-  }
+  try_match(QueryIntentType::kNationalIdCardNumber, u"national id number");
+  try_match(QueryIntentType::kNationalIdCardExpirationDate,
+            u"national id expiration", u"national id expiry");
+  try_match(QueryIntentType::kNationalIdCardIssueDate, u"national id issue");
+  try_match(QueryIntentType::kNationalIdCardCountry, u"national id country");
+  try_match(QueryIntentType::kNationalIdCardName, u"national id name");
+  try_match(QueryIntentType::kNationalIdCardFull, u"national id");
 
   // Redress Number
-  if (contains(u"redress number name", u"redress name")) {
-    return QueryIntentType::kRedressNumberName;
-  }
-  if (contains(u"redress number")) {
-    return QueryIntentType::kRedressNumberNumber;
-  }
-  if (contains(u"redress")) {
-    return QueryIntentType::kRedressNumberFull;
-  }
+  try_match(QueryIntentType::kRedressNumberName, u"redress number name",
+            u"redress name");
+  try_match(QueryIntentType::kRedressNumberNumber, u"redress number");
+  try_match(QueryIntentType::kRedressNumberFull, u"redress");
 
   // Known Traveler Number
-  if (contains(u"known traveler number name", u"ktn name")) {
-    return QueryIntentType::kKnownTravelerNumberName;
-  }
-  if (contains(u"known traveler number number", u"ktn number")) {
-    return QueryIntentType::kKnownTravelerNumberNumber;
-  }
-  if (contains(u"known traveler number expiration", u"ktn expiration",
-               u"ktn expiry")) {
-    return QueryIntentType::kKnownTravelerNumberExpirationDate;
-  }
-  if (contains(u"known traveler number", u"traveler number", u"ktn")) {
-    return QueryIntentType::kKnownTravelerNumberFull;
-  }
+  try_match(QueryIntentType::kKnownTravelerNumberName,
+            u"known traveler number name", u"ktn name");
+  try_match(QueryIntentType::kKnownTravelerNumberNumber,
+            u"known traveler number number", u"ktn number");
+  try_match(QueryIntentType::kKnownTravelerNumberExpirationDate,
+            u"known traveler number expiration", u"ktn expiration",
+            u"ktn expiry");
+  try_match(QueryIntentType::kKnownTravelerNumberFull, u"known traveler number",
+            u"traveler number", u"ktn");
 
-  // Drivers License
-  if (contains(u"drivers license number", u"driver's license number",
-               u"driver license number")) {
-    return QueryIntentType::kDriversLicenseNumber;
-  }
-  if (contains(u"drivers license state", u"driver's license state")) {
-    return QueryIntentType::kDriversLicenseState;
-  }
-  if (contains(u"drivers license expiration", u"driver's license expiration",
-               u"drivers license expiry", u"driver's license expiry")) {
-    return QueryIntentType::kDriversLicenseExpirationDate;
-  }
-  if (contains(u"drivers license issue", u"driver's license issue")) {
-    return QueryIntentType::kDriversLicenseIssueDate;
-  }
-  if (contains(u"drivers license name", u"driver's license name")) {
-    return QueryIntentType::kDriversLicenseName;
-  }
-  if (contains(u"drivers license", u"driver's license", u"driving license",
-               u"license")) {
-    return QueryIntentType::kDriversLicenseFull;
-  }
+  // Driver's License
+  try_match(QueryIntentType::kDriversLicenseNumber, u"drivers license number",
+            u"driver's license number", u"driver license number");
+  try_match(QueryIntentType::kDriversLicenseState, u"drivers license state",
+            u"driver's license state");
+  try_match(QueryIntentType::kDriversLicenseExpirationDate,
+            u"drivers license expiration", u"driver's license expiration",
+            u"drivers license expiry", u"driver's license expiry");
+  try_match(QueryIntentType::kDriversLicenseIssueDate, u"drivers license issue",
+            u"driver's license issue");
+  try_match(QueryIntentType::kDriversLicenseName, u"drivers license name",
+            u"driver's license name");
+  try_match(QueryIntentType::kDriversLicenseFull, u"drivers license",
+            u"driver's license", u"driving license", u"license");
 
   // Personal profiles
-  if (contains(u"zip", u"zip-code", u"postal-code", u"postal")) {
-    return QueryIntentType::kAddressZip;
-  }
-  if (contains(u"city", u"town")) {
-    return QueryIntentType::kAddressCity;
-  }
-  if (contains(u"state", u"province")) {
-    return QueryIntentType::kAddressState;
-  }
-  if (contains(u"country")) {
-    return QueryIntentType::kAddressCountry;
-  }
-  if (contains(u"street")) {
-    return QueryIntentType::kAddressStreetAddress;
-  }
-  if (contains(u"phone", u"mobile", u"telephone")) {
-    return QueryIntentType::kPhone;
-  }
-  if (contains(u"email", u"e-mail")) {
-    return QueryIntentType::kEmail;
-  }
-  if (contains(u"organization", u"company")) {
-    return QueryIntentType::kCompanyName;
-  }
-  if (contains(u"name")) {
-    return QueryIntentType::kNameFull;
-  }
-  if (contains(u"address", u"home", u"work", u"live")) {
-    return QueryIntentType::kAddressFull;
-  }
-  if (contains(u"iban", u"bank account")) {
-    return QueryIntentType::kIban;
+  try_match(QueryIntentType::kAddressZip, u"zip code", u"zip-code", u"zip",
+            u"postal code", u"postal-code", u"postal");
+  try_match(QueryIntentType::kAddressCity, u"city", u"town");
+  try_match(QueryIntentType::kAddressState, u"state", u"province");
+  try_match(QueryIntentType::kAddressCountry, u"country");
+  try_match(QueryIntentType::kAddressStreetAddress, u"street");
+  try_match(QueryIntentType::kPhone, u"phone", u"mobile", u"telephone");
+  try_match(QueryIntentType::kEmail, u"e-mail", u"email");
+  try_match(QueryIntentType::kCompanyName, u"organization", u"company");
+  try_match(QueryIntentType::kNameFull, u"name");
+  try_match(QueryIntentType::kAddressFull, u"home address", u"work address",
+            u"address", u"home", u"work", u"live");
+  try_match(QueryIntentType::kIban, u"iban", u"bank account");
+
+  if (matched_intent == QueryIntentType::kUnknown) {
+    return ClassifiedQuery(QueryIntentType::kUnknown);
   }
 
-  return QueryIntentType::kUnknown;
+  // Remove the matched keyword phrase from the query and extract the remaining
+  // words.
+  base::ReplaceFirstSubstringAfterOffset(&normalized_query, 0,
+                                         matched_keyword_phrase, u"");
+  std::vector<std::u16string> filter_words = base::SplitString(
+      normalized_query, u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  return ClassifiedQuery(matched_intent, std::move(filter_words));
 }
 
-QueryIntentType GeminiClassify(std::u16string_view query) {
+ClassifiedQuery GeminiClassify(std::u16string_view query) {
   // TODO(crbug.com/490211801): Implement Gemini model call within MES.
-  return QueryIntentType::kUnknown;
+  return ClassifiedQuery(QueryIntentType::kUnknown);
 }
 
 }  // namespace
 
+ClassifiedQuery::ClassifiedQuery(QueryIntentType intent,
+                                 std::vector<std::u16string> filter_words)
+    : intent(intent), filter_words(std::move(filter_words)) {}
+
+ClassifiedQuery::ClassifiedQuery(const ClassifiedQuery&) = default;
+ClassifiedQuery& ClassifiedQuery::operator=(const ClassifiedQuery&) = default;
+ClassifiedQuery::ClassifiedQuery(ClassifiedQuery&&) = default;
+ClassifiedQuery& ClassifiedQuery::operator=(ClassifiedQuery&&) = default;
+ClassifiedQuery::~ClassifiedQuery() = default;
+
 QueryClassifier CreateQueryClassifier() {
   std::vector<QueryClassifier> classifiers = {
-      internal::CreateRegExpQueryClassifier(),
+      internal::CreateKeywordQueryClassifier(),
       internal::CreateGeminiClassifier()};
   return base::BindRepeating(&CompositeClassify, std::move(classifiers));
 }
 
 namespace internal {
 
-QueryClassifier CreateRegExpQueryClassifier() {
-  return base::BindRepeating(&RegExpQueryClassify);
+bool ContainsStandalonePhrase(std::u16string_view haystack,
+                              std::u16string_view needle) {
+  if (needle.empty()) {
+    return true;
+  }
+
+  size_t pos = haystack.find(needle);
+  while (pos != std::u16string::npos) {
+    bool start_of_word = pos == 0 || haystack[pos - 1] == u' ';
+    bool end_of_word = pos + needle.length() == haystack.length() ||
+                       haystack[pos + needle.length()] == u' ';
+    if (start_of_word && end_of_word) {
+      return true;
+    }
+    pos = haystack.find(needle, pos + 1);
+  }
+  return false;
+}
+
+QueryClassifier CreateKeywordQueryClassifier() {
+  return base::BindRepeating(&KeywordQueryClassify);
 }
 
 QueryClassifier CreateGeminiClassifier() {
