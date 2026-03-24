@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -53,15 +55,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    file_utils_wrapper_ =
-        base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
-    // The log directory may or may not be attempted to be deleted during the
-    // test run.
-    EXPECT_CALL(*file_utils_wrapper_,
-                DeleteFileRecursively(
-                    GetWebAppsRootDirectory(profile()).AppendASCII("Logs")))
-        .Times(testing::AnyNumber())
-        .WillRepeatedly(testing::Return(true));
+    file_utils_wrapper_ = base::MakeRefCounted<TestFileUtils>();
     fake_provider().SetFileUtils(file_utils_wrapper_);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -73,24 +67,20 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  scoped_refptr<MockFileUtilsWrapper> file_utils_wrapper_;
+  scoped_refptr<TestFileUtils> file_utils_wrapper_;
 };
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SYNC);
 
   base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
       GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -99,23 +89,20 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_FALSE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kDefault);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
       GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -124,23 +111,22 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_FALSE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, FailedDataDeletionOrOsHookRemoval) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SYNC);
 
   base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
       GetWebAppsRootDirectory(profile()), app_id);
 
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(false));
+  file_utils_wrapper_->SetDeleteFileRecursivelyResult(deletion_path, false);
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -149,18 +135,12 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletionOrOsHookRemoval) {
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kError, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_TRUE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-
-  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
-      GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .Times(0);
+  webapps::AppId app_id =
+      GenerateAppId(std::nullopt, GURL("https://www.example.com"));
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -173,20 +153,13 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
 }
 
 TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
-
-  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
-      GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .Times(0);
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SYNC);
 
   provider()->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
@@ -194,30 +167,30 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
         EXPECT_EQ(webapps::UninstallResultCode::kShutdown, code);
       }));
 
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
   provider()->command_manager().Shutdown();
   // App is not uninstalled.
   EXPECT_NE(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_TRUE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kDefault);
-  webapps::AppId app_id = web_app->app_id();
-  web_app->AddInstallURLToManagementExternalConfigMap(
-      WebAppManagement::kDefault, GURL("https://www.example.com/install"));
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  web_app_info->install_url = GURL("https://www.example.com/install");
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+
   EXPECT_FALSE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                    .DoesAppIdExist(app_id));
 
   base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
       GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
 
   base::test::TestFuture<webapps::UninstallResultCode> future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -227,29 +200,34 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
   EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                   .DoesAppIdExist(app_id));
+  EXPECT_FALSE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kDefault);
-  web_app->AddInstallURLToManagementExternalConfigMap(
-      WebAppManagement::kDefault, GURL("https://example.com/install"));
-  web_app->AddSource(WebAppManagement::kPolicy);
-  web_app->AddInstallURLToManagementExternalConfigMap(
-      WebAppManagement::kPolicy, GURL("https://example.com/install"));
-  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  web_app_info->install_url = GURL("https://example.com/install");
 
-  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
-      GetWebAppsRootDirectory(profile()), app_id);
+  // Install as Default
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .Times(0);
+  // Install as Policy
+  auto web_app_info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info2->title = u"Example App";
+  web_app_info2->install_url = GURL("https://example.com/install");
+  test::InstallWebApp(profile(), std::move(web_app_info2),
+                      /*overwrite_existing_manifest_fields=*/false,
+                      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  EXPECT_FALSE(provider()
+                   ->registrar_unsafe()
+                   .GetAppById(app_id)
+                   ->CanUserUninstallWebApp());
 
   base::RunLoop run_loop;
   auto command = WebAppUninstallCommand::CreateForRemoveInstallManagements(
@@ -274,6 +252,9 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   provider()->command_manager().ScheduleCommand(std::move(command));
   run_loop.Run();
 
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
   // It should still be around from the default install.
   EXPECT_THAT(provider()->registrar_unsafe().LookUpAppIdByInstallUrl(
                   GURL("https://example.com/install")),
@@ -282,17 +263,17 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   EXPECT_EQ(provider()->registrar_unsafe().LookUpAppByInstallSourceInstallUrl(
                 WebAppManagement::kPolicy, GURL("https://example.com/install")),
             nullptr);
+  EXPECT_TRUE(base::PathExists(deletion_path));
 }
 
 TEST_F(WebAppUninstallCommandTest, Shutdown) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SYNC);
 
   base::test::TestFuture<webapps::UninstallResultCode> future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -303,6 +284,10 @@ TEST_F(WebAppUninstallCommandTest, Shutdown) {
   // removed.
   EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kShutdown);
   EXPECT_NE(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+  EXPECT_TRUE(base::PathExists(deletion_path));
 
   // Test post-shutdown behavior.
   base::test::TestFuture<webapps::UninstallResultCode> future2;
@@ -329,20 +314,16 @@ class WebAppUninstallCommandSourceTest
 // Sync.
 TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   base::HistogramTester tester;
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SYNC);
 
   base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
       GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->scheduler().RemoveUserUninstallableManagements(
@@ -350,6 +331,7 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_FALSE(base::PathExists(deletion_path));
   EXPECT_THAT(tester.GetAllSamples("Webapp.Install.UninstallEvent"),
               base::BucketsAre(base::Bucket(GetParam().source, /*count=*/1)));
 }

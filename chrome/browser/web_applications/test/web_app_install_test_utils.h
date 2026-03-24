@@ -44,6 +44,15 @@ void WaitUntilReady(WebAppProvider* provider);
 // is complete.
 void WaitUntilWebAppProviderAndSubsystemsReady(WebAppProvider* provider);
 
+// Installs a standalone web app for testing with a specific set of opinions:
+// - `start_url` and `install_url` are set to `app_url`.
+// - `scope` is set to `app_url` without the filename.
+// - `title` and `description` are set to `app_name`.
+// - `user_display_mode` is `kStandalone`.
+//
+// Use this when you just need a quick, basic installed app and don't care about
+// specific or differing values for those fields. For more precise control, use
+// `InstallWebApp()` directly.
 webapps::AppId InstallDummyWebApp(
     Profile* profile,
     const std::string& app_name,

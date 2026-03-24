@@ -13,12 +13,12 @@
 namespace web_app {
 
 scoped_refptr<TestFileUtils> TestFileUtils::Create(
-    std::map<base::FilePath, base::FilePath> read_file_rerouting) {
+    absl::flat_hash_map<base::FilePath, base::FilePath> read_file_rerouting) {
   return base::MakeRefCounted<TestFileUtils>(std::move(read_file_rerouting));
 }
 
 TestFileUtils::TestFileUtils(
-    std::map<base::FilePath, base::FilePath> read_file_rerouting)
+    absl::flat_hash_map<base::FilePath, base::FilePath> read_file_rerouting)
     : read_file_rerouting_(std::move(read_file_rerouting)) {}
 
 TestFileUtils::~TestFileUtils() = default;
@@ -30,6 +30,11 @@ void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
 void TestFileUtils::SetNextDeleteFileRecursivelyResult(
     std::optional<bool> delete_result) {
   delete_file_recursively_result_ = delete_result;
+}
+
+void TestFileUtils::SetDeleteFileRecursivelyResult(const base::FilePath& path,
+                                                   bool result) {
+  delete_file_recursively_results_[path] = result;
 }
 
 bool TestFileUtils::WriteFile(const base::FilePath& filename,
@@ -54,15 +59,18 @@ bool TestFileUtils::WriteFile(const base::FilePath& filename,
 
 bool TestFileUtils::ReadFileToString(const base::FilePath& path,
                                      std::string* contents) {
-  for (const std::pair<const base::FilePath, base::FilePath>& route :
-       read_file_rerouting_) {
-    if (route.first == path)
-      return FileUtilsWrapper::ReadFileToString(route.second, contents);
+  auto it = read_file_rerouting_.find(path);
+  if (it != read_file_rerouting_.end()) {
+    return FileUtilsWrapper::ReadFileToString(it->second, contents);
   }
   return FileUtilsWrapper::ReadFileToString(path, contents);
 }
 
 bool TestFileUtils::DeleteFileRecursively(const base::FilePath& path) {
+  auto it = delete_file_recursively_results_.find(path);
+  if (it != delete_file_recursively_results_.end()) {
+    return it->second;
+  }
   return delete_file_recursively_result_
              ? *delete_file_recursively_result_
              : FileUtilsWrapper::DeleteFileRecursively(path);
