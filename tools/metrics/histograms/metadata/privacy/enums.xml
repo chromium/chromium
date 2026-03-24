@@ -26,16 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AdsHeuristicCookieOverride">
-  <int value="0" label="kNone"/>
-  <int value="1" label="kNotAd"/>
-  <int value="2" label="kAny"/>
-  <int value="3" label="kSkipHeuristics"/>
-  <int value="4" label="kSkipMetadata"/>
-  <int value="5" label="kSkipSupport"/>
-  <int value="6" label="kSkipTopLevelSupport"/>
-</enum>
-
 <enum name="AggregationServiceObserverReportStatus">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed to assemble"/>

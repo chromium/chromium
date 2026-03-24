@@ -133,20 +133,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
       summary="No action taken instead a privacy sandbox notice timed out."/>
 </variants>
 
-<histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
-    enum="AdsHeuristicCookieOverride" expires_after="2026-03-22">
-  <owner>linnan@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Records what overrides were added to cookie setting overrides by the ads
-    heuristic. For non-ad cookie accesses, this records none. Only recorded
-    while the SkipTPCDMitigationsWithAdsHeuristic feature is on. Recorded once
-    on request start, or document.cookie access. Note that a single request may
-    emit multiple entries to this histogram, and the overall bucket proportions
-    will not be accurate.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.3PCD.RollbackNotice.Action"
     enum="RollBack3pcdNoticeAction" expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>

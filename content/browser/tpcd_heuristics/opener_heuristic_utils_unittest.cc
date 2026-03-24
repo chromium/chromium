@@ -9,9 +9,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/btm/btm_bounce_detector.h"
 #include "content/public/browser/btm_redirect.h"
-#include "content/public/browser/cookie_access_details.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -84,46 +82,6 @@ TEST(OpenerHeuristicUtilsTest, GetPopupProvider) {
   // If not a known provider, return kUnknown.
   EXPECT_EQ(GetPopupProvider(GURL("https://www.example.com/")),
             PopupProvider::kUnknown);
-}
-
-TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyInExperiment) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      network::features::kSkipTpcdMitigationsForAds,
-      {{"SkipTpcdMitigationsForAdsHeuristics", "true"}});
-
-  CookieAccessDetails details;
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kFalse);
-
-  details.cookie_setting_overrides.Put(
-      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kTrue);
-}
-
-TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(network::features::kSkipTpcdMitigationsForAds);
-
-  CookieAccessDetails details;
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
-
-  details.cookie_setting_overrides.Put(
-      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
-}
-
-TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      network::features::kSkipTpcdMitigationsForAds,
-      {{"SkipTpcdMitigationsForAdsHeuristics", "false"}});
-
-  CookieAccessDetails details;
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
-
-  details.cookie_setting_overrides.Put(
-      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
-  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
 }
 
 TEST(BtmRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {

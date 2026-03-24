@@ -16108,12 +16108,6 @@ be describing additional metrics about the same event.
       buckets up to 60 days.
     </summary>
   </metric>
-  <metric name="IsAdTagged" enum="IsAdTagged">
-    <summary>
-      Whether the cookie access attempt was tagged as an ad cookie, and thus
-      exempt from mitigations including heuristics.
-    </summary>
-  </metric>
 </event>
 
 <event name="OpenerHeuristic.TopLevel">
@@ -20693,12 +20687,6 @@ be describing additional metrics about the same event.
       &quot;Authentication&quot; for web authentications,
       &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
       &quot;NoInteraction&quot; for when there was no user interaction.
-    </summary>
-  </metric>
-  <metric name="IsAdTagged" enum="IsAdTagged">
-    <summary>
-      Whether the cookie access attempt was tagged as an ad cookie, and thus
-      exempt from mitigations including heuristics.
     </summary>
   </metric>
   <metric name="IsCurrentInteraction" enum="Boolean">

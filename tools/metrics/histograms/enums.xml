@@ -6104,12 +6104,6 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="CarrierIParcel"/>
 </enum>
 
-<enum name="IsAdTagged">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="False"/>
-  <int value="2" label="True"/>
-</enum>
-
 <enum name="IsolatedPrerenderISPFilteringStatus">
   <int value="0" label="No probing"/>
   <int value="1" label="DNS probing success"/>

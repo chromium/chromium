@@ -379,12 +379,9 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
   int32_t hours_since_opener = Bucketize3PCDHeuristicSample(
       (GetClock()->Now() - value->last_popup_time).InHours(),
       base::Days(30).InHours());
-  OptionalBool is_ad_tagged_cookie = IsAdTaggedCookieForHeuristics(details);
-
   ukm::builders::OpenerHeuristic_PostPopupCookieAccess(source_id)
       .SetAccessId(value->access_id)
       .SetAccessSucceeded(!details.blocked_by_policy)
-      .SetIsAdTagged(static_cast<int64_t>(is_ad_tagged_cookie))
       .SetHoursSincePopupOpened(hours_since_opener)
       .Record(ukm::UkmRecorder::Get());
 }

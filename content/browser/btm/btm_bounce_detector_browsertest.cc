@@ -393,11 +393,7 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
   BtmBounceDetectorBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
             &BtmBounceDetectorBrowserTest::GetActiveWebContents,
-            base::Unretained(this))) {
-    enabled_features_.push_back(
-        {network::features::kSkipTpcdMitigationsForAds,
-         {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}});
-  }
+            base::Unretained(this))) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -1844,11 +1840,10 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
       ukm_recorder.GetEntries(
           "RedirectHeuristic.CookieAccess2",
-          {"AccessId", "AccessAllowed", "IsAdTagged",
-           "HoursSinceLastInteraction", "MillisecondsSinceRedirect",
-           "OpenerHasSameSiteIframe", "SitesPassedCount",
-           "DoesFirstPartyPrecedeThirdParty", "IsCurrentInteraction",
-           "InteractionType"});
+          {"AccessId", "AccessAllowed", "HoursSinceLastInteraction",
+           "MillisecondsSinceRedirect", "OpenerHasSameSiteIframe",
+           "SitesPassedCount", "DoesFirstPartyPrecedeThirdParty",
+           "IsCurrentInteraction", "InteractionType"});
 
   // Expect UKM entries from all three cookie accesses.
   ASSERT_EQ(3u, ukm_entries.size());
@@ -1869,8 +1864,6 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
       ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
       Eq(target_url_3pc_allowed));
   EXPECT_EQ(ukm_entries[0].metrics.at("AccessAllowed"), true);
-  EXPECT_EQ(ukm_entries[0].metrics.at("IsAdTagged"),
-            static_cast<int32_t>(OptionalBool::kTrue));
   EXPECT_EQ(ukm_entries[0].metrics.at("HoursSinceLastInteraction"), 0);
   EXPECT_EQ(ukm_entries[0].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kFalse));
@@ -1891,8 +1884,6 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
       ukm_recorder.GetSourceForSourceId(ukm_entries[1].source_id)->url(),
       Eq(target_url_3pc_allowed));
   EXPECT_EQ(ukm_entries[1].metrics.at("AccessAllowed"), true);
-  EXPECT_EQ(ukm_entries[0].metrics.at("IsAdTagged"),
-            static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(ukm_entries[1].metrics.at("HoursSinceLastInteraction"), 0);
   EXPECT_EQ(ukm_entries[1].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kFalse));
@@ -1915,8 +1906,6 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
       ukm_recorder.GetSourceForSourceId(ukm_entries[2].source_id)->url(),
       Eq(target_url_3pc_blocked));
   EXPECT_EQ(ukm_entries[2].metrics.at("AccessAllowed"), false);
-  EXPECT_EQ(ukm_entries[2].metrics.at("IsAdTagged"),
-            static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(ukm_entries[2].metrics.at("HoursSinceLastInteraction"), -1);
   EXPECT_EQ(ukm_entries[2].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kTrue));

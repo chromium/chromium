@@ -156,7 +156,6 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
 
   OptionalBool has_same_site_iframe =
       ToOptionalBool(HasSameSiteIframe(web_contents(), details.url));
-  OptionalBool is_ad_tagged_cookie = IsAdTaggedCookieForHeuristics(details);
 
   const bool first_party_precedes_third_party =
       AllSitesFollowingFirstParty(web_contents(), details.first_party_url)
@@ -167,7 +166,6 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
   ukm::builders::RedirectHeuristic_CookieAccess2(first_party_source_id)
       .SetAccessId(access_id)
       .SetAccessAllowed(!details.blocked_by_policy)
-      .SetIsAdTagged(static_cast<int64_t>(is_ad_tagged_cookie))
       .SetHoursSinceLastInteraction(hours_since_last_interaction)
       .SetMillisecondsSinceRedirect(milliseconds_since_redirect)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_same_site_iframe))

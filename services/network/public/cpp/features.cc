@@ -350,36 +350,6 @@ BASE_FEATURE_PARAM(
     /*name=*/"RendererSideContentDecodingForceMojoFailureForTesting",
     /*default_value=*/false);
 
-// This feature allows skipping TPCD mitigation checks when the cookie access
-// is tagged as being used for advertising purposes. This means that cookies
-// will continue to be blocked for cookie accesses on ad requests even if the
-// 3PC mitigations would otherwise allow the access.
-BASE_FEATURE(kSkipTpcdMitigationsForAds, base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls whether we ignore opener heuristic grants for 3PC accesses.
-BASE_FEATURE_PARAM(bool,
-                   kSkipTpcdMitigationsForAdsHeuristics,
-                   &kSkipTpcdMitigationsForAds,
-                   /*name=*/"SkipTpcdMitigationsForAdsHeuristics",
-                   /*default_value=*/false);
-// Controls whether we ignore checks on the metadata allowlist for 3PC cookies.
-BASE_FEATURE_PARAM(bool,
-                   kSkipTpcdMitigationsForAdsMetadata,
-                   &kSkipTpcdMitigationsForAds,
-                   /*name=*/"SkipTpcdMitigationsForAdsMetadata",
-                   /*default_value=*/false);
-// Controls whether we ignore checks on the deprecation trial for 3PC.
-BASE_FEATURE_PARAM(bool,
-                   kSkipTpcdMitigationsForAdsTrial,
-                   &kSkipTpcdMitigationsForAds,
-                   /*name=*/"SkipTpcdMitigationsForAdsSupport",
-                   /*default_value=*/false);
-// Controls whether we ignore checks on the top-level deprecation trial for 3PC.
-BASE_FEATURE_PARAM(bool,
-                   kSkipTpcdMitigationsForAdsTopLevelTrial,
-                   &kSkipTpcdMitigationsForAds,
-                   /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
-                   /*default_value=*/false);
-
 // Enables Document-Isolation-Policy (DIP).
 // https://github.com/WICG/document-isolation-policy
 BASE_FEATURE(kDocumentIsolationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);

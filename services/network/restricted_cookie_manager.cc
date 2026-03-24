@@ -47,7 +47,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/storage_access_api/status.h"
-#include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -1201,8 +1200,6 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
   if (force_disable_third_party_cookies) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
   }
-  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides,
-                                        /*emit_metrics=*/true);
 
   if (apply_devtools_overrides) {
     overrides = base::Union(overrides, devtools_cookie_setting_overrides_);

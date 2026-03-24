@@ -5,8 +5,6 @@
 #include "content/browser/tpcd_heuristics/opener_heuristic_utils.h"
 
 #include "content/browser/btm/btm_bounce_detector.h"
-#include "content/public/browser/cookie_access_details.h"
-#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -16,16 +14,6 @@ PopupProvider GetPopupProvider(const GURL& popup_url) {
     return PopupProvider::kGoogle;
   }
   return PopupProvider::kUnknown;
-}
-
-OptionalBool IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details) {
-  if (!base::FeatureList::IsEnabled(
-          network::features::kSkipTpcdMitigationsForAds) ||
-      !network::features::kSkipTpcdMitigationsForAdsHeuristics.Get()) {
-    return OptionalBool::kUnknown;
-  }
-  return ToOptionalBool(details.cookie_setting_overrides.Has(
-      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant));
 }
 
 std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(

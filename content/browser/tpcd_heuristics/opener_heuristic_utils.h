@@ -18,7 +18,6 @@ class GURL;
 namespace content {
 
 class BtmRedirectContext;
-struct CookieAccessDetails;
 
 // Common identity providers that open pop-ups, to help estimate the impact of
 // third-party cookie blocking and prioritize mitigations. These values are
@@ -42,11 +41,6 @@ inline OptionalBool ToOptionalBool(bool b) {
   return b ? OptionalBool::kTrue : OptionalBool::kFalse;
 }
 
-// Returns whether the provided cookie access was ad-tagged, based on the cookie
-// settings overrides. Returns Unknown if kSkipTpcdMitigationsForAdsHeuristics
-// is false and the override is not set regardless.
-CONTENT_EXPORT OptionalBool
-IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details);
 
 // Returns a map of (site, (url, has_current_interaction)) for all URLs in the
 // current redirect chain that satisfy the redirect heuristic. This performs

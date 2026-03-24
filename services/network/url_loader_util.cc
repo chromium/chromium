@@ -22,7 +22,6 @@
 #include "net/http/http_response_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/url_request.h"
-#include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/cookie_manager.h"
@@ -368,8 +367,6 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
 
-  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
-                                        emit_metrics);
   // Only apply the DevTools overrides if the request is from devtools enabled
   // context.
   if (request.devtools_request_id.has_value()) {
