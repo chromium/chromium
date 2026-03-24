@@ -692,6 +692,9 @@ TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletBrandingV2};
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -720,16 +723,10 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
               UnorderedElementsAre(
                   ClientBehaviorConstants::kShowAccountEmailInLegalMessage,
                   ClientBehaviorConstants::kOfferingToSaveCvc));
-#else
-  EXPECT_THAT(
-      payments_network_interface().client_behavior_signals_in_request(),
-      UnorderedElementsAre(ClientBehaviorConstants::kOfferingToSaveCvc));
-#endif
 
   // Verify that even though the full address profile was saved, only the
   // country was included in the upload details request to payments.
@@ -2004,9 +2001,14 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
             user_provided_details.cardholder_name);
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
-       AttemptToOfferCardUploadSave_AutofillEnableBottomSheetAccountEmail) {
+       AttemptToOfferCardUploadSave_AutofillShowAccountEmailInLegalMessage) {
+#if !BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletBrandingV2};
+#endif
+
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
@@ -2034,7 +2036,43 @@ TEST_F(CreditCardSaveManagerTest,
               testing::Contains(
                   ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(
+    CreditCardSaveManagerTest,
+    AttemptToOfferCardUploadSave_AutofillDoNotShowAccountEmailInLegalMessage_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally).Times(0);
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
+
+  // Confirm that client_behavior_signals vector does NOT contain the
+  // kShowAccountEmailInLegalMessage signal.
+  std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
+      payments_network_interface().client_behavior_signals_in_request();
+  EXPECT_THAT(client_behavior_signals_in_request,
+              testing::Not(testing::Contains(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCardUploadSave_SendSaveCvcSignalIfOfferingToSaveCvc) {

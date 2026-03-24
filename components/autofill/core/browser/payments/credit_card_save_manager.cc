@@ -558,6 +558,11 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   upload_request_.client_behavior_signals.push_back(
       ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+#else
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)) {
+    upload_request_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+  }
 #endif
 
   // Check if we should request the CVC-inclusive legal message and if the user

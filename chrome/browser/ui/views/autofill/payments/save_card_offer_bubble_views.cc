@@ -389,10 +389,15 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
     return nullptr;
   }
 
+  bool v2_branding_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2);
   return ::autofill::CreateLegalMessageView(
       message_lines,
-      base::UTF8ToUTF16(controller()->GetAccountInfo().GetEmail()),
-      GetProfileAvatar(controller()->GetAccountInfo()),
+      v2_branding_enabled
+          ? /*user_email=*/std::u16string()
+          : base::UTF8ToUTF16(controller()->GetAccountInfo().GetEmail()),
+      v2_branding_enabled ? /*user_avatar=*/ui::ImageModel()
+                          : GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
                           base::Unretained(this)));
 }
