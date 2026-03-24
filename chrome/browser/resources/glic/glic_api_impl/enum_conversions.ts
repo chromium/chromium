@@ -90,6 +90,12 @@ export function enumToClient(
   val: mojomGlic.InvocationSource | null):
     glicApi.InvocationSource | undefined;
 export function enumToClient(
+  val: mojomGlic.LightweightPageFeature):
+    glicApi.LightweightPageFeature;
+export function enumToClient(
+  val: mojomGlic.LightweightPageFeature | null):
+    glicApi.LightweightPageFeature | undefined;
+export function enumToClient(
   val: mojomGlic.MetricUserInputReactionType):
     glicApi.MetricUserInputReactionType;
 export function enumToClient(
@@ -285,6 +291,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.InvocationSource | undefined):
     mojomGlic.InvocationSource | null;
+export function enumFromClient(
+  val: glicApi.LightweightPageFeature):
+    mojomGlic.LightweightPageFeature;
+export function enumFromClient(
+  val: glicApi.LightweightPageFeature | undefined):
+    mojomGlic.LightweightPageFeature | null;
 export function enumFromClient(
   val: glicApi.MetricUserInputReactionType):
     mojomGlic.MetricUserInputReactionType;
