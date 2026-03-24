@@ -140,20 +140,24 @@ void SurfaceLayerImpl::ResetStateForUpdateSubmissionStateCallback() {
   NoteLayerPropertyChanged();
 }
 
-void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
+void SurfaceLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  LayerImpl::CopyPropertiesTo(layer);
   SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
-  layer_impl->SetRange(surface_range_, std::move(deadline_in_frames_));
-  // Unless the client explicitly specifies otherwise, don't block on
-  // |surface_range_| more than once.
-  deadline_in_frames_ = 0u;
   layer_impl->SetStretchContentToFillBounds(stretch_content_to_fill_bounds_);
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_);
   layer_impl->SetHasPointerEventsNone(has_pointer_events_none_);
   layer_impl->SetIsReflection(is_reflection_);
   layer_impl->SetOverrideChildPaintFlags(override_child_paint_flags_);
+}
 
-  if (layer_impl->IsActive() && will_draw_needs_reset_) {
+void SurfaceLayerImpl::MovePropertiesToActiveLayer(LayerImpl* active_layer) {
+  LayerImpl::MovePropertiesToActiveLayer(active_layer);
+  SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(active_layer);
+  layer_impl->SetRange(surface_range_, std::move(deadline_in_frames_));
+  // Unless the client explicitly specifies otherwise, don't block on
+  // |surface_range_| more than once.
+  deadline_in_frames_ = 0u;
+  if (will_draw_needs_reset_) {
     layer_impl->will_draw_ = false;
     will_draw_needs_reset_ = false;
   }

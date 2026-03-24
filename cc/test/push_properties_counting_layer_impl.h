@@ -26,7 +26,7 @@ class PushPropertiesCountingLayerImpl : public LayerImpl {
       const PushPropertiesCountingLayerImpl&) = delete;
 
   // LayerImpl implementation.
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void MovePropertiesToActiveLayer(LayerImpl* active_layer) override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 

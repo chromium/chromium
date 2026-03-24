@@ -34,8 +34,8 @@ std::unique_ptr<LayerImpl> UIResourceLayerImpl::CreateLayerImpl(
   return UIResourceLayerImpl::Create(tree_impl, id());
 }
 
-void UIResourceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
+void UIResourceLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  LayerImpl::CopyPropertiesTo(layer);
   UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
 
   layer_impl->SetUIResourceId(ui_resource_id_);

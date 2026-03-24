@@ -46,7 +46,7 @@ class CC_EXPORT UIResourceLayerImpl : public LayerImpl {
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;

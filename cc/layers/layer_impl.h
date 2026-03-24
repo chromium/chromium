@@ -416,7 +416,11 @@ class CC_EXPORT LayerImpl {
 
   virtual std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const;
-  virtual void PushPropertiesTo(LayerImpl* layer);
+  // Non-destructive and can be called repeatedly with different `layer` args.
+  virtual void CopyPropertiesTo(LayerImpl* layer) const;
+  // May changed state on `this`. This does the same thing as CopyPropertiesTo
+  // and additionally destructively moves non-copied bits of state.
+  virtual void MovePropertiesToActiveLayer(LayerImpl* active_layer);
 
   // Internal to property tree construction (which only happens in tests on a
   // LayerImpl tree. See Layer::IsSnappedToPixelGridInTarget() for explanation,

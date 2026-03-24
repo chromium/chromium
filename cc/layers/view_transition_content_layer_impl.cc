@@ -62,8 +62,8 @@ void ViewTransitionContentLayerImpl::NotifyKnownResourceIdsBeforeAppendQuads(
   skip_unseen_resource_quads_ = known_resource_ids.count(resource_id_) == 0;
 }
 
-void ViewTransitionContentLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
+void ViewTransitionContentLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  LayerImpl::CopyPropertiesTo(layer);
   static_cast<ViewTransitionContentLayerImpl*>(layer)->SetMaxExtentsRect(
       max_extents_rect_in_originating_layer_coordinate_space_);
 }

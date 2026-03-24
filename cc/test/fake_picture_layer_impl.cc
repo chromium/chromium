@@ -35,11 +35,11 @@ std::unique_ptr<LayerImpl> FakePictureLayerImpl::CreateLayerImpl(
   return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id()));
 }
 
-void FakePictureLayerImpl::PushPropertiesTo(LayerImpl* layer_impl) {
+void FakePictureLayerImpl::CopyPropertiesTo(LayerImpl* layer_impl) const {
   FakePictureLayerImpl* picture_layer_impl =
       static_cast<FakePictureLayerImpl*>(layer_impl);
   picture_layer_impl->fixed_tile_size_ = fixed_tile_size_;
-  PictureLayerImpl::PushPropertiesTo(layer_impl);
+  PictureLayerImpl::CopyPropertiesTo(layer_impl);
 }
 
 void FakePictureLayerImpl::AppendQuads(const AppendQuadsContext& context,

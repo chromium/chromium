@@ -54,8 +54,8 @@ std::unique_ptr<LayerImpl> PaintedScrollbarLayerImpl::CreateLayerImpl(
                                            is_overlay_scrollbar());
 }
 
-void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerImplBase::PushPropertiesTo(layer);
+void PaintedScrollbarLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  ScrollbarLayerImplBase::CopyPropertiesTo(layer);
 
   PaintedScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedScrollbarLayerImpl*>(layer);

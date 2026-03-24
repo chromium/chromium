@@ -426,7 +426,7 @@ bool LayerImpl::IsSnappedToPixelGridInTarget() {
   return false;
 }
 
-void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
+void LayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
   DCHECK(layer->IsActive());
 
   if (GetChangeFlag(kChangedPropertyTreeIndex)) {
@@ -484,9 +484,10 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
     // Ensure updates also propagate to the display tree on its next update.
     layer->SetNeedsPushProperties(changed_properties_);
   }
+}
 
-  // Reset any state that should be cleared for the next update.
-  ResetChangeTracking();
+void LayerImpl::MovePropertiesToActiveLayer(LayerImpl* active_layer) {
+  CopyPropertiesTo(active_layer);
 }
 
 bool LayerImpl::IsAffectedByPageScale() const {
@@ -587,7 +588,7 @@ void LayerImpl::ResetChangeTracking() {
 }
 
 bool LayerImpl::IsActive() const {
-  return layer_tree_impl_->IsActiveTree();
+  return layer_tree_impl_ && layer_tree_impl_->IsActiveTree();
 }
 
 gfx::Size LayerImpl::bounds() const {

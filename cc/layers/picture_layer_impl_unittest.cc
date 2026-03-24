@@ -2433,7 +2433,7 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingIfDoesNotDrawContent) {
   // Set up layers with tilings.
   SetupDefaultTrees(gfx::Size(10, 10));
   SetContentsScaleOnBothLayers(1.f, 1.f, 1.f);
-  pending_layer()->PushPropertiesTo(active_layer());
+  pending_layer()->MovePropertiesToActiveLayer(active_layer());
   EXPECT_TRUE(pending_layer()->draws_content());
   EXPECT_TRUE(pending_layer()->CanHaveTilings());
   EXPECT_GE(pending_layer()->num_tilings(), 0u);
@@ -2445,7 +2445,7 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingIfDoesNotDrawContent) {
   EXPECT_FALSE(pending_layer()->CanHaveTilings());
 
   // No tilings should be pushed to active layer.
-  pending_layer()->PushPropertiesTo(active_layer());
+  pending_layer()->MovePropertiesToActiveLayer(active_layer());
   EXPECT_EQ(0u, active_layer()->num_tilings());
 }
 
@@ -3011,7 +3011,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   pending_layer()->SetBounds(layer_bounds);
   pending_layer()->SetRasterSourceForTesting(
       FakeRasterSource::CreateFilled(layer_bounds));
-  pending_layer()->PushPropertiesTo(active_layer());
+  pending_layer()->MovePropertiesToActiveLayer(active_layer());
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
                                             affected_by_invalid_scale);
@@ -3583,7 +3583,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   pending_layer()->SetBounds(layer_bounds);
   pending_layer()->SetRasterSourceForTesting(
       FakeRasterSource::CreateFilled(layer_bounds));
-  pending_layer()->PushPropertiesTo(active_layer());
+  pending_layer()->MovePropertiesToActiveLayer(active_layer());
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
 }

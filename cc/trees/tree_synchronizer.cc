@@ -193,7 +193,9 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
   for (auto* source_layer : layers) {
     LayerImpl* target_layer = active_tree->LayerById(source_layer->id());
     DCHECK(target_layer);
-    source_layer->PushPropertiesTo(target_layer);
+    source_layer->MovePropertiesToActiveLayer(target_layer);
+    // Reset any state that should be cleared for the next update.
+    source_layer->ResetChangeTracking();
   }
 
   pending_tree->ClearLayersThatShouldPushProperties();

@@ -838,6 +838,7 @@ void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
   extra->surface_hit_testable = layer.surface_hit_testable();
   extra->has_pointer_events_none = layer.has_pointer_events_none();
   extra->is_reflection = layer.is_reflection();
+  // TODO(zmo): This is never `true` on the active tree
   extra->will_draw_needs_reset = layer.will_draw_needs_reset();
   extra->override_child_paint_flags = layer.override_child_paint_flags();
 }

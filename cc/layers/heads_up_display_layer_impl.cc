@@ -468,15 +468,16 @@ void HeadsUpDisplayLayerImpl::GetContentsResourceId(
   }
 }
 
-void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
+void HeadsUpDisplayLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  LayerImpl::CopyPropertiesTo(layer);
+  static_cast<HeadsUpDisplayLayerImpl*>(layer)->SetHUDTypeface(typeface_);
+}
 
-  HeadsUpDisplayLayerImpl* layer_impl =
-      static_cast<HeadsUpDisplayLayerImpl*>(layer);
-
-  layer_impl->SetHUDTypeface(typeface_);
-  layer_impl->SetWebVitalsDebugRects(web_vitals_debug_rects_);
-  web_vitals_debug_rects_.clear();
+void HeadsUpDisplayLayerImpl::MovePropertiesToActiveLayer(
+    LayerImpl* active_layer) {
+  LayerImpl::MovePropertiesToActiveLayer(active_layer);
+  static_cast<HeadsUpDisplayLayerImpl*>(active_layer)
+      ->SetWebVitalsDebugRects(std::move(web_vitals_debug_rects_));
 }
 
 void HeadsUpDisplayLayerImpl::UpdateHudContents() {

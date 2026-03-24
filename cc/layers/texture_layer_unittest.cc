@@ -890,7 +890,7 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
   test_resource1_.Verify();
 
   // Test callback after activation.
-  pending_layer->PushPropertiesTo(active_layer.get());
+  pending_layer->MovePropertiesToActiveLayer(active_layer.get());
   active_layer->DidBecomeActive();
 
   test_resource1_.ExpectNoRelease();
@@ -899,7 +899,7 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
   test_resource1_.Verify();
 
   test_resource2_.ExpectRelease();
-  pending_layer->PushPropertiesTo(active_layer.get());
+  pending_layer->MovePropertiesToActiveLayer(active_layer.get());
   active_layer->DidBecomeActive();
   test_resource2_.Verify();
 
@@ -907,7 +907,7 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
   test_resource1_.ExpectRelease();
   pending_layer->SetTransferableResource(viz::TransferableResource(),
                                          viz::ReleaseCallback());
-  pending_layer->PushPropertiesTo(active_layer.get());
+  pending_layer->MovePropertiesToActiveLayer(active_layer.get());
   active_layer->DidBecomeActive();
   test_resource1_.Verify();
 

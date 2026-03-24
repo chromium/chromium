@@ -41,7 +41,7 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
 
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,

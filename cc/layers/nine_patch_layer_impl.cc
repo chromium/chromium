@@ -32,8 +32,8 @@ std::unique_ptr<LayerImpl> NinePatchLayerImpl::CreateLayerImpl(
   return NinePatchLayerImpl::Create(tree_impl, id());
 }
 
-void NinePatchLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  UIResourceLayerImpl::PushPropertiesTo(layer);
+void NinePatchLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  UIResourceLayerImpl::CopyPropertiesTo(layer);
   NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
 
   layer_impl->quad_generator_ = this->quad_generator_;

@@ -51,7 +51,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
 
   bool CanScrollOrientation() const;
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
   DamageReasonSet GetDamageReasons() const override;
   void ResetChangeTracking() override;
 

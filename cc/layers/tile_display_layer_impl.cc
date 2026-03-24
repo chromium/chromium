@@ -173,7 +173,7 @@ std::unique_ptr<LayerImpl> TileDisplayLayerImpl::CreateLayerImpl(
   NOTREACHED();
 }
 
-void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
+void TileDisplayLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
   NOTREACHED();
 }
 

@@ -46,8 +46,9 @@ std::unique_ptr<LayerImpl> NinePatchThumbScrollbarLayerImpl::CreateLayerImpl(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
 }
 
-void NinePatchThumbScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerImplBase::PushPropertiesTo(layer);
+void NinePatchThumbScrollbarLayerImpl::CopyPropertiesTo(
+    LayerImpl* layer) const {
+  ScrollbarLayerImplBase::CopyPropertiesTo(layer);
 
   NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
       static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);

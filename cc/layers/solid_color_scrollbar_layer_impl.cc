@@ -54,8 +54,8 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
       thumb_thickness_(thumb_thickness),
       track_start_(track_start) {}
 
-void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerImplBase::PushPropertiesTo(layer);
+void SolidColorScrollbarLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  ScrollbarLayerImplBase::CopyPropertiesTo(layer);
   static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color_);
 }
 

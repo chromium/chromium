@@ -118,7 +118,7 @@ TEST_F(LayerPerfTest, PushPropertiesTo) {
   reporter.AddResult("", timer_.LapsPerSecond());
 }
 
-TEST_F(LayerPerfTest, ImplPushPropertiesTo) {
+TEST_F(LayerPerfTest, ImplMovePropertiesToActiveLayer) {
   std::unique_ptr<LayerImpl> test_layer =
       LayerImpl::Create(host_impl_.active_tree(), 1);
   std::unique_ptr<LayerImpl> impl_layer =
@@ -138,7 +138,7 @@ TEST_F(LayerPerfTest, ImplPushPropertiesTo) {
     test_layer->SetDrawsContent(draws_content);
     test_layer->SetContentsOpaque(contents_opaque);
 
-    test_layer->PushPropertiesTo(impl_layer.get());
+    test_layer->MovePropertiesToActiveLayer(impl_layer.get());
 
     background_color =
         background_color == SkColors::kRed ? SkColors::kGreen : SkColors::kRed;
@@ -158,7 +158,7 @@ TEST_F(LayerPerfTest, ImplPushPropertiesTo) {
   // Properties didn't change.
   timer_.Reset();
   do {
-    test_layer->PushPropertiesTo(impl_layer.get());
+    test_layer->MovePropertiesToActiveLayer(impl_layer.get());
     timer_.NextLap();
   } while (!timer_.HasTimeLimitExpired());
 

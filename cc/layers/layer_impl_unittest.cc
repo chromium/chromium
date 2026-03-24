@@ -482,7 +482,7 @@ TEST_F(LayerImplScrollTest, TouchActionRegionCacheInvalidation) {
   EXPECT_EQ(pending_layer->GetAllTouchActionRegions(), region.GetAllRegions());
   EXPECT_EQ(layer()->GetAllTouchActionRegions(), Region());
 
-  pending_layer->PushPropertiesTo(layer());
+  pending_layer->MovePropertiesToActiveLayer(layer());
 
   // After pushing properties, the value for GetAllTouchActionRegions should
   // not be stale.
@@ -513,7 +513,7 @@ TEST_F(LayerImplScrollTest, PushPropertiesToMirrorsCurrentScrollOffset) {
       ->UpdateScrollOffsetBaseForTesting(pending_layer->element_id(),
                                          CurrentScrollOffset(layer()));
 
-  pending_layer->PushPropertiesTo(layer());
+  pending_layer->MovePropertiesToActiveLayer(layer());
 
   EXPECT_POINTF_EQ(gfx::PointF(22, 23), CurrentScrollOffset(layer()));
   EXPECT_POINTF_EQ(CurrentScrollOffset(layer()),

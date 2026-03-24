@@ -132,25 +132,47 @@ std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
+void PictureLayerImpl::CopyPropertiesTo(LayerImpl* base_layer) const {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
   layer_impl->has_animated_image_update_rect_ = has_animated_image_update_rect_;
   layer_impl->has_non_animated_image_update_rect_ =
       has_non_animated_image_update_rect_;
 
-  // This has to be cached before calling LayerImpl::PushPropertiesTo because it
-  // reset the flag.
-  bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
-  bool changed_tiles = GetChangeFlag(kChangedTile);
+  LayerImpl::CopyPropertiesTo(base_layer);
 
-  LayerImpl::PushPropertiesTo(base_layer);
+  bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
+  if (changed_other_props) {
+    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
+
+    // Solid color layers have no tilings.
+    DCHECK(!solid_color() || tilings_->num_tilings() == 0);
+
+    // The pending tree should have at most a single tiling.
+    DCHECK_LE(tilings_->num_tilings(), 1u);
+
+    layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
+
+    layer_impl->raster_page_scale_ = raster_page_scale_;
+    layer_impl->raster_device_scale_ = raster_device_scale_;
+    layer_impl->raster_source_scale_ = raster_source_scale_;
+    layer_impl->raster_contents_scale_ = raster_contents_scale_;
+    // Simply push the value to the active tree without any extra invalidations,
+    // since the pending tree tiles would have this handled. This is here to
+    // ensure the state is consistent for future raster.
+    layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+  }
+}
+
+void PictureLayerImpl::MovePropertiesToActiveLayer(LayerImpl* active_layer) {
+  LayerImpl::MovePropertiesToActiveLayer(active_layer);
+  PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(active_layer);
 
   // Twin relationships should never change once established.
   DCHECK(!twin_layer_ || twin_layer_ == layer_impl);
   DCHECK(!twin_layer_ || layer_impl->twin_layer_ == this);
   // The twin relationship does not need to exist before the first
-  // PushPropertiesTo from pending to active layer since before that the active
+  // CopyPropertiesTo from pending to active layer since before that the active
   // layer can not have a pile or tilings, it has only been created and inserted
   // into the tree at that point.
   twin_layer_ = layer_impl;
@@ -160,6 +182,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // Move tile updates over to the active layer so they get pushed to the
     // display tree. Note that the active layer after this point can also
     // accumulate their own tile updates into its |updated_tiles_|.
+    bool changed_tiles = GetChangeFlag(kChangedTile);
     if (changed_tiles) {
       // Deep merge logic.
       auto& dst = layer_impl->updated_tiles_;
@@ -186,33 +209,16 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     layer_impl->should_batch_updated_tiles_ = true;
   }
 
+  bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
   if (changed_other_props) {
-    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
-
-    // Solid color layers have no tilings.
-    DCHECK(!solid_color() || tilings_->num_tilings() == 0);
-
-    // The pending tree should have at most a single tiling.
-    DCHECK_LE(tilings_->num_tilings(), 1u);
-
-    layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
     layer_impl->UpdateRasterSourceInternal(
         raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
         discardable_image_map_.get());
     DCHECK(invalidation_.IsEmpty());
-
-    // After syncing a solid color layer, the active layer has no tilings.
-    DCHECK(!solid_color() || layer_impl->tilings_->num_tilings() == 0);
-
-    layer_impl->raster_page_scale_ = raster_page_scale_;
-    layer_impl->raster_device_scale_ = raster_device_scale_;
-    layer_impl->raster_source_scale_ = raster_source_scale_;
-    layer_impl->raster_contents_scale_ = raster_contents_scale_;
-    // Simply push the value to the active tree without any extra invalidations,
-    // since the pending tree tiles would have this handled. This is here to
-    // ensure the state is consistent for future raster.
-    layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
   }
+
+  // After syncing a solid color layer, the active layer has no tilings.
+  DCHECK(!solid_color() || layer_impl->tilings_->num_tilings() == 0);
 
   layer_impl->SanityCheckTilingState();
 }

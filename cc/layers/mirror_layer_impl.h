@@ -49,7 +49,7 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
   gfx::Rect GetDamageRect() const override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
 

@@ -88,7 +88,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                              gfx::SizeF* resource_uv_size) const override;
 
   // LayerImpl overrides.
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
+  void MovePropertiesToActiveLayer(LayerImpl* active_layer) override;
 
  private:
   HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl,

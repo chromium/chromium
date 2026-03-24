@@ -45,7 +45,7 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       const override;
 
   void SetMaxExtentsRect(const gfx::RectF& max_extents_rect);
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
   void SetOriginatingSurfaceContentRect(
       const gfx::Rect&
           originating_surface_content_rect_in_layer_coordinate_space);

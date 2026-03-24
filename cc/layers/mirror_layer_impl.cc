@@ -90,8 +90,8 @@ void MirrorLayerImpl::AppendQuads(const AppendQuadsContext& context,
                    0.f);
 }
 
-void MirrorLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
+void MirrorLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
+  LayerImpl::CopyPropertiesTo(layer);
 
   auto* mirror_layer = static_cast<MirrorLayerImpl*>(layer);
   mirror_layer->SetMirroredLayerId(mirrored_layer_id_);

@@ -56,7 +56,8 @@ class CC_EXPORT PictureLayerImpl
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void CopyPropertiesTo(LayerImpl* layer) const override;
+  void MovePropertiesToActiveLayer(LayerImpl* active_layer) override;
   void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
   void ResetChangeTracking() override;
   void ResetRasterScale();
