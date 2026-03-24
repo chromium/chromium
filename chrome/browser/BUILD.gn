@@ -878,8 +878,6 @@ static_library("browser") {
     "policy/value_provider/value_provider_util.h",
     "policy/webusb_allow_devices_for_urls_policy_handler.cc",
     "policy/webusb_allow_devices_for_urls_policy_handler.h",
-    "preloading/prefetch/chrome_prefetch_manager.cc",
-    "preloading/prefetch/chrome_prefetch_manager.h",
 
     # TODO(crbug.com/408801109) Remove this once the privacy_sandbox_service_factory is moved to chrome/browser/prviacy_sandbox/BUILD.
     "privacy_sandbox/notice/notice_service_factory.cc",
@@ -1648,6 +1646,8 @@ static_library("browser") {
     "//chrome/browser/preloading/bookmarkbar_preload:impl",
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/preloading/new_tab_page_preload:impl",
+    "//chrome/browser/preloading/prefetch",
+    "//chrome/browser/preloading/prefetch:impl",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
     "//chrome/browser/preloading/prefetch/prefetch_service",

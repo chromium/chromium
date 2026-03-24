@@ -5,6 +5,28 @@
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
+source_set("prefetch") {
+  public = [ "chrome_prefetch_manager.h" ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "chrome_prefetch_manager.cc" ]
+
+  deps = [
+    ":prefetch",
+    "//chrome/browser/preloading",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -41,6 +63,7 @@ source_set("platform_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":prefetch",
     ":test_support",
     "//chrome/browser/autocomplete",
     "//chrome/browser/preloading",
