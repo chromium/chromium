@@ -101,6 +101,7 @@ int InitSocketPoolHelper(
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
     ClientSocketHandle* socket_handle,
@@ -116,7 +117,7 @@ int InitSocketPoolHelper(
       !!(request_load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
   ClientSocketPool::GroupId connection_group(
       std::move(endpoint), privacy_mode, std::move(network_anonymization_key),
-      secure_dns_policy, disable_cert_network_fetches);
+      secure_dns_policy, disable_cert_network_fetches, target_network);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       CreateSocketParams(connection_group, allowed_bad_certs);
 
@@ -222,6 +223,7 @@ int InitSocketHandleForHttpRequest(
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
@@ -231,9 +233,9 @@ int InitSocketHandleForHttpRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, socket_tag,
-      net_log, 0, socket_handle, HttpNetworkSession::SocketPoolType::kNormal,
-      std::move(callback), proxy_auth_callback,
-      ClientSocketPool::PreconnectCompletionCallback());
+      target_network, net_log, 0, socket_handle,
+      HttpNetworkSession::SocketPoolType::kNormal, std::move(callback),
+      proxy_auth_callback, ClientSocketPool::PreconnectCompletionCallback());
 }
 
 int InitSocketHandleForWebSocketRequest(
@@ -245,6 +247,7 @@ int InitSocketHandleForWebSocketRequest(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
@@ -263,7 +266,7 @@ int InitSocketHandleForWebSocketRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
-      SocketTag(), net_log, 0, socket_handle,
+      SocketTag(), target_network, net_log, 0, socket_handle,
       HttpNetworkSession::SocketPoolType::kWebSocket, std::move(callback),
       proxy_auth_callback, ClientSocketPool::PreconnectCompletionCallback());
 }
@@ -278,6 +281,7 @@ int PreconnectSocketsForHttpRequest(
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
     ClientSocketPool::PreconnectCompletionCallback callback) {
@@ -290,7 +294,7 @@ int PreconnectSocketsForHttpRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
-      net_log, num_preconnect_streams, nullptr,
+      target_network, net_log, num_preconnect_streams, nullptr,
       HttpNetworkSession::SocketPoolType::kNormal, CompletionOnceCallback(),
       ClientSocketPool::ProxyAuthCallback(), std::move(callback));
 }

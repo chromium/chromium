@@ -311,7 +311,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(request_info.url), PrivacyMode::PRIVACY_MODE_DISABLED,
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-      /*disable_cert_network_fetches=*/false);
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
     idle_socket_count =
         network_session->http_stream_pool()

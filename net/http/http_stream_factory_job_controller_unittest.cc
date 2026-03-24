@@ -781,10 +781,10 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 
   // There should be no H1/H2 connection.
-  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
-                                     NetworkAnonymizationKey(),
-                                     SecureDnsPolicy::kAllow,
-                                     /*disable_cert_network_fetches=*/false);
+  ClientSocketPool::GroupId group_id(
+      server, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   TransportClientSocketPool* socket_pool =
       reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
           HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct()));
@@ -831,10 +831,10 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 
   // There should be no H1/H2 connection.
-  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
-                                     NetworkAnonymizationKey(),
-                                     SecureDnsPolicy::kAllow,
-                                     /*disable_cert_network_fetches=*/false);
+  ClientSocketPool::GroupId group_id(
+      server, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   TransportClientSocketPool* socket_pool =
       reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
           HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct()));
@@ -889,10 +889,10 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   EXPECT_TRUE(request_delegate_->WaitForHttpStream());
 
   // There should be no H1/H2 connection.
-  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
-                                     NetworkAnonymizationKey(),
-                                     SecureDnsPolicy::kAllow,
-                                     /*disable_cert_network_fetches=*/false);
+  ClientSocketPool::GroupId group_id(
+      server, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   TransportClientSocketPool* socket_pool =
       reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
           HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct()));
@@ -5230,15 +5230,15 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   ClientSocketPool::GroupId group_id0(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-      /*disable_cert_network_fetches=*/false);
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   ClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-      /*disable_cert_network_fetches=*/false);
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   ClientSocketPool::GroupId group_id2(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       kNetworkAnonymizationKey2, SecureDnsPolicy::kAllow,
-      /*disable_cert_network_fetches=*/false);
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   EXPECT_EQ(static_cast<uint32_t>(kNumRequests),
             socket_pool->NumConnectJobsInGroupForTesting(group_id0));
   EXPECT_EQ(1u, socket_pool->NumConnectJobsInGroupForTesting(group_id1));

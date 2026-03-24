@@ -18,6 +18,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
@@ -130,7 +131,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
             PrivacyMode privacy_mode,
             NetworkAnonymizationKey network_anonymization_key,
             SecureDnsPolicy secure_dns_policy,
-            bool disable_cert_network_fetches);
+            bool disable_cert_network_fetches,
+            handles::NetworkHandle target_network);
     GroupId(const GroupId& group_id);
 
     ~GroupId();
@@ -152,26 +154,14 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       return disable_cert_network_fetches_;
     }
 
+    handles::NetworkHandle target_network() const { return target_network_; }
+
     // Returns the group ID as a string, for logging.
     std::string ToString() const;
 
-    bool operator==(const GroupId& other) const {
-      return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_, disable_cert_network_fetches_) ==
-             std::tie(other.destination_, other.privacy_mode_,
-                      other.network_anonymization_key_,
-                      other.secure_dns_policy_,
-                      other.disable_cert_network_fetches_);
-    }
+    bool operator==(const GroupId& other) const = default;
 
-    bool operator<(const GroupId& other) const {
-      return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_, disable_cert_network_fetches_) <
-             std::tie(other.destination_, other.privacy_mode_,
-                      other.network_anonymization_key_,
-                      other.secure_dns_policy_,
-                      other.disable_cert_network_fetches_);
-    }
+    auto operator<=>(const GroupId& other) const = default;
 
    private:
     // The endpoint of the final destination (not the proxy).
@@ -190,6 +180,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     // be true for a very limited number of network-configuration related
     // scripts (e.g., PAC fetches).
     bool disable_cert_network_fetches_;
+
+    handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
   };
 
   // Parameters that, in combination with GroupId, proxy, websocket information,

@@ -123,7 +123,8 @@ ClientSocketPool::GroupId::GroupId(
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
-    bool disable_cert_network_fetches)
+    bool disable_cert_network_fetches,
+    handles::NetworkHandle target_network)
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       network_anonymization_key_(
@@ -131,7 +132,8 @@ ClientSocketPool::GroupId::GroupId(
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy),
-      disable_cert_network_fetches_(disable_cert_network_fetches) {
+      disable_cert_network_fetches_(disable_cert_network_fetches),
+      target_network_(target_network) {
   DCHECK(destination_.IsValid());
 
   // ClientSocketPool only expected to be used for HTTP/HTTPS/WS/WSS cases, and
@@ -154,7 +156,12 @@ std::string ClientSocketPool::GroupId::ToString() const {
   return base::StrCat(
       {disable_cert_network_fetches_ ? "disable_cert_network_fetches/" : "",
        GetSecureDnsPolicyGroupIdPrefix(secure_dns_policy_),
-       GetPrivacyModeGroupIdPrefix(privacy_mode_), destination_.Serialize(),
+       GetPrivacyModeGroupIdPrefix(privacy_mode_),
+       target_network_ != handles::kInvalidNetworkHandle
+           ? base::StrCat(
+                 {"target_network=", base::ToString(target_network_), "/"})
+           : "",
+       destination_.Serialize(),
        NetworkAnonymizationKey::IsPartitioningEnabled()
            ? base::StrCat(
                  {" <", network_anonymization_key_.ToDebugString(), ">"})

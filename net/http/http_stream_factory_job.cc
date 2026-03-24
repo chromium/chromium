@@ -363,7 +363,8 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   ClientSocketPool::GroupId connection_group(
       destination_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      disable_cert_verification_network_fetches());
+      disable_cert_verification_network_fetches(),
+      request_info_.target_network);
   return pool->HasActiveSocket(connection_group);
 }
 
@@ -818,8 +819,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
-        request_info_.secure_dns_policy, net_log_, num_streams_,
-        std::move(preconnect_callback));
+        request_info_.secure_dns_policy, request_info_.target_network, net_log_,
+        num_streams_, std::move(preconnect_callback));
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
@@ -831,16 +832,16 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
-        request_info_.network_anonymization_key, net_log_, connection_.get(),
-        io_callback_, proxy_auth_callback);
+        request_info_.network_anonymization_key, request_info_.target_network,
+        net_log_, connection_.get(), io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
       allowed_bad_certs_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
-      proxy_auth_callback);
+      request_info_.socket_tag, request_info_.target_network, net_log_,
+      connection_.get(), io_callback_, proxy_auth_callback);
 }
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic() {

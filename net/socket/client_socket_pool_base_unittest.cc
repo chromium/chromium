@@ -95,10 +95,10 @@ ClientSocketPool::GroupId TestGroupId(
     PrivacyMode privacy_mode = PrivacyMode::PRIVACY_MODE_DISABLED,
     NetworkAnonymizationKey network_anonymization_key =
         NetworkAnonymizationKey()) {
-  return ClientSocketPool::GroupId(url::SchemeHostPort(scheme, host, port),
-                                   privacy_mode, network_anonymization_key,
-                                   SecureDnsPolicy::kAllow,
-                                   /*disable_cert_network_fetches=*/false);
+  return ClientSocketPool::GroupId(
+      url::SchemeHostPort(scheme, host, port), privacy_mode,
+      network_anonymization_key, SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
 }
 
 // Make sure |handle| sets load times correctly when it has been assigned a
@@ -927,7 +927,8 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
                 url::SchemeHostPort(scheme, host_port_pair.host(),
                                     host_port_pair.port()),
                 privacy_mode, network_anonymization_key, secure_dns_policy,
-                /*disable_cert_network_fetches=*/false);
+                /*disable_cert_network_fetches=*/false,
+                handles::kInvalidNetworkHandle);
 
             EXPECT_FALSE(pool_->HasGroupForTesting(group_id));
 

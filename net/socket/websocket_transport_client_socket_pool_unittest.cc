@@ -26,6 +26,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -95,7 +96,8 @@ class WebSocketTransportClientSocketPoolTest
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkAnonymizationKey(),
                   SecureDnsPolicy::kAllow,
-                  /*disable_cert_network_fetches=*/false),
+                  /*disable_cert_network_fetches=*/false,
+                  handles::kInvalidNetworkHandle),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         host_resolver_(std::make_unique<
                        MockHostResolver>(/*default_result=*/
@@ -244,7 +246,8 @@ TEST_P(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
       handle.Init(ClientSocketPool::GroupId(
                       std::move(endpoint), PRIVACY_MODE_DISABLED,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                      /*disable_cert_network_fetches=*/false),
+                      /*disable_cert_network_fetches=*/false,
+                      handles::kInvalidNetworkHandle),
                   ClientSocketPool::SocketParams::CreateForHttpForTesting(),
                   std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
@@ -1300,7 +1303,8 @@ TEST_P(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkAnonymizationKey,
-      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   EXPECT_THAT(
       handle.Init(group_id, params_, std::nullopt /* proxy_annotation_tag */,
                   kDefaultPriority, SocketTag(),

@@ -77,6 +77,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -6186,7 +6187,8 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         net::PrivacyMode::PRIVACY_MODE_ENABLED,
         partition_connections ? network_anonymization_key
                               : net::NetworkAnonymizationKey(),
-        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+        net::handles::kInvalidNetworkHandle);
 
     const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
     ASSERT_TRUE(server_http_url.SchemeIs(url::kHttpScheme));
@@ -6195,7 +6197,8 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         net::PrivacyMode::PRIVACY_MODE_ENABLED,
         partition_connections ? network_anonymization_key
                               : net::NetworkAnonymizationKey(),
-        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+        net::handles::kInvalidNetworkHandle);
 
     network_context->PreconnectSockets(
         1, server_http_url, network::mojom::CredentialsMode::kOmit,
@@ -6358,11 +6361,13 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   url::SchemeHostPort destination(test_server.base_url());
   net::ClientSocketPool::GroupId group_id1(
       destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kNak1,
-      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      net::handles::kInvalidNetworkHandle);
   EXPECT_EQ(1, GetSocketCountForGroup(network_context.get(), group_id1));
   net::ClientSocketPool::GroupId group_id2(
       destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kNak2,
-      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      net::handles::kInvalidNetworkHandle);
   EXPECT_EQ(2, GetSocketCountForGroup(network_context.get(), group_id2));
 }
 
