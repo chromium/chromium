@@ -82,6 +82,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/platform_experience:prefs",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/prefetch/prefetch_service",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/privacy_sandbox/notice:core",
     "//chrome/browser/profiles",

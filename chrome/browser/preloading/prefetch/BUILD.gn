@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading/prefetch/no_state_prefetch:unit_tests",
+    "//chrome/browser/preloading/prefetch/prefetch_service",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/profiles:profile",

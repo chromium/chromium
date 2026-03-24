@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefetch_service") {
+  public = [
+    "chrome_prefetch_service_delegate.h",
+    "prefetch_origin_decider.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_prefetch_service_delegate.cc",
+    "prefetch_origin_decider.cc",
+  ]
+
+  deps = [
+    ":prefetch_service",
+    "//chrome/browser/battery",
+    "//chrome/browser/data_saver",
+    "//chrome/browser/prefetch",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/language/core/browser",
+    "//components/page_load_metrics/browser",
+    "//components/unified_consent",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  }
+}
