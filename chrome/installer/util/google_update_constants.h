@@ -67,6 +67,7 @@ extern const wchar_t kRegLastInstallerExtraField[];
 extern const wchar_t kRegMetricsId[];
 extern const wchar_t kRegMetricsIdEnabledDate[];
 extern const wchar_t kRegMetricsIdInstallDate[];
+extern const wchar_t kRegMetricsReportingLevel[];
 extern const wchar_t kRegMSIField[];
 extern const wchar_t kRegNameField[];
 extern const wchar_t kRegOemInstallField[];

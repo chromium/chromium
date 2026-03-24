@@ -53,6 +53,7 @@ const wchar_t kRegLastRunTimeField[] = L"lastrun";
 const wchar_t kRegMetricsId[] = L"metricsid";
 const wchar_t kRegMetricsIdEnabledDate[] = L"metricsid_enableddate";
 const wchar_t kRegMetricsIdInstallDate[] = L"metricsid_installdate";
+const wchar_t kRegMetricsReportingLevel[] = L"MetricsReportingLevel";
 const wchar_t kRegMSIField[] = L"msi";
 const wchar_t kRegNameField[] = L"name";
 const wchar_t kRegOemInstallField[] = L"oeminstall";

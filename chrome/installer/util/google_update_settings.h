@@ -19,6 +19,7 @@
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/metrics/client_info.h"
+#include "components/metrics/metrics_reporting_level.h"
 
 namespace installer {
 class AdditionalParameters;
@@ -93,6 +94,15 @@ class GoogleUpdateSettings {
   // Sets the user consent to send UMA and crash dumps to Google. Returns
   // false if the setting could not be recorded.
   static bool SetCollectStatsConsent(bool consented);
+
+  // Returns the metrics reporting level.
+  // TODO(b/492510818): This will be replacing GetCollectStatsConsent() method.
+  static metrics::MetricsReportingLevel GetMetricsReportingLevel();
+
+  // Sets the metrics reporting level. Returns false if the setting could not
+  // be recorded.
+  // TODO(b/492510818): This will be replacing SetCollectStatsConsent() method.
+  static bool SetMetricsReportingLevel(metrics::MetricsReportingLevel level);
 
   // Returns the default (original) state of the "send usage stats" checkbox
   // shown to the user when they downloaded Chrome. The value is returned via

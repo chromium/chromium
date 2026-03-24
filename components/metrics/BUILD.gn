@@ -97,6 +97,11 @@ source_set("client_info") {
 }
 
 # Used by the Chrome installer, which doesn't need the whole metrics library.
+source_set("metrics_reporting_level") {
+  sources = [ "metrics_reporting_level.h" ]
+}
+
+# Used by the Chrome installer, which doesn't need the whole metrics library.
 source_set("metrics_pref_names") {
   sources = [ "metrics_pref_names.h" ]
   configs += [
@@ -234,7 +239,6 @@ if (!is_cronet_build || is_ios) {
       "metrics_logs_event_manager.h",
       "metrics_provider.h",
       "metrics_reporting_default_state.h",
-      "metrics_reporting_level.h",
       "metrics_rotation_scheduler.h",
       "metrics_scheduler.h",
       "metrics_service.h",
@@ -272,6 +276,7 @@ if (!is_cronet_build || is_ios) {
       "//components/country_codes",
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",
+      "//components/metrics:metrics_reporting_level",
       "//components/regional_capabilities:country_id",
       "//components/variations",
       "//third_party/metrics_proto",

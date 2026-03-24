@@ -116,6 +116,20 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 }
 
 // static
+metrics::MetricsReportingLevel
+GoogleUpdateSettings::GetMetricsReportingLevel() {
+  // TODO(crbug.com/483043192): Implement this method.
+  return metrics::MetricsReportingLevel::kNone;
+}
+
+// static
+bool GoogleUpdateSettings::SetMetricsReportingLevel(
+    metrics::MetricsReportingLevel level) {
+  // TODO(crbug.com/483043192): Implement this method.
+  return false;
+}
+
+// static
 // TODO(gab): Implement storing/loading for all ClientInfo fields on POSIX.
 std::unique_ptr<metrics::ClientInfo>
 GoogleUpdateSettings::LoadMetricsClientInfo() {
