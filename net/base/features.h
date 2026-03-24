@@ -837,6 +837,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolProxyLimit);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitNormal);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitWebSocket);
 
+// If enabled, QuicCryptoClientConfigOwner will ignore memory pressure events
+// for the kDnsOverHttps partition.
+NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreQuicCryptoConfigMemoryPressureForDoh);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

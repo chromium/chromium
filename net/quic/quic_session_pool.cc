@@ -538,11 +538,13 @@ void QuicSessionRequest::SetSession(
 }
 
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
+    NetworkAnonymizationKey network_anonymization_key,
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
     std::unique_ptr<quic::QuicClientSessionCache> session_cache,
     size_t max_cache_entries,
     QuicSessionPool* quic_session_pool)
-    : config_(std::move(proof_verifier), std::move(session_cache)),
+    : network_anonymization_key_(std::move(network_anonymization_key)),
+      config_(std::move(proof_verifier), std::move(session_cache)),
       clock_(base::DefaultClock::GetInstance()),
       max_cache_entries_(max_cache_entries),
       quic_session_pool_(quic_session_pool) {
@@ -573,6 +575,19 @@ void QuicSessionPool::QuicCryptoClientConfigOwner::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   quic::SessionCache* session_cache = config_.session_cache();
   if (!session_cache) {
+    return;
+  }
+
+  if (network_anonymization_key_.network_isolation_partition() ==
+          NetworkIsolationPartition::kDnsOverHttps &&
+      base::FeatureList::IsEnabled(
+          features::kIgnoreQuicCryptoConfigMemoryPressureForDoh)) {
+    // We don't want to clear the session cache used by DNS-over-HTTPS
+    // connections because this will almost certainly be needed again soon,
+    // and since DNS query completion is in the critical path of every other
+    // request without a cached DNS record. Furthermore, the DoH-specific
+    // session cache should only ever have a few entries because it's used
+    // exclusively for connections to configured DoH server(s).
     return;
   }
 
@@ -2449,6 +2464,7 @@ QuicSessionPool::CreateCryptoConfigHandle(QuicCryptoClientConfigKey key) {
   // |active_crypto_config_map_|.
   std::unique_ptr<QuicCryptoClientConfigOwner> crypto_config_owner =
       std::make_unique<QuicCryptoClientConfigOwner>(
+          key.network_anonymization_key,
           std::make_unique<ProofVerifierChromium>(
               cert_verifier_, transport_security_state_, sct_auditing_delegate_,
               std::move(hostnames_to_allow_unknown_roots),
@@ -2545,6 +2561,28 @@ bool QuicSessionPool::CryptoConfigCacheIsEmptyForTesting(
     }
   }
   return !cached || cached->IsEmpty();
+}
+
+bool QuicSessionPool::CryptoConfigSessionCacheIsEmptyForTesting(
+    QuicCryptoClientConfigKey key) {
+  if (!use_network_anonymization_key_for_crypto_configs_) {
+    key.network_anonymization_key = NetworkAnonymizationKey();
+  }
+  quic::QuicCryptoClientConfig* config = nullptr;
+  auto map_iterator = active_crypto_config_map_.find(key);
+  if (map_iterator != active_crypto_config_map_.end()) {
+    config = map_iterator->second->config();
+  } else {
+    auto mru_iterator = recent_crypto_config_map_.Peek(key);
+    if (mru_iterator != recent_crypto_config_map_.end()) {
+      config = mru_iterator->second->config();
+    }
+  }
+
+  if (!config || !config->session_cache()) {
+    return true;
+  }
+  return config->session_cache()->GetSize() == 0;
 }
 
 }  // namespace net

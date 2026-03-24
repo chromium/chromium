@@ -101,7 +101,11 @@ class QuicSessionPoolPeer {
       const quic::QuicServerId& quic_server_id,
       QuicSessionPool::QuicCryptoClientConfigKey key);
 
-  static size_t GetNumDegradingSessions(QuicSessionPool* factory);
+  static bool CryptoConfigSessionCacheIsEmpty(
+      QuicSessionPool* pool,
+      QuicSessionPool::QuicCryptoClientConfigKey key);
+
+  static size_t GetNumDegradingSessions(QuicSessionPool* pool);
 
   static void SetAlarmFactory(
       QuicSessionPool* pool,

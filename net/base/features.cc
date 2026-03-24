@@ -808,4 +808,7 @@ BASE_FEATURE_PARAM(int,
                    "TcpSocketPoolProxyLimitWebSocket",
                    32);
 
+BASE_FEATURE(kIgnoreQuicCryptoConfigMemoryPressureForDoh,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

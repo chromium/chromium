@@ -17,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -27,6 +29,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -115,6 +118,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -1405,6 +1409,109 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
       }
     }
   }
+}
+
+TEST_P(QuicSessionPoolTest, MemoryPressureDohExclusion) {
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPartitionConnectionsByNetworkIsolationKey,
+       features::kIgnoreQuicCryptoConfigMemoryPressureForDoh},
+      {});
+  Initialize();
+
+  quic::QuicServerId doh_server_id("doh.example.com", 443);
+  quic::QuicServerId general_server_id("www.example.com", 443);
+
+  // 1. Create a config with DoH partition.
+  NetworkAnonymizationKey doh_nak =
+      NetworkAnonymizationKey::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kDnsOverHttps);
+  QuicSessionPool::QuicCryptoClientConfigKey doh_key =
+      CreateTestQuicCryptoClientConfigKey(doh_nak);
+  std::unique_ptr<QuicCryptoClientConfigHandle> doh_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), doh_key);
+
+  // 2. Create a config with General partition.
+  NetworkAnonymizationKey general_nak =
+      NetworkAnonymizationKey::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kGeneral);
+  QuicSessionPool::QuicCryptoClientConfigKey general_key =
+      CreateTestQuicCryptoClientConfigKey(general_nak);
+  std::unique_ptr<QuicCryptoClientConfigHandle> general_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), general_key);
+
+  // Populate session cache.
+  bssl::UniquePtr<SSL_SESSION> doh_session(
+      SSL_SESSION_new(doh_handle->GetConfig()->ssl_ctx()));
+  ASSERT_TRUE(doh_session);
+
+  bssl::UniquePtr<SSL_SESSION> general_session(
+      SSL_SESSION_new(general_handle->GetConfig()->ssl_ctx()));
+  ASSERT_TRUE(general_session);
+
+  quic::TransportParameters params;
+  doh_handle->GetConfig()->session_cache()->Insert(
+      doh_server_id, std::move(doh_session), params, nullptr);
+  general_handle->GetConfig()->session_cache()->Insert(
+      general_server_id, std::move(general_session), params, nullptr);
+
+  EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(pool_.get(),
+                                                                    doh_key));
+  EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(
+      pool_.get(), general_key));
+
+  // 3. Trigger memory pressure.
+  base::test::TestFuture<void> memory_pressure_future;
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+      memory_pressure_future.GetCallback());
+  ASSERT_TRUE(memory_pressure_future.Wait());
+
+  // 4. Verify that DoH was NOT cleared and General WAS cleared.
+  EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(pool_.get(),
+                                                                    doh_key));
+  EXPECT_TRUE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(
+      pool_.get(), general_key));
+}
+
+TEST_P(QuicSessionPoolTest, MemoryPressureWithFeatureDisabled) {
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPartitionConnectionsByNetworkIsolationKey},
+      {features::kIgnoreQuicCryptoConfigMemoryPressureForDoh});
+  Initialize();
+
+  quic::QuicServerId server_id("doh.example.com", 443);
+
+  NetworkAnonymizationKey doh_nak =
+      NetworkAnonymizationKey::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kDnsOverHttps);
+  QuicSessionPool::QuicCryptoClientConfigKey doh_key =
+      CreateTestQuicCryptoClientConfigKey(doh_nak);
+  std::unique_ptr<QuicCryptoClientConfigHandle> doh_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), doh_key);
+
+  bssl::UniquePtr<SSL_SESSION> doh_session(
+      SSL_SESSION_new(doh_handle->GetConfig()->ssl_ctx()));
+  ASSERT_TRUE(doh_session);
+
+  quic::TransportParameters params;
+  doh_handle->GetConfig()->session_cache()->Insert(
+      server_id, std::move(doh_session), params, nullptr);
+  EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(pool_.get(),
+                                                                    doh_key));
+
+  base::test::TestFuture<void> memory_pressure_future;
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+      memory_pressure_future.GetCallback());
+  ASSERT_TRUE(memory_pressure_future.Wait());
+
+  // Now it should be cleared.
+  EXPECT_TRUE(QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(pool_.get(),
+                                                                   doh_key));
 }
 
 TEST_P(QuicSessionPoolTest, PooledWithDifferentIpSession) {

@@ -795,6 +795,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   bool CryptoConfigCacheIsEmptyForTesting(const quic::QuicServerId& server_id,
                                           QuicCryptoClientConfigKey key);
 
+  bool CryptoConfigSessionCacheIsEmptyForTesting(QuicCryptoClientConfigKey key);
+
   const quic::ParsedQuicVersionVector& supported_versions() const {
     return params_.supported_versions;
   }
@@ -947,6 +949,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner
     : public base::MemoryPressureListener {
  public:
   QuicCryptoClientConfigOwner(
+      NetworkAnonymizationKey network_anonymization_key,
       std::unique_ptr<quic::ProofVerifier> proof_verifier,
       std::unique_ptr<quic::QuicClientSessionCache> session_cache,
       size_t max_cache_entries,
@@ -982,6 +985,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner
     num_refs_--;
   }
 
+  const NetworkAnonymizationKey network_anonymization_key_;
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
   raw_ptr<base::Clock> clock_;
