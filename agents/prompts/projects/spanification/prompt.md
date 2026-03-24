@@ -29,6 +29,17 @@ ______________________________________________________________________
 - run_shell_command(fdfind)
 - run_shell_command(rg)
 
+**CRITICAL: DO NOT USE `grep`.** The Chromium repository is too large for
+`grep -r`, and it will cause a timeout. You MUST use `rg` (ripgrep) for all text
+searches.
+
+## Search Strategy:
+
+- **Text Search:** Use `run_shell_command(rg "search_term")`.
+- **Symbol Lookup:** Use `remote_code_search` or `codebase_investigator` for
+  more precise architectural lookups.
+- **File Lookup:** Use `run_shell_command(fdfind "filename")`.
+
 ## Build/Test
 
 - run_shell_command(autoninja)
@@ -88,50 +99,33 @@ ______________________________________________________________________
      for any other instances of unsafe buffer patterns (e.g., `memcmp`,
      `strcmp`, pointer arithmetic) and fix them as well.**
 
-5. **Verify the Fix:** You must ensure your fix compiles. **This step is
-   mandatory.**
+5. **Verify the Fix:** You should ensure your fix compiles. While a separate
+   deterministic script will perform exhaustive cross-platform checks, it is
+   highly recommended that you verify your changes on at least one local builder
+   (typically Linux) to catch obvious errors early.
 
-   You will run the exact verification commands below for each of the builders.
-
-   **Linux:**
-
-   ```
-   autoninja -C out/linux-rel --quiet
-   ```
-
-   **Windows:**
+   **Recommended Local Verification (Linux):** You can build the entire target
+   or just the object file to save time:
 
    ```
-   autoninja -C out/linux-win-cross-rel --quiet
+   # Build the object file (fastest):
+   autoninja -C out/linux-rel obj/{path/to/file.o}
+
+   # Or build the whole target:
+   autoninja -C out/linux-rel {target_name}
    ```
 
-   **Android:**
+   Note: To find the object file path, you can use
+   `gn outputs out/linux-rel {path/to/file.cc}`.
+
+   If this fails, analyze the error and iterate. You do not need to run all 5
+   platforms (Windows, Android, Mac, ChromeOS) yourself unless you suspect
+   platform-specific issues.
+
+   **Test:** After a successful build, if you modified a test file, run:
 
    ```
-   autoninja -C out/android-14-x64-rel --quiet
-   ```
-
-   **Mac:**
-
-   ```
-   autoninja -C out/mac-rel --quiet
-   ```
-
-   **ChromeOS**
-
-   ```
-   autoninja -C out/linux-chromeos-rel --quiet
-   ```
-
-   **Iterate:** If any command fails for any builder, **you must analyze the
-   error and try a different fix.** Do not proceed until all commands pass for
-   all builders.
-
-   **Test:** After a successful build, if you modified a test file, select the
-   appropriate builder and run:
-
-   ```
-   ./tools/autotest.py ./out/{builder_name} {test_file_path}
+   ./tools/autotest.py ./out/linux-rel {test_file_path}
    ```
 
    If the test fails, you must fix the test code.
@@ -192,6 +186,21 @@ ______________________________________________________________________
 ### **Core Principles (Your Most Important Rules)**
 
 Follow the content of @unsafe_buffers.md
+
+#### **Readability and Simplicity**
+
+**Your code must be easy to read and maintain.**
+
+- **Avoid over-engineering:** Do not use complex template metaprogramming or
+  obscure C++ features if a simpler `base::span` or `std::ranges` approach
+  exists.
+- **Self-documenting code:** Use clear variable names and follow Chromium's
+  naming conventions.
+- **Surgical changes:** Keep your diffs focused. Do not refactor unrelated code,
+  but *do* ensure the code you touch is clean and modern.
+- **Safety Comments:** Every `UNSAFE_BUFFERS()` block MUST have a `// SAFETY:`
+  comment that is clear, technically accurate, and easy for a human reviewer to
+  verify.
 
 #### Important Rules:
 

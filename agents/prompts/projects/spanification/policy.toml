@@ -35,7 +35,6 @@ commandPrefix = [
     "git restore",
     "git checkout",
     "git status",
-    "git grep",
     "head",
     "ls",
     "tail",
