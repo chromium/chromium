@@ -364,6 +364,7 @@ source_set("wtf_unittests_sources") {
     "text/math_transform_test.cc",
     "text/strcat_test.cc",
     "text/string_buffer_test.cc",
+    "text/string_builder_stream_test.cc",
     "text/string_builder_test.cc",
     "text/string_hasher_test.cc",
     "text/string_impl_test.cc",

@@ -30,7 +30,18 @@ inline StringBuilder& operator<<(StringBuilder& builder,
   return builder;
 }
 
+inline StringBuilder& operator<<(StringBuilder& builder, char c) {
+  builder.Append(c);
+  return builder;
+}
+
+inline StringBuilder& operator<<(StringBuilder& builder, UChar c) {
+  builder.Append(c);
+  return builder;
+}
+
 template <std::integral T>
+  requires(!std::is_same_v<T, char> && !std::is_same_v<T, UChar>)
 StringBuilder& operator<<(StringBuilder& builder, T number) {
   builder.AppendNumber(number);
   return builder;
