@@ -6,14 +6,10 @@
 #define NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_delegate.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/system_proxy_resolution_service.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
 
 namespace net {
@@ -27,7 +23,7 @@ class WindowsSystemProxyResolver;
 // relies entirely on WinHttp APIs to determine the proxy that should be used
 // for each network request.
 class NET_EXPORT WindowsSystemProxyResolutionService
-    : public ProxyResolutionService {
+    : public SystemProxyResolutionService {
  public:
   [[nodiscard]] static bool IsSupported();
 
@@ -53,15 +49,6 @@ class NET_EXPORT WindowsSystemProxyResolutionService
                    std::unique_ptr<ProxyResolutionRequest>* request,
                    const NetLogWithSource& net_log,
                    RequestPriority priority) override;
-  void ReportSuccess(const ProxyInfo& proxy_info) override;
-  void SetProxyDelegate(ProxyDelegate* delegate) override;
-  void OnShutdown() override;
-  void ClearBadProxiesCache() override;
-  const ProxyRetryInfoMap& proxy_retry_info() const override;
-  base::DictValue GetProxyNetLogValues() override;
-  [[nodiscard]] bool CastToConfiguredProxyResolutionService(
-      ConfiguredProxyResolutionService** configured_proxy_resolution_service)
-      override;
 
  private:
   friend class WindowsSystemProxyResolutionRequest;
@@ -70,17 +57,8 @@ class NET_EXPORT WindowsSystemProxyResolutionService
       std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver,
       NetLog* net_log);
 
-  typedef std::set<
-      raw_ptr<WindowsSystemProxyResolutionRequest, SetExperimental>>
-      PendingRequests;
-
-  [[nodiscard]] bool ContainsPendingRequest(
-      WindowsSystemProxyResolutionRequest* req);
-  void RemovePendingRequest(WindowsSystemProxyResolutionRequest* req);
-
-  size_t PendingRequestSizeForTesting() const {
-    return pending_requests_.size();
-  }
+  // SystemProxyResolutionService:
+  base::DictValue GetProxySettingsForNetLog() override;
 
   // Called when proxy resolution has completed (either synchronously or
   // asynchronously). Handles logging the result, and cleaning out
@@ -94,26 +72,10 @@ class NET_EXPORT WindowsSystemProxyResolutionService
       int windows_error,
       const NetLogWithSource& net_log);
 
-  // Map of the known bad proxies and the information about the retry time.
-  ProxyRetryInfoMap proxy_retry_info_;
-
-  // Set of pending/in-progress requests.
-  PendingRequests pending_requests_;
-
   // This is used to launch cross-process proxy resolution requests. Individual
   // WindowsSystemProxyResolutionRequest will use this to initiate proxy
   // resolution.
   std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver_;
-
-  // This is the log for any generated events.
-  raw_ptr<NetLog> net_log_;
-
-  // Optional delegate for customizing proxy resolution behavior and receiving
-  // proxy-related callbacks.
-  raw_ptr<ProxyDelegate> proxy_delegate_ = nullptr;
-
-  // Ensures all method calls are made on the same sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net

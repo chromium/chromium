@@ -57,15 +57,13 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log,
     WindowsSystemProxyResolver* windows_system_proxy_resolver)
-    : service_(service),
-      user_callback_(std::move(user_callback)),
-      results_(results),
-      url_(url),
-      method_(method),
-      network_anonymization_key_(network_anonymization_key),
-      net_log_(net_log),
-      creation_time_(base::TimeTicks::Now()) {
-  DCHECK(!user_callback_.is_null());
+    : SystemProxyResolutionRequest(service,
+                                   url,
+                                   method,
+                                   network_anonymization_key,
+                                   results,
+                                   std::move(user_callback),
+                                   net_log) {
   DCHECK(windows_system_proxy_resolver);
   proxy_resolution_request_ =
       windows_system_proxy_resolver->GetProxyForUrl(url, this);
@@ -73,20 +71,21 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
 
 WindowsSystemProxyResolutionRequest::~WindowsSystemProxyResolutionRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (service_) {
-    service_->RemovePendingRequest(this);
-    net_log_.AddEvent(NetLogEventType::CANCELLED);
-
-    CancelResolveRequest();
-
-    net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
-  }
+  // Cancel the platform-specific resolver request before the base destructor
+  // runs (which handles removing from pending requests and net log events).
+  // C++ destructor ordering guarantees this runs before
+  // ~SystemProxyResolutionRequest.
+  // Safe to call even after completion — proxy_resolution_request_.reset() is
+  // a no-op when already null.
+  CancelResolveRequest();
 }
 
-LoadState WindowsSystemProxyResolutionRequest::GetLoadState() const {
-  // TODO(crbug.com/40111093): Consider adding a LoadState for "We're
-  // waiting on system APIs to do their thing".
-  return LOAD_STATE_RESOLVING_PROXY_FOR_URL;
+WindowsSystemProxyResolutionService*
+WindowsSystemProxyResolutionRequest::windows_service() const {
+  DCHECK(service_);
+  // The constructor guarantees service_ is a
+  // WindowsSystemProxyResolutionService, so this downcast is safe.
+  return static_cast<WindowsSystemProxyResolutionService*>(service_.get());
 }
 
 void WindowsSystemProxyResolutionRequest::CancelResolveRequest() {
@@ -110,7 +109,7 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
   results_->UseProxyList(proxy_list);
 
   // Note that DidFinishResolvingProxy might modify |results_|.
-  int net_error = service_->DidFinishResolvingProxy(
+  int net_error = windows_service()->DidFinishResolvingProxy(
       url_, method_, network_anonymization_key_, results_, winhttp_status,
       windows_error, net_log_);
 
@@ -123,8 +122,7 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
 
   CompletionOnceCallback callback = std::move(user_callback_);
 
-  service_->RemovePendingRequest(this);
-  service_ = nullptr;
+  MarkCompleted();
   user_callback_.Reset();
   std::move(callback).Run(net_error);
 }

@@ -8,17 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/time/time.h"
-#include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/network_anonymization_key.h"
-#include "net/log/net_log_with_source.h"
-#include "net/proxy_resolution/proxy_resolution_request.h"
+#include "net/proxy_resolution/system_proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "url/gurl.h"
 
 namespace net {
 
@@ -28,9 +21,9 @@ class WindowsSystemProxyResolutionService;
 
 // This is the concrete implementation of ProxyResolutionRequest used by
 // WindowsSystemProxyResolutionService. Manages a single asynchronous proxy
-// resolution request.
+// resolution request via WinHTTP APIs.
 class NET_EXPORT WindowsSystemProxyResolutionRequest
-    : public ProxyResolutionRequest {
+    : public SystemProxyResolutionRequest {
  public:
   // The |windows_system_proxy_resolver| is not saved by this object. Rather, it
   // is simply used to kick off proxy resolution in a utility process from
@@ -54,9 +47,6 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
 
   ~WindowsSystemProxyResolutionRequest() override;
 
-  // ProxyResolutionRequest
-  LoadState GetLoadState() const override;
-
   // Callback for when the cross-process proxy resolution has completed. The
   // |proxy_list| is the list of proxies returned by WinHttp translated into
   // Chromium-friendly terms. The |winhttp_status| describes the status of the
@@ -74,31 +64,16 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // resolution.
   void CancelResolveRequest();
 
-  // Returns true if the request has been completed.
-  bool was_completed() const { return user_callback_.is_null(); }
-
-  // Note that Request holds a bare pointer to the
-  // WindowsSystemProxyResolutionService. Outstanding requests are cancelled
-  // during ~WindowsSystemProxyResolutionService, so this is guaranteed to be
-  // valid throughout the lifetime of this object.
-  raw_ptr<WindowsSystemProxyResolutionService> service_;
-  CompletionOnceCallback user_callback_;
-  raw_ptr<ProxyInfo> results_;
-  const GURL url_;
-  const std::string method_;
-  const NetworkAnonymizationKey network_anonymization_key_;
-  NetLogWithSource net_log_;
-  // Time when the request was created.  Stored here rather than in |results_|
-  // because the time in |results_| will be cleared.
-  base::TimeTicks creation_time_;
+  // Returns a typed pointer to the Windows-specific service. The base class
+  // service_ is guaranteed to be a WindowsSystemProxyResolutionService because
+  // the constructor requires one. Used to call DidFinishResolvingProxy().
+  WindowsSystemProxyResolutionService* windows_service() const;
 
   // Manages the cross-process proxy resolution. Deleting this will cancel a
   // pending proxy resolution. After a callback has been received via
   // ProxyResolutionComplete(), this object will no longer do anything.
   std::unique_ptr<WindowsSystemProxyResolver::Request>
       proxy_resolution_request_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net
