@@ -38,7 +38,6 @@ suite('AiPageIndex', function() {
       showAiPageAiFeatureSection: true,
       showComposeControl: true,
       showHistorySearchControl: true,
-      showTabOrganizationControl: true,
       showGlicSettings: true,
       enableAiModeSearchSetting: true,
       actorLoginFederatedLoginSupportEnabled: true,
@@ -60,10 +59,6 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.AI);
     await microtasksFinished();
     assertActiveViews(defaultViews);
-
-    Router.getInstance().navigateTo(routes.AI_TAB_ORGANIZATION);
-    await microtasksFinished();
-    assertActiveViews(['tabOrganization']);
 
     Router.getInstance().navigateTo(routes.HISTORY_SEARCH);
     await microtasksFinished();
@@ -113,7 +108,6 @@ suite('AiPageIndex', function() {
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
     const childViewsId = [
-      'tabOrganization',
       'historySearch',
       'compose',
       'aiModeSearch',
@@ -143,7 +137,7 @@ suite('AiPageIndex', function() {
     }
 
     // Case1: Results only in the "AI Innovations" card.
-    let result = await index.searchContents('tab organizer');
+    let result = await index.searchContents('history search');
     assertFalse(result.canceled);
     assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);

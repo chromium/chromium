@@ -59,11 +59,4 @@
         route-path$="[[routes_.OFFER_WRITING_HELP.path]]">
     </settings-offer-writing-help-page>
   </template>
-
-  <template is="dom-if" if="[[showTabOrganizationControl_]]">
-    <settings-ai-tab-organization-subpage slot="view" id="tabOrganization"
-        data-parent-view-id="parent" prefs="{{prefs}}"
-        route-path$="[[routes_.AI_TAB_ORGANIZATION.path]]">
-    </settings-ai-tab-organization-subpage>
-  </template>
 </cr-view-manager>

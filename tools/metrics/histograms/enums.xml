@@ -3639,48 +3639,6 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="Server returned error"/>
 </enum>
 
-<enum name="EventLatencyEventType">
-  <int value="0" label="MousePressed"/>
-  <int value="1" label="MouseReleased"/>
-  <int value="2" label="MouseWheel"/>
-  <int value="3" label="KeyPressed"/>
-  <int value="4" label="KeyReleased"/>
-  <int value="5" label="TouchPressed"/>
-  <int value="6" label="TouchReleased"/>
-  <int value="7" label="TouchMoved"/>
-  <int value="8" label="GestureScrollBegin"/>
-  <int value="9" label="GestureScrollUpdate"/>
-  <int value="10" label="GestureScrollEnd"/>
-  <int value="11" label="GestureDoubleTap"/>
-  <int value="12" label="GestureLongPress"/>
-  <int value="13" label="GestureLongTap"/>
-  <int value="14" label="GestureShowPress"/>
-  <int value="15" label="GestureTap"/>
-  <int value="16" label="GestureTapCancel"/>
-  <int value="17" label="GestureTapDown"/>
-  <int value="18" label="GestureTapUnconfirmed"/>
-  <int value="19" label="GestureTwoFingerTap"/>
-  <int value="20" label="FirstGestureScrollUpdate"/>
-  <int value="21" label="MouseDragged"/>
-  <int value="22" label="GesturePinchBegin"/>
-  <int value="23" label="GesturePinchEnd"/>
-  <int value="24" label="GesturePinchUpdate"/>
-  <int value="25" label="InertialGesturePinchUpdate"/>
-  <int value="26" label="MouseMoved"/>
-</enum>
-
-<enum name="EventLatencyPinchInputType">
-  <int value="0" label="Touchpad"/>
-  <int value="1" label="Touchscreen"/>
-</enum>
-
-<enum name="EventLatencyScrollInputType">
-  <int value="0" label="Autoscroll"/>
-  <int value="1" label="Scrollbar"/>
-  <int value="2" label="Touchscreen"/>
-  <int value="3" label="Wheel"/>
-</enum>
-
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
   <int value="1" label="In progress, but the final response has arrived"/>

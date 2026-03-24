@@ -622,7 +622,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           autofill_client,
           autofill::AutofillAiAction::kListEntityInstancesInSettings));
   std::pair<const std::string_view, bool> optimization_guide_features[] = {
-      {"showTabOrganizationControl", false},
       {"showComposeControl", compose_visible},
       {"showHistorySearchControl",
        history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},

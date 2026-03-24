@@ -437,20 +437,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_REFERENCES},
       {"aiComposeComposeConsiderData", IDS_SETTINGS_COMPOSE_CONSIDER_DATA},
 
-      // Tab Organization strings.
-      {"tabOrganizationSettingLabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
-      {"tabOrganizationSettingSublabelV2",
-       IDS_SETTINGS_TAB_ORGANIZER_SUB_LABEL},
-      {"tabOrganizationSettingLearnMoreA11y",
-       IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y},
-      {"tabOrganizationSettingWhenOnAutoGroups",
-       IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS},
-      {"tabOrganizationSettingWhenOnImproveFocus",
-       IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_IMPROVE_FOCUS},
-      {"tabOrganizationSettingConsiderData",
-       IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA},
-
       // Password Change strings.
       {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
       {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
@@ -508,10 +494,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kComposeLearnMorePageURL);
   html_source->AddString("composeLearnMorePageManagedURL",
                          chrome::kComposeLearnMorePageManagedURL);
-  html_source->AddString("tabOrganizationLearnMoreUrl",
-                         chrome::kTabOrganizationLearnMorePageURL);
-  html_source->AddString("tabOrganizationLearnMoreManagedUrl",
-                         chrome::kTabOrganizationLearnMorePageManagedURL);
   html_source->AddString("passwordChangeSettingsUrl",
                          chrome::kChromeUiPasswordChangeUrl);
 }

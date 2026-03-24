@@ -333,7 +333,7 @@ export enum AiPageInteractions {
   HISTORY_SEARCH_CLICK = 0,
   // COMPARE_CLICK = 1, // DEPRECATED
   COMPOSE_CLICK = 2,
-  TAB_ORGANIZATION_CLICK = 3,
+  // TAB_ORGANIZATION_CLICK = 3, // DEPRECATED
   // WALLPAPER_SEARCH_CLICK = 4, // DEPRECATED
   AUTOFILL_AI_CLICK = 5,
   PASSWORD_CHANGE_CLICK = 6,
@@ -377,22 +377,6 @@ export enum AiPageComposeInteractions {
   MAX_VALUE = 3,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageComposeInteractions)
-
-/**
- * Contains all recorded interactions in the AI Tab Organization settings page.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SettingsAiPageTabOrganizationInteractions enum
- * in histograms/metadata/settings/enums.xml
- */
-// LINT.IfChange(AiPageTabOrganizationInteractions)
-export enum AiPageTabOrganizationInteractions {
-  LEARN_MORE_LINK_CLICKED = 0,
-  MAX_VALUE = 1,
-}
-// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageTabOrganizationInteractions)
 
 /**
  * These values are persisted to logs. Entries should not be renumbered and
@@ -648,13 +632,6 @@ export interface MetricsBrowserProxy {
   recordAiPageComposeInteractions(interaction: AiPageComposeInteractions): void;
 
   /**
-   * Helper function that calls recordHistogram for the
-   * Settings.AiPage.TabOrganization.Interactions histogram
-   */
-  recordAiPageTabOrganizationInteractions(
-      interaction: AiPageTabOrganizationInteractions): void;
-
-  /**
    * Records a referrer to one of Autofill settings pages.
    */
   recordAutofillSettingsReferrer(
@@ -889,15 +866,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.AiPage.Compose.Interactions',
       interaction,
       AiPageComposeInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordAiPageTabOrganizationInteractions(
-      interaction: AiPageTabOrganizationInteractions): void {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.AiPage.TabOrganization.Interactions',
-      interaction,
-      AiPageTabOrganizationInteractions.MAX_VALUE,
     ]);
   }
 
