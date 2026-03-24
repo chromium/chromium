@@ -42,14 +42,16 @@ class NET_EXPORT_PRIVATE CanaryDomainService
  public:
   // `resolve_context` is expected to be owned by `host_resolver`.
   // Both must outlive this object.
-  // Also, the kProbeSecureDnsCanaryDomain feature must be enabled, with
-  // a non-empty canary domain host specified.
   CanaryDomainService(base::SafeRef<ResolveContext> resolve_context,
                       base::SafeRef<HostResolver> host_resolver);
   ~CanaryDomainService() override;
 
   CanaryDomainService(const CanaryDomainService&) = delete;
   CanaryDomainService& operator=(const CanaryDomainService&) = delete;
+
+  // Returns true if the kProbeSecureDnsCanaryDomain feature is enabled and
+  // the canary domain host is not empty.
+  static bool IsFeatureEnabled();
 
   // Starts observing DoH status changes and probes the canary domain.
   // Should only be called once.
@@ -62,10 +64,6 @@ class NET_EXPORT_PRIVATE CanaryDomainService
   void SetOnProbeCompleteCallbackForTesting(base::OnceClosure callback);
 
  private:
-  // Returns true if the canary domain should be probed. Otherwise, calls to
-  // Start() and OnDohServerUnavailable() will be no-ops.
-  bool ShouldProbe();
-
   // Probes a canary domain that reports whether Secure DNS (DoH) fallback is
   // allowed, and then runs `OnSecureDnsProbeComplete()` with the result.
   // Should cancel any previous probe that is still pending.

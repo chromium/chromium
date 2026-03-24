@@ -214,8 +214,7 @@ class DnsClientImpl : public DnsClient {
 
     // If the canary domain check is enabled and the canary domain is not
     // successfully resolved, fall back to insecure DNS.
-    if (base::FeatureList::IsEnabled(features::kProbeSecureDnsCanaryDomain) &&
-        session_->config().should_perform_doh_fallback_upgrade) {
+    if (context->IsDohFallbackProbeEnabled()) {
       switch (context->doh_fallback_canary_domain_check_status()) {
         case CanaryDomainCheckStatus::kPositive:
           // On a positive canary domain check, no fallback to insecure DNS.
@@ -225,13 +224,14 @@ class DnsClientImpl : public DnsClient {
               FallbackFromSecureTransactionPreferredReason::
                   kFallbackPreferredCanaryDomainCheckNegative);
           return true;
-        case CanaryDomainCheckStatus::kUnknown:
         case CanaryDomainCheckStatus::kNotStarted:
         case CanaryDomainCheckStatus::kStarted:
           RecordFallbackFromSecureTransactionPreferred(
               FallbackFromSecureTransactionPreferredReason::
                   kFallbackPreferredCanaryDomainCheckPending);
           return true;
+        case CanaryDomainCheckStatus::kInactive:
+          NOTREACHED();
       }
     }
 

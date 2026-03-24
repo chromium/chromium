@@ -303,10 +303,12 @@ TEST_F(DnsClientTest, FallbackFromSecureTransactionPreferred_Failures) {
 TEST_F(DnsClientTest,
        FallbackFromSecureTransactionPreferred_CanaryDomainCheck) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {net::features::kProbeSecureDnsCanaryDomain,
-       net::features::kAddAutomaticWithDohFallbackMode},
-      {});
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kProbeSecureDnsCanaryDomain,
+      {{net::features::kSecureDnsCanaryDomainHost.name, "canary.com"}});
+  base::test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
 
   // 1. Set a config that has DoH fallback servers.
   DnsConfig config = BasicValidConfig();
@@ -318,8 +320,12 @@ TEST_F(DnsClientTest,
   resolve_context_->InvalidateCachesAndPerSessionData(
       client_->GetCurrentSession(), /*network_change=*/false);
 
-  // Canary domain check status is kNotStarted by default.
-  // Should prefer fallback since it's not kPositive.
+  // Manually set status to kNotStarted, as it defaults to kInactive.
+  resolve_context_->set_doh_fallback_canary_domain_check_status(
+      CanaryDomainCheckStatus::kNotStarted);
+
+  // Canary domain check status is kNotStarted.
+  // Should prefer fallback since it's not kPositive or kInactive.
   EXPECT_TRUE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 

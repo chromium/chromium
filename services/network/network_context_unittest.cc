@@ -5634,7 +5634,9 @@ TEST_F(NetworkContextTest, CanaryDomainServiceProbe_FeatureDisabled) {
 
   net::CanaryDomainService* canary_domain_service =
       network_context->canary_domain_service_for_testing();
-  ASSERT_TRUE(canary_domain_service);
+  EXPECT_TRUE(canary_domain_service);
+  EXPECT_EQ(net::CanaryDomainCheckStatus::kInactive,
+            resolve_context.doh_fallback_canary_domain_check_status());
   EXPECT_EQ(mock_resolver->num_resolve(), 0u);
 }
 

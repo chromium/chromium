@@ -74,7 +74,8 @@ CanaryDomainService::CanaryDomainService(
           NetLogWithSource::Make(NetLog::Get(),
                                  NetLogSourceType::CANARY_DOMAIN_SERVICE)) {
   resolve_context_->set_doh_fallback_canary_domain_check_status(
-      CanaryDomainCheckStatus::kNotStarted);
+      IsFeatureEnabled() ? CanaryDomainCheckStatus::kNotStarted
+                         : CanaryDomainCheckStatus::kInactive);
 }
 
 CanaryDomainService::~CanaryDomainService() {
@@ -82,6 +83,9 @@ CanaryDomainService::~CanaryDomainService() {
 }
 
 void CanaryDomainService::Start() {
+  if (!IsFeatureEnabled()) {
+    return;
+  }
   resolve_context_->RegisterDohStatusObserver(this);
   ProbeSecureDnsDomain();
 }
@@ -110,20 +114,14 @@ void CanaryDomainService::OnDohServerUnavailable(bool network_change) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool CanaryDomainService::ShouldProbe() {
-  // If DoH fallback is not enabled, then there is no need to check the canary
-  // domain.
-  if (!resolve_context_->IsDohFallbackProbeEnabled()) {
-    return false;
-  }
-
-  // Now check whether canary domain probing is enabled.
+// static
+bool CanaryDomainService::IsFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kProbeSecureDnsCanaryDomain) &&
-      !canary_domain_host_.host().empty();
+         !features::kSecureDnsCanaryDomainHost.Get().empty();
 }
 
 void CanaryDomainService::ProbeSecureDnsDomain() {
-  if (!ShouldProbe()) {
+  if (!resolve_context_->IsDohFallbackProbeEnabled()) {
     if (on_probe_complete_callback_for_testing_) {
       std::move(on_probe_complete_callback_for_testing_).Run();
     }

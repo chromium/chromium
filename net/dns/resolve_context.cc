@@ -689,7 +689,9 @@ bool ResolveContext::IsDohFallbackProbeEnabled() const {
   }
   return current_session_->config().secure_dns_mode ==
              SecureDnsMode::kAutomatic &&
-         current_session_->config().should_perform_doh_fallback_upgrade;
+         current_session_->config().should_perform_doh_fallback_upgrade &&
+         doh_fallback_canary_domain_check_status_ !=
+             CanaryDomainCheckStatus::kInactive;
 }
 
 // static

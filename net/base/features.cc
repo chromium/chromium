@@ -763,12 +763,12 @@ BASE_FEATURE(kEnableBootstrapIPRandomizationForDoh,
 
 BASE_FEATURE(kUseLockFreeX509Verification, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kProbeSecureDnsCanaryDomain, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProbeSecureDnsCanaryDomain, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kSecureDnsCanaryDomainHost,
                    &kProbeSecureDnsCanaryDomain,
                    /*name=*/"canary_domain_host",
-                   /*default_value=*/"");
+                   /*default_value=*/"use-application-dns.net");
 
 #if BUILDFLAG(IS_APPLE)
 BASE_FEATURE(kUseNSURLDataForGURLConversion, base::FEATURE_ENABLED_BY_DEFAULT);

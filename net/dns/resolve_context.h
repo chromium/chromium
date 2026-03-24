@@ -52,8 +52,8 @@ enum class DohServerAutoupgradeStatus {
 // Status of a canary domain check being used to check for whether a
 // particular behavior is allowed.
 enum class CanaryDomainCheckStatus {
-  // Unknown status, also when canary domain check is not enabled.
-  kUnknown,
+  // The canary domain check is disabled by feature flag or empty host.
+  kInactive,
   // The canary domain check has not yet started.
   kNotStarted,
   // The canary domain check has started but not yet completed.
@@ -373,7 +373,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Status of a canary domain check to allow DoH fallback for Secure DNS.
   CanaryDomainCheckStatus doh_fallback_canary_domain_check_status_ =
-      CanaryDomainCheckStatus::kNotStarted;
+      CanaryDomainCheckStatus::kInactive;
 
   base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
 };
