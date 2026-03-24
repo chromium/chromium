@@ -19,6 +19,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync_preferences/features.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -164,6 +165,8 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(std::string_view key,
                                       const base::Value** result) const {
+  // TODO(crbug.com/441437179): Consider if a similar check is needed for the
+  // local store.
   if (!ShouldGetValueFromAccountStore(key)) {
     return local_pref_store_->GetValue(key, result);
   }
@@ -236,7 +239,9 @@ void DualLayerUserPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
 
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-    local_pref_store_->RemoveValue(key, flags);
+    if (ShouldSetValueInLocalStore(key)) {
+      local_pref_store_->RemoveValue(key, flags);
+    }
     if (ShouldSetValueInAccountStore(key)) {
       account_pref_store_->RemoveValue(key, flags);
     }
@@ -287,7 +292,9 @@ void DualLayerUserPrefStore::ReportValueChanged(std::string_view key,
                                                 uint32_t flags) {
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-    if (ShouldSetValueInAccountStore(key)) {
+    const bool in_account = ShouldSetValueInAccountStore(key);
+    const bool in_local = ShouldSetValueInLocalStore(key);
+    if (in_account && in_local) {
       const base::Value* new_value = nullptr;
       // In case a merged value was updated, it would exist in `merged_prefs_`.
       // Else, get the new value from whichever store has it and copy it to the
@@ -308,8 +315,10 @@ void DualLayerUserPrefStore::ReportValueChanged(std::string_view key,
     }
     // Forward the ReportValueChanged() call to the underlying stores, so they
     // can notify their own observers.
-    local_pref_store_->ReportValueChanged(key, flags);
-    if (ShouldSetValueInAccountStore(key)) {
+    if (in_local) {
+      local_pref_store_->ReportValueChanged(key, flags);
+    }
+    if (in_account) {
       account_pref_store_->ReportValueChanged(key, flags);
     }
   }
@@ -327,7 +336,10 @@ void DualLayerUserPrefStore::DoSetValue(std::string_view key,
   auto set_value_fn = notify ? &WriteablePrefStore::SetValue
                              : &WriteablePrefStore::SetValueSilently;
 
-  if (ShouldSetValueInAccountStore(key)) {
+  const bool in_account = ShouldSetValueInAccountStore(key);
+  const bool in_local = ShouldSetValueInLocalStore(key);
+
+  if (in_local && in_account) {
     if (IsPrefKeyMergeable(key)) {
       auto [new_local_value, new_account_value] =
           UnmergeValue(key, std::move(value), flags);
@@ -339,8 +351,10 @@ void DualLayerUserPrefStore::DoSetValue(std::string_view key,
       (account_pref_store_.get()->*set_value_fn)(key, value.Clone(), flags);
       (local_pref_store_.get()->*set_value_fn)(key, std::move(value), flags);
     }
-  } else {
+  } else if (in_local) {
     (local_pref_store_.get()->*set_value_fn)(key, std::move(value), flags);
+  } else if (in_account) {
+    (account_pref_store_.get()->*set_value_fn)(key, std::move(value), flags);
   }
 }
 
@@ -531,6 +545,24 @@ void DualLayerUserPrefStore::EnableType(syncer::DataType data_type) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   );
   active_types_.insert(data_type);
+}
+
+bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
+    std::string_view key) const {
+  if (!base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
+    // A preference `key` should always be writable to the local store.
+    return true;
+  }
+  if (!pref_model_associator_client_) {
+    // Safer this way.
+    return true;
+  }
+  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
+                      .GetSyncablePrefMetadata(key);
+  // Prefs are written to the local store by default, unless explicitly tagged
+  // as account-only.
+  return !metadata.has_value() ||
+         metadata->write_behavior() != WriteBehavior::kWriteToAccountOnly;
 }
 
 void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(

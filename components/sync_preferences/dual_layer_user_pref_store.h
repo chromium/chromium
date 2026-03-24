@@ -176,6 +176,10 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // account.
   bool ShouldGetValueFromAccountStore(std::string_view key) const;
 
+  // Returns whether the pref with the given `key` should be inserted into the
+  // local pref store.
+  bool ShouldSetValueInLocalStore(std::string_view key) const;
+
   // Returns whether the pref with the given `key` is mergeable.
   bool IsPrefKeyMergeable(std::string_view key) const;
 

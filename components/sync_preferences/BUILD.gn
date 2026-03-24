@@ -109,6 +109,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":features",
     ":sync_preferences",
     ":test_support",
     "//base/test:test_support",
