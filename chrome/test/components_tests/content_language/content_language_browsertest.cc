@@ -97,10 +97,10 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   static constexpr const char kOriginUrl[] = "https://127.0.0.1:44444";
-  static constexpr const char kLanguageHistorgramName[] =
+  static constexpr const char kLanguageHistogramName[] =
       "LanguageUsage.AcceptLanguageAndContentLanguageUsage";
 
-  static constexpr const char kXmlHtmlLanguageHistorgramName[] =
+  static constexpr const char kXmlHtmlLanguageHistogramName[] =
       "LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage";
 
   void SetUpOnMainThread() override {
@@ -153,7 +153,7 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    histograms.ExpectBucketCount(kLanguageHistorgramName, expect_metric_type,
+    histograms.ExpectBucketCount(kLanguageHistogramName, expect_metric_type,
                                  expect_metric_count);
   }
 
@@ -166,8 +166,8 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     RetryForHistogramUntilCountReached(&histograms,
-                                       kXmlHtmlLanguageHistorgramName, 1);
-    histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                                       kXmlHtmlLanguageHistogramName, 1);
+    histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                  expect_metric_type, expect_metric_count);
   }
 
@@ -283,9 +283,9 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
 
 constexpr const char RecordLanguagesMetricsBrowserTest::kOriginUrl[];
 constexpr const char
-    RecordLanguagesMetricsBrowserTest::kLanguageHistorgramName[];
+    RecordLanguagesMetricsBrowserTest::kLanguageHistogramName[];
 constexpr const char
-    RecordLanguagesMetricsBrowserTest::kXmlHtmlLanguageHistorgramName[];
+    RecordLanguagesMetricsBrowserTest::kXmlHtmlLanguageHistogramName[];
 
 IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
                        ContentLanguageEmpty) {
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Child Content-Language vs Parent Content-Language
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageSubframeDiffers,
                                1);
@@ -387,18 +387,18 @@ IN_PROC_BROWSER_TEST_F(
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Accept-Language vs Parent Content-Language: en-US == en-US
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesPrimaryAcceptLanguage,
                                1);
 
   // Accept-Language vs Child Content-Language: empty
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageEmpty, 1);
 
   // Child Content-Language vs Parent Content-Language
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageSubframeDiffers,
                                1);
@@ -422,17 +422,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Accept-Language vs Parent Content-Language: empty
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageEmpty, 1);
 
   // Accept-Language vs Child Content-Language: en-US == en-US
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesPrimaryAcceptLanguage,
                                1);
 
   // Child Content-Language vs Parent Content-Language
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageSubframeDiffers,
                                1);
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   // Accept-Language vs Parent Content-Language: empty
   // Accept-Language vs Child Content-Language: empty
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageEmpty, 2);
 }
 
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
 
   // Accept-Language vs Parent Content-Language: match top-most
   // Accept-Language vs Child Content-Language: match top-most
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesPrimaryAcceptLanguage,
                                2);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   // Accept-Language vs Parent Content-Language: *
   // Accept-Language vs Child Content-Language: *
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageWildcard,
       2);
 }
@@ -529,19 +529,19 @@ IN_PROC_BROWSER_TEST_F(
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Accept-Language vs Parent Content-Language: en-US == en-US
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesPrimaryAcceptLanguage,
                                1);
 
   // Accept-Language vs Child Content-Language: *
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageWildcard,
       1);
 
   // Child Content-Language vs Parent Content-Language
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageSubframeDiffers,
                                1);
@@ -565,18 +565,18 @@ IN_PROC_BROWSER_TEST_F(
 
   // Accept-Language vs Parent Content-Language: *
   histograms.ExpectBucketCount(
-      kLanguageHistorgramName,
+      kLanguageHistogramName,
       blink::AcceptLanguageAndContentLanguageUsage::kContentLanguageWildcard,
       1);
 
   // Accept-Language vs Child Content-Language: en-US == en-US
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesPrimaryAcceptLanguage,
                                1);
 
   // Child Content-Language vs Parent Content-Language
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageSubframeDiffers,
                                1);
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Accept-Language vs Parent Content-Language: match top-most
   // Accept-Language vs Child Content-Language: match top-most
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesAnyAcceptLanguage,
                                2);
@@ -637,8 +637,8 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, XmlLangIsDash) {
   // Make sure no crash and no metric reports.
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 0);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     0);
 }
 
 IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, HtmlLangIsDash) {
@@ -654,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, HtmlLangIsDash) {
   // Make sure no crash and no metric reports.
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 0);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     0);
 }
 
 IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, XmlLangWildcard) {
@@ -711,10 +711,10 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
   // xml lang matches primary accept language
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kXmlLangMatchesPrimaryAcceptLanguage,
                                1);
@@ -737,11 +737,11 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // xml lang matches primary accept language
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kXmlLangMatchesPrimaryAcceptLanguage,
                                1);
@@ -816,11 +816,11 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // html lang matches primary accept language
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kHtmlLangMatchesPrimaryAcceptLanguage,
                                1);
@@ -843,11 +843,11 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // html lang matches primary accept language
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kHtmlLangMatchesPrimaryAcceptLanguage,
                                1);
@@ -870,11 +870,11 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // zh family, html lang matches non-primary accept language instead of primary
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kHtmlLangMatchesAnyNonPrimayAcceptLanguage,
                                1);
@@ -897,17 +897,17 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // Accept-Language vs xml:lang: match any
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kXmlLangMatchesAnyNonPrimayAcceptLanguage,
                                1);
 
   // Accept-Language vs Content-Language: match any
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesAnyAcceptLanguage,
                                1);
@@ -930,17 +930,17 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
 
-  RetryForHistogramUntilCountReached(&histograms,
-                                     kXmlHtmlLanguageHistorgramName, 1);
+  RetryForHistogramUntilCountReached(&histograms, kXmlHtmlLanguageHistogramName,
+                                     1);
 
   // Accept-Language vs html lang: match primary
-  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistogramName,
                                blink::AcceptLanguageAndXmlHtmlLangUsage::
                                    kHtmlLangMatchesPrimaryAcceptLanguage,
                                1);
 
   // Accept-Language vs Content-Language: match any
-  histograms.ExpectBucketCount(kLanguageHistorgramName,
+  histograms.ExpectBucketCount(kLanguageHistogramName,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesAnyAcceptLanguage,
                                1);

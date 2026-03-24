@@ -732,13 +732,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       DiaglogShowsThrobberWhileSearching) {
-  RunTestCase("DiaglogShowsThrobberWhileSearching");
+                       DialogShowsThrobberWhileSearching) {
+  RunTestCase("DialogShowsThrobberWhileSearching");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       DiaglogShowsDestinationsWhileSearching) {
-  RunTestCase("DiaglogShowsDestinationsWhileSearching");
+                       DialogShowsDestinationsWhileSearching) {
+  RunTestCase("DialogShowsDestinationsWhileSearching");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,

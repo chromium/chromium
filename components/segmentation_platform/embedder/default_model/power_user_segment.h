@@ -46,7 +46,7 @@ class PowerUserSegment : public DefaultModelProvider {
     kFeatureMediaInputStreamDuration,
     kFeatureUMAProfileSignInStatusV2,
     kFeatureUMAProfileSyncStatusV2,
-    kFeatureAndroidPhotoPickerDiaglogAction,
+    kFeatureAndroidPhotoPickerDialogAction,
     kFeatureDataUseTrafficSizeUserUpstreamForegroundNotCellular,
     kFeatureDataUseTrafficSizeUserUpstreamForegroundCellular,
     kFeatureTabGroupCreatedOpenInNewTab,

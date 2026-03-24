@@ -262,7 +262,7 @@ suite('DestinationDialogCrosTest', function() {
 
   // Test that the correct elements are displayed when the destination store is
   // still searching and has no valid destinations.
-  test('DiaglogShowsThrobberWhileSearching', async () => {
+  test('DialogShowsThrobberWhileSearching', async () => {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
     await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
@@ -308,7 +308,7 @@ suite('DestinationDialogCrosTest', function() {
 
   // Test that the correct elements are displayed when the destination store is
   // still searching but has returned valid destinations.
-  test('DiaglogShowsDestinationsWhileSearching', async () => {
+  test('DialogShowsDestinationsWhileSearching', async () => {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
 
     document.body.appendChild(dialog);

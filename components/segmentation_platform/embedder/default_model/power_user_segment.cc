@@ -29,13 +29,13 @@ constexpr int64_t kPowerUserMinSignalCollectionLength = 7;
 
 // InputFeatures.
 
-constexpr std::array<int32_t, 2> kEnumHistorgram0And1{0, 1};
-constexpr std::array<int32_t, 1> kEnumHistorgram1{1};
-constexpr std::array<int32_t, 1> kEnumHistorgram0{0};
+constexpr std::array<int32_t, 2> kEnumHistogram0And1{0, 1};
+constexpr std::array<int32_t, 1> kEnumHistogram1{1};
+constexpr std::array<int32_t, 1> kEnumHistogram0{0};
 
 constexpr FeaturePair<PowerUserSegment::Feature> kFeatures[] = {
     {PowerUserSegment::kFeatureDownloadStartPerProfileType,
-     features::UMAEnum("Download.Start.PerProfileType", 28, kEnumHistorgram0)},
+     features::UMAEnum("Download.Start.PerProfileType", 28, kEnumHistogram0)},
     {PowerUserSegment::kFeatureMobileMenuDownloadManager,
      features::UserAction("MobileMenuDownloadManager", 28)},
     {PowerUserSegment::kFeatureMobileMenuDownloadPage,
@@ -67,22 +67,22 @@ constexpr FeaturePair<PowerUserSegment::Feature> kFeatures[] = {
     {PowerUserSegment::kFeatureAutofillKeyMetricsFillingAcceptanceAddress,
      features::UMAEnum("Autofill.KeyMetrics.FillingAcceptance.Address",
                        28,
-                       kEnumHistorgram0And1)},
+                       kEnumHistogram0And1)},
     {PowerUserSegment::kFeatureAutofillKeyMetricsFillingAcceptanceCreditCard,
      features::UMAEnum("Autofill.KeyMetrics.FillingAcceptance.CreditCard",
                        28,
-                       kEnumHistorgram0And1)},
+                       kEnumHistogram0And1)},
     {PowerUserSegment::kFeatureMediaOutputStreamDuration,
      features::UMASum("Media.OutputStreamDuration", 28)},
     {PowerUserSegment::kFeaturePasswordManagerFillingSource,
-     features::UMAEnum("PasswordManager.FillingSource", 28, kEnumHistorgram1)},
+     features::UMAEnum("PasswordManager.FillingSource", 28, kEnumHistogram1)},
     {PowerUserSegment::kFeatureMediaInputStreamDuration,
      features::UMASum("Media.InputStreamDuration", 28)},
     {PowerUserSegment::kFeatureUMAProfileSignInStatusV2,
-     features::UMAEnum("UMA.ProfileSignInStatusV2", 28, kEnumHistorgram0)},
+     features::UMAEnum("UMA.ProfileSignInStatusV2", 28, kEnumHistogram0)},
     {PowerUserSegment::kFeatureUMAProfileSyncStatusV2,
-     features::UMAEnum("UMA.ProfileSyncStatusV2", 28, kEnumHistorgram0)},
-    {PowerUserSegment::kFeatureAndroidPhotoPickerDiaglogAction,
+     features::UMAEnum("UMA.ProfileSyncStatusV2", 28, kEnumHistogram0)},
+    {PowerUserSegment::kFeatureAndroidPhotoPickerDialogAction,
      features::UMACount("Android.PhotoPicker.DialogAction", 28)},
     {PowerUserSegment::
          kFeatureDataUseTrafficSizeUserUpstreamForegroundNotCellular,
@@ -214,7 +214,7 @@ void PowerUserSegment::ExecuteModelWithInput(
   AddToScoreIf(inputs[kFeatureUMAProfileSignInStatusV2] > 0 &&
                    inputs[kFeatureUMAProfileSyncStatusV2] > 0,
                score);
-  AddToScoreIf(inputs[kFeatureAndroidPhotoPickerDiaglogAction] >= 2, score);
+  AddToScoreIf(inputs[kFeatureAndroidPhotoPickerDialogAction] >= 2, score);
   AddToScoreIf(
       (inputs[kFeatureDataUseTrafficSizeUserUpstreamForegroundNotCellular] +
        inputs[kFeatureDataUseTrafficSizeUserUpstreamForegroundCellular]) >

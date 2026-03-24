@@ -763,7 +763,7 @@ void SystemWebAppManager::OnIconCheckResult(
     case SystemWebAppIconChecker::IconState::kNoAppInstalled:
       break;
     case SystemWebAppIconChecker::IconState::kBroken:
-      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, false);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistogramName, false);
       if (PreviousSessionHadBrokenIcons()) {
         base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, false);
       }
@@ -771,7 +771,7 @@ void SystemWebAppManager::OnIconCheckResult(
                                 true);
       break;
     case SystemWebAppIconChecker::IconState::kOk:
-      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, true);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistogramName, true);
       if (PreviousSessionHadBrokenIcons()) {
         base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, true);
       }

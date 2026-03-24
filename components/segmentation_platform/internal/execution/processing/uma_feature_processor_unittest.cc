@@ -40,13 +40,13 @@
 namespace segmentation_platform::processing {
 
 constexpr char kProfileId[] = "1";
-constexpr std::array<int32_t, 2> kEnumHistorgram0And1{0, 1};
+constexpr std::array<int32_t, 2> kEnumHistogram0And1{0, 1};
 
 constexpr MetadataWriter::UMAFeature kEnumRecorded4Times =
     MetadataWriter::UMAFeature::FromEnumHistogram("EnumRecorded4Times",
                                                   28,
-                                                  kEnumHistorgram0And1.data(),
-                                                  kEnumHistorgram0And1.size());
+                                                  kEnumHistogram0And1.data(),
+                                                  kEnumHistogram0And1.size());
 constexpr MetadataWriter::UMAFeature kEnumRecorded4TimesAsValue =
     MetadataWriter::UMAFeature::FromValueHistogram("EnumRecorded4Times",
                                                    28,
@@ -66,8 +66,8 @@ constexpr MetadataWriter::UMAFeature kValueHistogram =
 constexpr MetadataWriter::UMAFeature kEnumHistogramNotRecorded =
     MetadataWriter::UMAFeature::FromEnumHistogram("EnumHistogramNotRecorded",
                                                   28,
-                                                  kEnumHistorgram0And1.data(),
-                                                  kEnumHistorgram0And1.size());
+                                                  kEnumHistogram0And1.data(),
+                                                  kEnumHistogram0And1.size());
 
 constexpr MetadataWriter::UMAFeature kUserActionNotRecorded =
     MetadataWriter::UMAFeature::FromUserAction("UserActionNotRecorded", 28);
@@ -243,12 +243,12 @@ TEST_P(UmaFeatureProcessorTest, ProcessEnumFeature) {
   ExpectProcessResult(GetParam(), metadata, {3});
 }
 
-constexpr std::array<int32_t, 1> kEnumHistorgram4{4};
+constexpr std::array<int32_t, 1> kEnumHistogram4{4};
 constexpr MetadataWriter::UMAFeature kEnumValueNotRecorded =
     MetadataWriter::UMAFeature::FromEnumHistogram("EnumRecorded4Times",
                                                   28,
-                                                  kEnumHistorgram4.data(),
-                                                  kEnumHistorgram4.size());
+                                                  kEnumHistogram4.data(),
+                                                  kEnumHistogram4.size());
 
 TEST_P(UmaFeatureProcessorTest, ProcessEnumWithUnrecordedValues) {
   AddSignalsToDb();

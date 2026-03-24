@@ -71,7 +71,7 @@ class SystemWebAppManager : public KeyedService,
       "Webapp.SystemApps.FreshInstallDuration";
   static constexpr char kIconsFixedOnReinstallHistogramName[] =
       "Webapp.SystemApps.IconsFixedOnReinstall";
-  static constexpr char kIconsAreHealthyInSessionHistorgramName[] =
+  static constexpr char kIconsAreHealthyInSessionHistogramName[] =
       "Webapp.SystemApps.IconsAreHealthyInSession";
   static constexpr char kInstallResultHistogramName[] =
       "Webapp.InstallResult.System";

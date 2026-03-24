@@ -41,7 +41,7 @@ TEST_F(PowerUserModelTest, ExecuteModelWithInput) {
 
   input[Feature::kFeatureMediaControlsCast] = 2;
   input[Feature::kFeatureAutofillKeyMetricsFillingAcceptanceAddress] = 5;
-  input[Feature::kFeatureAndroidPhotoPickerDiaglogAction] = 6;
+  input[Feature::kFeatureAndroidPhotoPickerDialogAction] = 6;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            {Label::kLabelMedium});
   ExpectClassifierResults(input, {"Medium"});

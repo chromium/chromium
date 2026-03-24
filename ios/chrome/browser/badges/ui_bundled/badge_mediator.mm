@@ -50,7 +50,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 namespace {
-// Historgram name for when an overflow badge was tapped.
+// Histogram name for when an overflow badge was tapped.
 const char kInfobarOverflowBadgeTappedUserAction[] =
     "MobileMessagesOverflowBadgeTapped";
 // Histogram name for when the overflow badge is shown
