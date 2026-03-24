@@ -1276,9 +1276,8 @@ mojo::ScopedDataPipeConsumerHandle FillResponseForInitialWebUI(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote) {
   // Read the response body locally within the renderer, and make the
   // `response_body` pipe point to the result.
-  CHECK(local_resource_loader_config->sources.contains(origin));
   const blink::mojom::LocalResourceSourcePtr& source =
-      local_resource_loader_config->sources[origin];
+      local_resource_loader_config->sources.at(origin);
   const std::map<std::string, std::string> replacement_strings(
       source->replacement_strings.begin(), source->replacement_strings.end());
 
