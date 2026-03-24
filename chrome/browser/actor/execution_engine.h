@@ -95,10 +95,11 @@ class ExecutionEngine : public ToolDelegate {
     // The source origin and navigation origin are the same and should not be
     // gated.
     kAllowSameOrigin = 0,
-    // The navigation is allowed by the static allow-list.
+    // The navigation is allowed by the static allowlist or enterprise policy
+    // allowlist.
     kAllowByStaticList = 1,
-    // The navigation is blocked by the static block-list. The user will not be
-    // prompted for confirmation.
+    // The navigation is blocked by the static blocklist or enterprise policy
+    // blocklist. The user will not be prompted for confirmation.
     kBlockByStaticList = 2,
     // The navigation is not on any allowlist or blocklist and requires an
     // asynchronous check to determine the final outcome.

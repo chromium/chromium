@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -50,6 +51,7 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
@@ -709,6 +711,38 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   ActResultFuture result;
   task->Act(ToRequestList(click), result.GetCallback());
   ExpectOkResult(result);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
+                       BlocklistAppliesToPageNavigation) {
+  ASSERT_TRUE(actor::IsNavigationGatingEnabled());
+  UpdateGeminiActOnWebAndUrlPolicies(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{},
+      /*url_blocklist=*/{"bar.com"},
+      /*await_list_update=*/true);
+  EXPECT_TRUE(GetPolicyChecker().CanActOnWeb());
+
+  const GURL url =
+      embedded_https_test_server().GetURL("bar.com", "/empty.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
+  ActorTask* task = GetActorService().GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  base::test::TestFuture<actor::mojom::ActionResultPtr> future;
+  task->AddTab(active_tab().GetHandle(), future.GetCallback());
+  ASSERT_THAT(future.Get(), testing::Pointee(testing::Field(
+                                &actor::mojom::ActionResult::code,
+                                actor::mojom::ActionResultCode::kOk)));
+
+  content::TestNavigationObserver observer(web_contents());
+  content::ExecuteScriptAsync(web_contents(), "self.location.reload()");
+  observer.Wait();
+  EXPECT_FALSE(observer.last_navigation_succeeded());
 }
 
 // Makes sure that on policy-managed clients, when the default pref is

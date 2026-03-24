@@ -340,16 +340,14 @@ void ExecutionEngine::LogNavigationGating(
 ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     const GURL& source_url,
     const GURL& destination_url) const {
-  // If enterprise policy allows the destination, do not gate.
-  // Note that it is not necessary to have an equivalent check for the
-  // enterprise policy blocklist, as we would already have blocked the
-  // navigation before reaching this gating logic.
-  const EnterprisePolicyBlockReason enterprise_reason =
-      task_->policy_checker().Evaluate(destination_url);
-  if (enterprise_reason == EnterprisePolicyBlockReason::kExplicitlyAllowed) {
-    return GatingDecision::kAllowByStaticList;
+  switch (task_->policy_checker().Evaluate(destination_url)) {
+    case EnterprisePolicyBlockReason::kNotBlocked:
+      break;
+    case EnterprisePolicyBlockReason::kExplicitlyAllowed:
+      return GatingDecision::kAllowByStaticList;
+    case EnterprisePolicyBlockReason::kExplicitlyBlocked:
+      return GatingDecision::kBlockByStaticList;
   }
-  DCHECK_NE(enterprise_reason, EnterprisePolicyBlockReason::kExplicitlyBlocked);
 
   url::Origin destination_origin = url::Origin::Create(destination_url);
   const SafetyListManager& safety_list_manager =
