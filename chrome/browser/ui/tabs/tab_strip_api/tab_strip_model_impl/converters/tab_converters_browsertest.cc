@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
@@ -16,6 +15,7 @@
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider.h"
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest, ConvertTab) {
   ASSERT_EQ(base::UTF16ToUTF8(tab_ui_helper->GetTitle()), mojo->title);
   ASSERT_TRUE(mojo->is_active);
   ASSERT_TRUE(mojo->is_selected);
-  ASSERT_EQ(TabNetworkStateForWebContents(tab->GetContents()),
+  ASSERT_EQ(tabs::TabNetworkStateForWebContents(tab->GetContents()),
             FromMojo(mojo->network_state));
 
   std::vector<mojom::AlertState> tab_alerts = mojo->alert_states;

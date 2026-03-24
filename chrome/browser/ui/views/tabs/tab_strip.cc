@@ -1232,7 +1232,8 @@ bool TabStrip::IsTabCrashed(int tab_index) const {
 }
 
 bool TabStrip::TabHasNetworkError(int tab_index) const {
-  return tab_at(tab_index)->data().network_state == TabNetworkState::kError;
+  return tab_at(tab_index)->data().network_state ==
+         tabs::TabNetworkState::kError;
 }
 
 std::optional<tabs::TabAlert> TabStrip::GetTabAlertState(int tab_index) const {

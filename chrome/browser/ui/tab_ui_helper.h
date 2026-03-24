@@ -14,14 +14,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 class Browser;
 #endif
-
-enum class TabNetworkState;
 
 namespace content {
 class NavigationEntry;
@@ -117,7 +116,7 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
     return was_active_at_least_once_;
   }
 
-  TabNetworkState GetTabNetworkState();
+  tabs::TabNetworkState GetTabNetworkState();
 
 #if !BUILDFLAG(IS_ANDROID)
   void NotifyTabUIChanged(base::PassKey<Browser> pass_key);

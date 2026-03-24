@@ -18,7 +18,7 @@ mojom("mojo_bindings") {
         },
         {
           mojom = "tabs.mojom.TabNetworkState"
-          cpp = "::TabNetworkState"
+          cpp = "::tabs::TabNetworkState"
         },
       ]
       traits_headers = [ "tabs_mojom_traits.h" ]

@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, DefaultTabData) {
 
   EXPECT_FALSE(data.pinned);
   EXPECT_TRUE(data.should_display_favicon);
-  EXPECT_EQ(data.network_state, TabNetworkState::kNone);
+  EXPECT_EQ(data.network_state, tabs::TabNetworkState::kNone);
   EXPECT_FALSE(data.alert_state.has_value());
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.title, TabUIHelper::From(tab_interface)->GetTitle());
@@ -305,14 +305,14 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, NetworkState) {
       browser()->GetTabStripModel()->GetTabAtIndex(0);
 
   tabs::TabData data_loading = tabs::TabData::FromTabInterface(tab_interface);
-  EXPECT_NE(data_loading.network_state, TabNetworkState::kNone);
+  EXPECT_NE(data_loading.network_state, tabs::TabNetworkState::kNone);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   tabs::TabData data_committed = tabs::TabData::FromTabInterface(tab_interface);
-  EXPECT_EQ(data_committed.network_state, TabNetworkState::kNone);
+  EXPECT_EQ(data_committed.network_state, tabs::TabNetworkState::kNone);
 }
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, AlertStateAudioPlaying) {
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, AlertStateAudioPlaying) {
   auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
   const TabData& data = tab_data_observer->tab_data();
   EXPECT_TRUE(data.alert_state.has_value());
-  EXPECT_EQ(data.alert_state.value(), TabAlert::kAudioPlaying);
+  EXPECT_EQ(data.alert_state.value(), tabs::TabAlert::kAudioPlaying);
 }
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldHideThrobber) {

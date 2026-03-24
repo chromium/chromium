@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -20,20 +19,21 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace tabs_api::converters {
 
-mojom::NetworkState ToMojo(TabNetworkState state) {
+mojom::NetworkState ToMojo(tabs::TabNetworkState state) {
   switch (state) {
-    case TabNetworkState::kNone:
+    case tabs::TabNetworkState::kNone:
       return mojom::NetworkState::kNone;
-    case TabNetworkState::kWaiting:
+    case tabs::TabNetworkState::kWaiting:
       return mojom::NetworkState::kWaiting;
-    case TabNetworkState::kLoading:
+    case tabs::TabNetworkState::kLoading:
       return mojom::NetworkState::kLoading;
-    case TabNetworkState::kError:
+    case tabs::TabNetworkState::kError:
       return mojom::NetworkState::kError;
   }
 }
@@ -206,16 +206,16 @@ tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
   NOTREACHED();
 }
 
-TabNetworkState FromMojo(mojom::NetworkState state) {
+tabs::TabNetworkState FromMojo(mojom::NetworkState state) {
   switch (state) {
     case mojom::NetworkState::kNone:
-      return TabNetworkState::kNone;
+      return tabs::TabNetworkState::kNone;
     case mojom::NetworkState::kWaiting:
-      return TabNetworkState::kWaiting;
+      return tabs::TabNetworkState::kWaiting;
     case mojom::NetworkState::kLoading:
-      return TabNetworkState::kLoading;
+      return tabs::TabNetworkState::kLoading;
     case mojom::NetworkState::kError:
-      return TabNetworkState::kError;
+      return tabs::TabNetworkState::kError;
   }
 }
 

@@ -22,12 +22,12 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -368,8 +368,8 @@ std::optional<base::ByteSize> TabUIHelper::GetDiscardedMemorySavings() {
              : std::nullopt;
 }
 
-TabNetworkState TabUIHelper::GetTabNetworkState() {
-  return TabNetworkStateForWebContents(tab().GetContents());
+tabs::TabNetworkState TabUIHelper::GetTabNetworkState() {
+  return tabs::TabNetworkStateForWebContents(tab().GetContents());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

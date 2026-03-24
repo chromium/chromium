@@ -108,7 +108,7 @@ void TopContainerLoadingBar::SetWebContents(
   Observe(web_contents);
 
   if (!web_contents) {
-    network_state_ = TabNetworkState::kNone;
+    network_state_ = tabs::TabNetworkState::kNone;
     HideImmediately();
     return;
   }
@@ -120,7 +120,7 @@ void TopContainerLoadingBar::SetWebContents(
   // previously displayed in that tab.
 
   // Reset network state to update from a clean slate.
-  network_state_ = TabNetworkState::kNone;
+  network_state_ = tabs::TabNetworkState::kNone;
   UpdateLoadingProgress();
 }
 
@@ -135,27 +135,27 @@ void TopContainerLoadingBar::UpdateLoadingProgress() {
     return;
   }
 
-  const TabNetworkState old_network_state = network_state_;
-  network_state_ = TabNetworkStateForWebContents(web_contents());
+  const tabs::TabNetworkState old_network_state = network_state_;
+  network_state_ = tabs::TabNetworkStateForWebContents(web_contents());
   if (old_network_state != network_state_) {
-    if (network_state_ == TabNetworkState::kWaiting ||
-        network_state_ == TabNetworkState::kLoading) {
+    if (network_state_ == tabs::TabNetworkState::kWaiting ||
+        network_state_ == tabs::TabNetworkState::kLoading) {
       // Reset loading state when we go to waiting or loading.
       Show(GetLoadingProgress());
     }
   }
 
   switch (network_state_) {
-    case TabNetworkState::kLoading:
+    case tabs::TabNetworkState::kLoading:
       SetLoadingProgress(GetLoadingProgress());
       break;
-    case TabNetworkState::kError:
+    case tabs::TabNetworkState::kError:
       // TODO(pbos): Add a better error indicator (fade-out red?).
       HideImmediately();
       break;
-    case TabNetworkState::kWaiting:
+    case tabs::TabNetworkState::kWaiting:
       break;
-    case TabNetworkState::kNone:
+    case tabs::TabNetworkState::kNone:
       FinishLoading();
       break;
   }

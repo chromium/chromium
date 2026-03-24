@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   int new_index = tab_strip_model()->SetTabPinned(1, true);
   title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, tab_title);
   tab_data = tab_strip()->tab_at(new_index)->data();
-  tab_data.network_state = TabNetworkState::kError;
+  tab_data.network_state = tabs::TabNetworkState::kError;
   tab_strip()->tab_at(new_index)->SetDataForTesting(tab_data);
   data = ui::AXNodeData();
   tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 
   // AccessibleName update with alert on tab
   tab_data = tab_strip()->tab_at(new_index)->data();
-  tab_data.network_state = TabNetworkState::kLoading;
+  tab_data.network_state = tabs::TabNetworkState::kLoading;
   RecentlyAudibleHelper::FromWebContents(
       tab_strip_model()->GetWebContentsAt(new_index))
       ->SetCurrentlyAudibleForTesting();

@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 

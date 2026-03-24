@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_NETWORK_STATE_H_
-#define CHROME_BROWSER_UI_TABS_TAB_NETWORK_STATE_H_
+#ifndef COMPONENTS_TABS_PUBLIC_TAB_NETWORK_STATE_H_
+#define COMPONENTS_TABS_PUBLIC_TAB_NETWORK_STATE_H_
 
 namespace content {
 class WebContents;
 }
+
+namespace tabs {
 
 // The types of network activity for a tab. The network state of a tab may be
 // used to alter the UI (e.g. show different kinds of loading animations).
@@ -18,7 +20,9 @@ enum class TabNetworkState {
   kError,    // Encountered a network error.
 };
 
-// Computes tthe TabNetworkState for the given WebContents.
+// Computes the TabNetworkState for the given WebContents.
 TabNetworkState TabNetworkStateForWebContents(content::WebContents* contents);
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_NETWORK_STATE_H_
+}  // namespace tabs
+
+#endif  // COMPONENTS_TABS_PUBLIC_TAB_NETWORK_STATE_H_

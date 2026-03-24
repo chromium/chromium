@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
 #define CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
 
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/webui/tabs/tabs.mojom.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_network_state.h"
 
 // TODO(crbug.com/403572608) Autogenerate traits for simple enum cases.
 namespace mojo {
 
 using MojoTabNetworkState = tabs::mojom::TabNetworkState;
-using NativeTabNetworkState = enum TabNetworkState;
+using NativeTabNetworkState = enum tabs::TabNetworkState;
 
 // TabNetworkState Enum mapping.
 template <>

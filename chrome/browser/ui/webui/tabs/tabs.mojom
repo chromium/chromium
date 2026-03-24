@@ -27,7 +27,7 @@ enum TabAlertState {
   kVrPresentingInHeadset,
 };
 
-// Typemapped to "//chrome/browser/ui/tabs/tab_network_state.h".
+// Typemapped to "//components/tabs/public/tab_network_state.h".
 enum TabNetworkState {
   kNone,
   kWaiting,

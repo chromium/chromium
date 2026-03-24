@@ -58,9 +58,9 @@ namespace {
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
 
-bool NetworkStateIsAnimated(TabNetworkState network_state) {
-  return network_state != TabNetworkState::kNone &&
-         network_state != TabNetworkState::kError;
+bool NetworkStateIsAnimated(tabs::TabNetworkState network_state) {
+  return network_state != tabs::TabNetworkState::kNone &&
+         network_state != tabs::TabNetworkState::kError;
 }
 
 }  // namespace
@@ -380,7 +380,7 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
 
   if (GetShowingLoadingAnimation()) {
     // Never paint the favicon during the waiting animation.
-    if (network_state_ == TabNetworkState::kWaiting) {
+    if (network_state_ == tabs::TabNetworkState::kWaiting) {
       return;
     }
     // Don't paint the default favicon while we're still loading.
@@ -493,7 +493,7 @@ void TabIcon::SetDiscarded(bool discarded) {
   }
 }
 
-void TabIcon::SetNetworkState(TabNetworkState network_state) {
+void TabIcon::SetNetworkState(tabs::TabNetworkState network_state) {
   const bool was_animated = NetworkStateIsAnimated(network_state_);
   network_state_ = network_state;
   const bool is_animated = NetworkStateIsAnimated(network_state_);

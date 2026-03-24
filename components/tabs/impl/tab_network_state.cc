@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "components/tabs/public/tab_network_state.h"
 
+#include "base/check.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+
+namespace tabs {
 
 TabNetworkState TabNetworkStateForWebContents(content::WebContents* contents) {
   DCHECK(contents);
@@ -25,3 +28,5 @@ TabNetworkState TabNetworkStateForWebContents(content::WebContents* contents) {
   }
   return TabNetworkState::kLoading;
 }
+
+}  // namespace tabs

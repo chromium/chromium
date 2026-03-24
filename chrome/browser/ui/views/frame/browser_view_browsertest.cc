@@ -547,17 +547,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   contents->GetController().LoadURL(test_url, content::Referrer(),
                                     ui::PAGE_TRANSITION_LINK, std::string());
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_EQ(TabNetworkState::kWaiting,
+  EXPECT_EQ(tabs::TabNetworkState::kWaiting,
             tab_strip->tab_at(0)->data().network_state);
   EXPECT_EQ(test_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_EQ(TabNetworkState::kLoading,
+  EXPECT_EQ(tabs::TabNetworkState::kLoading,
             tab_strip->tab_at(0)->data().network_state);
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
   EXPECT_FALSE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_EQ(TabNetworkState::kNone, tab_strip->tab_at(0)->data().network_state);
+  EXPECT_EQ(tabs::TabNetworkState::kNone,
+            tab_strip->tab_at(0)->data().network_state);
 }
 
 // Verifies a tab should show its favicon.

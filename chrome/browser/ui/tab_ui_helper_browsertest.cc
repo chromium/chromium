@@ -13,10 +13,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, NetworkStateChangeIsNotified) {
   tabs::TabInterface* const tab_interface =
       browser()->tab_strip_model()->GetActiveTab();
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
-  ASSERT_EQ(tab_ui_helper->GetTabNetworkState(), TabNetworkState::kNone);
+  ASSERT_EQ(tab_ui_helper->GetTabNetworkState(), tabs::TabNetworkState::kNone);
 
   // Pinning the tab will trigger a callback.
   auto tab_ui_change_waiter =
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, NetworkStateChangeIsNotified) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetURL(), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(tab_ui_helper->GetTabNetworkState(), TabNetworkState::kNone);
+  EXPECT_EQ(tab_ui_helper->GetTabNetworkState(), tabs::TabNetworkState::kNone);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TabCrashStateChangeIsNotified) {

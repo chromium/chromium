@@ -127,7 +127,7 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   }
 
   // Network error interstitial.
-  if (tab_data.network_state == TabNetworkState::kError) {
+  if (tab_data.network_state == tabs::TabNetworkState::kError) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NETWORK_ERROR_FORMAT,
                                       title);
   }
