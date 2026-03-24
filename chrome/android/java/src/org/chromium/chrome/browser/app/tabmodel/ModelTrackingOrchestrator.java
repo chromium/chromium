@@ -289,7 +289,7 @@ public class ModelTrackingOrchestrator {
         if (!mIsAuthoritative) {
             onRestoredForModel(/* incognito= */ false);
             onRestoredForModel(/* incognito= */ true);
-            return;
+            mMigrationManager.onShadowStoreCaughtUp();
         }
 
         Callback<TabModel> clearUnusedNodesForModel = this::clearUnusedNodesForModel;
@@ -403,7 +403,6 @@ public class ModelTrackingOrchestrator {
         try (ScopedStorageBatch ignored = createBatch(profile)) {
             var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
             getSynchronizer(profileAndCollection, incognito).fullSave();
-            mMigrationManager.onShadowStoreCaughtUp();
         }
 
         initializeTrackingSuite(incognito);
