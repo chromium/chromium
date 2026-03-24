@@ -814,6 +814,14 @@ bool IsAndroidSurfaceControlEnabled() {
 // should be 1 irrespecticve of the feature LimitAImageReaderMaxSizeToOne
 // enabled or not. Get() returns default value even if the feature is disabled.
 bool LimitAImageReaderMaxSizeToOne() {
+  // The feature is enabled by default, if it was overridden by user we should
+  // not limit regardless if it will work or not.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
+                          kLimitAImageReaderMaxSizeToOne.name)) {
+    return base::FeatureList::IsEnabled(kLimitAImageReaderMaxSizeToOne);
+  }
+
   // Always limit image reader to 1 frame for Android TV. Many TVs doesn't work
   // with more than 1 frame and it's very hard to localize which models do.
   if (base::android::device_info::is_tv()) {
