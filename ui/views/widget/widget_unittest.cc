@@ -6456,4 +6456,16 @@ TEST_F(WidgetTest, ClosingChildWidgetUnregisterAccelerators) {
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
 }
 
+TEST_F(WidgetTest, IsDragging) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  EXPECT_FALSE(widget->is_dragging());
+  static_cast<internal::NativeWidgetDelegate*>(widget.get())
+      ->OnNativeWidgetUserDragStarted();
+  EXPECT_TRUE(widget->is_dragging());
+  static_cast<internal::NativeWidgetDelegate*>(widget.get())
+      ->OnNativeWidgetUserDragEnded();
+  EXPECT_FALSE(widget->is_dragging());
+}
+
 }  // namespace views::test

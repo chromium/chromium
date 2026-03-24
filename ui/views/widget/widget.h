@@ -1304,6 +1304,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool movement_disabled() const { return movement_disabled_; }
   void set_movement_disabled(bool disabled) { movement_disabled_ = disabled; }
 
+  // True if the widget is currently being dragged.
+  bool is_dragging() const { return is_dragging_; }
+
   // Returns the work area bounds of the screen the Widget belongs to.
   gfx::Rect GetWorkAreaBoundsInScreen() const;
 
@@ -1771,6 +1774,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Block the widget from closing.
   bool block_close_ = false;
+
+  // True if the widget is currently being dragged.
+  bool is_dragging_ = false;
 
   // The native theme this widget is using.
   // If nullptr, defaults to use the regular native theme.
