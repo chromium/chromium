@@ -132,7 +132,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 0);
+        mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 0);
 
         // Resolve infos received: app info should be updated.
         var appInfo = mEntryPoint.getOpenInAppInfoForMenuItem();
@@ -145,20 +145,25 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         // Empty resolve infos: app info should be null.
         mEntryPoint.onResolveInfosFetched(
-                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl, /* navigationId= */ 0);
+                delegate,
+                new OpenInAppEntryPoint.ResolveResult.None(),
+                mIntent,
+                mUrl,
+                /* navigationId= */ 0);
         assertNull(mEntryPoint.getOpenInAppInfoForMenuItem());
         assertNull(delegate.getCurrentOpenInAppInfo());
     }
 
     @Test
     public void destroy() {
+        OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
         var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
         verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
         captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 0);
+        mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 0);
 
         // Verify it is set.
         assertNonNull(mEntryPoint.getOpenInAppInfoForMenuItem());

@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.external_intents.ExternalNavigationHelper;
+import org.chromium.url.GURL;
 
 /** A delegate for handling the open in app action for a {@link Tab}. */
 @NullMarked
@@ -42,6 +43,7 @@ public class OpenInAppDelegate implements UserData {
 
     private @Nullable OpenInAppInfo mCurrentOpenInAppInfo;
     private @Nullable ExternalNavigationHelper mExternalNavigationHelper;
+    private @Nullable GURL mLastNavigatedUrl;
 
     public void updateOpenInAppInfo(@Nullable OpenInAppInfo openInAppInfo) {
         mCurrentOpenInAppInfo = openInAppInfo;
@@ -50,6 +52,16 @@ public class OpenInAppDelegate implements UserData {
     /** Returns the current {@link OpenInAppInfo}. */
     public @Nullable OpenInAppInfo getCurrentOpenInAppInfo() {
         return mCurrentOpenInAppInfo;
+    }
+
+    /** Sets the last navigated {@link GURL}. */
+    public void setLastNavigatedUrl(@Nullable GURL url) {
+        mLastNavigatedUrl = url;
+    }
+
+    /** Returns the last navigated {@link GURL}. */
+    public @Nullable GURL getLastNavigatedUrl() {
+        return mLastNavigatedUrl;
     }
 
     public void setExternalNavigationHelper(ExternalNavigationHelper helper) {
