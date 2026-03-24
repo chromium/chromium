@@ -29,22 +29,26 @@ ChromeFilterNavigationObserver* ChromeFilterNavigationObserver::From(
 
 namespace {
 
-class UiDelegateImpl : public FilterNavigationObserver::UiDelegate {
+class UiDelegateImpl : public MultistepFilterUiDelegate {
  public:
   explicit UiDelegateImpl(tabs::TabInterface& tab) : tab_(tab) {}
 
   void ClearSuggestion() override {
+    weak_ptr_factory_.InvalidateWeakPtrs();
     if (auto* controller = GetController()) {
       controller->ClearSuggestion();
     }
   }
 
-  base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-  GetSuggestionCallback() override {
+  void OnSuggestionGenerated(
+      std::optional<UrlFilterSuggestion> suggestion) override {
     if (auto* controller = GetController()) {
-      return controller->GetSuggestionCallback();
+      controller->OnSuggestionGenerated(std::move(suggestion));
     }
-    return base::DoNothing();
+  }
+
+  base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -53,6 +57,7 @@ class UiDelegateImpl : public FilterNavigationObserver::UiDelegate {
   }
 
   const raw_ref<tabs::TabInterface> tab_;
+  base::WeakPtrFactory<UiDelegateImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace

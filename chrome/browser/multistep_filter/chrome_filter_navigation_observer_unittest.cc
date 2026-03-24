@@ -39,12 +39,11 @@ class MockMultistepFilterService : public MultistepFilterService {
                                /*identity_manager=*/nullptr) {}
 
   MOCK_METHOD(void, ExtractAnnotation, (const GURL& url), (override));
-  MOCK_METHOD(
-      void,
-      GenerateFilterSuggestions,
-      (const GURL& url,
-       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
-      (override));
+  MOCK_METHOD(void,
+              GenerateFilterSuggestions,
+              (const GURL& url,
+               base::WeakPtr<MultistepFilterUiDelegate> delegate),
+              (override));
 };
 
 // Helper class for ChromeFilterNavigationObserverTest.

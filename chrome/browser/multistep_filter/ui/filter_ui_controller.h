@@ -7,14 +7,12 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-enum class ToastId;
+class GURL;
 
 namespace tabs {
 class TabInterface;
@@ -37,10 +35,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
 
   // Callback for when a suggestion is generated.
   void OnSuggestionGenerated(std::optional<UrlFilterSuggestion> suggestion);
-
-  // Returns a callback that handles the generation of a URL filter suggestion.
-  base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-  GetSuggestionCallback();
 
   // Clears the current suggestion and hides the UI.
   void ClearSuggestion();

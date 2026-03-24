@@ -43,12 +43,6 @@ void FilterUiController::OnSuggestionGenerated(
   }
 }
 
-base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-FilterUiController::GetSuggestionCallback() {
-  return base::BindOnce(&FilterUiController::OnSuggestionGenerated,
-                        weak_factory_.GetWeakPtr());
-}
-
 void FilterUiController::ClearSuggestion() {
   // TODO(crbug.com/491210510): This method is currently only called when a
   // suggestion is applied or when a new navigation is committed. Update the

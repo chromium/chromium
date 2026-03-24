@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -58,7 +59,7 @@ bool ShouldGenerateSuggestions(content::NavigationHandle* navigation_handle) {
 FilterNavigationObserver::FilterNavigationObserver(
     content::WebContents* web_contents,
     MultistepFilterService* service,
-    std::unique_ptr<UiDelegate> delegate)
+    std::unique_ptr<MultistepFilterUiDelegate> delegate)
     : content::WebContentsObserver(web_contents),
       service_(service),
       delegate_(std::move(delegate)) {
@@ -90,8 +91,7 @@ void FilterNavigationObserver::DidFinishNavigation(
 
   // We only show suggestions for "fresh" navigations to new sites.
   if (ShouldGenerateSuggestions(navigation_handle)) {
-    service_->GenerateFilterSuggestions(url,
-                                        delegate_->GetSuggestionCallback());
+    service_->GenerateFilterSuggestions(url, delegate_->GetWeakPtr());
   }
 }
 

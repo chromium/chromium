@@ -45,6 +45,7 @@ class TestFilterUiController : public FilterUiController {
 
   // Expose protected methods for testing
   using FilterUiController::NavigateTo;
+  using FilterUiController::OnSuggestionGenerated;
   using FilterUiController::ShowSuggestionUi;
 };
 
@@ -112,16 +113,11 @@ TEST_F(FilterUiControllerTest, SuggestionCallbackGeneratesSuggestion) {
   GURL url("https://example.com");
   UrlFilterSuggestion suggestion("Example", url);
 
-  auto callback = controller_->GetSuggestionCallback();
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
-  std::move(callback).Run(suggestion);
+  controller_->OnSuggestionGenerated(suggestion);
 }
 
 TEST_F(FilterUiControllerTest, SuggestionCallbackIgnoresNullopt) {
-  auto callback = controller_->GetSuggestionCallback();
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
-  std::move(callback).Run(std::nullopt);
-
   // Also verify that direct calls with nullopt are ignored.
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
   controller_->OnSuggestionGenerated(std::nullopt);
@@ -130,7 +126,6 @@ TEST_F(FilterUiControllerTest, SuggestionCallbackIgnoresNullopt) {
 TEST_F(FilterUiControllerTest, ClearSuggestion) {
   GURL url("https://example.com");
   UrlFilterSuggestion suggestion("Example", url);
-  auto callback = controller_->GetSuggestionCallback();
 
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
@@ -140,10 +135,6 @@ TEST_F(FilterUiControllerTest, ClearSuggestion) {
   // Verify that the current suggestion is reset.
   EXPECT_CALL(*controller_, NavigateTo(testing::_)).Times(0);
   controller_->ApplySuggestion();
-
-  // Verify that pending callbacks are invalidated.
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
-  std::move(callback).Run(suggestion);
 }
 
 TEST_F(FilterUiControllerTest, ShowSuggestionUiWithNullBrowserWindowInterface) {

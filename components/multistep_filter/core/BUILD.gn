@@ -14,6 +14,7 @@ source_set("core") {
   sources = [
     "multistep_filter_service.cc",
     "multistep_filter_service.h",
+    "multistep_filter_ui_delegate.h",
     "multistep_filter_util.cc",
     "multistep_filter_util.h",
   ]

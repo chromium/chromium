@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -21,6 +20,7 @@ class WebContents;
 namespace multistep_filter {
 
 class MultistepFilterService;
+class MultistepFilterUiDelegate;
 
 // Observes navigations to trigger Multistep Filter feature logic.
 // This observer detects primary main frame navigations, clears existing
@@ -28,18 +28,9 @@ class MultistepFilterService;
 // eligible URLs.
 class FilterNavigationObserver : public content::WebContentsObserver {
  public:
-  // Interface to interact with the UI controller.
-  class UiDelegate {
-   public:
-    virtual ~UiDelegate() = default;
-    virtual void ClearSuggestion() = 0;
-    virtual base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-    GetSuggestionCallback() = 0;
-  };
-
   FilterNavigationObserver(content::WebContents* web_contents,
                            MultistepFilterService* service,
-                           std::unique_ptr<UiDelegate> delegate);
+                           std::unique_ptr<MultistepFilterUiDelegate> delegate);
 
   FilterNavigationObserver(const FilterNavigationObserver&) = delete;
   FilterNavigationObserver& operator=(const FilterNavigationObserver&) = delete;
@@ -57,8 +48,8 @@ class FilterNavigationObserver : public content::WebContentsObserver {
   // This service must outlive this observer.
   raw_ptr<MultistepFilterService> service_;
 
-  // Delegate to interact with the UI.
-  std::unique_ptr<UiDelegate> delegate_;
+  // Delegate to provide contextual information and interact with the UI.
+  std::unique_ptr<MultistepFilterUiDelegate> delegate_;
 };
 
 }  // namespace multistep_filter

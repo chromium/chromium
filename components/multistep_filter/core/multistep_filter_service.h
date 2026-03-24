@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 
 class GURL;
 
@@ -50,10 +51,11 @@ class MultistepFilterService : public KeyedService {
   virtual void ExtractAnnotation(const GURL& url);
 
   // Generates a filter suggestion for `url`. Based on URL analysis, the
-  // suggestion may be stored for later use. Returns the result via `callback`.
+  // suggestion may be stored for later use. Results are returned via the
+  // `delegate`.
   virtual void GenerateFilterSuggestions(
       const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
+      base::WeakPtr<MultistepFilterUiDelegate> delegate);
 
  private:
   friend class MultistepFilterServiceTestApi;
