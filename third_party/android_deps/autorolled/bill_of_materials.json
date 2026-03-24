@@ -1977,7 +1977,7 @@
     {
         "name": "atomicfu-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "0.32.0"
+        "version": "0.32.1"
     },
     {
         "name": "kotlinx-coroutines-android",
