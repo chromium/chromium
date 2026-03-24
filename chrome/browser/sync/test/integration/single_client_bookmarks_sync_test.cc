@@ -37,6 +37,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -3719,21 +3720,29 @@ IN_PROC_BROWSER_TEST_F(
               ElementsAre(IsFolder(kTestTitle)));
 }
 
-class SingleClientBookmarksExplicitSigninForBookmarksSyncTest
+class SingleClientBookmarksExplicitSigninSyncTest
     : public SyncTest,
       public testing::WithParamInterface<bool> {
  public:
-  SingleClientBookmarksExplicitSigninForBookmarksSyncTest()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientBookmarksExplicitSigninSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (content::IsPreTest()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
-          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
     } else {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          {{syncer::kExplicitSigninForBookmarks.name,
-            GetParam() ? "true" : "false"}});
+      if (GetParam()) {
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/
+            {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+            /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+      } else {
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+            /*disabled_features=*/{
+                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+      }
     }
   }
 
@@ -3747,7 +3756,7 @@ class SingleClientBookmarksExplicitSigninForBookmarksSyncTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninSyncTest,
                        PRE_BookmarksEnabledDefaultValue) {
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
 
@@ -3755,23 +3764,23 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
       syncer::UserSelectableType::kBookmarks));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninSyncTest,
                        BookmarksEnabledDefaultValue) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // For the user group with `kReplaceSyncPromosWithSignInPromos` enabled but
-  // `kExplicitSigninForBookmarks` disabled: Bookmarks are enabled for
-  // pre-existing sessions and does not require new sign-in, therefore expect
-  // bookmarks sync to be on.
-  // If `kExplicitSigninForBookmarks` is enabled: Bookmarks are enabled for new
-  // sign-ins only. Therefore, expect sync bookmarks to be off.
+  // `kReplaceSyncPromosWithSigninPromosNewSignin` disabled: Bookmarks are
+  // enabled for pre-existing sessions and does not require new sign-in,
+  // therefore expect bookmarks sync to be on. If
+  // `kReplaceSyncPromosWithSigninPromosNewSignin` is enabled: Bookmarks are
+  // enabled for new sign-ins only. Therefore, expect sync bookmarks to be off.
   EXPECT_NE(GetParam(),
             GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
                 syncer::UserSelectableType::kBookmarks));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninSyncTest,
                        BookmarksEnabledAfterSignIn) {
   // When the user signs in after the flags were enabled, bookmarks should
   // always be available. See
@@ -3783,10 +3792,62 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
       syncer::UserSelectableType::kBookmarks));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
-    testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         SingleClientBookmarksExplicitSigninSyncTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NewSignin" : "AllSignedinUsers";
+                         });
+
+class SingleClientBookmarksExplicitSigninBothFeaturesSyncTest
+    : public SyncTest {
+ public:
+  SingleClientBookmarksExplicitSigninBothFeaturesSyncTest()
+      : SyncTest(SINGLE_CLIENT) {
+    if (content::IsPreTest()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+          /*disabled_features=*/{});
+    }
+  }
+
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninBothFeaturesSyncTest,
+                       PRE_BookmarksEnabledDefaultValue) {
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninBothFeaturesSyncTest,
+                       BookmarksEnabledDefaultValue) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Both features being enabled should act like
+  // `kReplaceSyncPromosWithSignInPromos` enabled. Bookmarks should be enabled
+  // for pre-existing sessions.
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
 
 class SingleClientBookmarksExplicitSigninTransitionTest : public SyncTest {
  public:
@@ -3799,17 +3860,21 @@ class SingleClientBookmarksExplicitSigninTransitionTest : public SyncTest {
       // Stage 1: Main feature OFF.
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
-          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
     } else if (test_name.starts_with("PRE_")) {
-      // Stage 2: Main ON, kExplicitSigninForBookmarks OFF.
-      feature_list_.InitAndEnableFeatureWithParameters(
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          {{syncer::kExplicitSigninForBookmarks.name, "false"}});
+      // Stage 2: Main ON, new feature OFF.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
     } else {
-      // Stage 3: Main ON, kExplicitSigninForBookmarks ON.
-      feature_list_.InitAndEnableFeatureWithParameters(
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+      // Stage 3: new feature ON.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
     }
   }
 
@@ -3835,13 +3900,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        PRE_ExplicitSigninForBookmarksOffToOn) {
   ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  ASSERT_FALSE(syncer::kExplicitSigninForBookmarks.Get());
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin));
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // For the user group with `kReplaceSyncPromosWithSignInPromos` but before
-  // `kExplicitSigninForBookmarks` being enabled, bookmarks were enabled for
-  // pre-existing sessions and did not require new sign-in.
+  // `kReplaceSyncPromosWithSigninPromosNewSignin` being enabled, bookmarks were
+  // enabled for pre-existing sessions and did not require new sign-in.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kBookmarks));
 }
@@ -3849,12 +3915,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        ExplicitSigninForBookmarksOffToOn) {
   ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  ASSERT_TRUE(syncer::kExplicitSigninForBookmarks.Get());
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin));
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // Moving the user group to `kExplicitSigninForBookmarks` enabled should not
-  // impact syncing bookmarks.
+  // Moving the user group to `kReplaceSyncPromosWithSigninPromosNewSignin`
+  // enabled should not impact syncing bookmarks.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kBookmarks));
 }

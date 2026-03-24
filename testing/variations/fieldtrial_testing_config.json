@@ -22576,26 +22576,8 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithExplicitSigninForExtensionsAndBookmarks",
-                    "params": {
-                        "ExplicitSigninForBookmarks": "true",
-                        "ExplicitSigninForExtensions": "true"
-                    },
-                    "enable_features": [
-                        "ForcedDiceMigration",
-                        "IPH_SignInBenefits",
-                        "ReplaceSyncPromosWithSignInPromos",
-                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
-                    ]
-                },
-                {
                     "name": "Enabled",
-                    "params": {
-                        "ExplicitSigninForBookmarks": "false",
-                        "ExplicitSigninForExtensions": "false"
-                    },
                     "enable_features": [
-                        "ForcedDiceMigration",
                         "IPH_SignInBenefits",
                         "ReplaceSyncPromosWithSignInPromos",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"

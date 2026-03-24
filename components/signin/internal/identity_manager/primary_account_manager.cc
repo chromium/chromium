@@ -129,8 +129,8 @@ bool ShouldEnableExtensionsExplicitBrowserSigninPrefForSignedInUser() {
   // existing sessions (requiring a new sign-in to be enabled). This function
   // identifies users from the original migration group to ensure they maintain
   // their existing behavior.
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-         !syncer::kExplicitSigninForExtensions.Get();
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 bool ShouldEnableBookmarksExplicitBrowserSigninPrefForSignedInUser() {
@@ -144,8 +144,8 @@ bool ShouldEnableBookmarksExplicitBrowserSigninPrefForSignedInUser() {
   // existing sessions (requiring a new sign-in to be enabled). This function
   // identifies users from the original migration group to ensure they maintain
   // their existing behavior.
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-         !syncer::kExplicitSigninForBookmarks.Get();
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 bool ShouldEnableExtensionExplicitBrowserSigninPrefOnSignIn(

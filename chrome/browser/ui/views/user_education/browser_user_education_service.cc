@@ -1349,14 +1349,18 @@ void MaybeRegisterChromeFeaturePromos(
                        "a new profile or an existing local profile")));
 
   // kIPHSignInBenefitsFeature:
+  int signin_benefits_feature_string_id = IDS_SIGN_IN_BENEFITS_IPH_TEXT;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
+      !base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    signin_benefits_feature_string_id =
+        IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT;
+  }
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSignInBenefitsFeature,
-          kToolbarAvatarButtonElementId,
-          (syncer::kExplicitSigninForBookmarks.Get() ||
-           syncer::kExplicitSigninForExtensions.Get())
-              ? IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT
-              : IDS_SIGN_IN_BENEFITS_IPH_TEXT,
+          kToolbarAvatarButtonElementId, signin_benefits_feature_string_id,
           IDS_PROMO_MANAGE_BUTTON,
           base::BindRepeating(
               [](ContextPtr ctx,

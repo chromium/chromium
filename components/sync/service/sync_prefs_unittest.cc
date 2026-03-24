@@ -1718,10 +1718,8 @@ TEST_F(SyncPrefsMigrationTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_SyncEverything) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForExtensions.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1742,10 +1740,8 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForExtensions.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1766,10 +1762,8 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForExtensions.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types except for kExtensions are selected in the global prefs.
   {
@@ -1790,10 +1784,8 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_SyncEverything) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types including kBookmarks are selected in the global prefs.
   {
@@ -1814,10 +1806,8 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types including kBookmarks are selected in the global prefs.
   {
@@ -1838,10 +1828,8 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      syncer::kReplaceSyncPromosWithSignInPromos,
-      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
 
   // All types except for kBookmarks are selected in the global prefs.
   {

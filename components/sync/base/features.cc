@@ -89,20 +89,14 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 #endif
 );
 
-bool IsReplaceSyncPromosWithSignInPromosEnabled() {
-  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-}
+BASE_FEATURE(kReplaceSyncPromosWithSigninPromosNewSignin,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(bool,
-                   kExplicitSigninForExtensions,
-                   &kReplaceSyncPromosWithSignInPromos,
-                   "explicit_signin_for_extensions",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kExplicitSigninForBookmarks,
-                   &kReplaceSyncPromosWithSignInPromos,
-                   "explicit_signin_for_bookmarks",
-                   false);
+bool IsReplaceSyncPromosWithSignInPromosEnabled() {
+  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+         base::FeatureList::IsEnabled(
+             kReplaceSyncPromosWithSigninPromosNewSignin);
+}
 
 BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
 #if BUILDFLAG(IS_CHROMEOS)

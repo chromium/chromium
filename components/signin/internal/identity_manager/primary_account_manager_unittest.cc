@@ -1172,19 +1172,22 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetricsSync) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest
+class PrimaryAccountManagerExplicitSigninNewFeatureTest
     : public PrimaryAccountManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest() {
-    const std::string param_state = GetParam() ? "true" : "false";
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{syncer::kReplaceSyncPromosWithSignInPromos,
-                               {{syncer::kExplicitSigninForExtensions.name,
-                                 param_state},
-                                {syncer::kExplicitSigninForBookmarks.name,
-                                 param_state}}}},
-        /*disabled_features=*/{});
+  PrimaryAccountManagerExplicitSigninNewFeatureTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    }
   }
 
  private:
@@ -1194,7 +1197,7 @@ class PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest
 // Test that the extensions explicit signin pref is set if
 // `switches::IsExtensionsExplicitBrowserSigninEnabled()` is enabled and the
 // user signs in through the extension install bubble.
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninExtensionPref) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1270,7 +1273,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
 }
 
 // Test that the bookmarks explicit signin pref is set for all new sign-ins.
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninBookmarksPref) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1306,7 +1309,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
   EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninBookmarksPref_ResetWhenSyncTurnedOn) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1339,8 +1342,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
 // Tests for users already signed `ExplicitSigninExtensionsPref` is only set to
 // true if the user belongs to the group with
 // `kReplaceSyncPromosWithSignInPromos` enabled but
-// `kExplicitSigninForExtensions` disabled.
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+// `kReplaceSyncPromosWithSigninPromosNewSignin` disabled.
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninExtensionsPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1359,8 +1362,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
 // Tests for users already signed `ExplicitSigninBookmarksPref` is only set to
 // true if the user belongs to the group with
 // `kReplaceSyncPromosWithSignInPromos` enabled but
-// `kExplicitSigninForBookmarks` disabled.
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+// `kReplaceSyncPromosWithSigninPromosNewSignin` disabled.
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninBookmarksPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1376,7 +1379,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
             SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninExtensionsPref_AlreadySyncing) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1392,7 +1395,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
+TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninBookmarksPref_AlreadySyncing) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1408,11 +1411,10 @@ TEST_P(PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest,
-    testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "ExplicitSigninTrue" : "ExplicitSigninFalse";
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrimaryAccountManagerExplicitSigninNewFeatureTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NewSignins" : "ExistingUsers";
+                         });
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
