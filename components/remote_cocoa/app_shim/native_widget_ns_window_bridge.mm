@@ -1707,6 +1707,10 @@ base::TimeDelta NativeWidgetNSWindowBridge::PreCommitTimeout() {
   return kUIPaintTimeout;
 }
 
+bool NativeWidgetNSWindowBridge::IsWindowInLiveResize() {
+  return [window_ inLiveResize];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetNSWindowBridge, CocoaMouseCaptureDelegate:
 

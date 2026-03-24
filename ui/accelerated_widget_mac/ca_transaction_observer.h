@@ -45,6 +45,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
    public:
     virtual bool ShouldWaitInPreCommit() = 0;
     virtual base::TimeDelta PreCommitTimeout() = 0;
+    virtual bool IsWindowInLiveResize() = 0;
   };
 
   // PostCommitObserver sub-classes must communicate with the IO thread. The

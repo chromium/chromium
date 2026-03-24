@@ -10,10 +10,13 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/ui_base_features.h"
 
 typedef NS_ENUM(unsigned int, CATransactionPhase) {
   kCATransactionPhasePreLayout,
@@ -70,11 +73,15 @@ void CATransactionCoordinator::PreCommitHandler() {
   const base::TimeTicks start_time = clock->NowTicks();
   while (true) {
     bool continue_waiting = false;
+    bool any_observed_window_in_live_resize = false;
     base::TimeTicks deadline = start_time;
     for (auto& observer : pre_commit_observers_) {
       if (observer.ShouldWaitInPreCommit()) {
         continue_waiting = true;
         deadline = std::max(deadline, start_time + observer.PreCommitTimeout());
+        if (observer.IsWindowInLiveResize()) {
+          any_observed_window_in_live_resize = true;
+        }
       }
     }
     if (!continue_waiting)
@@ -83,6 +90,16 @@ void CATransactionCoordinator::PreCommitHandler() {
     base::TimeDelta time_left = deadline - clock->NowTicks();
     if (time_left <= base::Seconds(0))
       break;  // timeout
+
+    // If there is no live resize there is still a need to invoke
+    // `WaitForSingleTaskToRun()` in case there are already queued tasks.
+    // There should not be any waiting for additional tasks so the waiting is
+    // kept to essentially zero.
+    if (base::FeatureList::IsEnabled(
+            features::kOnlyUseWindowResizeHelperOnResize) &&
+        !any_observed_window_in_live_resize) {
+      time_left = base::Nanoseconds(1);
+    }
 
     ui::WindowResizeHelperMac::Get()->WaitForSingleTaskToRun(time_left);
   }
