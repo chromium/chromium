@@ -23,10 +23,12 @@ import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -47,6 +49,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectActionMenuHelperTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SelectActionMenuHelper.TextSelectionCapabilitiesDelegate mDelegate;
     @Mock private Context mContext;
 
@@ -98,7 +101,6 @@ public class SelectActionMenuHelperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Used to mock out getting menu item icons.
         TypedArray a = mock(TypedArray.class);
         when(mContext.obtainStyledAttributes(any(int[].class))).thenReturn(a);

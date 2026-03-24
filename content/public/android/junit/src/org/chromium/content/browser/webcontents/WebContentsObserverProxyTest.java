@@ -8,13 +8,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -25,6 +27,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebContentsObserverProxyTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebContentsObserver mWebContentsObserver;
     @Mock private WebContentsObserver mWebContentsObserver2;
     @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
@@ -34,7 +37,6 @@ public class WebContentsObserverProxyTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         WebContentsObserverProxyJni.setInstanceForTesting(mWebContentsObserverProxyJni);
         when(mWebContentsObserverProxyJni.init(any())).thenReturn(1L);
     }

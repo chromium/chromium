@@ -12,11 +12,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,12 +28,12 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MagnifierAnimatorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MagnifierWrapper mMagnifier;
     private MagnifierAnimator mAnimator;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mMagnifier = Mockito.mock(MagnifierWrapper.class);
         when(mMagnifier.isAvailable()).thenReturn(true);

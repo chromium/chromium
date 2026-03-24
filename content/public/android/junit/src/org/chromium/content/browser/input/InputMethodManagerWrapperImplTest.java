@@ -18,11 +18,13 @@ import android.view.inputmethod.InputMethodManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -34,6 +36,7 @@ import java.lang.ref.WeakReference;
 /** A robolectric test for {@link InputMethodManagerWrapperImpl} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class InputMethodManagerWrapperImplTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final boolean DEBUG = false;
 
     private class TestInputMethodManagerWrapperImpl extends InputMethodManagerWrapperImpl {
@@ -75,7 +78,6 @@ public class InputMethodManagerWrapperImplTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mImmw = new TestInputMethodManagerWrapperImpl(mContext, mWindowAndroid, mDelegate);
         when(mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
                 .thenReturn(mInputMethodManager);

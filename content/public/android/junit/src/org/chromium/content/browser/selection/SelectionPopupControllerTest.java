@@ -45,12 +45,14 @@ import android.view.textclassifier.TextClassification;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
@@ -104,6 +106,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
 public class SelectionPopupControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MenuModelBridge mMenuModelBridge;
     private SelectionPopupControllerImpl mController;
     private Context mContext;
@@ -180,7 +183,6 @@ public class SelectionPopupControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext = Mockito.mock(Context.class);
         mWeakContext = new WeakReference<Context>(mContext);

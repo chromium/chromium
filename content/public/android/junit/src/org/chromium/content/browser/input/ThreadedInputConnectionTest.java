@@ -28,12 +28,14 @@ import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
@@ -52,6 +54,7 @@ import java.util.concurrent.Callable;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadedInputConnectionTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImeAdapterImpl mImeAdapter;
 
     ThreadedInputConnection mConnection;
@@ -63,7 +66,6 @@ public class ThreadedInputConnectionTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mImeAdapter = Mockito.mock(ImeAdapterImpl.class);
         mInOrder = inOrder(mImeAdapter);

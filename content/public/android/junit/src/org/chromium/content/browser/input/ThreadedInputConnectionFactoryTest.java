@@ -21,12 +21,14 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -44,6 +46,8 @@ import java.util.concurrent.Callable;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadedInputConnectionFactoryTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     /** A testable version of ThreadedInputConnectionFactory. */
     private class TestFactory extends ThreadedInputConnectionFactory {
 
@@ -115,7 +119,6 @@ public class ThreadedInputConnectionFactoryTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mEditorInfo = new EditorInfo();
         mUiHandler = new Handler();
