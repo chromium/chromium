@@ -173,6 +173,8 @@ class GPUCanvasContext : public ScriptWrappable,
   // Matches [[texture_descriptor]] in the WebGPU specification except that it
   // never becomes null.
   wgpu::TextureDescriptor texture_descriptor_;
+
+  SkIRect dirty_rect_for_commit_;
   // The texture descriptor for the swap_texture is tracked separately, since
   // it may have different usage in the case that a copy is required.
   wgpu::TextureDescriptor swap_texture_descriptor_;

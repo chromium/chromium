@@ -78,6 +78,7 @@ GPUCanvasContext::GPUCanvasContext(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kWebgpu) {
   texture_descriptor_ = {};
+  dirty_rect_for_commit_.setEmpty();
 }
 
 GPUCanvasContext::~GPUCanvasContext() {
@@ -154,6 +155,9 @@ cc::Layer* GPUCanvasContext::CcLayer() const {
 }
 
 void GPUCanvasContext::Reshape(int width, int height) {
+  dirty_rect_for_commit_ =
+      SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height());
+
   if (stopped_) {
     return;
   }
@@ -338,7 +342,10 @@ bool GPUCanvasContext::PushFrame() {
   if (!canvas_resource)
     return false;
 
-  return Host()->PushFrame(std::move(canvas_resource), std::nullopt);
+  bool result =
+      Host()->PushFrame(std::move(canvas_resource), dirty_rect_for_commit_);
+  dirty_rect_for_commit_.setEmpty();
+  return result;
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
@@ -711,6 +718,8 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
 
   // Simply requesting a new canvas texture with WebGPU is enough to mark it as
   // "dirty", so always call DidDraw() when a new texture is created.
+  dirty_rect_for_commit_.join(
+      SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height()));
   DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   SkAlphaType alpha_type = GetAlphaType();
