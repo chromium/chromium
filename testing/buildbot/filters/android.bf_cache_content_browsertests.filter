@@ -5,3 +5,4 @@
 # https://crbug.com/484183125
 -SignedExchangePrefetchBrowserTest.PrefetchMainResourceSXG_CrossOrigin
 -SignedExchangePrefetchBrowserTest.PrefetchMainResourceSXG_SameURL
+-SignedExchangePrefetchBrowserTest.PrefetchMainResourceSXG_SameOrigin
