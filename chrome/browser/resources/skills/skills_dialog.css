@@ -70,7 +70,7 @@ p.description {
 cr-input {
   --cr-input-error-display: none;
   --cr-input-focus-outline-color: var(--cr-focus-outline-color);
-  --cr-input-font-size: 12px;
+  --cr-input-font-size: 13px;
   --cr-input-hover-background-color: var(--color-sys-surface-variant);
   --cr-input-placeholder-color: var(--color-sys-state-disabled);
   font-weight: 400;
@@ -136,11 +136,11 @@ cr-input:focus-within {
 textarea {
   display: block;
   width: 100%;
-  height: 90px;
+  height: 175px;
   box-sizing: border-box;
   resize: none;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 18px;
   color: var(--cr-primary-text-color);
@@ -162,7 +162,7 @@ textarea::placeholder {
 
 .textarea-actions {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   padding: 8px;
   background-color: transparent;
 }
@@ -170,14 +170,14 @@ textarea::placeholder {
 #instructionsLoader {
   display: block;
   width: 100%;
-  height: 90px;
+  height: 175px;
   box-sizing: border-box;
 }
 
 .refine-icon {
   margin: 0;
   --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
-  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 24px;
   --cr-icon-button-hover-background-color:
     var(--color-sys-state-hover-on-subtle);
@@ -324,7 +324,7 @@ textarea::placeholder {
   background-color: var(--color-sys-neutral-container);
   border-top: 1px solid var(--color-sys-neutral-outline);
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   gap: 4px;
   line-height: 18px;
