@@ -34,6 +34,7 @@ source_set("impl") {
 
   deps = [
     ":prerender",
+    "//chrome/browser:browser_features",
     "//chrome/browser/headless",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prefetch/search_prefetch",
@@ -84,6 +85,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser:browser_features",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading:test_support",

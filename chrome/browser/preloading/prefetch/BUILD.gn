@@ -65,6 +65,7 @@ source_set("platform_browser_tests") {
   deps = [
     ":prefetch",
     ":test_support",
+    "//chrome/browser:browser_features",
     "//chrome/browser/autocomplete",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:test_support",

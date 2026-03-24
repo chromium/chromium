@@ -114,6 +114,16 @@ buildflag_header("buildflags") {
   }
 }
 
+source_set("browser_features") {
+  sources = [ "browser_features.h" ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//extensions/buildflags",
+  ]
+}
+
 source_set("browser_process") {
   sources = [
     "browser_process.cc",
@@ -211,7 +221,6 @@ static_library("browser") {
     "browser_about_handler.cc",
     "browser_about_handler.h",
     "browser_features.cc",
-    "browser_features.h",
     "browser_process_impl.cc",
     "browser_process_impl.h",
     "browser_process_platform_part.h",
@@ -1277,8 +1286,8 @@ static_library("browser") {
     # - c/b/media/mirroring_service_host.h
     "//chrome/browser/media/router",
 
-    # TODO(crbug.com/419304389): Remove once c/b/profile_manager.h and c/b/browser_features.h
-    # get fully modularized.
+    # TODO(crbug.com/419304389): Remove once c/b/profile_manager.h gets fully
+    # modularized.
     "//chrome/browser/profiles/keep_alive:impl",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
@@ -1295,14 +1304,6 @@ static_library("browser") {
     # - c/b/password_manager/
     # - c/b/tab_contents/
     "//chrome/browser/ui/login:impl",
-
-    # TODO(crbug.com/408146612): Remove these circular dependencies when the
-    # following headers get modularized:
-    # - c/b/browser_features.h
-    "//chrome/browser/predictors:impl",
-    "//chrome/browser/preloading/bookmarkbar_preload:impl",
-    "//chrome/browser/preloading/new_tab_page_preload:impl",
-    "//chrome/browser/preloading/prerender:impl",
 
     # TODO(crbug.com/487357837): Remove this circular dependency when the
     # following headers get modularized:
@@ -1351,11 +1352,6 @@ static_library("browser") {
     # into the //chrome/browser/profiles target.
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependency once
-    # c/b/browser_features.h gets componentized. It is included by
-    # c/b/webid/federated_identity_api_permission_context.cc.
-    "//chrome/browser/webid:impl",
-
     # TODO(crbug.com/353332589): Remove this circular dependency once the following
     # headers get componentized:
     # c/b/custom_handlers/protocol_handler_registry_factory.h"
@@ -1368,7 +1364,6 @@ static_library("browser") {
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers get componentized:
-    # - c/b/browser_features.h"
     # - c/b/net/referrer.h"
     # - c/b/notifications/system_notification_helper.h"
     # - c/b/profiles/profile_manager.h"
@@ -1429,6 +1424,7 @@ static_library("browser") {
 
   deps = [
     ":active_use_util",
+    ":browser_features",
     ":browser_process",
     ":expired_flags_list",
     ":flags",
@@ -3374,11 +3370,6 @@ static_library("browser") {
       # - c/b/android/android_theme_resources.h
       # - c/b/android/resource_mapper.h
       "//chrome/browser/send_tab_to_self:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
-      # - c/b/browser_features.h
-      "//chrome/browser/flags:flags_android_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:

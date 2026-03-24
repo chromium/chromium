@@ -22,6 +22,7 @@ source_set("impl") {
 
   deps = [
     ":bookmarkbar_preload",
+    "//chrome/browser:browser_features",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prerender",
     "//chrome/browser/search_engines",
@@ -37,6 +38,7 @@ source_set("unit_tests") {
 
   deps = [
     ":bookmarkbar_preload",
+    "//chrome/browser:browser_features",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prerender",
     "//chrome/test:test_support",

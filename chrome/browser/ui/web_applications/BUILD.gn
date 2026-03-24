@@ -268,6 +268,7 @@ source_set("browser_tests") {
     ":web_applications",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_features",
     "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",

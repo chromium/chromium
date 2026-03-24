@@ -160,6 +160,7 @@ static_library("chrome_test_launcher") {
 static_library("test_support") {
   defines = []
   deps = [
+    "//chrome/browser:browser_features",
     "//chrome/browser:global_features",
     "//chrome/browser/background",
     "//chrome/browser/bookmarks",
@@ -1421,6 +1422,7 @@ source_set("platform_browser_tests") {
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/browser",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/bookmarks",
@@ -2550,6 +2552,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser",
+      "//chrome/browser:browser_features",
       "//chrome/browser:buildflags",
       "//chrome/browser:global_features",
       "//chrome/browser:main_extra_parts",
@@ -6998,6 +7001,7 @@ test("unit_tests") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:active_use_util",
+    "//chrome/browser:browser_features",
     "//chrome/browser:buildflags",
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
@@ -11143,6 +11147,7 @@ if (!is_android) {
     deps = [
       "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:browser_features",
       "//chrome/browser:browser_process",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:shell_integration",
@@ -11599,6 +11604,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome:strings",
       "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:browser_features",
       "//chrome/browser:buildflags",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",

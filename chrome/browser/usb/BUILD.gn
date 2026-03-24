@@ -78,6 +78,7 @@ source_set("impl") {
     ":usb",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_features",
     "//chrome/browser/chooser_controller",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/notifications:system_notification_helper",

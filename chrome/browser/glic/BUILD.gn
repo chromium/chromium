@@ -651,6 +651,7 @@ source_set("browser_tests") {
     ":glic",
     ":impl",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_features",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/actor:test_support",

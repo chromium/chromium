@@ -19,6 +19,7 @@ source_set("impl") {
 
   deps = [
     ":keep_alive",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
   ]

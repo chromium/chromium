@@ -64,6 +64,7 @@ static_library("flags_android_impl") {
     ":jni_headers",
     "//base",
     "//build:android_buildflags",
+    "//chrome/browser:browser_features",
     "//chrome/browser/android/webapk:webapk_sources",
     "//chrome/browser/contextmenu",
     "//chrome/browser/finds/core",

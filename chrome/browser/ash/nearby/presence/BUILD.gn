@@ -17,6 +17,7 @@ static_library("presence") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser:browser_features",
     "//chrome/browser/ash/nearby",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",

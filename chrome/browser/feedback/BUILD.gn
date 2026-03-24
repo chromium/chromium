@@ -66,6 +66,7 @@ source_set("feedback_impl") {
   ]
   deps = [
     ":feedback",
+    "//chrome/browser:browser_features",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -189,6 +190,7 @@ source_set("unit_tests") {
     ":feedback_impl",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/safe_browsing/core/common",

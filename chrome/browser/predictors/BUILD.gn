@@ -91,6 +91,7 @@ source_set("impl") {
     ":config",
     ":predictors",
     "lcp_critical_path_predictor:impl",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
@@ -195,6 +196,7 @@ if (!is_android) {
     deps = [
       ":predictors",
       ":test_support",
+      "//chrome/browser:browser_features",
       "//chrome/browser:browser_process",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/ui",

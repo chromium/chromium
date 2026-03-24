@@ -111,6 +111,7 @@ source_set("impl") {
   deps = [
     ":webid",
     "//base",
+    "//chrome/browser:browser_features",
     "//chrome/browser/actor",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions",

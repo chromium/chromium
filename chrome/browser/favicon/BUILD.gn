@@ -33,6 +33,7 @@ source_set("impl") {
   public_deps = [ ":favicon" ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
+    "//chrome/browser:browser_features",
     "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/sync",

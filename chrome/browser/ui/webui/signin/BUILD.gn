@@ -445,6 +445,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:buildflag_header_h",
     "//chrome/browser",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/consent_auditor:test_support",

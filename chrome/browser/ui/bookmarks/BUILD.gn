@@ -64,6 +64,7 @@ source_set("impl") {
   deps = [
     ":bookmarks",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_features",
     "//chrome/browser/bookmarks",
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",

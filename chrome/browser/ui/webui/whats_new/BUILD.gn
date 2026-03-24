@@ -58,6 +58,7 @@ source_set("impl") {
   deps = [
     ":whats_new",
     "//base",
+    "//chrome/browser:browser_features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",

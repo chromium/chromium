@@ -279,6 +279,7 @@ if (!is_android) {
       "//build:branding_buildflags",
       "//chrome/app:command_ids",
       "//chrome/app:generated_resources",
+      "//chrome/browser:browser_features",
       "//chrome/browser/autocomplete",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
