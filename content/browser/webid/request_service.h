@@ -420,7 +420,8 @@ class CONTENT_EXPORT RequestService
   // if needed.
   bool ShouldTerminateRequest(
       const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
-      const MediationRequirement& requirement);
+      const MediationRequirement& requirement,
+      NavigationHandle* navigation_handle);
 
   // If a new request is associated with active mode, it can replace the pending
   // request with passive mode. Otherwise a new request will be cancelled when

@@ -37,6 +37,8 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -316,6 +318,20 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
     return federated_auth_request_impl;
   }
 
+  // Creates a child frame with identity-credentials-get PP delegation
+  // (equivalent to <iframe allow="identity-credentials-get">).
+  TestRenderFrameHost* AppendChildFrameWithIdentityCredentialsGetPolicy(
+      const std::string& frame_name) {
+    network::ParsedPermissionsPolicy frame_policy(1);
+    frame_policy[0].feature =
+        network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet;
+    frame_policy[0].matches_all_origins = true;
+    frame_policy[0].matches_opaque_src = false;
+    return static_cast<TestRenderFrameHost*>(
+               web_contents()->GetPrimaryMainFrame())
+        ->AppendChildWithPolicy(frame_name, frame_policy);
+  }
+
   void DoRequestToken(
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
       RequestTokenCallback callback,
@@ -496,13 +512,15 @@ TEST_F(RequestServiceMultipleFramesTest, SameOriginIframe) {
 TEST_F(RequestServiceMultipleFramesTest, SameSiteIframe) {
   base::HistogramTester histogram_tester;
 
+  // Same-site but cross-origin (subdomain differs), so
+  // identity-credentials-get PP delegation is needed because the default
+  // allowlist is EnableForSelf (same-origin, not same-site).
   const char kSameSiteIframeUrl[] =
       "https://subdomain.top-frame.example/iframe.html";
   RenderFrameHost* same_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSameSiteIframeUrl),
-          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-              ->AppendChild("same_site_iframe"));
+          AppendChildFrameWithIdentityCredentialsGetPolicy("same_site_iframe"));
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
@@ -542,8 +560,8 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframe) {
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kCrossSiteIframeUrl),
-          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-              ->AppendChild("cross_site_iframe"));
+          AppendChildFrameWithIdentityCredentialsGetPolicy(
+              "cross_site_iframe"));
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
@@ -578,13 +596,13 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframe) {
 // have sharing permissions.
 TEST_F(RequestServiceMultipleFramesTest,
        IframePreventSilentAccessNoSharingPermission) {
+  // Same-site but cross-origin — needs PP delegation (see SameSiteIframe).
   const char kSameSiteIframeUrl[] =
       "https://subdomain.top-frame.example/iframe.html";
   RenderFrameHost* same_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSameSiteIframeUrl),
-          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-              ->AppendChild("same_site_iframe"));
+          AppendChildFrameWithIdentityCredentialsGetPolicy("same_site_iframe"));
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
@@ -759,8 +777,8 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kCrossSiteIframeUrl),
-          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-              ->AppendChild("cross_site_iframe"));
+          AppendChildFrameWithIdentityCredentialsGetPolicy(
+              "cross_site_iframe"));
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;

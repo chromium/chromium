@@ -39,13 +39,17 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "metrics.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
@@ -1188,6 +1192,31 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         IdpSigninStatusMismatchDialogAction::kNone,
         ErrorDialogAction::kClose,
         LoadingDialogAction::kNone};
+  }
+
+  // Navigate with identity-credentials-get PP denied and bind a new
+  // Mojo remote to the resulting RFH.
+  mojo::Remote<blink::mojom::FederatedAuthRequest>
+  NavigateAndBindWithDeniedIdentityCredentialsGetPolicy() {
+    // Setting `feature` with no `allowed_origins` means disabled for all.
+    network::ParsedPermissionsPolicy policy(1);
+    policy[0].feature =
+        network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet;
+
+    auto simulator = NavigationSimulator::CreateRendererInitiated(
+        GURL(rp_url_), web_contents()->GetPrimaryMainFrame());
+    simulator->SetPermissionsPolicyHeader(std::move(policy));
+    simulator->Commit();
+
+    mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
+    RequestService::CreateForTesting(
+        *static_cast<TestRenderFrameHost*>(
+            simulator->GetFinalRenderFrameHost()),
+        test_api_permission_delegate_.get(),
+        test_auto_reauthn_permission_delegate_.get(),
+        test_permission_delegate_.get(), test_identity_registry_.get(),
+        remote.BindNewPipeAndPassReceiver());
+    return remote;
   }
 
   void SetUp() override {
@@ -8798,6 +8827,60 @@ TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidOrigin) {
               kInvalidOrigin));
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+TEST_F(RequestServiceTest, RequestTokenDeniedByPermissionsPolicy) {
+  auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto get_params = blink::mojom::IdentityProviderGetParameters::New();
+  get_params->providers.push_back(
+      blink::mojom::IdentityProviderRequestOptions::New());
+  get_params->providers[0]->config =
+      blink::mojom::IdentityProviderConfig::New();
+  get_params->providers[0]->config->config_url = GURL(kProviderUrlFull);
+  get_params->providers[0]->config->client_id = kClientId;
+
+  std::vector<blink::mojom::IdentityProviderGetParametersPtr> params;
+  params.push_back(std::move(get_params));
+
+  remote->RequestToken(
+      std::move(params),
+      password_manager::CredentialMediationRequirement::kOptional,
+      base::DoNothing());
+
+  EXPECT_EQ("identity-credentials-get permissions policy not enabled",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(RequestServiceTest, RequestUserInfoDeniedByPermissionsPolicy) {
+  auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto config = blink::mojom::IdentityProviderConfig::New();
+  config->config_url = GURL(kProviderUrlFull);
+  config->client_id = kClientId;
+
+  remote->RequestUserInfo(std::move(config), base::DoNothing());
+
+  EXPECT_EQ("identity-credentials-get permissions policy not enabled",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(RequestServiceTest, DisconnectDeniedByPermissionsPolicy) {
+  auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto options = blink::mojom::IdentityCredentialDisconnectOptions::New();
+  options->config = blink::mojom::IdentityProviderConfig::New();
+  options->config->config_url = GURL(kProviderUrlFull);
+  options->config->client_id = kClientId;
+  options->account_hint = "hint";
+
+  remote->Disconnect(std::move(options), base::DoNothing());
+
+  EXPECT_EQ("identity-credentials-get permissions policy not enabled",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content::webid
