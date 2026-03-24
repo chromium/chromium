@@ -44,6 +44,10 @@ class RulesServiceBase : public KeyedService {
   // function return true.
   virtual bool BlockScreenshots(const GURL& url) const;
 
+  // Returns true if there is any active Data Controls rule that applies a
+  // blocking 'screenshot' restriction.
+  bool HasBlockingScreenshotRule() const;
+
  protected:
   // Returns a `Verdict` corresponding to all triggered Data Control rules given
   // the provided context.

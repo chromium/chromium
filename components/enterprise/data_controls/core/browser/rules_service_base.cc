@@ -72,6 +72,17 @@ bool RulesServiceBase::BlockScreenshots(const GURL& url) const {
              .level() == Rule::Level::kBlock;
 }
 
+bool RulesServiceBase::HasBlockingScreenshotRule() const {
+  for (const auto& rule : rules_) {
+    // Check if the rule specifies any screenshot restriction (like kBlock).
+    // Note: 'kBlock' is the only level supported for screenshots.
+    if (rule.GetLevel(Rule::Restriction::kScreenshot) == Rule::Level::kBlock) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Verdict RulesServiceBase::GetVerdict(Rule::Restriction restriction,
                                      const ActionContext& context) const {
   Rule::Level max_level = Rule::Level::kNotSet;

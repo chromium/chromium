@@ -280,6 +280,53 @@ TEST_F(RulesServiceBaseTest, RuleWithoutRestrictionsForCopy) {
       incognito_service_->GetCopyToOSClipboardVerdict(google_url()));
 }
 
+TEST_F(RulesServiceBaseTest, HasBlockingScreenshotRule_NoRules) {
+  EXPECT_FALSE(service_->HasBlockingScreenshotRule());
+}
+
+TEST_F(RulesServiceBaseTest, HasBlockingScreenshotRule_NoScreenshotRule) {
+  SetDataControls(&prefs_, {
+                               R"({
+        "name": "rule",
+        "rule_id": "1",
+        "sources": { "urls": ["*"] },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })",
+                           });
+  EXPECT_FALSE(service_->HasBlockingScreenshotRule());
+}
+
+TEST_F(RulesServiceBaseTest, HasBlockingScreenshotRule_WarnScreenshotRule) {
+  // Only BLOCK screenshot rules activate HasBlockingScreenshotRule
+  SetDataControls(&prefs_, {
+                               R"({
+        "name": "rule",
+        "rule_id": "1",
+        "sources": { "urls": ["*"] },
+        "restrictions": [
+          {"class": "SCREENSHOT", "level": "WARN"}
+        ]
+      })",
+                           });
+  EXPECT_FALSE(service_->HasBlockingScreenshotRule());
+}
+
+TEST_F(RulesServiceBaseTest, HasBlockingScreenshotRule_BlockScreenshotRule) {
+  SetDataControls(&prefs_, {
+                               R"({
+        "name": "rule",
+        "rule_id": "1",
+        "sources": { "urls": ["*"] },
+        "restrictions": [
+          {"class": "SCREENSHOT", "level": "BLOCK"}
+        ]
+      })",
+                           });
+  EXPECT_TRUE(service_->HasBlockingScreenshotRule());
+}
+
 TEST_F(RulesServiceBaseTest, BlockScreenshots_NoRules) {
   EXPECT_FALSE(service_->BlockScreenshots(google_url()));
   EXPECT_FALSE(incognito_service_->BlockScreenshots(google_url()));

@@ -175,6 +175,14 @@ Rule::Level Rule::GetLevel(Restriction restriction,
   return Level::kNotSet;
 }
 
+Rule::Level Rule::GetLevel(Restriction restriction) const {
+  auto it = restrictions_.find(restriction);
+  if (it == restrictions_.end()) {
+    return Level::kNotSet;
+  }
+  return it->second;
+}
+
 const std::string& Rule::name() const {
   return name_;
 }

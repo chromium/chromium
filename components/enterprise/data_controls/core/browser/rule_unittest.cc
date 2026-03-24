@@ -431,6 +431,28 @@ TEST(DataControlsRuleTest, InvalidRestrictions) {
       MakeRule(base::StringPrintf(kTemplate, R"(["not_a_real_restriction"])")));
 }
 
+TEST(DataControlsRuleTest, GetLevelWithoutContext) {
+  auto rule = MakeRule(R"({
+    "name": "Block pastes",
+    "rule_id": "1234",
+    "description": "A test rule to block pastes",
+    "destinations": { "urls": ["*"] },
+    "restrictions": [
+      { "class": "CLIPBOARD", "level": "BLOCK" },
+      { "class": "SCREENSHOT", "level": "WARN" }
+    ]
+  })");
+  ASSERT_TRUE(rule);
+
+  // The raw level should be returned without evaluating conditions like
+  // destinations.
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard), Rule::Level::kBlock);
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kScreenshot), Rule::Level::kWarn);
+
+  // Unspecified restrictions should return kNotSet.
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kPrinting), Rule::Level::kNotSet);
+}
+
 TEST(DataControlsRuleTest, Restrictions) {
   auto rule = MakeRule(R"({
     "name": "Block pastes",

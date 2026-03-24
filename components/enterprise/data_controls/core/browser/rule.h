@@ -117,6 +117,9 @@ class Rule {
   // Returns the `Level` to be applied to a given action.
   Level GetLevel(Restriction restriction, const ActionContext& context) const;
 
+  // Returns the raw `Level` for a given restriction, ignoring any conditions.
+  Level GetLevel(Restriction restriction) const;
+
   const std::string& name() const;
   const std::string& rule_id() const;
   const std::string& description() const;
