@@ -494,9 +494,6 @@ const char kEnableArcVmDlc[] = "enable-arcvm-dlc";
 const char kArcVmDlcHardwareRequirementSatisfied[] =
     "arcvm-dlc-hardware-satisfied";
 
-// Enables ARCVM realtime VCPU feature.
-const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
-
 // Used to override `kDisableBirchWeatherApiForTesting` for specific tast tests.
 const char kEnableBirchWeatherApiForTestingOverride[] =
     "enable-birch-weather-api-for-testing-override";

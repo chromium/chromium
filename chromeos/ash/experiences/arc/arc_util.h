@@ -147,11 +147,6 @@ bool IsArcVmDlcHardwareRequirementSatisfied();
 // or the version is unknown, it returns kMaxArcVersion, a large number.
 int GetArcAndroidSdkVersionAsInt();
 
-// Returns true if ARC VM realtime VCPU is enabled.
-// |cpus| is the number of logical cores that are currently online on the
-// device.
-bool IsArcVmRtVcpuEnabled(uint32_t cpus);
-
 // Returns true if ARC VM advised to use Huge Pages for guest memory.
 bool IsArcVmUseHugePages();
 

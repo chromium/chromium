@@ -224,15 +224,6 @@ BASE_FEATURE(kResizeCompat,
              "ArcResizeCompat",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls ARCVM real time vcpu feature on a device with 3+ logical cores
-// online.
-// When you change the default, you also need to modify the chromeExtraAgas
-// in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
-// add ArcRtVcpuQuadCore there. Otherwise, the test will start failing.
-BASE_FEATURE(kRtVcpuQuadCore,
-             "ArcRtVcpuQuadCore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, tracing raw files are saved in order to help debug failures.
 BASE_FEATURE(kSaveRawFilesOnTracing,
              "ArcSaveRawFilesOnTracing",

@@ -604,11 +604,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "arc-rt-vcpu-quad-core",
-    "owners": [ "kansho@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "arc-unthrottle-on-active-audio-v2",
     "owners": [ "pteerapong@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 140

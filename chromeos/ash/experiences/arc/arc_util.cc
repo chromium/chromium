@@ -237,18 +237,6 @@ int GetArcAndroidSdkVersionAsInt() {
   return arc_version;
 }
 
-bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
-  // TODO(kansho): remove switch after tast test use Finch instead.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kEnableArcVmRtVcpu)) {
-    return true;
-  }
-  if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore)) {
-    return true;
-  }
-  return false;
-}
-
 bool IsArcVmUseHugePages() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcVmUseHugePages);

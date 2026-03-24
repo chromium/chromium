@@ -6743,12 +6743,6 @@ inline constexpr char kArcResizeCompatName[] =
 inline constexpr char kArcResizeCompatDescription[] =
     "Enable resize compatibility features for ARC++ apps";
 
-inline constexpr char kArcRtVcpuQuadCoreName[] =
-    "Enable ARC real time vCPU on a device with 3+ logical cores online.";
-inline constexpr char kArcRtVcpuQuadCoreDesc[] =
-    "Enable ARC real time vCPU on a device with 3+ logical cores online to "
-    "reduce media playback glitch.";
-
 inline constexpr char kArcVmmSwapKBShortcutName[] =
     "Keyboard shortcut trigger for ARCVM"
     " vmm swap feature";
