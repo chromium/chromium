@@ -1152,6 +1152,58 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
             web_contents()->GetPrimaryMainFrame()->GetProcess());
 }
 
+// Test that a renderer-initiated navigation to about:blank from a data: URL
+// with V8 optimizations disabled does not swap BrowsingInstances.
+//
+// `about:blank` URLs default to having JS optimizations enabled while `data:`
+// URLs default to having JS optimizations disabled. If the mismatched V8
+// optimization flags triggered a BrowsingInstance swap (via the
+// BI-swap-on-flags functionality), it would break the assumption that
+// renderer-initiated about:blank navigations stay in their initiator's
+// SiteInstance and process.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       RendererInitiatedAboutBlankNavigationDoesNotSwap) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL("data:text/html,foo")));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  scoped_refptr<content::SiteInstance> initial_instance =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+
+  // Perform a renderer-initiated navigation to about:blank.
+  const GURL about_blank_url(url::kAboutBlankURL);
+  EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), about_blank_url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  EXPECT_EQ(GURL("about:blank"), web_contents()->GetLastCommittedURL());
+  // V8 optimizations should match the initiator and be disabled.
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  // No BrowsingInstance swap occurs, so the site instances should be the same.
+  EXPECT_EQ(initial_instance,
+            web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+}
+
+// Test that a browser-initiated navigation to about:blank from a site with
+// V8 optimizations disabled does not swap BrowsingInstances, because it
+// navigates to about:blank.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       BrowserInitiatedAboutBlankNavigationSwaps) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL("data:text/html,foo")));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  scoped_refptr<content::SiteInstance> initial_instance =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+
+  // Perform a browser-initiated navigation to about:blank.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
+
+  EXPECT_EQ(GURL("about:blank"), web_contents()->GetLastCommittedURL());
+  // V8 optimizations should be disabled.
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  // No BrowsingInstance swap occurs, so the site instances should be the same.
+  EXPECT_EQ(initial_instance,
+            web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+}
+
 class JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation
     : public JavascriptOptimizerBrowserTest_UseSiteFamiliarity {
  public:

@@ -202,6 +202,12 @@ bool ShouldSwapBrowsingInstancesForDifferentProcessFlags(
       future_isolation_context, destination_effective_url_info);
   const SiteInfo& current_site_info = current_instance->GetSiteInfo();
 
+  // Navigation to about:blank should stay in its initiator's
+  // SiteInstance/process.
+  if (destination_effective_url_info.url.IsAboutBlank()) {
+    return false;
+  }
+
   if (current_site_info.are_v8_optimizations_disabled() !=
       site_info_in_future_context.are_v8_optimizations_disabled()) {
     return true;
