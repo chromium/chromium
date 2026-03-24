@@ -13,7 +13,11 @@ import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
-/** This class implements {@link XrSceneCoreSessionInitializer} interface. */
+/**
+ * This class implements {@link XrSceneCoreSessionInitializer} interface.
+ *
+ * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
+ */
 @NullMarked
 public class XrSceneCoreSessionInitializerImpl
         implements XrSceneCoreSessionInitializer, WindowFocusChangedObserver {

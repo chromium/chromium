@@ -14,6 +14,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
+/**
+ * Implementation of {@link XrModuleProvider}.
+ *
+ * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
+ */
 @NullMarked
 public class XrModuleProviderImpl implements XrModuleProvider {
     @Override

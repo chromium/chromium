@@ -4,6 +4,8 @@
 
 package org.chromium.ui.xr.scenecore;
 
+import android.view.View;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -53,4 +55,32 @@ public interface XrSceneCoreSessionManager extends Destroyable {
 
     /** Update visibility of main panel in the Full Space mode. */
     void setMainPanelVisibility(boolean visible);
+
+    /**
+     * Creates an XR surface entity with the specified shape.
+     *
+     * @param shape The shape of the surface entity (see {@link XrSurfaceEntityShape}).
+     * @return An {@link XrSurfaceEntityHolder} for the created surface.
+     */
+    XrSurfaceEntityHolder createSurfaceEntity(@XrSurfaceEntityShape int shape);
+
+    /**
+     * Creates an XR panel entity from an Android view.
+     *
+     * @param view The Android view to be hosted in the panel.
+     * @param name A name for the panel entity (used for debugging/identification).
+     * @return An {@link XrPanelEntityHolder} for the created panel.
+     */
+    XrPanelEntityHolder createPanelEntity(View view, String name);
+
+    /** Returns the {@link XrPanelEntityHolder} for the main panel of the session. */
+    XrPanelEntityHolder getMainPanelEntity();
+
+    /**
+     * Sets the key entity for the session. This is typically used to identify the entity that is
+     * the primary focus of the user's interaction.
+     *
+     * @param entityHolder The entity to be set as the key entity.
+     */
+    void setKeyEntity(XrEntityHolder entityHolder);
 }

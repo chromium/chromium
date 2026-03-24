@@ -10,9 +10,15 @@ import("//tools/grit/grit_rule.gni")
 # Main Android library for the module
 android_library("java") {
   sources = [
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactory.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProviderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrResizableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImpl.java",
   ]
   additional_jar_files = [ [
         "service.txt",

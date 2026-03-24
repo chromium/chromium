@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.xr.scenecore;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
+import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
@@ -15,6 +16,7 @@ import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
 import androidx.xr.runtime.math.FloatSize3d;
 import androidx.xr.scenecore.ActivitySpace;
+import androidx.xr.scenecore.BaseEntity;
 import androidx.xr.scenecore.Scene;
 import androidx.xr.scenecore.SessionExt;
 
@@ -27,13 +29,19 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.xr.scenecore.XrEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
 import java.util.function.Consumer;
 
 /**
  * The class wraps usage of {@link androidx.xr.runtime.Session} and implements {@link
  * XrSceneCoreSessionManager}.
+ *
+ * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
  */
 @SuppressLint("RestrictedApi")
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -151,6 +159,31 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     @Override
     public void setMainPanelVisibility(boolean visible) {
         getScene().getMainPanelEntity().setEnabled(visible);
+    }
+
+    @Override
+    public XrSurfaceEntityHolder createSurfaceEntity(@XrSurfaceEntityShape int shape) {
+        return XrEntityHolderFactory.createSurfaceEntityHolder(mXrSession, shape);
+    }
+
+    @Override
+    public XrPanelEntityHolder createPanelEntity(View view, String name) {
+        return XrEntityHolderFactory.createPanelEntityHolder(mXrSession, view, name);
+    }
+
+    @Override
+    public XrPanelEntityHolder getMainPanelEntity() {
+        return XrPanelEntityHolderImpl.create(mXrSession, getScene().getMainPanelEntity());
+    }
+
+    @Override
+    public void setKeyEntity(@Nullable XrEntityHolder entityHolder) {
+        Scene scene = getScene();
+        if (entityHolder != null && entityHolder.getEntity() instanceof BaseEntity entity) {
+            scene.setKeyEntity(entity);
+        } else {
+            scene.setKeyEntity(null);
+        }
     }
 
     @SuppressWarnings("NullAway")
