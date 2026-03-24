@@ -187,7 +187,6 @@ public class FirstRunIntegrationTest {
             mInstrumentation.addMonitor(monitor);
         }
 
-        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         // Disable animations by default.
         FullscreenSigninMediator.disableAnimationsForTesting();
     }
@@ -445,6 +444,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -473,6 +473,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "crbug.com/431982831")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -527,6 +528,7 @@ public class FirstRunIntegrationTest {
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         runFirstRunPagesTest(
                 new FirstRunPagesTestCase().withCctTosDisabled().withHistorySyncPromo());
     }
@@ -562,6 +564,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -630,7 +633,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissButtonClickSkipsSyncConsentPageWhenNoAccountsAreOnDevice() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.SignIn.Started", SigninAccessPoint.START_PAGE)
@@ -667,6 +669,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void continueButtonClickShowsHistorySyncPage() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
         FirstRunActivity firstRunActivity = launchFirstRunActivityAndWaitForNativeInitialization();
 
@@ -679,7 +682,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void managedAccountContinueButtonClickShowsManagementNotice() {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
         FirstRunActivity firstRunActivity = launchFirstRunActivityAndWaitForNativeInitialization();
@@ -701,6 +703,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissHistorySyncWhenAccountIsRemoved() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
         FirstRunActivity firstRunActivity = launchFirstRunActivityAndWaitForNativeInitialization();
 
@@ -721,7 +724,6 @@ public class FirstRunIntegrationTest {
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void continueButtonClickShowsHistorySyncPageWithChildAccount() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
         FirstRunActivity firstRunActivity = launchFirstRunActivityAndWaitForNativeInitialization();
@@ -738,7 +740,6 @@ public class FirstRunIntegrationTest {
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissButtonNotShownOnResetForChildAccount() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
         FirstRunActivity firstRunActivity = launchFirstRunActivityAndWaitForNativeInitialization();
@@ -756,7 +757,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void acceptingHistorySyncEndsFreAndEnablesHistorySync() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         testAcceptsHistorySyncWithAccount(TestAccounts.AADC_ADULT_ACCOUNT);
     }
 
@@ -764,7 +764,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void aadcMinorAccount_acceptsHistorySync() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         testAcceptsHistorySyncWithAccount(TestAccounts.AADC_MINOR_ACCOUNT);
     }
 
@@ -791,7 +790,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void refusingHistorySyncEndsFreAndDoesNotEnableHistorySync() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         testRefusesHistorySyncWithAccount(TestAccounts.AADC_ADULT_ACCOUNT);
     }
 
@@ -799,7 +797,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void aadcMinorAccount_refuseHistorySync() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         testRefusesHistorySyncWithAccount(TestAccounts.AADC_MINOR_ACCOUNT);
     }
 
@@ -807,7 +804,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void childAccount_refuseHistorySync() throws Exception {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         testRefusesHistorySyncWithAccount(TestAccounts.CHILD_ACCOUNT);
     }
 
@@ -1195,6 +1191,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "crbug.com/430594808")
     public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
 
@@ -1228,6 +1225,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_noPagesShown() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
 
@@ -1258,6 +1256,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "Flaky, see crbug.com/441219391")
     public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
 
@@ -1293,6 +1292,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_searchEnginePromoDisabledWhilePromoShown() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
 
@@ -1329,6 +1329,7 @@ public class FirstRunIntegrationTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_historySyncPromoPromoDisabledWhilePromoShown() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
 
