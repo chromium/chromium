@@ -11,7 +11,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
+#include "components/content_extraction/content/browser/inner_text.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -21,13 +23,7 @@
 // include this dependency themselves
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/render_widget_host_view.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
-#include "components/content_extraction/content/browser/inner_text.h"
-#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif
 
 class PredictionServiceRequest;
 class Profile;
@@ -50,7 +46,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
     permissions::RequestType request_type;
   };
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Contains input data and metadata that are important for the
   // superset of model execution workflows supported by the ui selector.
   struct ModelExecutionData {
@@ -73,7 +68,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
 
   using ModelExecutionCallback =
       base::OnceCallback<void(ModelExecutionData model_data)>;
-#endif
 
   using PredictionGrantLikelihood =
       permissions::PermissionUiSelector::PredictionGrantLikelihood;
@@ -115,9 +109,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   std::optional<permissions::PermissionRequestRelevance>
   get_permission_request_relevance_for_testing();
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void set_snapshot_for_testing(SkBitmap snapshot);
-#endif
 
   void set_inner_text_for_testing(
       content_extraction::InnerTextResult inner_text);
@@ -187,7 +179,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
       const permissions::PredictionRequestFeatures& features,
       PredictionRequestMetadata request_metadata);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Function that handles model execution for all AIvX models.
   void ExecuteOnDeviceAivXModel(ModelExecutionData model_data);
 
@@ -248,7 +239,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
       ModelExecutionData model_data,
       ModelExecutionCallback model_execution_callback,
       passage_embeddings::Embedding embedding);
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
@@ -266,7 +256,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
 
   base::OneShotTimer timeout_timer_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
   std::optional<SkBitmap> snapshot_for_testing_;
 
@@ -283,7 +272,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   std::unique_ptr<permissions::LanguageDetectionObserver>
       language_detection_observer_;
 
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PermissionsAiUiSelector> weak_ptr_factory_{this};
 };

@@ -141,8 +141,6 @@ constexpr char kCpssV3InquiryDurationHistogram[] =
     "Permissions.PredictionService.InquiryDuration";
 constexpr char kPredictionServiceTimeoutHistogram[] =
     "Permissions.PredictionService.Timeout";
-constexpr char kTFLiteLibAvailableHistogram[] =
-    "Permissions.PredictionService.TFLiteLibAvailable";
 constexpr char kMSBBHistogram[] = "Permissions.PredictionService.MSBB";
 
 // AIv4 relevant histograms
@@ -1442,8 +1440,6 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
       /*sample=*/true, /*expected_count=*/
       test_case.success_count_model_execution);
 
-  histogram_tester().ExpectBucketCount(kTFLiteLibAvailableHistogram,
-                                       /*sample=*/true, /*expected_count=*/1);
   histogram_tester().ExpectBucketCount(kMSBBHistogram,
                                        /*sample=*/true, /*expected_count=*/1);
 

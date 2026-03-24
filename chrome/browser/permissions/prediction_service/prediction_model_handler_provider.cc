@@ -14,15 +14,12 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
+#include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/request_type.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/download/public/background_service/download_params.h"
 #endif
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/permissions/prediction_service/prediction_model_handler.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace permissions {
 
@@ -74,7 +71,6 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
   // fulfilled (like the MSBB bit that we don't check here at the moment).
   // TODO(crbug.com/414527270) Only create models when its really necessary (see
   // PermissionsAiUiSelector::GetPredictionTypeToUse).
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (embedder_metadata_provider) {
     embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
@@ -121,23 +117,19 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
         RequestType::kGeolocation, scheduling_params);
     return;
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
 
 void PredictionModelHandlerProvider::Shutdown() {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // LINT.IfChange(Shutdown)
   notification_prediction_model_handler_.reset();
   geolocation_prediction_model_handler_.reset();
   notification_aiv4_handler_.reset();
   geolocation_aiv4_handler_.reset();
   // LINT.ThenChange(//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h:ModelHandlers)
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PredictionModelHandlerProvider::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
   is_passage_embedder_ready_ = metadata.IsValid();
@@ -205,6 +197,4 @@ passage_embeddings::Embedder*
 PredictionModelHandlerProvider::GetPassageEmbedder() {
   return passage_embedder_;
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }  // namespace permissions

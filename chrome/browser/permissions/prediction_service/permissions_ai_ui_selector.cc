@@ -23,14 +23,16 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/prediction_service/prediction_common.h"
+#include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
@@ -41,14 +43,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-
-// TODO(crbug.com/382447738): Fix tflite defines; this might not build for
-// tflite right now.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/passage_embeddings/core/passage_embeddings_types.h"
-#include "components/permissions/prediction_service/permissions_aiv4_handler.h"
-#include "components/permissions/prediction_service/prediction_model_handler.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
 using ComputePassagesEmbeddingsCallback =
@@ -155,15 +149,11 @@ PermissionsAiUiSelector::ModelExecutionData::ModelExecutionData(
       model_type(model_type) {}
 
 PermissionsAiUiSelector::PermissionsAiUiSelector(Profile* profile)
-    : profile_(profile)
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-      ,
+    : profile_(profile),
       passage_embedder_delegate_(
           std::make_unique<PassageEmbedderDelegate>(profile_)),
       language_detection_observer_(
-          std::make_unique<LanguageDetectionObserver>())
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-{
+          std::make_unique<LanguageDetectionObserver>()) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPredictionServiceMockLikelihood)) {
     auto mock_likelihood = ParsePredictionServiceMockLikelihood(
@@ -193,7 +183,6 @@ void PermissionsAiUiSelector::InquireServerModel(
                      std::move(request_metadata)));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PermissionsAiUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     const PredictionRequestFeatures& features,
     PredictionRequestMetadata request_metadata) {
@@ -295,7 +284,6 @@ void PermissionsAiUiSelector::OnDeviceTfliteAivXModelExecutionCallback(
 
   InquireServerModel(features, std::move(request_metadata));
 }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 void PermissionsAiUiSelector::SelectUiToUse(
     content::WebContents* web_contents,
@@ -333,17 +321,6 @@ void PermissionsAiUiSelector::SelectUiToUse(
   cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
   language_detection_observer_->Reset();
-
-  bool is_tflite_available = true;
-  // BUILD_WITH_TFLITE_LIB should be enabled for most of the devices on all
-  // platforms. However, it is still useful to measure the percentage of
-  // disabled devices.
-#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  is_tflite_available = false;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  base::UmaHistogramBoolean("Permissions.PredictionService.TFLiteLibAvailable",
-                            is_tflite_available);
 
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
@@ -393,20 +370,12 @@ void PermissionsAiUiSelector::SelectUiToUse(
   switch (prediction_source) {
     case PredictionSource::kServerSideCpssV3Model:
       return InquireServerModel(features, std::move(request_metadata));
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     case PredictionSource::kOnDeviceAiv4AndServerSideModel:
       return InquireOnDeviceAiv4AndServerModelIfAvailable(
           web_contents, std::move(features), std::move(request_metadata));
     case PredictionSource::kOnDeviceCpssV1Model:
       return InquireCpssV1OnDeviceModelIfAvailable(features,
                                                    std::move(request_metadata));
-#else
-    case PredictionSource::kOnDeviceCpssV1Model:
-      VLOG(1) << "[CPSS] Client doesn't support on-device tflite: "
-              << static_cast<int>(prediction_source);
-      FinishRequest(Decision::UseNormalUiAndShowNoWarning());
-      return;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     case PredictionSource::kNoCpssModel:
       [[fallthrough]];
     default:
@@ -722,17 +691,14 @@ PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
   if (use_server_side) {
     // The AIv4 model takes priority over the server-side CPSSv3 model if
     // enabled.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     if (PredictionModelHandlerProvider::IsAIv4FeatureEnabled()) {
       VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv4";
       return PredictionSource::kOnDeviceAiv4AndServerSideModel;
     }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv3";
     return PredictionSource::kServerSideCpssV3Model;
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if ((request_type == permissions::RequestType::kNotifications &&
        base::FeatureList::IsEnabled(
            permissions::features::
@@ -743,7 +709,6 @@ PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
     VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv1";
     return PredictionSource::kOnDeviceCpssV1Model;
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   VLOG(1) << "[CPSS] GetPredictionTypeToUse NoCpssModel";
   return PredictionSource::kNoCpssModel;
@@ -762,7 +727,6 @@ void PermissionsAiUiSelector::set_inner_text_for_testing(
   inner_text_for_testing_ = std::move(inner_text_);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PermissionsAiUiSelector::set_snapshot_for_testing(SkBitmap snapshot) {
   CHECK_IS_TEST();
   snapshot_for_testing_ = snapshot;
@@ -796,7 +760,6 @@ void PermissionsAiUiSelector::TakeSnapshot(
                 std::move(model_data))));
   }
 }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 void PermissionsAiUiSelector::GetInnerText(
     content::RenderFrameHost* render_frame_host,
@@ -816,7 +779,6 @@ void PermissionsAiUiSelector::GetInnerText(
                      std::move(model_execution_callback)));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PermissionsAiUiSelector::ExecuteOnDeviceAivXModel(
     ModelExecutionData model_data) {
   VLOG(1) << "[PermissionsAI] ExecuteOnDeviceAivXModel";
@@ -855,13 +817,11 @@ void PermissionsAiUiSelector::ExecuteOnDeviceAivXModel(
   } else {
     VLOG(1) << "[PermissionsAIvX] On device AI model session unavailable";
   }
-#endif
 
   InquireServerModel(model_data.features,
                      std::move(model_data.request_metadata));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PermissionsAiUiSelector::OnPassageEmbeddingsComputed(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
@@ -870,4 +830,3 @@ void PermissionsAiUiSelector::OnPassageEmbeddingsComputed(
   model_data.inner_text_embedding = std::move(embedding);
   std::move(model_execution_callback).Run(std::move(model_data));
 }
-#endif

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
@@ -17,75 +16,65 @@ source_set("prediction_service") {
   sources = [
     "permission_ui_selector.cc",
     "permission_ui_selector.h",
+    "permissions_ai_encoder_base.cc",
+    "permissions_ai_encoder_base.h",
+    "permissions_aiv4_executor.cc",
+    "permissions_aiv4_executor.h",
+    "permissions_aiv4_handler.cc",
+    "permissions_aiv4_handler.h",
     "prediction_common.cc",
     "prediction_common.h",
+    "prediction_model_executor.cc",
+    "prediction_model_executor.h",
+    "prediction_model_handler.cc",
+    "prediction_model_handler.h",
     "prediction_request_features.h",
     "prediction_service.cc",
     "prediction_service.h",
     "prediction_service_base.h",
+    "prediction_signature_model_executor.cc",
+    "prediction_signature_model_executor.h",
   ]
   deps = [
     "//components/keyed_service/content",
+    "//components/passage_embeddings/core",
     "//components/permissions:permissions_common",
     "//components/version_info",
     "//content/public/browser",
     "//services/network/public/cpp",
+    "//skia",
     "//third_party/protobuf:protobuf_lite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
   ]
   public_deps = [
     ":prediction_service_messages_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "permissions_ai_encoder_base.cc",
-      "permissions_ai_encoder_base.h",
-      "permissions_aiv4_executor.cc",
-      "permissions_aiv4_executor.h",
-      "permissions_aiv4_handler.cc",
-      "permissions_aiv4_handler.h",
-      "prediction_model_executor.cc",
-      "prediction_model_executor.h",
-      "prediction_model_handler.cc",
-      "prediction_model_handler.h",
-      "prediction_signature_model_executor.cc",
-      "prediction_signature_model_executor.h",
-    ]
-
-    deps += [
-      "//components/passage_embeddings/core",
-      "//skia",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "prediction_service_unittest.cc" ]
+  sources = [
+    "permissions_aiv4_handler_unittest.cc",
+    "prediction_service_unittest.cc",
+  ]
   deps = [
     ":prediction_service",
+    "//base",
     "//base/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/permissions:permissions_common",
+    "//components/permissions:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
     "//ui/gfx",
   ]
-  if (build_with_tflite_lib) {
-    sources += [ "permissions_aiv4_handler_unittest.cc" ]
-    deps += [
-      "//base",
-      "//components/permissions:test_support",
-    ]
-    data = [ "//components/test/data/permissions/" ]
-  }
+  data = [ "//components/test/data/permissions/" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

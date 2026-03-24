@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -47,6 +46,8 @@ source_set("permissions") {
     "prediction_service/permissions_ai_ui_selector.h",
     "prediction_service/prediction_model_handler_provider.cc",
     "prediction_service/prediction_model_handler_provider.h",
+    "prediction_service/prediction_model_handler_provider_factory.cc",
+    "prediction_service/prediction_model_handler_provider_factory.h",
     "prediction_service/prediction_service_factory.cc",
     "prediction_service/prediction_service_factory.h",
     "prediction_service/prediction_service_request.cc",
@@ -84,6 +85,7 @@ source_set("permissions") {
     "//chrome/browser/metrics",
     "//chrome/browser/nfc",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/passage_embeddings",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
@@ -113,6 +115,7 @@ source_set("permissions") {
     "//components/language_detection/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/passage_embeddings/core",
     "//components/permissions",
     "//components/permissions/prediction_service",
     "//components/pref_registry",
@@ -121,6 +124,7 @@ source_set("permissions") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     "//components/site_engagement/content",
     "//components/subresource_filter/content/browser",
     "//components/supervised_user/core/common:features",
@@ -180,23 +184,11 @@ source_set("permissions") {
     ]
   }
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "prediction_service/prediction_model_handler_provider_factory.cc",
-      "prediction_service/prediction_model_handler_provider_factory.h",
-    ]
-    if (!is_android) {
-      deps += [ "//third_party/tflite_support" ]
-    }
-    deps += [
-      "//chrome/browser/passage_embeddings",
-      "//components/passage_embeddings/core",
-      "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
-    ]
-  }
-
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/permission_bubble" ]
+    deps += [
+      "//chrome/browser/ui/permission_bubble",
+      "//third_party/tflite_support",
+    ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -244,13 +236,10 @@ source_set("unit_tests") {
     "permission_revocation_request_unittest.cc",
     "permission_subscription_unittest.cc",
     "prediction_service/contextual_notification_permission_ui_selector_unittest.cc",
+    "prediction_service/passage_embedder_delegate_unittest.cc",
     "prediction_service/permissions_ai_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
   ]
-
-  if (build_with_tflite_lib) {
-    sources += [ "prediction_service/passage_embedder_delegate_unittest.cc" ]
-  }
 
   if (!is_android) {
     sources += [ "one_time_permissions_tracker_unittest.cc" ]
@@ -270,6 +259,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
+    "//components/passage_embeddings/core",
     "//components/permissions/prediction_service",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/site_engagement/content",
@@ -278,10 +268,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (build_with_tflite_lib) {
-    deps += [ "//components/passage_embeddings/core" ]
-  }
 
   if (is_android) {
     sources += [
@@ -324,6 +310,7 @@ if (!is_android) {
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",
       "permission_ukm_browsertest.cc",
+      "prediction_service/prediction_service_browsertest.cc",
     ]
 
     deps = [
@@ -342,16 +329,12 @@ if (!is_android) {
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
       "//components/passage_embeddings/core:test_support",
+      "//components/permissions/prediction_service",
     ]
 
     if (is_chromeos) {
       sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
       deps += [ "//chrome/browser/ash/privacy_hub" ]
-    }
-
-    if (build_with_tflite_lib) {
-      sources += [ "prediction_service/prediction_service_browsertest.cc" ]
-      deps += [ "//components/permissions/prediction_service" ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
