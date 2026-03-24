@@ -242,6 +242,17 @@ void ContextualTasksPageHandler::IsPendingErrorPage(
   std::move(callback).Run(ui_service_->IsPendingErrorPage(task_id));
 }
 
+void ContextualTasksPageHandler::IsEmbeddedPageErrorDocument(
+    IsEmbeddedPageErrorDocumentCallback callback) {
+  bool is_error = false;
+  if (auto* inner_contents = web_ui_controller_->GetInnerWebContents()) {
+    if (auto* main_frame = inner_contents->GetPrimaryMainFrame()) {
+      is_error = main_frame->IsErrorDocument();
+    }
+  }
+  std::move(callback).Run(is_error);
+}
+
 void ContextualTasksPageHandler::CloseSidePanel() {
   web_ui_controller_->CloseSidePanel();
 }

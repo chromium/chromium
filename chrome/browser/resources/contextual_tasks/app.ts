@@ -42,6 +42,7 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 declare global {
   interface HTMLElementEventMap {
     'loadstart': chrome.webviewTag.LoadStartEvent;
+    'loadabort': chrome.webviewTag.LoadAbortEvent;
     'loadcommit': chrome.webviewTag.LoadCommitEvent;
     'newwindow': chrome.webviewTag.NewWindowEvent;
     'permissionrequest': chrome.webviewTag.PermissionRequestEvent;
@@ -474,7 +475,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.$.threadFrame.addEventListener(
         'contentload', this.onThreadFrameContentLoad.bind(this));
     this.$.threadFrame.addEventListener(
-        'loadabort', this.onThreadFrameLoadAbort.bind(this) as EventListener);
+        'loadabort', this.onThreadFrameLoadAbort.bind(this));
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -720,15 +721,22 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.updateBasicModeAfterNavigation();
   }
 
-  private onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
-    if (e.isTopLevel) {
-      // TODO(crbug.com/489713572): Potentially query autocomplete when the
-      // error is resolved and the page reloads.
-      this.isLoadError_ = true;
-    }
+  private async onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
     this.isFrameLoading = false;
     this.isLoadingZeroStateFromResults_ = false;
     this.setIsGhostLoaderVisible(false);
+
+    // Navigations delegated to external applications fire a load abort event.
+    // Check if the embedded page is showing an error document.
+    if (e.isTopLevel) {
+      const {isErrorDocument} =
+          await this.browserProxy_.handler.isEmbeddedPageErrorDocument();
+      if (isErrorDocument) {
+        // TODO(crbug.com/489713572): Potentially query autocomplete when the
+        // error is resolved and the page reloads
+        this.isLoadError_ = true;
+    }
+  }
     this.updateBasicModeAfterNavigation();
   }
 
@@ -1156,8 +1164,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.onThreadFrameContentLoad();
   }
 
-  onThreadFrameLoadAbortForTesting(event: chrome.webviewTag.LoadAbortEvent) {
-    this.onThreadFrameLoadAbort(event);
+  async onThreadFrameLoadAbortForTesting(event: chrome.webviewTag.LoadAbortEvent) {
+    await this.onThreadFrameLoadAbort(event);
   }
 
   setIsZeroStateForTesting(isZeroState: boolean) {

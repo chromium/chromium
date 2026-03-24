@@ -1158,6 +1158,80 @@ suite('ContextualTasksAppTest', function() {
   });
 
   test(
+      'hides composebox if load abort contains an error document',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        // Override isEmbeddedPageErrorDocument to return true
+        proxy.handler.isEmbeddedPageErrorDocument = () => {
+          return Promise.resolve({isErrorDocument: true});
+        };
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        // Remove the thread frame to prevent unwanted loadstart events.
+        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+        assertTrue(!!threadFrame);
+        appElement.shadowRoot.removeChild(threadFrame);
+        await microtasksFinished();
+
+        const loadAbortEvent = new CustomEvent('loadabort') as any;
+        loadAbortEvent.isTopLevel = true;
+        loadAbortEvent.url = fixtureUrl;
+        loadAbortEvent.reason = 'ERR_CONNECTION_RESET';
+
+        // Do NOT await yet.
+        const promise =
+            appElement.onThreadFrameLoadAbortForTesting(loadAbortEvent);
+
+        await promise;
+
+        // After it resolves it should be true.
+        assertTrue(
+            appElement.isLoadErrorForTesting,
+            'isLoadError_ should be true if it was an error document');
+      });
+
+  test(
+      'does not hide composebox if load abort does not contain error document',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        // Override isEmbeddedPageErrorDocument to return false
+        proxy.handler.isEmbeddedPageErrorDocument = () => {
+          return Promise.resolve({isErrorDocument: false});
+        };
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        // Remove the thread frame to prevent unwanted loadstart events.
+        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+        assertTrue(!!threadFrame);
+        appElement.shadowRoot.removeChild(threadFrame);
+        await microtasksFinished();
+
+        const loadAbortEvent = new CustomEvent('loadabort') as any;
+        loadAbortEvent.isTopLevel = true;
+        loadAbortEvent.url = fixtureUrl;
+        loadAbortEvent.reason = 'ERR_ABORTED';
+
+        // Do NOT await yet.
+        const promise =
+            appElement.onThreadFrameLoadAbortForTesting(loadAbortEvent);
+
+        await promise;
+
+        // After it resolves it should be false.
+        assertFalse(
+            appElement.isLoadErrorForTesting,
+            'isLoadError_ should be false if it was not an error document');
+      });
+
+  test(
       'sets pending basic mode to false when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});

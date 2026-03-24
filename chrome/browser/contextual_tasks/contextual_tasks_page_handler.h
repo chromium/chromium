@@ -53,6 +53,8 @@ class ContextualTasksPageHandler
   void IsAiPage(const GURL& url, IsAiPageCallback callback) override;
   void IsPendingErrorPage(const base::Uuid& task_id,
                           IsPendingErrorPageCallback callback) override;
+  void IsEmbeddedPageErrorDocument(
+      IsEmbeddedPageErrorDocumentCallback callback) override;
   void CloseSidePanel() override;
   void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
