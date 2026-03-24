@@ -493,6 +493,138 @@ TEST_F(ClipboardWinTest, ReadPngAsyncEncodesBitmapWhenOnlyBitmapFormatPresent) {
   EXPECT_EQ(decoded.height(), 1);
 }
 
+TEST_F(ClipboardWinTest, ReadPngAsyncHandlesTopDownBitmap) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    // Write a 1x2, 32bpp top-down CF_DIB payload. A negative biHeight indicates
+    // a top-down DIB. Two rows with distinct colors are used so that
+    // unexpected row-order flipping would be detectable via pixel inspection.
+    BITMAPINFOHEADER header = {};
+    header.biSize = sizeof(header);
+    header.biWidth = 1;
+    header.biHeight = -2;
+    header.biPlanes = 1;
+    header.biBitCount = 32;
+    header.biCompression = BI_RGB;
+
+    std::vector<uint8_t> dib_data(sizeof(header) + 8, 0);
+    base::as_writable_byte_span(dib_data)
+        .first(sizeof(header))
+        .copy_from(base::byte_span_from_ref(header));
+    // DIB pixel byte order is BGRA.
+    // Row 0 (top): red (R=0xFF, G=0x00, B=0x00, A=0xFF)
+    dib_data[sizeof(header) + 0] = 0x00;
+    dib_data[sizeof(header) + 1] = 0x00;
+    dib_data[sizeof(header) + 2] = 0xFF;
+    dib_data[sizeof(header) + 3] = 0xFF;
+    // Row 1 (bottom): blue (R=0x00, G=0x00, B=0xFF, A=0xFF)
+    dib_data[sizeof(header) + 4] = 0xFF;
+    dib_data[sizeof(header) + 5] = 0x00;
+    dib_data[sizeof(header) + 6] = 0x00;
+    dib_data[sizeof(header) + 7] = 0xFF;
+
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(dib_data));
+  }
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GT(png.size(), 0u);
+
+  SkBitmap decoded = gfx::PNGCodec::Decode(png);
+  EXPECT_FALSE(decoded.drawsNothing());
+  EXPECT_EQ(decoded.width(), 1);
+  EXPECT_EQ(decoded.height(), 2);
+  // Row 0 (top) must be red and row 1 (bottom) must be blue
+  EXPECT_EQ(decoded.getColor(0, 0), SkColorSetARGB(255, 255, 0, 0));
+  EXPECT_EQ(decoded.getColor(0, 1), SkColorSetARGB(255, 0, 0, 255));
+}
+
+TEST_F(ClipboardWinTest, ReadPngAsyncHandlesBottomUpBitmap) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    // Write a 1x2, 32bpp bottom-up CF_DIB payload. A positive biHeight
+    // indicates a bottom-up DIB.
+    BITMAPINFOHEADER header = {};
+    header.biSize = sizeof(header);
+    header.biWidth = 1;
+    header.biHeight = 2;
+    header.biPlanes = 1;
+    header.biBitCount = 32;
+    header.biCompression = BI_RGB;
+
+    std::vector<uint8_t> dib_data(sizeof(header) + 8, 0);
+    base::as_writable_byte_span(dib_data)
+        .first(sizeof(header))
+        .copy_from(base::byte_span_from_ref(header));
+    // DIB pixel byte order is BGRA.
+    // Row 1 (bottom): red (R=0xFF, G=0x00, B=0x00, A=0xFF)
+    dib_data[sizeof(header) + 0] = 0x00;
+    dib_data[sizeof(header) + 1] = 0x00;
+    dib_data[sizeof(header) + 2] = 0xFF;
+    dib_data[sizeof(header) + 3] = 0xFF;
+    // Row 0 (top): blue (R=0x00, G=0x00, B=0xFF, A=0xFF)
+    dib_data[sizeof(header) + 4] = 0xFF;
+    dib_data[sizeof(header) + 5] = 0x00;
+    dib_data[sizeof(header) + 6] = 0x00;
+    dib_data[sizeof(header) + 7] = 0xFF;
+
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(dib_data));
+  }
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GT(png.size(), 0u);
+
+  SkBitmap decoded = gfx::PNGCodec::Decode(png);
+  EXPECT_FALSE(decoded.drawsNothing());
+  EXPECT_EQ(decoded.width(), 1);
+  EXPECT_EQ(decoded.height(), 2);
+  EXPECT_EQ(decoded.getColor(0, 0), SkColorSetARGB(255, 0, 0, 255));
+  EXPECT_EQ(decoded.getColor(0, 1), SkColorSetARGB(255, 255, 0, 0));
+}
+
+TEST_F(ClipboardWinTest, ReadPngAsyncRejectsLongMinBitmapHeight) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    // biHeight == LONG_MIN is rejected early because abs(LONG_MIN) is
+    // undefined behavior and LONG_MIN is clearly not a valid image height.
+    BITMAPINFOHEADER header = {};
+    header.biSize = sizeof(header);
+    header.biWidth = 1;
+    header.biHeight = LONG_MIN;
+    header.biPlanes = 1;
+    header.biBitCount = 32;
+    header.biCompression = BI_RGB;
+
+    std::vector<uint8_t> dib_data(sizeof(header) + 4, 0);
+    base::as_writable_byte_span(dib_data)
+        .first(sizeof(header))
+        .copy_from(base::byte_span_from_ref(header));
+
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(dib_data));
+  }
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  EXPECT_TRUE(png_future.Get().empty());
+
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
+}
+
 TEST_F(ClipboardWinTest, ReadPngAsyncEmptyClipboard) {
   auto* clipboard = Clipboard::GetForCurrentThread();
   clipboard->Clear(ClipboardBuffer::kCopyPaste);

@@ -16,7 +16,9 @@
 #include <shellapi.h>
 #include <shlobj.h>
 
+#include <climits>
 #include <cstdint>
+#include <cstdlib>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
@@ -1240,6 +1242,15 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
   BITMAPINFO* bitmap = locked.data();
   if (!bitmap)
     return SkBitmap();
+
+  // Reject LONG_MIN because abs(LONG_MIN) is undefined behavior,
+  // and LONG_MIN is clearly not a valid image height.
+  if (bitmap->bmiHeader.biHeight == LONG_MIN) {
+    return SkBitmap();
+  }
+  // biHeight can be negative for top-down DIBs. Use absolute value for size
+  // calculations and API calls that expect positive dimensions.
+  const LONG bi_height_abs = std::abs(bitmap->bmiHeader.biHeight);
   int color_table_length = 0;
 
   size_t image_size_bytes;
@@ -1255,11 +1266,11 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
   // Calculate the size of the bitmap. This is not an exact calculation but that
   // doesn't matter for this purpose. If the calculation overflows then the
   // image is too big. Return an empty image.
-  if (!base::CheckMul(
-           bitmap->bmiHeader.biWidth,
-           base::CheckMul(bitmap->bmiHeader.biHeight, bytes_per_pixel))
-           .AssignIfValid(&image_size_bytes))
+  if (!base::CheckMul(bitmap->bmiHeader.biWidth,
+                      base::CheckMul(bi_height_abs, bytes_per_pixel))
+           .AssignIfValid(&image_size_bytes)) {
     return SkBitmap();
+  }
   // If the image size is too big then return an empty image.
   if (image_size_bytes > kMaxClipboardSize.InBytes()) {
     return SkBitmap();
@@ -1293,16 +1304,15 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
   base::win::ScopedGDIObject<HBITMAP> dst_hbitmap = skia::CreateHBitmapXRGB8888(
-      bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, 0, &dst_bits);
+      bitmap->bmiHeader.biWidth, bi_height_abs, 0, &dst_bits);
 
   {
     base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
     HBITMAP old_hbitmap =
         static_cast<HBITMAP>(SelectObject(hdc.Get(), dst_hbitmap.get()));
     ::SetDIBitsToDevice(hdc.Get(), 0, 0, bitmap->bmiHeader.biWidth,
-                        bitmap->bmiHeader.biHeight, 0, 0, 0,
-                        bitmap->bmiHeader.biHeight, bitmap_bits, bitmap,
-                        DIB_RGB_COLORS);
+                        bi_height_abs, 0, 0, 0, bi_height_abs, bitmap_bits,
+                        bitmap, DIB_RGB_COLORS);
     SelectObject(hdc.Get(), old_hbitmap);
   }
   // Windows doesn't really handle alpha channels well in many situations. When
@@ -1313,9 +1323,9 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
   // we assume the alpha channel contains garbage and force the bitmap to be
   // opaque as well. This heuristic will fail on a transparent bitmap
   // containing only black pixels...
-  SkPixmap device_pixels(SkImageInfo::MakeN32Premul(bitmap->bmiHeader.biWidth,
-                                                    bitmap->bmiHeader.biHeight),
-                         dst_bits, bitmap->bmiHeader.biWidth * 4);
+  SkPixmap device_pixels(
+      SkImageInfo::MakeN32Premul(bitmap->bmiHeader.biWidth, bi_height_abs),
+      dst_bits, bitmap->bmiHeader.biWidth * 4);
 
   {
     bool has_invalid_alpha_channel =
