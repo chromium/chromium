@@ -35,6 +35,14 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 namespace {
+bool IsVisualSelectionType(lens::LensOverlaySelectionType selection_type) {
+  return selection_type == lens::REGION_SEARCH ||
+         selection_type == lens::TAP_ON_EMPTY ||
+         selection_type == lens::TAP_ON_REGION_GLEAM ||
+         selection_type == lens::TAP_ON_OBJECT ||
+         selection_type == lens::INJECTED_IMAGE;
+}
+
 std::vector<lens::ContextualInput> ConvertPageContentToContextualInput(
     base::span<const lens::PageContent> underlying_page_contents) {
   std::vector<lens::ContextualInput> contextual_inputs;
@@ -479,18 +487,24 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     return;
   }
 
+  auto lens_selection_type = request_info->lens_overlay_selection_type;
   GetContextualSearchSessionHandle()->CreateSearchUrl(
       std::move(request_info),
       base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), lens_selection_type));
 }
 
-void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
+void LensQueryFlowRouter::OpenContextualTasksPanel(
+    std::optional<lens::LensOverlaySelectionType> lens_selection_type,
+    GURL url) {
   // If the invocation source was the contextual tasks composebox, avoid
-  // navigating the side panel URL to preserve the current
-  // conversation (the panel should already be open).
+  // navigating the side panel URL for visual selections to preserve the current
+  // conversation (the panel should already be open). Text selections like
+  // translate should still navigate.
   if (lens_search_controller_->invocation_source() ==
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox &&
+      lens_selection_type.has_value() &&
+      IsVisualSelectionType(lens_selection_type.value())) {
     return;
   }
 
@@ -554,10 +568,12 @@ void LensQueryFlowRouter::UploadContextualInputData(
     // Add the tab context file token to the request's file tokens. This could
     // not be added earlier because the token is not known until this point.
     pending_search_url_request_->file_tokens.push_back(token);
+    auto lens_selection_type =
+        pending_search_url_request_->lens_overlay_selection_type;
     session_handle->CreateSearchUrl(
         std::move(pending_search_url_request_),
         base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), lens_selection_type));
   }
 }
 
