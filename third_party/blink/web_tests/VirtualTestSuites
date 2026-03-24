@@ -1420,7 +1420,8 @@
       "external/wpt/css/css-page",
       "fast/multicol",
       "fragmentation",
-      "printing"
+      "printing",
+      "wpt_internal/printing"
     ],
     "args": [ "--enable-blink-features=FragmentedOofInCb" ],
     "expires": "May 17, 2026"

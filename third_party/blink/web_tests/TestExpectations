@@ -4775,6 +4775,7 @@ crbug.com/40886857 external/wpt/css/css-box/margin-trim/grid-inline-start.html [
 crbug.com/40886857 external/wpt/css/css-box/margin-trim/grid-inline.html [ Failure ]
 crbug.com/40886857 external/wpt/css/css-box/margin-trim/grid-trim-ignores-collapsed-tracks.html [ Failure ]
 
+# Block fragmentation and printing
 crbug.com/1367912 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-058.html [ Failure ]
 crbug.com/1367912 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-043.html [ Failure ]
 crbug.com/1509077 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-065-print.html [ Failure ]
@@ -4816,12 +4817,14 @@ crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Fa
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/346088869 external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 crbug.com/468760502 external/wpt/css/css-multicol/multicol-under-vertical-rl-scroll.html [ Failure Pass ]
+crbug.com/40267498 wpt_internal/printing/icb-scaling-007-print.html [ Failure ]
 
 # Tests fixed by FragmentedOofInCb:
 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html [ Pass ]
 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html [ Pass ]
 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html [ Pass ]
 virtual/fragmented-oof-in-cb/external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Pass ]
+virtual/fragmented-oof-in-cb/wpt_internal/printing/icb-scaling-007-print.html [ Pass ]
 
 # Tests failing with FragmentedOofInCb:
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/anchor-center-002.html [ Pass Timeout ]

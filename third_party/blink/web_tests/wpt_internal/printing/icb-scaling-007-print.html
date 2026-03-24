@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>No scaling should occur here, since the OOF is clipped</title>
+<link rel="match" href="icb-scaling-007-print-ref.html">
+<style>
+  @page {
+    size: 500px;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+  }
+</style>
+<p>
+  The left and right borders of the box below should be flush with the page's edge when printed.<br>
+  Try saving as PDF.
+</p>
+<div style="position:relative; width:480px; height:200px; overflow:hidden; border:10px solid;">
+  <div style="position:absolute; margin-left:2000px; width:100px; height:100px;">foo</div>
+</div>
