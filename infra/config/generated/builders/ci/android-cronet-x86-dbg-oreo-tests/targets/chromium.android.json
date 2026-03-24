@@ -7,6 +7,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -54,6 +55,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -101,6 +103,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -148,6 +151,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -196,6 +200,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -245,6 +250,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",
@@ -293,6 +299,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with generic_android26",
         "merge": {
           "args": [
             "--bucket",

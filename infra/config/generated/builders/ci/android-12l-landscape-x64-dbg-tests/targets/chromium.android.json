@@ -10,6 +10,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -65,6 +66,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable_landscape",
         "merge": {
           "args": [
             "--bucket",

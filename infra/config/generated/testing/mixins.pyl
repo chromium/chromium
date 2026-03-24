@@ -9,6 +9,7 @@
 
 {
   '11-x86-emulator': {
+    'description': 'Run with android_30_google_apis_x86',
     'args': [
       '--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb',
     ],

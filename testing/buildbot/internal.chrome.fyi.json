@@ -9,6 +9,7 @@
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--git-revision=${got_revision}"
         ],
+        "description": "Run with android_30_google_apis_x86",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -54,6 +55,7 @@
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--git-revision=${got_revision}"
         ],
+        "description": "Run with android_30_google_apis_x86",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

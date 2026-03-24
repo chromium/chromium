@@ -11,6 +11,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -66,6 +67,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -123,6 +125,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -172,6 +175,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -222,6 +226,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -270,6 +275,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -317,6 +323,7 @@
           "-v",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -361,6 +368,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -409,6 +417,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -457,6 +466,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -505,6 +515,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -554,6 +565,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -607,6 +619,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -656,6 +669,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -704,6 +718,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -753,6 +768,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -801,6 +817,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -849,6 +866,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -897,6 +915,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -948,6 +967,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1005,6 +1025,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1059,6 +1080,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1107,6 +1129,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1158,6 +1181,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1207,6 +1231,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1257,6 +1282,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1305,6 +1331,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1353,6 +1380,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1401,6 +1429,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1450,6 +1479,7 @@
           "--recover-devices"
         ],
         "ci_only": true,
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1498,6 +1528,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1546,6 +1577,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1594,6 +1626,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1642,6 +1675,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1690,6 +1724,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1740,6 +1775,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1788,6 +1824,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1836,6 +1873,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1884,6 +1922,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1932,6 +1971,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -1980,6 +2020,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2028,6 +2069,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2077,6 +2119,7 @@
           "--recover-devices"
         ],
         "ci_only": true,
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2125,6 +2168,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2173,6 +2217,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2222,6 +2267,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2270,6 +2316,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2318,6 +2365,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2366,6 +2414,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2414,6 +2463,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2464,6 +2514,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2512,6 +2563,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2560,6 +2612,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2608,6 +2661,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2656,6 +2710,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2704,6 +2759,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2752,6 +2808,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2800,6 +2857,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2848,6 +2906,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2896,6 +2955,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2944,6 +3004,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -2992,6 +3053,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3040,6 +3102,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3089,6 +3152,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3137,6 +3201,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3185,6 +3250,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3235,6 +3301,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3284,6 +3351,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3332,6 +3400,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",
@@ -3380,6 +3449,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_32_google_apis_x64_foldable",
         "merge": {
           "args": [
             "--bucket",

@@ -47,6 +47,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -94,6 +95,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -141,6 +143,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -188,6 +191,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -236,6 +240,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -285,6 +290,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -333,6 +339,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_29_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",

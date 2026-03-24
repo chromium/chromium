@@ -10,6 +10,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_30_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -67,6 +68,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_30_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",
@@ -123,6 +125,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "description": "Run with android_30_google_apis_x86",
         "merge": {
           "args": [
             "--bucket",

@@ -9,7 +9,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_tablet_x64",
+        "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -59,7 +59,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_tablet_x64",
+        "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -112,7 +112,7 @@
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_tablet_x64",
+        "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
         "merge": {
           "args": [
             "--bucket",
@@ -167,7 +167,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_tablet_x64",
+        "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
         "merge": {
           "args": [
             "--bucket",
