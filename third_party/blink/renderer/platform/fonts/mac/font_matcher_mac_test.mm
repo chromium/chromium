@@ -360,6 +360,41 @@ TEST(FontMatcherMacTest, FontFamilyMatchingWithBoldCondensedTraits) {
   EXPECT_TRUE(bold_condensed_font_traits & NSFontCondensedTrait);
 }
 
+TEST(FontMatcherMacTest, FontWeightSearchDirection) {
+  // CSS font matching algorithm (css-fonts-4 §5.2) requires directional weight
+  // search: for weight > 500, prefer heavier faces first. For a family with
+  // just normal (400) and bold (700) faces like Times New Roman, any requested
+  // weight above 500 should match the bold face, and any weight at or below
+  // 500 should match the normal face.
+  // This test exercises MatchFontFamily, which uses the CoreText path
+  // (BetterChoiceCT). The AppKit path (BetterChoice) uses the same shared
+  // weight comparison logic and is exercised only when
+  // FontFamilyStyleMatchingCTMigration is disabled.
+  AtomicString family_name = AtomicString("Times New Roman");
+
+  // Weights at or below 500 should match the normal (non-bold) face.
+  for (int weight : {100, 400, 499, 500}) {
+    ScopedCFTypeRef<CTFontRef> font =
+        MatchFontFamily(family_name, FontSelectionValue(weight),
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+    ASSERT_TRUE(font) << "Failed to match font for weight " << weight;
+    CTFontSymbolicTraits traits = CTFontGetSymbolicTraits(font.get());
+    EXPECT_FALSE(traits & kCTFontTraitBold)
+        << "Weight " << weight << " should match normal, not bold";
+  }
+
+  // Weights above 500 should match the bold face (ascending search first).
+  for (int weight : {501, 520, 600, 700, 900}) {
+    ScopedCFTypeRef<CTFontRef> font =
+        MatchFontFamily(family_name, FontSelectionValue(weight),
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+    ASSERT_TRUE(font) << "Failed to match font for weight " << weight;
+    CTFontSymbolicTraits traits = CTFontGetSymbolicTraits(font.get());
+    EXPECT_TRUE(traits & kCTFontTraitBold)
+        << "Weight " << weight << " should match bold";
+  }
+}
+
 TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
   // For some fonts AppKit returns inconsistent weight values in the font
   // information, retrieved using `availableFontsForFamily`. For instance, both

@@ -90,6 +90,48 @@ BOOL AcceptableChoice(NSFontTraitMask desired_traits,
   return (candidate_traits & desired_traits) == desired_traits;
 }
 
+bool BetterWeightMatch(int desired_weight,
+                       int chosen_weight,
+                       int candidate_weight,
+                       int lower_threshold,
+                       int upper_threshold) {
+  if (desired_weight > upper_threshold) {
+    bool chosen_above = (chosen_weight >= desired_weight);
+    bool candidate_above = (candidate_weight >= desired_weight);
+    if (chosen_above != candidate_above) {
+      return candidate_above;
+    }
+  } else if (desired_weight < lower_threshold) {
+    bool chosen_below = (chosen_weight <= desired_weight);
+    bool candidate_below = (candidate_weight <= desired_weight);
+    if (chosen_below != candidate_below) {
+      return candidate_below;
+    }
+  } else {
+    // desired_weight in [lower, upper]: prefer [desired, upper], then
+    // < desired, then > upper.
+    auto search_priority = [desired_weight, upper_threshold](int w) -> int {
+      if (w >= desired_weight && w <= upper_threshold) {
+        return 0;
+      }
+      if (w < desired_weight) {
+        return 1;
+      }
+      return 2;
+    };
+    int chosen_priority = search_priority(chosen_weight);
+    int candidate_priority = search_priority(candidate_weight);
+    if (chosen_priority != candidate_priority) {
+      return candidate_priority < chosen_priority;
+    }
+  }
+
+  // Within the same search direction, prefer the closer weight.
+  int chosen_weight_delta = abs(chosen_weight - desired_weight);
+  int candidate_weight_delta = abs(candidate_weight - desired_weight);
+  return candidate_weight_delta < chosen_weight_delta;
+}
+
 BOOL BetterChoice(NSFontTraitMask desired_traits,
                   NSInteger desired_weight,
                   NSFontTraitMask chosen_traits,
@@ -118,17 +160,17 @@ BOOL BetterChoice(NSFontTraitMask desired_traits,
       return NO;
   }
 
-  NSInteger chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
-  NSInteger candidate_weight_delta_magnitude =
-      abs(candidate_weight - desired_weight);
+  // CSS font matching algorithm (css-fonts-4 section 5.2) requires
+  // directional weight search: for weight > 6 (AppKit, i.e. CSS > 500),
+  // prefer heavier fonts first; for weight < 5 (CSS < 400), prefer lighter
+  // fonts first; for weight in [5, 6] (CSS [400, 500]), prefer weights
+  // between desired and 6, then lighter, then heavier than 6.
+  // AppKit weight 5 = CSS 400, AppKit weight 6 = CSS 500.
+  constexpr NSInteger kAppKitLowerThreshold = 5;  // CSS 400
+  constexpr NSInteger kAppKitUpperThreshold = 6;  // CSS 500
 
-  // If both are the same distance from the desired weight, prefer the candidate
-  // if it is further from medium.
-  if (chosen_weight_delta_magnitude == candidate_weight_delta_magnitude)
-    return abs(candidate_weight - 6) > abs(chosen_weight - 6);
-
-  // Otherwise, prefer the one closer to the desired weight.
-  return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
+  return BetterWeightMatch(desired_weight, chosen_weight, candidate_weight,
+                           kAppKitLowerThreshold, kAppKitUpperThreshold);
 }
 
 CTFontSymbolicTraits ComputeDesiredTraits(FontSelectionValue desired_weight,
@@ -194,6 +236,16 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
         chosen_weight != desired_weight) {
       return true;
     }
+    // For weights > 500, the CSS font matching algorithm (css-fonts-4 §5.2)
+    // requires ascending search (heavier first). However, kBoldThreshold is
+    // 600, so desired_traits only sets kCTFontTraitBold at weight >= 600.
+    // This means weights in (500, 600) would penalize bold candidates for
+    // having the bold trait even though the spec wants heavier faces first.
+    // Skip the bold trait comparison for the entire >500 range so the
+    // directional weight logic below can handle it correctly.
+    if (mask == kCTFontBoldTrait && desired_weight > 500) {
+      continue;
+    }
     bool desired = (desired_traits & mask) != 0;
     bool chosen_has_unwanted_trait = desired != ((chosen_traits & mask) != 0);
     bool candidate_has_unwanted_trait =
@@ -206,17 +258,15 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
     }
   }
 
-  int chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
-  int candidate_weight_delta_magnitude = abs(candidate_weight - desired_weight);
+  // CSS font matching algorithm (css-fonts-4 section 5.2) requires
+  // directional weight search: for weight > 500, prefer heavier fonts first;
+  // for weight < 400, prefer lighter fonts first; for weight in [400, 500],
+  // prefer weights between desired and 500, then lighter, then heavier.
+  constexpr int kCSSLowerThreshold = 400;
+  constexpr int kCSSUpperThreshold = 500;
 
-  // If both are the same distance from the desired weight, prefer the candidate
-  // if it is further from medium, i.e. 500.
-  if (chosen_weight_delta_magnitude == candidate_weight_delta_magnitude) {
-    return abs(candidate_weight - 500) > abs(chosen_weight - 500);
-  }
-
-  // Otherwise, prefer the one closer to the desired weight.
-  return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
+  return BetterWeightMatch(desired_weight, chosen_weight, candidate_weight,
+                           kCSSLowerThreshold, kCSSUpperThreshold);
 }
 
 // This function is similar to `BestStyleMatchForFamily` except
