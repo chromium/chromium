@@ -43,6 +43,8 @@ enum class GlicInvokeError {
   kInvalidConversationId,
   // The provided tab was invalid (e.g. null).
   kInvalidTab,
+  // The instance was destroyed before the invocation could complete.
+  kInstanceDestroyed,
 };
 
 // Configuration options for invoking Glic.

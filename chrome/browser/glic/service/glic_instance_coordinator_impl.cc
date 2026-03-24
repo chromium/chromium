@@ -685,6 +685,12 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
+  if (invoke_handlers_.contains(instance)) {
+    // OnError will trigger the completion callback which will remove the invoke
+    // handler from the map.
+    invoke_handlers_[instance]->OnError(GlicInvokeError::kInstanceDestroyed);
+  }
+
   if (!instances_.contains(instance->id())) {
     // This instance has already been removed, so there's no work to do.
     return;
