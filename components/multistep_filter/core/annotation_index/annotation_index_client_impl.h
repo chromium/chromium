@@ -11,7 +11,17 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
+#include "components/version_info/channel.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+struct ResourceRequest;
+}  // namespace network
 
 namespace multistep_filter {
 
@@ -20,7 +30,9 @@ struct FilterSuggestionCandidate;
 
 class AnnotationIndexClientImpl : public AnnotationIndexClient {
  public:
-  AnnotationIndexClientImpl();
+  AnnotationIndexClientImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel);
   ~AnnotationIndexClientImpl() override;
 
   // AnnotationIndexClient overrides:
@@ -40,6 +52,48 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
       const GURL& url,
       base::OnceCallback<void(std::optional<FilterAnnotation>)> callback)
       override;
+
+ private:
+  friend class AnnotationIndexClientImplTestApi;
+
+  using SimpleURLLoaderList =
+      std::vector<std::unique_ptr<network::SimpleURLLoader>>;
+
+  // Centralized helper to launch a network request. It creates the loader,
+  // stores it in `active_url_loaders_` to keep it alive, and dispatches the
+  // network request. It forwards the raw response to the provided callback.
+  void ExecuteRequest(
+      std::unique_ptr<network::ResourceRequest> request,
+      std::string request_body,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      base::OnceCallback<void(std::optional<std::string>)> callback);
+
+  // Invoked when `SimpleURLLoader` finishes. Cleans up the specific loader
+  // from `active_url_loaders_` and forwards the raw response to the parser.
+  void OnSimpleURLLoaderComplete(
+      network::SimpleURLLoader* loader,
+      base::OnceCallback<void(std::optional<std::string>)> callback,
+      std::optional<std::string> response_body);
+
+ protected:
+  AnnotationIndexClientImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::string api_key);
+
+ private:
+  // The factory used to instantiate network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Holds all currently active network requests. Removing a loader from this
+  // list immediately cancels its underlying network traffic.
+  SimpleURLLoaderList active_url_loaders_;
+
+  // API key to be used for the requests.
+  std::string api_key_;
+
+  // This should be kept at the end so that it is the first member to be
+  // destroyed.
+  base::WeakPtrFactory<AnnotationIndexClientImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter

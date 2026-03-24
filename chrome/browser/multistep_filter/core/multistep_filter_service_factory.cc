@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
@@ -15,6 +16,8 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace multistep_filter {
 
@@ -47,8 +50,14 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
+  std::unique_ptr<AnnotationIndexClient> annotation_index_client =
+      AnnotationIndexClient::Create(
+          context->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess(),
+          chrome::GetChannel());
+
   return std::make_unique<MultistepFilterService>(
-      AnnotationIndexClient::Create(), std::make_unique<FilterStore>(),
+      std::move(annotation_index_client), std::make_unique<FilterStore>(),
       identity_manager);
 }
 

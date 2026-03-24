@@ -12,7 +12,13 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/version_info/channel.h"
 #include "url/gurl.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace multistep_filter {
 
@@ -37,7 +43,9 @@ struct FilterSuggestionCandidate;
 class AnnotationIndexClient {
  public:
   // Creates a default instance of `AnnotationIndexClient`.
-  static std::unique_ptr<AnnotationIndexClient> Create();
+  static std::unique_ptr<AnnotationIndexClient> Create(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel);
 
   virtual ~AnnotationIndexClient() = default;
 

@@ -7,13 +7,23 @@ static_library("annotation_index") {
   sources = [
     "annotation_index_client_impl.cc",
     "annotation_index_client_impl.h",
+    "annotation_index_client_impl_config.h",
     "annotation_index_conversion_util.cc",
+  ]
+
+  friend = [ ":*" ]
+
+  deps = [
+    "//google_apis",
+    "//google_apis/common:request_util",
+    "//services/network/public/cpp",
   ]
 
   public_deps = [
     "//base",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
+    "//components/version_info:channel",
     "//url",
   ]
 }
@@ -21,25 +31,44 @@ static_library("annotation_index") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "annotation_index_client_impl_test_api.h",
     "mock_annotation_index_client.cc",
     "mock_annotation_index_client.h",
   ]
 
+  deps = [
+    "//base",
+    "//components/multistep_filter/core/data_models",
+    "//url",
+  ]
+
   public_deps = [
     ":annotation_index",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "annotation_index_conversion_util_unittest.cc" ]
+  sources = [
+    "annotation_index_client_impl_unittest.cc",
+    "annotation_index_conversion_util_unittest.cc",
+  ]
 
   deps = [
     ":annotation_index",
+    ":test_support",
     "//base",
+    "//base/test:test_support",
+    "//components/multistep_filter/core",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
+    "//google_apis/common:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//url",
   ]
