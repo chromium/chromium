@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsSourceLanguageSupported"
-    units="int" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-03-01">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsTargetLanguageSupported"
-    units="int" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-03-01">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
