@@ -103,7 +103,10 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kSaveCardSuccess:
       return l10n_util::GetStringUTF16(
           base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT
+              ? (base::FeatureList::IsEnabled(
+                     features::kAutofillEnableWalletBrandingV2)
+                     ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2
+                     : IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT)
               : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT);
     case AutofillSnackbarType::kVirtualCardEnrollSuccess:
       return l10n_util::GetStringUTF16(

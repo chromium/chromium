@@ -226,7 +226,7 @@ TEST_F(AutofillSnackbarControllerImplTest,
 }
 
 TEST_F(AutofillSnackbarControllerImplTest,
-       SaveCardSuccessMessageAndActionButtonText) {
+       SaveCardSuccessMessageAndActionButtonText_WalletBrandingEnabled) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableWalletBranding);
 
@@ -236,6 +236,26 @@ TEST_F(AutofillSnackbarControllerImplTest,
       controller()->GetMessageText(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      controller()->GetActionButtonText(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       SaveCardSuccessMessageAndActionButtonText) {
+  base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                              features::kAutofillEnableWalletBrandingV2},
+        /*disabled_features=*/{});
+
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
+
+  EXPECT_EQ(
+      controller()->GetMessageText(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2));
   EXPECT_EQ(
       controller()->GetActionButtonText(),
       l10n_util::GetStringUTF16(

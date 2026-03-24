@@ -18,8 +18,65 @@ namespace autofill {
 // attributes are correctly set for save card upload success.
 TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForSaveCardSuccess) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableWalletBranding);
+  base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                              features::kAutofillEnableWalletBrandingV2},
+        /*disabled_features=*/{});
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveCardSuccess(/*is_for_save_and_fill=*/false);
+
+  EXPECT_TRUE(ui_params.is_success);
+  EXPECT_TRUE(ui_params.should_display_wallet_logo);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2));
+  EXPECT_TRUE(ui_params.failure_ok_button_text.empty());
+  EXPECT_TRUE(ui_params.failure_ok_button_accessible_name.empty());
+}
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for Save and Fill save card upload success.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForSaveCardSuccess_SaveAndFill) {
+  base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                              features::kAutofillEnableWalletBrandingV2},
+        /*disabled_features=*/{});
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveCardSuccess(/*is_for_save_and_fill=*/true);
+
+  EXPECT_TRUE(ui_params.is_success);
+  EXPECT_FALSE(ui_params.should_display_wallet_logo);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2));
+  EXPECT_TRUE(ui_params.failure_ok_button_text.empty());
+  EXPECT_TRUE(ui_params.failure_ok_button_accessible_name.empty());
+}
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for save card upload success when Wallet
+// branding is enabled but not Wallet branding V2.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForSaveCardSuccess_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+        /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
@@ -39,11 +96,14 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
 }
 
 // Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-// attributes are correctly set for Save and Fill save card upload success.
+// attributes are correctly set for Save and Fill save card upload success when
+// Wallet branding is enabled but not Wallet branding V2.
 TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
-     VerifyAttributesForSaveCardSuccess_SaveAndFill) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableWalletBranding);
+     VerifyAttributesForSaveCardSuccess_SaveAndFill_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+        /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
