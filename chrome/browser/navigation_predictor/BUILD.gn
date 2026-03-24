@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("navigation_predictor") {
@@ -25,7 +23,6 @@ source_set("navigation_predictor") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -43,6 +40,10 @@ source_set("impl") {
     "navigation_predictor_keyed_service_factory.cc",
     "navigation_predictor_metrics_document_data.cc",
     "navigation_predictor_preconnect_client.cc",
+    "preloading_model_executor.cc",
+    "preloading_model_executor.h",
+    "preloading_model_handler.cc",
+    "preloading_model_handler.h",
     "preloading_model_keyed_service.cc",
     "preloading_model_keyed_service_factory.cc",
     "search_engine_preconnector.cc",
@@ -67,14 +68,6 @@ source_set("impl") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
   ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "preloading_model_executor.cc",
-      "preloading_model_executor.h",
-      "preloading_model_handler.cc",
-      "preloading_model_handler.h",
-    ]
-  }
 }
 
 if (!is_android) {
@@ -85,8 +78,10 @@ if (!is_android) {
       "anchor_element_preloader_browsertest.cc",
       "navigation_predictor_browsertest.cc",
       "navigation_predictor_preconnect_client_browsertest.cc",
+      "preloading_model_keyed_service_browsertest.cc",
       "search_engine_preconnector_browsertest.cc",
     ]
+    data = [ "test/preloading_heuristics.tflite" ]
     deps = [
       ":impl",
       ":navigation_predictor",
@@ -104,16 +99,16 @@ if (!is_android) {
       "//components/ukm:test_support",
       "//content/test:test_support",
     ]
-    if (build_with_tflite_lib) {
-      sources += [ "preloading_model_keyed_service_browsertest.cc" ]
-      data = [ "test/preloading_heuristics.tflite" ]
-    }
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "navigation_predictor_unittest.cc" ]
+  sources = [
+    "navigation_predictor_unittest.cc",
+    "preloading_model_executor_unittest.cc",
+  ]
+  data = [ "test/preloading_heuristics.tflite" ]
   deps = [
     ":impl",
     ":navigation_predictor",
@@ -122,8 +117,4 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
   ]
-  if (build_with_tflite_lib) {
-    sources += [ "preloading_model_executor_unittest.cc" ]
-    data = [ "test/preloading_heuristics.tflite" ]
-  }
 }

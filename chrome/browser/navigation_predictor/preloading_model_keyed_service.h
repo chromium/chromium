@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
 namespace base {
 class CancelableTaskTracker;
@@ -66,11 +65,9 @@ class PreloadingModelKeyedService : public KeyedService {
   // is called.
   void AddOnModelUpdatedCallbackForTesting(base::OnceClosure callback);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
  private:
   // preloading ML model
   std::unique_ptr<PreloadingModelHandler> preloading_model_handler_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_
