@@ -69,7 +69,10 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
     browser_session_running_ = !closing;
   }
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/495686112): remove when the AppShimTerminationManagerImpl
+  // is no longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
   base::CallbackListSubscription closing_all_browsers_subscription_;
   bool browser_session_running_ = false;
