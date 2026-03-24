@@ -325,25 +325,19 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
       "");
 }
 
-// C++23: Can replace AndThen(opt, acc) with opt.and_then(acc).
-template <typename Opt, typename Acc>
-std::optional<GURL> AndThen(const Opt& opt, Acc acc) {
-  return opt ? std::invoke(acc, *opt) : std::nullopt;
-}
-
 // Projections for [un]redacted fenced frame configs to allow comparisons. These
 // only compare the `mapped_url` field for convenience. (We don't need an
 // equality operator for configs outside of tests, so it would be wasteful to
 // declare it as default in the class declaration.)
 std::optional<GURL> Project(const FencedFrameConfig& config) {
-  return AndThen(config.mapped_url(), [](const FencedFrameProperty<GURL>& url) {
+  return config.mapped_url().and_then([](const FencedFrameProperty<GURL>& url) {
     return url.GetValueForEntity(Entity::kEmbedder);
   });
 }
 std::optional<GURL> Project(const RedactedFencedFrameConfig& config) {
-  return AndThen(config.mapped_url(),
-                 &blink::FencedFrame::RedactedFencedFrameProperty<
-                     GURL>::potentially_opaque_value);
+  return config.mapped_url().and_then(
+      &blink::FencedFrame::RedactedFencedFrameProperty<
+          GURL>::potentially_opaque_value);
 }
 
 TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
