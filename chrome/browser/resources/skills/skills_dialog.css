@@ -63,6 +63,7 @@ p.description {
 }
 
 #nameWrapper {
+  position: relative;
   transition: background-color 200ms ease-in-out;
 }
 
@@ -245,6 +246,14 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   padding: 4px;
+}
+
+#emojiPicker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  z-index: 1;
 }
 
 #emojiZeroStateIcon {
