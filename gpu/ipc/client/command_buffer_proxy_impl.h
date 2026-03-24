@@ -100,6 +100,8 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   void OnDisconnect();
 
+  void ShutdownClientMessageFilter();
+
   // CommandBuffer implementation:
   State GetLastState() override;
   void Flush(int32_t put_offset) override;

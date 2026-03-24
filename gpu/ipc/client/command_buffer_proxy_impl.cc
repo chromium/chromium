@@ -207,9 +207,7 @@ CommandBufferProxyImpl::CommandBufferProxyImpl(
 CommandBufferProxyImpl::~CommandBufferProxyImpl() {
   for (auto& observer : deletion_observers_)
     observer.OnWillDeleteImpl();
-  if (client_filter_) {
-    client_filter_->Destroy();
-  }
+  ShutdownClientMessageFilter();
   DisconnectChannel();
   CancelAllQueries();
 }
@@ -314,6 +312,12 @@ void CommandBufferProxyImpl::OnDisconnect() {
     }
   }
   OnGpuAsyncMessageError(context_lost_reason, gpu::error::kLostContext);
+}
+
+void CommandBufferProxyImpl::ShutdownClientMessageFilter() {
+  if (client_filter_) {
+    client_filter_->Destroy();
+  }
 }
 
 void CommandBufferProxyImpl::OnDestroyed(gpu::error::ContextLostReason reason,
