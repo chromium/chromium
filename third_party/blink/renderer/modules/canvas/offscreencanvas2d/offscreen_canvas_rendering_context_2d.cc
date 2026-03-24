@@ -136,7 +136,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   if (!GetOrCreateResourceProvider()) {
     return;
   }
-  resource_provider_->FlushCanvas(reason);
+  resource_provider_->FlushCanvas2D(reason);
   Host()->NotifyCachesOfSwitchingFrame();
 }
 
@@ -471,7 +471,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     return false;
   }
 
-  resource_provider_->FlushCanvas();
+  resource_provider_->FlushCanvas2D();
 
   // Short-circuit out if an error occurred while flushing the recording.
   if (!resource_provider_->IsValid()) {
@@ -514,7 +514,7 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  return resource_provider_ ? resource_provider_->FlushCanvas(reason)
+  return resource_provider_ ? resource_provider_->FlushCanvas2D(reason)
                             : std::nullopt;
 }
 

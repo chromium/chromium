@@ -194,7 +194,7 @@ void Draw(TestHibernationHandlerDelegate& delegate) {
   }
   CanvasResourceProvider* provider = delegate.GetResourceProvider();
   provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
-  provider->FlushCanvas(FlushReason::kOther);
+  provider->FlushCanvas2D(FlushReason::kOther);
 }
 
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {

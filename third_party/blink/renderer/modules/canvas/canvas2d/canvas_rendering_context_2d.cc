@@ -354,7 +354,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
       recorder->RestartRecording();
     }
   } else {
-    provider->FlushCanvas();
+    provider->FlushCanvas2D();
 
     // Short-circuit out if an error occurred while flushing the recording.
     if (!provider->IsValid()) {
@@ -526,7 +526,7 @@ std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
   if (provider == nullptr) [[unlikely]] {
     return std::nullopt;
   }
-  return provider->FlushCanvas(reason);
+  return provider->FlushCanvas2D(reason);
 }
 
 bool CanvasRenderingContext2D::WillSetFont() const {
@@ -764,7 +764,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
     return nullptr;
   }
 
-  resource_provider_->FlushCanvas();
+  resource_provider_->FlushCanvas2D();
   return resource_provider_->Snapshot();
 }
 
@@ -1039,7 +1039,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   HTMLCanvasElement* host = canvas();
   CHECK(host);
 
-  GetResourceProvider()->FlushCanvas(reason);
+  GetResourceProvider()->FlushCanvas2D(reason);
   if (reason == FlushReason::kCanvasPushFrame) {
     if (host->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.
