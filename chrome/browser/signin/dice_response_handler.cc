@@ -154,7 +154,7 @@ void DiceResponseHandler::DiceTokenFetcher::OnTimeout() {
   gaia_auth_fetcher_.reset();
   timeout_closure_.Cancel();
   dice_response_handler_->OnTokenExchangeFailure(
-      this, GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      this, GoogleServiceAuthError::CreateRequestCanceled());
   // |this| may be deleted at this point.
 }
 

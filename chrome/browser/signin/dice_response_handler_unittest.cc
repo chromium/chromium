@@ -1011,7 +1011,8 @@ TEST_F(DiceResponseHandlerTest, Reauth) {
       account_info.gaia_id, account_info.email);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -1053,15 +1054,14 @@ TEST_F(DiceResponseHandlerTest, SigninFailure) {
   EXPECT_EQ(
       1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   // Simulate GaiaAuthFetcher failure.
-  GoogleServiceAuthError::State error_state =
-      GoogleServiceAuthError::SERVICE_UNAVAILABLE;
-  consumer->OnClientOAuthFailure(GoogleServiceAuthError(error_state));
+  consumer->OnClientOAuthFailure(
+      GoogleServiceAuthError::FromServiceUnavailable(""));
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   // Check that the token has not been inserted in the token service.
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
   EXPECT_EQ(account_info.email, auth_error_email_);
-  EXPECT_EQ(error_state, auth_error_.state());
+  EXPECT_EQ(GoogleServiceAuthError::SERVICE_UNAVAILABLE, auth_error_.state());
 }
 
 // Checks that a second token for the same account is not requested when a
