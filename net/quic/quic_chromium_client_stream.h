@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -174,11 +175,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       return stream_ && stream_->SupportsH3Datagram();
     }
 
+    // Getter for the time the stream request spent waiting.
+    base::TimeDelta max_stream_limit_pending_delay() const;
+
    private:
     friend class QuicChromiumClientStream;
 
     // Constucts a new Handle for |stream|.
-    explicit Handle(QuicChromiumClientStream* stream);
+    Handle(QuicChromiumClientStream* stream,
+           base::TimeDelta max_stream_limit_pending_delay);
 
     // Methods invoked by the stream.
     void OnEarlyHintsAvailable();
@@ -243,6 +248,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     base::TimeTicks headers_received_start_time_;
 
+    base::TimeDelta max_stream_limit_pending_delay_;
+
     base::WeakPtrFactory<Handle> weak_factory_{this};
   };
 
@@ -252,7 +259,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       quic::QuicServerId server_id,
       quic::StreamType type,
       const NetLogWithSource& net_log,
-      const NetworkTrafficAnnotationTag& traffic_annotation);
+      const NetworkTrafficAnnotationTag& traffic_annotation,
+      std::optional<base::TimeDelta> max_stream_limit_pending_delay);
   QuicChromiumClientStream(
       quic::PendingStream* pending,
       quic::QuicSpdyClientSessionBase* session,
@@ -392,6 +400,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     size_t frame_len = 0;
   };
   base::circular_deque<EarlyHints> early_hints_;
+
+  // Only set when this is an outgoing stream.
+  std::optional<base::TimeDelta> max_stream_limit_pending_delay_;
 
   base::WeakPtrFactory<QuicChromiumClientStream> weak_factory_{this};
 };

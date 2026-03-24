@@ -48,9 +48,18 @@ class ScopedBoolSaver {
 };
 }  // namespace
 
-QuicChromiumClientStream::Handle::Handle(QuicChromiumClientStream* stream)
-    : stream_(stream), net_log_(stream->net_log()) {
+QuicChromiumClientStream::Handle::Handle(
+    QuicChromiumClientStream* stream,
+    base::TimeDelta max_stream_limit_pending_delay)
+    : stream_(stream),
+      net_log_(stream->net_log()),
+      max_stream_limit_pending_delay_(max_stream_limit_pending_delay) {
   SaveState();
+}
+
+base::TimeDelta
+QuicChromiumClientStream::Handle::max_stream_limit_pending_delay() const {
+  return max_stream_limit_pending_delay_;
 }
 
 QuicChromiumClientStream::Handle::~Handle() {
@@ -548,12 +557,14 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicServerId server_id,
     quic::StreamType type,
     const NetLogWithSource& net_log,
-    const NetworkTrafficAnnotationTag& traffic_annotation)
+    const NetworkTrafficAnnotationTag& traffic_annotation,
+    std::optional<base::TimeDelta> max_stream_limit_pending_delay)
     : quic::QuicSpdyStream(id, session, type),
       net_log_(net_log),
       session_(session),
       server_id_(std::move(server_id)),
-      quic_version_(session->connection()->transport_version()) {}
+      quic_version_(session->connection()->transport_version()),
+      max_stream_limit_pending_delay_(max_stream_limit_pending_delay) {}
 
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::PendingStream* pending,
@@ -738,7 +749,12 @@ bool QuicChromiumClientStream::WritevStreamData(
 std::unique_ptr<QuicChromiumClientStream::Handle>
 QuicChromiumClientStream::CreateHandle() {
   DCHECK(!handle_);
-  auto handle = base::WrapUnique(new QuicChromiumClientStream::Handle(this));
+  // We only create a handle for outgoing streams, which should have a
+  // max_stream_limit_pending_delay set.
+  CHECK(max_stream_limit_pending_delay_.has_value());
+
+  auto handle = base::WrapUnique(new QuicChromiumClientStream::Handle(
+      this, *max_stream_limit_pending_delay_));
   handle_ = handle.get();
 
   // Should this perhaps be via PostTask to make reasoning simpler?

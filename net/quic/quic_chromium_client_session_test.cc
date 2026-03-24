@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -224,8 +225,7 @@ class QuicChromiumClientSessionTest
         /*cert_verify_flags=*/0, config_,
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         "CONNECTION_UNKNOWN", base::TimeTicks::Now(), base::TimeTicks::Now(),
-        base::DefaultTickClock::GetInstance(),
-        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        tick_clock_, base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
@@ -323,6 +323,9 @@ class QuicChromiumClientSessionTest
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
   int keep_alive_timeouts_ = 0;
   std::optional<quic::test::QuicTestAlarmProxy> ping_alarm_;
+  base::SimpleTestTickClock test_tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -926,6 +929,93 @@ TEST_P(QuicChromiumClientSessionTest, ClosedWithAsyncStreamRequest) {
   // Pump the message loop to read the connection close packet.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(handle2.get());
+  quic_data.Resume();
+  EXPECT_TRUE(quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+}
+
+// Tests that the stream wait time is correctly calculated when the
+// MAX_STREAMS frame increases the limit.
+TEST_P(QuicChromiumClientSessionTest, PendingStreamWaitTime) {
+  constexpr size_t kMaxStreams = 50;
+  constexpr size_t kIncreasedMaxStreams = 100;
+  constexpr base::TimeDelta kPendingWaitTime = base::Milliseconds(50);
+
+  test_tick_clock_.Advance(base::Milliseconds(5));
+  tick_clock_ = &test_tick_clock_;
+  MockQuicData quic_data(version_);
+  uint64_t packet_num = 1;
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  // The open stream limit is set to kMaxStreams, so when the 51st stream is
+  // requested, a STREAMS_BLOCKED will be sent.
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++)
+                         .AddStreamsBlockedFrame(/*control_frame_id=*/1,
+                                                 /*stream_count=*/kMaxStreams,
+                                                 /*unidirectional=*/false)
+                         .Build());
+  // This node receives the RST_STREAM+STOP_SENDING.
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
+  // After the STREAMS_BLOCKED is sent, receive a MAX_STREAMS to increase
+  // the limit to kIncreasedMaxStreams.
+  quic_data.AddRead(
+      ASYNC, server_maker_.Packet(1)
+                 .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                     /*stream_count=*/kIncreasedMaxStreams,
+                                     /*unidirectional=*/false)
+                 .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  // Open the maximum number of streams so that subsequent requests cannot
+  // proceed immediately.
+  EXPECT_EQ(GetMaxAllowedOutgoingBidirectionalStreams(), kMaxStreams);
+  for (size_t i = 0; i < kMaxStreams; i++) {
+    QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
+  }
+  EXPECT_EQ(session_->GetNumActiveStreams(), kMaxStreams);
+
+  // Request a stream and verify that it's pending.
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_EQ(
+      ERR_IO_PENDING,
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Advance the clock by kPendingWaitTime to simulate wait time.
+  test_tick_clock_.Advance(kPendingWaitTime);
+
+  quic::QuicRstStreamFrame rst(quic::kInvalidControlFrameId,
+                               GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED, 0);
+  session_->OnRstStream(rst);
+  quic::QuicStopSendingFrame stop_sending(
+      quic::kInvalidControlFrameId,
+      GetNthClientInitiatedBidirectionalStreamId(0),
+      quic::QUIC_STREAM_CANCELLED);
+  session_->OnStopSendingFrame(stop_sending);
+
+  EXPECT_FALSE(callback.have_result());
+
+  // Wait for the request to be unblocked.
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  std::unique_ptr<QuicChromiumClientStream::Handle> stream =
+      handle->ReleaseStream();
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(kPendingWaitTime, stream->max_stream_limit_pending_delay());
+
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   quic_data.Resume();
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());

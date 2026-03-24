@@ -748,6 +748,11 @@ void QuicHttpStream::SetRequestIdempotency(Idempotency idempotency) {
 }
 
 void QuicHttpStream::PopulateLoadTimingInternalInfo(
-    LoadTimingInternalInfo* load_timing_internal_info) const {}
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (stream_ && !stream_->max_stream_limit_pending_delay().is_zero()) {
+    load_timing_internal_info->max_stream_limit_pending_delay =
+        stream_->max_stream_limit_pending_delay();
+  }
+}
 
 }  // namespace net

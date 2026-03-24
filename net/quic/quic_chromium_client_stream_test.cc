@@ -189,7 +189,8 @@ class QuicChromiumClientStreamTest
         quic::test::GetNthClientInitiatedBidirectionalStreamId(
             version_.transport_version, 0),
         &session_, quic::QuicServerId(), quic::BIDIRECTIONAL,
-        NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS,
+        /*max_stream_limit_pending_delay=*/base::TimeDelta());
     session_.ActivateStream(base::WrapUnique(stream_.get()));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -857,7 +858,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersBeforeHandle) {
   quic::QuicStreamId stream_id = GetNthServerInitiatedUnidirectionalStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
       stream_id, &session_, quic::QuicServerId(), quic::READ_UNIDIRECTIONAL,
-      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*max_stream_limit_pending_delay=*/base::TimeDelta());
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();
@@ -881,7 +883,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
   quic::QuicStreamId stream_id = GetNthServerInitiatedUnidirectionalStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
       stream_id, &session_, quic::QuicServerId(), quic::READ_UNIDIRECTIONAL,
-      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*max_stream_limit_pending_delay=*/base::TimeDelta());
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();

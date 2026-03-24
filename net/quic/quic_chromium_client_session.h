@@ -1017,7 +1017,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool WasConnectionEverUsed();
 
   QuicChromiumClientStream* CreateOutgoingReliableStreamImpl(
-      const NetworkTrafficAnnotationTag& traffic_annotation);
+      const NetworkTrafficAnnotationTag& traffic_annotation,
+      base::TimeDelta max_stream_limit_pending_delay);
   QuicChromiumClientStream* CreateIncomingReliableStreamImpl(
       quic::QuicStreamId id,
       const NetworkTrafficAnnotationTag& traffic_annotation);

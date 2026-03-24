@@ -37,7 +37,8 @@ QuicChromiumClientStream* QuicChromiumClientSessionPeer::CreateOutgoingStream(
     QuicChromiumClientSession* session) {
   return session->ShouldCreateOutgoingBidirectionalStream()
              ? session->CreateOutgoingReliableStreamImpl(
-                   TRAFFIC_ANNOTATION_FOR_TESTS)
+                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                   /*max_stream_limit_pending_delay=*/base::TimeDelta())
              : nullptr;
 }
 

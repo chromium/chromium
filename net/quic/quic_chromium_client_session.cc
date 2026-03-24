@@ -1363,9 +1363,10 @@ int QuicChromiumClientSession::TryCreateStream(StreamRequest* request) {
 
   bool can_open_next = CanOpenNextOutgoingBidirectionalStream();
   if (can_open_next) {
-    request->stream_ =
-        CreateOutgoingReliableStreamImpl(request->traffic_annotation())
-            ->CreateHandle();
+    request->stream_ = CreateOutgoingReliableStreamImpl(
+                           request->traffic_annotation(),
+                           /*max_stream_limit_pending_delay=*/base::TimeDelta())
+                           ->CreateHandle();
     return OK;
   }
 
@@ -1424,11 +1425,13 @@ QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
 
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingReliableStreamImpl(
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
+    const NetworkTrafficAnnotationTag& traffic_annotation,
+    base::TimeDelta max_stream_limit_pending_delay) {
   DCHECK(connection()->connected());
   QuicChromiumClientStream* stream = new QuicChromiumClientStream(
       GetNextOutgoingBidirectionalStreamId(), this, server_id(),
-      quic::BIDIRECTIONAL, net_log_, traffic_annotation);
+      quic::BIDIRECTIONAL, net_log_, traffic_annotation,
+      max_stream_limit_pending_delay);
   ActivateStream(base::WrapUnique(stream));
   ++num_total_streams_;
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumOpenStreams",
@@ -1645,7 +1648,7 @@ QuicChromiumClientSession::CreateIncomingReliableStreamImpl(
 
   QuicChromiumClientStream* stream = new QuicChromiumClientStream(
       id, this, server_id(), quic::READ_UNIDIRECTIONAL, net_log_,
-      traffic_annotation);
+      traffic_annotation, /*max_stream_limit_pending_delay=*/std::nullopt);
   ActivateStream(base::WrapUnique(stream));
   ++num_total_streams_;
   return stream;
@@ -1692,8 +1695,10 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
     StreamRequest* request = stream_requests_.front();
     // TODO(ckrasic) - analyze data and then add logic to mark QUIC
     // broken if wait times are excessive.
+    base::TimeDelta pending_wait_time =
+        tick_clock_->NowTicks() - request->pending_start_time_;
     UMA_HISTOGRAM_TIMES("Net.QuicSession.PendingStreamsWaitTime",
-                        tick_clock_->NowTicks() - request->pending_start_time_);
+                        pending_wait_time);
     stream_requests_.pop_front();
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -1707,7 +1712,8 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
     request->OnRequestCompleteSuccess(
-        CreateOutgoingReliableStreamImpl(request->traffic_annotation())
+        CreateOutgoingReliableStreamImpl(request->traffic_annotation(),
+                                         pending_wait_time)
             ->CreateHandle());
   }
 }
