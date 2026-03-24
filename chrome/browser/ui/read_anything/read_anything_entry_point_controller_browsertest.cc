@@ -345,12 +345,25 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     UpdatePageActionVisibility_DoesNotShowChipIfIgnoredManyTimes) {
-  RegisterPageActionObserver();
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 10);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/long_text_page.html");
+  RegisterPageActionObserver();
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+      ->AddHintForTesting(
+          url, optimization_guide::proto::READER_MODE_ELIGIBLE,
+          std::optional<optimization_guide::OptimizationMetadata>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  VerifyPageActionIsShowing(true);
+  VerifyChipIsShowing(false);
+
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
+                                                               browser());
+  VerifyPageActionIsShowing(false);
+  VerifyChipIsShowing(false);
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
-
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(false);
 }
