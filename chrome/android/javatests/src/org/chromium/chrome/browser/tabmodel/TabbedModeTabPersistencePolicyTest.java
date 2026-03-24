@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
@@ -37,8 +38,10 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -66,7 +69,9 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Tests for the tabbed-mode persistence policy. TODO: Consider turning this into a unit test after
@@ -150,11 +155,11 @@ public class TabbedModeTabPersistencePolicyTest {
             activity.finishAndRemoveTask();
         }
 
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabWindowManagerSingleton.getInstance().setArchivedTabModelSelector(null);
                 });
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(
@@ -263,9 +268,46 @@ public class TabbedModeTabPersistencePolicyTest {
     }
 
     /**
+     * Test the cleanup task path that deletes all the persistent state metadata files except for
+     * those associated with the provided window tags.
+     */
+    @Test
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.SCHEDULE_WINDOW_CLEANING})
+    @MediumTest
+    public void testClearAllWindowsExceptFor() throws Throwable {
+        File dir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+
+        File file0 = new File(dir, "tab_state0");
+        File file1 = new File(dir, "tab_state1");
+        File file2 = new File(dir, "tab_state2");
+        File file3 = new File(dir, "tab_state3");
+        File fileOther = new File(dir, "other_file");
+
+        file0.createNewFile();
+        file1.createNewFile();
+        file2.createNewFile();
+        file3.createNewFile();
+        fileOther.createNewFile();
+
+        TabbedModeTabModelOrchestrator orchestrator =
+                buildTestTabModelSelector(new int[] {1}, new int[] {2}, /* removeTabs= */ false);
+
+        TabPersistencePolicy policy =
+                orchestrator.getTabPersistentStoreForTesting().getTabPersistencePolicyForTesting();
+        policy.clearAllWindowsExceptFor(Arrays.asList("1", "3"));
+
+        CriteriaHelper.pollInstrumentationThread(() -> !file0.exists() && !file2.exists());
+
+        assertTrue(file1.exists());
+        assertTrue(file3.exists());
+        assertTrue(fileOther.exists());
+    }
+
+    /**
      * Test the cleanup task path that deletes all the persistent state files for an instance.
      * Ensure tabs not used by other instances only are collected for deletion. This may not be a
-     * real scenario likey to happen.
+     * real scenario likely to happen.
      */
     @Test
     @Feature("TabPersistentStore")
