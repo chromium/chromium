@@ -391,7 +391,7 @@ error-page {
   width: var(--composebox-width);
 }
 
-:host(:not([is-shown-in-tab_])) #composebox {
+:host([is-ai-page_]:not([is-shown-in-tab_])) #composebox {
   inset-inline-start: 0;
   margin: 0 auto;
 }
