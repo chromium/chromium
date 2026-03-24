@@ -789,4 +789,6 @@ BASE_FEATURE(kEnableErrorCodePropagationForPreconnect,
 BASE_FEATURE(kPermitTcpSocketPoolConnectBackupJobs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLocalNetworkPermissionCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

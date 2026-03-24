@@ -361,6 +361,9 @@ AndroidGetNetworkBlockedReason GetAndroidGetNetworkBlockedReason() {
 NetworkBlockedReason GetNetworkBlockedReason(int fd) {
   static AndroidGetNetworkBlockedReason get_network_blocked_reason =
       GetAndroidGetNetworkBlockedReason();
+  if (!base::FeatureList::IsEnabled(features::kLocalNetworkPermissionCheck)) {
+    return NetworkBlockedReason::kNone;
+  }
   if (!get_network_blocked_reason) {
     return NetworkBlockedReason::kNone;
   }

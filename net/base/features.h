@@ -818,6 +818,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableErrorCodePropagationForPreconnect);
 // See crbug.com/481934003 to track efforts to disable this by default.
 NET_EXPORT BASE_DECLARE_FEATURE(kPermitTcpSocketPoolConnectBackupJobs);
 
+// If enabled, examine why a network operation was blocked due to local network
+// permission.
+NET_EXPORT BASE_DECLARE_FEATURE(kLocalNetworkPermissionCheck);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
