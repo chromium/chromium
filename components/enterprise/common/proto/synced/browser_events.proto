@@ -834,7 +834,7 @@ message DlpSensitiveDataEvent {
 
 // Event where a large file could not be scanned for analysis e.g. malware or
 // DLP.
-// Next ID: 26.
+// Next ID: 29.
 message UnscannedFileEvent {
   reserved 6, 9, 10, 11, 12, 14;
 
@@ -923,6 +923,16 @@ message UnscannedFileEvent {
 
   // The user action led to a content transfer event.
   ContentTransferMethod content_transfer_method = 24;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 26;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 27;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 28;
 }
 
 // Event that indicates that content was transferred.
