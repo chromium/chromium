@@ -1238,8 +1238,17 @@ void PopupViewViews::CreateSuggestionViews() {
 
     footer_container_ =
         suggestions_container_->AddChildView(std::move(footer_container));
+
+    // If the last item in the footer is a BNPL footnote, then we don't need
+    // any extra padding at the bottom. The BNPL footnote has its own bottom
+    // padding to ensure it is properly shaded.
+    int footer_bottom_padding =
+        suggestions.back().type == SuggestionType::kBnplFootnote
+            ? 0
+            : kInterItemsPadding;
     footer_container_->SetInsideBorderInsets(
-        gfx::Insets::VH(kInterItemsPadding, 0));
+        gfx::Insets::TLBR(kInterItemsPadding, 0, footer_bottom_padding, 0));
+
     suggestions_container_->SetFlexForView(footer_container_, 0);
   }
 
