@@ -35,6 +35,7 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
@@ -1388,6 +1389,9 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
 // search when search engines are overridden using pref.
 TEST_F(TemplateURLServiceTest,
        RepairPrepopulatedEnginesWithOverridesUpdatesSyncGuid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
   SetOverriddenEngines();
   test_util()->VerifyLoad();
 
@@ -1425,6 +1429,26 @@ TEST_F(TemplateURLServiceTest,
   EXPECT_EQ(overridden_engine->sync_guid(), dse_guid);
   EXPECT_EQ(overridden_engine->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
+}
+
+// Checks that search engine overrides are ignored when the
+// kIgnoreSearchProviderOverrides flag is enabled.
+TEST_F(TemplateURLServiceTest, SearchProviderOverridesIgnoredWhenFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
+
+  SetOverriddenEngines();
+  test_util()->VerifyLoad();
+
+  // The "override_keyword" engine should NOT be available.
+  TemplateURL* overridden_engine =
+      model()->GetTemplateURLForKeyword(u"override_keyword");
+  EXPECT_FALSE(overridden_engine);
+
+  // The default search provider should NOT be the overridden one.
+  const TemplateURL* default_provider = model()->GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+  EXPECT_NE(u"override_keyword", default_provider->keyword());
 }
 
 // Checks that RepairPrepopulatedEngines correctly updates sync guid for default

@@ -26,6 +26,14 @@ extern const char kDisableSearchEngineChoiceScreen[];
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kForceSearchEngineChoiceScreen[];
 
+// When enabled, prefs-based search provider overrides are ignored and
+// prepopulated engines will always be the regional built-in ones. If a user
+// previously had an overridden search engine as DSE, this flag will cause that
+// engine to be ignored, and the default search engine will be picked from the
+// regional set instead.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kIgnoreSearchProviderOverrides);
+
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
 

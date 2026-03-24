@@ -26,6 +26,8 @@ const char kDisableSearchEngineChoiceScreen[] =
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+BASE_FEATURE(kIgnoreSearchProviderOverrides, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Invalidates old search engine choices when Chrome detects that it has been
 // transferred to a new device.
 BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,

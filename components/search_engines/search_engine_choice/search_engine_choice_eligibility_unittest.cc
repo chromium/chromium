@@ -241,6 +241,9 @@ class SearchEngineChoiceEligibilityTest
 // overridden in the intial_preferences file.
 TEST_F(SearchEngineChoiceEligibilityTest,
        DoNotShowChoiceScreenWithProviderListOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
   base::ListValue override_list;
   pref_service()->SetList(prefs::kSearchProviderOverrides,
                           override_list.Clone());
@@ -248,6 +251,21 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   EXPECT_EQ(
       GetStaticConditions(),
       IfSupported(SearchEngineChoiceScreenConditions::kSearchProviderOverride));
+}
+
+// Test that the choice screen gets displayed even if the provider list is
+// overridden in the intial_preferences file, when the flag is enabled.
+TEST_F(SearchEngineChoiceEligibilityTest,
+       DoShowChoiceScreenWithProviderListOverrideIfFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
+
+  base::ListValue override_list;
+  pref_service()->SetList(prefs::kSearchProviderOverrides,
+                          override_list.Clone());
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
 }
 
 // Test that the choice screen gets displayed if the

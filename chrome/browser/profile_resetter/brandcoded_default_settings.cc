@@ -6,12 +6,14 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 
 BrandcodedDefaultSettings::BrandcodedDefaultSettings() = default;
 
@@ -37,6 +39,9 @@ BrandcodedDefaultSettings::~BrandcodedDefaultSettings() = default;
 
 std::optional<base::ListValue>
 BrandcodedDefaultSettings::GetSearchProviderOverrides() const {
+  if (base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides)) {
+    return std::nullopt;
+  }
   return ExtractList(prefs::kSearchProviderOverrides);
 }
 

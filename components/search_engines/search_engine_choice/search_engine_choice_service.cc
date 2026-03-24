@@ -595,7 +595,8 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
 
   // Initially exclude users with this type of override. Consult b/302675777 for
   // next steps.
-  if (profile_prefs_->HasPrefPath(prefs::kSearchProviderOverrides)) {
+  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides) &&
+      profile_prefs_->HasPrefPath(prefs::kSearchProviderOverrides)) {
     return SearchEngineChoiceScreenConditions::kSearchProviderOverride;
   }
 

@@ -589,6 +589,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
   <int value="2" label="kPrefHasValidUrls"/>
+  <int value="3" label="kIgnoredPref"/>
 </enum>
 
 <enum name="SearchReferralParam">

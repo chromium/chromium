@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -32,6 +33,7 @@
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
@@ -305,6 +307,9 @@ TEST_F(TemplateURLPrepopulateDataTest,
 // Verifies that default search providers from the preferences file
 // override the built-in ones.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
   pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
                               std::make_unique<base::Value>(1));
   base::ListValue overrides;
@@ -384,7 +389,45 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
   EXPECT_EQ(2u, t_urls.size());
 }
 
+TEST_F(TemplateURLPrepopulateDataTest,
+       ProvidersFromPrefsIgnoredWhenFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
+  base::HistogramTester histogram_tester;
+
+  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
+                              std::make_unique<base::Value>(1));
+  base::ListValue overrides;
+  base::DictValue entry;
+  entry.Set("name", "foo");
+  entry.Set("keyword", "fook");
+  entry.Set("search_url", "http://foo.com/s?q={searchTerms}");
+  entry.Set("favicon_url", "http://foi.com/favicon.ico");
+  entry.Set("encoding", "UTF-8");
+  entry.Set("id", 1001);
+  overrides.Append(entry.Clone());
+  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                              std::move(overrides));
+
+  // Version should be the default one, not 1.
+  EXPECT_EQ(TemplateURLPrepopulateData::kCurrentDataVersion,
+            TemplateURLPrepopulateData::GetDataVersion(pref_service()));
+
+  // Engines should be the default ones, not from overrides.
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
+      prepopulate_data_resolver().GetPrepopulatedEngines();
+  for (const auto& t_url : t_urls) {
+    EXPECT_NE(u"fook", t_url->keyword());
+  }
+
+  histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus",
+                                      /*kIgnoredPref=*/3, 1);
+}
+
 TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
   OverrideCountryId(CountryId());
   pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
                               std::make_unique<base::Value>(1));

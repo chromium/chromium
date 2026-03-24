@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -23,6 +24,7 @@
 #include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -52,30 +54,45 @@ enum class SearchProviderOverrideStatus {
   // template URL(s).
   kPrefHasValidUrls = 2,
 
-  kMaxValue = kPrefHasValidUrls
+  // The feature `kIgnoreSearchProviderOverrides` is enabled and the pref
+  // `kSearchProviderOverrides` is present.
+  kIgnoredPref = 3,
+
+  kMaxValue = kIgnoredPref
 };
 
 std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
     PrefService& prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
-  const base::ListValue& list = prefs.GetList(prefs::kSearchProviderOverrides);
+  const bool ignore_overrides =
+      base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides);
+  if (!ignore_overrides) {
+    const base::ListValue& list =
+        prefs.GetList(prefs::kSearchProviderOverrides);
 
-  for (const base::Value& engine : list) {
-    if (engine.is_dict()) {
-      auto t_url = TemplateURLDataFromOverrideDictionary(engine.GetDict());
-      if (t_url) {
-        t_urls.push_back(std::move(t_url));
+    for (const base::Value& engine : list) {
+      if (engine.is_dict()) {
+        auto t_url = TemplateURLDataFromOverrideDictionary(engine.GetDict());
+        if (t_url) {
+          t_urls.push_back(std::move(t_url));
+        }
       }
     }
   }
 
-  base::UmaHistogramEnumeration(
-      "Search.SearchProviderOverrideStatus",
-      !t_urls.empty() ? SearchProviderOverrideStatus::kPrefHasValidUrls
-                      : (prefs.HasPrefPath(prefs::kSearchProviderOverrides)
-                             ? SearchProviderOverrideStatus::kEmptyPref
-                             : SearchProviderOverrideStatus::kNoPref));
+  const bool has_pref = prefs.HasPrefPath(prefs::kSearchProviderOverrides);
+
+  SearchProviderOverrideStatus status = SearchProviderOverrideStatus::kNoPref;
+  if (ignore_overrides && has_pref) {
+    status = SearchProviderOverrideStatus::kIgnoredPref;
+  } else if (!t_urls.empty()) {
+    status = SearchProviderOverrideStatus::kPrefHasValidUrls;
+  } else if (has_pref) {
+    status = SearchProviderOverrideStatus::kEmptyPref;
+  }
+
+  base::UmaHistogramEnumeration("Search.SearchProviderOverrideStatus", status);
 
   return t_urls;
 }
@@ -147,10 +164,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 int GetDataVersion(PrefService* prefs) {
-  // Allow tests to override the local version.
-  return (prefs && prefs->HasPrefPath(prefs::kSearchProviderOverridesVersion)) ?
-      prefs->GetInteger(prefs::kSearchProviderOverridesVersion) :
-      kCurrentDataVersion;
+  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides) &&
+      prefs && prefs->HasPrefPath(prefs::kSearchProviderOverridesVersion)) {
+    return prefs->GetInteger(prefs::kSearchProviderOverridesVersion);
+  }
+
+  return kCurrentDataVersion;
 }
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(

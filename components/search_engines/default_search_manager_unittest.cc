@@ -224,8 +224,36 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 }
 
+// Test that DefaultSearch manager ignores kSearchProviderOverrides when the
+// kIgnoreSearchProviderOverrides flag is enabled.
+TEST_F(DefaultSearchManagerTest, DefaultSearchOverridesIgnoredWhenFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
+
+  SetOverrides(pref_service(), false);
+  auto manager = create_manager();
+
+  // The fallback engine should be the default prepopulated one (Google), not
+  // the one from overrides.
+  std::unique_ptr<TemplateURLData> fallback_t_url_data =
+      prepopulate_data_resolver().GetFallbackSearch();
+  EXPECT_EQ(fallback_t_url_data->keyword(),
+            TemplateURLPrepopulateData::google.keyword);
+  EXPECT_EQ(fallback_t_url_data->prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
+
+  DefaultSearchManager::Source source = DefaultSearchManager::FROM_POLICY;
+  const TemplateURLData* engine = manager->GetDefaultSearchEngine(&source);
+  ASSERT_TRUE(engine);
+  EXPECT_EQ(engine->keyword(), TemplateURLPrepopulateData::google.keyword);
+  EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
+}
+
 // Test that DefaultSearch manager detects changes to kSearchProviderOverrides.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
   SetOverrides(pref_service(), false);
   auto manager = create_manager();
 

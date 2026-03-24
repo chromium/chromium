@@ -110,10 +110,14 @@ DefaultSearchManager::DefaultSearchManager(
         kDefaultSearchProviderDataPrefName,
         base::BindRepeating(&DefaultSearchManager::OnDefaultSearchPrefChanged,
                             base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kSearchProviderOverrides,
-        base::BindRepeating(&DefaultSearchManager::OnOverridesPrefChanged,
-                            base::Unretained(this)));
+
+    if (!base::FeatureList::IsEnabled(
+            switches::kIgnoreSearchProviderOverrides)) {
+      pref_change_registrar_.Add(
+          prefs::kSearchProviderOverrides,
+          base::BindRepeating(&DefaultSearchManager::OnOverridesPrefChanged,
+                              base::Unretained(this)));
+    }
   }
   LoadPrepopulatedFallbackSearch();
   if (search_engine_choice_service->IsDsePropagationAllowedForGuest()) {
@@ -300,6 +304,10 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
 }
 
 void DefaultSearchManager::OnOverridesPrefChanged() {
+  if (base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides)) {
+    return;
+  }
+
   LoadPrepopulatedFallbackSearch();
 
   const TemplateURLData* effective_data = GetDefaultSearchEngine(nullptr);

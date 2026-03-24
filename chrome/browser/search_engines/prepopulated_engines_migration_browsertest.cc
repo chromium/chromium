@@ -22,6 +22,8 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -181,7 +183,7 @@ std::ostream& operator<<(std::ostream& os,
   os << "{ id: " << summary.id << ", keyword: " << summary.keyword;
   if (summary.is_default.has_value()) {
     os << ", is_default: " << (*summary.is_default ? "true" : "false");
-  };
+  }
   if (summary.search_url.has_value()) {
     os << ", search_url: "
        << (summary.search_url == TemplateURLPrepopulateData::google.search_url
@@ -1210,6 +1212,75 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
                 .id = IsParamFeatureEnabled() ? new_id : generic_id,
                 .keyword = custom_keyword,
                 .name = android_codesearch.name}));
+}
+
+// -- Prepopulated Engines interactions with Search Provider Overrides --------
+
+class PrepopulatedEnginesOverridesBrowserTest : public PlatformBrowserTest {
+ protected:
+  PrepopulatedEnginesOverridesBrowserTest() {
+    if (GetTestPreCount() > 0) {
+      // Feature is disabled in PRE_ step.
+      feature_list_.InitAndDisableFeature(
+          switches::kIgnoreSearchProviderOverrides);
+    } else {
+      // Feature is enabled in the main step.
+      feature_list_.InitAndEnableFeature(
+          switches::kIgnoreSearchProviderOverrides);
+    }
+  }
+
+  TemplateURLService& template_url_service() {
+    return CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(GetProfile()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrepopulatedEnginesOverridesBrowserTest,
+                       PRE_OverriddenDseIgnored) {
+  {
+    base::ListValue overrides;
+    // Mandatory properties for search provider overrides
+    // See `TemplateURLDataFromOverrideDictionary`
+    base::DictValue entry;
+    entry.Set("name", u"override");
+    entry.Set("keyword", u"override");
+    entry.Set("search_url", "https://override.com/s?q={searchTerms}");
+    entry.Set("favicon_url", "http://override.com/favicon.ico");
+    entry.Set("encoding", "UTF-8");
+    entry.Set("id", 9999);
+    overrides.Append(std::move(entry));
+
+    PrefService* prefs = GetProfile()->GetPrefs();
+    prefs->SetList(prefs::kSearchProviderOverrides, std::move(overrides));
+    prefs->SetInteger(prefs::kSearchProviderOverridesVersion, 1);
+  }
+
+  // The overridden engine should be available and set as DSE based on the prefs
+  // observer.
+  TemplateURL* override_turl =
+      template_url_service().GetTemplateURLForKeyword(u"override");
+  ASSERT_TRUE(override_turl);
+
+  EXPECT_EQ(template_url_service().GetDefaultSearchProvider(), override_turl);
+  EXPECT_EQ(template_url_service().GetDefaultSearchProvider()->prepopulate_id(),
+            9999);
+}
+
+IN_PROC_BROWSER_TEST_F(PrepopulatedEnginesOverridesBrowserTest,
+                       OverriddenDseIgnored) {
+  // The overridden engine might still be in the keyword map because it's
+  // persisted in the WebData database and we don't automatically purge it.
+  // However, it should NOT be the default search provider anymore because it
+  // should have failed reconciliation and fell back to a default.
+  const TemplateURL* dse = template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_NE(dse->keyword(), u"foo")
+      << "DSE should not be the overridden engine. Current DSE: "
+      << dse->keyword() << " (ID: " << dse->prepopulate_id() << ")";
+  EXPECT_NE(dse->prepopulate_id(), 9999);
 }
 
 }  // namespace
