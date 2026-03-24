@@ -90,6 +90,7 @@ void ProfilePickerReauthProvider::SwitchToReauth(
 
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(&*profile_));
+  AddCommonSigninWebContentUserData(contents_.get(), this);
   host_->ShowScreen(contents_.get(), GetLoadingScreenURL(),
                     /*navigation_finished_closure=*/base::OnceClosure());
   timer_.Start(
@@ -281,6 +282,10 @@ void ProfilePickerReauthProvider::Finish(bool success,
                                          ProfilePickerReauthResult result) {
   RecordReauthResult(result);
   scoped_identity_manager_observation_.Reset();
+  if (contents_) {
+    web_modal::WebContentsModalDialogManager::FromWebContents(contents_.get())
+        ->SetDelegate(nullptr);
+  }
   content::WebContentsObserver::Observe(nullptr);
   // Hide the toolbar in case it was visible after showing the reauth page.
   host_->SetNativeToolbarVisible(false);
