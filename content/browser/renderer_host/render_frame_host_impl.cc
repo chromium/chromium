@@ -6944,19 +6944,28 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
                             on_before_unload_overhead_time);
     switch (execution_mode) {
       case BeforeUnloadExecutionMode::kDefault:
+      case BeforeUnloadExecutionMode::kAsync:
         base::UmaHistogramTimes(
             "Navigation.OnBeforeUnloadOverheadTime."
             "BeforeUnloadHandlerRegistered",
             on_before_unload_overhead_time);
+        if (execution_mode == BeforeUnloadExecutionMode::kAsync) {
+          base::UmaHistogramTimes(
+              "Navigation.OnBeforeUnloadOverheadTime."
+              "BeforeUnloadHandlerRegistered.Async",
+              on_before_unload_overhead_time);
+        } else {
+          base::UmaHistogramTimes(
+              "Navigation.OnBeforeUnloadOverheadTime."
+              "BeforeUnloadHandlerRegistered.Sync",
+              on_before_unload_overhead_time);
+        }
         break;
       case BeforeUnloadExecutionMode::kForLegacy:
         base::UmaHistogramTimes(
             "Navigation.OnBeforeUnloadOverheadTime."
             "NoBeforeUnloadHandlerRegistered",
             on_before_unload_overhead_time);
-        break;
-      case BeforeUnloadExecutionMode::kAsync:
-        // TODO(crbug.com/475716933): Add UMA for kAsync.
         break;
     }
 
