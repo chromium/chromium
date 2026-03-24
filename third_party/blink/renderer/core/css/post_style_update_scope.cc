@@ -42,6 +42,12 @@ PostStyleUpdateScope::~PostStyleUpdateScope() {
 }
 
 bool PostStyleUpdateScope::Apply() {
+  if (current_ != this) {
+    // We only record and apply updates in the outermost scope (reflected by
+    // current_).
+    return false;
+  }
+
   if (ApplyPseudo()) {
     return true;
   }
@@ -101,6 +107,14 @@ void PostStyleUpdateScope::AnimationData::SetPendingUpdate(
     const CSSAnimationUpdate& update) {
   element.EnsureElementAnimations().CssAnimations().SetPendingUpdate(update);
   elements_with_pending_updates_.insert(&element);
+}
+
+void PostStyleUpdateScope::SetPendingUpdateForTesting(
+    Element& element,
+    const CSSAnimationUpdate& update) {
+  if (AnimationData* data = CurrentAnimationData()) {
+    data->SetPendingUpdate(element, update);
+  }
 }
 
 void PostStyleUpdateScope::AnimationData::StoreOldStyleIfNeeded(

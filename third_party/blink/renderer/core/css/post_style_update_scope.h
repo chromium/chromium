@@ -98,6 +98,8 @@ class CORE_EXPORT PostStyleUpdateScope {
     return current_ && !current_->GetPseudoData();
   }
 
+  static void SetPendingUpdateForTesting(Element&, const CSSAnimationUpdate&);
+
   // If there is a CurrentAnimationData() and old-style was previously stored
   // using StoreOldStyleIfNeeded, this function returns that ComputedStyle.
   // Otherwise returns the current ComputedStyle on the Element.

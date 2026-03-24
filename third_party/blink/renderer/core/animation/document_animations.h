@@ -116,6 +116,11 @@ class CORE_EXPORT DocumentAnimations final
   void UpdateAnimationTriggerAttachments();
   void AddTriggeredAnimation(CSSAnimation* animation);
 
+  const HeapHashSet<WeakMember<CSSAnimation>>& TriggeredAnimationsForTesting()
+      const {
+    return triggered_animations_;
+  }
+
   void UpdateCompositorAnimationTriggers(
       const PaintArtifactCompositor* paint_artifact_compositor);
 

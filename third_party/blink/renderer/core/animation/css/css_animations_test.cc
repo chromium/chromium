@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update.h"
 #include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -2911,6 +2913,79 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
   test_timeline_type(get_trigger(AtomicString("--trigger2")),
                      /*is_view=*/true,
                      /*is_scroll=*/true, /*is_document=*/false);
+}
+
+TEST_P(CSSAnimationsTriggerTest, NestedScopeAvoidsTriggerUpdates) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim { from { opacity: 1; } to { opacity: 0; } }
+      #target {
+        animation-name: anim;
+        animation-duration: 1s;
+        timeline-trigger: --trigger view() contain;
+        animation-trigger: --trigger play;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ(target->NamedTriggers()->size(), 1);
+  EXPECT_EQ(GetDocument()
+                .GetDocumentAnimations()
+                .TriggeredAnimationsForTesting()
+                .size(),
+            1);
+  CSSAnimation* animation = GetDocument()
+                                .GetDocumentAnimations()
+                                .TriggeredAnimationsForTesting()
+                                .begin()
+                                ->Get();
+  AnimationTrigger* initial_trigger =
+      target->NamedTriggers()->begin()->value.Get();
+
+  EXPECT_EQ(initial_trigger->getAnimations().size(), 1);
+  EXPECT_EQ(initial_trigger->getAnimations()[0], animation);
+  EXPECT_EQ(animation->GetTriggers().size(), 1);
+  EXPECT_EQ(animation->GetTriggers().begin()->Get(), initial_trigger);
+
+  // Clear the triggers declared on #target. PostUpdateScope::Apply should
+  // construct a new trigger, fulfilling timeline-trigger: --trigger.
+  target->NamedTriggers()->clear();
+  initial_trigger->removeAnimation(animation);
+
+  PostStyleUpdateScope outer_scope(GetDocument());
+
+  // Inject a mock pending update for #target into the outer scope
+  CSSAnimationUpdate update;
+  update.SetNeedsNamedTriggerUpdate();
+
+  // Create an inner scope and call Apply()
+  PostStyleUpdateScope inner_scope(GetDocument());
+
+  PostStyleUpdateScope::SetPendingUpdateForTesting(*target, update);
+
+  inner_scope.Apply();
+
+  // After inner_scope.Apply(), #target's triggers should still be empty because
+  // the inner scope bypassed the trigger attachments updates.
+  EXPECT_TRUE(target->NamedTriggers()->empty());
+  EXPECT_TRUE(animation->GetTriggers().empty());
+  EXPECT_TRUE(initial_trigger->getAnimations().empty());
+
+  // Let outer scope complete.
+  outer_scope.Apply();
+
+  // After outer_scope.Apply(), the outer scope should have processed the
+  // pending update and re-instantiated the triggers.
+  EXPECT_EQ(target->NamedTriggers()->size(), 1);
+  AnimationTrigger* final_trigger =
+      target->NamedTriggers()->begin()->value.Get();
+  EXPECT_TRUE(initial_trigger->getAnimations().empty());
+  EXPECT_EQ(final_trigger->getAnimations().size(), 1);
+  EXPECT_EQ(final_trigger->getAnimations()[0], animation);
+  EXPECT_EQ(animation->GetTriggers().size(), 1);
+  EXPECT_EQ(animation->GetTriggers().begin()->Get(), final_trigger);
 }
 
 // The lookup of --t on #target does not find anything here
