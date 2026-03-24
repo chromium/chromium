@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -187,7 +189,18 @@ export class PostSelectionRendererElement extends
     return [
       'calculateStaticRegions(' +
           'selectedRegions.*, activeRegionId, multiRegionSelectionEnabled)',
+      'syncActiveRegion(selectedRegions.*, activeRegionId)',
     ];
+  }
+
+  private syncActiveRegion() {
+    const activeRegion =
+        this.selectedRegions.find(r => r.id === this.activeRegionId);
+    if (activeRegion) {
+      const {x, y, width, height} = activeRegion.region;
+      this.setDimensions(y - height / 2, x - width / 2, height, width);
+      this.rerender();
+    }
   }
 
   private eventTracker_: EventTracker = new EventTracker();
@@ -308,18 +321,30 @@ export class PostSelectionRendererElement extends
     this.listenerIds = [];
   }
 
-  private onStaticRegionPointerdown(event: PointerEvent) {
-    const target = event.target as HTMLElement;
-    const id = target.dataset['id'];
+  private onStaticRegionPointerEnter(event: PointerEvent) {
+    const id = (event.currentTarget as HTMLElement).dataset['id'];
     if (id) {
       this.dispatchEvent(new CustomEvent(
           'activate-region', {bubbles: true, composed: true, detail: {id}}));
-      event.stopPropagation();
     }
+  }
+
+  private onCloseActiveButtonClick(event: Event) {
+    if (this.activeRegionId) {
+      this.baseHandler.deleteRegion(this.activeRegionId);
+    }
+    event.stopPropagation();
+  }
+
+  private onCloseButtonPointerdown(event: PointerEvent) {
+    event.stopPropagation();
   }
 
   private onMultiRegionSelectionUpdated(regions: SelectedRegion[]) {
     this.selectedRegions = regions;
+    if (regions.length === 0) {
+      this.activeRegionId = '';
+    }
     this.calculateStaticRegions();
   }
 
@@ -436,7 +461,11 @@ export class PostSelectionRendererElement extends
       this.shouldDarkenScrim = false;
       return true;
     }
-    return false;
+
+    // Check if the user is clicking on a close button.
+    const elementsAtPoint =
+        this.shadowRoot!.elementsFromPoint(event.startX, event.startY);
+    return elementsAtPoint.some(el => el.classList.contains('close-button'));
   }
 
   handleGestureDrag(event: GestureEvent) {
@@ -513,7 +542,7 @@ export class PostSelectionRendererElement extends
       // Issue Lens request for new bounds
       this.baseHandler.adjustRegionSelected(
           this.getNormalizedCenterRotatedBox().box,
-          RegionSource.SELECTION_CHANGE);
+          RegionSource.SELECTION_CHANGE, this.activeRegionId);
 
       // Check for selectable text
       this.dispatchEvent(new CustomEvent('detect-text-in-region', {

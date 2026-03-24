@@ -133,9 +133,6 @@ export class SelectionOverlayElementElement extends
     if (this.selectionElements.postSelectionRenderer.handleGestureStart(
             this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
-    } else {
-      this.activeRegionId = '';
-      this.selectionElements.postSelectionRenderer.clearSelection();
     }
   }
 
@@ -192,8 +189,10 @@ export class SelectionOverlayElementElement extends
         }
         break;
       case GestureState.STARTING:
-        this.selectionElements.regionSelectionLayer.handleGestureEnd(
-            this.currentGesture);
+        if (this.draggingRespondent === DragFeature.NONE) {
+          this.selectionElements.regionSelectionLayer.handleGestureEnd(
+              this.currentGesture);
+        }
         break;
       default:  // Other states are invalid and ignored.
         break;

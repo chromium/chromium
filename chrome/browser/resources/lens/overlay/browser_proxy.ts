@@ -92,6 +92,10 @@ class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
     return -1;
   }
 
+  deleteRegion(_id: string): void {
+    // Lens doesn't support deleting a specific region.
+  }
+
   postRegionSelectionCallback(
       callback: (region: RectF) => void, region: CenterRotatedBox): void {
     callback(region.box);

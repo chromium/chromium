@@ -17,6 +17,7 @@
 #include "chrome/grit/glic_untrusted_resources.h"
 #include "chrome/grit/glic_untrusted_resources_map.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -86,6 +87,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       "bottomLeftSliderAriaLabel",
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
   html_source->AddBoolean("enableMultiRegionSelection", true);
+  html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddResourcePath("glic_region_selection_cursor_icon.svg",
                                IDR_GLIC_REGION_SELECTION_CURSOR_ICON);
 

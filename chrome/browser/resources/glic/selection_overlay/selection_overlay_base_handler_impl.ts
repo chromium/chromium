@@ -116,11 +116,16 @@ export class SelectionOverlayBaseHandlerImpl extends
 
   adjustRegionSelected(
       rect: RectF, _source: RegionSource,
-      id: string = generateRandomHexId()): void {
+      id: string = this.activeRegionId || generateRandomHexId()): void {
     const proxy = BrowserProxyImpl.getInstance();
     proxy.handler.adjustRegion({
       region: rect,
-      id,
+      id: id,
     });
+  }
+
+  deleteRegion(id: string): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.deleteRegion(id);
   }
 }
