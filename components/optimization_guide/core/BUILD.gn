@@ -383,10 +383,12 @@ source_set("manifest_broker") {
     "model_execution/manifest_broker/manifest_asset_manager.h",
   ]
   deps = [
+    ":features",
     ":ondevice",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom",
+    "//components/prefs",
   ]
 }
 
@@ -416,6 +418,7 @@ static_library("manifest_broker_test_support") {
     ":manifest_broker_dev_support",
     ":model_execution_test_support",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
   ]
 }
