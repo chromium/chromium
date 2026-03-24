@@ -104,28 +104,10 @@ extern const base::FeatureParam<PlaceholderText> kSteadyPlaceholder;
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
 
-// Enum for `kRealboxLayoutMode`.
-enum class RealboxLayoutMode {
-  kTallBottomContext,
-  kCompact,
-};
-
-// Flag to control the realbox layout mode (Tall, Compact).
-extern const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode;
-
 // Whether to enable multi-line input in the searchbox.
 extern const base::FeatureParam<bool> kMultiLineEnabled;
 
 bool IsNtpRealboxNextEnabled(Profile* profile);
-
-// String constants for RealboxLayoutMode.
-inline constexpr char kRealboxLayoutModeTallBottomContext[] =
-    "TallBottomContext";
-inline constexpr char kRealboxLayoutModeCompact[] = "Compact";
-
-// Returns the string representation of `RealboxLayoutMode`.
-std::string_view RealboxLayoutModeToString(
-    RealboxLayoutMode realbox_layout_mode);
 
 }  // namespace ntp_realbox
 

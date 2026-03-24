@@ -2159,7 +2159,6 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         ntpRealboxNextEnabled: true,
-        realboxLayoutMode: 'Compact',
         composeboxCloseByClickOutside: true,
       });
     });

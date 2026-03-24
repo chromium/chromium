@@ -311,32 +311,8 @@ const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
                                                     "CyclingPlaceholders",
                                                     false);
 
-const base::FeatureParam<RealboxLayoutMode>::Option
-    kRealboxLayoutModeOptions[] = {
-        {RealboxLayoutMode::kTallBottomContext,
-         kRealboxLayoutModeTallBottomContext},
-        {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
-
-const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
-    &kNtpRealboxNext,
-    "RealboxLayoutMode",
-    RealboxLayoutMode::kCompact,
-    &kRealboxLayoutModeOptions);
-
 const base::FeatureParam<bool> kMultiLineEnabled(&kNtpRealboxNext,
                                                  "MultiLineEnabled",
                                                  true);
-
-std::string_view RealboxLayoutModeToString(
-    RealboxLayoutMode realbox_layout_mode) {
-  switch (realbox_layout_mode) {
-    case RealboxLayoutMode::kTallBottomContext:
-      return kRealboxLayoutModeTallBottomContext;
-    case RealboxLayoutMode::kCompact:
-      return kRealboxLayoutModeCompact;
-    default:
-      NOTREACHED();
-  }
-}
 
 }  // namespace ntp_realbox

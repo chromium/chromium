@@ -12,7 +12,6 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -52,7 +51,6 @@
 // the `/tmp/pixel_test_output` directory.
 
 namespace {
-using ntp_realbox::RealboxLayoutMode;
 using ::testing::ValuesIn;
 using DeepQuery = InteractiveBrowserWindowTestApi::DeepQuery;
 
@@ -101,7 +99,6 @@ const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
 // makes it easy to build sets of relevant tests, vs. the brute-force
 // testing::Combine() approach.
 struct NtpRealboxUiTestParams {
-  RealboxLayoutMode layout_mode = RealboxLayoutMode::kCompact;
   bool compose_button_enabled = true;
   ui::NativeTheme::PreferredColorScheme color_scheme =
       ui::NativeTheme::PreferredColorScheme::kLight;
@@ -109,7 +106,7 @@ struct NtpRealboxUiTestParams {
 
   std::string ToString() const {
     std::ostringstream oss;
-    oss << RealboxLayoutModeToString(layout_mode);
+    oss << "RealboxNext";
     if (!compose_button_enabled) {
       oss << "_compose_disabled";
     }
@@ -253,20 +250,9 @@ class NtpRealboxUiTestBase
 
  protected:
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
-      std::optional<RealboxLayoutMode> layout_mode = std::nullopt,
       bool compose_button_enabled = true) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams realbox_params;
-    if (layout_mode.has_value()) {
-      realbox_params[ntp_realbox::kRealboxLayoutMode.name] = [=]() {
-        switch (layout_mode.value()) {
-          case RealboxLayoutMode::kTallBottomContext:
-            return ntp_realbox::kRealboxLayoutModeTallBottomContext;
-          case RealboxLayoutMode::kCompact:
-            return ntp_realbox::kRealboxLayoutModeCompact;
-        }
-      }();
-    }
     enabled_features.emplace_back(ntp_realbox::kNtpRealboxNext, realbox_params);
     enabled_features.emplace_back(omnibox::kAimEnabled,
                                   base::FieldTrialParams());
@@ -305,8 +291,7 @@ class NtpRealboxUiScreenshotTest
 
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
-        GetEnabledFeatures(GetParam().layout_mode,
-                           GetParam().compose_button_enabled);
+        GetEnabledFeatures(GetParam().compose_button_enabled);
 
     // Disable NTP features that load asynchronously to prevent page shifts.
     // TODO(crbug.com/452928336): Wait for a signal that the NTP's layout is
@@ -332,10 +317,6 @@ class NtpRealboxUiScreenshotTest
 
   void SetUpOnMainThread() override {
     NtpRealboxUiTestBase::SetUpOnMainThread();
-    // Sanity check that the NtpRealboxUiTestParams setup actually took; if it
-    // didn't, then we can't accurately perform the test.
-    ASSERT_EQ(RealboxLayoutModeToString(ntp_realbox::kRealboxLayoutMode.Get()),
-              RealboxLayoutModeToString(GetParam().layout_mode));
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -370,34 +351,24 @@ INSTANTIATE_TEST_SUITE_P(
 #if !BUILDFLAG(IS_WIN)
         // Compact, compose disabled, light mode, LTR
         {
-            .layout_mode = RealboxLayoutMode::kCompact,
             .compose_button_enabled = false,
         },
         // Compact, compose enabled, light mode, LTR
         {
-            .layout_mode = RealboxLayoutMode::kCompact,
         },
         // Compact, compose enabled, dark mode, RTL
         {
-            .layout_mode = RealboxLayoutMode::kCompact,
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
             .rtl = true,
         },
 #endif
-        // Tall bottom, compose enabled, light mode, LTR
-        {
-            .layout_mode = RealboxLayoutMode::kTallBottomContext,
-        },
-        // Tall bottom, compose enabled, dark mode, RTL
-        {
-            .layout_mode = RealboxLayoutMode::kTallBottomContext,
-            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
-            .rtl = true,
-        },
     }),
     [](const testing::TestParamInfo<NtpRealboxUiTestParams>& info) {
       return info.param.ToString();
     });
+
+// This test suite is empty on Windows.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NtpRealboxUiScreenshotTest);
 
 // TODO(crbug.com/454761015): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {

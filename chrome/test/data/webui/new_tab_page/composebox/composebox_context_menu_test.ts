@@ -92,7 +92,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
     test('tab changes calls getRecentTabs', async () => {
       createComposeboxElement(testProxy);
       loadTimeData.overrideValues({
-        realboxLayoutMode: 'Compact',
         composeboxShowRecentTabChip: true,
       });
       const sampleTabs = [

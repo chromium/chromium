@@ -303,11 +303,6 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      realboxLayoutMode_: {
-        type: String,
-        reflect: true,
-      },
-
       searchboxCyclingPlaceholders_: {
         type: Boolean,
       },
@@ -419,8 +414,6 @@ export class AppElement extends AppElementBase {
   protected accessor isFooterVisible_: boolean = false;
   protected accessor ntpRealboxNextEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
-  protected accessor realboxLayoutMode_: string =
-      loadTimeData.getString('realboxLayoutMode');
   protected accessor searchboxCyclingPlaceholders_: boolean =
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
   protected accessor ntpNextFeaturesEnabled_: boolean =
@@ -736,7 +729,7 @@ export class AppElement extends AppElementBase {
       this.recordBrowserPromoMetrics_();
     }
 
-    if (this.ntpRealboxNextEnabled_ && this.realboxLayoutMode_ !== '') {
+    if (this.ntpRealboxNextEnabled_) {
       this.registerHelpBubble(
           CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, ['#searchbox', '#context'],
           {fixed: true});

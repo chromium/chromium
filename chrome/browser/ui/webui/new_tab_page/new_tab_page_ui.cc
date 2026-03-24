@@ -290,11 +290,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
 
-  source->AddString("realboxLayoutMode",
-                    ntp_realbox::IsNtpRealboxNextEnabled(profile)
-                        ? ntp_realbox::RealboxLayoutModeToString(
-                              ntp_realbox::kRealboxLayoutMode.Get())
-                        : "");
   source->AddBoolean("ntpRealboxNextEnabled",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile));
   source->AddBoolean("searchboxCyclingPlaceholders",
@@ -683,12 +678,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
 
-  bool show_context_menu_description =
-      ntp_composebox::kShowContextMenuDescription.Get() &&
-      ntp_realbox::kRealboxLayoutMode.Get() !=
-          ntp_realbox::RealboxLayoutMode::kCompact;
-  source->AddBoolean("composeboxShowContextMenuDescription",
-                     show_context_menu_description);
+  source->AddBoolean("composeboxShowContextMenuDescription", false);
 
   source->AddBoolean("composeboxCloseByEscape", false);
   // TODO(b/477969358): Remove "close by click outside" boolean.

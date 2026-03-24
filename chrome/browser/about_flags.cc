@@ -1578,19 +1578,13 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      kComposeboxNextSingleContextForRealboxNext, nullptr},
 };
 
-const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
-    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
-};
-const FeatureEntry::FeatureParam kShowNextRealboxCompactCyclingPlaceholders[] =
-    {
-        {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
-        {"CyclingPlaceholders", "true"},
+const FeatureEntry::FeatureParam kShowNextRealboxCyclingPlaceholders[] = {
+    {"CyclingPlaceholders", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
-    {"- Show Next Realbox (Compact)", kShowNextRealboxCompact, nullptr},
-    {"- Show Next Realbox: Compact, Cycling placeholders",
-     kShowNextRealboxCompactCyclingPlaceholders, nullptr},
+    {"- Show Next Realbox: Cycling placeholders",
+     kShowNextRealboxCyclingPlaceholders, nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {

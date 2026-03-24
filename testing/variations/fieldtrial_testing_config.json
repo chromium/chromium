@@ -15657,8 +15657,7 @@
                     "name": "Enabled_Compact_Multiline",
                     "params": {
                         "CyclingPlaceholders": "true",
-                        "MultiLineEnabled": "true",
-                        "RealboxLayoutMode": "Compact"
+                        "MultiLineEnabled": "true"
                     },
                     "enable_features": [
                         "NtpRealboxNext"
