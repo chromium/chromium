@@ -21,6 +21,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -105,6 +106,7 @@ class NET_EXPORT HttpStreamFactory {
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
     SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow;
     SocketTag socket_tag;
+    handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
   };
 
   // Calculates an appropriate SPDY session key for the given parameters.
