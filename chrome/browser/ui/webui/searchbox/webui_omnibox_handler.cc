@@ -76,16 +76,14 @@ searchbox::mojom::SelectionLineState ConvertLineState(
     case OmniboxPopupSelection::LineState::KEYWORD_MODE:
       return searchbox::mojom::SelectionLineState::kKeywordMode;
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM:
-      // WebUi currently only cares about popup matches' selection states. No
-      // need to pipe in a selection state that's unique to the omnibox input.
-      return searchbox::mojom::SelectionLineState::kNormal;
+      return searchbox::mojom::SelectionLineState::kFocusedButtonAim;
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
       return searchbox::mojom::SelectionLineState::kFocusedButtonAction;
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return searchbox::mojom::SelectionLineState::
           kFocusedButtonRemoveSuggestion;
     default:
-      // Realbox doesn't support the other UIs and their focus states.
+      // WebUI omnibox doesn't support the other UIs and their focus states.
       NOTREACHED() << state;
   }
 }
