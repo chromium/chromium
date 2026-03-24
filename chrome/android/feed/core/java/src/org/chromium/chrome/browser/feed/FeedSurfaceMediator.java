@@ -130,6 +130,7 @@ public class FeedSurfaceMediator
 
             if (mSnapScrollHelper != null) {
                 mSnapScrollHelper.destroy();
+                mSnapScrollHelper = null;
             }
             mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
         }
@@ -205,13 +206,13 @@ public class FeedSurfaceMediator
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Context mContext;
-    private final @Nullable SnapScrollHelper mSnapScrollHelper;
     private final Profile mProfile;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final SigninManager mSigninManager;
     private final TemplateUrlService mTemplateUrlService;
     private final FeedActionDelegate mActionDelegate;
     private View.@Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    private @Nullable SnapScrollHelper mSnapScrollHelper;
 
     private final SettableNonNullObservableSupplier<Integer> mGetRestoringStateSupplier =
             ObservableSuppliers.createNonNull(RestoringState.WAITING_TO_RESTORE);
@@ -348,6 +349,8 @@ public class FeedSurfaceMediator
         // regular scrolling, which is observed through an OnScrollListener.
         mOnLayoutChangeListener =
                 (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (mSnapScrollHelper == null) return;
+
                     mCoordinator.getView().postOnAnimation(mSnapScrollHelper::handleScroll);
                     float pixelToDp = mContext.getResources().getDisplayMetrics().density;
                     int widthDp = (int) ((right - left) / pixelToDp);
