@@ -650,8 +650,42 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding},
+       features::kAutofillEnableWalletBranding,
+       features::kAutofillEnableWalletBrandingV2},
       /*disabled_features=*/{});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_chrome_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_IN_GOOGLE_WALLET_PROMPT_TITLE
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION)
+          : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-only-save bottom sheet when Wallet branding V2 is disabled.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveOnlyBottomSheet_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
@@ -715,8 +749,42 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding},
+       features::kAutofillEnableWalletBranding,
+       features::kAutofillEnableWalletBrandingV2},
       /*disabled_features=*/{});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_chrome_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_IN_GOOGLE_WALLET_PROMPT_TITLE
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION)
+          : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-save-with-CVC bottom sheet when Wallet branding V2 is disabled.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},

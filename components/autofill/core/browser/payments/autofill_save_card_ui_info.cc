@@ -250,16 +250,21 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
   std::u16string description_text;
   bool is_for_bottom_sheet = false;
 #if BUILDFLAG(IS_ANDROID)
+  bool is_wallet_branding_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding);
+  bool is_wallet_branding_v2_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2);
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly: {
       if (is_chrome_branding_enabled) {
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillEnableWalletBranding)) {
+        if (is_wallet_branding_enabled) {
           save_card_icon_id = IDR_AUTOFILL_GOOGLE_WALLET;
           save_card_icon_description_text = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME);
           description_text = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION);
+              is_wallet_branding_v2_enabled
+                  ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION
+                  : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION);
         } else {
           save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
           save_card_icon_description_text = l10n_util::GetStringUTF16(
@@ -268,7 +273,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
               IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
         }
         save_card_prompt_title_id =
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
+            is_wallet_branding_v2_enabled
+                ? IDS_AUTOFILL_SAVE_CARD_IN_GOOGLE_WALLET_PROMPT_TITLE
+                : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
       } else {
         save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
         save_card_prompt_title_id =
@@ -278,13 +285,14 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     }
     case CardSaveType::kCardSaveWithCvc: {
       if (is_chrome_branding_enabled) {
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillEnableWalletBranding)) {
+        if (is_wallet_branding_enabled) {
           save_card_icon_id = IDR_AUTOFILL_GOOGLE_WALLET;
           save_card_icon_description_text = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME);
           description_text = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY);
+              is_wallet_branding_v2_enabled
+                  ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION
+                  : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY);
         } else {
           save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
           save_card_icon_description_text = l10n_util::GetStringUTF16(
@@ -293,7 +301,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
               IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
         }
         save_card_prompt_title_id =
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY;
+            is_wallet_branding_v2_enabled
+                ? IDS_AUTOFILL_SAVE_CARD_IN_GOOGLE_WALLET_PROMPT_TITLE
+                : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY;
       } else {
         save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
         save_card_prompt_title_id =
