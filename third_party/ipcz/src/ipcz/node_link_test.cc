@@ -253,5 +253,53 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
   link20->Deactivate();
 }
 
+// Sending multiple proxy termination messages (like ProxyWillStop or
+// StopProxying) to a proxying router was triggering an assertion failure
+// because the router would attempt to set the sequence length limits on its
+// decaying links more than once. Regression test for crbug.com/486341715.
+TEST_F(NodeLinkTest, StopProxyingRedundant) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+
+  auto [link0, link1] = LinkNodes(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  // Configure router0 as a proxy.
+  RouterDescriptor descriptor;
+  router0->SerializeNewRouter(*link0, descriptor);
+
+  // Calling StopProxying multiple times used to trigger an assertion failure.
+  // With the fix, the second call is safely ignored.
+  EXPECT_TRUE(router0->StopProxying(SequenceNumber(100), SequenceNumber(100)));
+  EXPECT_FALSE(router0->StopProxying(SequenceNumber(100), SequenceNumber(100)));
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
+TEST_F(NodeLinkTest, NotifyProxyWillStopRedundant) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+
+  auto [link0, link1] = LinkNodes(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  // Configure router0 as a proxy.
+  RouterDescriptor descriptor;
+  router0->SerializeNewRouter(*link0, descriptor);
+
+  // Calling NotifyProxyWillStop multiple times used to trigger an assertion
+  // failure. With the fix, the second call is safely ignored.
+  EXPECT_TRUE(router0->NotifyProxyWillStop(SequenceNumber(100)));
+  EXPECT_FALSE(router0->NotifyProxyWillStop(SequenceNumber(100)));
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
 }  // namespace
 }  // namespace ipcz

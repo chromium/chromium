@@ -1250,6 +1250,11 @@ bool Router::StopProxying(SequenceNumber inbound_sequence_length,
     } else if (!inward_edge_ || inward_edge_->is_stable()) {
       // Not a proxy, so this request is invalid.
       return false;
+    } else if (inward_edge_->length_to_decaying_link().has_value() ||
+               inward_edge_->length_from_decaying_link().has_value() ||
+               outward_edge_.length_to_decaying_link().has_value() ||
+               outward_edge_.length_from_decaying_link().has_value()) {
+      return false;
     } else {
       inward_edge_->set_length_to_decaying_link(inbound_sequence_length);
       inward_edge_->set_length_from_decaying_link(outbound_sequence_length);
@@ -1265,6 +1270,17 @@ bool Router::StopProxying(SequenceNumber inbound_sequence_length,
       // The bridge is being or has already been torn down, so there's nothing
       // to do here.
       return true;
+    }
+
+    if (bridge_->length_to_decaying_link().has_value() ||
+        bridge_->length_from_decaying_link().has_value() ||
+        outward_edge_.length_to_decaying_link().has_value() ||
+        outward_edge_.length_from_decaying_link().has_value() ||
+        bridge_peer->bridge_->length_to_decaying_link().has_value() ||
+        bridge_peer->bridge_->length_from_decaying_link().has_value() ||
+        bridge_peer->outward_edge_.length_to_decaying_link().has_value() ||
+        bridge_peer->outward_edge_.length_from_decaying_link().has_value()) {
+      return false;
     }
 
     bridge_->set_length_to_decaying_link(inbound_sequence_length);
@@ -1295,6 +1311,10 @@ bool Router::NotifyProxyWillStop(SequenceNumber inbound_sequence_length) {
       // or we've lost all links due to disconnection. In the latter case we
       // can silently ignore this, but the former case is a validation failure.
       return is_disconnected_;
+    }
+
+    if (outward_edge_.length_from_decaying_link().has_value()) {
+      return false;
     }
 
     DVLOG(4) << "Bypassed proxy will stop forwarding inbound parcels after a "
@@ -1341,6 +1361,12 @@ bool Router::StopProxyingToLocalPeer(SequenceNumber outbound_sequence_length) {
       return false;
     }
 
+    if (local_peer->outward_edge_.length_from_decaying_link().has_value() ||
+        outward_edge_.length_to_decaying_link().has_value() ||
+        inward_edge_->length_from_decaying_link().has_value()) {
+      return false;
+    }
+
     DVLOG(4) << "Stopping proxy with decaying "
              << inward_edge_->decaying_link()->Describe() << " and decaying "
              << our_link->Describe();
@@ -1368,6 +1394,14 @@ bool Router::StopProxyingToLocalPeer(SequenceNumber outbound_sequence_length) {
     MultiMutexLock lock(&mutex_, &local_peer->mutex_, &bridge_peer->mutex_);
     if (outward_edge_.is_stable() || local_peer->outward_edge_.is_stable() ||
         bridge_peer->outward_edge_.is_stable()) {
+      return false;
+    }
+
+    if (local_peer->outward_edge_.length_from_decaying_link().has_value() ||
+        outward_edge_.length_from_decaying_link().has_value() ||
+        bridge_->length_to_decaying_link().has_value() ||
+        bridge_peer->outward_edge_.length_to_decaying_link().has_value() ||
+        bridge_peer->bridge_->length_from_decaying_link().has_value()) {
       return false;
     }
 
