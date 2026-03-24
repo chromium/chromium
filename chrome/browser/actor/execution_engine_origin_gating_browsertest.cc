@@ -102,9 +102,9 @@ class ExecutionEngineOriginGatingBrowserTestBase
             {features::kGlicActor,
              {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {kGlicCrossOriginNavigationGating,
-             {{
+             {
                  {"confirm_navigation_to_new_origins", "true"},
-             }}},
+             }},
         },
         /*disabled_features=*/{features::kGlicWarming});
   }
@@ -1848,5 +1848,81 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "MetricsEnabled"
                                              : "MetricsDisabled";
                          });
+
+class ExecutionEngineBlocklistDisabledBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase {
+ public:
+  ExecutionEngineBlocklistDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlic, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {kGlicCrossOriginNavigationGating,
+             {
+                 {"confirm_navigation_to_new_origins", "false"},
+                 {"enforce_component_updater_block_list_entries", "false"},
+             }},
+        },
+        /*disabled_features=*/{});
+  }
+  ~ExecutionEngineBlocklistDisabledBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
+                       NavigateToBlockedUrlAllowed) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // Attempt to navigate to the blocked URL by setting link and clicking
+  // it.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // It should succeed because component updater blocklist is disabled by flag.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), blocked_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
+                       ClickOnPageFromBlockedUrlAllowed) {
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+  OpenGlicAndCreateTask();
+
+  std::unique_ptr<ToolRequest> click_on_page =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click_on_page), result.GetCallback());
+  ExpectOkResult(result);
+}
 
 }  // namespace actor

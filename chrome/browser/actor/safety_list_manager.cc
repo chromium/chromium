@@ -149,7 +149,9 @@ SafetyListManager::Decision SafetyListManager::Find(
     case CONTENT_SETTING_ALLOW:
       return Decision::kAllow;
     case CONTENT_SETTING_BLOCK:
-      return Decision::kBlock;
+      return kGlicEnforceComponentUpdaterBlockListEntries.Get()
+                 ? Decision::kBlock
+                 : Decision::kNone;
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_ASK:
     case CONTENT_SETTING_SESSION_ONLY:

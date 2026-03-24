@@ -76,6 +76,11 @@ BASE_FEATURE_PARAM(bool,
                    "include_hardcoded_block_list_entries",
                    true);
 BASE_FEATURE_PARAM(bool,
+                   kGlicEnforceComponentUpdaterBlockListEntries,
+                   &kGlicCrossOriginNavigationGating,
+                   "enforce_component_updater_block_list_entries",
+                   true);
+BASE_FEATURE_PARAM(bool,
                    kGlicAllowImplicitToolOriginGrants,
                    &kGlicCrossOriginNavigationGating,
                    "allow_implicit_tool_origin_grants",
