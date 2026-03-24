@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_writer.h"
+#include "base/values.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +17,9 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/device_form_factor.h"
 
 class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
@@ -27,6 +32,14 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     WebUIMochaBrowserTest::SetUpDefaultCommandLine(command_line);
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+
+    // Capture headers for all requests to the test server and make them
+    // available through a JSON endpoint.
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &SlimWebviewBrowserTest::MonitorRequest, base::Unretained(this)));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &SlimWebviewBrowserTest::HandleRequest, base::Unretained(this)));
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -53,6 +66,37 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
   }
 
  private:
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    captured_headers_[request.relative_url] = request.headers;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() == "/capture-headers") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("application/json");
+
+      base::DictValue root;
+      for (const auto& [url, headers] : captured_headers_) {
+        base::DictValue headers_dict;
+        for (const auto& [key, value] : headers) {
+          headers_dict.Set(key, value);
+        }
+        root.Set(url, std::move(headers_dict));
+      }
+
+      std::string json;
+      base::JSONWriter::Write(root, &json);
+      http_response->set_content(json);
+      return http_response;
+    }
+    return nullptr;
+  }
+
+  std::map<std::string, net::test_server::HttpRequest::HeaderMap>
+      captured_headers_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kGlic};
 };
 

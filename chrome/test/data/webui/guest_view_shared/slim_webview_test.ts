@@ -4,6 +4,7 @@
 
 import '//glic/shared/guest_view/slim_webview.js';
 
+import {OnBeforeSendHeadersParams} from '//glic/shared/guest_view/request_throttlers.js';
 import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
 import type {SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -214,5 +215,38 @@ suite('Operations', function() {
 
     assertEquals('NotAllowedError', mediaError.name);
     assertTrue(await isFulfilled(requestDeniedPromise));
+  });
+});
+
+suite('Headers', function() {
+  test('HeadersConfigured', async function() {
+    const webviewUrl =
+        getTestUrl('/webui/guest_view_shared/eval_post_message.html');
+    const webview = document.createElement('webview');
+
+    webview.onBeforeSendHeadersParams = new OnBeforeSendHeadersParams(
+        ['xmlhttprequest', 'main_frame'], false,
+        [{name: 'X-Test-Header', value: 'test-value'}]);
+
+    document.body.appendChild(webview);
+
+    await navigateAndWaitForContentLoad(webview, webviewUrl);
+
+    // Let the guest perform a fetch request and retrieve the captured headers.
+    // We fetch from the guest context because the embedder WebUI has a strict
+    // CSP that blocks connections to the local HTTP test server.
+    const capturedHeaders = await evalOnWebview(webview, async () => {
+      const response = await fetch('/capture-headers');
+      return await response.json();
+    });
+
+    const mainFrameHeaders =
+        capturedHeaders['/webui/guest_view_shared/eval_post_message.html'];
+    assertTrue(!!mainFrameHeaders);
+    assertEquals('test-value', mainFrameHeaders['X-Test-Header']);
+
+    const fetchHeaders = capturedHeaders['/capture-headers'];
+    assertTrue(!!fetchHeaders);
+    assertEquals('test-value', fetchHeaders['X-Test-Header']);
   });
 });
