@@ -117,7 +117,7 @@ bool ClipboardRequestHandler::UploadDataImpl() {
       base::BindOnce(&ClipboardRequestHandler::OnContentAnalysisResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  content_analysis_info_->InitializeRequest(request.get());
+  content_analysis_info_->InitializeRequest(request.get(), true);
   request->set_analysis_connector(BULK_DATA_ENTRY);
   if (type_ == Type::kImage) {
     request->set_image_paste(true);

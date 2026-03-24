@@ -126,7 +126,7 @@ bool PagePrintRequestHandler::UploadDataImpl() {
       base::BindOnce(&PagePrintRequestHandler::OnContentAnalysisResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  content_analysis_info_->InitializeRequest(request.get());
+  content_analysis_info_->InitializeRequest(request.get(), true);
   request->set_analysis_connector(PRINT);
   request->set_filename(content_analysis_info_->tab_title());
   if (!printer_name_.empty()) {

@@ -31,7 +31,7 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   // service. Connector-specific fields need to be added to the request
   // separately.
   void InitializeRequest(BinaryUploadRequest* request,
-                         bool include_enterprise_only_fields = true) override;
+                         bool include_enterprise_only_fields) override;
 
   // Returns email of the active Gaia user based on the values provided by
   // `tab_url()` and `identity_manager()`. Only returns a value for Workspace

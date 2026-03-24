@@ -219,7 +219,7 @@ FilesRequestHandler::PrepareFileRequest(size_t index) {
       base::BindOnce(&FilesRequestHandler::FileRequestStartCallback,
                      weak_ptr_factory_.GetWeakPtr(), index));
   enterprise_connectors::FileAnalysisRequestBase* request_raw = request.get();
-  content_analysis_info_->InitializeRequest(request_raw);
+  content_analysis_info_->InitializeRequest(request_raw, true);
   request_raw->set_analysis_connector(
       AccessPointToEnterpriseConnector(access_point_));
   request_raw->set_source(source_);
