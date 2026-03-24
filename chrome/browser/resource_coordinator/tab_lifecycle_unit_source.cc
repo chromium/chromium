@@ -19,8 +19,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -183,11 +182,12 @@ TabStripModel* TabLifecycleUnitSource::GetFocusedTabStripModel() const {
   if (focused_tab_strip_model_for_testing_) {
     return focused_tab_strip_model_for_testing_;
   }
-  Browser* const focused_browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* const focused_browser =
+      chrome::FindBrowserWithActiveWindow();
   if (!focused_browser) {
     return nullptr;
   }
-  return focused_browser->tab_strip_model();
+  return focused_browser->GetTabStripModel();
 }
 
 void TabLifecycleUnitSource::UpdateFocusedTab(BrowserWindowInterface* browser) {

@@ -75,8 +75,8 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
   }
 
   // Show the dialog in the active tabbed browser window.
-  Browser* browser = chrome::FindBrowserWithActiveWindow();
-  if (browser && browser->is_type_normal()) {
+  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  if (browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     DCHECK(!on_visible_);
     ShowRequiredNotification(browser, deadline,
                              is_notification_style_ap_required);

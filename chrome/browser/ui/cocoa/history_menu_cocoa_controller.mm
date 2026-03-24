@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_id.h"
@@ -52,8 +53,9 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
     // bridge, target the active profile. Without this, history menu items open
     // in the nearest non-incognito window, or create one.
     if (auto* active_browser = chrome::FindBrowserWithActiveWindow()) {
-      if (active_browser->profile()->GetOriginalProfile() == target_profile) {
-        target_profile = active_browser->profile();
+      if (active_browser->GetProfile()->GetOriginalProfile() ==
+          target_profile) {
+        target_profile = active_browser->GetProfile();
       }
     }
 

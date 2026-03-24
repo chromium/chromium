@@ -100,7 +100,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  auto* browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
   if (!browser) {
     browser = chrome::FindLastActiveWithProfile(profile_);
   }
@@ -108,7 +108,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
     return;
   }
 
-  auto* tab_strip_model = browser->tab_strip_model();
+  auto* tab_strip_model = browser->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     auto* web_contents = tab_strip_model->GetWebContentsAt(i);
     if (web_contents->GetLastCommittedURL() == url) {
@@ -135,11 +135,7 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
 
 void ShoppingUiHandlerDelegate::NavigateToUrl(BrowserWindowInterface* browser,
                                               const GURL& url) {
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
-  browser->GetBrowserForMigrationOnly()->OpenURL(
-      params, /*navigation_handle_callback=*/{});
+  browser->OpenGURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 }  // namespace commerce

@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -234,9 +235,11 @@ ChromeNewWindowClient* ChromeNewWindowClient::Get() {
 }
 
 void ChromeNewWindowClient::NewTab() {
-  Browser* browser = chrome::FindBrowserWithActiveWindow();
-  if (browser && browser->is_type_normal()) {
-    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  if (browser &&
+      browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+    chrome::NewTab(browser->GetBrowserForMigrationOnly(),
+                   NewTabTypes::kNewTabCommand);
     return;
   }
 
@@ -252,10 +255,11 @@ void ChromeNewWindowClient::NewTab() {
     }
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
-    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
+    chrome::NewTab(browser->GetBrowserForMigrationOnly(),
+                   NewTabTypes::kNewTabCommand);
   }
 
-  browser->SetFocusToLocationBar();
+  browser->GetBrowserForMigrationOnly()->SetFocusToLocationBar();
 }
 
 void ChromeNewWindowClient::NewWindow(bool is_incognito,
@@ -264,9 +268,9 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito,
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithActiveWindow();
-  Profile* profile = (browser && browser->profile())
-                         ? browser->profile()->GetOriginalProfile()
+  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  Profile* profile = (browser && browser->GetProfile())
+                         ? browser->GetProfile()->GetOriginalProfile()
                          : ProfileManager::GetActiveUserProfile();
   chrome::NewEmptyWindow(
       is_incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
@@ -487,8 +491,8 @@ void ChromeNewWindowClient::RestoreTab() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithActiveWindow();
-  Profile* profile = browser ? browser->profile() : nullptr;
+  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  Profile* profile = browser ? browser->GetProfile() : nullptr;
   if (!profile) {
     profile = ProfileManager::GetActiveUserProfile();
   }
