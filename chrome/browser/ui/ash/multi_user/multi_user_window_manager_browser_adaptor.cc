@@ -9,12 +9,14 @@
 
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,11 +24,6 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -74,13 +71,13 @@ class MultiUserWindowManagerBrowserAdaptor::AppObserver
 };
 
 MultiUserWindowManagerBrowserAdaptor::MultiUserWindowManagerBrowserAdaptor(
-    MultiUserWindowManager* multi_user_window_manager)
-    : multi_user_window_manager_(CHECK_DEREF(multi_user_window_manager)) {
+    MultiUserWindowManager* multi_user_window_manager,
+    BrowserController* browser_controller)
+    : multi_user_window_manager_(CHECK_DEREF(multi_user_window_manager)),
+      browser_controller_(CHECK_DEREF(browser_controller)) {
   multi_user_window_manager_observation_.Observe(
       &multi_user_window_manager_.get());
-
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  browser_controller_observation_.Observe(browser_controller);
 }
 
 MultiUserWindowManagerBrowserAdaptor::~MultiUserWindowManagerBrowserAdaptor() {
@@ -113,25 +110,32 @@ void MultiUserWindowManagerBrowserAdaptor::AddUser(
   }
 
   // Account all existing browser windows of this user accordingly.
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->GetProfile()->IsSameOrParent(profile)) {
-          OnBrowserCreated(browser);
+  browser_controller_->ForEachBrowser(
+      BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](BrowserDelegate& browser) {
+        if (browser.GetAccountId() == account_id) {
+          OnBrowserCreated(&browser);
         }
-        return true;
+        return BrowserController::IterationDirective::kContinueIteration;
       });
 }
 
 void MultiUserWindowManagerBrowserAdaptor::OnBrowserCreated(
-    BrowserWindowInterface* browser) {
-  // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
-  // come here with no valid window.
-  if (!browser->GetWindow() || !browser->GetWindow()->GetNativeWindow()) {
+    BrowserDelegate* browser) {
+  if (!browser->GetAccountId().is_valid()) {
+    // On several browser tests, ChromeOS user is not properly set up.
+    // Skip the window owner settings for the case.
+    CHECK_IS_TEST();
     return;
   }
-  multi_user_window_manager_->SetWindowOwner(
-      browser->GetWindow()->GetNativeWindow(),
-      multi_user_util::GetAccountIdFromProfile(browser->GetProfile()));
+
+  // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
+  // come here with no valid window.
+  if (!browser->GetWindow() || !browser->GetNativeWindow()) {
+    return;
+  }
+  multi_user_window_manager_->SetWindowOwner(browser->GetNativeWindow(),
+                                             browser->GetAccountId());
 }
 
 void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(
@@ -142,8 +146,7 @@ void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(
   const AccountId& owner = multi_user_window_manager_->GetWindowOwner(window);
   // Browser windows don't use kAvatarIconKey. See
   // BrowserFrameViewAsh::UpdateProfileIcons().
-  if (owner.is_valid() &&
-      !ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
+  if (owner.is_valid() && !browser_controller_->GetBrowserForWindow(window)) {
     const user_manager::User* const window_owner =
         user_manager::UserManager::IsInitialized()
             ? user_manager::UserManager::Get()->FindUser(owner)

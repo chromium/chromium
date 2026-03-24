@@ -9,6 +9,7 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
@@ -66,6 +67,7 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     ASSERT_TRUE(testing_profile_manager_->SetUp());
 
     ChromeAshTestBase::SetUp();
+    browser_controller_ = std::make_unique<BrowserControllerImpl>();
 
     ash::ProfileHelper::Get();  // Instantiate
     LogIn(kAccountId1);
@@ -75,7 +77,8 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
 
     multi_user_window_manager_browser_adaptor_ =
         std::make_unique<MultiUserWindowManagerBrowserAdaptor>(
-            ash::Shell::Get()->multi_user_window_manager());
+            ash::Shell::Get()->multi_user_window_manager(),
+            browser_controller_.get());
     multi_user_window_manager_browser_adaptor_->AddUser(kAccountId1);
   }
 
@@ -110,6 +113,7 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
  private:
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
       multi_user_window_manager_browser_adaptor_;
 

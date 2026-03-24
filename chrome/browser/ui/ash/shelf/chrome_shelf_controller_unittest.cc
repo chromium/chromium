@@ -504,6 +504,15 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       arc_app_test_.PreProfileSetUp();
     }
 
+    // BrowserWithTestWindowTest::SetUp many things, and BrowserController
+    // instantiates in the middle of these set up. Because we instantiate
+    // MultiUserWindowManagerBrowserAdaptor in OnAshTestHelperCreated(),
+    // which is called from BrowserWithTestWindowTest::SetUp(), and the
+    // adaptor requires BrowserController, instantiating the controller
+    // after the BrowserWithTestWindowTest::SetUp() is too late, so here we
+    // set it up earlier unlike the production. If needed, we'd revisit here
+    // about the initialization order.
+    browser_controller_.emplace();
     BrowserWithTestWindowTest::SetUp();
 
     // WallpaperControllerClientImpl should be created before Profile
@@ -615,8 +624,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     if (StartWebAppProviderForMainProfile()) {
       StartWebAppProvider(profile());
     }
-
-    browser_controller_.emplace();
   }
 
   void OnAshTestHelperCreated() override {
@@ -626,7 +633,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     CHECK(ash::Shell::Get()->multi_user_window_manager());
     multi_user_window_manager_browser_adaptor_ =
         std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
-            ash::Shell::Get()->multi_user_window_manager());
+            ash::Shell::Get()->multi_user_window_manager(),
+            &browser_controller_.value());
   }
 
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
@@ -720,13 +728,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   void TearDown() override {
     app_registry_cache_observer_.Reset();
     shelf_controller_.reset();
-    browser_controller_.reset();
     wallpaper_controller_client_.reset();
     if (auto_start_arc_app_test_) {
       arc_app_test_.PreProfileTearDown();
     }
     multi_user_window_manager_browser_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
+    browser_controller_.reset();
     if (auto_start_arc_app_test_) {
       arc_app_test_.PostProfileTearDown();
     }

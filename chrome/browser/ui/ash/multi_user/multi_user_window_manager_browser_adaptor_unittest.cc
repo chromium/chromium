@@ -378,11 +378,12 @@ void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
 
+  browser_controller_.emplace();
+
   multi_user_window_manager_browser_adaptor_ =
       std::make_unique<MultiUserWindowManagerBrowserAdaptor>(
-          ash::Shell::Get()->multi_user_window_manager());
-
-  browser_controller_.emplace();
+          ash::Shell::Get()->multi_user_window_manager(),
+          &browser_controller_.value());
 }
 
 void MultiUserWindowManagerBrowserAdaptorTest::SetUpForThisManyWindows(
@@ -431,8 +432,6 @@ MultiUserWindowManagerBrowserAdaptorTest::SetUpOneWindowEachDeskForUser() {
 }
 
 void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
-  browser_controller_.reset();
-
   // Since the AuraTestBase is needed to create our assets, we have to
   // also delete them before we tear it down.
   while (!windows_.empty()) {
@@ -448,6 +447,9 @@ void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
       user_manager_->OnUserProfileWillBeDestroyed(*account_id);
     }
   }
+
+  browser_controller_.reset();
+
   ChromeAshTestBase::TearDown();
   // ProfileManager instance is destroyed in OnHelperWillBeDestroyed()
   // invoked inside ChromeAshTestBase::TearDown().
