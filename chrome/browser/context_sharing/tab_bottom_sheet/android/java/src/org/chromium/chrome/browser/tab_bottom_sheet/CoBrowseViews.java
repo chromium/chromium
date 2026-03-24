@@ -102,7 +102,15 @@ public class CoBrowseViews {
     @CalledByNative
     public void setWebContents(@Nullable WebContents webContents) {
         if (mWebUi != null) {
+            View oldView = mWebUi.getWebUiView();
             mWebUi.setWebContents(webContents);
+            View newView = mWebUi.getWebUiView();
+            if (oldView != newView) {
+                ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
+                webUiContainer.removeAllViews();
+                detachFromParent(newView);
+                webUiContainer.addView(newView);
+            }
         }
     }
 
