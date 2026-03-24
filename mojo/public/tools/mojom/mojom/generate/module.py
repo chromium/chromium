@@ -389,7 +389,6 @@ PRIMITIVES = (
 
 ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
 ATTRIBUTE_DEFAULT = 'Default'
-ATTRIBUTE_DIRECT_RECEIVER = 'DirectReceiver'
 ATTRIBUTE_DISPATCH_DEBUG_ALIAS = 'DispatchDebugAlias'
 ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
@@ -1166,11 +1165,6 @@ class Interface(ReferenceKind):
       enum.Stylize(stylizer)
     for constant in self.constants:
       constant.Stylize(stylizer)
-
-  @property
-  def direct_receiver(self):
-    return self.attributes.get(ATTRIBUTE_DIRECT_RECEIVER, False) \
-        if self.attributes else False
 
   @property
   def service_sandbox(self):

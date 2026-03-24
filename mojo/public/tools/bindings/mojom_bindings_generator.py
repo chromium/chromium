@@ -57,7 +57,6 @@ _BUILTIN_GENERATORS = {
 _BUILTIN_CHECKS = {
     "attributes": "mojom_attributes_check",
     "definitions": "mojom_definitions_check",
-    "direct_receiver": "mojom_interface_direct_receiver_check",
     "features": "mojom_interface_feature_check",
     "restrictions": "mojom_restrictions_check",
 }

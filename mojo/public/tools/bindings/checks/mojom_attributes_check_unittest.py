@@ -104,11 +104,6 @@ class MojoBindingsCheckTest(MojomParserTestCase):
         MethodWithSendValidation(Thingy thing);
       };
 
-      [DirectReceiver]
-      interface FooWithDirectReceiver {
-        Method();
-      };
-
       [VendorSpecified="foo=bar"]
       interface InterfaceWithVendorSpecifiedStringAttribute {
         Method();
