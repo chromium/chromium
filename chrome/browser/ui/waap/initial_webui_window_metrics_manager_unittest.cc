@@ -179,3 +179,60 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "FromConstructor",
       expected_delta, 1);
 }
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       RecordsNewWindowIfStartupDeltaIsNegative) {
+  // Ensure pristine static state across tests if tests are run in the same
+  // process.
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+
+  base::HistogramTester tester;
+
+  {
+    // Window 1: Startup Window (First window created)
+    const base::TimeTicks start_time1 = base::TimeTicks::Now();
+    InitialWebUIWindowMetricsManager startup_manager(&browser_window_);
+    // We do NOT call `SkipStartupForTesting()` because we want to test the
+    // startup logic.
+
+    // Simulate presentation of native window.
+    base::TimeTicks browser_window_time1 = start_time1 + kTestLatency;
+    startup_manager.OnBrowserWindowFirstPresentation(browser_window_time1);
+
+    // Simulate an invalid/negative gap (reload button paints BEFORE the window
+    // presentation).
+    base::TimeTicks reload_button_time1 =
+        browser_window_time1 - base::Milliseconds(10);
+    startup_manager.OnReloadButtonFirstPaint(reload_button_time1);
+  }
+
+  // Verify the startup metric was NOT recorded because the gap is negative.
+  tester.ExpectTotalCount(
+      "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
+
+  base::TimeDelta webui_delay = base::Milliseconds(50);
+  {
+    // Window 2: New Window
+    const base::TimeTicks start_time2 = base::TimeTicks::Now();
+    InitialWebUIWindowMetricsManager new_window_manager(&browser_window_);
+    new_window_manager.SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated, start_time2);
+
+    // Simulate presentation of native window.
+    base::TimeTicks browser_window_time2 = start_time2 + kTestLatency;
+    new_window_manager.OnBrowserWindowFirstPresentation(browser_window_time2);
+
+    // Simulate a valid positive gap.
+    base::TimeTicks reload_button_time2 = browser_window_time2 + webui_delay;
+    new_window_manager.OnReloadButtonFirstPaint(reload_button_time2);
+  }
+
+  // The critical verification: This window must incorrectly NOT be logged as
+  // Startup, but correctly as a New Window.
+  tester.ExpectTotalCount(
+      "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      webui_delay, 1);
+}

@@ -81,6 +81,10 @@ class InitialWebUIWindowMetricsManager {
   // Skips recording startup metrics for testing.
   void SkipStartupForTesting();
 
+  // Resets the static markers tracking whether startup metrics have been
+  // emitted.
+  static void ResetForTesting();
+
  private:
   // The service used to record metrics. May be null if the feature is disabled.
   const raw_ptr<WaapUIMetricsService> waap_service_;
