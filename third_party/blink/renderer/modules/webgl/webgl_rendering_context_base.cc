@@ -1289,6 +1289,8 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   ADD_VALUES_TO_SET(supported_tex_image_source_formats_, kSupportedFormatsES2);
   ADD_VALUES_TO_SET(supported_types_, kSupportedTypesES2);
   ADD_VALUES_TO_SET(supported_tex_image_source_types_, kSupportedTypesES2);
+
+  dirty_rect_for_commit_.setEmpty();
 }
 
 scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
@@ -1578,6 +1580,9 @@ void WebGLRenderingContextBase::MarkContextChanged(
 
   if (Host()->IsOffscreenCanvas()) {
     marked_canvas_dirty_ = true;
+    dirty_rect_for_commit_.join(
+        SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height()));
+
     DidDraw(draw_type);
     return;
   }
@@ -1619,8 +1624,8 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
   if (!canvas_resource)
     return false;
   const bool submitted_frame =
-      Host()->PushFrame(std::move(canvas_resource), std::nullopt);
-
+      Host()->PushFrame(std::move(canvas_resource), dirty_rect_for_commit_);
+  dirty_rect_for_commit_.setEmpty();
   MarkLayerComposited();
   return submitted_frame;
 }
@@ -1641,8 +1646,9 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   if (resource_provider && resource_provider_has_content_for_frame_push_) {
     submitted_frame = Host()->PushFrame(
         resource_provider->ProduceCanvasResource(FlushReason::kOther),
-        std::nullopt);
+        dirty_rect_for_commit_);
     resource_provider_has_content_for_frame_push_ = false;
+    dirty_rect_for_commit_.setEmpty();
   }
   MarkLayerComposited();
   return submitted_frame;
@@ -2194,6 +2200,8 @@ WebGLRenderingContextBase::GetRGBAUnacceleratedStaticBitmapImage(
 }
 
 void WebGLRenderingContextBase::Reshape(int width, int height) {
+  dirty_rect_for_commit_ = SkIRect::MakeWH(width, height);
+
   if (isContextLost())
     return;
 
