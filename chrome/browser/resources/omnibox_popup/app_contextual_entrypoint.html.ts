@@ -16,7 +16,6 @@ export function getHtml(this: OmniboxPopupAppElement) {
         class="upload-button"
         ?show-context-menu-description="${
             this.computeShowContextEntrypointDescription_()}"
-        .inputState="${this.inputState_}"
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
     </cr-composebox-contextual-entrypoint-button>
   `}

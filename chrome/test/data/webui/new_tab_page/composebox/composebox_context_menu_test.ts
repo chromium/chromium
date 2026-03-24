@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ContextUploadErrorType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {ADD_TAB_CONTEXT_FN, createComposeboxElement, setupComposeboxTest} from './test_support.js';
+import {ADD_TAB_CONTEXT_FN, createComposeboxElement, MockInputState, setupComposeboxTest} from './test_support.js';
 
 suite('NewTabPageComposeboxContextMenuTest', () => {
   const testProxy = setupComposeboxTest();
@@ -27,6 +27,59 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
       assertTrue(!!contextMenuButton);
     });
+
+    test(
+        'context menu button is displayed when not using pec api',
+        async () => {
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+          });
+          createComposeboxElement(testProxy);
+          testProxy.element.showMenuOnClick = false;
+          await testProxy.element.updateComplete;
+          await microtasksFinished();
+
+          const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
+
+          assertTrue(!!contextMenuButton);
+        });
+
+    test(
+        'context menu button is displayed with valid input state',
+        async () => {
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: true,
+          });
+          createComposeboxElement(testProxy);
+          testProxy.element.showMenuOnClick = false;
+          await testProxy.element.updateComplete;
+          const inputState = new MockInputState({
+            allowedTools: [ToolMode.kDeepSearch],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputState);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
+
+          assertTrue(!!contextMenuButton);
+        });
+
+    test(
+        'context menu button is hidden with invalid input state',
+        async () => {
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: true,
+          });
+          createComposeboxElement(testProxy);
+          testProxy.element.showMenuOnClick = false;
+          await microtasksFinished();
+
+          const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
+
+          assertFalse(!!contextMenuButton);
+        });
 
     test('add tab context', async () => {
       createComposeboxElement(testProxy);
