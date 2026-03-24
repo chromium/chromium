@@ -8,10 +8,10 @@
 
 chromium::import! {
     "//mojo/public/rust/system";
-    "//mojo/public/rust/sequences:sequences";
+    "//base:sequenced_task_runner";
 }
 
-use sequences::SequencedTaskRunnerHandle;
+use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message::RawMojoMessage;
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;

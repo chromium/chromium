@@ -3,17 +3,27 @@
 // found in the LICENSE file.
 
 chromium::import! {
-    "//mojo/public/rust/sequences";
-    "//mojo/public/rust/sequences:test_cxx";
+    "//base:scoped_refptr";
+    "//base:sequenced_task_runner";
+    "//base:sequenced_task_runner_test_bridge";
+    "//base/test:task_environment";
 }
 
 use rust_gtest_interop::prelude::*;
-use sequences::{ScopedRefPtr, SequencedTaskRunnerHandle};
+use scoped_refptr::ScopedRefPtr;
+use sequenced_task_runner::SequencedTaskRunnerHandle;
 use std::sync::{Arc, RwLock};
 
-fn get_test_ref_ptr(b: *mut bool) -> ScopedRefPtr<test_cxx::ffi::TestRefCounted> {
+fn get_test_ref_ptr(
+    b: *mut bool,
+) -> ScopedRefPtr<sequenced_task_runner_test_bridge::ffi::TestRefCounted> {
     // SAFETY: CreateTestRefCounted provides a released pointer
-    unsafe { ScopedRefPtr::wrap_ref_counted(test_cxx::ffi::CreateTestRefCounted(&mut *b)) }.unwrap()
+    unsafe {
+        ScopedRefPtr::wrap_ref_counted(
+            sequenced_task_runner_test_bridge::ffi::CreateTestRefCounted(&mut *b),
+        )
+    }
+    .unwrap()
 }
 
 #[gtest(RustSequences, TestScopedRefPtr)]
@@ -49,15 +59,17 @@ fn test_scoped_refptr() {
 #[gtest(RustSequences, TestSequencedTaskrunner)]
 fn test_sequenced_task_runner() {
     // Set up the environment so we can get a task runner and execute the tasks
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let task_runner = SequencedTaskRunnerHandle::get_current_default()
         .expect("We just initialized an environment so there should be a default task runner");
 
-    let run_tasks = SequencedTaskRunnerHandle::run_all_current_tasks_on_default_runner_for_testing;
+    let run_tasks = || {
+        task_runner.run_all_current_tasks_for_testing();
+    };
 
-    // FOR_RELEASE: It would be nice to make our own type that wraps Arc<RwLock>
-    // to provide a nicer API to users (in particular, no blocking functions).
+    // TODO(crbug.com/470438844): Replace these with sequenced primitives once
+    // we've implemented them.
     let count: Arc<RwLock<i32>> = Arc::new(RwLock::new(0));
 
     let count_clone = count.clone();

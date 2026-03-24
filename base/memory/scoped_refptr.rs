@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! This module defines the `ScopedRefPtr` type, which is a Rust wrapper for a
+//! This crate defines the `ScopedRefPtr` type, which is a Rust wrapper for a
 //! `base::scoped_refptr`. Therefore, it only accepts types which match the
 //! ref-counting behavior of `base::scoped_refptr`, and only works on opaque
 //! C++ types.

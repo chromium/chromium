@@ -1091,7 +1091,7 @@ component("base") {
   deps += [ "//third_party/zlib" ]
 
   deps += [
-    ":rust_logger",
+    ":logger",
     "//third_party/rust/serde_json_lenient/v0_2/wrapper",
   ]
 
@@ -2578,6 +2578,20 @@ component("base") {
   }
 }
 
+# This meta-target is equivalent to //base, but for rust code. It's separate
+# to make dependency management easier: base_rust depends on //base, but not
+# vice-versa.
+# TODO(crbug.com/475513466): We may want to rename :base to :base_cpp and
+# create a new meta-target :base that includes both cpp and rust code, for
+# convenience.
+group("base_rust") {
+  public_deps = [
+    ":callback",
+    ":run_loop",
+    ":sequenced_task_runner",
+  ]
+}
+
 # A separate source_set for this header to avoid circular dependencies.
 source_set("compiler_specific") {
   public = [ "compiler_specific.h" ]
@@ -2622,7 +2636,7 @@ rust_bindgen("logging_log_severity_bindgen") {
   deps = [ ":debugging_buildflags" ]
 }
 
-rust_static_library("rust_logger") {
+rust_static_library("logger") {
   allow_unsafe = true  # Unsafe needed for FFI.
   deps = [
     ":logging_log_severity_bindgen",
@@ -2642,7 +2656,7 @@ rust_static_library("rust_logger") {
     # circular dependencies more robustly.
     "//base/allocator/partition_allocator:raw_ptr",
 
-    # Needed because logging/rust_logger.rs contains:
+    # Needed because logging/logger.rs contains:
     #   include!("base/logging/rust_log_integration.h");
     # rust_log_integration.h ends up transitively #including
     # debug/debugging_buildflags.h, which is a generated header that needs to
@@ -2661,10 +2675,114 @@ rust_static_library("rust_logger") {
     ":debugging_buildflags",
   ]
   visibility = [ ":base" ]
-  sources = [ "logging/rust_logger.rs" ]
-  crate_root = "logging/rust_logger.rs"
+  sources = [ "logging/logger.rs" ]
+  crate_root = "logging/logger.rs"
 
-  cxx_bindings = [ "logging/rust_logger.rs" ]
+  cxx_bindings = [ "logging/logger.rs" ]
+}
+
+rust_static_library("scoped_refptr") {
+  sources = [ "memory/scoped_refptr.rs" ]
+  crate_root = "memory/scoped_refptr.rs"
+  allow_unsafe = true
+
+  # This file uses cxx APIs but doesn't have its own bindings
+  deps = [ "//third_party/rust/cxx/v1:lib" ]
+}
+
+rust_static_library("callback") {
+  sources = [ "functional/callback.rs" ]
+  crate_root = "functional/callback.rs"
+  cxx_bindings = [ "functional/callback.rs" ]
+  allow_unsafe = true
+  deps = [ ":scoped_refptr" ]
+}
+
+rust_static_library("run_loop") {
+  sources = [ "run_loop.rs" ]
+  crate_root = "run_loop.rs"
+  cxx_bindings = [ "run_loop.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":run_loop_shim",
+    "//base",
+  ]
+}
+
+rust_static_library("sequenced_task_runner") {
+  sources = [ "task/sequenced_task_runner.rs" ]
+  crate_root = "task/sequenced_task_runner.rs"
+  cxx_bindings = [ "task/sequenced_task_runner.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":callback",
+    ":run_loop",
+    ":scoped_refptr",
+    ":sequenced_task_runner_shim",
+    "//base",
+  ]
+}
+
+rust_static_library("sequenced_task_runner_test_bridge") {
+  testonly = true
+  sources = [ "task/sequenced_task_runner_test_bridge.rs" ]
+  crate_root = "task/sequenced_task_runner_test_bridge.rs"
+  cxx_bindings = [ "task/sequenced_task_runner_test_bridge.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":base_rust",
+    ":scoped_refptr",
+    ":sequenced_task_runner_test_util",
+    "//base",
+  ]
+}
+
+source_set("sequenced_task_runner_test_util") {
+  testonly = true
+  sources = [
+    "task/sequenced_task_runner_test_util.cc",
+    "task/sequenced_task_runner_test_util.h",
+  ]
+  deps = [
+    "test:test_support",
+    "//base",
+  ]
+}
+
+source_set("run_loop_shim") {
+  sources = [
+    "run_loop_rust_shim.cc",
+    "run_loop_rust_shim.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("sequenced_task_runner_shim") {
+  sources = [
+    "task/sequenced_task_runner_rust_shim.cc",
+    "task/sequenced_task_runner_rust_shim.h",
+  ]
+
+  deps = [
+    ":callback",
+    "//base",
+  ]
+}
+
+rust_static_library("rust_sequences_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  allow_unsafe = true
+  sources = [ "task/sequenced_task_runner_unittest.rs" ]
+  crate_root = "task/sequenced_task_runner_unittest.rs"
+  deps = [
+    ":scoped_refptr",
+    ":sequenced_task_runner",
+    ":sequenced_task_runner_test_bridge",
+    "//base/test:task_environment",
+    "//testing/rust_gtest_interop",
+  ]
 }
 
 if (is_linux || is_chromeos) {
@@ -3880,11 +3998,13 @@ test("base_unittests") {
     ":hardening_tests",
     ":i18n",
     ":path_service_unittest",
+    ":rust_sequences_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
     "//base/numerics:unittests",
     "//base/test:proto_test_support",
     "//base/test:run_all_unittests",
+    "//base/test:task_environment",
     "//base/test:test_proto",
     "//base/test:test_support",
     "//build:blink_buildflags",

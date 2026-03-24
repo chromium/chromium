@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
-#include "base/logging/rust_logger.rs.h"
+#include "base/logging/logger.rs.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace logging::internal {

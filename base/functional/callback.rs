@@ -11,14 +11,27 @@
 //! RustOnceClosure, call base::BindOnce with the closure and the `run`
 //! method.
 
-// FOR_RELEASE: In theory we don't need a box here, we could just have this
-// struct be an unsized type since we're going to have to box it anyway
-// to call run(). But the cxx bridge complains if we do that, so see if we can
-// figure out how to make it work in reality.
-// FOR_RELEASE: Figure out if `Send` is actually necessary or not. Can we do
-// without it if things are single-sequenced (and require it elsewhere for
-// things that aren't)?
-pub struct RustOnceClosure(Box<dyn FnOnce() + Send>);
+chromium::import! {
+    "//base:scoped_refptr";
+}
+
+#[cxx::bridge(namespace = "base")]
+pub mod ffi {
+    // Allow C++ to use RustOnceClosure types
+    extern "Rust" {
+        #[derive(ExternType)]
+        type RustOnceClosure;
+
+        #[Self = "RustOnceClosure"]
+        fn run(boxed: Box<RustOnceClosure>);
+    }
+}
+
+// TODO(crbug.com/493253831): In theory we don't need a box here, we could just
+// have this struct be an unsized type since we're going to have to box it
+// anyway to call run(). But the cxx bridge complains if we do that, so see if
+// we can figure out how to make it work in reality.
+pub struct RustOnceClosure(Box<dyn FnOnce()>);
 
 impl RustOnceClosure {
     /// Execute the contained closure.
@@ -32,7 +45,7 @@ impl RustOnceClosure {
     }
 }
 
-impl<T: FnOnce() + Send + 'static> From<T> for RustOnceClosure {
+impl<T: FnOnce() + 'static> From<T> for RustOnceClosure {
     fn from(f: T) -> Self {
         Self(Box::new(f))
     }

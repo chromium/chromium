@@ -29,7 +29,7 @@
 
 chromium::import! {
   "//mojo/public/rust/system";
-  "//mojo/public/rust/sequences";
+  "//base:sequenced_task_runner";
 }
 
 use std::marker::PhantomData;
@@ -39,7 +39,7 @@ use std::marker::PhantomData;
 // it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex, Weak};
 
-use sequences::SequencedTaskRunnerHandle;
+use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message::RawMojoMessage;
 use system::message_pipe::MessageEndpoint;
 
@@ -105,7 +105,7 @@ where
     /// for creating a new `Receiver` from an endpoint received via mojo or FFI.
     ///
     /// Note that the caller is responsible for ensuring that `Self` has the
-    /// same instantiation of `T` as the other endpoint, or else incoming
+    /// right instantiation of `T` as the other endpoint, or else incoming
     /// messages will be incomprehensible.
     pub fn new(endpoint: MessageEndpoint) -> Self {
         Self { endpoint, _phantom: PhantomData }

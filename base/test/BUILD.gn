@@ -6,6 +6,7 @@ import("//build/compiled_action.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -44,6 +45,35 @@ rust_static_library("test_rust_logger_consumer") {
   crate_root = "logging/test_rust_logger_consumer.rs"
 
   cxx_bindings = [ "logging/test_rust_logger_consumer.rs" ]
+}
+
+rust_static_library("task_environment") {
+  testonly = true
+  sources = [ "task_environment.rs" ]
+  crate_root = "task_environment.rs"
+  cxx_bindings = [ "task_environment.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":task_environment_shim",
+    "//base",
+  ]
+}
+
+source_set("task_environment_shim") {
+  testonly = true
+  sources = [
+    "task_environment_rust_shim.cc",
+    "task_environment_rust_shim.h",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+  ]
+}
+
+group("test_support_rust") {
+  testonly = true
+  public_deps = [ ":task_environment" ]
 }
 
 static_library("test_support") {

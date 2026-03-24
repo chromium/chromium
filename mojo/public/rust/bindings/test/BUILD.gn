@@ -18,11 +18,12 @@ rust_static_library("bindings_unittests") {
     ":bindings_unittests_mojom_rust",
     ":math_service_cpp",
     "..:bindings",
-    "../../sequences",
-    "../../sequences:test_cxx",
     "../../system",
     "../../system/test_util",
     "//base",
+    "//base:base_rust",
+    "//base:sequenced_task_runner_test_bridge",
+    "//base/test:test_support_rust",
     "//testing/rust_gtest_interop",
   ]
 }

@@ -9,14 +9,16 @@ chromium::import! {
     "//mojo/public/rust/tests/interop_tests:interop_test_mojom_rust";
     "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
     "//mojo/public/rust/system";
-    "//mojo/public/rust/sequences";
-    "//mojo/public/rust/sequences:test_cxx";
+    "//base:sequenced_task_runner";
+    "//base:run_loop";
+    "//base:sequenced_task_runner_test_bridge";
+    "//base/test:task_environment";
 }
 
 use bindings::remote::PendingRemote;
 use interop_test_mojom_rust::interop_test::TestService;
 use parser_unittests_rust::parser_unittests::*;
-use sequences::run_loop::RunLoop;
+use run_loop::RunLoop;
 use system::mojo_types::UntypedHandle;
 
 #[cxx::bridge(namespace = "interop_test")]
@@ -30,7 +32,7 @@ pub mod ffi {
 
 #[gtest(RustMojoInterop, InteropTest)]
 fn test_interop() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let mut handle_val: usize = 0;
     let _impl = ffi::GetTestService(&mut handle_val);

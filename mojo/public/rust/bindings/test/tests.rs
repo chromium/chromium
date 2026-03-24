@@ -11,14 +11,16 @@ chromium::import! {
     "//mojo/public/rust/bindings/test:bindings_unittests_mojom_rust";
     "//mojo/public/rust/system";
     "//mojo/public/rust/system/test_util";
-    "//mojo/public/rust/sequences";
-    "//mojo/public/rust/sequences:test_cxx";
+    "//base:sequenced_task_runner";
+    "//base:run_loop";
+    "//base:sequenced_task_runner_test_bridge";
+    "//base/test:task_environment";
 }
 
 use bindings::receiver::PendingReceiver;
 use bindings::remote::PendingRemote;
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
-use sequences::run_loop::RunLoop;
+use run_loop::RunLoop;
 use system::mojo_types::UntypedHandle;
 
 use test_mojom::{HandleService, MathService, TwoInts};
@@ -28,7 +30,7 @@ use crate::state_objects::*;
 #[gtest(RustBindingsAPI, MessagePipeWatcherBasicTests)]
 fn test_watcher_basic() {
     // Exercise the various watcher methods so we have some coverage
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     use bindings::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
     use system::message::RawMojoMessage;
@@ -80,7 +82,7 @@ fn test_watcher_basic() {
 
 #[gtest(RustBindingsAPI, MessagePipeWatcherDisconnectTests)]
 fn test_watcher_disconnect() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     use bindings::message_pipe_watcher::MessagePipeWatcher;
     use system::message_pipe::MessageEndpoint;
@@ -118,7 +120,7 @@ fn test_watcher_disconnect() {
 fn test_watcher_disconnect_immediately() {
     // Make sure things work fine if a watcher is constructed with an endpoint
     // whose counterpoint has already been dropped.
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     use bindings::message_pipe_watcher::MessagePipeWatcher;
     use system::message_pipe::MessageEndpoint;
@@ -149,7 +151,7 @@ fn test_watcher_disconnect_immediately() {
 
 #[gtest(RustBindingsAPI, RemoteReceiverWrapMathTest)]
 fn test_remote_receiver_wrapping() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -172,7 +174,7 @@ fn test_remote_receiver_wrapping() {
 
 #[gtest(RustBindingsAPI, RemoteReceiverSatMathTest)]
 fn test_remote_receiver_saturating() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     // We can use the same constructor call as in the previous test,
     // but for a different type of state object!
@@ -197,7 +199,7 @@ fn test_remote_receiver_saturating() {
 
 #[gtest(RustBindingsAPI, RemoteReceiverNotifMathTest)]
 fn test_remote_receiver_notifying() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -229,7 +231,7 @@ fn test_remote_receiver_notifying() {
 
 #[gtest(RustBindingsAPI, CppReceiverTest)]
 fn test_cpp_receiver() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -259,7 +261,7 @@ fn test_cpp_receiver() {
 
 #[gtest(RustBindingsAPI, CppRemoteTest)]
 fn test_cpp_remote() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -298,7 +300,7 @@ fn test_cpp_remote() {
 /// afterwards, they work as expected.
 #[gtest(RustBindingsAPI, HandlePassingTest)]
 fn test_handle_passing() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (handle_pending_remote, handle_pending_receiver) =
         PendingRemote::<dyn test_mojom::HandleService>::new_pipe().unwrap();
@@ -386,7 +388,7 @@ fn test_handle_passing() {
 
 #[gtest(RustBindingsAPI, DisconnectHandlersTest)]
 fn test_disconnect_handlers() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     // Test Receiver disconnect handler
     let run_loop = RunLoop::new();
@@ -416,7 +418,7 @@ fn test_disconnect_handlers() {
 
 #[gtest(RustBindingsAPI, SelfOwnedReceiverTest)]
 fn test_self_owned_receiver() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -443,7 +445,7 @@ fn test_self_owned_receiver() {
 
 #[gtest(RustBindingsAPI, CppToRustHandoverTest)]
 fn test_cpp_to_rust_handover() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
 
     // Create a PlusSevenMathService and bind it, all in C++.
     let mut _service = cxx::UniquePtr::null();
