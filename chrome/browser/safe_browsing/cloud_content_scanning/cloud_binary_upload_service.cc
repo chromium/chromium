@@ -618,8 +618,11 @@ void CloudBinaryUploadService::FinishRequest(
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordRequestMetrics(request->id(), result, response);
   std::string upload_info = "None";
-  if (active_uploads_.count(request->id()) && !request->IsAuthRequest()) {
-    upload_info = active_uploads_[request->id()]->GetUploadInfo();
+  if (!request->IsAuthRequest()) {
+    if (const auto it = active_uploads_.find(request->id());
+        it != active_uploads_.end()) {
+      upload_info = it->second->GetUploadInfo();
+    }
   }
 
   // We add the request here in case we never actually uploaded anything, so
