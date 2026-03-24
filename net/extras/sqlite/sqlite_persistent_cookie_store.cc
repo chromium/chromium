@@ -450,6 +450,10 @@ class SQLitePersistentCookieStore::Backend
   // Initialize the data base.
   bool DoInitializeDatabase() override;
 
+  // Helper for MaybeInitializeDatabaseEarly to continue initialization after
+  // crypto is ready.
+  void InitializeDatabaseEarly();
+
   // Loads cookies for the next domain key from the DB, then either reschedules
   // itself or schedules the provided callback to run on the client runner (if
   // all domains are loaded).
@@ -687,6 +691,22 @@ void SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly() {
     base::UmaHistogramBoolean("Cookie.CreateDatabaseEarly", false);
     return;
   }
+
+  if (crypto_) {
+    client_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CookieCryptoDelegate::Init, base::Unretained(crypto_.get()),
+            base::BindOnce(
+                &Backend::PostBackgroundTask, this, FROM_HERE,
+                base::BindOnce(&Backend::InitializeDatabaseEarly, this))));
+  } else {
+    InitializeDatabaseEarly();
+  }
+}
+
+void SQLitePersistentCookieStore::Backend::InitializeDatabaseEarly() {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   InitializeDatabase();
   base::UmaHistogramBoolean("Cookie.CreateDatabaseEarly", true);
 }
