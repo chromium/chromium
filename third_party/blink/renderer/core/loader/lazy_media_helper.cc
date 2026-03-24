@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -56,8 +58,14 @@ bool LazyMediaHelper::ShouldDeferMediaLoad(LocalFrame& frame,
   LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
       media_element->FastGetAttribute(html_names::kLoadingAttr));
 
+  bool is_video = IsA<HTMLVideoElement>(media_element);
+
   // If loading=eager, don't defer.
   if (loading_attr == LoadingAttributeValue::kEager) {
+    UseCounter::Count(frame.GetDocument(),
+                      is_video
+                          ? WebFeature::kLazyLoadVideoLoadingAttributeEager
+                          : WebFeature::kLazyLoadAudioLoadingAttributeEager);
     return false;
   }
 
@@ -66,8 +74,11 @@ bool LazyMediaHelper::ShouldDeferMediaLoad(LocalFrame& frame,
     return false;
   }
 
-  UseCounter::CountWebDXFeature(
-      frame.GetDocument(), mojom::blink::WebDXFeature::kDRAFT_LoadingLazyMedia);
+  UseCounter::Count(frame.GetDocument(),
+                    is_video ? WebFeature::kLazyLoadVideoLoadingAttributeLazy
+                             : WebFeature::kLazyLoadAudioLoadingAttributeLazy);
+  UseCounter::CountWebDXFeature(frame.GetDocument(),
+                                mojom::blink::WebDXFeature::kLoadingLazyMedia);
 
   return true;
 }

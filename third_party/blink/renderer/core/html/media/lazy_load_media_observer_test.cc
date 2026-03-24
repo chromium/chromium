@@ -10,9 +10,11 @@
 #include <optional>
 #include <tuple>
 
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
@@ -95,6 +97,14 @@ TEST_P(LazyLoadMediaParamsTest, LazyLoadVideoFarFromViewport) {
   // The video should NOT have started loading since it's far from viewport.
   EXPECT_FALSE(ConsoleMessages().Contains("video loadstart"));
   EXPECT_FALSE(ConsoleMessages().Contains("video loadedmetadata"));
+
+  // The lazy loading use counter should be recorded for video.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeLazy));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeEager));
+  EXPECT_TRUE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kLoadingLazyMedia));
 }
 
 // Test that a video with loading=lazy near the viewport loads.
@@ -153,6 +163,14 @@ TEST_P(LazyLoadMediaParamsTest, LazyLoadAudioFarFromViewport) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   // The audio should NOT have started loading since it's far from viewport.
   EXPECT_FALSE(ConsoleMessages().Contains("audio loadstart"));
+
+  // The lazy loading use counter should be recorded for audio.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadAudioLoadingAttributeLazy));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadAudioLoadingAttributeEager));
+  EXPECT_TRUE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kLoadingLazyMedia));
 }
 
 // Test that an audio with loading=lazy near the viewport loads.
@@ -360,6 +378,14 @@ TEST_F(LazyLoadMediaTest, EagerVideoLoadsImmediately) {
 
   // The video should load immediately despite being far from viewport.
   EXPECT_TRUE(ConsoleMessages().Contains("video loadstart"));
+
+  // The eager loading use counter should be recorded for video.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeEager));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeLazy));
+  EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kLoadingLazyMedia));
 }
 
 // Test that a video without loading attribute loads immediately (default
@@ -386,6 +412,15 @@ TEST_F(LazyLoadMediaTest, VideoWithoutLoadingAttributeLoadsImmediately) {
 
   // The video should load immediately (default eager behavior).
   EXPECT_TRUE(ConsoleMessages().Contains("video loadstart"));
+
+  // No lazy/eager loading use counters should be recorded without a loading
+  // attribute.
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeLazy));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kLazyLoadVideoLoadingAttributeEager));
+  EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kLoadingLazyMedia));
 }
 
 // Test that loading=lazy takes precedence over preload=auto.

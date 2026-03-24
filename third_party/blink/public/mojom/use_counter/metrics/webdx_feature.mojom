@@ -489,7 +489,7 @@ enum WebDXFeature {
   kLanguageDetector = 425,
   kTranslator = 426,
   kNavigatorModelcontext = 427,
-  kDRAFT_LoadingLazyMedia = 428,
+  kLoadingLazyMedia = 428,
   kManifestLocalization = 429,
   kContrastColor = 430,
   kDRAFT_WebAppMigration = 431,

@@ -5163,6 +5163,10 @@ enum WebFeature {
   kHTMLPatching = 5846,
   kHTMLStreaming = 5847,
   kHTMLPositionalSetters = 5848,
+  kLazyLoadVideoLoadingAttributeLazy = 5849,
+  kLazyLoadVideoLoadingAttributeEager = 5850,
+  kLazyLoadAudioLoadingAttributeLazy = 5851,
+  kLazyLoadAudioLoadingAttributeEager = 5852,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
