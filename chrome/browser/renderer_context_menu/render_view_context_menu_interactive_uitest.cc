@@ -1273,17 +1273,17 @@ class GlicInteractiveContextMenuTest
     return Do([this]() {
       glic::GlicInstance* instance =
           glic_service()->GetInstanceForActiveTab(browser());
-      EXPECT_TRUE(instance->id().is_valid());
-      EXPECT_TRUE(cached_instance_id_.is_valid());
+      EXPECT_TRUE(instance->id().IsValid());
+      EXPECT_TRUE(cached_instance_id_.IsValid());
       EXPECT_NE(instance->id(), cached_instance_id_);
-      cached_instance_id_ = base::Uuid();
+      cached_instance_id_ = glic::InstanceId::CreateNullId();
     });
   }
 
   auto PollForNewGlicInstance() {
     return PollUntil(
         [this]() {
-          return cached_instance_id_.is_valid() &&
+          return cached_instance_id_.IsValid() &&
                  cached_instance_id_ !=
                      glic_service()->GetInstanceForActiveTab(browser())->id();
         },

@@ -269,6 +269,8 @@ class Host : public GlicSharingManagerProvider {
     return instance_delegate().instance_metrics_backwards_compatibility();
   }
 
+  InstanceId GetInstanceId() const;
+
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents() const;

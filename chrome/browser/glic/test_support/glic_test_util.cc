@@ -113,8 +113,8 @@ BrowserWindowInterface* GlicInstanceTracker::GetBrowser() {
 
 std::string GlicInstanceTracker::DescribeGlicTracking() {
   if (tracked_instance_id_) {
-    return base::StrCat({"Tracking glic instance with id ",
-                         tracked_instance_id_->AsLowercaseString()});
+    return base::StrCat(
+        {"Tracking glic instance with id ", tracked_instance_id_->value()});
   } else if (glic_instance_tab_index_) {
     return base::StrCat({"Tracking glic instance at tab index ",
                          base::NumberToString(*glic_instance_tab_index_)});

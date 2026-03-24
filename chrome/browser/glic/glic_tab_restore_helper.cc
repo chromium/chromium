@@ -48,7 +48,7 @@ void PopulateGlicExtraData(content::WebContents* web_contents,
   auto* helper = GlicInstanceHelper::From(tab);
   if (helper) {
     if (auto instance_id = helper->GetInstanceId()) {
-      (*extra_data)[kGlicInstanceIdKey] = instance_id->AsLowercaseString();
+      (*extra_data)[kGlicInstanceIdKey] = instance_id->value();
     }
     if (auto conversation_id = helper->GetConversationId()) {
       (*extra_data)[kGlicConversationIdKey] = *conversation_id;
@@ -62,7 +62,7 @@ void PopulateGlicExtraData(content::WebContents* web_contents,
           continue;
         }
         base::DictValue dict;
-        dict.Set(kInstanceIdKey, instance->id().AsLowercaseString());
+        dict.Set(kInstanceIdKey, instance->id().value());
         if (auto conv_id = instance->conversation_id()) {
           dict.Set(kConversationIdKey, *conv_id);
         }

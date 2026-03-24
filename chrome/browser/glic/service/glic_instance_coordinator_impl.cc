@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
@@ -106,7 +107,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     GlicKeyedService* service,
     GlicEnabling* enabling,
     ContextualCueingService* contextual_cueing_service)
-    : profile_(profile),
+    : coordinator_uid_(
+          base::RandGenerator(std::numeric_limits<int64_t>::max())),
+      profile_(profile),
       service_(service),
       contextual_cueing_service_(contextual_cueing_service),
       memory_pressure_listener_registration_(
@@ -663,7 +666,8 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
 
 std::unique_ptr<GlicInstanceImpl>
 GlicInstanceCoordinatorImpl::CreateInstanceImpl(std::optional<InstanceId> id) {
-  InstanceId instance_id = id ? *id : base::Uuid::GenerateRandomV4();
+  InstanceId instance_id =
+      id ? *id : InstanceId::Create(coordinator_uid_, next_instance_index_++);
   return std::make_unique<GlicInstanceImpl>(
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics(),
@@ -1103,8 +1107,8 @@ void GlicInstanceCoordinatorImpl::CheckMemoryUsage() {
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrRestoreInstanceImpl(
     const GlicRestoredState::InstanceInfo& instance_info) {
-  auto instance_id = InstanceId::ParseLowercase(instance_info.instance_id);
-  if (!instance_id.is_valid()) {
+  InstanceId instance_id(instance_info.instance_id);
+  if (!instance_id.IsValid()) {
     return nullptr;
   }
 

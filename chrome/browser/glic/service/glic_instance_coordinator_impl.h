@@ -259,6 +259,9 @@ class GlicInstanceCoordinatorImpl
   void RestoreTab(content::WebContents* web_contents,
                   const GlicRestoredState& state);
 
+  // A unique ID for this coordinator, used to generate unique instance IDs.
+  const uint64_t coordinator_uid_;
+
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
@@ -266,6 +269,7 @@ class GlicInstanceCoordinatorImpl
   raw_ptr<GlicKeyedService> service_;
   raw_ptr<ContextualCueingService> contextual_cueing_service_;
 
+  uint32_t next_instance_index_ = 0;
   std::map<InstanceId, std::unique_ptr<GlicInstanceImpl>> instances_;
 
   base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>>

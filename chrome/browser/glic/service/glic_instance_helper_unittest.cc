@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/uuid.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -59,8 +59,8 @@ TEST_F(GlicInstanceHelperTest, DestructionLogsNothingIfEmpty) {
 TEST_F(GlicInstanceHelperTest, LogsBindCount) {
   {
     GlicInstanceHelper helper(&mock_tab_);
-    InstanceId id1_val = base::Uuid::GenerateRandomV4();
-    InstanceId id2_val = base::Uuid::GenerateRandomV4();
+    InstanceId id1_val = InstanceId::Create(0, 0);
+    InstanceId id2_val = InstanceId::Create(0, 1);
     FakeGlicInstance instance1(id1_val);
     FakeGlicInstance instance2(id2_val);
 
@@ -80,7 +80,7 @@ TEST_F(GlicInstanceHelperTest, LogsBindCount) {
 TEST_F(GlicInstanceHelperTest, LogsPinCount) {
   {
     GlicInstanceHelper helper(&mock_tab_);
-    FakeGlicInstance instance(base::Uuid::GenerateRandomV4());
+    FakeGlicInstance instance(InstanceId::Create(0, 0));
     helper.OnPinnedByInstance(&instance);
 
     // Cleanup
@@ -91,7 +91,7 @@ TEST_F(GlicInstanceHelperTest, LogsPinCount) {
 
 TEST_F(GlicInstanceHelperTest, GettersWork) {
   GlicInstanceHelper helper(&mock_tab_);
-  InstanceId id = base::Uuid::GenerateRandomV4();
+  InstanceId id = InstanceId::Create(123, 0);
   FakeGlicInstance instance(id);
 
   helper.SetBoundInstance(&instance);

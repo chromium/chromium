@@ -8,6 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {GlicPreloadHandlerFactory, GlicPreloadHandlerRemote, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PreloadPageCallbackRouter} from './glic.mojom-webui.js';
 import type {GlicPreloadHandlerInterface, PageHandlerInterface} from './glic.mojom-webui.js';
+import {ObservableValue} from './observable.js';
 
 export interface BrowserProxy {
   pageHandler: PageHandlerInterface;
@@ -26,6 +27,7 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   glicPreloadHandler?: GlicPreloadHandlerRemote;
   preloadPageCallbackRouter: PreloadPageCallbackRouter;
+  instanceId = ObservableValue.withNoValue<string>();
 
   constructor() {
     this.pageCallbackRouter = new PageCallbackRouter();
@@ -52,9 +54,13 @@ export class BrowserProxyImpl implements BrowserProxy {
         },
       });
     }
-    PageHandlerFactory.getRemote().createPageHandler(
-        this.pageHandler.$.bindNewPipeAndPassReceiver(),
-        this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
+    PageHandlerFactory.getRemote()
+        .createPageHandler(
+            this.pageHandler.$.bindNewPipeAndPassReceiver(),
+            this.pageCallbackRouter.$.bindNewPipeAndPassRemote())
+        .then(({instanceId}) => {
+          this.instanceId.assignAndSignal(instanceId);
+        });
 
     if (kGlicWebContentsWarming) {
       const preloadHandlerRemote = new GlicPreloadHandlerRemote();

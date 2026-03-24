@@ -147,7 +147,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling),
-      id_(base::Uuid::GenerateRandomV4()) {
+      id_(InstanceId::Create(/*glic_instance_coordinator_id=*/1, 0).value()) {
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
   if (window_config_.ShouldResetOnStart()) {
     previous_position_.reset();

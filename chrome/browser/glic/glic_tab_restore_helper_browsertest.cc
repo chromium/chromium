@@ -56,15 +56,14 @@ IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
   GlicInstanceHelper* helper = GlicInstanceHelper::From(tab);
   ASSERT_TRUE(helper);
 
-  std::string instance_id_str = "00000000-0000-0000-0000-000000000001";
+  std::string instance_id_str = InstanceId::Create(123, 1).value();
   std::string conversation_id = "conversation1";
-  MockInstance bound_instance(base::Uuid::ParseLowercase(instance_id_str),
-                              conversation_id);
+  MockInstance bound_instance(InstanceId(instance_id_str), conversation_id);
   helper->SetBoundInstance(&bound_instance);
 
-  std::string pinned_instance_id_str = "00000000-0000-0000-0000-000000000002";
-  MockInstance pinned_instance(
-      base::Uuid::ParseLowercase(pinned_instance_id_str), std::nullopt);
+  std::string pinned_instance_id_str = InstanceId::Create(123, 2).value();
+  MockInstance pinned_instance(InstanceId(pinned_instance_id_str),
+                               std::nullopt);
   helper->OnPinnedByInstance(&pinned_instance);
 
   // 2. Populate extra_data

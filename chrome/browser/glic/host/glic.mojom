@@ -168,7 +168,8 @@ interface GlicPreloadHandlerFactory {
 interface PageHandlerFactory {
   // Creates the PageHandler for chrome://glic.
   CreatePageHandler(
-      pending_receiver<PageHandler> receiver, pending_remote<Page> page);
+      pending_receiver<PageHandler> receiver, pending_remote<Page> page)
+      => (string instance_id);
 };
 
 // It is used in the Glic.PanelWebUiState.FinishState histogram.

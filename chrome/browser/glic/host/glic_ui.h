@@ -84,7 +84,8 @@ class GlicUI : public ui::MojoWebUIController,
 
   void CreatePageHandler(
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
-      mojo::PendingRemote<glic::mojom::Page> page) override;
+      mojo::PendingRemote<glic::mojom::Page> page,
+      CreatePageHandlerCallback callback) override;
 
   void CreateInternalsPageHandler(
       mojo::PendingReceiver<glic::mojom::InternalsPageHandler> receiver)
@@ -127,6 +128,7 @@ class GlicUI : public ui::MojoWebUIController,
 
   mojo::PendingReceiver<glic::mojom::PageHandler> pending_receiver_;
   mojo::PendingRemote<glic::mojom::Page> pending_page_;
+  CreatePageHandlerCallback pending_callback_;
 
   static bool simulate_no_connection_;
 

@@ -47,11 +47,6 @@ class GlicWidget;
 class GlicKeyedService;
 enum class AttachChangeReason;
 
-struct ConversationInfo {
-  InstanceId instance_id;
-  std::string title;
-};
-
 // MIGRATION IN PROGRESS - WARNING
 //
 // GlicWindowController is a misleading name!

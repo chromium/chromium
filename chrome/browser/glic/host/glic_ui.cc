@@ -45,6 +45,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
@@ -362,12 +363,14 @@ void GlicUI::AttachToHost(Host* host) {
     page_handler_ = std::make_unique<GlicPageHandler>(
         web_ui()->GetWebContents(), host, std::move(pending_receiver_),
         std::move(pending_page_));
+    std::move(pending_callback_).Run(host->GetInstanceId().value());
   }
 }
 
 void GlicUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
-    mojo::PendingRemote<glic::mojom::Page> page) {
+    mojo::PendingRemote<glic::mojom::Page> page,
+    CreatePageHandlerCallback callback) {
   if (!host_) {
     // Create a Host for tabs navigated to chrome://glic
     host_ = GlicKeyedServiceFactory::GetGlicKeyedService(
@@ -380,10 +383,13 @@ void GlicUI::CreatePageHandler(
     // WebUI.
     pending_receiver_ = std::move(receiver);
     pending_page_ = std::move(page);
+    pending_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        std::move(callback), std::string());
     return;
   }
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), host_, std::move(receiver), std::move(page));
+  std::move(callback).Run(host_->GetInstanceId().value());
 }
 
 void GlicUI::CreateInternalsPageHandler(
