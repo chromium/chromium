@@ -20,3 +20,29 @@ source_set("analysis") {
     "//ios/web/public/download",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "content_analysis_info_unittest.mm" ]
+
+  deps = [
+    ":analysis",
+    "//base",
+    "//components/enterprise/common/proto:connectors_proto_gen",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:proto_internal_gen",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/web/public/test",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

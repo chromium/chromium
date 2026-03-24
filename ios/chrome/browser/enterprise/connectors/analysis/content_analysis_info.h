@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 
 #import "components/enterprise/connectors/core/analysis_settings.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #import "components/enterprise/connectors/core/content_analysis_info_base.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -24,10 +25,13 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
       // The URL containing the contents for the analysis request.
       const GURL& url,
       AnalysisSettings settings,
+      ContentAnalysisRequest::Reason reason,
       web::WebState* web_state);
   ~ContentAnalysisInfo();
 
   // ContentAnalysisInfoBase override:
+  void InitializeRequest(BinaryUploadRequest* request,
+                         bool include_enterprise_only_fields) override;
   const GURL& url() const override;
   const GURL& tab_url() const override;
   signin::IdentityManager* identity_manager() const override;
@@ -37,20 +41,25 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
       const override;
   const AnalysisSettings& settings() const override;
   std::string GetContentAreaAccountEmail() const override;
-
- private:
   int user_action_requests_count() const override;
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
   ContentAnalysisRequest::Reason reason() const override;
 
+ private:
   // The content analysis settings.
   AnalysisSettings settings_;
 
   // The URL containing the contents for the analysis request.
   GURL url_;
   GURL tab_url_;
+  // The title corresponding to the WebState triggering the scan.
+  std::string title_ = std::string();
+  // The reason that triggers the scan.
+  ContentAnalysisRequest::Reason reason_ = ContentAnalysisRequest::UNKNOWN;
+  // The unique id for identifying the user action.
+  std::string user_action_id_;
   base::WeakPtr<signin::IdentityManager> identity_manager_;
 };
 

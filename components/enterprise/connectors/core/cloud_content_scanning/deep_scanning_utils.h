@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
 
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
@@ -53,6 +54,10 @@ bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a local content analysis.
 bool LocalResultIsFailure(ScanRequestUploadResult result);
+
+void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
+                                   const ContentAnalysisInfoBase& info,
+                                   bool include_enterprise_only_fields);
 
 }  // namespace enterprise_connectors
 

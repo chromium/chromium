@@ -325,6 +325,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/enterprise/client_certificates:unit_tests",
     "//ios/chrome/browser/enterprise/cloud_content_scanning/model:unit_tests",
     "//ios/chrome/browser/enterprise/connectors:unit_tests",
+    "//ios/chrome/browser/enterprise/connectors/analysis:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
     "//ios/chrome/browser/enterprise/identifiers:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",

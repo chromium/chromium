@@ -18,6 +18,7 @@ class IdentityManager;
 namespace enterprise_connectors {
 
 struct AnalysisSettings;
+class BinaryUploadRequest;
 
 // Platform-agnostic interface providing data about a given content analysis
 // action. This should be used as an abstraction layer to access information
@@ -25,6 +26,12 @@ struct AnalysisSettings;
 // not important (ex. when populating protos).
 class ContentAnalysisInfoBase {
  public:
+  // Adds shared fields to `request` before sending it to the binary upload
+  // service. Connector-specific fields need to be added to the request
+  // separately.
+  virtual void InitializeRequest(BinaryUploadRequest* request,
+                                 bool include_enterprise_only_fields) = 0;
+
   // The `AnalysisSettings` that should be applied to the content analysis scan.
   virtual const AnalysisSettings& settings() const = 0;
 

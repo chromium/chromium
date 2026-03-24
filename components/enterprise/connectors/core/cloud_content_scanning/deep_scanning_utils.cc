@@ -6,6 +6,8 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace enterprise_connectors {
 
@@ -149,6 +151,59 @@ bool LocalResultIsFailure(ScanRequestUploadResult result) {
   return result != ScanRequestUploadResult::kSuccess &&
          result != ScanRequestUploadResult::kFileTooLarge &&
          result != ScanRequestUploadResult::kFileEncrypted;
+}
+
+void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
+                                   const ContentAnalysisInfoBase& info,
+                                   bool include_enterprise_only_fields) {
+  const auto& settings = info.settings();
+
+  if (include_enterprise_only_fields) {
+    if (settings.cloud_or_local_settings.is_cloud_analysis()) {
+      request->set_device_token(settings.cloud_or_local_settings.dm_token());
+    }
+
+    // Include tab page title in local content analysis requests.
+    if (settings.cloud_or_local_settings.is_local_analysis()) {
+      request->set_tab_title(info.tab_title());
+    }
+
+    if (settings.client_metadata) {
+      request->set_client_metadata(*settings.client_metadata);
+    }
+
+    request->set_per_profile_request(settings.per_profile);
+
+    if (info.reason() != ContentAnalysisRequest::UNKNOWN) {
+      request->set_reason(info.reason());
+    }
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      request->set_referrer_chain(info.referrer_chain());
+    }
+
+    std::string email = info.GetContentAreaAccountEmail();
+    if (!email.empty()) {
+      request->set_content_area_account_email(email);
+    }
+
+    if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
+      request->set_frame_url_chain(info.frame_url_chain());
+    }
+  }
+
+  request->set_user_action_requests_count(info.user_action_requests_count());
+  request->set_user_action_id(info.user_action_id());
+  request->set_email(info.email());
+  request->set_url(info.url());
+  request->set_tab_url(info.tab_url());
+
+  for (const auto& tag : settings.tags) {
+    request->add_tag(tag.first);
+  }
+
+  request->set_blocking(settings.block_until_verdict !=
+                        BlockUntilVerdict::kNoBlock);
 }
 
 }  // namespace enterprise_connectors

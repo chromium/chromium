@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -28,52 +29,7 @@ namespace enterprise_connectors {
 void ContentAnalysisInfo::InitializeRequest(
     BinaryUploadRequest* request,
     bool include_enterprise_only_fields) {
-  if (include_enterprise_only_fields) {
-    if (settings().cloud_or_local_settings.is_cloud_analysis()) {
-      request->set_device_token(settings().cloud_or_local_settings.dm_token());
-    }
-
-    // Include tab page title in local content analysis requests.
-    if (settings().cloud_or_local_settings.is_local_analysis()) {
-      request->set_tab_title(tab_title());
-    }
-
-    if (settings().client_metadata) {
-      request->set_client_metadata(*settings().client_metadata);
-    }
-
-    request->set_per_profile_request(settings().per_profile);
-
-    if (reason() != ContentAnalysisRequest::UNKNOWN) {
-      request->set_reason(reason());
-    }
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      request->set_referrer_chain(referrer_chain());
-    }
-
-    std::string email = GetContentAreaAccountEmail();
-    if (!email.empty()) {
-      request->set_content_area_account_email(email);
-    }
-
-    if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
-      request->set_frame_url_chain(frame_url_chain());
-    }
-  }
-
-  request->set_user_action_requests_count(user_action_requests_count());
-  request->set_user_action_id(user_action_id());
-  request->set_email(email());
-  request->set_url(url());
-  request->set_tab_url(tab_url());
-
-  for (const auto& tag : settings().tags) {
-    request->add_tag(tag.first);
-  }
-
-  request->set_blocking(settings().block_until_verdict !=
-                        BlockUntilVerdict::kNoBlock);
+  InitializeBinaryUploadRequest(request, *this, include_enterprise_only_fields);
 }
 
 std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
