@@ -1017,7 +1017,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
   }
 
   if (!cached_snapshot_) {
-    FlushCanvas(FlushReason::kOther);
+    FlushCanvas2D(FlushReason::kOther);
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
