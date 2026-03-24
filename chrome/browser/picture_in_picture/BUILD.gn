@@ -139,11 +139,6 @@ source_set("impl") {
       "//third_party/blink/public/common:headers",
       "//ui/views",
     ]
-
-    # TODO(crbug.com/495379535): Fix the exit-time destructors in
-    # hats/auto_picture_in_picture_hats_service.cc
-    # and then remove this config.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]

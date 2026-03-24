@@ -28,10 +28,6 @@ constexpr base::FeatureParam<AutoPipReason>::Option kAutoPipReasonOptions[] = {
     {AutoPipReason::kMediaPlayback, "MediaPlayback"},
     {AutoPipReason::kBrowserInitiated, "BrowserInitiated"}};
 
-const base::FeatureParam<AutoPipReason> kAutoPictureInPictureSurveyTargetReason{
-    &media::kAutoPictureInPictureSurveys, "autopip_reason",
-    AutoPipReason::kUnknown, &kAutoPipReasonOptions};
-
 constexpr base::FeatureParam<PromptResult>::Option kPromptResultOptions[] = {
     {PromptResult::kIgnored, "Ignored"},
     {PromptResult::kBlock, "Block"},
@@ -41,11 +37,6 @@ constexpr base::FeatureParam<PromptResult>::Option kPromptResultOptions[] = {
     {PromptResult::kNotShownAllowedOnce, "NotShownAllowedOnce"},
     {PromptResult::kNotShownBlocked, "NotShownBlocked"},
     {PromptResult::kNotShownIncognito, "NotShownIncognito"}};
-
-const base::FeatureParam<PromptResult>
-    kAutoPictureInPictureSurveyTargetPromptResult{
-        &media::kAutoPictureInPictureSurveys, "prompt_result",
-        PromptResult::kIgnored, &kPromptResultOptions};
 
 std::string AutoPipReasonToString(AutoPipReason reason) {
   switch (reason) {
@@ -147,10 +138,9 @@ void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
   // segments.
   const std::string actual_trigger = GetSurveyTrigger(permission_prompt_result);
   const std::string target_trigger =
-      GetSurveyTrigger(kAutoPictureInPictureSurveyTargetPromptResult.Get());
+      GetSurveyTrigger(GetSurveyTargetPromptResult());
 
-  if (auto_pip_trigger_reason !=
-          kAutoPictureInPictureSurveyTargetReason.Get() ||
+  if (auto_pip_trigger_reason != GetSurveyTargetReason() ||
       actual_trigger != target_trigger) {
     active_window_context_ = std::nullopt;
     return;
@@ -185,6 +175,22 @@ void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
                              product_specific_string_data);
 
   active_window_context_ = std::nullopt;
+}
+
+media::PictureInPictureEventsInfo::AutoPipReason
+AutoPictureInPictureHatsService::GetSurveyTargetReason() const {
+  return base::FeatureParam<AutoPipReason>(
+             &media::kAutoPictureInPictureSurveys, "autopip_reason",
+             AutoPipReason::kUnknown, &kAutoPipReasonOptions)
+      .Get();
+}
+
+AutoPipSettingHelper::PromptResult
+AutoPictureInPictureHatsService::GetSurveyTargetPromptResult() const {
+  return base::FeatureParam<PromptResult>(
+             &media::kAutoPictureInPictureSurveys, "prompt_result",
+             PromptResult::kIgnored, &kPromptResultOptions)
+      .Get();
 }
 
 AutoPictureInPictureHatsService::ActiveWindowContext::ActiveWindowContext(

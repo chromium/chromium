@@ -73,6 +73,10 @@ class AutoPictureInPictureHatsService : public KeyedService {
   void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
 
  private:
+  media::PictureInPictureEventsInfo::AutoPipReason GetSurveyTargetReason()
+      const;
+  AutoPipSettingHelper::PromptResult GetSurveyTargetPromptResult() const;
+
   raw_ptr<Profile> profile_;
 
   raw_ptr<const base::TickClock> clock_;
