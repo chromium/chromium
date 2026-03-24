@@ -226,6 +226,10 @@ void PaintImage::CreateSkImage() {
         std::make_unique<SkiaPaintImageGenerator>(paint_image_generator_,
                                                   kDefaultFrameIndex,
                                                   kDefaultGeneratorClientId));
+    if (reinterpret_as_srgb_) {
+      cached_sk_image_ =
+          cached_sk_image_->reinterpretColorSpace(SkColorSpace::MakeSRGB());
+    }
   }
 }
 
