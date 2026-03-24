@@ -45,15 +45,14 @@ ConvertConfigToSourcesMap(blink::mojom::LocalResourceLoaderConfigPtr config) {
   // TODO(https://crbug.com/384765582) This manual copy is only necessary
   // because ui::ReplaceTemplateExpressions uses an unconventional map type.
   // Remove this when that is fixed.
-  for (const auto& source : config->sources) {
-    const url::Origin origin = source.first;
-    const blink::mojom::LocalResourceSourcePtr& mojo_source = source.second;
-    const std::map<std::string, std::string> replacement_strings(
+  for (auto& [origin, mojo_source] : config->sources) {
+    std::map<std::string, std::string> replacement_strings(
         mojo_source->replacement_strings.begin(),
         mojo_source->replacement_strings.end());
-    LocalResourceURLLoaderFactory::Source local_source(
-        mojo_source.Clone(), std::move(replacement_strings));
-    sources.insert({std::move(origin), std::move(local_source)});
+    // Since we're iterating over a base::flat_map, the keys are already sorted
+    // and unique, so we can use end() as a hint for efficient insertion.
+    sources.try_emplace(sources.end(), std::move(origin),
+                        std::move(mojo_source), std::move(replacement_strings));
   }
   return sources;
 }
