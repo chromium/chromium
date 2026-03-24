@@ -335,7 +335,7 @@ class GraphBuilderTflite final {
 
   // This function is called by `SerializeConcat` to serialize WebNN
   // concat operator or used to emulate WebNN operations.
-  OperatorOffset SerializeConcatOperation(
+  base::expected<OperatorOffset, std::string> SerializeConcatOperation(
       base::span<const TensorIndex> input_tensor_indices,
       TensorIndex output_tensor_index,
       uint32_t axis);
@@ -657,7 +657,7 @@ class GraphBuilderTflite final {
       base::span<const int32_t> state_dimensions);
 
   // Serialize a sub graph (reshape appending concat operation) for gru /lstm.
-  TensorIndex SerializeSubGraphReshapeConcat(
+  base::expected<TensorIndex, std::string> SerializeSubGraphReshapeConcat(
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> new_shape,
