@@ -16,6 +16,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -958,6 +959,39 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     assertEquals(
         composebox.selectedMatchIndex_, -1,
         'No suggestion should be selected on arrow up in zero state full tab');
+  });
+
+  test('clicking activity link calls openUrl', async () => {
+    loadTimeData.overrideValues({
+      suggestionActivityLink:
+          'Learn more about <a href="https://google.com/">activity</a>',
+    });
+
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    testProxy.callbackRouterRemote.onSidePanelStateChanged();
+
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    // Manual trigger since it depends on results.
+    contextualComposebox.$.composebox.dispatchEvent(
+        new CustomEvent('show-suggestion-activity-link', {detail: true}));
+    await contextualComposebox.updateComplete;
+
+    const activityLink =
+        contextualComposebox.shadowRoot.querySelector('localized-link');
+    assertTrue(!!activityLink, 'Activity link should be present');
+
+    const anchor = activityLink.shadowRoot.querySelector('a');
+    assertTrue(!!anchor, 'Anchor tag should be present');
+
+    anchor.click();
+    await microtasksFinished();
+
+    const [url, disposition] = await testProxy.handler.whenCalled('openUrl');
+    assertEquals('https://google.com/', url);
+    assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
   });
 
 });

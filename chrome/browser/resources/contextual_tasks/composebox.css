@@ -591,6 +591,7 @@
   padding-inline-start: 20px;
   padding-top: 8px;
   position: relative;
+  pointer-events: auto;
 }
 
 :host:has(#composebox:not([show-dropdown_])) #contextualTasksSuggestionsContainer {
