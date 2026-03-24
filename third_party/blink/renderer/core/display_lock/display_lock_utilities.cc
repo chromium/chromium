@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -96,7 +97,15 @@ Element* NearestLockedExclusiveAncestor(const Node& node) {
   }
   // TODO(crbug.com/924550): Once we figure out a more efficient way to
   // determine whether we're inside a locked subtree or not, change this.
-  for (Node& ancestor : AncestorTraversal(&node)) {
+  const Node* start_node = &node;
+  if (node.IsPseudoElement() &&
+      To<PseudoElement>(node).GetPseudoId() == kPseudoIdBackdrop) {
+    // ::backdrop is rendered outside of its originating element's layout
+    // hierarchy. Therefore, it is not affected by the originating element's
+    // display lock.
+    start_node = node.parentElement();
+  }
+  for (Node& ancestor : AncestorTraversal(start_node)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
       continue;
