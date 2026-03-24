@@ -54,7 +54,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // Checks whether `country_code` belongs to a country where Wallet is
 // supported.
 [[nodiscard]] bool IsWalletSupportedCountry(
-    const GeoIpCountryCode& country_code) {
+    const GeoIpCountryCode& country_code,
+    std::optional<EntityType> entity_type) {
   // List of countries where Wallet is supported.
   constexpr static auto kWalletSupportedCountries =
       base::MakeFixedFlatSet<std::string_view>(
@@ -85,7 +86,22 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     return true;
   }
 
-  return kWalletSupportedCountries.contains(country_code.value());
+  if (!kWalletSupportedCountries.contains(country_code.value())) {
+    return false;
+  }
+
+  // The entity type is not set for confirming whether the Wallet promotion can
+  // be shown.
+  if (!entity_type) {
+    return true;
+  }
+
+  // List of countries in which private passes are not supported.
+  constexpr static auto kPrivatePassExclusions =
+      base::MakeFixedFlatSet<std::string_view>({"FR", "OM"});
+  return !IsMaskedStorageSupported(*entity_type,
+                                   EntityInstance::RecordType::kServerWallet) ||
+         !kPrivatePassExclusions.contains(country_code.value());
 }
 
 // Checks whether `country_code` belongs to a permitted GeoIp.
@@ -407,6 +423,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
     AutofillAiAction action,
+    std::optional<EntityType> entity_type,
     std::string* debug_message) {
   // Off-the-record.
   switch (action) {
@@ -438,7 +455,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   switch (action) {
     case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kWalletDataSharingPromotion:
-      if (!IsWalletSupportedCountry(country_code)) {
+      if (!IsWalletSupportedCountry(country_code, entity_type)) {
         return false;
       }
       break;
@@ -540,7 +557,7 @@ bool MayPerformAutofillAiAction(
 
   return SatisfiesMiscellaneousRequirements(is_off_the_record,
                                             has_entity_data_saved, country_code,
-                                            action, debug_message);
+                                            action, entity_type, debug_message);
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {

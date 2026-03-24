@@ -919,6 +919,25 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
       client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
 }
 
+// Tests that the Wallet import is not allowed for private passes if the country
+// is explicitly excluded (currently France and Oman).
+TEST_F(AutofillAiMayPerformImportToWalletTest,
+       ImportToWallet_FalseForPrivatePassIfCountryIsExcluded) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+
+  for (const auto& country : {GeoIpCountryCode("FR"), GeoIpCountryCode("OM")}) {
+    SCOPED_TRACE(testing::Message() << "country: " << country.value());
+    client().SetVariationConfigCountryCode(country);
+    // Public pass.
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
+    // Private pass.
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
+  }
+}
+
 }  // namespace
 
 }  // namespace autofill
