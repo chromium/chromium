@@ -1109,14 +1109,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + PROGRESS_SCREEN_SHOWN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + PROGRESS_SCREEN_DISMISSED));
+        assertEquals(1, getUserActionCount(PROGRESS_SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(PROGRESS_SCREEN_DISMISSED));
     }
 
     @Test
@@ -1467,10 +1461,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
 
         numIssuersShownHistogram.assertExpected();
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ISSUER_SELECTION_SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_SHOWN));
     }
 
     @Test
@@ -1486,10 +1477,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                 BNPL_ISSUER_CONTEXT_KLARNA_LINKED));
 
         numIssuersShownHistogram.assertExpected();
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ISSUER_SELECTION_SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_SHOWN));
     }
 
     @Test
@@ -1530,10 +1518,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN, /* sample= */ 1));
-        assertEquals(
-                2,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ISSUER_SELECTION_SCREEN_SHOWN));
+        assertEquals(2, getUserActionCount(ISSUER_SELECTION_SCREEN_SHOWN));
     }
 
     @Test
@@ -1551,11 +1536,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED));
     }
 
     @Test
@@ -1573,11 +1554,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED));
     }
 
     @Test
@@ -1595,11 +1572,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_KLARNA_LINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED));
     }
 
     @Test
@@ -1617,11 +1590,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_KLARNA_UNLINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_KLARNA_UNLINKED_SELECTED));
     }
 
     @Test
@@ -1639,11 +1608,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_ZIP_LINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED));
     }
 
     @Test
@@ -1661,11 +1626,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_ZIP_UNLINKED.getIssuerId());
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED));
     }
 
     @Test
@@ -1706,11 +1667,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .run();
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED));
     }
 
     @Test
@@ -1740,11 +1697,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         spans[0].onClick(new TextViewWithClickableSpans(mActivity));
 
         verify(mDelegateMock, times(1)).showPaymentMethodSettings();
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED));
     }
 
     @Test
@@ -1761,10 +1714,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ISSUER_SELECTION_SCREEN_DISMISSED));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_DISMISSED));
     }
 
     @Test
@@ -2169,10 +2119,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + AFFIRM_TOS_SCREEN + SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(AFFIRM_TOS_SCREEN + SCREEN_SHOWN));
     }
 
     @Test
@@ -2180,10 +2127,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_KLARNA);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + KLARNA_TOS_SCREEN + SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(KLARNA_TOS_SCREEN + SCREEN_SHOWN));
     }
 
     @Test
@@ -2191,10 +2135,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_ZIP);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ZIP_TOS_SCREEN + SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(ZIP_TOS_SCREEN + SCREEN_SHOWN));
     }
 
     @Test
@@ -2230,10 +2171,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .run();
 
         verify(mDelegateMock).onBnplTosAccepted();
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + AFFIRM_TOS_SCREEN + SCREEN_ACCEPTED));
+        assertEquals(1, getUserActionCount(AFFIRM_TOS_SCREEN + SCREEN_ACCEPTED));
     }
 
     @Test
@@ -2248,10 +2186,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .get(ON_CLICK_ACTION)
                 .run();
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ZIP_TOS_SCREEN + SCREEN_DISMISSED));
+        assertEquals(1, getUserActionCount(ZIP_TOS_SCREEN + SCREEN_DISMISSED));
     }
 
     @Test
@@ -2265,10 +2200,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         linkText.getSpans(0, linkText.length(), ClickableSpan.class)[0].onClick(
                 new TextViewWithClickableSpans(mActivity));
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + KLARNA_TOS_SCREEN + WALLET_LINK_CLICKED));
+        assertEquals(1, getUserActionCount(KLARNA_TOS_SCREEN + WALLET_LINK_CLICKED));
     }
 
     @Test
@@ -2280,12 +2212,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .get(LINK_OPENER)
                 .accept("http://www.test.com");
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION
-                                + AFFIRM_TOS_SCREEN
-                                + LEGAL_MESSAGE_LINK_CLICKED));
+        assertEquals(1, getUserActionCount(AFFIRM_TOS_SCREEN + LEGAL_MESSAGE_LINK_CLICKED));
     }
 
     @Test
@@ -2336,13 +2263,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
 
-        assertEquals(
-                1,
-                mActionTester.getActionCount(TOUCH_TO_FILL_BNPL_USER_ACTION + ERROR_SCREEN_SHOWN));
-        assertEquals(
-                1,
-                mActionTester.getActionCount(
-                        TOUCH_TO_FILL_BNPL_USER_ACTION + ERROR_SCREEN_DISMISSED));
+        assertEquals(1, getUserActionCount(ERROR_SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(ERROR_SCREEN_DISMISSED));
     }
 
     @Test
@@ -3425,5 +3347,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private void advanceClockAndClick(PropertyModel cardSuggestionModel) {
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         cardSuggestionModel.get(ON_CREDIT_CARD_CLICK_ACTION).run();
+    }
+
+    private int getUserActionCount(String userAction) {
+        return mActionTester.getActionCount(TOUCH_TO_FILL_BNPL_USER_ACTION + userAction);
     }
 }
