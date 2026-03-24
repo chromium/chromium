@@ -11,7 +11,7 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import type {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
@@ -158,7 +158,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   let mockTimer: MockTimer;
   let metrics: MetricsTracker;
 
-  async function setActiveTool(tool: ComposeboxToolMode) {
+  async function setActiveTool(tool: ToolMode) {
     searchboxCallbackRouterRemote.onInputStateChanged({
       ...new MockInputState(),
       activeTool: tool,
@@ -688,20 +688,20 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   });
 
   interface ToolModeInfo {
-    toolMode: ComposeboxToolMode;
+    toolMode: ToolMode;
     text: string;
   }
 
   [{
-    toolMode: ComposeboxToolMode.kDeepSearch,
+    toolMode: ToolMode.kDeepSearch,
     text: 'Deep Search',
   },
    {
-     toolMode: ComposeboxToolMode.kImageGen,
+     toolMode: ToolMode.kImageGen,
      text: 'Create Images',
    },
    {
-     toolMode: ComposeboxToolMode.kCanvas,
+     toolMode: ToolMode.kCanvas,
      text: 'Canvas',
    }].forEach((toolModeInfo: ToolModeInfo) => {
     test(
@@ -731,11 +731,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             composed: true,
           }));
 
-          await setActiveTool(ComposeboxToolMode.kUnspecified);
+          await setActiveTool(ToolMode.kUnspecified);
 
           assertEquals(
-              ComposeboxToolMode.kUnspecified,
-              composebox.inputState.activeTool,
+              ToolMode.kUnspecified, composebox.inputState.activeTool,
               'Active tool should be unspecified after clicking tool twice');
         });
 
@@ -782,7 +781,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       assertTrue(!!toolChip, toolModeInfo.text + ' chip should be present');
       // Simulate cancel button click without having to fully render button.
       composebox.onCancelClick_();
-      await setActiveTool(ComposeboxToolMode.kUnspecified);
+      await setActiveTool(ToolMode.kUnspecified);
 
       await composebox.updateComplete;
       await microtasksFinished();
@@ -798,7 +797,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
       assertTrue(!!toolChip, toolModeInfo.text + ' chip should be present');
       composebox.handleEscapeKeyLogic();
-      await setActiveTool(ComposeboxToolMode.kUnspecified);
+      await setActiveTool(ToolMode.kUnspecified);
 
       await composebox.updateComplete;
       await microtasksFinished();

@@ -4,8 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ComposeboxElement} from './composebox.js';
+import {ToolMode} from './composebox_query.mojom-webui.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -32,7 +32,7 @@ export function getHtml(this: ComposeboxElement) {
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"
         .inCreateImageMode="${
-            this.inputState?.activeTool === ComposeboxToolMode.kImageGen}"
+            this.inputState?.activeTool === ToolMode.kImageGen}"
         .hasImageFiles="${this.hasImageFiles_()}"
         .disabledTabIds="${this.addedTabsIds}"
         .fileNum="${this.files.size}"

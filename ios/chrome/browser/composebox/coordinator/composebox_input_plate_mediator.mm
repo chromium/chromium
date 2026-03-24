@@ -1399,11 +1399,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (_contextualSearchSession &&
       _contextualSearchSession->GetMetricsRecorder()) {
     _contextualSearchSession->GetMetricsRecorder()->RecordModesOnSubmission(
-        mojo::EnumTraits<composebox_query::mojom::ToolMode,
-                         omnibox::ToolMode>::ToMojom(_inputState.active_tool),
-        mojo::EnumTraits<composebox_query::mojom::ModelMode,
-                         omnibox::ModelMode>::ToMojom(_inputState
-                                                          .active_model));
+        _inputState.active_tool, _inputState.active_model);
   }
 }
 

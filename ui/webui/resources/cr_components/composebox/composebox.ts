@@ -29,7 +29,6 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -44,7 +43,7 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
@@ -566,8 +565,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           (this.inputState.allowedModels.length > 0 ||
            this.inputState.allowedTools.length > 0 ||
            this.inputState.allowedInputTypes.length > 0);
-      this.inToolMode_ =
-          this.inputState.activeTool !== ComposeboxToolMode.kUnspecified;
+      this.inToolMode_ = this.inputState.activeTool !== ToolMode.kUnspecified;
       this.dispatchEvent(new CustomEvent('input-state-changed', {
         detail: {inputState: this.inputState},
       }));
@@ -690,9 +688,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const previousTool = this.inputState?.activeTool;
     this.uploadButtonDisabled_ = false;
 
-    if (previousTool !== ComposeboxToolMode.kUnspecified) {
+    if (previousTool !== ToolMode.kUnspecified) {
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
-      this.handleToolModeUpdate_(ComposeboxToolMode.kUnspecified);
+      this.handleToolModeUpdate_(ToolMode.kUnspecified);
     }
   }
 
@@ -710,7 +708,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   resetToolsAndModels() {
     if (this.inputState) {
-      this.searchboxHandler_.setActiveToolMode(ComposeboxToolMode.kUnspecified);
+      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
       this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
     }
   }
@@ -760,7 +758,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected async updateState_(state: ComposeboxState) {
     const text = state.text || '';
     const files = state.files || [];
-    const mode = state.mode ?? ComposeboxToolMode.kUnspecified;
+    const mode = state.mode ?? ToolMode.kUnspecified;
     let model = state.model ?? ModelMode.kUnspecified;
 
     if (text) {
@@ -798,7 +796,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
       this.processFiles_(dataTransfer.files);
     }
-    if (mode !== ComposeboxToolMode.kUnspecified) {
+    if (mode !== ToolMode.kUnspecified) {
       this.handleToolClick_(mode);
     }
 
@@ -914,7 +912,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // TODO(crbug.com/485648942): Update to drive Deep Search behavior from the
     //   PEC API's ToolSubstateConfig.
     // Allow empty query for Deep Search follow-ups.
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch &&
+    if (this.inputState?.activeTool === ToolMode.kDeepSearch &&
         this.isFollowupQuery) {
       return true;
     }
@@ -1394,7 +1392,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private hasContent_(): boolean {
-    return this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified ||
+    return this.inputState?.activeTool !== ToolMode.kUnspecified ||
         this.input.trim().length > 0 || this.files.size > 0;
   }
 
@@ -1424,8 +1422,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // deliberately added by the user (i.e. not the automatic active tab).
     const isOnlyAutoTab = this.files.size === 1 && !!this.automaticActiveTab_;
     const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
-        !isOnlyAutoTab &&
-        this.inputState?.activeTool === ComposeboxToolMode.kUnspecified;
+        !isOnlyAutoTab && this.inputState?.activeTool === ToolMode.kUnspecified;
     if (shouldUseFileHint) {
       if (this.files.size > 1) {
         this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThese');
@@ -1446,7 +1443,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     if (this.inputState) {
-      if (this.inputState.activeTool !== ComposeboxToolMode.kUnspecified) {
+      if (this.inputState.activeTool !== ToolMode.kUnspecified) {
         const config = this.inputState.toolConfigs.find(
             c => c.tool === this.inputState!.activeTool);
         if (config?.hintText) {
@@ -1470,10 +1467,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
+    if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
       this.inputPlaceholder =
           loadTimeData.getString('composeDeepSearchPlaceholder');
-    } else if (this.inputState?.activeTool === ComposeboxToolMode.kImageGen) {
+    } else if (this.inputState?.activeTool === ToolMode.kImageGen) {
       this.inputPlaceholder =
           loadTimeData.getString('composeCreateImagePlaceholder');
     } else {
@@ -1482,19 +1479,19 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  protected onToolClick_(e: CustomEvent<{toolMode: ComposeboxToolMode}>) {
+  protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {
     this.handleToolClick_(e.detail.toolMode);
   }
 
-  protected handleToolClick_(tool: ComposeboxToolMode) {
+  protected handleToolClick_(tool: ToolMode) {
     const isTogglingOff = this.inputState?.activeTool === tool;
 
     if (this.contextMenuDescriptionEnabled_) {
       this.showContextMenuDescription_ =
-          isTogglingOff || tool === ComposeboxToolMode.kUnspecified;
+          isTogglingOff || tool === ToolMode.kUnspecified;
     }
 
-    const newToolMode = isTogglingOff ? ComposeboxToolMode.kUnspecified : tool;
+    const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
 
     if (isTogglingOff) {
       const metricName = `ContextualSearch.UserAction.InputStateDeletion.Tool.${
@@ -1507,7 +1504,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.handleToolModeUpdate_(newToolMode);
   }
 
-  private handleToolModeUpdate_(newTool: ComposeboxToolMode) {
+  private handleToolModeUpdate_(newTool: ToolMode) {
     this.searchboxHandler_.setActiveToolMode(newTool);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
@@ -1864,13 +1861,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
       switch (context.toolMode) {
         case ToolMode.kDeepSearch:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kDeepSearch);
+          this.handleToolModeUpdate_(ToolMode.kDeepSearch);
           break;
-        case ToolMode.kCreateImage:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kImageGen);
+        case ToolMode.kImageGen:
+          this.handleToolModeUpdate_(ToolMode.kImageGen);
           break;
         case ToolMode.kCanvas:
-          this.handleToolModeUpdate_(ComposeboxToolMode.kCanvas);
+          this.handleToolModeUpdate_(ToolMode.kCanvas);
           break;
         default:
       }
@@ -2368,7 +2365,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (!files || files.length === 0) {
       return;
     }
-    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
+    if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
       this.handleProcessFilesError_(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
       return;
     }
@@ -2399,7 +2396,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     for (const file of files) {
       const inputType = this.getInputType_(file.type);
-      if (this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified) {
+      if (this.inputState?.activeTool !== ToolMode.kUnspecified) {
         const disabledTypes = this.inputState?.disabledInputTypes || [];
         if (disabledTypes.includes(inputType)) {
           errorToDisplay =

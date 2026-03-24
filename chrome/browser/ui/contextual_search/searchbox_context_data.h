@@ -11,6 +11,7 @@
 
 #include "base/sequence_checker.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 // Temporarily stores search context (files, mode, query, etc.) while moving
 // from one piece of UI to another (e.g. context menu to composebox dialog).
@@ -24,7 +25,7 @@ class SearchboxContextData {
 
     std::string text;
     std::vector<searchbox::mojom::SearchContextAttachmentPtr> file_infos;
-    searchbox::mojom::ToolMode mode = searchbox::mojom::ToolMode::kDefault;
+    omnibox::ToolMode mode = omnibox::TOOL_MODE_UNSPECIFIED;
   };
 
   SearchboxContextData();
