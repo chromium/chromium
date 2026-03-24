@@ -81,7 +81,8 @@ const DeepQuery kContextualEntrypoint = {"ntp-app", "cr-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
 const DeepQuery kContextMenuDialog = {"ntp-app", "cr-searchbox", "#context",
                                       "#menu",   "#menu",        "#dialog"};
-const DeepQuery kComposeboxInput = {"ntp-app", "#composebox", "#input"};
+const DeepQuery kComposeboxInput = {"ntp-app", "cr-composebox",
+                                    "cr-composebox-input", "#input"};
 const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
                                            "#submitContainer"};
 const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};

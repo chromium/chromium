@@ -564,7 +564,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
     });
 
     // Act.
-    testProxy.element.$.input.dispatchEvent(pasteEvent);
+    testProxy.element.getInputElement().inputElement.dispatchEvent(pasteEvent);
 
     // Assert.
     // Check that addFileContext (testSupport.ADD_FILE_CONTEXT_FN) was called
@@ -620,7 +620,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
     });
 
     // Act.
-    testProxy.element.$.input.dispatchEvent(pasteEvent);
+    testProxy.element.getInputElement().inputElement.dispatchEvent(pasteEvent);
     await testProxy.searchboxHandler.whenCalled(
         testSupport.ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
@@ -661,7 +661,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
     });
 
     // Act.
-    testProxy.element.$.input.dispatchEvent(pasteEvent);
+    testProxy.element.getInputElement().inputElement.dispatchEvent(pasteEvent);
     await microtasksFinished();
 
     // Assert.
@@ -695,7 +695,8 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
         });
 
         // Act.
-        testProxy.element.$.input.dispatchEvent(pasteEvent);
+        testProxy.element.getInputElement().inputElement.dispatchEvent(
+            pasteEvent);
         await microtasksFinished();
 
         // Assert.
@@ -744,7 +745,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
     });
 
     // Act.
-    testProxy.element.$.input.dispatchEvent(pasteEvent);
+    testProxy.element.getInputElement().$.input.dispatchEvent(pasteEvent);
 
     // Wait for both files to be processed (addFileContext called twice).
     await testSupport.waitForAddFileCallCount(testProxy.searchboxHandler, 2);
@@ -810,7 +811,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
         });
 
         // Act.
-        testProxy.element.$.input.dispatchEvent(pasteEvent);
+        testProxy.element.getInputElement().$.input.dispatchEvent(pasteEvent);
 
         await testSupport.waitForAddFileCallCount(
             testProxy.searchboxHandler, 5);
@@ -874,7 +875,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
         });
 
         // Act.
-        testProxy.element.$.input.dispatchEvent(pasteEvent);
+        testProxy.element.getInputElement().$.input.dispatchEvent(pasteEvent);
 
         await testSupport.waitForAddFileCallCount(
             testProxy.searchboxHandler, 3);
@@ -922,7 +923,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
           composed: true,
         });
 
-        testProxy.element.$.input.dispatchEvent(pasteEvent);
+        testProxy.element.getInputElement().$.input.dispatchEvent(pasteEvent);
 
         await testSupport.waitForAddFileCallCount(
             testProxy.searchboxHandler, 1);
@@ -1031,8 +1032,9 @@ suite('NewTabPageComposeboxUploadToolModeTest', () => {
         testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
     // Query autocomplete with image present to get verbatim match.
-    testProxy.element.$.input.value = 'T';
-    testProxy.element.$.input.dispatchEvent(new Event('input'));
+    testProxy.element.getInputElement().$.input.value = 'T';
+    testProxy.element.getInputElement().$.input.dispatchEvent(
+        new Event('input'));
     await microtasksFinished();
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);

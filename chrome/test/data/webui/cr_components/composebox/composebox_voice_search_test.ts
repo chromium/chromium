@@ -235,9 +235,12 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test('idle timer exits voice search if no final result', async () => {
+    const hidePromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
+    await hidePromise;
 
     assertTrue(mockSpeechRecognition.voiceSearchInProgress);
     const showPromise =
@@ -260,9 +263,12 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test('idle timer submits voice search if final result exists', async () => {
+    const hidePromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
+    await hidePromise;
 
     assertTrue(mockSpeechRecognition.voiceSearchInProgress);
 
@@ -292,9 +298,12 @@ suite('ComposeboxVoiceSearch', () => {
   test(
       'idle timeout with interim result and some final result submits query',
       async () => {
+        const hidePromise =
+            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);
         voiceSearchButton!.click();
         await microtasksFinished();
+        await hidePromise;
 
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
 
@@ -336,9 +345,12 @@ suite('ComposeboxVoiceSearch', () => {
     composeboxElement = document.createElement('cr-composebox');
     document.body.appendChild(composeboxElement);
 
+    const hidePromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
+    await hidePromise;
 
     assertTrue(mockSpeechRecognition.voiceSearchInProgress);
 
@@ -379,9 +391,12 @@ suite('ComposeboxVoiceSearch', () => {
       async () => {
         (composeboxElement as any).autoSubmitVoiceSearch = true;
 
+        const hidePromise =
+            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);
         voiceSearchButton!.click();
         await microtasksFinished();
+        await hidePromise;
 
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
 
@@ -430,9 +445,12 @@ suite('ComposeboxVoiceSearch', () => {
   test('transcript is cleared to avoid leftover past queries', async () => {
     (composeboxElement as any).autoSubmitVoiceSearch = true;
 
+    const hidePromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
+    await hidePromise;
 
     assertTrue(mockSpeechRecognition.voiceSearchInProgress);
 
@@ -506,9 +524,12 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test('on error closes voice search for other errors', async () => {
+    const hidePromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
+    await hidePromise;
 
     const showPromise =
         getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');

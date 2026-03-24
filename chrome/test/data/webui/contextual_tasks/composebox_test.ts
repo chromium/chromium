@@ -455,7 +455,7 @@ suite('ContextualTasksComposeboxTest', () => {
   test('SelectingMatchPopulatesComposebox', async () => {
     mockTimer.install();
     const composebox = contextualTasksApp.$.composebox.$.composebox;
-    const inputElement = composebox.$.input;
+    const inputElement = composebox.getInputElement().$.input;
 
 
     const testQuery = 'test';
@@ -654,7 +654,7 @@ suite('ContextualTasksComposeboxTest', () => {
     mockTimer.install();
     const TEST_QUERY = 'test query';
 
-    const inputElement = composebox.$.input;
+    const inputElement = composebox.getInputElement().$.input;
     assertTrue(
         isVisible(inputElement), 'Composebox input element should be visible');
 
@@ -716,7 +716,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('EnterKeyOnEmptyInputDoesNotAddNewLineOrSubmit', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
-    const inputElement = innerComposebox.$.input;
+    const inputElement = innerComposebox.getInputElement().$.input;
     const keydownDiv =
         innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!keydownDiv);
@@ -1052,7 +1052,7 @@ suite('ContextualTasksComposeboxTest', () => {
   test('lens overlay showing updates placeholder', async () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
-    const inputElement = innerComposebox.$.input;
+    const inputElement = innerComposebox.getInputElement().$.input;
 
     // Initially false, placeholder override should be empty.
     assertFalse(contextualComposebox.isOverlayOpenForAimVisualSearch);

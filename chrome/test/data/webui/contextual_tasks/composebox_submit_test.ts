@@ -182,7 +182,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockTimer.install();
     const TEST_QUERY = 'test query';
 
-    const inputElement = composebox.$.input;
+    const inputElement = composebox.getInputElement().$.input;
     assertTrue(
         isVisible(inputElement), 'Composebox input element should be visible');
 
@@ -229,7 +229,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockTimer.install();
     const TEST_QUERY = 'test query';
 
-    const inputElement = composebox.$.input;
+    const inputElement = composebox.getInputElement().$.input;
     assertTrue(
         isVisible(inputElement), 'Composebox input element should be visible');
 
