@@ -225,6 +225,21 @@ TEST(Switches, Unparsed) {
   ASSERT_EQ("---e=--1=1 --a --b --c=1 --d=1", switches.ToString());
 }
 
+TEST(Switches, UnparsedInvalidName) {
+  Switches switches;
+  switches.SetUnparsedSwitch("--a b");
+  switches.SetUnparsedSwitch("c\"d");
+  switches.SetUnparsedSwitch("e\'f");
+  switches.SetUnparsedSwitch("g\th");
+  switches.SetUnparsedSwitch("i\nj");
+  switches.SetUnparsedSwitch("k\rl");
+  switches.SetUnparsedSwitch("m=1");
+  switches.SetUnparsedSwitch("--n o=1");
+  switches.SetUnparsedSwitch("/c echo NOT_CHROME > capture.txt");
+
+  ASSERT_EQ("--m=1", switches.ToString());
+}
+
 TEST(ParseCapabilities, UnknownCapabilityLegacy) {
   // In legacy mode, unknown capabilities are ignored.
   Capabilities capabilities;

@@ -1039,6 +1039,11 @@ void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
     start_index = 2;
   name = unparsed_switch.substr(start_index, equals_index - start_index);
 
+  if (name.find_first_of(" \t\n\r\"\'") != std::string::npos) {
+    LOG(WARNING) << "Ignoring switch with invalid name: " << name;
+    return;
+  }
+
   const auto iter = kMultivaluedSwitches.find(name);
   if (iter != kMultivaluedSwitches.end()) {
     SetMultivaluedSwitch(name, value, iter->second);
