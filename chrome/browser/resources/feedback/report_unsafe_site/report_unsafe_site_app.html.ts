@@ -27,6 +27,7 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
     <div>
       <cr-checkbox id="includeScreenshotCheckbox"
           ?checked="${this.includeScreenshot_}"
+          ?disabled="${this.screenshotDataUri_.length === 0}"
           @checked-changed="${this.onIncludeScreenshotCheckedChanged_}">
         $i18n{reportUnsafeSiteDialogIncludeScreenshotCheckboxLabel}
       </cr-checkbox>
