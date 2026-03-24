@@ -923,9 +923,10 @@ class GraphBuilderTflite final {
 
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
-  Result FinishAndTakeResult(base::span<const OperandId> input_operands,
-                             base::span<const OperandId> output_operands,
-                             bool has_fp32_operation);
+  base::expected<Result, std::string> FinishAndTakeResult(
+      base::span<const OperandId> input_operands,
+      base::span<const OperandId> output_operands,
+      bool graph_requires_fp32_precision);
 
   const ContextProperties context_properties_;
 
