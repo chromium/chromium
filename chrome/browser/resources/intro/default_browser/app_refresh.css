@@ -9,8 +9,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --bg-bottom-url: url(images/default_browser_bg_bottom_light.png);
-  --bg-right-url: url(images/default_browser_bg_right_light.png);
+  --bg-bottom-url: url(images/default_browser_bg_bottom_light.svg);
+  --bg-right-url: url(images/default_browser_bg_right_light.svg);
   --child-max-height: 31.25rem;
   --child-max-width: 31.25rem;
   --content-gap: 1.5rem;
@@ -135,8 +135,8 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --bg-bottom-url: url(images/default_browser_bg_bottom_dark.png);
-    --bg-right-url: url(images/default_browser_bg_right_dark.png);
+    --bg-bottom-url: url(images/default_browser_bg_bottom_dark.svg);
+    --bg-right-url: url(images/default_browser_bg_right_dark.svg);
   }
 }
 
