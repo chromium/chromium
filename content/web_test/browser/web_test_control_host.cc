@@ -2236,16 +2236,16 @@ mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
   GlobalRenderFrameHostId key(frame->GetProcess()->GetDeprecatedID(),
                               frame->GetRoutingID());
-  if (!web_test_render_frame_map_.contains(key)) {
-    mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
-        web_test_render_frame_map_[key];
+  auto [it, inserted] = web_test_render_frame_map_.try_emplace(key);
+  if (inserted) {
+    mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr = it->second;
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&new_ptr);
     new_ptr.set_disconnect_handler(
         base::BindOnce(&WebTestControlHost::HandleWebTestRenderFrameRemoteError,
                        weak_factory_.GetWeakPtr(), key));
   }
-  DCHECK(web_test_render_frame_map_[key].get());
-  return web_test_render_frame_map_[key];
+  DCHECK(it->second.get());
+  return it->second;
 }
 
 void WebTestControlHost::HandleWebTestRenderFrameRemoteError(

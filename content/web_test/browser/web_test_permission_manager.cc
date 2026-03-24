@@ -169,9 +169,6 @@ void WebTestPermissionManager::ResetPermission(blink::PermissionType permission,
       PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
           permission),
       requesting_origin, embedding_origin);
-  if (!permissions_.contains(key)) {
-    return;
-  }
   permissions_.erase(key);
 }
 

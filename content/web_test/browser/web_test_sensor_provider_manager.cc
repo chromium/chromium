@@ -32,7 +32,8 @@ void WebTestSensorProviderManager::CreateVirtualSensor(
     return;
   }
 
-  if (sensor_overrides_.contains(type)) {
+  auto [it, inserted] = sensor_overrides_.try_emplace(type);
+  if (!inserted) {
     std::move(callback).Run(
         device::mojom::CreateVirtualSensorResult::kSensorTypeAlreadyOverridden);
     return;
@@ -42,7 +43,7 @@ void WebTestSensorProviderManager::CreateVirtualSensor(
       WebContentsSensorProviderProxy::GetOrCreate(web_contents_.get())
           ->CreateVirtualSensorForDevTools(type, std::move(metadata));
   CHECK(virtual_sensor);
-  sensor_overrides_[type] = std::move(virtual_sensor);
+  it->second = std::move(virtual_sensor);
 
   std::move(callback).Run(device::mojom::CreateVirtualSensorResult::kSuccess);
 }

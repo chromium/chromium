@@ -35,7 +35,8 @@ void WebTestPressureManager::CreateVirtualPressureSource(
     device::mojom::PressureSource source,
     device::mojom::VirtualPressureSourceMetadataPtr metadata,
     CreateVirtualPressureSourceCallback callback) {
-  if (pressure_source_overrides_.contains(source)) {
+  auto [it, inserted] = pressure_source_overrides_.try_emplace(source);
+  if (!inserted) {
     std::move(callback).Run(
         blink::test::mojom::CreateVirtualPressureSourceResult::
             kSourceTypeAlreadyOverridden);
@@ -46,7 +47,7 @@ void WebTestPressureManager::CreateVirtualPressureSource(
       WebContentsPressureManagerProxy::GetOrCreate(&GetWebContents())
           ->CreateVirtualPressureSourceForDevTools(source, std::move(metadata));
   CHECK(virtual_pressure_source);
-  pressure_source_overrides_[source] = std::move(virtual_pressure_source);
+  it->second = std::move(virtual_pressure_source);
 
   std::move(callback).Run(
       blink::test::mojom::CreateVirtualPressureSourceResult::kSuccess);
