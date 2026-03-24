@@ -212,6 +212,16 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-rx-5500xt-exp",
+    description_html = "Runs release GPU tests on experimental Linux/AMD RX 5500XT configs",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (AMD RX 5500XT)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-amd-rx-7600-rel",
     mirrors = [
         "ci/GPU FYI Linux Builder",

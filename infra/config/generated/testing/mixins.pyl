@@ -203,6 +203,17 @@
       },
     },
   },
+  'gpu_amd_rx_5500_xt_linux_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '1002:7340-25.0.7',
+        'os': 'Ubuntu-24.04',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'gpu_enable_metal_debug_layers': {
     'args': [
       '--enable-metal-debug-layers',

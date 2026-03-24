@@ -1060,6 +1060,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_amd_rx_5500_xt_linux_experimental",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "1002:7340-25.0.7",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_amd_9900x_linux_experimental",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.

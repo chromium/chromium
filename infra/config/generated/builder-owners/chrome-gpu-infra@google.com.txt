@@ -95,6 +95,7 @@ ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (AMD 780M)
 ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (AMD 9900X)
+ci/Linux FYI Experimental Release (AMD RX 5500XT)
 ci/Linux FYI Experimental Release (Intel Arc 140V)
 ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
@@ -209,6 +210,7 @@ try/gpu-fyi-try-linux-amd-780m-exp
 try/gpu-fyi-try-linux-amd-890m-exp
 try/gpu-fyi-try-linux-amd-9900x-exp
 try/gpu-fyi-try-linux-amd-rel
+try/gpu-fyi-try-linux-amd-rx-5500xt-exp
 try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-arc-140v-exp
 try/gpu-fyi-try-linux-intel-exp
