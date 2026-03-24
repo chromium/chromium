@@ -32,7 +32,7 @@ source_set("one_p_resolver") {
 
 source_set("annotation_reducer") {
   sources = [
-    "autofill_data_provider.h",
+    "memory_data_provider.h",
     "memory_search_result.cc",
     "memory_search_result.h",
     "query_classifier.cc",

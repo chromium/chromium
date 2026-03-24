@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/accessibility_annotator/core/annotation_reducer/autofill_data_provider.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -20,7 +20,7 @@ namespace autofill {
 // Autofill AI entities) and serves them in a standardized format suitable for
 // @memory search results.
 class AutofillDataProviderImpl
-    : public accessibility_annotator::AutofillDataProvider {
+    : public accessibility_annotator::MemoryDataProvider {
  public:
   AutofillDataProviderImpl(const PersonalDataManager* personal_data_manager,
                            const EntityDataManager* entity_data_manager);
@@ -28,7 +28,7 @@ class AutofillDataProviderImpl
   AutofillDataProviderImpl& operator=(const AutofillDataProviderImpl&) = delete;
   ~AutofillDataProviderImpl() override;
 
-  // accessibility_annotator::AutofillDataProvider:
+  // accessibility_annotator::MemoryDataProvider:
   std::vector<accessibility_annotator::MemorySearchResult> RetrieveAll(
       accessibility_annotator::QueryIntentType type) override;
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/mock_accessibility_query_service.h"
 
-#include "components/accessibility_annotator/core/annotation_reducer/autofill_data_provider.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 
 namespace autofill {
 

@@ -12,7 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/accessibility_annotator/core/annotation_reducer/autofill_data_provider.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,13 +21,13 @@ namespace accessibility_annotator {
 
 namespace {
 
-using ::accessibility_annotator::AutofillDataProvider;
+using ::accessibility_annotator::MemoryDataProvider;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
 using ::accessibility_annotator::MemorySearchStatus;
 using ::accessibility_annotator::QueryIntentType;
 
-class FakeAutofillDataProvider : public AutofillDataProvider {
+class FakeMemoryDataProvider : public MemoryDataProvider {
  public:
   std::vector<MemorySearchResult> RetrieveAll(QueryIntentType type) override {
     last_type_ = type;
@@ -54,7 +54,7 @@ class AccessibilityQueryServiceTest : public testing::Test {
 // Tests that the query service returns the expected results when the intent is
 // successfully classified.
 TEST_F(AccessibilityQueryServiceTest, Query_Success) {
-  auto data_provider = std::make_unique<FakeAutofillDataProvider>();
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
   auto* fake_data_provider = data_provider.get();
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
@@ -74,7 +74,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
 // Tests that the query service returns an empty list when the intent is
 // unknown.
 TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent) {
-  auto data_provider = std::make_unique<FakeAutofillDataProvider>();
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
 
@@ -89,7 +89,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent) {
 // Tests that the query service correctly filters results when filter words
 // are present in the query.
 TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
-  auto data_provider = std::make_unique<FakeAutofillDataProvider>();
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
   auto* fake_data_provider = data_provider.get();
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
@@ -115,7 +115,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
 // classified intent if none of the results match the filter words.
 TEST_F(AccessibilityQueryServiceTest,
        Query_WithFilterWords_NoMatch_ReturnsAll) {
-  auto data_provider = std::make_unique<FakeAutofillDataProvider>();
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
   auto* fake_data_provider = data_provider.get();
   auto service =
       std::make_unique<AccessibilityQueryService>(std::move(data_provider));
