@@ -5,6 +5,7 @@
 #include "extensions/browser/image_sanitizer.h"
 
 #include <optional>
+#include <tuple>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
@@ -118,20 +119,20 @@ void ImageSanitizer::Start() {
   }
 }
 
-void ImageSanitizer::ImageFileRead(
-    const base::FilePath& image_path,
-    std::tuple<std::vector<uint8_t>, bool, bool> read_and_delete_result) {
-  if (!std::get<1>(read_and_delete_result)) {
+void ImageSanitizer::ImageFileRead(const base::FilePath& image_path,
+                                   std::vector<uint8_t> contents,
+                                   bool read_successful,
+                                   bool delete_successful) {
+  if (!read_successful) {
     ReportError(Status::kFileReadError, image_path);
     return;
   }
-  if (!std::get<2>(read_and_delete_result)) {
+  if (!delete_successful) {
     ReportError(Status::kFileDeleteError, image_path);
     return;
   }
-  const std::vector<uint8_t>& image_data = std::get<0>(read_and_delete_result);
   data_decoder::DecodeImage(
-      client_->GetDataDecoder(), image_data,
+      client_->GetDataDecoder(), contents,
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, kMaxImageCanvas, gfx::Size(),
       base::BindOnce(&ImageSanitizer::ImageDecoded, weak_factory_.GetWeakPtr(),

@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 #include <set>
-#include <tuple>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -93,9 +92,10 @@ class ImageSanitizer {
 
   void Start();
 
-  void ImageFileRead(
-      const base::FilePath& image_path,
-      std::tuple<std::vector<uint8_t>, bool, bool> read_and_delete_result);
+  void ImageFileRead(const base::FilePath& image_path,
+                     std::vector<uint8_t> contents,
+                     bool read_successful,
+                     bool delete_successful);
 
   void ImageDecoded(const base::FilePath& image_path,
                     const SkBitmap& decoded_image);

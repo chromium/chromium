@@ -213,17 +213,9 @@ void HidConnectionLinux::PlatformGetFeatureReport(uint8_t report_id,
       device_info()->max_feature_report_size() + 1);
   buffer->as_vector().data()[0] = report_id;
 
-  auto callback_wrapper = base::BindOnce(
-      [](ReadCallback callback,
-         std::tuple<bool, scoped_refptr<base::RefCountedBytes>, int> result) {
-        std::move(callback).Run(std::get<0>(result), std::get<1>(result),
-                                std::get<2>(result));
-      },
-      std::move(callback));
-
   helper_.AsyncCall(&BlockingTaskRunnerHelper::GetFeatureReport)
       .WithArgs(report_id, std::move(buffer))
-      .Then(std::move(callback_wrapper));
+      .Then(std::move(callback));
 }
 
 void HidConnectionLinux::PlatformSendFeatureReport(

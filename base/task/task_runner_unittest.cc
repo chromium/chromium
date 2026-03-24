@@ -5,13 +5,17 @@
 #include "base/task/task_runner.h"
 
 #include <memory>
+#include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -48,6 +52,11 @@ void ExpectFoo(std::unique_ptr<Foo> foo) {
   EXPECT_FALSE(foo.get());
 }
 
+void ExpectTwoFoos(std::unique_ptr<Foo> foo, std::unique_ptr<Foo> bar) {
+  ExpectFoo(std::move(foo));
+  ExpectFoo(std::move(bar));
+}
+
 struct FooDeleter {
   void operator()(Foo* foo) const {
     ++g_foo_free_count;
@@ -64,6 +73,14 @@ void ExpectScopedFoo(std::unique_ptr<Foo, FooDeleter> foo) {
   std::unique_ptr<Foo, FooDeleter> local_foo(std::move(foo));
   EXPECT_TRUE(local_foo.get());
   EXPECT_FALSE(foo.get());
+}
+
+std::tuple<std::unique_ptr<Foo>, std::unique_ptr<Foo>> CreateFooTuple() {
+  return {std::make_unique<Foo>(), std::make_unique<Foo>()};
+}
+
+std::tuple<int, std::string> ReturnIntAndString() {
+  return {42, "hello"};
 }
 
 struct FooWithoutDefaultConstructor {
@@ -165,6 +182,75 @@ TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultWithoutDefaultConstructor) {
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(kSomeVal, actual);
+}
+
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultTuple) {
+  test::SingleThreadTaskEnvironment task_environment;
+
+  int out_int = 0;
+  std::string out_string;
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&ReturnIntAndString),
+      BindLambdaForTesting([&](int x, std::string s) {
+        out_int = x;
+        out_string = std::move(s);
+      }).Then(task_environment.QuitClosure()));
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(out_int, 42);
+  EXPECT_EQ(out_string, "hello");
+}
+
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultTupleConstRef) {
+  test::SingleThreadTaskEnvironment task_environment;
+
+  int out_int = 0;
+  std::string out_string;
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&ReturnIntAndString),
+      BindLambdaForTesting([&](int x, const std::string& s) {
+        out_int = x;
+        out_string = s;
+      }).Then(task_environment.QuitClosure()));
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(out_int, 42);
+  EXPECT_EQ(out_string, "hello");
+}
+
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultTupleImplicitConversion) {
+  test::SingleThreadTaskEnvironment task_environment;
+
+  int out_int = 0;
+  std::string out_string;
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&ReturnIntAndString),
+      BindLambdaForTesting([&](int x, std::string_view s) {
+        out_int = x;
+        out_string = s;
+      }).Then(task_environment.QuitClosure()));
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(out_int, 42);
+  EXPECT_EQ(out_string, "hello");
+}
+
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultTupleTestFuture) {
+  test::SingleThreadTaskEnvironment task_environment;
+
+  test::TestFuture<int, std::string> future;
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&ReturnIntAndString), future.GetCallback());
+  EXPECT_EQ(42, future.Get<int>());
+  EXPECT_EQ("hello", future.Get<std::string>());
+}
+
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithTupleResultPassed) {
+  test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&CreateFooTuple),
+      BindOnce(&ExpectTwoFoos).Then(task_environment.QuitClosure()));
+  task_environment.RunUntilQuit();
+
+  EXPECT_EQ(2, g_foo_destruct_count);
+  EXPECT_EQ(0, g_foo_free_count);
 }
 
 }  // namespace base

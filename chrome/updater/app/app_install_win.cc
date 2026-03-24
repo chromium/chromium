@@ -608,18 +608,8 @@ void AppInstallControllerImpl::InstallAppOffline(
                                             : client_install_data);
           },
           app_id_),
-      base::BindOnce(
-          [](scoped_refptr<AppInstallControllerImpl> self,
-             const std::tuple<
-                 OfflineManifestSystemRequirements /*requirements*/,
-                 std::string /*installer_version*/,
-                 base::FilePath /*installer_path*/, std::string /*arguments*/,
-                 std::string /*install_data*/>& result) {
-            self->DoInstallAppOffline(std::get<0>(result), std::get<1>(result),
-                                      std::get<2>(result), std::get<3>(result),
-                                      std::get<4>(result));
-          },
-          base::WrapRefCounted(this)));
+      base::BindOnce(&AppInstallControllerImpl::DoInstallAppOffline,
+                     base::WrapRefCounted(this)));
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(

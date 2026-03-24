@@ -141,27 +141,33 @@ class BASE_EXPORT TaskRunner
   //
   // Templating on the types of `task` and `reply` allows template matching to
   // work for both base::RepeatingCallback and base::OnceCallback in each case.
+  //
+  // It's also possible for `task` to return a tuple which is unpacked into
+  // arguments for `reply`.
   template <typename TaskReturnType,
-            typename ReplyArgType,
-            template <typename>
-            class TaskCallbackType,
-            template <typename>
-            class ReplyCallbackType>
+            typename... ReplyArgTypes,
+            template <typename> class TaskCallbackType,
+            template <typename> class ReplyCallbackType>
     requires(IsBaseCallback<TaskCallbackType<void()>> &&
              IsBaseCallback<ReplyCallbackType<void()>>)
-  bool PostTaskAndReplyWithResult(const Location& from_here,
-                                  TaskCallbackType<TaskReturnType()> task,
-                                  ReplyCallbackType<void(ReplyArgType)> reply) {
+  bool PostTaskAndReplyWithResult(
+      const Location& from_here,
+      TaskCallbackType<TaskReturnType()> task,
+      ReplyCallbackType<void(ReplyArgTypes...)> reply) {
     DCHECK(task);
     DCHECK(reply);
-    // std::unique_ptr used to avoid the need of a default constructor.
-    auto* result = new std::unique_ptr<TaskReturnType>();
+    using ReplyStorageType =
+        typename internal::ensure_tuple<TaskReturnType>::type;
+    auto* result = new std::unique_ptr<ReplyStorageType>();
+
     return PostTaskAndReply(
         from_here,
-        base::BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
-                       std::move(task), result),
-        base::BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
-                       std::move(reply), Owned(result)));
+        base::BindOnce(
+            &internal::ReturnAsParamAdapter<ReplyStorageType, TaskReturnType>,
+            std::move(task), result),
+        base::BindOnce(
+            &internal::ReplyAdapter<ReplyStorageType, ReplyArgTypes...>,
+            std::move(reply), Owned(result)));
   }
 
  protected:

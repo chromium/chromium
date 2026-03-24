@@ -5,6 +5,7 @@
 #include "chrome/updater/action_handler.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -16,7 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/update_client/update_client.h"
@@ -53,14 +54,7 @@ void ActionHandler::Handle(const base::FilePath& action,
        base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ActionHandler::RunCommand, action),
-      base::BindOnce(
-          [](Callback callback, const Result& result) {
-            auto [succeeded, error_code, extra_code] = result;
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), succeeded,
-                                          error_code, extra_code));
-          },
-          std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 ActionHandler::Result ActionHandler::RunCommand(

@@ -82,17 +82,21 @@ class BASE_EXPORT CancelableTaskTracker {
                           OnceClosure task,
                           OnceClosure reply);
 
-  template <typename TaskReturnType, typename ReplyArgType>
-  TaskId PostTaskAndReplyWithResult(TaskRunner* task_runner,
-                                    const Location& from_here,
-                                    OnceCallback<TaskReturnType()> task,
-                                    OnceCallback<void(ReplyArgType)> reply) {
-    auto* result = new std::unique_ptr<TaskReturnType>();
+  template <typename TaskReturnType, typename... ReplyArgTypes>
+  TaskId PostTaskAndReplyWithResult(
+      TaskRunner* task_runner,
+      const Location& from_here,
+      OnceCallback<TaskReturnType()> task,
+      OnceCallback<void(ReplyArgTypes...)> reply) {
+    using ReplyStorageType =
+        typename internal::ensure_tuple<TaskReturnType>::type;
+    auto* result = new std::unique_ptr<ReplyStorageType>();
     return PostTaskAndReply(
         task_runner, from_here,
-        BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
-                 std::move(task), Unretained(result)),
-        BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
+        BindOnce(
+            &internal::ReturnAsParamAdapter<ReplyStorageType, TaskReturnType>,
+            std::move(task), Unretained(result)),
+        BindOnce(&internal::ReplyAdapter<ReplyStorageType, ReplyArgTypes...>,
                  std::move(reply), Owned(result)));
   }
 

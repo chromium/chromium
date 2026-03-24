@@ -16,11 +16,10 @@ namespace net {
 
 namespace {
 
-void DoCallback(
-    const base::WeakPtr<ThreadedSSLPrivateKey>& key,
-    SSLPrivateKey::SignCallback callback,
-    std::tuple<Error, std::unique_ptr<std::vector<uint8_t>>> result) {
-  auto [error, signature] = std::move(result);
+void DoCallback(base::WeakPtr<ThreadedSSLPrivateKey> key,
+                SSLPrivateKey::SignCallback callback,
+                Error error,
+                std::unique_ptr<std::vector<uint8_t>> signature) {
   if (!key)
     return;
   std::move(callback).Run(error, *signature);

@@ -148,19 +148,22 @@ class BASE_EXPORT ThreadPool {
   // conversion at once on the overload resolution.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
-            typename ReplyArgType>
+            typename... ReplyArgTypes>
     requires(IsBaseCallback<CallbackType<void()>>)
   static bool PostTaskAndReplyWithResult(
       const Location& from_here,
       const TaskTraits& traits,
       CallbackType<TaskReturnType()> task,
-      CallbackType<void(ReplyArgType)> reply) {
-    auto* result = new std::unique_ptr<TaskReturnType>();
+      CallbackType<void(ReplyArgTypes...)> reply) {
+    using ReplyStorageType =
+        typename internal::ensure_tuple<TaskReturnType>::type;
+    auto* result = new std::unique_ptr<ReplyStorageType>();
     return PostTaskAndReply(
         from_here, traits,
-        BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
-                 std::move(task), result),
-        BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
+        BindOnce(
+            &internal::ReturnAsParamAdapter<ReplyStorageType, TaskReturnType>,
+            std::move(task), result),
+        BindOnce(&internal::ReplyAdapter<ReplyStorageType, ReplyArgTypes...>,
                  std::move(reply), Owned(result)));
   }
 

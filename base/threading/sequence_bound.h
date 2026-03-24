@@ -482,9 +482,9 @@ class SequenceBound {
           << "make sure to invoke Then() or use base::IgnoreResult()";
     }
 
-    template <template <typename> class CallbackType, typename ThenArg>
+    template <template <typename> class CallbackType, typename... ThenArgs>
       requires(IsCrossThreadTask<CallbackType>)
-    void Then(CallbackType<void(ThenArg)> then_callback) && {
+    void Then(CallbackType<void(ThenArgs...)> then_callback) && {
       this->sequence_bound_->PostTaskAndThenHelper(
           *this->location_,
           CrossThreadTraits::BindOnce(
@@ -581,9 +581,9 @@ class SequenceBound {
                                   std::move(then_callback));
     }
 
-    template <template <typename> class CallbackType, typename ThenArg>
+    template <template <typename> class CallbackType, typename... ThenArgs>
       requires(!std::is_void_v<ReturnType> && IsCrossThreadTask<CallbackType>)
-    void Then(CallbackType<void(ThenArg)> then_callback) && {
+    void Then(CallbackType<void(ThenArgs...)> then_callback) && {
       std::exchange(sequence_bound_, nullptr)
           ->PostTaskAndThenHelper(*location_, std::move(callback_),
                                   std::move(then_callback));
@@ -616,14 +616,14 @@ class SequenceBound {
   }
 
   template <typename ReturnType,
-            template <typename>
-            class CallbackType,
-            typename ThenArg>
-    requires(IsCrossThreadTask<CallbackType>)
-  void PostTaskAndThenHelper(const Location& location,
-                             CrossThreadTask<ReturnType()> callback,
-                             CallbackType<void(ThenArg)> then_callback) const {
-    CrossThreadTask<void(ThenArg)>&& once_then_callback =
+            template <typename> class CallbackType,
+            typename... ThenArgs>
+    requires(IsCrossThreadTask<CallbackType> && !std::is_void_v<ReturnType>)
+  void PostTaskAndThenHelper(
+      const Location& location,
+      CrossThreadTask<ReturnType()> callback,
+      CallbackType<void(ThenArgs...)> then_callback) const {
+    CrossThreadTask<void(ThenArgs...)>&& once_then_callback =
         std::move(then_callback);
     CrossThreadTraits::PostTaskAndReplyWithResult(
         *impl_task_runner_, location, std::move(callback),

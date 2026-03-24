@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -318,7 +319,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
   }
 
   // Runs on the cache_task_runner_.
-  static std::tuple<CacheStorageError, std::string>
+  static base::expected<std::string, CacheStorageError>
   PrepareNewCacheDirectoryInPool(const base::FilePath& directory_path) {
     std::string cache_dir;
     base::FilePath cache_path;
@@ -329,29 +330,27 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
     base::File::Error error = base::File::FILE_OK;
     if (base::CreateDirectoryAndGetError(cache_path, &error)) {
-      return std::make_tuple(CacheStorageError::kSuccess, cache_dir);
-    } else {
+      return cache_dir;
+    }
+
       CacheStorageError status =
           error == base::File::FILE_ERROR_NO_SPACE
               ? CacheStorageError::kErrorQuotaExceeded
               : MakeErrorStorage(ErrorStorageType::kDidCreateNullCache);
-      return std::make_tuple(status, cache_dir);
-    }
+      return base::unexpected(status);
   }
 
   void PrepareNewCacheCreateCache(
       const std::u16string& cache_name,
       CacheAndErrorCallback callback,
-      const std::tuple<CacheStorageError, std::string>& result) {
-    const auto& [status, cache_dir] = result;
-
-    if (status != CacheStorageError::kSuccess) {
-      std::move(callback).Run(nullptr, status);
+      base::expected<std::string, CacheStorageError> result) {
+    if (!result.has_value()) {
+      std::move(callback).Run(nullptr, result.error());
       return;
     }
-    DCHECK(!cache_dir.empty());
 
-    cache_name_to_cache_dir_[cache_name] = cache_dir;
+    DCHECK(!result->empty());
+    cache_name_to_cache_dir_[cache_name] = std::move(*result);
     std::move(callback).Run(CreateCache(cache_name, CacheStorage::kSizeUnknown,
                                         CacheStorage::kSizeUnknown),
                             CacheStorageError::kSuccess);

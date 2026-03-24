@@ -49,12 +49,12 @@ struct CrossThreadTraits {
                                         std::move(reply));
   }
 
-  template <typename TaskReturnType, typename ReplyArgType>
+  template <typename TaskReturnType, typename... ReplyArgTypes>
   static inline bool PostTaskAndReplyWithResult(
       SequencedTaskRunner& task_runner,
       const Location& location,
       OnceCallback<TaskReturnType()>&& task,
-      OnceCallback<void(ReplyArgType)>&& reply) {
+      OnceCallback<void(ReplyArgTypes...)>&& reply) {
     return task_runner.PostTaskAndReplyWithResult(location, std::move(task),
                                                   std::move(reply));
   }
