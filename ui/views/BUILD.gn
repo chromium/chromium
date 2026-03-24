@@ -750,7 +750,7 @@ component("views") {
       "win/pen_id_handler.h",
       "win/scoped_enable_unadjusted_mouse_events_win.h",
       "win/scoped_fullscreen_visibility.h",
-      "win/user_resize_detector.h",
+      "win/user_resize_move_detector.h",
     ]
     sources += [
       "controls/menu/menu_config_win.cc",
@@ -764,7 +764,7 @@ component("views") {
       "win/pen_id_handler.cc",
       "win/scoped_enable_unadjusted_mouse_events_win.cc",
       "win/scoped_fullscreen_visibility.cc",
-      "win/user_resize_detector.cc",
+      "win/user_resize_move_detector.cc",
     ]
     libs = [
       "dwmapi.lib",

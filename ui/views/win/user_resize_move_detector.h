@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_WIN_USER_RESIZE_DETECTOR_H_
-#define UI_VIEWS_WIN_USER_RESIZE_DETECTOR_H_
+#ifndef UI_VIEWS_WIN_USER_RESIZE_MOVE_DETECTOR_H_
+#define UI_VIEWS_WIN_USER_RESIZE_MOVE_DETECTOR_H_
 
 #include "base/memory/raw_ptr.h"
 
@@ -13,9 +13,9 @@ class HWNDMessageHandlerDelegate;
 
 // This class detects the start and end of user resizing/dragging and notifies
 // the HWND message handle delegate.
-class UserResizeDetector {
+class UserResizeMoveDetector {
  public:
-  explicit UserResizeDetector(HWNDMessageHandlerDelegate* hwnd_delegate);
+  explicit UserResizeMoveDetector(HWNDMessageHandlerDelegate* hwnd_delegate);
 
   // Called on WM_ENTERSIZEMOVE.
   void OnEnterSizeMove();
@@ -47,4 +47,4 @@ class UserResizeDetector {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_WIN_USER_RESIZE_DETECTOR_H_
+#endif  // UI_VIEWS_WIN_USER_RESIZE_MOVE_DETECTOR_H_
