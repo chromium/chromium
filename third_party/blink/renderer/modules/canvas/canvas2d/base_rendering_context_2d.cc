@@ -1374,9 +1374,6 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     return nullptr;
   }
 
-  // Prepare to flush the canvas to a WebGPU texture.
-  FinalizeFrame();
-
   // We will need to access the canvas' resource provider.
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (!host) {
@@ -1384,7 +1381,21 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
                                       "Unable to access canvas image.");
     return nullptr;
   }
+
+  // SharedImage backings chosen for low latency are not guaranteed to support
+  // transfer to WebGPU (notably on Windows). Disallow this combination for
+  // simplicity.
+  if (host->LowLatencyEnabled()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Transfer of low-latency canvases to WebGPU is not supported.");
+    return nullptr;
+  }
+
   host->SetTransferToGPUTextureWasInvoked();
+
+  // Prepare to flush the canvas to a WebGPU texture.
+  FinalizeFrame();
 
   // Ensure that the canvas host lives on the GPU. This call is a no-op if the
   // host is already accelerated.
