@@ -197,10 +197,9 @@ FieldClassificationModelHandler::CreateMlPredictionLog(
   std::vector<std::string> model_types;
   for (int field_type_as_int : state_->metadata.output_type()) {
     FieldType field_type =
-        ToSafeFieldType(FieldType(field_type_as_int)).value_or(NO_SERVER_DATA);
-    std::string field_type_name = (field_type != NO_SERVER_DATA)
-                                      ? FieldTypeToString(field_type)
-                                      : "[INVALID]";
+        ToSafeFieldType(field_type_as_int).value_or(NO_SERVER_DATA);
+    std::string field_type_name =
+        field_type ? FieldTypeToString(field_type) : "[INVALID]";
     model_types.emplace_back(std::move(field_type_name));
   }
   prediction_log->model_output_types.assign(model_types.begin(),

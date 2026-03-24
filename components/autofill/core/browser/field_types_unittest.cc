@@ -9,13 +9,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
+
+using ::testing::Optional;
 
 TEST(FieldTypesTest, TypeStringConversion) {
   EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
     if (FieldType raw_value = static_cast<FieldType>(i);  // nocheck
-        ToSafeFieldType(raw_value).value_or(NO_SERVER_DATA) != NO_SERVER_DATA) {
+        ToSafeFieldType(raw_value).has_value()) {
       EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
     }
@@ -164,8 +167,11 @@ TEST(FieldTypesTest, IsValidFieldType) {
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {
     FieldType raw_value = static_cast<FieldType>(i);
-    EXPECT_EQ(ToSafeFieldType(raw_value).value_or(kInvalidValue),
-              kValidFieldTypes.count(raw_value) ? raw_value : kInvalidValue);
+    if (kValidFieldTypes.contains(raw_value)) {
+      EXPECT_THAT(ToSafeFieldType(raw_value), Optional(raw_value));
+    } else {
+      EXPECT_EQ(ToSafeFieldType(raw_value), std::nullopt);
+    }
   }
 }
 
@@ -183,4 +189,5 @@ TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
   EXPECT_EQ(result, static_cast<size_t>(4));
 }
 
+}  // namespace
 }  // namespace autofill

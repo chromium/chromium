@@ -619,9 +619,7 @@ template <>
 struct DenseSetTraits<FieldType>
     : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {
   static constexpr bool is_valid(FieldType x) {
-    return x == NO_SERVER_DATA ||
-           ToSafeFieldType(std::to_underlying(x)).value_or(NO_SERVER_DATA) !=
-               NO_SERVER_DATA;
+    return ToSafeFieldType(std::to_underlying(x)).has_value();
   }
 };
 

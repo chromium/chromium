@@ -115,12 +115,11 @@ void ReadChromeValuablesMetadata(
        metadata.metadata_entries()) {
     std::optional<AttributeType> attribute_type =
         StringToAttributeType(entity_type, entry.attribute_type());
-    FieldType field_type =
-        ToSafeFieldType(entry.field_type()).value_or(UNKNOWN_TYPE);
+    std::optional<FieldType> field_type = ToSafeFieldType(entry.field_type());
     std::u16string value = base::UTF8ToUTF16(entry.value());
     std::optional<VerificationStatus> status =
         ToSafeVerificationStatus(entry.verification_status());
-    if (!attribute_type || field_type == UNKNOWN_TYPE || !status) {
+    if (!attribute_type || !field_type || !status) {
       continue;
     }
     auto it = parsed_metadata_attributes.find(*attribute_type);

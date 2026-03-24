@@ -598,8 +598,8 @@ void EncodeFormForQuery(const FormData& form,
 bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
   return std::ranges::any_of(
       field_suggestion.predictions(), [](const auto& prediction) {
-        auto group_type = GroupTypeOfFieldType(
-            ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
+        std::optional<FieldTypeGroup> group_type =
+            ToSafeFieldType(prediction.type()).transform(&GroupTypeOfFieldType);
         return group_type == FieldTypeGroup::kPasswordField ||
                group_type == FieldTypeGroup::kUsernameField;
       });
@@ -612,8 +612,8 @@ void MergePasswordManagerPredictions(
     FieldSuggestion& merge_to_predictions) {
   CHECK_NE(&merge_to_predictions, &merge_from_predictions);
   for (const auto& prediction : merge_from_predictions.predictions()) {
-    FieldTypeGroup group_type = GroupTypeOfFieldType(
-        ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
+    std::optional<FieldTypeGroup> group_type =
+        ToSafeFieldType(prediction.type()).transform(&GroupTypeOfFieldType);
     // Only add predictions relevant for PasswordManager.
     if (group_type == FieldTypeGroup::kPasswordField ||
         group_type == FieldTypeGroup::kUsernameField) {
@@ -883,9 +883,8 @@ void ClearSmallAddressFormPredictions(
         return false;
     }
     // Only address types should be wiped.
-    FieldType type =
-        ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA);
-    return IsAddressType(type);
+    std::optional<FieldType> type = ToSafeFieldType(prediction.type());
+    return type && IsAddressType(*type);
   };
 
   for (AutofillQueryResponse::FormSuggestion::FieldSuggestion& field :
@@ -1155,9 +1154,7 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
                                   : FieldPrediction::SOURCE_UNSPECIFIED,
         .server_type2 =
             field->server_predictions().size() >= 2
-                ? std::optional<FieldType>(
-                      ToSafeFieldType(field->server_predictions()[1].type())
-                          .value_or(NO_SERVER_DATA))
+                ? ToSafeFieldType(field->server_predictions()[1].type())
                 : std::nullopt,
         .prediction_source2 = field->server_predictions().size() >= 2
                                   ? field->server_predictions()[1].source()

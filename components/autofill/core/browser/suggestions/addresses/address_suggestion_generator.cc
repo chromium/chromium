@@ -113,11 +113,11 @@ FieldTypeSet GetAutofillOnTypingPossibleTypes() {
     if (!base::StringToInt(part, &current_value)) {
       return {};
     }
-    FieldType type = ToSafeFieldType(current_value).value_or(NO_SERVER_DATA);
-    if (!IsAddressType(type)) {
+    std::optional<FieldType> type = ToSafeFieldType(current_value);
+    if (!type || !IsAddressType(*type)) {
       return {};
     }
-    types.insert(type);
+    types.insert(*type);
   }
   return types;
 }
