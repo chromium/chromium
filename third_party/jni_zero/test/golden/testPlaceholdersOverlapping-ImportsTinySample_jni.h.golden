@@ -12,34 +12,46 @@
 #include "extra_include.h"
 #include "ImportsTinySample_shared_jni.h"
 
-// Macro for transition to enable_definition_macros=true.
-#define DEFINE_JNI_FOR_ImportsTinySample()
+// Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
+// static void JNI_ImportsTinySample_Asdf(JNIEnv* env);
+//
+
+// Triggers a compiler warning if DEFINE_JNI(ImportsTinySample) is forgotten (requires -Wunused-function).
+static void YouForgotToCallMacro_DEFINE_JNI_ImportsTinySample() {}
 
 // Java to native functions
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_ImportsTinySample_Asdf(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1extrapackage_1ImportsTinySample_1asdf(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...)) {
-      return JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_ImportsTinySample_Asdf() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee ImportsTinySample_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
-
+#define DEFINE_JNI_FOR_ImportsTinySample()                                                         \
+  namespace {                                                                                      \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1extrapackage_1ImportsTinySample_1asdf( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Prevent -Wunused-function warning. */                                                       \
+    YouForgotToCallMacro_DEFINE_JNI_ImportsTinySample();                                           \
+                                                                                                   \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...)) {                \
+        return JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...);                  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_ImportsTinySample_Asdf() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee ImportsTinySample_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+                                                                                                   \
+  }  /* namespace */
 
 
 #endif  // org_jni_1zero_extrapackage_ImportsTinySample_JNI

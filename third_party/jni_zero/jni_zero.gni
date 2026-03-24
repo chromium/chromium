@@ -173,6 +173,7 @@ template("generate_jni_registration") {
     if (defined(_priority_java_sources_list)) {
       gen_deps += [ ":${target_name}__priority_java_sources" ]
     }
+
     # Cannot depend on jni_sources_list targets since they likely depend on
     # this target via srcjar_deps. Depfiles are used to add the dep instead.
     deps = []
@@ -323,6 +324,15 @@ template("generate_jni_impl") {
           "$target_gen_dir/${_final_target_name}_placeholder.srcjar"
     }
 
+    if (defined(invoker.enable_definition_macros)) {
+      _enable_definition_macros = invoker.enable_definition_macros
+    } else {
+      _enable_definition_macros =
+          build_with_chromium &&
+          filter_include([ get_label_info(":$target_name", "dir") ],
+                         [ "//third_party/webrtc/*" ]) == []
+    }
+
     _invoke_jni_zero(_jni_zero_action_target_name) {
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
@@ -352,6 +362,9 @@ template("generate_jni_impl") {
         "--output-dir",
         rebase_path(_jni_output_dir, root_build_dir),
       ]
+      if (_enable_definition_macros) {
+        args += [ "--use-std-primitive-types" ]
+      }
 
       if (_from_source) {
         assert(defined(invoker.sources))
@@ -382,8 +395,7 @@ template("generate_jni_impl") {
         if (defined(invoker.namespace)) {
           args += [ "--namespace=${invoker.namespace}" ]
         }
-        if (defined(invoker.enable_definition_macros) &&
-            invoker.enable_definition_macros) {
+        if (_enable_definition_macros) {
           args += [ "--enable-definition-macros" ]
         }
         if (defined(invoker.allow_private_called_by_natives) &&
@@ -526,13 +538,6 @@ template("generate_jni") {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    if (!defined(invoker.enable_definition_macros)) {
-      enable_definition_macros =
-          build_with_chromium &&
-          filter_include([ get_label_info(":$target_name", "dir") ],
-                         [ "//third_party/webrtc/*" ]) == []
-    }
-
     # TODO(http://crbug.com/330720762): Change to False and migrate.
     allow_private_called_by_natives = true
     metadata = {
@@ -595,10 +600,9 @@ template("native_with_jni") {
   _needs_native_dep = _enable_underlying_native && _needs_cpp_codegen
   _force_current_toolchain = defined(invoker.force_current_toolchain) &&
                              invoker.force_current_toolchain
-  _use_current_toolchain = _force_current_toolchain ||
-                           current_toolchain == default_toolchain
-  if ((_needs_cpp_codegen && _use_current_toolchain) ||
-      _needs_native_dep) {
+  _use_current_toolchain =
+      _force_current_toolchain || current_toolchain == default_toolchain
+  if ((_needs_cpp_codegen && _use_current_toolchain) || _needs_native_dep) {
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
     _registration_cpp_codegen_output =
         "$jni_headers_dir/$_subdir/${target_name}__jni_registration_generated"

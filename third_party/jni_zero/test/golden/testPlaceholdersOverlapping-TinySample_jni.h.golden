@@ -12,67 +12,78 @@
 #include "extra_include.h"
 #include "TinySample_shared_jni.h"
 
-// Macro for transition to enable_definition_macros=true.
-#define DEFINE_JNI_FOR_TinySample()
+// Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
+// static bool JNI_TinySample_Bar(JNIEnv* env, int32_t a, const jni_zero::JavaRef<jobject>& b);
+//
+// static void JNI_TinySample_Foo(JNIEnv* env, const jni_zero::JavaRef<jobject>& a, int32_t b);
+//
+
+// Triggers a compiler warning if DEFINE_JNI(TinySample) is forgotten (requires -Wunused-function).
+static void YouForgotToCallMacro_DEFINE_JNI_TinySample() {}
 
 // Java to native functions
-// Forward declaration. To be implemented by the including .cc file.
-static jboolean JNI_TinySample_Bar(JNIEnv* env, jint a, const jni_zero::JavaRef<jobject>& b);
-
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(
-    JNIEnv* env,
-    jclass jcaller,
-    jint a,
-    jobject b) {
-  auto b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
-      b);
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_TinySample_Bar(std::forward<decltype(args)>(args)...)) {
-      return JNI_TinySample_Bar(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, a, b_ref); }) {
-      return func_wrapper(env, a, b_ref);
-    } else if constexpr (requires { func_wrapper(a, b_ref); }) {
-      return func_wrapper(a, b_ref);
-    } else {
-      static_assert(false, "JNI_TinySample_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (jint, const jni_zero::JavaRef<jobject>&)\nSee TinySample_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_TinySample_Foo(JNIEnv* env, const jni_zero::JavaRef<jobject>& a, jint b);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject a,
-    jint b) {
-  auto a_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
-      a);
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_TinySample_Foo(std::forward<decltype(args)>(args)...)) {
-      return JNI_TinySample_Foo(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, a_ref, b); }) {
-      return func_wrapper(env, a_ref, b);
-    } else if constexpr (requires { func_wrapper(a_ref, b); }) {
-      return func_wrapper(a_ref, b);
-    } else {
-      static_assert(false, "JNI_TinySample_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, jint)\nSee TinySample_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
-
+#define DEFINE_JNI_FOR_TinySample()                                                                \
+  namespace {                                                                                      \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT bool Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(      \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      int32_t a,                                                                                   \
+      jobject b) {                                                                                 \
+    /* Prevent -Wunused-function warning. */                                                       \
+    YouForgotToCallMacro_DEFINE_JNI_TinySample();                                                  \
+                                                                                                   \
+    auto b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,                                      \
+        b);                                                                                        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_TinySample_Bar(std::forward<decltype(args)>(args)...)) {                        \
+        return JNI_TinySample_Bar(std::forward<decltype(args)>(args)...);                          \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, a, b_ref); }) {                                   \
+        return func_wrapper(env, a, b_ref);                                                        \
+      } else if constexpr (requires { func_wrapper(a, b_ref); }) {                                 \
+        return func_wrapper(a, b_ref);                                                             \
+      } else {                                                                                     \
+        static_assert(false, "JNI_TinySample_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jobject>&)\nSee TinySample_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(      \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject a,                                                                                   \
+      int32_t b) {                                                                                 \
+    auto a_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,                                      \
+        a);                                                                                        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_TinySample_Foo(std::forward<decltype(args)>(args)...)) {                        \
+        return JNI_TinySample_Foo(std::forward<decltype(args)>(args)...);                          \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, a_ref, b); }) {                                   \
+        return func_wrapper(env, a_ref, b);                                                        \
+      } else if constexpr (requires { func_wrapper(a_ref, b); }) {                                 \
+        return func_wrapper(a_ref, b);                                                             \
+      } else {                                                                                     \
+        static_assert(false, "JNI_TinySample_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, int32_t)\nSee TinySample_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+                                                                                                   \
+  }  /* namespace */
 
 
 #endif  // org_jni_1zero_TinySample_JNI

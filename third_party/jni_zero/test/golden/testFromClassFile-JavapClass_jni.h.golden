@@ -76,7 +76,7 @@ namespace JNI_JavapClass {
 
 [[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
     JNIEnv* env,
-    jboolean p0) {
+    bool p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -108,7 +108,7 @@ namespace JNI_JavapClass {
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-[[maybe_unused]] static jint Java_JavapClass_intMethod(
+[[maybe_unused]] static int32_t Java_JavapClass_intMethod(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jstring>& p0) {
@@ -192,7 +192,7 @@ namespace JNI_JavapClass {
   return ::jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
 }
 
-[[maybe_unused]] static jint Java_JavapClass_staticIntMethod(
+[[maybe_unused]] static int32_t Java_JavapClass_staticIntMethod(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jstring>& p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
@@ -243,11 +243,11 @@ using namespace ::JNI_JavapClass;
 template<>
 class _CalledByNatives<::org::jni_zero::JJavapClass> {
   public:
-  static inline constexpr jint CONST_INT = 3;
+  static inline constexpr int32_t CONST_INT = 3;
   static inline constexpr char CONST_STR[] = "\"VaLuE\"";
-  static inline constexpr jint mFinalInt = 7;
-  static inline constexpr jboolean sBoolValue = true;
-  static jint Get_CONST_INT(JNIEnv* env) {
+  static inline constexpr int32_t mFinalInt = 7;
+  static inline constexpr bool sBoolValue = true;
+  static int32_t Get_CONST_INT(JNIEnv* env) {
     return 3;
   }
   static ::jni_zero::ScopedJavaLocalRef<jstring> Get_CONST_STR(JNIEnv* env) {
@@ -257,7 +257,7 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
     return ::jni_zero::ScopedJavaLocalRef<>::Adopt(env, env->GetStaticObjectField(clazz, field_id))
         .As<jstring>();
   }
-  jint Get_mFinalInt(JNIEnv* env) const {
+  int32_t Get_mFinalInt(JNIEnv* env) const {
     return 7;
   }
   ::jni_zero::ScopedJavaLocalRef<jstring> Get_mMutableString(JNIEnv* env) const {
@@ -271,16 +271,16 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
     jfieldID field_id = org_jni_1zero_JavapClass_fieldId_mMutableString(env);
     env->SetObjectField(this_obj->obj(), field_id, value.obj());
   }
-  static jboolean Get_sBoolValue(JNIEnv* env) {
+  static bool Get_sBoolValue(JNIEnv* env) {
     return true;
   }
-  static jboolean Get_sMutableInt(JNIEnv* env) {
+  static bool Get_sMutableInt(JNIEnv* env) {
     jclass clazz = org_jni_1zero_JavapClass_clazz(env);
     JNI_ZERO_DCHECK(clazz);
     jfieldID field_id = org_jni_1zero_JavapClass_fieldId_sMutableInt(env);
     return env->GetStaticBooleanField(clazz, field_id);
   }
-  static void Set_sMutableInt(JNIEnv* env, jboolean value) {
+  static void Set_sMutableInt(JNIEnv* env, bool value) {
     jclass clazz = org_jni_1zero_JavapClass_clazz(env);
     JNI_ZERO_DCHECK(clazz);
     jfieldID field_id = org_jni_1zero_JavapClass_fieldId_sMutableInt(env);
@@ -291,9 +291,7 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
         .As<::org::jni_zero::JJavapClass>();
   }
 
-  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JJavapClass> New(
-      JNIEnv* env,
-      jboolean p0) {
+  static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JJavapClass> New(JNIEnv* env, bool p0) {
     return Java_JavapClass_Constructor__boolean(env, p0)
         .As<::org::jni_zero::JJavapClass>();
   }
@@ -305,7 +303,7 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
         .As<::org::jni_zero::JJavapClass>();
   }
 
-  jint intMethod(JNIEnv* env, const ::jni_zero::JavaRef<jstring>& p0) const {
+  int32_t intMethod(JNIEnv* env, const ::jni_zero::JavaRef<jstring>& p0) const {
     auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JJavapClass>*>(this);
     return Java_JavapClass_intMethod(env, *this_obj, p0);
   }
@@ -332,7 +330,7 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
     return Java_JavapClass_objTest(env, *this_obj, p0, p1);
   }
 
-  static jint staticIntMethod(
+  static int32_t staticIntMethod(
       JNIEnv* env,
       const ::jni_zero::JavaRef<jstring>& p0,
       const ::jni_zero::JavaRef<::org::jni_zero::JJavapClass>& p1) {

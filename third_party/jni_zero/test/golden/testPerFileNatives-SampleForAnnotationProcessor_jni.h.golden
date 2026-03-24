@@ -12,8 +12,876 @@
 #include "extra_include.h"
 #include "SampleForAnnotationProcessor_shared_jni.h"
 
-// Macro for transition to enable_definition_macros=true.
-#define DEFINE_JNI_FOR_SampleForAnnotationProcessor()
+// Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
+// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_Bar(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor>& sample);
+//
+// static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env);
+//
+// static bool JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnClasses(
+//     JNIEnv* env);
+//
+// static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(
+//     JNIEnv* env);
+//
+// static std::vector<int32_t> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
+//
+// static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(JNIEnv* env);
+//
+// static std::vector<std::string> JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnObject(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnObjects(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_ReturnString(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStrings(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnStruct(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStructs(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForAnnotationProcessor_ReturnThrowable(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnThrowables(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_RevString(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jstring>& stringToReverse);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendSamplesToNative(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobjectArray>& strs);
+//
+// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendToNative(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jobjectArray>& strs);
+//
+// static std::vector<int32_t> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
+//     JNIEnv* env,
+//     int zint,
+//     const std::vector<int32_t>& ints,
+//     int64_t zlong,
+//     const jni_zero::JavaRef<jlongArray>& longs,
+//     int16_t zshort,
+//     const jni_zero::JavaRef<jshortArray>& shorts,
+//     int zchar,
+//     const jni_zero::JavaRef<jcharArray>& chars,
+//     int8_t zbyte,
+//     const jni_zero::JavaRef<jbyteArray>& bytes,
+//     double zdouble,
+//     const jni_zero::JavaRef<jdoubleArray>& doubles,
+//     float zfloat,
+//     const jni_zero::JavaRef<jfloatArray>& floats,
+//     bool zbool,
+//     const jni_zero::JavaRef<jbooleanArray>& bools);
+//
+// static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jclass>& clazz,
+//     const jni_zero::JavaRef<jobjectArray>& classes,
+//     const jni_zero::JavaRef<jthrowable>& throwable,
+//     const jni_zero::JavaRef<jobjectArray>& throwables,
+//     const jni_zero::JavaRef<jstring>& string,
+//     const jni_zero::JavaRef<jobjectArray>& strings,
+//     const std::string& convertedString,
+//     const std::vector<std::string>& convertedStrings,
+//     const std::optional<std::string>& optionalString,
+//     const std::optional<void(*)(const std::vector<bool>&)>& funcType,
+//     const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>& tStruct,
+//     const jni_zero::JavaRef<jobjectArray>& structs,
+//     const jni_zero::JavaRef<jobject>& obj,
+//     const jni_zero::tests::CPPClass& convertedObj,
+//     const jni_zero::JavaRef<jobjectArray>& objects,
+//     const jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>& nestedInterface,
+//     const jni_zero::JavaRef<::android::view::JView>& view,
+//     const jni_zero::JavaRef<::android::content::JContext>& context,
+//     const std::vector<jni_zero::tests::CPPClass>& convertedObjects);
+//
+
+// Triggers a compiler warning if DEFINE_JNI(SampleForAnnotationProcessor) is forgotten (requires -Wunused-function).
+static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
+
+// Java to native functions
+#define DEFINE_JNI_FOR_SampleForAnnotationProcessor()                                              \
+  namespace {                                                                                      \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeBar(   \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject sample) {                                                                            \
+    /* Prevent -Wunused-function warning. */                                                       \
+    YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor();                                \
+                                                                                                   \
+    auto sample_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor>::CreateLeaky(env, \
+        static_cast<::org::jni_zero::JSampleForAnnotationProcessor>(sample));                      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...)) {      \
+        return JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...);        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, sample_ref); }) {                                 \
+        return func_wrapper(env, sample_ref);                                                      \
+      } else if constexpr (requires { func_wrapper(sample_ref); }) {                               \
+        return func_wrapper(sample_ref);                                                           \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeFoo(      \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...)) {      \
+        return JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...);        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT bool Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeHasPhalange( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_HasPhalange() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClass( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClasses( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClasses() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedAppObjects( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject __arrayClazz) {                                                                      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    auto converted_ret = jni_zero::ToJniArray(                                                     \
+        env,                                                                                       \
+        std::move(return_value),                                                                   \
+        static_cast<jclass>(__arrayClazz)).Release();                                              \
+    return converted_ret;                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedInts( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedInts() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();             \
+    return converted_ret;                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedString( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    auto converted_ret = jni_zero::ToJniType(env, std::move(return_value)).Release();              \
+    return converted_ret;                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedStrings( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    auto converted_ret = jni_zero::ToJniArray(                                                     \
+        env,                                                                                       \
+        std::move(return_value),                                                                   \
+        jni_zero::g_string_class).Release();                                                       \
+    return converted_ret;                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObject( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObject() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObjects( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnString( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStrings( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStruct( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStruct() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStructs( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStructs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowable( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowable() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowables( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowables() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeRevString( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject stringToReverse) {                                                                   \
+    auto stringToReverse_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                        \
+        static_cast<jstring>(stringToReverse));                                                    \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...);  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, stringToReverse_ref); }) {                        \
+        return func_wrapper(env, stringToReverse_ref);                                             \
+      } else if constexpr (requires { func_wrapper(stringToReverse_ref); }) {                      \
+        return func_wrapper(stringToReverse_ref);                                                  \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_RevString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendSamplesToNative( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject strs) {                                                                              \
+    auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                              \
+        static_cast<jobjectArray>(strs));                                                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, strs_ref); }) {                                   \
+        return func_wrapper(env, strs_ref);                                                        \
+      } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
+        return func_wrapper(strs_ref);                                                             \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendToNative( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject strs) {                                                                              \
+    auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                              \
+        static_cast<jobjectArray>(strs));                                                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, strs_ref); }) {                                   \
+        return func_wrapper(env, strs_ref);                                                        \
+      } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
+        return func_wrapper(strs_ref);                                                             \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestAllPrimitives( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      int32_t zint,                                                                                \
+      jobject ints,                                                                                \
+      int64_t zlong,                                                                               \
+      jobject longs,                                                                               \
+      int16_t zshort,                                                                              \
+      jobject shorts,                                                                              \
+      uint16_t zchar,                                                                              \
+      jobject chars,                                                                               \
+      int8_t zbyte,                                                                                \
+      jobject bytes,                                                                               \
+      double zdouble,                                                                              \
+      jobject doubles,                                                                             \
+      float zfloat,                                                                                \
+      jobject floats,                                                                              \
+      bool zbool,                                                                                  \
+      jobject bools) {                                                                             \
+    int zint_converted = jni_zero::internal::PrimitiveConvert<int, int32_t>::FromJniType(          \
+        env,                                                                                       \
+        zint);                                                                                     \
+    std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(            \
+        env,                                                                                       \
+        jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(ints)));             \
+    auto longs_ref = jni_zero::JavaRef<jlongArray>::CreateLeaky(env,                               \
+        static_cast<jlongArray>(longs));                                                           \
+    auto shorts_ref = jni_zero::JavaRef<jshortArray>::CreateLeaky(env,                             \
+        static_cast<jshortArray>(shorts));                                                         \
+    int zchar_converted = jni_zero::internal::PrimitiveConvert<int, uint16_t>::FromJniType(        \
+        env,                                                                                       \
+        zchar);                                                                                    \
+    auto chars_ref = jni_zero::JavaRef<jcharArray>::CreateLeaky(env,                               \
+        static_cast<jcharArray>(chars));                                                           \
+    auto bytes_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,                               \
+        static_cast<jbyteArray>(bytes));                                                           \
+    auto doubles_ref = jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env,                           \
+        static_cast<jdoubleArray>(doubles));                                                       \
+    auto floats_ref = jni_zero::JavaRef<jfloatArray>::CreateLeaky(env,                             \
+        static_cast<jfloatArray>(floats));                                                         \
+    auto bools_ref = jni_zero::JavaRef<jbooleanArray>::CreateLeaky(env,                            \
+        static_cast<jbooleanArray>(bools));                                                        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          std::move(zint_converted),                                                               \
+          std::move(ints_converted),                                                               \
+          zlong,                                                                                   \
+          longs_ref,                                                                               \
+          zshort,                                                                                  \
+          shorts_ref,                                                                              \
+          std::move(zchar_converted),                                                              \
+          chars_ref,                                                                               \
+          zbyte,                                                                                   \
+          bytes_ref,                                                                               \
+          zdouble,                                                                                 \
+          doubles_ref,                                                                             \
+          zfloat,                                                                                  \
+          floats_ref,                                                                              \
+          zbool,                                                                                   \
+          bools_ref); }) {                                                                         \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            std::move(zint_converted),                                                             \
+            std::move(ints_converted),                                                             \
+            zlong,                                                                                 \
+            longs_ref,                                                                             \
+            zshort,                                                                                \
+            shorts_ref,                                                                            \
+            std::move(zchar_converted),                                                            \
+            chars_ref,                                                                             \
+            zbyte,                                                                                 \
+            bytes_ref,                                                                             \
+            zdouble,                                                                               \
+            doubles_ref,                                                                           \
+            zfloat,                                                                                \
+            floats_ref,                                                                            \
+            zbool,                                                                                 \
+            bools_ref);                                                                            \
+      } else if constexpr (requires { func_wrapper(                                                \
+          std::move(zint_converted),                                                               \
+          std::move(ints_converted),                                                               \
+          zlong,                                                                                   \
+          longs_ref,                                                                               \
+          zshort,                                                                                  \
+          shorts_ref,                                                                              \
+          std::move(zchar_converted),                                                              \
+          chars_ref,                                                                               \
+          zbyte,                                                                                   \
+          bytes_ref,                                                                               \
+          zdouble,                                                                                 \
+          doubles_ref,                                                                             \
+          zfloat,                                                                                  \
+          floats_ref,                                                                              \
+          zbool,                                                                                   \
+          bools_ref); }) {                                                                         \
+        return func_wrapper(                                                                       \
+            std::move(zint_converted),                                                             \
+            std::move(ints_converted),                                                             \
+            zlong,                                                                                 \
+            longs_ref,                                                                             \
+            zshort,                                                                                \
+            shorts_ref,                                                                            \
+            std::move(zchar_converted),                                                            \
+            chars_ref,                                                                             \
+            zbyte,                                                                                 \
+            bytes_ref,                                                                             \
+            zdouble,                                                                               \
+            doubles_ref,                                                                           \
+            zfloat,                                                                                \
+            floats_ref,                                                                            \
+            zbool,                                                                                 \
+            bools_ref);                                                                            \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int, std::vector<int32_t>, int64_t, const jni_zero::JavaRef<jlongArray>&, int16_t, const jni_zero::JavaRef<jshortArray>&, int, const jni_zero::JavaRef<jcharArray>&, int8_t, const jni_zero::JavaRef<jbyteArray>&, double, const jni_zero::JavaRef<jdoubleArray>&, float, const jni_zero::JavaRef<jfloatArray>&, bool, const jni_zero::JavaRef<jbooleanArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();             \
+    return converted_ret;                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestSpecialTypes( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject clazz,                                                                               \
+      jobject classes,                                                                             \
+      jobject throwable,                                                                           \
+      jobject throwables,                                                                          \
+      jobject string,                                                                              \
+      jobject strings,                                                                             \
+      jobject convertedString,                                                                     \
+      jobject convertedStrings,                                                                    \
+      jobject optionalString,                                                                      \
+      jobject funcType,                                                                            \
+      jobject tStruct,                                                                             \
+      jobject structs,                                                                             \
+      jobject obj,                                                                                 \
+      jobject convertedObj,                                                                        \
+      jobject objects,                                                                             \
+      jobject nestedInterface,                                                                     \
+      jobject view,                                                                                \
+      jobject context,                                                                             \
+      jobject convertedObjects) {                                                                  \
+    auto clazz_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env,                                   \
+        static_cast<jclass>(clazz));                                                               \
+    auto classes_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
+        static_cast<jobjectArray>(classes));                                                       \
+    auto throwable_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,                           \
+        static_cast<jthrowable>(throwable));                                                       \
+    auto throwables_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                        \
+        static_cast<jobjectArray>(throwables));                                                    \
+    auto string_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                 \
+        static_cast<jstring>(string));                                                             \
+    auto strings_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
+        static_cast<jobjectArray>(strings));                                                       \
+    std::string convertedString_converted = jni_zero::FromJniType<std::string>(                    \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedString));                            \
+    std::vector<std::string> convertedStrings_converted = jni_zero::FromJniArray<std::vector<std::string>>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedStrings))); \
+    std::optional<std::string> optionalString_converted = jni_zero::FromJniType<std::optional<std::string>>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, optionalString));                             \
+    std::optional<void(*)(const std::vector<bool>&)> funcType_converted = jni_zero::FromJniType<std::optional<void(*)(const std::vector<bool>&)>>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, funcType));                                   \
+    auto tStruct_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>::CreateLeaky(env, \
+        static_cast<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>(tStruct));          \
+    auto structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
+        static_cast<jobjectArray>(structs));                                                       \
+    auto obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,                                    \
+        obj);                                                                                      \
+    jni_zero::tests::CPPClass convertedObj_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedObj));                               \
+    auto objects_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
+        static_cast<jobjectArray>(objects));                                                       \
+    auto nestedInterface_ref = jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>::CreateLeaky(env, \
+        static_cast<::org::stubs::JMyClass_SecondNestedInterface>(nestedInterface));               \
+    auto view_ref = jni_zero::JavaRef<::android::view::JView>::CreateLeaky(env,                    \
+        static_cast<::android::view::JView>(view));                                                \
+    auto context_ref = jni_zero::JavaRef<::android::content::JContext>::CreateLeaky(env,           \
+        static_cast<::android::content::JContext>(context));                                       \
+    std::vector<jni_zero::tests::CPPClass> convertedObjects_converted = jni_zero::FromJniArray<std::vector<jni_zero::tests::CPPClass>>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedObjects))); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          clazz_ref,                                                                               \
+          classes_ref,                                                                             \
+          throwable_ref,                                                                           \
+          throwables_ref,                                                                          \
+          string_ref,                                                                              \
+          strings_ref,                                                                             \
+          std::move(convertedString_converted),                                                    \
+          std::move(convertedStrings_converted),                                                   \
+          std::move(optionalString_converted),                                                     \
+          std::move(funcType_converted),                                                           \
+          tStruct_ref,                                                                             \
+          structs_ref,                                                                             \
+          obj_ref,                                                                                 \
+          std::move(convertedObj_converted),                                                       \
+          objects_ref,                                                                             \
+          nestedInterface_ref,                                                                     \
+          view_ref,                                                                                \
+          context_ref,                                                                             \
+          std::move(convertedObjects_converted)); }) {                                             \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            clazz_ref,                                                                             \
+            classes_ref,                                                                           \
+            throwable_ref,                                                                         \
+            throwables_ref,                                                                        \
+            string_ref,                                                                            \
+            strings_ref,                                                                           \
+            std::move(convertedString_converted),                                                  \
+            std::move(convertedStrings_converted),                                                 \
+            std::move(optionalString_converted),                                                   \
+            std::move(funcType_converted),                                                         \
+            tStruct_ref,                                                                           \
+            structs_ref,                                                                           \
+            obj_ref,                                                                               \
+            std::move(convertedObj_converted),                                                     \
+            objects_ref,                                                                           \
+            nestedInterface_ref,                                                                   \
+            view_ref,                                                                              \
+            context_ref,                                                                           \
+            std::move(convertedObjects_converted));                                                \
+      } else if constexpr (requires { func_wrapper(                                                \
+          clazz_ref,                                                                               \
+          classes_ref,                                                                             \
+          throwable_ref,                                                                           \
+          throwables_ref,                                                                          \
+          string_ref,                                                                              \
+          strings_ref,                                                                             \
+          std::move(convertedString_converted),                                                    \
+          std::move(convertedStrings_converted),                                                   \
+          std::move(optionalString_converted),                                                     \
+          std::move(funcType_converted),                                                           \
+          tStruct_ref,                                                                             \
+          structs_ref,                                                                             \
+          obj_ref,                                                                                 \
+          std::move(convertedObj_converted),                                                       \
+          objects_ref,                                                                             \
+          nestedInterface_ref,                                                                     \
+          view_ref,                                                                                \
+          context_ref,                                                                             \
+          std::move(convertedObjects_converted)); }) {                                             \
+        return func_wrapper(                                                                       \
+            clazz_ref,                                                                             \
+            classes_ref,                                                                           \
+            throwable_ref,                                                                         \
+            throwables_ref,                                                                        \
+            string_ref,                                                                            \
+            strings_ref,                                                                           \
+            std::move(convertedString_converted),                                                  \
+            std::move(convertedStrings_converted),                                                 \
+            std::move(optionalString_converted),                                                   \
+            std::move(funcType_converted),                                                         \
+            tStruct_ref,                                                                           \
+            structs_ref,                                                                           \
+            obj_ref,                                                                               \
+            std::move(convertedObj_converted),                                                     \
+            objects_ref,                                                                           \
+            nestedInterface_ref,                                                                   \
+            view_ref,                                                                              \
+            context_ref,                                                                           \
+            std::move(convertedObjects_converted));                                                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+                                                                                                   \
+  }  /* namespace */
 
 // Class Accessors
 #ifndef org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
@@ -27,879 +895,6 @@ inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
 }
 #pragma clang diagnostic pop
 #endif
-
-
-// Java to native functions
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_Bar(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& sample);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeBar(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject sample) {
-  auto sample_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor>::CreateLeaky(env,
-      static_cast<::org::jni_zero::JSampleForAnnotationProcessor>(sample));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, sample_ref); }) {
-      return func_wrapper(env, sample_ref);
-    } else if constexpr (requires { func_wrapper(sample_ref); }) {
-      return func_wrapper(sample_ref);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeFoo(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeHasPhalange(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_HasPhalange() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClass(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnClasses(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClasses(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClasses() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedAppObjects(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject __arrayClazz) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(
-      env,
-      std::move(return_value),
-      static_cast<jclass>(__arrayClazz)).Release();
-  return converted_ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static std::vector<int32_t> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedInts(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedInts() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();
-  return converted_ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedString(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniType(env, std::move(return_value)).Release();
-  return converted_ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static std::vector<std::string> JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedStrings(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(
-      env,
-      std::move(return_value),
-      jni_zero::g_string_class).Release();
-  return converted_ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnObject(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObject(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObject() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnObjects(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObjects(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_ReturnString(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnString(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStrings(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStrings(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnStruct(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStruct(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStruct() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStructs(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStructs(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStructs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForAnnotationProcessor_ReturnThrowable(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowable(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowable() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnThrowables(
-    JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowables(
-    JNIEnv* env,
-    jclass jcaller) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env); }) {
-      return func_wrapper(env);
-    } else if constexpr (requires { func_wrapper(); }) {
-      return func_wrapper();
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowables() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_RevString(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jstring>& stringToReverse);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeRevString(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject stringToReverse) {
-  auto stringToReverse_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
-      static_cast<jstring>(stringToReverse));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, stringToReverse_ref); }) {
-      return func_wrapper(env, stringToReverse_ref);
-    } else if constexpr (requires { func_wrapper(stringToReverse_ref); }) {
-      return func_wrapper(stringToReverse_ref);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_RevString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendSamplesToNative(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobjectArray>& strs);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendSamplesToNative(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject strs) {
-  auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(strs));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, strs_ref); }) {
-      return func_wrapper(env, strs_ref);
-    } else if constexpr (requires { func_wrapper(strs_ref); }) {
-      return func_wrapper(strs_ref);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendToNative(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobjectArray>& strs);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendToNative(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject strs) {
-  auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(strs));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, strs_ref); }) {
-      return func_wrapper(env, strs_ref);
-    } else if constexpr (requires { func_wrapper(strs_ref); }) {
-      return func_wrapper(strs_ref);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value.ReleaseLocal();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static std::vector<int32_t> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
-    JNIEnv* env,
-    int zint,
-    std::vector<int32_t>& ints,
-    jlong zlong,
-    const jni_zero::JavaRef<jlongArray>& longs,
-    jshort zshort,
-    const jni_zero::JavaRef<jshortArray>& shorts,
-    int zchar,
-    const jni_zero::JavaRef<jcharArray>& chars,
-    jbyte zbyte,
-    const jni_zero::JavaRef<jbyteArray>& bytes,
-    jdouble zdouble,
-    const jni_zero::JavaRef<jdoubleArray>& doubles,
-    jfloat zfloat,
-    const jni_zero::JavaRef<jfloatArray>& floats,
-    jboolean zbool,
-    const jni_zero::JavaRef<jbooleanArray>& bools);
-
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestAllPrimitives(
-    JNIEnv* env,
-    jclass jcaller,
-    jint zint,
-    jobject ints,
-    jlong zlong,
-    jobject longs,
-    jshort zshort,
-    jobject shorts,
-    jchar zchar,
-    jobject chars,
-    jbyte zbyte,
-    jobject bytes,
-    jdouble zdouble,
-    jobject doubles,
-    jfloat zfloat,
-    jobject floats,
-    jboolean zbool,
-    jobject bools) {
-  int zint_converted = jni_zero::internal::PrimitiveConvert<int, jint>::FromJniType(env, zint);
-  std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(
-      env,
-      jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(ints)));
-  auto longs_ref = jni_zero::JavaRef<jlongArray>::CreateLeaky(env,
-      static_cast<jlongArray>(longs));
-  auto shorts_ref = jni_zero::JavaRef<jshortArray>::CreateLeaky(env,
-      static_cast<jshortArray>(shorts));
-  int zchar_converted = jni_zero::internal::PrimitiveConvert<int, jchar>::FromJniType(env, zchar);
-  auto chars_ref = jni_zero::JavaRef<jcharArray>::CreateLeaky(env,
-      static_cast<jcharArray>(chars));
-  auto bytes_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,
-      static_cast<jbyteArray>(bytes));
-  auto doubles_ref = jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env,
-      static_cast<jdoubleArray>(doubles));
-  auto floats_ref = jni_zero::JavaRef<jfloatArray>::CreateLeaky(env,
-      static_cast<jfloatArray>(floats));
-  auto bools_ref = jni_zero::JavaRef<jbooleanArray>::CreateLeaky(env,
-      static_cast<jbooleanArray>(bools));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(
-        env,
-        zint_converted,
-        ints_converted,
-        zlong,
-        longs_ref,
-        zshort,
-        shorts_ref,
-        zchar_converted,
-        chars_ref,
-        zbyte,
-        bytes_ref,
-        zdouble,
-        doubles_ref,
-        zfloat,
-        floats_ref,
-        zbool,
-        bools_ref); }) {
-      return func_wrapper(
-          env,
-          zint_converted,
-          ints_converted,
-          zlong,
-          longs_ref,
-          zshort,
-          shorts_ref,
-          zchar_converted,
-          chars_ref,
-          zbyte,
-          bytes_ref,
-          zdouble,
-          doubles_ref,
-          zfloat,
-          floats_ref,
-          zbool,
-          bools_ref);
-    } else if constexpr (requires { func_wrapper(
-        zint_converted,
-        ints_converted,
-        zlong,
-        longs_ref,
-        zshort,
-        shorts_ref,
-        zchar_converted,
-        chars_ref,
-        zbyte,
-        bytes_ref,
-        zdouble,
-        doubles_ref,
-        zfloat,
-        floats_ref,
-        zbool,
-        bools_ref); }) {
-      return func_wrapper(
-          zint_converted,
-          ints_converted,
-          zlong,
-          longs_ref,
-          zshort,
-          shorts_ref,
-          zchar_converted,
-          chars_ref,
-          zbyte,
-          bytes_ref,
-          zdouble,
-          doubles_ref,
-          zfloat,
-          floats_ref,
-          zbool,
-          bools_ref);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int, std::vector<int32_t>, jlong, const jni_zero::JavaRef<jlongArray>&, jshort, const jni_zero::JavaRef<jshortArray>&, int, const jni_zero::JavaRef<jcharArray>&, jbyte, const jni_zero::JavaRef<jbyteArray>&, jdouble, const jni_zero::JavaRef<jdoubleArray>&, jfloat, const jni_zero::JavaRef<jfloatArray>&, jboolean, const jni_zero::JavaRef<jbooleanArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();
-  return converted_ret;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jclass>& clazz,
-    const jni_zero::JavaRef<jobjectArray>& classes,
-    const jni_zero::JavaRef<jthrowable>& throwable,
-    const jni_zero::JavaRef<jobjectArray>& throwables,
-    const jni_zero::JavaRef<jstring>& string,
-    const jni_zero::JavaRef<jobjectArray>& strings,
-    std::string& convertedString,
-    std::vector<std::string>& convertedStrings,
-    std::optional<std::string>& optionalString,
-    std::optional<void(*)(const std::vector<bool>&)>& funcType,
-    const jni_zero::JavaRef<jobject>& tStruct,
-    const jni_zero::JavaRef<jobjectArray>& structs,
-    const jni_zero::JavaRef<jobject>& obj,
-    jni_zero::tests::CPPClass& convertedObj,
-    const jni_zero::JavaRef<jobjectArray>& objects,
-    const jni_zero::JavaRef<jobject>& nestedInterface,
-    const jni_zero::JavaRef<jobject>& view,
-    const jni_zero::JavaRef<jobject>& context,
-    std::vector<jni_zero::tests::CPPClass>& convertedObjects);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestSpecialTypes(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject clazz,
-    jobject classes,
-    jobject throwable,
-    jobject throwables,
-    jobject string,
-    jobject strings,
-    jobject convertedString,
-    jobject convertedStrings,
-    jobject optionalString,
-    jobject funcType,
-    jobject tStruct,
-    jobject structs,
-    jobject obj,
-    jobject convertedObj,
-    jobject objects,
-    jobject nestedInterface,
-    jobject view,
-    jobject context,
-    jobject convertedObjects) {
-  auto clazz_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env,
-      static_cast<jclass>(clazz));
-  auto classes_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(classes));
-  auto throwable_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,
-      static_cast<jthrowable>(throwable));
-  auto throwables_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(throwables));
-  auto string_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,
-      static_cast<jstring>(string));
-  auto strings_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(strings));
-  std::string convertedString_converted = jni_zero::FromJniType<std::string>(
-      env,
-      jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedString));
-  std::vector<std::string> convertedStrings_converted = jni_zero::FromJniArray<std::vector<std::string>>(
-      env,
-      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedStrings)));
-  std::optional<std::string> optionalString_converted = jni_zero::FromJniType<std::optional<std::string>>(
-      env,
-      jni_zero::JavaRef<jobject>::CreateLeaky(env, optionalString));
-  std::optional<void(*)(const std::vector<bool>&)> funcType_converted = jni_zero::FromJniType<std::optional<void(*)(const std::vector<bool>&)>>(
-      env,
-      jni_zero::JavaRef<jobject>::CreateLeaky(env, funcType));
-  auto tStruct_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>::CreateLeaky(env,
-      static_cast<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>(tStruct));
-  auto structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(structs));
-  auto obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,
-      obj);
-  jni_zero::tests::CPPClass convertedObj_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass>(
-      env,
-      jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedObj));
-  auto objects_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,
-      static_cast<jobjectArray>(objects));
-  auto nestedInterface_ref = jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>::CreateLeaky(env,
-      static_cast<::org::stubs::JMyClass_SecondNestedInterface>(nestedInterface));
-  auto view_ref = jni_zero::JavaRef<::android::view::JView>::CreateLeaky(env,
-      static_cast<::android::view::JView>(view));
-  auto context_ref = jni_zero::JavaRef<::android::content::JContext>::CreateLeaky(env,
-      static_cast<::android::content::JContext>(context));
-  std::vector<jni_zero::tests::CPPClass> convertedObjects_converted = jni_zero::FromJniArray<std::vector<jni_zero::tests::CPPClass>>(
-      env,
-      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedObjects)));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(
-        env,
-        clazz_ref,
-        classes_ref,
-        throwable_ref,
-        throwables_ref,
-        string_ref,
-        strings_ref,
-        convertedString_converted,
-        convertedStrings_converted,
-        optionalString_converted,
-        funcType_converted,
-        tStruct_ref,
-        structs_ref,
-        obj_ref,
-        convertedObj_converted,
-        objects_ref,
-        nestedInterface_ref,
-        view_ref,
-        context_ref,
-        convertedObjects_converted); }) {
-      return func_wrapper(
-          env,
-          clazz_ref,
-          classes_ref,
-          throwable_ref,
-          throwables_ref,
-          string_ref,
-          strings_ref,
-          convertedString_converted,
-          convertedStrings_converted,
-          optionalString_converted,
-          funcType_converted,
-          tStruct_ref,
-          structs_ref,
-          obj_ref,
-          convertedObj_converted,
-          objects_ref,
-          nestedInterface_ref,
-          view_ref,
-          context_ref,
-          convertedObjects_converted);
-    } else if constexpr (requires { func_wrapper(
-        clazz_ref,
-        classes_ref,
-        throwable_ref,
-        throwables_ref,
-        string_ref,
-        strings_ref,
-        convertedString_converted,
-        convertedStrings_converted,
-        optionalString_converted,
-        funcType_converted,
-        tStruct_ref,
-        structs_ref,
-        obj_ref,
-        convertedObj_converted,
-        objects_ref,
-        nestedInterface_ref,
-        view_ref,
-        context_ref,
-        convertedObjects_converted); }) {
-      return func_wrapper(
-          clazz_ref,
-          classes_ref,
-          throwable_ref,
-          throwables_ref,
-          string_ref,
-          strings_ref,
-          convertedString_converted,
-          convertedStrings_converted,
-          optionalString_converted,
-          funcType_converted,
-          tStruct_ref,
-          structs_ref,
-          obj_ref,
-          convertedObj_converted,
-          objects_ref,
-          nestedInterface_ref,
-          view_ref,
-          context_ref,
-          convertedObjects_converted);
-    } else {
-      static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
 
 
 

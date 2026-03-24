@@ -12,8 +12,134 @@
 #include "extra_include.h"
 #include "SampleUniqueAnnotations_shared_jni.h"
 
-// Macro for transition to enable_definition_macros=true.
-#define DEFINE_JNI_FOR_SampleUniqueAnnotations()
+// Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
+// static int32_t JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, int32_t x, int32_t y);
+//
+// static void JNI_SampleUniqueAnnotations_Baz(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<::org::jni_zero::JSampleUniqueAnnotations_Handle>& handle);
+//
+// void FooAndroid::BarDelegate::Foo(JNIEnv* env, const std::string& arg);
+//
+// void Foo::Bar::CallWithQualifiedObject(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
+//
+
+// Triggers a compiler warning if DEFINE_JNI(SampleUniqueAnnotations) is forgotten (requires -Wunused-function).
+static void YouForgotToCallMacro_DEFINE_JNI_SampleUniqueAnnotations() {}
+
+// Java to native functions
+#define DEFINE_JNI_FOR_SampleUniqueAnnotations()                                                   \
+  namespace {                                                                                      \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1bar( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      int32_t x,                                                                                   \
+      int32_t y) {                                                                                 \
+    /* Prevent -Wunused-function warning. */                                                       \
+    YouForgotToCallMacro_DEFINE_JNI_SampleUniqueAnnotations();                                     \
+                                                                                                   \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleUniqueAnnotations_Bar(std::forward<decltype(args)>(args)...)) {           \
+        return JNI_SampleUniqueAnnotations_Bar(std::forward<decltype(args)>(args)...);             \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, x, y); }) {                                       \
+        return func_wrapper(env, x, y);                                                            \
+      } else if constexpr (requires { func_wrapper(x, y); }) {                                     \
+        return func_wrapper(x, y);                                                                 \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleUniqueAnnotations_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, int32_t)\nSee SampleUniqueAnnotations_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1baz( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jobject handle) {                                                                            \
+    auto handle_ref = jni_zero::JavaRef<::org::jni_zero::JSampleUniqueAnnotations_Handle>::CreateLeaky(env, \
+        static_cast<::org::jni_zero::JSampleUniqueAnnotations_Handle>(handle));                    \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleUniqueAnnotations_Baz(std::forward<decltype(args)>(args)...)) {           \
+        return JNI_SampleUniqueAnnotations_Baz(std::forward<decltype(args)>(args)...);             \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, handle_ref); }) {                                 \
+        return func_wrapper(env, handle_ref);                                                      \
+      } else if constexpr (requires { func_wrapper(handle_ref); }) {                               \
+        return func_wrapper(handle_ref);                                                           \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleUniqueAnnotations_Baz() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleUniqueAnnotations_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      int64_t nativePtr,                                                                           \
+      jobject arg) {                                                                               \
+    std::string arg_converted = jni_zero::FromJniType<std::string>(                                \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));                                        \
+    FooAndroid::BarDelegate* _ptr = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);         \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(_ptr->Foo(std::forward<decltype(args)>(args)...)) {                                 \
+        return _ptr->Foo(std::forward<decltype(args)>(args)...);                                   \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, std::move(arg_converted)); }) {                   \
+        return func_wrapper(env, std::move(arg_converted));                                        \
+      } else if constexpr (requires { func_wrapper(std::move(arg_converted)); }) {                 \
+        return func_wrapper(std::move(arg_converted));                                             \
+      } else {                                                                                     \
+        static_assert(false, "FooAndroid::BarDelegate::Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::string)\nSee SampleUniqueAnnotations_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject( \
+      JNIEnv* env,                                                                                 \
+      jobject jcaller,                                                                             \
+      int64_t nativePtr) {                                                                         \
+    Foo::Bar* _ptr = reinterpret_cast<Foo::Bar*>(nativePtr);                                       \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(_ptr->CallWithQualifiedObject(std::forward<decltype(args)>(args)...)) {             \
+        return _ptr->CallWithQualifiedObject(std::forward<decltype(args)>(args)...);               \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));           \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
+      } else {                                                                                     \
+        static_assert(false, "Foo::Bar::CallWithQualifiedObject() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleUniqueAnnotations_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+                                                                                                   \
+  }  /* namespace */
 
 // Class Accessors
 #ifndef org_jni_1zero_SampleUniqueAnnotations_clazz_defined
@@ -27,115 +153,6 @@ inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
 }
 #pragma clang diagnostic pop
 #endif
-
-
-// Java to native functions
-// Forward declaration. To be implemented by the including .cc file.
-static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x, jint y);
-
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1bar(
-    JNIEnv* env,
-    jclass jcaller,
-    jint x,
-    jint y) {
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleUniqueAnnotations_Bar(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleUniqueAnnotations_Bar(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, x, y); }) {
-      return func_wrapper(env, x, y);
-    } else if constexpr (requires { func_wrapper(x, y); }) {
-      return func_wrapper(x, y);
-    } else {
-      static_assert(false, "JNI_SampleUniqueAnnotations_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (jint, jint)\nSee SampleUniqueAnnotations_jni.h for an example.");
-    }
-  };
-  auto return_value = dependent_context(0);
-  return return_value;
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleUniqueAnnotations_Baz(JNIEnv* env, const jni_zero::JavaRef<jobject>& handle);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1baz(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject handle) {
-  auto handle_ref = jni_zero::JavaRef<::org::jni_zero::JSampleUniqueAnnotations_Handle>::CreateLeaky(env,
-      static_cast<::org::jni_zero::JSampleUniqueAnnotations_Handle>(handle));
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(JNI_SampleUniqueAnnotations_Baz(std::forward<decltype(args)>(args)...)) {
-      return JNI_SampleUniqueAnnotations_Baz(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, handle_ref); }) {
-      return func_wrapper(env, handle_ref);
-    } else if constexpr (requires { func_wrapper(handle_ref); }) {
-      return func_wrapper(handle_ref);
-    } else {
-      static_assert(false, "JNI_SampleUniqueAnnotations_Baz() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleUniqueAnnotations_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
-    JNIEnv* env,
-    jclass jcaller,
-    jlong nativePtr,
-    jobject arg) {
-  std::string arg_converted = jni_zero::FromJniType<std::string>(
-      env,
-      jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));
-  FooAndroid::BarDelegate* _ptr = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(_ptr->Foo(std::forward<decltype(args)>(args)...)) {
-      return _ptr->Foo(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(env, arg_converted); }) {
-      return func_wrapper(env, arg_converted);
-    } else if constexpr (requires { func_wrapper(arg_converted); }) {
-      return func_wrapper(arg_converted);
-    } else {
-      static_assert(false, "FooAndroid::BarDelegate::Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::string)\nSee SampleUniqueAnnotations_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(
-    JNIEnv* env,
-    jobject jcaller,
-    jlong nativePtr) {
-  Foo::Bar* _ptr = reinterpret_cast<Foo::Bar*>(nativePtr);
-  /* Lambda required to make "if constexpr" work properly. */
-  auto dependent_context = [&](auto) {
-    /* Lambda required to disambiguate overloads. */
-    auto func_wrapper = [&](auto&&... args) ->
-    decltype(_ptr->CallWithQualifiedObject(std::forward<decltype(args)>(args)...)) {
-      return _ptr->CallWithQualifiedObject(std::forward<decltype(args)>(args)...);
-    };
-    if constexpr (requires { func_wrapper(
-        env,
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {
-      return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));
-    } else if constexpr (requires { func_wrapper(
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {
-      return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));
-    } else {
-      static_assert(false, "Foo::Bar::CallWithQualifiedObject() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleUniqueAnnotations_jni.h for an example.");
-    }
-  };
-  dependent_context(0);
-}
 
 
 // Native to Java functions

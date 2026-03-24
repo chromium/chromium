@@ -26,6 +26,7 @@ CPP_TYPE_BY_JAVA_TYPE = {
     'java/lang/Throwable': 'jthrowable',
 }
 
+# Replaced with CPP_TYPE_BY_JAVA_TYPE based on --use-std-primitive-types.
 CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = {
     'boolean': 'bool',  # underlying type of jboolean
     'byte': 'int8_t',  # underlying type of jbyte
@@ -37,6 +38,7 @@ CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = {
     'short': 'int16_t',  # underlying type of jshort
     'void': 'void',
     'java/lang/Class': 'jclass',
+    'java/lang/Object': 'jobject',
     'java/lang/String': 'jstring',
     'java/lang/Throwable': 'jthrowable',
 }
