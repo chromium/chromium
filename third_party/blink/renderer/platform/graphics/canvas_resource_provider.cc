@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -771,33 +772,15 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
-  const size_t dest_width = static_cast<size_t>(Size().width());
-  const size_t dest_height = static_cast<size_t>(Size().height());
+  const int dest_width = Size().width();
+  const int dest_height = Size().height();
 
-  base::span<const uint8_t> pixels = gfx::SkPixmapToSpan(pixmap);
-  const size_t source_row_bytes = pixmap.rowBytes();
-  const size_t source_height = pixmap.height();
-
-  SkImageInfo copy_rect_info = pixmap.info().makeWH(
-      static_cast<int>(dest_width), static_cast<int>(dest_height));
-  const size_t dest_row_bytes = copy_rect_info.bytesPerPixel() * dest_width;
-
-  std::vector<uint8_t> dest_pixels;
-  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
-    dest_pixels.resize(dest_row_bytes * dest_height);
-
-    const size_t x_offset_bytes =
-        copy_rect_info.bytesPerPixel() * static_cast<size_t>(src_x);
-    size_t src_offset =
-        static_cast<size_t>(src_y) * source_row_bytes + x_offset_bytes;
-
-    base::span<uint8_t> dest_data(dest_pixels);
-    for (size_t dst_y = 0; dst_y < dest_height;
-         ++dst_y, src_offset += source_row_bytes) {
-      dest_data.take_first(dest_row_bytes)
-          .copy_from(pixels.subspan(src_offset, dest_row_bytes));
-    }
-    pixels = dest_pixels;
+  SkPixmap subset;
+  if (!pixmap.extractSubset(
+          &subset,
+          SkIRect::MakeXYWH(static_cast<int>(src_x), static_cast<int>(src_y),
+                            dest_width, dest_height))) {
+    return false;
   }
 
   if (!is_accelerated_) {
@@ -809,7 +792,7 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     EnsureSkiaCanvas();
 
     return GetSkSurface()->getCanvas()->writePixels(
-        copy_rect_info, pixels.data(), dest_row_bytes, /*x=*/0, /*y=*/0);
+        subset.info(), subset.addr(), subset.rowBytes(), /*x=*/0, /*y=*/0);
   }
 
   TRACE_EVENT0("blink",
@@ -830,10 +813,9 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
   must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetClientSharedImage();
-  RasterInterface()->WritePixels(
-      client_si->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-      client_si->GetTextureTarget(),
-      SkPixmap(copy_rect_info, pixels.data(), dest_row_bytes));
+  RasterInterface()->WritePixels(client_si->mailbox(), /*dst_x_offset=*/0,
+                                 /*dst_y_offset=*/0,
+                                 client_si->GetTextureTarget(), subset);
   resource()->EndAccess(std::move(access));
 
   is_cleared_ = true;
