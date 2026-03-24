@@ -33,6 +33,7 @@ dependencies {
     compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
     compileLatest 'com.google.android.material:material:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
+    compileLatest 'com.google.android.play:review:+'
     compileLatest 'com.google.code.gson:gson:+'
     compileLatest 'com.google.mlkit:common:+'
     compileLatest 'com.google.mlkit:genai-common:+'
