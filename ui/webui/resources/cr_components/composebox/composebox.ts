@@ -1732,10 +1732,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
                           /* shouldBlockAutoSuggestedTabs= */ false);
     }
 
-    if (this.isCollapsible) {
-      this.getInputElement().inputElement.blur();
-    }
-
     this.fire('composebox-submit');
   }
 
