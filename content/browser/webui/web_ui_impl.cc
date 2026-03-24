@@ -39,6 +39,8 @@
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -331,6 +333,11 @@ void WebUIImpl::TearDownMojoConnection() {
 
   remote_.reset();
   receiver_.reset();
+}
+
+WebUIConfig* WebUIImpl::GetWebUIConfig() {
+  return WebUIConfigMap::GetInstance().GetConfig(
+      web_contents_->GetBrowserContext(), web_contents_->GetLastCommittedURL());
 }
 
 WebContents* WebUIImpl::GetWebContents() {

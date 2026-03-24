@@ -112,6 +112,10 @@ bool WebUIToolbarConfig::IsWebUIEnabled(
   return features::IsWebUIToolbarEnabled();
 }
 
+bool WebUIToolbarConfig::ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() {
+  return features::kWebUIReloadButtonKeepVisibleUntilPaint.Get();
+}
+
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         receiver) {

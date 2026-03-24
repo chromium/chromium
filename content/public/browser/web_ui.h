@@ -24,6 +24,7 @@ namespace content {
 
 class RenderFrameHost;
 class WebContents;
+class WebUIConfig;
 class WebUIController;
 class WebUIMessageHandler;
 
@@ -136,6 +137,9 @@ class CONTENT_EXPORT WebUI {
     base::ValueView args[] = {arg1, arg...};
     CallJavascriptFunctionUnsafe(function_name, args);
   }
+
+  // Returns the WebUIConfig for the WebUI, if one exists.
+  virtual WebUIConfig* GetWebUIConfig() = 0;
 
   // Allows mutable access to this WebUI's message handlers for testing.
   virtual std::vector<std::unique_ptr<WebUIMessageHandler>>*

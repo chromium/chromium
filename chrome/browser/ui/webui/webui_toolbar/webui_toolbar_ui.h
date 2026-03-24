@@ -143,6 +143,7 @@ class WebUIToolbarConfig : public DefaultTopChromeWebUIConfig<WebUIToolbarUI> {
   WebUIToolbarConfig();
   // DefaultTopChromeWebUIConfig overrides:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_

@@ -65,6 +65,7 @@ class TestWebUI : public WebUI {
   void CallJavascriptFunctionUnsafe(
       std::string_view function_name,
       base::span<const base::ValueView> args) override;
+  WebUIConfig* GetWebUIConfig() override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 
