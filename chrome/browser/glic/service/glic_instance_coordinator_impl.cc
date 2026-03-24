@@ -289,8 +289,15 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
 
   instance = std::visit(
       absl::Overload{[&](const ConversationId& conversation_id) {
-                       // TODO(crbug.com/483387751): Handle empty conversation
-                       // id case.
+                       if (conversation_id.empty()) {
+                         if (options.on_error) {
+                           std::move(options.on_error)
+                               .Run(GlicInvokeError::kInvalidConversationId);
+                         }
+                         // TODO(crbug.com/483387751): Show default toast here
+                         // once implemented.
+                         return (GlicInstanceImpl*)nullptr;
+                       }
                        return GetOrCreateInstanceImplForConversationId(
                            conversation_id);
                      },
@@ -300,7 +307,9 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
                      }},
       options.conversation);
 
-  CHECK(instance);
+  if (!instance) {
+    return;
+  }
 
   if (invoke_handlers_.contains(instance)) {
     // TODO(crbug.com/483387751): Don't just fail silently here.
