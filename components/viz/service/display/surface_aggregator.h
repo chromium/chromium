@@ -132,14 +132,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
  private:
   struct PrewalkResult;
 
-  struct AggregateStatistics {
-    // True if the current frame contains a pixel-moving foreground filter
-    // render pass.
-    bool has_pixel_moving_filter = false;
-    // True if the current frame contains a unembedded render pass.
-    bool has_unembedded_pass = false;
-  };
-
   // SurfaceObserver implementation.
   void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
 
@@ -330,9 +322,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Logs the surface information for debugging purposes.
   void DebugLogSurface(const Surface* surface, bool will_draw);
 
-  // Records UMA histograms and resets |stats_|.
-  void RecordStatHistograms();
-
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
 
@@ -389,8 +378,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   SurfaceId root_surface_id_;
   gfx::Transform root_surface_transform_;
 
-  std::optional<AggregateStatistics> stats_;
-
   // For each Surface used in the last aggregation, gives the frame_index at
   // that time.
   base::flat_set<SurfaceId> previous_contained_surfaces_;
@@ -425,11 +412,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // True if the frame that's currently being aggregated has copy requests.
   // This is valid during Aggregate after PrewalkSurface is called.
   bool has_copy_requests_ = false;
-
-  // True if any RenderPasses in the aggregated frame have a backdrop filter
-  // that moves pixels. This is valid during Aggregate after PrewalkSurface is
-  // called.
-  bool has_pixel_moving_backdrop_filter_ = false;
 
   // For each FrameSinkId, contains a vector of SurfaceRanges that will damage
   // the display if they're damaged.

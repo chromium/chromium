@@ -581,22 +581,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceAggregator.Has{Type}PerFrame"
-    enum="Boolean" expires_after="2025-10-26">
-  <owner>magchen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Record whether a frame has a specific type of render pass. This is logged
-    once per frame.
-  </summary>
-  <token key="Type">
-    <variant name="CopyRequests"/>
-    <variant name="PixelMovingBackdropFilters"/>
-    <variant name="PixelMovingFilters"/>
-    <variant name="UnembeddedRenderPasses"/>
-  </token>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
     enum="RenderPassDamage" expires_after="2025-09-07">
   <owner>petermcneeley@chromium.org</owner>
