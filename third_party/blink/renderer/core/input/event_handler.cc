@@ -1330,11 +1330,9 @@ static LocalFrame* LocalFrameFromTargetNode(Node* target) {
     return DynamicTo<LocalFrame>(html_frame_base_element->ContentFrame());
   }
 
-  if (RuntimeEnabledFeatures::DragAndDropPluginElementSupportEnabled()) {
-    auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(target);
-    if (html_plugin_element) {
-      return DynamicTo<LocalFrame>(html_plugin_element->ContentFrame());
-    }
+  auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(target);
+  if (html_plugin_element) {
+    return DynamicTo<LocalFrame>(html_plugin_element->ContentFrame());
   }
 
   return nullptr;

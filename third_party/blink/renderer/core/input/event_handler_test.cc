@@ -3727,11 +3727,9 @@ TEST_F(EventHandlerSimTest, GestureTapHoverState) {
 }
 
 // Tests LocalFrameFromTargetNode for HTMLPlugInElement (object tag).
-// Verifies that when DragAndDropPluginElementSupport is enabled, the function
-// returns a non-null LocalFrame from an object element.
+// Verifies that the function returns a non-null LocalFrame from an object
+// element.
 TEST_F(EventHandlerSimTest, LocalFrameFromPluginElementForTesting) {
-  ScopedDragAndDropPluginElementSupportForTest feature_scope(true);
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest object_resource("https://example.com/object.html", "text/html");
@@ -3759,8 +3757,8 @@ TEST_F(EventHandlerSimTest, LocalFrameFromPluginElementForTesting) {
                            ->GetEventHandler()
                            .LocalFrameFromTargetNodeForTesting(target);
 
-  // With DragAndDropPluginElementSupport enabled, LocalFrameFromTargetNode
-  // should return a non-null LocalFrame for object elements
+  // LocalFrameFromTargetNode should return a non-null LocalFrame for object
+  // elements
   ASSERT_NE(result, nullptr)
       << "LocalFrameFromTargetNode should return a LocalFrame for "
       << "object elements";

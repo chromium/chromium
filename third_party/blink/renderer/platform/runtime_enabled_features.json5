@@ -2326,13 +2326,6 @@
       status: "stable",
     },
     {
-      // Enable drag and drop delegation to child frames in HTMLPlugInElements
-      // (object/embed elements). Fixes drag and drop from text inputs/textareas
-      // to elements inside object frames.
-      name: "DragAndDropPluginElementSupport",
-      status: "stable",
-    },
-    {
       // See https://crbug.com/443612843
       name: "EditContextAssignmentAsPerSpec",
       status: "test"
