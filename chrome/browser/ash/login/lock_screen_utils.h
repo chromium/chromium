@@ -10,17 +10,20 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
+class PrefService;
 
 namespace ash::lock_screen_utils {
 
 // Update current input method in the given IME state to last input method used
 // by this user.
-void SetUserInputMethod(const AccountId& account_id,
+void SetUserInputMethod(PrefService& local_state,
+                        const AccountId& account_id,
                         input_method::InputMethodManager::State* ime_state,
                         bool honor_device_policy);
 
 // Get user's last input method ID.
-std::string GetUserLastInputMethodId(const AccountId& account_id);
+std::string GetUserLastInputMethodId(PrefService& local_state,
+                                     const AccountId& account_id);
 
 // Sets the currently allowed input method ID, including those that are enforced
 // by device policy.
@@ -30,7 +33,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id);
 void StopEnforcingPolicyInputMethods();
 
 // Update the keyboard settings for `account_id`.
-void SetKeyboardSettings(const AccountId& account_id);
+void SetKeyboardSettings(PrefService& local_state, const AccountId& account_id);
 
 // Covert a base::ListValue of locale info to a list of ash struct LocaleItem.
 std::vector<LocaleItem> FromListValueToLocaleItem(base::ListValue locales);

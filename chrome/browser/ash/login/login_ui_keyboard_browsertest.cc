@@ -142,11 +142,13 @@ IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, PRE_CheckPODSwitches) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, CheckPODSwitches) {
-  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(test_users_[2]),
+  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(
+                CHECK_DEREF(g_browser_process->local_state()), test_users_[2]),
             std::string());
   LoginUser(test_users_[2]);
   const std::string logged_user_input_method =
-      lock_screen_utils::GetUserLastInputMethodId(test_users_[2]);
+      lock_screen_utils::GetUserLastInputMethodId(
+          CHECK_DEREF(g_browser_process->local_state()), test_users_[2]);
   test::ShowUserAddingScreen();
 
   std::vector<std::string> expected_input_methods;
@@ -176,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, CheckPODSwitches) {
                                        .id());
 
   // Check that logged in user settings did not change.
-  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(test_users_[2]),
+  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(
+                CHECK_DEREF(g_browser_process->local_state()), test_users_[2]),
             logged_user_input_method);
 }
 
@@ -475,7 +478,9 @@ class FirstLoginKeyboardTest : public LoginManagerTest {
 // session unlock.
 IN_PROC_BROWSER_TEST_F(FirstLoginKeyboardTest,
                        UsersLastInputMethodPersistsOnLoginOrUnlock) {
-  EXPECT_TRUE(lock_screen_utils::GetUserLastInputMethodId(test_user_).empty());
+  EXPECT_TRUE(lock_screen_utils::GetUserLastInputMethodId(
+                  CHECK_DEREF(g_browser_process->local_state()), test_user_)
+                  .empty());
 
   // Non canonical display email (typed) should not affect input method storage.
   LoginDisplayHost::default_host()->SetDisplayEmail(
@@ -483,7 +488,9 @@ IN_PROC_BROWSER_TEST_F(FirstLoginKeyboardTest,
   LoginUser(test_user_);
 
   // Last input method should be stored.
-  EXPECT_FALSE(lock_screen_utils::GetUserLastInputMethodId(test_user_).empty());
+  EXPECT_FALSE(lock_screen_utils::GetUserLastInputMethodId(
+                   CHECK_DEREF(g_browser_process->local_state()), test_user_)
+                   .empty());
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
@@ -492,13 +499,17 @@ IN_PROC_BROWSER_TEST_F(FirstLoginKeyboardTest,
   input_method::InputMethodPersistence::
       SetUserLastInputMethodPreferenceForTesting(
           *g_browser_process->local_state(), test_user_, std::string());
-  EXPECT_TRUE(lock_screen_utils::GetUserLastInputMethodId(test_user_).empty());
+  EXPECT_TRUE(lock_screen_utils::GetUserLastInputMethodId(
+                  CHECK_DEREF(g_browser_process->local_state()), test_user_)
+                  .empty());
 
   locker_tester.UnlockWithPassword(test_user_, "password");
   locker_tester.WaitForUnlock();
 
   // Last input method should be stored.
-  EXPECT_FALSE(lock_screen_utils::GetUserLastInputMethodId(test_user_).empty());
+  EXPECT_FALSE(lock_screen_utils::GetUserLastInputMethodId(
+                   CHECK_DEREF(g_browser_process->local_state()), test_user_)
+                   .empty());
 }
 
 class EphemeralUserKeyboardTest : public LoginManagerTest {
@@ -534,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(EphemeralUserKeyboardTest, PersistToProfile) {
 
   std::vector<std::string> expected_input_method;
   Append_en_US_InputMethod(&expected_input_method);
-  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(account_id),
+  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethodId(
+                CHECK_DEREF(g_browser_process->local_state()), account_id),
             expected_input_method[0]);
 }
 

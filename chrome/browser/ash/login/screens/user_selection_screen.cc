@@ -636,10 +636,10 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
   }
   CheckUserStatus(account_id);
   lock_screen_utils::SetUserInputMethod(
-      account_id, ime_state_.get(),
+      local_state_.get(), account_id, ime_state_.get(),
       display_type_ ==
           DisplayedScreen::SIGN_IN_SCREEN /* honor_device_policy */);
-  lock_screen_utils::SetKeyboardSettings(account_id);
+  lock_screen_utils::SetKeyboardSettings(local_state_.get(), account_id);
 
   user_manager::KnownUser known_user(&local_state_.get());
   std::optional<bool> use_24hour_clock =
@@ -673,7 +673,8 @@ void UserSelectionScreen::OnAllowedInputMethodsChanged() {
   DCHECK_EQ(display_type_, DisplayedScreen::SIGN_IN_SCREEN);
   if (focused_pod_account_id_.is_valid()) {
     std::string user_input_method_id =
-        lock_screen_utils::GetUserLastInputMethodId(focused_pod_account_id_);
+        lock_screen_utils::GetUserLastInputMethodId(local_state_.get(),
+                                                    focused_pod_account_id_);
     lock_screen_utils::EnforceDevicePolicyInputMethods(user_input_method_id);
   } else {
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());

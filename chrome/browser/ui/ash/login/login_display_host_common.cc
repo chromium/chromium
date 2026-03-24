@@ -109,7 +109,7 @@ void PushFrontImIfNotExists(const std::string& input_method_id,
   }
 }
 
-void SetGaiaInputMethods(const PrefService& local_state,
+void SetGaiaInputMethods(PrefService& local_state,
                          const std::string& application_locale,
                          const AccountId& account_id) {
   input_method::InputMethodManager* imm =
@@ -122,7 +122,8 @@ void SetGaiaInputMethods(const PrefService& local_state,
 
   // Set Least Recently Used input method for the user.
   if (account_id.is_valid()) {
-    lock_screen_utils::SetUserInputMethod(account_id, gaia_ime_state.get(),
+    lock_screen_utils::SetUserInputMethod(local_state, account_id,
+                                          gaia_ime_state.get(),
                                           true /*honor_device_policy*/);
   } else {
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
@@ -134,7 +135,7 @@ void SetGaiaInputMethods(const PrefService& local_state,
     }
     const std::string owner_input_method_id =
         lock_screen_utils::GetUserLastInputMethodId(
-            user_manager::UserManager::Get()->GetOwnerAccountId());
+            local_state, user_manager::UserManager::Get()->GetOwnerAccountId());
     const std::string system_input_method_id =
         local_state.GetString(language_prefs::kPreferredKeyboardLayout);
 

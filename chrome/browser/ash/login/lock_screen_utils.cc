@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -50,12 +49,14 @@ bool SetUserInputMethodImpl(
 
 }  // namespace
 
-void SetUserInputMethod(const AccountId& account_id,
+void SetUserInputMethod(PrefService& local_state,
+                        const AccountId& account_id,
                         input_method::InputMethodManager::State* ime_state,
                         bool honor_device_policy) {
   bool succeed = false;
 
-  const std::string input_method_id = GetUserLastInputMethodId(account_id);
+  const std::string input_method_id =
+      GetUserLastInputMethodId(local_state, account_id);
 
   if (honor_device_policy)
     EnforceDevicePolicyInputMethods(input_method_id);
@@ -74,10 +75,11 @@ void SetUserInputMethod(const AccountId& account_id,
   }
 }
 
-std::string GetUserLastInputMethodId(const AccountId& account_id) {
+std::string GetUserLastInputMethodId(PrefService& local_state,
+                                     const AccountId& account_id) {
   if (!account_id.is_valid())
     return std::string();
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   if (const std::string* input_method_id =
           known_user.GetUserLastInputMethodId(account_id)) {
     return *input_method_id;
@@ -137,8 +139,9 @@ void StopEnforcingPolicyInputMethods() {
   imm_state->SetInputMethodLoginDefault(false /* is_in_oobe_context */);
 }
 
-void SetKeyboardSettings(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+void SetKeyboardSettings(PrefService& local_state,
+                         const AccountId& account_id) {
+  user_manager::KnownUser known_user(&local_state);
   if (std::optional<bool> auto_repeat_enabled =
           known_user.FindBoolPath(account_id, prefs::kXkbAutoRepeatEnabled);
       auto_repeat_enabled.has_value()) {
