@@ -57,8 +57,6 @@ class SafetyListManagerTest
                                                  : Decision::kNone;
   }
 
-  base::HistogramTester histogram_tester_;
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   // `manager_` is made optional to delay its construction until after
@@ -394,6 +392,7 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
+  base::HistogramTester histogram_tester;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -422,15 +421,16 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
   EXPECT_EQ(manager().Find(GURL("https://blocked.com"),
                            GURL("https://not-allowed.com")),
             ExpectedBlocklistDecision());
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
       1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationBlocked", ParseResult::kSuccess,
       1);
 }
 
 TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
+  base::HistogramTester histogram_tester;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
@@ -463,15 +463,16 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
       ExpectedBlocklistDecision());
   EXPECT_EQ(manager().Find(GURL("http://bar.com"), GURL("https://sub.foo.com")),
             ExpectedBlocklistDecision());
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester.ExpectBucketCount(
       "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
       2);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester.ExpectBucketCount(
       "Actor.SafetyListParseResult.NavigationBlocked", ParseResult::kSuccess,
       2);
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
+  base::HistogramTester histogram_tester;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [],
@@ -480,10 +481,10 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
       ]
     }
   )json");
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationBlocked",
       ParseResult::kInvalidFromUrlPattern, 1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
       1);
 }
