@@ -418,6 +418,28 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorCancelled) {
   EXPECT_EQ("AbortError: Request cancelled", promise_tester.ValueAsString());
 }
 
+TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentAppError) {
+  test::TaskEnvironment task_environment;
+  PaymentRequestV8TestingScope scope;
+  PaymentRequest* request = PaymentRequest::Create(
+      scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+
+  static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnError(
+      payments::mojom::blink::PaymentErrorReason::PAYMENT_APP_ERROR,
+      "Request cancelled");
+
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
+  EXPECT_TRUE(promise_tester.ValueAsString().starts_with("OperationError"));
+}
+
 TEST(PaymentRequestTest, RejectShowPromiseOnUpdateDetailsFailure) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;

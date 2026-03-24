@@ -848,10 +848,31 @@ void PaymentRequest::OnPaymentResponseAvailable(
   client_->OnPaymentResponse(std::move(response));
 }
 
-void PaymentRequest::OnPaymentResponseError(const std::string& error_message) {
+void PaymentRequest::OnPaymentResponseError(
+    mojom::PaymentEventResponseType error,
+    const std::string& error_message) {
+  CHECK(error != mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS);
+
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_INSTRUMENT_DETAILS_ERROR);
 
   reject_show_error_message_ = error_message;
+
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestSupportReportingAppError)) {
+    switch (error) {
+      case mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT:
+        reject_show_error_reason_ = mojom::PaymentErrorReason::USER_CANCEL;
+        break;
+      case mojom::PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR:
+        reject_show_error_reason_ =
+            mojom::PaymentErrorReason::PAYMENT_APP_ERROR;
+        break;
+      default:
+        reject_show_error_reason_ = mojom::PaymentErrorReason::UNKNOWN;
+        break;
+    }
+  }
+
   ShowErrorMessageAndAbortPayment();
 }
 
@@ -914,7 +935,8 @@ void PaymentRequest::OnUserCancelled() {
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationUxRefresh)) {
     client_->OnError(
-        mojom::PaymentErrorReason::USER_CANCEL,
+        reject_show_error_reason_.value_or(
+            mojom::PaymentErrorReason::USER_CANCEL),
         (!reject_show_error_message_.empty() ? reject_show_error_message_
                                              : errors::kUserCancelled));
   } else {
@@ -923,7 +945,8 @@ void PaymentRequest::OnUserCancelled() {
     bool is_spc_enabled = spec_->IsSecurePaymentConfirmationRequested();
     client_->OnError(
         is_spc_enabled ? mojom::PaymentErrorReason::NOT_ALLOWED_ERROR
-                       : mojom::PaymentErrorReason::USER_CANCEL,
+                       : reject_show_error_reason_.value_or(
+                             mojom::PaymentErrorReason::USER_CANCEL),
         is_spc_enabled
             ? errors::kWebAuthnOperationTimedOutOrNotAllowed
             : (!reject_show_error_message_.empty() ? reject_show_error_message_

@@ -592,7 +592,9 @@ void PaymentHandlerWebFlowViewController::AbortPayment() {
     web_contents()->Close();
   }
 
-  state()->OnPaymentResponseError(errors::kPaymentHandlerInsecureNavigation);
+  state()->OnPaymentResponseError(
+      mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSECURE_NAVIGATION,
+      errors::kPaymentHandlerInsecureNavigation);
 }
 
 void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {

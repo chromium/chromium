@@ -80,7 +80,8 @@ class JniPaymentApp : public PaymentApp::Delegate {
   void OnInstrumentDetailsReady(const std::string& method_name,
                                 const std::string& stringified_details,
                                 const PayerData& payer_data) override;
-  void OnInstrumentDetailsError(const std::string& error_message) override;
+  void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                const std::string& error_message) override;
 
   explicit JniPaymentApp(std::unique_ptr<PaymentApp> payment_app);
   ~JniPaymentApp() override;

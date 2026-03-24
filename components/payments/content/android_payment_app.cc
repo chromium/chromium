@@ -190,12 +190,18 @@ void AndroidPaymentApp::OnPaymentAppResponse(
     return;
 
   if (error_message.has_value()) {
-    delegate->OnInstrumentDetailsError(error_message.value());
+    // TODO(crbug.com/473478138): Enable android payment apps to indicate
+    // internal error versus user abort.
+    delegate->OnInstrumentDetailsError(
+        mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT,
+        error_message.value());
     return;
   }
 
   if (!is_activity_result_ok) {
-    delegate->OnInstrumentDetailsError(errors::kUserClosedPaymentApp);
+    delegate->OnInstrumentDetailsError(
+        mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT,
+        errors::kUserClosedPaymentApp);
     return;
   }
 

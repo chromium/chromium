@@ -91,13 +91,14 @@ void PaymentResponseHelper::OnInstrumentDetailsReady(
 }
 
 void PaymentResponseHelper::OnInstrumentDetailsError(
+    mojom::PaymentEventResponseType error,
     const std::string& error_message) {
   if (!is_waiting_for_instrument_details_)
     return;
 
   is_waiting_for_instrument_details_ = false;
   is_waiting_for_shipping_address_normalization_ = false;
-  delegate_->OnPaymentResponseError(error_message);
+  delegate_->OnPaymentResponseError(error, error_message);
 }
 
 void PaymentResponseHelper::OnAddressNormalized(

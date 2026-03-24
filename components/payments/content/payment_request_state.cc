@@ -258,11 +258,12 @@ void PaymentRequestState::OnPaymentResponseReady(
 }
 
 void PaymentRequestState::OnPaymentResponseError(
+    mojom::PaymentEventResponseType error,
     const std::string& error_message) {
   if (!delegate_)
     return;
 
-  delegate_->OnPaymentResponseError(error_message);
+  delegate_->OnPaymentResponseError(error, error_message);
 }
 
 void PaymentRequestState::OnSpecUpdated() {

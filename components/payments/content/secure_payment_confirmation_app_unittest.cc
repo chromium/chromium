@@ -114,7 +114,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     on_instrument_details_ready_called_ = true;
   }
 
-  void OnInstrumentDetailsError(const std::string& error_message) override {
+  void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                const std::string& error_message) override {
     EXPECT_EQ(error_message,
               "The operation either timed out or was not allowed. See: "
               "https://www.w3.org/TR/webauthn-2/"

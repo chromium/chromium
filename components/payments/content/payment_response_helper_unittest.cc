@@ -46,7 +46,8 @@ class PaymentResponseHelperTest : public testing::Test,
   }
 
   // PaymentRequestState::Delegate:
-  void OnPaymentResponseError(const std::string& error_message) override {}
+  void OnPaymentResponseError(mojom::PaymentEventResponseType error,
+                              const std::string& error_message) override {}
 
   // Convenience method to create a PaymentRequestSpec with specified |details|
   // and |method_data|.

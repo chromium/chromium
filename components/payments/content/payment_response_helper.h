@@ -31,7 +31,8 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
     virtual void OnPaymentResponseReady(
         mojom::PaymentResponsePtr payment_response) = 0;
 
-    virtual void OnPaymentResponseError(const std::string& error_message) = 0;
+    virtual void OnPaymentResponseError(mojom::PaymentEventResponseType error,
+                                        const std::string& error_message) = 0;
   };
 
   // The spec, selected_app and delegate cannot be null.
@@ -53,7 +54,8 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
   void OnInstrumentDetailsReady(const std::string& method_name,
                                 const std::string& stringified_details,
                                 const PayerData& payer_data) override;
-  void OnInstrumentDetailsError(const std::string& error_message) override;
+  void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                const std::string& error_message) override;
 
   mojom::PayerDetailPtr GeneratePayerDetail(
       const autofill::AutofillProfile* selected_contact_profile) const;

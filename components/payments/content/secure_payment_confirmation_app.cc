@@ -413,6 +413,7 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
 
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
     delegate->OnInstrumentDetailsError(
+        mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT,
         errors::kWebAuthnOperationTimedOutOrNotAllowed);
     RecordSystemPromptResult(
         SecurePaymentConfirmationSystemPromptResult::kCanceled);

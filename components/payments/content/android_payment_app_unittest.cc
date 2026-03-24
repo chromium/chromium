@@ -84,7 +84,8 @@ class AndroidPaymentAppTest : public testing::Test,
   }
 
   // PaymentApp::Delegate implementation.
-  void OnInstrumentDetailsError(const std::string& error_message) override {
+  void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                const std::string& error_message) override {
     error_message_ = error_message;
     if (on_payment_app_response_callback_) {
       std::move(on_payment_app_response_callback_).Run();

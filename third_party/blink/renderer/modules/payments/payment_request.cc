@@ -1721,6 +1721,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       exception_code = DOMExceptionCode::kSecurityError;
       break;
 
+    case PaymentErrorReason::PAYMENT_APP_ERROR:
+      exception_code = DOMExceptionCode::kOperationError;
+      break;
+
     case PaymentErrorReason::UNKNOWN:
       break;
   }

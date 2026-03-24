@@ -113,7 +113,8 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
 
   // PaymentRequestState::Delegate:
   void OnPaymentResponseAvailable(mojom::PaymentResponsePtr response) override;
-  void OnPaymentResponseError(const std::string& error_message) override;
+  void OnPaymentResponseError(mojom::PaymentEventResponseType error,
+                              const std::string& error_message) override;
   void OnShippingOptionIdSelected(std::string shipping_option_id) override;
   void OnShippingAddressSelected(mojom::PaymentAddressPtr address) override;
   void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) override;
@@ -293,6 +294,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // invoked. This is distinct from state_->IsInitialized(), because the
   // callback is asynchronous.
   bool is_requested_methods_supported_invoked_ = false;
+
+  // If not empty, use this error reason when rejecting PaymentRequest.show().
+  // Will be mapped to a DOMException on the renderer side.
+  std::optional<mojom::PaymentErrorReason> reject_show_error_reason_;
 
   // If not empty, use this error message for rejecting
   // PaymentRequest.show().

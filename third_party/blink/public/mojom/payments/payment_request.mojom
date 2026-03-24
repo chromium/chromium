@@ -49,6 +49,7 @@ enum PaymentErrorReason {
   NOT_ALLOWED_ERROR,
   USER_OPT_OUT,
   USER_ACTIVATION_REQUIRED,
+  PAYMENT_APP_ERROR,
 };
 
 enum CanMakePaymentQueryResult {

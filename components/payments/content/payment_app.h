@@ -56,7 +56,8 @@ class PaymentApp {
 
     // Should be called with a developer-facing error message to be used when
     // rejecting PaymentRequest.show().
-    virtual void OnInstrumentDetailsError(const std::string& error_message) = 0;
+    virtual void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                          const std::string& error_message) = 0;
   };
 
   // Describes a PaymentEntityLogo composed of the accessibility label, and the
