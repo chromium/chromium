@@ -2228,7 +2228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.AudioRecordingMode.{TabletOrClamshellMode}"
-    enum="AudioRecordingMode" expires_after="2026-05-21">
+    enum="AudioRecordingMode" expires_after="2026-09-20">
   <owner>minch@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -8505,7 +8505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.TimeInSplitView" units="ms"
-    expires_after="2026-05-21">
+    expires_after="2026-09-20">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromim.org</owner>
   <summary>
