@@ -174,7 +174,6 @@ void GlicWindowEventObserver::HandleWindowDragWithOffset(
     return;
   }
   in_move_loop_ = true;
-  widget_->SetIsDragging(true);
   delegate_->window_animator()->CancelAnimation();
 #if BUILDFLAG(IS_MAC)
   widget_->SetCapture(nullptr);
@@ -201,10 +200,6 @@ void GlicWindowEventObserver::HandleWindowDragWithOffset(
 
 void GlicWindowEventObserver::OnMoveLoopFinished() {
   in_move_loop_ = false;
-
-  if (widget_) {
-    widget_->SetIsDragging(false);
-  }
 
   // The delegate owns this object, so it is guaranteed to be alive if we are.
   delegate_->window_animator()->MaybeAnimateToTargetSize();

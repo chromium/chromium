@@ -68,7 +68,7 @@ GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
 }
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  if (!widget_ || widget_->IsDragging()) {
+  if (!widget_ || widget_->is_dragging()) {
     // Don't change bounds while the user is actively dragging the widget.
     return;
   }

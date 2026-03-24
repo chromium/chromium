@@ -222,7 +222,7 @@ void GlicWindowControllerImpl::OnWidgetDestroyed(views::Widget* widget) {
 void GlicWindowControllerImpl::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  if (window_event_observer_->IsDragging() && !AlwaysDetached()) {
+  if (widget->is_dragging() && !AlwaysDetached()) {
     // While in a move loop, look for nearby browsers to toggle the drop to
     // attach indicator.
     HandleGlicButtonIndicator();
