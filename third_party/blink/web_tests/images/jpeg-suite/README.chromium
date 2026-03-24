@@ -1,0 +1,40 @@
+Name: JPEG Test Suite
+Short Name: jpegsuite
+URL: https://github.com/robert-ancell/jpegsuite
+Version: N/A
+Revision: 8382e7831896cd1adf1cc61a1c9e565c4030aa43
+Update Mechanism: Static (https://crbug.com/495458802)
+License: CC0-1.0
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+A representative subset of test images from the jpegsuite project, which
+provides a collection of JPEG images for testing JPEG decoders. Inspired by
+PngSuite. Only the generated JPEG image files are included here (CC0 licensed);
+the generator code (GPL v3) is not included.
+
+Files are selected from all 7 upstream directories using a test matrix approach
+to maximize coverage while minimizing redundancy:
+- Size/extreme/marker features tested once in baseline (encoding-independent).
+- Core color/interleaving/subsampling tested per DCT encoding mode.
+- Progressive scan variations tested in both Huffman and arithmetic modes.
+- Lossless predictor and bit-depth variants tested in lossless_huffman.
+
+Directory layout (matches upstream names):
+- baseline/: Baseline DCT (SOF0) 8-bit images (24 files)
+- extended_huffman/: Extended Huffman DCT (SOF1) 8-bit + 12-bit (15 files)
+- extended_arithmetic/: Extended arithmetic DCT (SOF9) 8-bit (5 files)
+- progressive_huffman/: Progressive Huffman DCT (SOF2) 8-bit + 12-bit (21 files)
+- progressive_arithmetic/: Progressive arithmetic DCT (SOF10) 8-bit (9 files)
+- lossless_huffman/: Lossless Huffman (SOF3) 8-bit + 16-bit (6 files)
+- lossless_arithmetic/: Lossless arithmetic (SOF11) 8-bit (3 files)
+
+Total: 83 files (from ~296 upstream).
+
+Local Modifications:
+- Only a representative subset of the upstream images is included. See the plan
+  in the test code for the full test matrix rationale.
+- Each test entry has an `expect_failure` flag set empirically based on whether
+  Chromium's libjpeg-turbo build can decode the file.

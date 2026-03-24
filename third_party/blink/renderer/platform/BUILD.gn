@@ -2637,6 +2637,7 @@ group("blink_platform_unittests_data") {
     "image-decoders/testing/",
     "//third_party/blink/web_tests/images/resources/",
     "//third_party/blink/web_tests/images/bmp-suite/",
+    "//third_party/blink/web_tests/images/jpeg-suite/",
 
     # Required by some font tests.
     "//third_party/blink/web_tests/external/wpt/fonts/",

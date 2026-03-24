@@ -9,13 +9,22 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "ui/base/test/skia_gold_matching_algorithm.h"  // nogncheck
+#include "ui/base/test/skia_gold_pixel_diff.h"          // nogncheck
+#endif
 
 namespace blink {
 
@@ -702,5 +711,319 @@ TEST(JPEGImageDecoderTest, c2paManifestNotPresent) {
   test_decoder->SetData(test_data.get(), true);
   EXPECT_FALSE(test_decoder->HasC2PAManifest());
 }
+
+// JPEG Suite parameterized tests, modeled after BMPImageDecoderSuiteTest.
+// Test images are sourced from https://github.com/robert-ancell/jpegsuite
+// using a representative subset across all 7 upstream encoding-mode
+// directories.
+class JPEGSuiteEntry {
+ public:
+  // `entry_dir` and `entry_jpg` locate the test file at:
+  // `third_party/blink/web_tests/images/jpeg-suite/<entry_dir>/<entry_jpg>.jpg`
+  //
+  // `expected_result` indicates whether Chromium's JPEG decoder (libjpeg-turbo)
+  // is expected to succeed or fail decoding this image. This is set empirically
+  // based on actual decoder behavior, not assumed from the encoding mode.
+  //
+  // `revision` is a Skia Gold revision string that must be incremented
+  // whenever test expectations change.
+  //
+  // `expected_width` and `expected_height` specify the expected decoded image
+  // dimensions. Only meaningful for images expected to succeed decoding.
+  enum class ExpectedResult { kSuccess, kFailure };
+
+  JPEGSuiteEntry(std::string entry_dir,
+                 std::string entry_jpg,
+                 ExpectedResult expected_result = ExpectedResult::kSuccess,
+                 int expected_width = 0,
+                 int expected_height = 0,
+                 std::string revision = "rev0")
+      : entry_dir_(std::move(entry_dir)),
+        entry_jpg_(std::move(entry_jpg)),
+        expected_width_(expected_width),
+        expected_height_(expected_height),
+        expected_result_(expected_result),
+        revision_(std::move(revision)) {}
+
+  const std::string& entry_dir() const { return entry_dir_; }
+  const std::string& entry_jpg() const { return entry_jpg_; }
+  int expected_width() const { return expected_width_; }
+  int expected_height() const { return expected_height_; }
+  ExpectedResult expected_result() const { return expected_result_; }
+  const std::string& revision() const { return revision_; }
+
+ private:
+  std::string entry_dir_;
+  std::string entry_jpg_;
+  int expected_width_;
+  int expected_height_;
+  ExpectedResult expected_result_;
+  std::string revision_;
+};
+
+class JPEGImageDecoderSuiteTest
+    : public testing::TestWithParam<JPEGSuiteEntry> {};
+
+TEST_P(JPEGImageDecoderSuiteTest, VerifyJPEGSuiteImage) {
+  const JPEGSuiteEntry& entry = GetParam();
+  std::string jpg_path = base::StringPrintf(
+      "/images/jpeg-suite/%s/%s.jpg", entry.entry_dir(), entry.entry_jpg());
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpg_path.c_str());
+  ASSERT_NE(data.get(), nullptr) << "unable to load '" << jpg_path << "'";
+  ASSERT_FALSE(data->empty());
+
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  // Note: We intentionally pass all data at once. Testing incremental/
+  // progressive decoding with partial data is out of scope for this suite,
+  // since intermediate output depends on decoder implementation details.
+  decoder->SetData(data, /*all_data_received=*/true);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+
+  [[maybe_unused]] const SkBitmap* result_image = nullptr;
+  SkBitmap empty_bitmap;
+  if (frame && frame->GetStatus() == ImageFrame::kFrameComplete) {
+    EXPECT_FALSE(decoder->Failed());
+    EXPECT_NE(entry.expected_result(), JPEGSuiteEntry::ExpectedResult::kFailure)
+        << "Expected decode failure but succeeded: " << jpg_path;
+    result_image = &frame->Bitmap();
+    // Validate decoded image dimensions on all platforms.
+    EXPECT_EQ(entry.expected_width(), frame->Bitmap().width())
+        << "Width mismatch for " << jpg_path;
+    EXPECT_EQ(entry.expected_height(), frame->Bitmap().height())
+        << "Height mismatch for " << jpg_path;
+  } else {
+    EXPECT_EQ(entry.expected_result(), JPEGSuiteEntry::ExpectedResult::kFailure)
+        << "Expected decode success but failed: " << jpg_path;
+    // Represent failures as a 1x1 transparent black pixel in Skia Gold.
+    empty_bitmap.allocPixels(SkImageInfo::MakeN32(1, 1, kPremul_SkAlphaType));
+    empty_bitmap.eraseColor(SK_ColorTRANSPARENT);
+    result_image = &empty_bitmap;
+  }
+
+// On Linux, skip Skia Gold pixel comparison due to flaky goldctl network
+// timeouts (crbug.com/422362214). Size validation above is sufficient.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  raw_ptr<ui::test::SkiaGoldPixelDiff> skia_gold =
+      ui::test::SkiaGoldPixelDiff::GetSession();
+  ui::test::PositiveIfOnlyImageAlgorithm positive_if_exact_image_only;
+  std::string golden_name = ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
+      "JPEGImageDecoderTest", "VerifyJPEGSuite",
+      base::StringPrintf("%s_%s.%s", entry.entry_dir(), entry.entry_jpg(),
+                         entry.revision()));
+  EXPECT_TRUE(skia_gold->CompareScreenshot(golden_name, *result_image,
+                                           &positive_if_exact_image_only))
+      << jpg_path;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}
+
+// The ExpectedResult is determined empirically. Files using arithmetic
+// coding, lossless encoding, or 12-bit precision are not supported by
+// libjpeg-turbo as built in Chromium. The expected result should be updated
+// if decoder support changes.
+INSTANTIATE_TEST_SUITE_P(
+    JPEGSuite,
+    JPEGImageDecoderSuiteTest,
+    testing::Values(
+        // baseline/ — size variations (partial MCU handling)
+        JPEGSuiteEntry{"baseline", "1x1x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 1, 1},
+        JPEGSuiteEntry{"baseline", "5x5x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 5, 5},
+        JPEGSuiteEntry{"baseline", "8x8x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 8, 8},
+        JPEGSuiteEntry{"baseline", "16x16x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 16, 16},
+        // baseline/ — extreme values
+        JPEGSuiteEntry{"baseline", "8x8x8_grayscale_black",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 8, 8},
+        JPEGSuiteEntry{"baseline", "8x8x8_grayscale_white",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 8, 8},
+        JPEGSuiteEntry{"baseline", "8x8x8_grayscale_zero_coefficients",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 8, 8},
+        // baseline/ — marker features
+        JPEGSuiteEntry{"baseline", "32x32x8_comment",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_comments",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        // baseline/ — core color/interleaving/subsampling
+        JPEGSuiteEntry{"baseline", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_rgb",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_rgb_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_cmyk",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_cmyk_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_2x2_1x1_1x1",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_2x2_1x1_1x1_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_2x2_2x1_1x2",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_2x2_2x1_1x2_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_restarts",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_grayscale_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"baseline", "32x32x8_ycbcr_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+
+        // extended_huffman/ — core color/interleaving/subsampling
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_rgb",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_rgb_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_cmyk",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_cmyk_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_ycbcr_2x2_1x1_1x1",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman",
+                       "32x32x8_ycbcr_2x2_1x1_1x1_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_ycbcr_2x2_2x1_1x2",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman",
+                       "32x32x8_ycbcr_2x2_2x1_1x2_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_restarts",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_grayscale_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"extended_huffman", "32x32x8_ycbcr_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+
+        // progressive_huffman/ — scan variations
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_spectral",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_spectral_all",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"progressive_huffman",
+                       "32x32x8_grayscale_spectral_all_reverse",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_successive",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_successive_ac",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_successive_dc",
+                       JPEGSuiteEntry::ExpectedResult::kSuccess, 32, 32},
+
+        // ===== Images expected to fail decoding (arithmetic coding, =====
+        // ===== lossless, 12-bit, DNL, or broken progressive scans)  =====
+
+        // baseline/ — DNL marker
+        JPEGSuiteEntry{"baseline", "32x32x8_dnl",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // extended_huffman/ — 12-bit
+        JPEGSuiteEntry{"extended_huffman", "32x32x12_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // extended_arithmetic/ — core + conditioning
+        JPEGSuiteEntry{"extended_arithmetic", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"extended_arithmetic", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"extended_arithmetic", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"extended_arithmetic", "32x32x8_conditioning_bounds_4_6",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"extended_arithmetic", "32x32x8_conditioning_kx_6",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // progressive_huffman/ — core (broken data stream in these files)
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_rgb",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_rgb_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_cmyk",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_cmyk_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_ycbcr_2x2_1x1_1x1",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman",
+                       "32x32x8_ycbcr_2x2_1x1_1x1_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_ycbcr_2x2_2x1_1x2",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman",
+                       "32x32x8_ycbcr_2x2_2x1_1x2_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_restarts",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_grayscale_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_huffman", "32x32x8_ycbcr_quantization",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        // progressive_huffman/ — 12-bit
+        JPEGSuiteEntry{"progressive_huffman", "32x32x12_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // progressive_arithmetic/
+        JPEGSuiteEntry{"progressive_arithmetic", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic", "32x32x8_grayscale_spectral",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic",
+                       "32x32x8_grayscale_spectral_all",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic",
+                       "32x32x8_grayscale_spectral_all_reverse",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic", "32x32x8_grayscale_successive",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic",
+                       "32x32x8_grayscale_successive_ac",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"progressive_arithmetic",
+                       "32x32x8_grayscale_successive_dc",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // lossless_huffman/
+        JPEGSuiteEntry{"lossless_huffman", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_huffman", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_huffman", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_huffman", "32x32x8_grayscale_predictor1",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_huffman", "32x32x8_grayscale_predictor7",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_huffman", "32x32x16_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+
+        // lossless_arithmetic/
+        JPEGSuiteEntry{"lossless_arithmetic", "32x32x8_grayscale",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_arithmetic", "32x32x8_ycbcr",
+                       JPEGSuiteEntry::ExpectedResult::kFailure},
+        JPEGSuiteEntry{"lossless_arithmetic", "32x32x8_ycbcr_interleaved",
+                       JPEGSuiteEntry::ExpectedResult::kFailure}));
 
 }  // namespace blink
