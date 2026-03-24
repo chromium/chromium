@@ -2048,6 +2048,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="SetApplicationLocale@chrome/browser/ash/login/screens/welcome_screen.cc"/>
   <int value="-1327712601"
       label="Decorate@chrome/browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc"/>
+  <int value="-1064754214"
+      label="PopulateSyncLogs@chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.cc"/>
   <int value="-940486992"
       label="GetPrimaryUserProfile@chrome/browser/extensions/profile_util.cc"/>
   <int value="-913390141"
@@ -2106,6 +2108,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="HandleMediaAction@chrome/browser/ui/ash/media_client/media_client_impl.cc"/>
   <int value="930273683"
       label="IsDriveFsBulkPinningAvailable@chrome/browser/ash/drive/file_system_util.cc"/>
+  <int value="977176806"
+      label="GetUserProfile@chrome/browser/policy/messaging_layer/util/user_dm_token_retriever.cc"/>
   <int value="1031614968"
       label="CreateEnrollmentDialog@chrome/browser/ui/ash/network/enrollment_dialog_view.cc"/>
   <int value="1036717894"
