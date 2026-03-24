@@ -73,6 +73,6 @@ function returnModuleList(moduleListData: ModuleListData) {
 document.addEventListener('DOMContentLoaded', () => {
   // Ask the C++ ConflictsHandler to get details about the available modules
   // and return detailed data about the configuration.
-  sendWithPromise('requestModuleList').then(returnModuleList);
+  sendWithPromise<ModuleListData>('requestModuleList').then(returnModuleList);
   window.addEventListener('hashchange', filterModuleListData, false);
 });

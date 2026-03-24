@@ -58,7 +58,7 @@ export function webUIResponse(id: string, isSuccess: boolean, response: any) {
  * @param args Variable number of arguments to be forwarded to the
  *     C++ call.
  */
-export function sendWithPromise<T = any>(
+export function sendWithPromise<T>(
     methodName: string, ...args: any[]): Promise<T> {
   const promiseResolver = new PromiseResolver<T>();
   const id = methodName + '_' + createUid();

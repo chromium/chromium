@@ -547,5 +547,6 @@ function onGetSandboxDiagnostics(results: SandboxDiagnostics) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  sendWithPromise('requestSandboxDiagnostics').then(onGetSandboxDiagnostics);
+  sendWithPromise<SandboxDiagnostics>('requestSandboxDiagnostics')
+      .then(onGetSandboxDiagnostics);
 });

@@ -33,7 +33,7 @@ export class LanguagesBrowserProxyImpl implements LanguagesBrowserProxy {
   }
 
   getProspectiveUiLanguage() {
-    return sendWithPromise('getProspectiveUILanguage');
+    return sendWithPromise<string>('getProspectiveUILanguage');
   }
 
   // </if>

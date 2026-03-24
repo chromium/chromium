@@ -42,19 +42,20 @@ export interface PasskeysBrowserProxy {
 
 export class PasskeysBrowserProxyImpl implements PasskeysBrowserProxy {
   hasPasskeys() {
-    return sendWithPromise('passkeysHasPasskeys');
+    return sendWithPromise<boolean>('passkeysHasPasskeys');
   }
 
   enumerate() {
-    return sendWithPromise('passkeysEnumerate');
+    return sendWithPromise<Passkey[]|null>('passkeysEnumerate');
   }
 
   delete(credentialId: string) {
-    return sendWithPromise('passkeysDelete', credentialId);
+    return sendWithPromise<Passkey[]|null>('passkeysDelete', credentialId);
   }
 
   edit(credentialId: string, newUsername: string) {
-    return sendWithPromise('passkeysEdit', credentialId, newUsername);
+    return sendWithPromise<Passkey[]|null>(
+        'passkeysEdit', credentialId, newUsername);
   }
 
   static getInstance(): PasskeysBrowserProxy {
