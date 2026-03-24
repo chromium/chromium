@@ -1520,7 +1520,10 @@ media::EncoderStatus RTCVideoEncoder::Impl::FillGenericFrameInfo(
       encode_buffers_tid_.resize(webrtc::kMaxEncoderBuffers);
     }
     uint32_t temporal_id = md_generic.temporal_idx;
-    for (int i = 0; i < webrtc::kMaxEncoderBuffers; i++) {
+    // This awkward type is used to permit a change in the underlying
+    // type for webrtc::kMaxEncoderBuffers.
+    for (std::underlying_type_t<decltype(webrtc::kMaxEncoderBuffers)> i = 0;
+         i < webrtc::kMaxEncoderBuffers; i++) {
       bool referenced = !!(*md_generic.reference_flags & (1u << i));
       if (referenced) {
         // If VEA doesn't follow the SVC spec, we need to check whether
