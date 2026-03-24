@@ -6087,6 +6087,32 @@ TEST_F(AIPageContentAgentTest, TabIndex) {
                   mojom::blink::AIPageContentClickabilityReason::kTabIndex));
 }
 
+TEST_F(AIPageContentAgentTest, IsTabbable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <button tabindex="-1">Programmatic Focus</button>
+        <div tabindex="0">Tab Stop</div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& focusable_only_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(focusable_only_node.content_attributes->node_interaction_info);
+  const auto& focusable_only_interaction_info =
+      *focusable_only_node.content_attributes->node_interaction_info;
+  EXPECT_TRUE(focusable_only_interaction_info.is_focusable);
+  EXPECT_FALSE(focusable_only_interaction_info.is_tabbable);
+
+  const auto& tabbable_node = *ContentRootNode().children_nodes[1];
+  ASSERT_TRUE(tabbable_node.content_attributes->node_interaction_info);
+  const auto& tabbable_interaction_info =
+      *tabbable_node.content_attributes->node_interaction_info;
+  EXPECT_TRUE(tabbable_interaction_info.is_focusable);
+  EXPECT_TRUE(tabbable_interaction_info.is_tabbable);
+}
+
 TEST_F(AIPageContentAgentTest, ClipPathCircle) {
   // The <div> element is clipped to a small circle.
   frame_test_helpers::LoadHTMLString(

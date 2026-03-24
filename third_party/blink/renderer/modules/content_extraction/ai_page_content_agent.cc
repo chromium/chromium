@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
@@ -2822,8 +2823,20 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   if (element) {
     AddClickabilityReasons(*element, *attributes.aria_role,
                            *node_interaction_info);
-    node_interaction_info->is_focusable =
+    const bool element_is_focusable =
         element->IsFocusable(Element::UpdateBehavior::kAssertNoLayoutUpdates);
+    node_interaction_info->is_focusable = element_is_focusable;
+    const bool has_non_negative_tabindex =
+        FocusController::AdjustedTabIndex(*element) >= 0;
+    // Overflow scroll containers are keyboard-focusable if there is nothing
+    // focusable inside of them, but we consider them is_tabbable == true:
+    // 1) We would need to call element->IsKeyboardFocusableSlow() which
+    //    must check all descendants.
+    // 2) The is_tabbable signal is used to help find clickable widgets, but in
+    //    this case the only purpose of clicking is to allow keyboard scrolling,
+    //    and not action.
+    node_interaction_info->is_tabbable =
+        element_is_focusable && has_non_negative_tabindex;
   }
 
   const bool needs_interaction_info =

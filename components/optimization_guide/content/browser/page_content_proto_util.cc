@@ -298,6 +298,8 @@ void ConvertNodeInteractionInfo(
   }
   proto_interaction_info->set_is_focusable(
       mojom_node_interaction_info.is_focusable);
+  proto_interaction_info->set_is_tabbable(
+      mojom_node_interaction_info.is_tabbable);
 
   if (mojom_node_interaction_info.document_scoped_z_order) {
     proto_interaction_info->set_document_scoped_z_order(

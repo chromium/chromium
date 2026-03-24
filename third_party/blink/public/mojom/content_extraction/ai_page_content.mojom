@@ -234,8 +234,18 @@ struct AIPageContentNodeInteractionInfo {
   // state.
   AIPageContentScrollerInfo? scroller_info;
 
-  // Whether the content node is focusable.
+  // Whether the content node is focusable. See also `is_tabbable`.
+  // A node can be focusable even if it is not tabbable. For
+  // example, every option in a long listbox might be focusable, but
+  // only reachable using the arrow keys. In this case the options
+  // would likely have a negative tabindex, allowing them to be
+  // focused by click or by script.
   bool is_focusable;
+
+  // Whether the content node is tabbable. This is determined by whether the
+  // node is focusable and has a non-negative computed tab index (usually 0,
+  // which indicates it fits into the tab cycle in its natural order).
+  bool is_tabbable;
 
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
