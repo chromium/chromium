@@ -120,16 +120,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
   EXPECT_EQ(rfh_a, current_frame_host());
 }
 
-// When CCNS is present and WebSocket is used, both features should be recorded
+// When CCNS is present and WebRTC is used, both features should be recorded
 // and the test should not hit CHECK.
-// TODO(crbug.com/40241677): WebSocket server is flaky Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CCNSAndWebSocketBothRecorded DISABLED_CCNSAndWebSocketBothRecorded
-#else
-#define MAYBE_CCNSAndWebSocketBothRecorded CCNSAndWebSocketBothRecorded
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
-                       MAYBE_CCNSAndWebSocketBothRecorded) {
+                       CCNSAndWebRTCBothRecorded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a_no_store(embedded_test_server()->GetURL(
@@ -139,16 +133,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
   // 1. Load the document and specify no-store for the main resource.
   ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
   RenderFrameHostWrapper rfh_a(current_frame_host());
-  // Open a WebSocket.
+  // Open a WebRTC connection.
   const char script[] = R"(
       new Promise(resolve => {
-        const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve(42));
+        const pc = new RTCPeerConnection();
+        pc.addIceCandidate({ candidate: "test", sdpMLineIndex: 0 }).finally(()=>{
+          resolve(42);
+        });
       });)";
-  ASSERT_EQ(42, EvalJs(rfh_a.get(),
-                       JsReplace(script, net::test_server::GetWebSocketURL(
-                                             *embedded_test_server(),
-                                             "/echo-with-no-extension"))));
+  ASSERT_EQ(42, EvalJs(rfh_a.get(), script));
 
   // 2. Navigate away and expect frame to be deleted.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -156,9 +149,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
   // 3. Go back and make sure both reasons are recorded.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {BlocklistedFeature::kWebSocket,
+                    {BlocklistedFeature::kWebRTC,
                      BlocklistedFeature::kMainResourceHasCacheControlNoStore,
-                     BlocklistedFeature::kWebSocketSticky},
+                     BlocklistedFeature::kWebRTCSticky},
                     {}, {}, {}, FROM_HERE);
 }
 
