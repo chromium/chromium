@@ -85,8 +85,7 @@ PreconditionState ContactInfoPreconditionChecker::GetPreconditionState(
   }
   // Exclude explicit passphrase users.
   if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase() &&
-      !base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers)) {
+      !syncer::IsContactInfoDataTypeForCustomPassphraseUsersEnabled()) {
     return PreconditionState::kMustStopAndClearData;
   }
   // Exclude Dasher accounts.

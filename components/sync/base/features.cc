@@ -70,6 +70,13 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #endif
 );
 
+bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled() {
+  return base::FeatureList::IsEnabled(
+             kSyncEnableContactInfoDataTypeForCustomPassphraseUsers) ||
+         base::FeatureList::IsEnabled(
+             kReplaceSyncPromosWithSigninPromosNewSignin);
+}
+
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

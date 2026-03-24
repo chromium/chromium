@@ -75,7 +75,14 @@ BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);
 // exceeded.
 BASE_DECLARE_FEATURE(kSyncShowBookmarksLimitExceededError);
 
+// Do not use this flag directly. Use
+// IsContactInfoDataTypeForCustomPassphraseUsersEnabled() instead.
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
+
+// If enabled, the Contact Info data type will be enabled for users with custom
+// passphrase.
+bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled();
+
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 
 // If enabled, keeps local and account search engines separate.
