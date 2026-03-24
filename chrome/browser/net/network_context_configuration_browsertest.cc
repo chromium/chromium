@@ -1883,13 +1883,28 @@ class WaitingHandshakeClient : public network::mojom::WebSocketHandshakeClient {
 class NetworkContextConfigurationProxySettingsBrowserTest
     : public NetworkContextConfigurationHttpPacBrowserTest {
  public:
-  const size_t kDefaultMaxConnectionsPerProxy = 32;
+  const size_t kDefaultMaxConnectionsPerProxy = 64;
 
   NetworkContextConfigurationProxySettingsBrowserTest() {
-    // This is disabled as backup jobs cause extra connections without opening
-    // new sockets, and this breaks WebSocket tests.
-    scoped_feature_list_.InitAndDisableFeature(
-        net::features::kPermitTcpSocketPoolConnectBackupJobs);
+    // `kTcpSocketPoolProxyLimit` is specified as this test depends on a
+    // specific value, and not setting it causes test failures across field
+    // trials. `kPermitTcpSocketPoolConnectBackupJobs` is disabled as backup
+    // jobs cause extra connections without opening new WebSockets, breaking
+    // tests.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {net::features::kTcpSocketPoolProxyLimit,
+             {
+                 {"TcpSocketPoolProxyLimitNormal",
+                  base::NumberToString(kDefaultMaxConnectionsPerProxy)},
+                 {"TcpSocketPoolProxyLimitWebSocket",
+                  base::NumberToString(kDefaultMaxConnectionsPerProxy)},
+             }},
+        },
+        /*disabled_features=*/{
+            net::features::kPermitTcpSocketPoolConnectBackupJobs,
+        });
   }
 
   NetworkContextConfigurationProxySettingsBrowserTest(
@@ -2074,7 +2089,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
 class NetworkContextConfigurationManagedProxySettingsBrowserTest
     : public NetworkContextConfigurationProxySettingsBrowserTest {
  public:
-  const size_t kTestMaxConnectionsPerProxy = 37;
+  const size_t kTestMaxConnectionsPerProxy = 16;
 
   NetworkContextConfigurationManagedProxySettingsBrowserTest() = default;
 
