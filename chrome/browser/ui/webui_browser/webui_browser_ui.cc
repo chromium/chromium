@@ -118,7 +118,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
-  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
 
 #if BUILDFLAG(ENABLE_SURFACE_EMBED)
   source->AddBoolean(

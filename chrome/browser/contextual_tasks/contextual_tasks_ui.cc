@@ -279,9 +279,16 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "child-src 'self' https://*.google.com;");
 
   // Add required resources for the searchbox.
+  bool session_allows_drag_and_drop = false;
+  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+    session_allows_drag_and_drop =
+        session_handle->CheckSearchContentSharingSettings(profile->GetPrefs());
+  }
+
   SearchboxHandler::SetupWebUIDataSource(source, profile,
                                          /*enable_voice_search=*/true,
-                                         /*enable_lens_search=*/false);
+                                         /*enable_lens_search=*/false,
+                                         session_allows_drag_and_drop);
   // Add strings.js
   source->UseStringsJs();
 
@@ -397,14 +404,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   AddContextMenuItemEligibilityLoadTimeData(source, profile);
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
+  // TODO(b/477969358): Remove `composeboxShowSubmit` boolean. This has the same
+  // value everywhere it is used.
   source->AddBoolean("composeboxShowSubmit", true);
-  source->AddBoolean("composeboxContextDragAndDropEnabled", true);
-  source->AddBoolean(
-      "steadyComposeboxShowVoiceSearch",
-      contextual_tasks::GetIsExpandedComposeboxVoiceSearchEnabled());
-  source->AddBoolean(
-      "expandedComposeboxShowVoiceSearch",
-      contextual_tasks::GetIsSteadyComposeboxVoiceSearchEnabled());
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
   source->AddBoolean(

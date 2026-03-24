@@ -255,14 +255,6 @@ CreateQueryControllerConfigParams() {
   return config_params;
 }
 
-const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
-    &internal::kWebUIOmniboxAimPopup,
-    "CloseComposeboxByClickOutside",
-    true);
-const base::FeatureParam<bool> kCloseComposeboxByEscape(
-    &internal::kWebUIOmniboxAimPopup,
-    "CloseComposeboxByEscape",
-    true);
 const base::FeatureParam<std::string>
     kConfigParam(&internal::kWebUIOmniboxAimPopup, "Omnibox_ConfigParam", "");
 const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
@@ -273,9 +265,6 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ContextMenuMaxTabSuggestions",
     3);
-const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
-                                           "MaxNumFiles",
-                                           10);
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowComposeboxImageSuggestions",
@@ -316,9 +305,6 @@ const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowSmartCompose",
     false);
-const base::FeatureParam<bool> kShowSubmit(&internal::kWebUIOmniboxAimPopup,
-                                           "ShowSubmit",
-                                           true);
 const base::FeatureParam<bool> kShowToolsAndModels(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowToolsAndModels",
@@ -327,23 +313,11 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuHeaders",
     true);
-const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowVoiceSearchInSteadyComposebox",
-    true);
-const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowVoiceSearchInExpandedComposebox",
-    true);
 // TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
 // respects its disabled state.
 const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_AutoSubmitVoiceSearchQuery",
-    true);
-const base::FeatureParam<bool> kEnableContextDragAndDrop(
-    &internal::kWebUIOmniboxAimPopup,
-    "EnableContextDragAndDrop",
     true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}

@@ -51,7 +51,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   static void SetupWebUIDataSource(content::WebUIDataSource* source,
                                    Profile* profile,
                                    bool enable_voice_search = false,
-                                   bool enable_lens_search = false);
+                                   bool enable_lens_search = false,
+                                   bool session_allows_drag_and_drop = false);
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.

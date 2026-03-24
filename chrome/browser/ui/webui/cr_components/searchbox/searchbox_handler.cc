@@ -305,7 +305,8 @@ BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
 void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                             Profile* profile,
                                             bool enable_voice_search,
-                                            bool enable_lens_search) {
+                                            bool enable_lens_search,
+                                            bool session_allows_drag_and_drop) {
   // The WebUI Omnibox code will override this to `true` to adjust various
   // color and layout options.
   source->AddBoolean("isTopChromeSearchbox", false);
@@ -454,7 +455,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       }
     }
   }
-
   source->AddInteger("composeboxFileMaxCount", max_files);
   source->AddString("composeboxDragAndDropHint",
                     l10n_util::GetPluralStringFUTF16(
@@ -468,6 +468,13 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddString("maxPdfsReachedError",
                     l10n_util::GetPluralStringFUTF16(
                         IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, max_pdfs));
+
+  source->AddBoolean("composeboxContextDragAndDropEnabled",
+                     session_allows_drag_and_drop);
+
+  // TODO(b/477969358): Consolidate voice search booleans.
+  source->AddBoolean("steadyComposeboxShowVoiceSearch", enable_voice_search);
+  source->AddBoolean("expandedComposeboxShowVoiceSearch", enable_voice_search);
 
   // TODO(b/481663895): Remove "ConfigParam" from Next studies.
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;

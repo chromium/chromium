@@ -93,6 +93,23 @@ class SearchboxHandlerTest : public ::testing::Test {
   }
 };
 
+TEST_F(SearchboxHandlerTest, SetupWebUIDataSourceSetsDragAndDrop) {
+  SearchboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile(),
+                                         /*enable_voice_search=*/false,
+                                         /*enable_lens_search=*/false);
+  EXPECT_FALSE(*source()->GetLocalizedStrings()->FindBool(
+      "composeboxContextDragAndDropEnabled"));
+
+  SearchboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile(),
+                                         /*enable_voice_search=*/false,
+                                         /*enable_lens_search=*/false,
+                                         /*session_allows_drag_and_drop=*/true);
+  EXPECT_TRUE(*source()->GetLocalizedStrings()->FindBool(
+      "composeboxContextDragAndDropEnabled"));
+}
+
 class RealboxHandlerTest : public SearchboxHandlerTest {
  public:
   RealboxHandlerTest() = default;

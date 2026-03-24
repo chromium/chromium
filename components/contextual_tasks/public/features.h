@@ -117,9 +117,6 @@ extern const base::FeatureParam<std::string>
 // The maximum size of a file that can be attached to a Nextbox.
 extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize;
 
-// The maximum number of files that can be attached to a Nextbox.
-extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
-
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 
@@ -149,12 +146,6 @@ extern int GetContextualTasksOnboardingTooltipImpressionDelay();
 // The number of seconds inactive side panel WebContents should keep in cache.
 // Expired side panel WebContents will be destroyed.
 extern int ContextualTasksInactiveSidePanelKeepInCacheMinutes();
-
-// Returns if voice search is allowed in expanded composebox.
-extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
-
-// Returns if voice search is allowed in base steady composebox.
-extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
 
 // Returns if voice search queries should be auto submitted.
 extern bool GetAutoSubmitVoiceSearchQuery();

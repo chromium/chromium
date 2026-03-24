@@ -192,16 +192,6 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
     &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.0"};
 
-const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
-    &kContextualTasks,
-    "ContextualTasksEnableSteadyComposeboxVoiceSearch",
-    true);
-
-const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
-    &kContextualTasks,
-    "ContextualTasksEnableExpandedComposeboxVoiceSearch",
-    true);
-
 // TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
 // respects its disabled state.
 const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
@@ -311,14 +301,6 @@ int ContextualTasksInactiveSidePanelKeepInCacheMinutes() {
   return kContextualTasksInactiveSidePanelKeepInCacheMinutes.Get();
 }
 
-bool GetIsExpandedComposeboxVoiceSearchEnabled() {
-  return kEnableExpandedComposeboxVoiceSearch.Get();
-}
-
-bool GetIsSteadyComposeboxVoiceSearchEnabled() {
-  return kEnableSteadyComposeboxVoiceSearch.Get();
-}
-
 bool GetAutoSubmitVoiceSearchQuery() {
   return kAutoSubmitVoiceSearchQuery.Get();
 }
@@ -402,9 +384,6 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize{
     &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileSize",
     20 * 1024 * 1024};
-
-const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
-    &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileCount", 10};
 
 bool GetIsContextualTasksSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
