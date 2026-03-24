@@ -1367,6 +1367,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "DataUrlMimeTypeParameterPreservation",
                 "Preserve parameters in the MIME type of data: URLs."),
+        Flag.baseFeature(
+                "AsyncBeforeUnload",
+                "If enabled, runs beforeunload handlers asynchronously when the user"
+                        + " hasn't interacted with the frame."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
