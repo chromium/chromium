@@ -960,6 +960,9 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # The early zone registration can't use base or absl. So it uses
             # std.
             r'base/allocator/partition_allocator/src/partition_alloc/shim/early_zone_registration_utils_apple.h',
+            # Similarly, helpers for printing stack traces can't use base or absl.
+            r'base/debug/buffered_dwarf_reader\.cc',
+            r'base/debug/buffered_dwarf_reader\.h',
 
             # Needed to use QUICHE API.
             r'components/private_ai/phosphor/.*',

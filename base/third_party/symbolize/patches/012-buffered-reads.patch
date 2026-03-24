@@ -1,0 +1,404 @@
+diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
+index 39c2317be5e6d..54417ee042bb1 100644
+--- a/base/third_party/symbolize/symbolize.cc
++++ b/base/third_party/symbolize/symbolize.cc
+@@ -148,20 +148,19 @@ FileDescriptor::~FileDescriptor() {
+   }
+ }
+
+-ssize_t ReadFromOffset(const int fd,
+-                       void* buf,
+-                       const size_t count,
+-                       const size_t offset) {
++// Read up to "count" bytes from file descriptor "fd" into the buffer
++// starting at "buf" while handling short reads and EINTR.  On
++// success, return the number of bytes read.  Otherwise, return -1.
++static ssize_t ReadPersistent(int fd, void* buf, size_t count) {
+   SAFE_ASSERT(fd >= 0);
+-  SAFE_ASSERT(count <=
+-              static_cast<size_t>(std::numeric_limits<ssize_t>::max()));
+-  char *buf0 = reinterpret_cast<char *>(buf);
++  SAFE_ASSERT(count <= SSIZE_MAX);
++  char* buf0 = reinterpret_cast<char*>(buf);
+   size_t num_bytes = 0;
+   while (num_bytes < count) {
+     ssize_t len;
+-    NO_INTR(len = pread(fd, buf0 + num_bytes, count - num_bytes,
+-                        static_cast<off_t>(offset + num_bytes)));
++    NO_INTR(len = read(fd, buf0 + num_bytes, count - num_bytes));
+     if (len < 0) {  // There was an error other than EINTR.
++      RAW_LOG(WARNING, "read failed: errno=%d", errno);
+       return -1;
+     }
+     if (len == 0) {  // Reached EOF.
+@@ -173,22 +172,58 @@ ssize_t ReadFromOffset(const int fd,
+   return static_cast<ssize_t>(num_bytes);
+ }
+
+-// Try reading exactly "count" bytes from "offset" bytes in a file
+-// pointed by "fd" into the buffer starting at "buf" while handling
+-// short reads and EINTR.  On success, return true. Otherwise, return
+-// false.
+-static bool ReadFromOffsetExact(const int fd,
+-                                void* buf,
+-                                const size_t count,
+-                                const size_t offset) {
+-  ssize_t len = ReadFromOffset(fd, buf, count, offset);
+-  return static_cast<size_t>(len) == count;
++// Read up to "count" bytes from "offset" into the buffer starting at "buf",
++// while handling short reads and EINTR.  On success, return the number of bytes
++// read.  Otherwise, return -1.
++ssize_t CachingFile::ReadFromOffset(void* buf, size_t count, off_t offset) {
++  char* dst = static_cast<char*>(buf);
++  size_t read = 0;
++  while (read < count) {
++    // Look in cache first.
++    if (offset >= cache_start_ && offset < cache_limit_) {
++      const char* hit_start = &cache_[offset - cache_start_];
++      const size_t n =
++          std::min(count - read, static_cast<size_t>(cache_limit_ - offset));
++      memcpy(dst, hit_start, n);
++      dst += n;
++      read += static_cast<size_t>(n);
++      offset += static_cast<off_t>(n);
++      continue;
++    }
++
++    cache_start_ = 0;
++    cache_limit_ = 0;
++    ssize_t n = pread(fd_, cache_, cache_size_, offset);
++    if (n < 0) {
++      if (errno == EINTR) {
++        continue;
++      }
++      RAW_LOG(WARNING, "read failed: errno=%d", errno);
++      return -1;
++    }
++    if (n == 0) {  // Reached EOF.
++      break;
++    }
++
++    cache_start_ = offset;
++    cache_limit_ = offset + static_cast<off_t>(n);
++    // Next iteration will copy from cache into dst.
++  }
++  return static_cast<ssize_t>(read);
++}
++
++// Try reading exactly "count" bytes from "offset" bytes into the buffer
++// starting at "buf" while handling short reads and EINTR.  On success, return
++// true. Otherwise, return false.
++bool CachingFile::ReadFromOffsetExact(void* buf, size_t count, off_t offset) {
++  ssize_t len = ReadFromOffset(buf, count, offset);
++  return len >= 0 && static_cast<size_t>(len) == count;
+ }
+
+ // Returns elf_header.e_type if the file pointed by fd is an ELF binary.
+-static int FileGetElfType(const int fd) {
++static int FileGetElfType(CachingFile* file) {
+   ElfW(Ehdr) elf_header;
+-  if (!ReadFromOffsetExact(fd, &elf_header, sizeof(elf_header), 0)) {
++  if (!file->ReadFromOffsetExact(&elf_header, sizeof(elf_header), 0)) {
+     return -1;
+   }
+   if (memcmp(elf_header.e_ident, ELFMAG, SELFMAG) != 0) {
+@@ -202,7 +237,7 @@ static int FileGetElfType(const int fd) {
+ // and return true.  Otherwise, return false.
+ // To keep stack consumption low, we would like this function to not get
+ // inlined.
+-static ATTRIBUTE_NOINLINE bool GetSectionHeaderByType(const int fd,
++static ATTRIBUTE_NOINLINE bool GetSectionHeaderByType(CachingFile* file,
+                                                       ElfW(Half) sh_num,
+                                                       const size_t sh_offset,
+                                                       ElfW(Word) type,
+@@ -213,8 +248,8 @@ static ATTRIBUTE_NOINLINE bool GetSectionHeaderByType(const int fd,
+     const size_t num_bytes_left = (sh_num - i) * sizeof(buf[0]);
+     const size_t num_bytes_to_read =
+         (sizeof(buf) > num_bytes_left) ? num_bytes_left : sizeof(buf);
+-    const ssize_t len = ReadFromOffset(fd, buf, num_bytes_to_read,
+-                                       sh_offset + i * sizeof(buf[0]));
++    const ssize_t len = file->ReadFromOffset(buf, num_bytes_to_read,
++                                             sh_offset + i * sizeof(buf[0]));
+     if (len == -1) {
+       return false;
+     }
+@@ -239,8 +274,10 @@ const int kMaxSectionNameLen = 64;
+ // name_len should include terminating '\0'.
+ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+                             ElfW(Shdr) *out) {
++  char buf[kMaxSectionNameLen];
++  CachingFile file(fd, buf, sizeof(buf));
+   ElfW(Ehdr) elf_header;
+-  if (!ReadFromOffsetExact(fd, &elf_header, sizeof(elf_header), 0)) {
++  if (!file.ReadFromOffsetExact(&elf_header, sizeof(elf_header), 0)) {
+     return false;
+   }
+
+@@ -248,14 +285,14 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+   size_t shstrtab_offset =
+       (elf_header.e_shoff + static_cast<size_t>(elf_header.e_shentsize) *
+                                 static_cast<size_t>(elf_header.e_shstrndx));
+-  if (!ReadFromOffsetExact(fd, &shstrtab, sizeof(shstrtab), shstrtab_offset)) {
++  if (!file.ReadFromOffsetExact(&shstrtab, sizeof(shstrtab), shstrtab_offset)) {
+     return false;
+   }
+
+   for (size_t i = 0; i < elf_header.e_shnum; ++i) {
+     size_t section_header_offset =
+         (elf_header.e_shoff + elf_header.e_shentsize * i);
+-    if (!ReadFromOffsetExact(fd, out, sizeof(*out), section_header_offset)) {
++    if (!file.ReadFromOffsetExact(out, sizeof(*out), section_header_offset)) {
+       return false;
+     }
+     char header_name[kMaxSectionNameLen];
+@@ -266,7 +303,7 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+       return false;
+     }
+     size_t name_offset = shstrtab.sh_offset + out->sh_name;
+-    ssize_t n_read = ReadFromOffset(fd, &header_name, name_len, name_offset);
++    ssize_t n_read = file.ReadFromOffset(&header_name, name_len, name_offset);
+     if (n_read == -1) {
+       return false;
+     } else if (static_cast<size_t>(n_read) != name_len) {
+@@ -287,7 +324,7 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+ // To keep stack consumption low, we would like this function to not get
+ // inlined.
+ static ATTRIBUTE_NOINLINE bool FindSymbol(uint64_t pc,
+-                                          const int fd,
++                                          CachingFile* file,
+                                           char* out,
+                                           size_t out_size,
+                                           uint64_t symbol_offset,
+@@ -303,6 +340,9 @@ static ATTRIBUTE_NOINLINE bool FindSymbol(uint64_t pc,
+     // If we are reading Elf64_Sym's, we want to limit this array to
+     // 32 elements (to keep stack consumption low), otherwise we can
+     // have a 64 element Elf32_Sym array.
++    // TODO(dcheng): Using a large batch size here improves performance but
++    // with the aforementioned tradeoff. Abseil has enough storage to read 3072
++    // bytes of symbols at a time.
+ #if defined(__WORDSIZE) && __WORDSIZE == 64
+     const size_t NUM_SYMBOLS = 32U;
+ #else
+@@ -313,7 +353,7 @@ static ATTRIBUTE_NOINLINE bool FindSymbol(uint64_t pc,
+     ElfW(Sym) buf[NUM_SYMBOLS];
+     size_t num_symbols_to_read = std::min(NUM_SYMBOLS, num_symbols - i);
+     const ssize_t len =
+-        ReadFromOffset(fd, &buf, sizeof(buf[0]) * num_symbols_to_read, offset);
++        file->ReadFromOffset(buf, sizeof(buf[0]) * num_symbols_to_read, offset);
+     SAFE_ASSERT(static_cast<size_t>(len) % sizeof(buf[0]) == 0);
+     const size_t num_symbols_in_buf = static_cast<size_t>(len) / sizeof(buf[0]);
+     SAFE_ASSERT(num_symbols_in_buf <= num_symbols_to_read);
+@@ -325,8 +365,8 @@ static ATTRIBUTE_NOINLINE bool FindSymbol(uint64_t pc,
+       if (symbol.st_value != 0 &&  // Skip null value symbols.
+           symbol.st_shndx != 0 &&  // Skip undefined symbols.
+           start_address <= pc && pc < end_address) {
+-        ssize_t len1 = ReadFromOffset(fd, out, out_size,
+-                                      strtab->sh_offset + symbol.st_name);
++        ssize_t len1 = file->ReadFromOffset(out, out_size,
++                                            strtab->sh_offset + symbol.st_name);
+         if (len1 <= 0 || memchr(out, '\0', out_size) == NULL) {
+           memset(out, 0, out_size);
+           return false;
+@@ -348,34 +388,39 @@ static bool GetSymbolFromObjectFile(const int fd,
+                                     char* out,
+                                     size_t out_size,
+                                     uint64_t base_address) {
++  char buf[kBigFileCacheSize];
++  CachingFile file(fd, buf, sizeof(buf));
++
+   // Read the ELF header.
+   ElfW(Ehdr) elf_header;
+-  if (!ReadFromOffsetExact(fd, &elf_header, sizeof(elf_header), 0)) {
++  if (!file.ReadFromOffsetExact(&elf_header, sizeof(elf_header), 0)) {
+     return false;
+   }
+
+   ElfW(Shdr) symtab, strtab;
+
+   // Consult a regular symbol table first.
+-  if (GetSectionHeaderByType(fd, elf_header.e_shnum, elf_header.e_shoff,
++  if (GetSectionHeaderByType(&file, elf_header.e_shnum, elf_header.e_shoff,
+                              SHT_SYMTAB, &symtab)) {
+-    if (!ReadFromOffsetExact(fd, &strtab, sizeof(strtab), elf_header.e_shoff +
+-                             symtab.sh_link * sizeof(symtab))) {
++    if (!file.ReadFromOffsetExact(
++            &strtab, sizeof(strtab),
++            elf_header.e_shoff + symtab.sh_link * sizeof(symtab))) {
+       return false;
+     }
+-    if (FindSymbol(pc, fd, out, out_size, base_address, &strtab, &symtab)) {
++    if (FindSymbol(pc, &file, out, out_size, base_address, &strtab, &symtab)) {
+       return true;  // Found the symbol in a regular symbol table.
+     }
+   }
+
+   // If the symbol is not found, then consult a dynamic symbol table.
+-  if (GetSectionHeaderByType(fd, elf_header.e_shnum, elf_header.e_shoff,
++  if (GetSectionHeaderByType(&file, elf_header.e_shnum, elf_header.e_shoff,
+                              SHT_DYNSYM, &symtab)) {
+-    if (!ReadFromOffsetExact(fd, &strtab, sizeof(strtab), elf_header.e_shoff +
+-                             symtab.sh_link * sizeof(symtab))) {
++    if (!file.ReadFromOffsetExact(
++            &strtab, sizeof(strtab),
++            elf_header.e_shoff + symtab.sh_link * sizeof(symtab))) {
+       return false;
+     }
+-    if (FindSymbol(pc, fd, out, out_size, base_address, &strtab, &symtab)) {
++    if (FindSymbol(pc, &file, out, out_size, base_address, &strtab, &symtab)) {
+       return true;  // Found the symbol in a dynamic symbol table.
+     }
+   }
+@@ -392,11 +437,10 @@ namespace {
+ // and snprintf().
+ class LineReader {
+  public:
+-  explicit LineReader(int fd, char* buf, size_t buf_len, size_t offset)
++  explicit LineReader(int fd, char* buf, size_t buf_len)
+       : fd_(fd),
+         buf_(buf),
+         buf_len_(buf_len),
+-        offset_(offset),
+         bol_(buf),
+         eol_(buf),
+         eod_(buf) {}
+@@ -408,11 +452,10 @@ class LineReader {
+   // dropped.  It's an intentional behavior to make the code simple.
+   bool ReadLine(const char **bol, const char **eol) {
+     if (BufferIsEmpty()) {  // First time.
+-      const ssize_t num_bytes = ReadFromOffset(fd_, buf_, buf_len_, offset_);
++      const ssize_t num_bytes = ReadPersistent(fd_, buf_, buf_len_);
+       if (num_bytes <= 0) {  // EOF or error.
+         return false;
+       }
+-      offset_ += static_cast<size_t>(num_bytes);
+       eod_ = buf_ + num_bytes;
+       bol_ = buf_;
+     } else {
+@@ -426,11 +469,10 @@ class LineReader {
+         char * const append_pos = buf_ + incomplete_line_length;
+         const size_t capacity_left = buf_len_ - incomplete_line_length;
+         const ssize_t num_bytes =
+-            ReadFromOffset(fd_, append_pos, capacity_left, offset_);
++            ReadPersistent(fd_, append_pos, capacity_left);
+         if (num_bytes <= 0) {  // EOF or error.
+           return false;
+         }
+-        offset_ += static_cast<size_t>(num_bytes);
+         eod_ = append_pos + num_bytes;
+         bol_ = buf_;
+       }
+@@ -476,7 +518,6 @@ class LineReader {
+   const int fd_;
+   char * const buf_;
+   const size_t buf_len_;
+-  size_t offset_;
+   char *bol_;
+   char *eol_;
+   const char *eod_;  // End of data in "buf_".
+@@ -529,7 +570,7 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
+   // look into the symbol tables inside.
+   char buf[1024];  // Big enough for line of sane /proc/self/maps
+   unsigned num_maps = 0;
+-  LineReader reader(wrapped_maps_fd.get(), buf, sizeof(buf), 0);
++  LineReader reader(wrapped_maps_fd.get(), buf, sizeof(buf));
+   while (true) {
+     num_maps++;
+     const char *cursor;
+@@ -569,11 +610,15 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
+       return -1;  // Malformed line.
+     }
+
++    char buf[kSmallFileCacheSize];
++    CachingFile mem_file(wrapped_mem_fd.get(), buf, sizeof(buf));
++
+     // Determine the base address by reading ELF headers in process memory.
+     ElfW(Ehdr) ehdr;
+     // Skip non-readable maps.
+     if (flags_start[0] == 'r' &&
+-        ReadFromOffsetExact(mem_fd, &ehdr, sizeof(ElfW(Ehdr)), start_address) &&
++        mem_file.ReadFromOffsetExact(&ehdr, sizeof(ElfW(Ehdr)),
++                                     start_address) &&
+         memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0) {
+       switch (ehdr.e_type) {
+         case ET_EXEC:
+@@ -591,8 +636,8 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
+           base_address = start_address;
+           for (unsigned i = 0; i != ehdr.e_phnum; ++i) {
+             ElfW(Phdr) phdr;
+-            if (ReadFromOffsetExact(
+-                    mem_fd, &phdr, sizeof(phdr),
++            if (mem_file.ReadFromOffsetExact(
++                    &phdr, sizeof(phdr),
+                     start_address + ehdr.e_phoff + i * sizeof(phdr)) &&
+                 phdr.p_type == PT_LOAD && phdr.p_offset == 0) {
+               base_address = start_address - phdr.p_vaddr;
+@@ -801,7 +846,10 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void* pc,
+     // Failed to determine the object file containing PC.  Bail out.
+     return false;
+   }
+-  int elf_type = FileGetElfType(wrapped_object_fd.get());
++
++  char buf[kSmallFileCacheSize];
++  CachingFile file(wrapped_object_fd.get(), buf, sizeof(buf));
++  int elf_type = FileGetElfType(&file);
+   if (elf_type == -1) {
+     return false;
+   }
+diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize/symbolize.h
+index 34019937968c5..d90a82ddf2837 100644
+--- a/base/third_party/symbolize/symbolize.h
++++ b/base/third_party/symbolize/symbolize.h
+@@ -96,15 +96,6 @@
+
+ _START_GOOGLE_NAMESPACE_
+
+-// Read up to "count" bytes from "offset" in the file pointed by file
+-// descriptor "fd" into the buffer starting at "buf" while handling short reads
+-// and EINTR.  On success, return the number of bytes read.  Otherwise, return
+-// -1.
+-ssize_t ReadFromOffset(const int fd,
+-                       void* buf,
+-                       const size_t count,
+-                       const size_t offset);
+-
+ // Gets the section header for the given name, if it exists. Returns true on
+ // success. Otherwise, returns false.
+ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+@@ -145,6 +136,37 @@ struct FileDescriptor {
+   void operator=(const FileDescriptor&);
+ };
+
++// Small cache to use for miscellaneous file reads.
++const int kSmallFileCacheSize = 100;
++// Bigger cache size to use when performing many reads from a file. Abseil uses
++// an 8K cache, but Abseil uses an async signal safe arena allocator for
++// storage for bigger buffers; in Chrome, these buffers are on the stack.
++const int kBigFileCacheSize = 4096;
++
++class CachingFile {
++ public:
++  // Setup reader for fd that uses buf[0, buf_size-1] as a cache.
++  CachingFile(int fd, char* buf, size_t buf_size)
++      : fd_(fd),
++        cache_(buf),
++        cache_size_(buf_size),
++        cache_start_(0),
++        cache_limit_(0) {}
++
++  int fd() const { return fd_; }
++  ssize_t ReadFromOffset(void* buf, size_t count, off_t offset);
++  bool ReadFromOffsetExact(void* buf, size_t count, off_t offset);
++
++ private:
++  // Bytes [cache_start_, cache_limit_-1] from fd_ are stored in
++  // a prefix of cache_[0, cache_size_-1].
++  int fd_;
++  char* cache_;
++  size_t cache_size_;
++  off_t cache_start_;
++  off_t cache_limit_;
++};
++
+ // Restrictions on the callbacks that follow:
+ //  - The callbacks must not use heaps but only use stacks.
+ //  - The callbacks must be async-signal-safe.

@@ -33,6 +33,7 @@ bool GetDwarfSourceLineNumber(const void* pc,
                               uint64_t cu_offsets,
                               char* out,
                               size_t out_size);
+
 }  // namespace debug
 }  // namespace base
 

@@ -96,15 +96,6 @@
 
 _START_GOOGLE_NAMESPACE_
 
-// Read up to "count" bytes from "offset" in the file pointed by file
-// descriptor "fd" into the buffer starting at "buf" while handling short reads
-// and EINTR.  On success, return the number of bytes read.  Otherwise, return
-// -1.
-ssize_t ReadFromOffset(const int fd,
-                       void* buf,
-                       const size_t count,
-                       const size_t offset);
-
 // Gets the section header for the given name, if it exists. Returns true on
 // success. Otherwise, returns false.
 bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
@@ -143,6 +134,37 @@ struct FileDescriptor {
  private:
   FileDescriptor(const FileDescriptor&);
   void operator=(const FileDescriptor&);
+};
+
+// Small cache to use for miscellaneous file reads.
+const int kSmallFileCacheSize = 100;
+// Bigger cache size to use when performing many reads from a file. Abseil uses
+// an 8K cache, but Abseil uses an async signal safe arena allocator for
+// storage for bigger buffers; in Chrome, these buffers are on the stack.
+const int kBigFileCacheSize = 4096;
+
+class CachingFile {
+ public:
+  // Setup reader for fd that uses buf[0, buf_size-1] as a cache.
+  CachingFile(int fd, char* buf, size_t buf_size)
+      : fd_(fd),
+        cache_(buf),
+        cache_size_(buf_size),
+        cache_start_(0),
+        cache_limit_(0) {}
+
+  int fd() const { return fd_; }
+  ssize_t ReadFromOffset(void* buf, size_t count, off_t offset);
+  bool ReadFromOffsetExact(void* buf, size_t count, off_t offset);
+
+ private:
+  // Bytes [cache_start_, cache_limit_-1] from fd_ are stored in
+  // a prefix of cache_[0, cache_size_-1].
+  int fd_;
+  char* cache_;
+  size_t cache_size_;
+  off_t cache_start_;
+  off_t cache_limit_;
 };
 
 // Restrictions on the callbacks that follow:

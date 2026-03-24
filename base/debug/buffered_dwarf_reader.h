@@ -8,32 +8,21 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #ifdef USE_SYMBOLIZE
+
+#include "base/third_party/symbolize/symbolize.h"
 
 namespace base {
 namespace debug {
 
-class BufferedDwarfReader {
+class BufferedDwarfReaderBase {
  public:
-  // Constructs a BufferedDwarfReader for a given `fd` starting
-  // `position` bytes from the start of the file.
-  //
-  // BufferedDwarfReader does not affect the `fd` state so it is completely
-  // okay to have multiple BufferedDwarfReader attached to one `fd` to act
-  // as cursors into different parts of the file.
-  BufferedDwarfReader(int fd, uint64_t position);
-
   // Gets and Sets the absolute position from the start of the file.
-  uint64_t position() const { return last_chunk_start_ + cursor_in_buffer_; }
+  uint64_t position() const { return position_; }
 
-  void set_position(uint64_t position) {
-    last_chunk_start_ = next_chunk_start_ = position;
-
-    // Invalidate buffer.
-    cursor_in_buffer_ = 0;
-    unconsumed_amount_ = 0;
-  }
+  void set_position(uint64_t position) { position_ = position; }
 
   bool ReadChar(char& value) { return ReadInt(value); }
   bool ReadInt8(uint8_t& value) { return ReadInt(value); }
@@ -95,6 +84,9 @@ class BufferedDwarfReader {
                         uint8_t& address_size,
                         uint64_t& end_position);
 
+ protected:
+  BufferedDwarfReaderBase(int fd, uint64_t position, std::span<char> buf);
+
  private:
   // Generic helper to read an integral value. The size read is determined by
   // the width of `value`
@@ -105,22 +97,24 @@ class BufferedDwarfReader {
 
   bool BufferedRead(void* buf, const size_t count);
 
-  // The buffer and counters. In local testing, buffer sizes larger than 4096
-  // bytes provides negligible benefit, while buffer sizes less than 4096 bytes
-  // incur a significant performance penalty: compared to the original buffer
-  // size of 256 bytes, 4096 bytes is 2x faster.
-  std::array<char, 4096> buf_;
-  size_t unconsumed_amount_ = 0;
-  size_t cursor_in_buffer_ = 0;
+  google::CachingFile file_;
+  uint64_t position_;
+};
 
-  // The file descriptor for the file being read.
-  const int fd_;
+template <size_t N = google::kSmallFileCacheSize>
+class BufferedDwarfReader : public BufferedDwarfReaderBase {
+ public:
+  // Constructs a BufferedDwarfReader for a given `fd` starting
+  // `position` bytes from the start of the file.
+  //
+  // BufferedDwarfReader does not affect the `fd` state so it is completely
+  // okay to have multiple BufferedDwarfReader attached to one `fd` to act
+  // as cursors into different parts of the file.
+  BufferedDwarfReader(int fd, uint64_t position)
+      : BufferedDwarfReaderBase(fd, position, buf_) {}
 
-  // The position of the next chunk to read.
-  uint64_t next_chunk_start_;
-
-  // The position of the last chunk read.
-  uint64_t last_chunk_start_;
+ private:
+  std::array<char, N> buf_;
 };
 
 }  // namespace debug

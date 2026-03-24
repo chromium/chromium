@@ -9,19 +9,21 @@
 #ifdef USE_SYMBOLIZE
 
 #include <algorithm>
-#include <cstring>
+#include <span>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/third_party/symbolize/symbolize.h"
 
 namespace base::debug {
 
-BufferedDwarfReader::BufferedDwarfReader(int fd, uint64_t position)
-    : fd_(fd), next_chunk_start_(position), last_chunk_start_(position) {}
+BufferedDwarfReaderBase::BufferedDwarfReaderBase(int fd,
+                                                 uint64_t position,
+                                                 std::span<char> buf)
+    : file_(fd, buf.data(), buf.size()), position_(position) {}
 
-size_t BufferedDwarfReader::ReadCString(uint64_t max_position,
-                                        char* out,
-                                        size_t out_size) {
+size_t BufferedDwarfReaderBase::ReadCString(uint64_t max_position,
+                                            char* out,
+                                            size_t out_size) {
   char character;
   size_t bytes_written = 0;
   do {
@@ -32,7 +34,7 @@ size_t BufferedDwarfReader::ReadCString(uint64_t max_position,
     if (out && bytes_written < out_size) {
       UNSAFE_TODO(out[bytes_written++]) = character;
     }
-  } while (character != '\0' && position() < max_position);
+  } while (character != '\0' && position_ < max_position);
 
   if (out) {
     UNSAFE_TODO(out[std::min(bytes_written, out_size - 1)]) = '\0';
@@ -41,7 +43,7 @@ size_t BufferedDwarfReader::ReadCString(uint64_t max_position,
   return bytes_written;
 }
 
-bool BufferedDwarfReader::ReadLeb128(uint64_t& value) {
+bool BufferedDwarfReaderBase::ReadLeb128(uint64_t& value) {
   value = 0;
   uint8_t byte;
   int shift = 0;
@@ -55,7 +57,7 @@ bool BufferedDwarfReader::ReadLeb128(uint64_t& value) {
   return true;
 }
 
-bool BufferedDwarfReader::ReadLeb128(int64_t& value) {
+bool BufferedDwarfReaderBase::ReadLeb128(int64_t& value) {
   value = 0;
   uint8_t byte;
   int shift = 0;
@@ -75,7 +77,8 @@ bool BufferedDwarfReader::ReadLeb128(int64_t& value) {
   return true;
 }
 
-bool BufferedDwarfReader::ReadInitialLength(bool& is_64bit, uint64_t& length) {
+bool BufferedDwarfReaderBase::ReadInitialLength(bool& is_64bit,
+                                                uint64_t& length) {
   uint32_t token_32bit;
 
   if (!ReadInt32(token_32bit)) {
@@ -104,7 +107,7 @@ bool BufferedDwarfReader::ReadInitialLength(bool& is_64bit, uint64_t& length) {
   return true;
 }
 
-bool BufferedDwarfReader::ReadOffset(bool is_64bit, uint64_t& offset) {
+bool BufferedDwarfReaderBase::ReadOffset(bool is_64bit, uint64_t& offset) {
   if (is_64bit) {
     if (!ReadInt64(offset)) {
       return false;
@@ -119,7 +122,8 @@ bool BufferedDwarfReader::ReadOffset(bool is_64bit, uint64_t& offset) {
   return true;
 }
 
-bool BufferedDwarfReader::ReadAddress(uint8_t address_size, uint64_t& address) {
+bool BufferedDwarfReaderBase::ReadAddress(uint8_t address_size,
+                                          uint64_t& address) {
   // Note `address_size` indicates the numbrer of bytes in the address.
   switch (address_size) {
     case 2: {
@@ -152,16 +156,16 @@ bool BufferedDwarfReader::ReadAddress(uint8_t address_size, uint64_t& address) {
   return true;
 }
 
-bool BufferedDwarfReader::ReadCommonHeader(bool& is_64bit,
-                                           uint64_t& length,
-                                           uint16_t& version,
-                                           uint64_t& offset,
-                                           uint8_t& address_size,
-                                           uint64_t& end_position) {
+bool BufferedDwarfReaderBase::ReadCommonHeader(bool& is_64bit,
+                                               uint64_t& length,
+                                               uint16_t& version,
+                                               uint64_t& offset,
+                                               uint8_t& address_size,
+                                               uint64_t& end_position) {
   if (!ReadInitialLength(is_64bit, length)) {
     return false;
   }
-  end_position = position() + length;
+  end_position = position_ + length;
 
   if (!ReadInt16(version)) {
     return false;
@@ -178,34 +182,14 @@ bool BufferedDwarfReader::ReadCommonHeader(bool& is_64bit,
   return true;
 }
 
-bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
-  size_t bytes_left = bytes;
-  while (bytes_left > 0) {
-    // Refresh the buffer.
-    if (unconsumed_amount_ == 0) {
-      if (!base::IsValueInRangeForNumericType<size_t>(next_chunk_start_)) {
-        return false;
-      }
-      const ssize_t unconsumed_amount = google::ReadFromOffset(
-          fd_, buf_.data(), (buf_.size() * sizeof(decltype(buf_)::value_type)),
-          static_cast<size_t>(next_chunk_start_));
-      if (unconsumed_amount <= 0) {
-        // Read error.
-        return false;
-      }
-      unconsumed_amount_ = static_cast<size_t>(unconsumed_amount);
-
-      last_chunk_start_ = next_chunk_start_;
-      next_chunk_start_ += unconsumed_amount_;
-      cursor_in_buffer_ = 0;
-    }
-
-    size_t to_copy = std::min(bytes_left, unconsumed_amount_);
-    UNSAFE_TODO(memcpy(out, &buf_[cursor_in_buffer_], to_copy));
-    unconsumed_amount_ -= to_copy;
-    cursor_in_buffer_ += to_copy;
-    bytes_left -= to_copy;
+bool BufferedDwarfReaderBase::BufferedRead(void* out, const size_t bytes) {
+  if (!base::IsValueInRangeForNumericType<size_t>(position_)) {
+    return false;
   }
+  if (!file_.ReadFromOffsetExact(out, bytes, position_)) {
+    return false;
+  }
+  position_ += bytes;
   return true;
 }
 
