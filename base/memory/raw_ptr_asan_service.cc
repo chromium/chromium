@@ -276,6 +276,8 @@ int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
 
     // When accessing any quarantined memory, cause `use-after-poison`.
     __asan_poison_memory_region(ptr, size);
+
+    ANNOTATE_LEAKING_OBJECT_PTR(const_cast<const void*>(ptr));
     return 1;
   }
 
@@ -301,6 +303,10 @@ int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
 
   // When accessing any quarantined memory, cause `use-after-poison`.
   __asan_poison_memory_region(ptr, size);
+
+  // This allocation is being quarantined, so tell the ASan allocator not to
+  // release it yet.
+  ANNOTATE_LEAKING_OBJECT_PTR(const_cast<const void*>(ptr));
   return 1;
 }
 
