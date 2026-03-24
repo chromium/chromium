@@ -37,6 +37,13 @@
   // to keep the aspect ratio fixed we override one window dimension with a
   // value computed from the other dimension.
   std::optional<bool> _resizingHorizontally;
+
+  // Used to keep track of whether the window is currently being moved.
+  BOOL _isMoving;
+
+  // Holds the local event monitor used to detect when the user releases
+  // the mouse to finish dragging the window.
+  id __strong _mouseUpMonitor;
 }
 
 - (instancetype)initWithBridgedNativeWidget:
@@ -175,11 +182,45 @@
   _parent->OnSizeChanged();
 }
 
+- (void)windowWillMove:(NSNotification*)notification {
+  _parent->OnWindowWillMove();
+  _isMoving = YES;
+
+  // We set a local event monitor here to listen for `.leftMouseUp`.
+  // AppKit intercepts standard events during a window drag, so we need
+  // this monitor to detect exactly when the user finishes moving the window.
+  if (!_mouseUpMonitor) {
+    __weak ViewsNSWindowDelegate* weakSelf = self;
+    _mouseUpMonitor = [NSEvent
+        addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp
+                                     handler:^NSEvent*(NSEvent* event) {
+                                       [weakSelf windowEndMove];
+                                       return event;
+                                     }];
+  }
+}
+
 - (void)windowDidMove:(NSNotification*)notification {
-  // Note: windowDidMove: is sent only once at the end of a window drag. There
-  // is also windowWillMove: sent at the start, also once. When the window is
-  // being moved by the WindowServer live updates are not provided.
   _parent->OnPositionChanged();
+
+  // `windowDidMove` will be called multiple times during a drag.
+  // Only signal the end of the move when the left mouse button is released.
+  BOOL left_button_pressed = ([NSEvent pressedMouseButtons] & 1) != 0;
+  if (!left_button_pressed) {
+    [self windowEndMove];
+  }
+}
+
+- (void)windowEndMove {
+  if (_isMoving) {
+    _isMoving = NO;
+    _parent->OnWindowDidEndMove();
+  }
+
+  if (_mouseUpMonitor) {
+    [NSEvent removeMonitor:_mouseUpMonitor];
+    _mouseUpMonitor = nil;
+  }
 }
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
@@ -215,6 +256,8 @@
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
+  [self windowEndMove];
+
   NSWindow* window = _parent->ns_window();
   if (NSWindow* sheetParent = [window sheetParent]) {
     // On no! Something called -[NSWindow close] on a sheet rather than calling

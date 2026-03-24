@@ -134,6 +134,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Called by the NSWindowDelegate when the size of the window changes.
   void OnSizeChanged();
 
+  // Called once by the NSWindowDelegate when the position of the window is
+  // about to change.
+  void OnWindowWillMove();
+
+  // Called once by the NSWindowDelegate when a user-initiated move has
+  // completed.
+  void OnWindowDidEndMove();
+
   // Called once by the NSWindowDelegate when the position of the window has
   // changed.
   void OnPositionChanged();
@@ -473,6 +481,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
   bool wants_to_be_visible_ = false;
+
+  // If true, the window is currently being moved by the user.
+  bool in_move_ = false;
 
   // If true, then ignore interactions with CATransactionCoordinator until the
   // first frame arrives.

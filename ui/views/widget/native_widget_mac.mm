@@ -193,14 +193,28 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
   }
 }
 
+void NativeWidgetMac::OnWindowWillMove() {
+  if (delegate_) {
+    delegate_->OnNativeWidgetBeginUserBoundsChange();
+  }
+}
+
+void NativeWidgetMac::OnWindowDidEndMove() {
+  if (delegate_) {
+    delegate_->OnNativeWidgetEndUserBoundsChange();
+  }
+}
+
 void NativeWidgetMac::OnWindowWillStartLiveResize() {
   if (delegate_) {
+    delegate_->OnNativeWidgetBeginUserBoundsChange();
     delegate_->OnNativeWidgetUserResizeStarted();
   }
 }
 
 void NativeWidgetMac::OnWindowDidEndLiveResize() {
   if (delegate_) {
+    delegate_->OnNativeWidgetEndUserBoundsChange();
     delegate_->OnNativeWidgetUserResizeEnded();
   }
 }

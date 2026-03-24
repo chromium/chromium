@@ -69,6 +69,12 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // Called when the backing NSWindow gains or loses key status.
   void OnWindowKeyStatusChanged(bool is_key, bool is_content_first_responder);
 
+  // Called when the window is about to move.
+  void OnWindowWillMove();
+
+  // Called when the window has moved.
+  void OnWindowDidEndMove();
+
   // Called when the user will start resizing the window.
   void OnWindowWillStartLiveResize();
 

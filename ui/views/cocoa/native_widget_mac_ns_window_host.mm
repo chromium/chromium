@@ -98,6 +98,8 @@ class BridgedNativeWidgetHostDummy
   void OnWindowGeometryChanged(
       const gfx::Rect& window_bounds_in_screen_dips,
       const gfx::Rect& content_bounds_in_screen_dips) override {}
+  void OnWindowWillMove() override {}
+  void OnWindowDidEndMove() override {}
   void OnWindowWillStartLiveResize() override {}
   void OnWindowDidEndLiveResize() override {}
   void OnWindowFullscreenTransitionStart(
@@ -1385,6 +1387,14 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
     // Update the compositor surface and layer size.
     UpdateCompositorProperties();
   }
+}
+
+void NativeWidgetMacNSWindowHost::OnWindowWillMove() {
+  native_widget_mac_->OnWindowWillMove();
+}
+
+void NativeWidgetMacNSWindowHost::OnWindowDidEndMove() {
+  native_widget_mac_->OnWindowDidEndMove();
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowWillStartLiveResize() {
