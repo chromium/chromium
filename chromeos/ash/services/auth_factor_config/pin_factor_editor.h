@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::auth {
@@ -38,10 +39,9 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback)
       override;
-  void CheckPinComplexity(
-      const std::string& auth_token,
-      const std::string& pin,
-      base::OnceCallback<void(mojom::PinComplexity)> callback) override;
+  void CheckPinComplexity(const std::string& auth_token,
+                          const std::string& pin,
+                          CheckPinComplexityCallback callback) override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::PinFactorEditor> receiver);
 
@@ -80,6 +80,7 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      mojo::ReportBadMessageCallback bad_message_callback,
       std::unique_ptr<UserContext> context);
   void OnPinSet(const std::string& auth_token,
                 base::OnceCallback<void(mojom::ConfigureResult)> callback,
@@ -94,6 +95,7 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      mojo::ReportBadMessageCallback bad_message_callback,
       std::unique_ptr<UserContext> context);
   void OnUpdatePinConfigured(
       const std::string& auth_token,
@@ -111,11 +113,10 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback,
       AuthFactorSet factors);
 
-  void CheckPinComplexityWithContext(
-      const std::string& auth_token,
-      const std::string& pin,
-      base::OnceCallback<void(mojom::PinComplexity)> callback,
-      std::unique_ptr<UserContext> context);
+  void CheckPinComplexityWithContext(const std::string& auth_token,
+                                     const std::string& pin,
+                                     CheckPinComplexityCallback callback,
+                                     std::unique_ptr<UserContext> context);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;

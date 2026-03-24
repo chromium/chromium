@@ -6,6 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -20,18 +23,35 @@ namespace ash::auth {
 
 namespace {
 
-mojom::PinComplexity LocalAuthFactorsComplexityToMojom(
-    LocalAuthFactorsComplexity complexity) {
-  switch (complexity) {
-    case LocalAuthFactorsComplexity::kNone:
-      return mojom::PinComplexity::kErrNone;
-    case LocalAuthFactorsComplexity::kLow:
-      return mojom::PinComplexity::kErrLow;
-    case LocalAuthFactorsComplexity::kMedium:
-      return mojom::PinComplexity::kErrMedium;
-    case LocalAuthFactorsComplexity::kHigh:
-      return mojom::PinComplexity::kErrHigh;
+mojom::PinComplexity CheckPinComplexityImpl(const AccountId& account_id,
+                                            const std::string& pin) {
+  std::optional<LocalAuthFactorsComplexity> policy =
+      AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
+          account_id);
+  if (policy.has_value()) {
+    bool ok = policy::local_auth_factors::CheckPinComplexity(pin, *policy);
+    return ok ? mojom::PinComplexity::kOk : mojom::PinComplexity::kTooWeak;
   }
+
+  return mojom::PinComplexity::kOk;
+}
+
+// Safely retrieves the mojo::ReportBadMessageCallback.
+// When these methods are invoked via Mojo IPC (production), this returns
+// the actual callback to terminate the bad client. When invoked directly
+// via C++ (e.g., in browser tests), there is no active message dispatch,
+// so this returns a no-op callback to prevent a DCHECK crash.
+mojo::ReportBadMessageCallback GetBadMessageCallbackSafe() {
+  if (mojo::IsInMessageDispatch()) {
+    return mojo::GetBadMessageCallback();
+  }
+
+  CHECK_IS_TEST();
+
+  // Return a callback that crashes the process if executed.
+  return base::BindOnce([](std::string_view error) {
+    NOTREACHED() << "Compromised C++ client detected outside Mojo: " << error;
+  });
 }
 
 }  // namespace
@@ -51,20 +71,21 @@ void PinFactorEditor::SetPin(
     const std::string& auth_token,
     const std::string& pin,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&PinFactorEditor::SetPinWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token, pin,
-                               std::move(callback)));
+  ObtainContext(auth_token, base::BindOnce(&PinFactorEditor::SetPinWithContext,
+                                           weak_factory_.GetWeakPtr(),
+                                           auth_token, pin, std::move(callback),
+                                           GetBadMessageCallbackSafe()));
 }
 
 void PinFactorEditor::UpdatePin(
     const std::string& auth_token,
     const std::string& pin,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&PinFactorEditor::UpdatePinWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token, pin,
-                               std::move(callback)));
+  ObtainContext(
+      auth_token,
+      base::BindOnce(&PinFactorEditor::UpdatePinWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, pin,
+                     std::move(callback), GetBadMessageCallbackSafe()));
 }
 
 void PinFactorEditor::RemovePin(
@@ -148,6 +169,7 @@ void PinFactorEditor::SetPinWithContext(
     const std::string& auth_token,
     const std::string& pin,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    mojo::ReportBadMessageCallback bad_message_callback,
     std::unique_ptr<UserContext> context) {
   if (!context) {
     LOG(ERROR) << "Invalid auth token";
@@ -155,6 +177,7 @@ void PinFactorEditor::SetPinWithContext(
     return;
   }
   AccountId account_id = context->GetAccountId();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
@@ -164,7 +187,13 @@ void PinFactorEditor::SetPinWithContext(
     return;
   }
 
-  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+  if (CheckPinComplexityImpl(account_id, pin) != mojom::PinComplexity::kOk) {
+    std::move(bad_message_callback)
+        .Run("Client failed to check PIN complexity.");
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
   pin_backend_->Set(
       account_id, auth_token, pin,
       base::BindOnce(&PinFactorEditor::OnPinSet, weak_factory_.GetWeakPtr(),
@@ -223,6 +252,7 @@ void PinFactorEditor::UpdatePinWithContext(
     const std::string& auth_token,
     const std::string& pin,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    mojo::ReportBadMessageCallback bad_message_callback,
     std::unique_ptr<UserContext> context) {
   if (!context) {
     LOG(ERROR) << "Invalid auth token";
@@ -254,6 +284,13 @@ void PinFactorEditor::UpdatePinWithContext(
           : mojom::AuthFactor::kCryptohomePinV2;
 
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
+  if (CheckPinComplexityImpl(account_id, pin) != mojom::PinComplexity::kOk) {
+    std::move(bad_message_callback)
+        .Run("Client failed to check PIN complexity.");
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
 
   pin_backend_->UpdateCryptohomePin(
       account_id, auth_token, pin,
@@ -347,10 +384,9 @@ void PinFactorEditor::OnPinRemoveWithContext(
   return;
 }
 
-void PinFactorEditor::CheckPinComplexity(
-    const std::string& auth_token,
-    const std::string& pin,
-    base::OnceCallback<void(mojom::PinComplexity)> callback) {
+void PinFactorEditor::CheckPinComplexity(const std::string& auth_token,
+                                         const std::string& pin,
+                                         CheckPinComplexityCallback callback) {
   ObtainContext(auth_token,
                 base::BindOnce(&PinFactorEditor::CheckPinComplexityWithContext,
                                weak_factory_.GetWeakPtr(), auth_token, pin,
@@ -360,35 +396,22 @@ void PinFactorEditor::CheckPinComplexity(
 void PinFactorEditor::CheckPinComplexityWithContext(
     const std::string& auth_token,
     const std::string& pin,
-    base::OnceCallback<void(mojom::PinComplexity)> callback,
+    CheckPinComplexityCallback callback,
     std::unique_ptr<UserContext> context) {
   if (!context) {
     LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::PinComplexity::kInvalidTokenError);
+    std::move(callback).Run(
+        base::unexpected(mojom::ConfigureResult::kInvalidTokenError));
     return;
   }
 
   AccountId account_id = context->GetAccountId();
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
-  std::optional<LocalAuthFactorsComplexity> complexity =
-      AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
-          account_id);
-  if (!complexity.has_value()) {
-    // The policy is not set.
-    return std::move(callback).Run(mojom::PinComplexity::kOk);
-  }
+  std::move(callback).Run(CheckPinComplexityImpl(account_id, pin));
 
   // TODO(crbug.com/445625494): Unify this method with the other codepath going
   // through the legacy QuickUnlockPrivate API.
-
-  bool ok = policy::local_auth_factors::CheckPinComplexity(pin, *complexity);
-
-  mojom::PinComplexity result =
-      ok ? mojom::PinComplexity::kOk
-         : LocalAuthFactorsComplexityToMojom(*complexity);
-
-  std::move(callback).Run(result);
 }
 
 void PinFactorEditor::BindReceiver(

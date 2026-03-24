@@ -115,13 +115,7 @@ interface RecoveryFactorEditor {
 // A value describing the complexity of a pin.
 enum PinComplexity {
   kOk,
-  kInvalidTokenError,
-  // These values correspond to the values of the `LocalAuthFactorsComplexity`
-  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
-  kErrNone,
-  kErrLow,
-  kErrMedium,
-  kErrHigh,
+  kTooWeak,
 };
 
 // Interface for methods specific to pin authentication. Served from chrome
@@ -145,7 +139,7 @@ interface PinFactorEditor {
 
   // Returns a value describing the complexity of the provided pin value.
   CheckPinComplexity(string auth_token, string pin) =>
-      (PinComplexity complexity);
+      result<PinComplexity, ConfigureResult>;
 };
 
 // A value describing the complexity of a password.
