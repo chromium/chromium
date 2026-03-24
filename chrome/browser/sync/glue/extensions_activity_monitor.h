@@ -10,7 +10,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 
 class ExtensionFunction;
@@ -22,7 +22,7 @@ class ExtensionsActivity;
 
 namespace browser_sync {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using BookmarksApiWatcherObserver = extensions::BookmarksApiWatcher::Observer;
 #else
 // Provides a stub class to inherit from to support overriding the destructor.
@@ -43,7 +43,7 @@ class ExtensionsActivityMonitor : public BookmarksApiWatcherObserver {
 
   ~ExtensionsActivityMonitor() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // extensions::BookmarksApiWatcher:
   void OnBookmarksApiInvoked(const ExtensionFunction* func) override;
 #endif
@@ -53,7 +53,7 @@ class ExtensionsActivityMonitor : public BookmarksApiWatcherObserver {
  private:
   scoped_refptr<syncer::ExtensionsActivity> extensions_activity_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   base::ScopedObservation<extensions::BookmarksApiWatcher,
                           extensions::BookmarksApiWatcher::Observer>
       bookmarks_api_observation_{this};

@@ -7,7 +7,7 @@
 #include "components/sync/base/extensions_activity.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 #include "extensions/browser/extension_function.h"  // nogncheck
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -26,7 +26,7 @@ ExtensionsActivityMonitor::ExtensionsActivityMonitor(
   // the fly so there is no reliable object to point to (same problem if we
   // wanted to use the string name).  Thus, we use all sources and filter in
   // Observe.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bookmarks_api_observation_.Observe(
       extensions::BookmarksApiWatcher::GetForBrowserContext(context));
 #endif
@@ -36,7 +36,7 @@ ExtensionsActivityMonitor::~ExtensionsActivityMonitor() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void ExtensionsActivityMonitor::OnBookmarksApiInvoked(
     const ExtensionFunction* func) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
