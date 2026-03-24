@@ -1342,8 +1342,53 @@ void ExtensionTelemetryService::DumpReportForTesting(
         }
         continue;
       }
+
+      // DOM Access
+      if (signal_pb.has_dom_access_info()) {
+        const auto& dom_access_info_pb = signal_pb.dom_access_info();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_DOMAccessInfo_DOMAccess>&
+            dom_accesses = dom_access_info_pb.dom_accesses();
+        if (!dom_accesses.empty()) {
+          ss << "  Signal: DOMAccess\n";
+          for (const auto& entry : dom_accesses) {
+            ss << "    DOM Access Details:\n"
+               << "      api_name: " << entry.api_name() << "\n"
+               << "      url: " << entry.url() << "\n"
+               << "      access_type: "
+               << base::NumberToString(static_cast<int>(entry.access_type()))
+               << "\n"
+               << "      count: " << entry.count() << "\n";
+          }
+        }
+        continue;
+      }
+
+      // Script Injection
+      if (signal_pb.has_script_injection_info()) {
+        const auto& script_injection_info_pb =
+            signal_pb.script_injection_info();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_ScriptInjectionInfo_ScriptInjection>&
+            script_injections = script_injection_info_pb.script_injections();
+        if (!script_injections.empty()) {
+          ss << "  Signal: ScriptInjection\n";
+          for (const auto& entry : script_injections) {
+            ss << "    Script Injection Details:\n"
+               << "      api_name: " << entry.api_name() << "\n"
+               << "      url: " << entry.url() << "\n"
+               << "      arg_url: " << entry.arg_url() << "\n";
+            for (const auto& arg : entry.args_list()) {
+              ss << "      arg: " << arg << "\n";
+            }
+            ss << "      count: " << entry.count() << "\n";
+          }
+        }
+        continue;
+      }
     }
   }
+
   DVLOG(1) << "Telemetry Report: " << ss.str();
 }
 
