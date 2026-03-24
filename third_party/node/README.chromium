@@ -68,6 +68,7 @@ Date: 2019-02-24
 Revision: 0cc1d0a3d6d6ea38eb2f764d17fb097d9ffe6b31
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/svgo/LICENSE
 Security Critical: no
 Shipped: no
 License Android Compatible: Yes
@@ -88,6 +89,7 @@ URL: https://www.npmjs.com/package/typescript
 Version: 5.7.2
 Update Mechanism: Manual
 License: Apache-2.0
+License File: node_modules/typescript/LICENSE.txt
 Security Critical: no
 Shipped: no
 
@@ -250,6 +252,7 @@ URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
 Version: 50.2.2
 Update Mechanism: Manual
 License: BSD-3-Clause
+License File: node_modules/eslint-plugin-jsdoc/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -269,6 +272,7 @@ URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
 Version: 8.4.0
 Update Mechanism: Manual
 License: BSD-2-Clause
+License File: node_modules/@typescript-eslint/eslint-plugin/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -288,6 +292,7 @@ URL: https://www.npmjs.com/package/@typescript-eslint/parser
 Version: 8.4.0
 Update Mechanism: Manual
 License: BSD-2-Clause
+License File: node_modules/@typescript-eslint/parser/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -308,6 +313,7 @@ URL: https://www.npmjs.com/package/@typescript-eslint/types
 Version: 8.4.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/@typescript-eslint/types/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -329,6 +335,7 @@ URL: https://npmjs.com/package/@typescript-eslint/utils
 Version: 8.4.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/@typescript-eslint/utils/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -521,6 +528,7 @@ URL: https://www.npmjs.com/package/@stylistic/eslint-plugin
 Version: 2.8.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/@stylistic/eslint-plugin/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -541,6 +549,7 @@ URL: https://www.npmjs.com/package/eslint
 Version: 9.10.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/eslint/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -635,6 +644,7 @@ URL: https://www.npmjs.com/package/postcss
 Version: 8.5.3
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/postcss/LICENSE
 License Android Compatible: Yes
 Security Critical: no
 Shipped: no
@@ -654,6 +664,7 @@ URL: https://www.npmjs.com/package/postcss-minify
 Version: 1.1.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/postcss-minify/LICENSE
 License Android Compatible: Yes
 Security Critical: no
 Shipped: no
@@ -673,6 +684,7 @@ URL: https://www.npmjs.com/package/stylelint
 Version: 17.0.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/stylelint/LICENSE
 License Android Compatible: Yes
 Security Critical: no
 Shipped: no
