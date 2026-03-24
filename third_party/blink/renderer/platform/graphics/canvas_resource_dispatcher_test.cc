@@ -383,10 +383,13 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   platform->RunUntilIdle();
 
-  auto canvas_resource = CanvasResourceSharedImage::CreateSoftware(
+  auto canvas_resource = CanvasResourceSharedImage::CreateForTesting(
       GetSize(), viz::SinglePlaneFormat::kBGRA_8888, kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(),
-      /*provider=*/nullptr, shared_image_interface_provider());
+      gfx::ColorSpace::CreateSRGB(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+      /*is_software=*/true,
+      /*is_accelerated=*/false, /*provider=*/nullptr,
+      /*context_provider_wrapper=*/nullptr, shared_image_interface_provider());
+
   EXPECT_TRUE(!!canvas_resource);
   EXPECT_EQ(canvas_resource->Size(), GetSize());
 

@@ -594,11 +594,14 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
   }
   ~FakeCanvasResourceProvider() override = default;
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        SharedGpuContext::ContextProviderWrapper(),
-        weak_ptr_factory_.GetWeakPtr(), IsAccelerated(),
-        GetSharedImageUsageFlags()));
+    return scoped_refptr<CanvasResource>(
+        CanvasResourceSharedImage::CreateForTesting(
+            Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+            GetSharedImageUsageFlags(),
+            /*is_software=*/false, IsAccelerated(),
+            weak_ptr_factory_.GetWeakPtr(),
+            SharedGpuContext::ContextProviderWrapper(),
+            /*shared_image_interface_provider=*/nullptr));
   }
   sk_sp<SkSurface> CreateSkSurface() const override {
     const auto info = SkImageInfo::Make(

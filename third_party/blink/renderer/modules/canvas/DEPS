@@ -3,6 +3,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "canvas_rendering_context_2d_test.cc": [
+        "+command_buffer/client/shared_image_pool.h",
+    ],
     "html_canvas_element_module_test.cc": [
         "+components/viz/test/test_context_provider.h",
         "+components/viz/test/test_raster_interface.h",

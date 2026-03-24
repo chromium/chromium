@@ -390,13 +390,17 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override;
 
-  void ClearUnusedResources() { unused_resources_.clear(); }
+  void ClearUnusedResources() {
+    if (image_pool_) {
+      image_pool_->Clear();
+    }
+  }
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   void OnDestroyResource() { --num_inflight_resources_; }
 
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
-    return unused_resources_reclaim_timer_.IsRunning();
+    return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
   }
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
@@ -444,6 +448,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
+  gpu::SharedImagePool<CanvasResourceSharedImage>* ImagePool() {
+    return image_pool_.get();
+  }
   gpu::raster::RasterInterface* RasterInterface() const;
   void EnsureWriteAccess();
   void EndWriteAccess();
@@ -461,7 +468,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   bool resource_recycling_enabled_ = true;
-  gpu::SharedImageUsageSet shared_image_usage_flags_;
   const bool is_accelerated_;
 
   // The resource that is currently being used by this provider.
@@ -488,23 +494,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
-  struct UnusedResource {
-    UnusedResource(base::TimeTicks last_use,
-                   scoped_refptr<CanvasResourceSharedImage> resource)
-        : last_use(last_use), resource(std::move(resource)) {}
-    base::TimeTicks last_use;
-    scoped_refptr<CanvasResourceSharedImage> resource;
-  };
-
-  void RegisterUnusedResource(
-      scoped_refptr<CanvasResourceSharedImage>&& resource);
   const CanvasResourceSharedImage* resource() const {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
-  void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
-  void MaybePostUnusedResourcesReclaimTask();
-  void ClearOldUnusedResources();
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 
   // `viz::ContextLostObserver`:
@@ -514,11 +507,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnGpuChannelLost() final;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |unused_resources_| will be empty.
-  Vector<UnusedResource> unused_resources_;
+  // false, |image_pool_| will not rescycle resources.
+  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
-  base::OneShotTimer unused_resources_reclaim_timer_;
 
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the

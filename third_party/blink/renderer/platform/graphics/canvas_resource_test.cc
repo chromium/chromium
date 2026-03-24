@@ -41,12 +41,12 @@ TEST(CanvasResourceTest, PrepareTransferableResource_Software) {
           TestWebGraphicsSharedImageInterfaceProvider::Create();
   auto shared_image_interface_provider =
       test_web_shared_image_interface_provider->GetWeakPtr();
-
-  scoped_refptr<CanvasResource> canvas_resource =
-      CanvasResourceSharedImage::CreateSoftware(
-          gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
-          kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider);
+  auto canvas_resource = CanvasResourceSharedImage::CreateForTesting(
+      gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
+      kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
+      gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, /*is_software=*/true,
+      /*is_accelerated=*/false, /*provider=*/nullptr,
+      /*context_provider_wrapper=*/nullptr, shared_image_interface_provider);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;
@@ -70,27 +70,34 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;
 
-  scoped_refptr<CanvasResource> premul_canvas_resource =
-      CanvasResourceSharedImage::Create(
-          gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
-          kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          SharedGpuContext::ContextProviderWrapper(),
-          /*CanvasResourceProvider=*/nullptr,
-          /*is_accelerated=*/false, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+  gpu::ImageInfo image_info(
+      gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType);
+  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_info,
+      static_cast<gpu::SharedImageInterface*>(
+          test_context_provider->SharedImageInterface()),
+      "CanvasResourceRaster", 0, std::nullopt);
+
+  auto premul_canvas_resource = image_pool->GetImage();
+  premul_canvas_resource->Initialize(
+      /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
+      /*is_accelerated=*/false);
 
   ASSERT_TRUE(premul_canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, /*needs_verified_synctoken=*/false));
   EXPECT_EQ(resource.GetAlphaType(), kPremul_SkAlphaType);
 
-  scoped_refptr<CanvasResource> unpremul_canvas_resource =
-      CanvasResourceSharedImage::Create(
-          gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
-          kUnpremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          SharedGpuContext::ContextProviderWrapper(),
-          /*CanvasResourceProvider=*/nullptr,
-          /*is_accelerated=*/false,
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE);
+  image_info.alpha_type = kUnpremul_SkAlphaType;
+  image_info.usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  image_pool->Reconfigure(image_info);
+
+  auto unpremul_canvas_resource = image_pool->GetImage();
+  unpremul_canvas_resource->Initialize(
+      /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
+      /*is_accelerated=*/false);
 
   ASSERT_TRUE(unpremul_canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, /*needs_verified_synctoken=*/false));

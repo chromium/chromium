@@ -37,12 +37,6 @@ class SkSurface;
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 
-namespace gfx {
-
-class ColorSpace;
-
-}  // namespace gfx
-
 namespace gpu::raster {
 
 class RasterInterface;
@@ -175,23 +169,30 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
  public:
-  static scoped_refptr<CanvasResourceSharedImage> CreateSoftware(
+  explicit CanvasResourceSharedImage(
+      scoped_refptr<gpu::ClientSharedImage> shared_image);
+
+  static scoped_refptr<CanvasResourceSharedImage> CreateForTesting(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      bool is_software,
+      bool is_accelerated,
       base::WeakPtr<CanvasResourceProviderSharedImage>,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
-  static scoped_refptr<CanvasResourceSharedImage> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProviderSharedImage>,
-      bool is_accelerated,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
+  void InitializeSoftware(
+      base::WeakPtr<CanvasResourceProviderSharedImage> provider,
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+          shared_image_interface_provider);
+  void Initialize(base::WeakPtr<CanvasResourceProviderSharedImage> provider,
+                  base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                      context_provider_wrapper,
+                  bool is_accelerated);
+  bool IsInitialized() const { return is_initialized_; }
 
   bool CreatesAcceleratedTransferableResources() const override {
     return !GetSharedImage()->is_software();
@@ -242,19 +243,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void VerifySyncToken() override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
-  CanvasResourceSharedImage(
-      SkAlphaType alpha_type,
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      base::WeakPtr<CanvasResourceProviderSharedImage>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
-
-  CanvasResourceSharedImage(SkAlphaType alpha_type,
-                            scoped_refptr<gpu::ClientSharedImage> shared_image,
-                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                            base::WeakPtr<CanvasResourceProviderSharedImage>,
-                            bool is_accelerated);
-
   ~CanvasResourceSharedImage() override;
 
   SkAlphaType GetAlphaType() const { return alpha_type_; }
@@ -271,7 +259,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   gpu::SyncToken acquire_sync_token_;
 
   // Accessed on any thread.
-  const bool is_accelerated_;
+  bool is_accelerated_ = false;
+  bool is_initialized_ = false;
   const SkAlphaType alpha_type_;
   base::WeakPtr<CanvasResourceProviderSharedImage> provider_;
 };

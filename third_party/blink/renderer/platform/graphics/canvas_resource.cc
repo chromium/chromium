@@ -58,17 +58,6 @@
 namespace blink {
 
 namespace {
-// Controls whether we add SHARED_IMAGE_USAGE_WEBGPU_READ by default to shared
-// image backed CanvasResources so that they can be imported into WebGPU without
-// an intermediate copy. This could cause a different shared image backing type
-// to be used in the GPU process based on the OS platform.
-BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 // Controls whether CanvasResource::WaitSyncToken(const SyncToken&) should
 // defer wait (when enabled) or wait immediately (when disabled).
@@ -207,130 +196,85 @@ bool CanvasResource::PrepareTransferableResource(
 //==============================================================================
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
-    SkAlphaType alpha_type,
-    const gpu::SyncToken& sync_token,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
-    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
-    base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider)
-    : CanvasResource(std::move(shared_image)),
-      is_accelerated_(false),
-      alpha_type_(alpha_type),
-      provider_(std::move(provider)) {
-  DCHECK(GetSharedImage());
-  DCHECK(sync_token.HasData() && sync_token.verified_flush());
-  SetReleaseSyncToken(sync_token);
-  GetClientSharedImage()->UpdateDestructionSyncToken(sync_token);
-}
+    scoped_refptr<gpu::ClientSharedImage> shared_image)
+    : CanvasResource(shared_image), alpha_type_(shared_image->alpha_type()) {}
 
-scoped_refptr<CanvasResourceSharedImage>
-CanvasResourceSharedImage::CreateSoftware(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
+void CanvasResourceSharedImage::InitializeSoftware(
     base::WeakPtr<CanvasResourceProviderSharedImage> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
-  if (!shared_image_interface_provider) {
-    return nullptr;
-  }
-  auto* shared_image_interface =
-      shared_image_interface_provider->SharedImageInterface();
-  if (!shared_image_interface) {
-    return nullptr;
-  }
+  DCHECK(GetSharedImage());
+  DCHECK(!is_initialized_);
+  DCHECK(shared_image_interface_provider);
 
-  auto client_shared_image =
-      shared_image_interface->CreateSharedImageForSoftwareCompositor(
-          {format, size, color_space, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "CanvasResourceSharedImage"});
+  provider_ = std::move(provider);
+  is_accelerated_ = false;
 
   // This class doesn't currently have a way of verifying the sync token for
   // software SharedImages at the time of vending it in VerifySyncToken(),
   // so we instead ensure that it is verified now.
+  auto* shared_image_interface =
+      shared_image_interface_provider->SharedImageInterface();
+  DCHECK(shared_image_interface);
   gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
+  SetReleaseSyncToken(sync_token);
+  GetClientSharedImage()->UpdateDestructionSyncToken(sync_token);
 
-  return base::AdoptRef(new CanvasResourceSharedImage(
-      alpha_type, sync_token, std::move(client_shared_image),
-      std::move(provider), std::move(shared_image_interface_provider)));
+  is_initialized_ = true;
 }
 
-CanvasResourceSharedImage::CanvasResourceSharedImage(
-    SkAlphaType alpha_type,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+void CanvasResourceSharedImage::Initialize(
     base::WeakPtr<CanvasResourceProviderSharedImage> provider,
-    bool is_accelerated)
-    : CanvasResource(std::move(shared_image)),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      is_accelerated_(is_accelerated),
-      alpha_type_(alpha_type),
-      provider_(std::move(provider)) {
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    bool is_accelerated) {
   DCHECK(GetSharedImage());
-  DCHECK(RasterInterface());
+  DCHECK(!is_initialized_);
+  DCHECK(context_provider_wrapper);
+  DCHECK(context_provider_wrapper->ContextProvider().RasterInterface());
+
+  provider_ = std::move(provider);
+  context_provider_wrapper_ = std::move(context_provider_wrapper);
+  is_accelerated_ = is_accelerated;
 
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(GetSharedImage()->creation_sync_token());
+
+  is_initialized_ = true;
 }
 
-scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
+scoped_refptr<CanvasResourceSharedImage>
+CanvasResourceSharedImage::CreateForTesting(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    bool is_software,
     bool is_accelerated,
-    gpu::SharedImageUsageSet shared_image_usage_flags) {
-  TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
-  auto* shared_image_interface =
-      context_provider_wrapper->ContextProvider().SharedImageInterface();
-  DCHECK(shared_image_interface);
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+        shared_image_interface_provider) {
+  gpu::ImageInfo image_info(size, format, shared_image_usage_flags, color_space,
+                            kTopLeft_GrSurfaceOrigin, alpha_type,
+                            /*buffer_usage=*/std::nullopt, is_software);
+  auto* sii =
+      is_software
+          ? shared_image_interface_provider->SharedImageInterface()
+          : context_provider_wrapper->ContextProvider().SharedImageInterface();
+  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_info, sii, "CanvasResourceSharedImage", /*max_pool_size=*/0);
 
-  // These SharedImages are both read and written by the raster interface (both
-  // occur, for example, when copying canvas resources between canvases).
-  // Additionally, these SharedImages can be put into
-  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into GL
-  // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
-  shared_image_usage_flags =
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
-  if (!is_accelerated) {
-    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
-    // image usage flag here since mailbox will be used for CPU writes by the
-    // client. But doing that stops us from using CompoundImagebacking as many
-    // backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
-    // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
-    // resolved.
-
-    client_shared_image = shared_image_interface->CreateSharedImage(
-        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         gpu::SharedImageUsageSet(shared_image_usage_flags),
-         "CanvasResourceRasterGmb"},
-        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
-    if (!client_shared_image) {
-      return nullptr;
-    }
+  auto canvas_resource = image_pool->GetImage();
+  if (is_software) {
+    DCHECK(!is_accelerated);
+    canvas_resource->InitializeSoftware(
+        provider, std::move(shared_image_interface_provider));
   } else {
-    client_shared_image = shared_image_interface->CreateSharedImage(
-        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         gpu::SharedImageUsageSet(shared_image_usage_flags),
-         "CanvasResourceRaster"},
-        gpu::kNullSurfaceHandle);
-    CHECK(client_shared_image);
+    canvas_resource->Initialize(provider, context_provider_wrapper,
+                                is_accelerated);
   }
-
-  return base::AdoptRef(
-      new CanvasResourceSharedImage(alpha_type, std::move(client_shared_image),
-                                    std::move(context_provider_wrapper),
-                                    std::move(provider), is_accelerated));
+  return canvas_resource;
 }
 
 void CanvasResourceSharedImage::OnRefReturned(
