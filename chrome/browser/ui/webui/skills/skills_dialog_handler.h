@@ -52,6 +52,10 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   void RefineSkill(
       const skills::Skill& skill,
       skills::mojom::DialogHandler::RefineSkillCallback callback) override;
+  void GenerateNameAndEmoji(
+      const skills::Skill& skill,
+      skills::mojom::DialogHandler::GenerateNameAndEmojiCallback callback)
+      override;
   void GetSignedInEmail(GetSignedInEmailCallback callback) override;
 
  protected:
@@ -61,6 +65,12 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   // Callback for the model execution result for `RefineSkill`.
   void OnRefineSkillResponse(
       skills::mojom::DialogHandler::RefineSkillCallback callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Callback for the model execution result for `GenerateNameAndEmoji`.
+  void OnGenerateNameAndEmojiResponse(
+      skills::mojom::DialogHandler::GenerateNameAndEmojiCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

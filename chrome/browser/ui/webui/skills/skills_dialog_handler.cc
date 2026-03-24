@@ -211,6 +211,72 @@ void SkillsDialogHandler::RefineSkill(
                      std::move(wrapped_callback)));
 }
 
+void SkillsDialogHandler::GenerateNameAndEmoji(
+    const skills::Skill& skill,
+    skills::mojom::DialogHandler::GenerateNameAndEmojiCallback callback) {
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::nullopt);
+
+  if (skill.prompt.empty()) {
+    RecordSkillsRefineResult(SkillsRefineResult::kInvalidRequest);
+    return;
+  }
+  if (!optimization_guide_keyed_service_) {
+    RecordSkillsRefineResult(SkillsRefineResult::kServiceUnavailable);
+    return;
+  }
+
+  SkillsRequest skills_request_proto;
+  skills_request_proto.set_task_type(SkillsRequest::GENERATE_METADATA);
+
+  auto* draft = skills_request_proto.mutable_skill_draft();
+  draft->set_prompt(skill.prompt);
+
+  optimization_guide_keyed_service_->ExecuteModel(
+      ModelBasedCapabilityKey::kSkills, skills_request_proto,
+      ModelExecutionOptions(),
+      base::BindOnce(&SkillsDialogHandler::OnGenerateNameAndEmojiResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(wrapped_callback)));
+}
+
+void SkillsDialogHandler::OnGenerateNameAndEmojiResponse(
+    DialogHandler::GenerateNameAndEmojiCallback callback,
+    OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<ModelQualityLogEntry> log_entry) {
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::nullopt);
+
+  if (!result.response.has_value()) {
+    RecordSkillsRefineResult(SkillsRefineResult::kModelExecutionFailed);
+    return;
+  }
+
+  // Parse the response into SkillsResponse proto
+  auto response = optimization_guide::ParsedAnyMetadata<SkillsResponse>(
+      result.response.value());
+
+  if (!response) {
+    RecordSkillsRefineResult(SkillsRefineResult::kParseError);
+    return;
+  }
+  if (response->suggestions_size() == 0) {
+    RecordSkillsRefineResult(SkillsRefineResult::kNoSuggestions);
+    return;
+  }
+
+  // Get the first suggestion (which contains the refined prompt)
+  const auto& suggestion = response->suggestions(0);
+
+  // Map the proto data to Mojo Skill object
+  skills::Skill refined_skill;
+  refined_skill.name = suggestion.name();  // Suggested name
+  refined_skill.icon = suggestion.icon();  // Suggested icon/emoji
+
+  RecordSkillsRefineResult(SkillsRefineResult::kSuccess);
+  std::move(wrapped_callback).Run(std::move(refined_skill));
+}
+
 void SkillsDialogHandler::GetSignedInEmail(GetSignedInEmailCallback callback) {
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::string());

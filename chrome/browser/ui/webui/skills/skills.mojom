@@ -96,6 +96,10 @@ interface DialogHandler {
   // Called when the user clicks the "Refine" button in the dialog.
   RefineSkill(skills.mojom.Skill skill) => (skills.mojom.Skill? refined_skill);
 
+  // Called when to automatically generate name and emoji for a skill.
+  GenerateNameAndEmoji(skills.mojom.Skill skill)
+    => (skills.mojom.Skill? refined_skill);
+
   // Called when the user clicks the "Cancel" button in the dialog.
   CloseDialog();
 
