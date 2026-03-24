@@ -44,12 +44,12 @@ def CheckNoAutofillClockTimeCalls(input_api, output_api):
         files) ]
   return []
 
-def CheckNoFieldTypeCasts(input_api, output_api):
+def HelperForCheckNoEnumCasts(enum, input_api, output_api):
   """Makes sure that raw integers aren't cast to FieldTypes."""
-  explanation = """
-Do not cast raw integers to FieldType to prevent values that
+  explanation = f"""
+Do not cast raw integers to {enum} to prevent values that
 have no corresponding enum constant or are deprecated. Use
-ToSafeFieldType() instead.
+ToSafe{enum}() instead.
 Add "// nocheck" to the end of the line to suppress this error."""
   errors = []
   file_filter = lambda f: (
@@ -57,15 +57,15 @@ Add "// nocheck" to the end of the line to suppress this error."""
     and f.LocalPath().endswith(('.h', '.cc', '.mm'))
   )
   # There may be a line break in the cast, so we test multiple patterns.
-  pattern_full = input_api.re.compile(r'_cast<\s*FieldType\b')
-  pattern_prefix = input_api.re.compile(r'_cast<\s*$')
-  pattern_postfix = input_api.re.compile(r'^\s*FieldType\b')
+  pattern_full = input_api.re.compile(rf'_cast<\s*{enum}\b')
+  pattern_prefix = input_api.re.compile(rf'_cast<\s*$')
+  pattern_postfix = input_api.re.compile(rf'^\s*{enum}\b')
   for f in input_api.AffectedSourceFiles(file_filter):
     contents = f.ChangedContents()
     # We look at each line and their successor to check if
-    # - the line contains the full `static_cast<FieldType>` or similar, or
+    # - the line contains the full `static_cast<MyEnum>` or similar, or
     # - the line ends with `static_cast<` and the next line begins with
-    #   `FieldType` or similar.
+    #   `MyEnum` or similar.
     for i in range(len(contents)):
       line_num = contents[i][0]
       line = contents[i][1]
@@ -85,6 +85,12 @@ Add "// nocheck" to the end of the line to suppress this error."""
             )
         )
   return errors
+
+def CheckNoFieldTypeCasts(input_api, output_api):
+  return HelperForCheckNoEnumCasts('FieldType', input_api, output_api)
+
+def CheckNoHtmlFieldTypeCasts(input_api, output_api):
+  return HelperForCheckNoEnumCasts('HtmlFieldType', input_api, output_api)
 
 def CheckFieldTypeSets(input_api, output_api):
   """Produces errors if the changed code contains DenseSet<FieldType> instead

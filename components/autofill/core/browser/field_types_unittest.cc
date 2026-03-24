@@ -189,5 +189,16 @@ TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
   EXPECT_EQ(result, static_cast<size_t>(4));
 }
 
+// Tests that ToSafeHtmlFieldType() (which is constexpr) is equivalent to
+// mojom::IsKnownEnumValue().
+TEST(FieldTypesTest, ToSafeHtmlFieldType) {
+  for (auto raw = std::to_underlying(HtmlFieldType::kMinValue) - 1;
+       raw <= std::to_underlying(HtmlFieldType::kMaxValue) + 1; ++raw) {
+    EXPECT_EQ(
+        ToSafeHtmlFieldType(raw).has_value(),
+        mojom::IsKnownEnumValue(static_cast<HtmlFieldType>(raw)));  // nocheck
+  }
+}
+
 }  // namespace
 }  // namespace autofill

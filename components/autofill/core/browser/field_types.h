@@ -611,9 +611,10 @@ enum class FieldTypeGroup {
 constexpr std::optional<FieldType> ToSafeFieldType(
     std::underlying_type_t<FieldType> raw_value);
 
-constexpr HtmlFieldType ToSafeHtmlFieldType(
-    std::underlying_type_t<HtmlFieldType> raw_value,
-    HtmlFieldType fallback_value);
+// Returns `raw_value` if it is a known HtmlFieldType constant.
+// This is equivalent to mojom::IsKnownEnumValue() but it is `constexpr`.
+constexpr std::optional<HtmlFieldType> ToSafeHtmlFieldType(
+    std::underlying_type_t<HtmlFieldType> raw_value);
 
 template <>
 struct DenseSetTraits<FieldType>
@@ -629,10 +630,7 @@ struct DenseSetTraits<HtmlFieldType>
                          HtmlFieldType::kMinValue,
                          HtmlFieldType::kMaxValue> {
   static constexpr bool is_valid(HtmlFieldType x) {
-    return x == HtmlFieldType::kUnrecognized ||
-           ToSafeHtmlFieldType(std::to_underlying(x),
-                               HtmlFieldType::kUnrecognized) !=
-               HtmlFieldType::kUnrecognized;
+    return ToSafeHtmlFieldType(std::to_underlying(x)).has_value();
   }
 };
 
@@ -729,9 +727,8 @@ constexpr std::optional<FieldType> ToSafeFieldType(
   return static_cast<FieldType>(raw_value);  // nocheck
 }
 
-constexpr HtmlFieldType ToSafeHtmlFieldType(
-    std::underlying_type_t<HtmlFieldType> raw_value,
-    HtmlFieldType fallback_value) {
+constexpr std::optional<HtmlFieldType> ToSafeHtmlFieldType(
+    std::underlying_type_t<HtmlFieldType> raw_value) {
   auto is_invalid = [](std::underlying_type_t<HtmlFieldType> t) {
     return t < std::to_underlying(HtmlFieldType::kMinValue) ||
            t > std::to_underlying(HtmlFieldType::kMaxValue) ||
@@ -740,8 +737,10 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
            // UPI is deprecated.
            t == 46;
   };
-  return is_invalid(raw_value) ? fallback_value
-                               : static_cast<HtmlFieldType>(raw_value);
+  if (is_invalid(raw_value)) {
+    return std::nullopt;
+  }
+  return static_cast<HtmlFieldType>(raw_value);  // nocheck
 }
 
 constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
