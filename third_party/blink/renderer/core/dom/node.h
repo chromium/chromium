@@ -89,6 +89,7 @@ class Part;
 class QualifiedName;
 class RegisteredEventListener;
 class ScrollTimeline;
+class SetHTMLOptions;
 class SVGQualifiedName;
 class ShadowRoot;
 template <typename NodeType>
@@ -99,7 +100,6 @@ class TextVisitor;
 class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedHTML;
 class V8UnionStringOrTrustedScript;
-class V8UnionSetHTMLOptionsOrTrustedParserOptions;
 class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 class WebPluginContainerImpl;
 class WritableStream;
@@ -271,20 +271,16 @@ class CORE_EXPORT Node : public EventTarget {
   void remove(ExceptionState&);
   void remove();
 
-  void beforeHTML(const String& html,
-                  V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
-                  ExceptionState&);
+  void beforeHTML(const String& html, SetHTMLOptions* options, ExceptionState&);
   void beforeHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                         V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
                         ExceptionState&);
-  void afterHTML(const String& html,
-                 V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
-                 ExceptionState&);
+  void afterHTML(const String& html, SetHTMLOptions* options, ExceptionState&);
   void afterHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                        V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
                        ExceptionState&);
   void replaceWithHTML(const String& html,
-                       V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                       SetHTMLOptions* options,
                        ExceptionState&);
   void replaceWithHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                              V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
@@ -294,23 +290,22 @@ class CORE_EXPORT Node : public EventTarget {
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
   WritableStream* streamBeforeHTML(ScriptState*,
-                                   V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                   SetHTMLOptions*,
                                    ExceptionState&);
   WritableStream* streamAfterHTMLUnsafe(
       ScriptState*,
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
   WritableStream* streamAfterHTML(ScriptState*,
-                                  V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                  SetHTMLOptions*,
                                   ExceptionState&);
   WritableStream* streamReplaceWithHTMLUnsafe(
       ScriptState*,
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
-  WritableStream* streamReplaceWithHTML(
-      ScriptState*,
-      V8UnionSetHTMLOptionsOrTrustedParserOptions*,
-      ExceptionState&);
+  WritableStream* streamReplaceWithHTML(ScriptState*,
+                                        SetHTMLOptions*,
+                                        ExceptionState&);
   // NonDocumentTypeChildNode interface. These functions are only actually
   // web-exposed on  interfaces that include NonDocumentTypeChildNode in their
   // idl.

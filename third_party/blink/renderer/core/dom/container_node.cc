@@ -1944,11 +1944,11 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
 
 WritableStream* ContainerNode::streamAppendHTML(
     ScriptState* script_state,
-    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    SetHTMLOptions* options,
     ExceptionState& exception_state) {
   return HTMLStream::Create(
       script_state, this, nullptr, Sanitizer::Mode::kSafe,
-      FragmentParserOptions::From(options), TrustedTypesInterfaceName(this),
+      FragmentParserOptions(options), TrustedTypesInterfaceName(this),
       trusted_types_names::kStreamAppendHTML, exception_state);
 }
 
@@ -1964,11 +1964,11 @@ WritableStream* ContainerNode::streamPrependHTMLUnsafe(
 
 WritableStream* ContainerNode::streamPrependHTML(
     ScriptState* script_state,
-    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    SetHTMLOptions* options,
     ExceptionState& exception_state) {
   return HTMLStream::Create(
       script_state, this, firstChild(), Sanitizer::Mode::kSafe,
-      FragmentParserOptions::From(options), TrustedTypesInterfaceName(this),
+      FragmentParserOptions(options), TrustedTypesInterfaceName(this),
       trusted_types_names::kStreamPrependHTML, exception_state);
 }
 
@@ -1983,21 +1983,19 @@ WritableStream* ContainerNode::streamHTMLUnsafe(
       [&] { RemoveChildren(); });
 }
 
-WritableStream* ContainerNode::streamHTML(
-    ScriptState* script_state,
-    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
-    ExceptionState& exception_state) {
+WritableStream* ContainerNode::streamHTML(ScriptState* script_state,
+                                          SetHTMLOptions* options,
+                                          ExceptionState& exception_state) {
   return HTMLStream::Create(script_state, this, nullptr, Sanitizer::Mode::kSafe,
-                            FragmentParserOptions::From(options),
+                            FragmentParserOptions(options),
                             TrustedTypesInterfaceName(this),
                             trusted_types_names::kStreamHTML, exception_state,
                             [&] { RemoveChildren(); });
 }
 
-void ContainerNode::appendHTML(
-    const String& html,
-    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
-    ExceptionState& exception_state) {
+void ContainerNode::appendHTML(const String& html,
+                               SetHTMLOptions* options,
+                               ExceptionState& exception_state) {
   CHECK(IsElementNode() || IsShadowRoot());
   InsertHTMLBefore(nullptr, html,
                    blink::GetFragmentParserConfig(
@@ -2005,7 +2003,7 @@ void ContainerNode::appendHTML(
                        IsElementNode() ? trusted_types_names::kElement
                                        : trusted_types_names::kShadowRoot,
                        trusted_types_names::kAppendHTML, this),
-                   FragmentParserOptions::From(options), exception_state);
+                   FragmentParserOptions(options), exception_state);
 }
 
 void ContainerNode::appendHTMLUnsafe(
@@ -2027,10 +2025,9 @@ void ContainerNode::appendHTMLUnsafe(
                    exception_state);
 }
 
-void ContainerNode::prependHTML(
-    const String& html,
-    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
-    ExceptionState& exception_state) {
+void ContainerNode::prependHTML(const String& html,
+                                SetHTMLOptions* options,
+                                ExceptionState& exception_state) {
   CHECK(IsElementNode() || IsShadowRoot());
   InsertHTMLBefore(firstChild(), html,
                    blink::GetFragmentParserConfig(
@@ -2038,7 +2035,7 @@ void ContainerNode::prependHTML(
                        IsElementNode() ? trusted_types_names::kElement
                                        : trusted_types_names::kShadowRoot,
                        trusted_types_names::kPrependHTML, this),
-                   FragmentParserOptions::From(options), exception_state);
+                   FragmentParserOptions(options), exception_state);
 }
 
 void ContainerNode::prependHTMLUnsafe(

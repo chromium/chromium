@@ -139,7 +139,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                      TrustedParserOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
-  void setHTML(const String& html, TrustedParserOptions*, ExceptionState&);
 
   Node* Clone(Document& factory,
               NodeCloningData& data,

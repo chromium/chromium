@@ -201,7 +201,8 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(
       CheckHTML(html, trusted_types_names::kSetHTMLUnsafe, exception_state),
-      FragmentParserOptions(options), Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(options, Sanitizer::Mode::kUnsafe),
+      Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
       trusted_types_names::kSetHTMLUnsafe, exception_state);
 }
@@ -234,15 +235,6 @@ void ShadowRoot::SetInnerHTMLInternal(
 
 void ShadowRoot::setHTML(const String& html,
                          SetHTMLOptions* options,
-                         ExceptionState& exception_state) {
-  SetInnerHTMLInternal(
-      html, FragmentParserOptions(options), Sanitizer::Mode::kSafe,
-      FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
-      trusted_types_names::kSetHTML, exception_state);
-}
-
-void ShadowRoot::setHTML(const String& html,
-                         TrustedParserOptions* options,
                          ExceptionState& exception_state) {
   SetInnerHTMLInternal(
       html, FragmentParserOptions(options), Sanitizer::Mode::kSafe,

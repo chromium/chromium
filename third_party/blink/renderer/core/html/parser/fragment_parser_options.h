@@ -8,7 +8,6 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmloptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -62,9 +61,11 @@ class CORE_EXPORT FragmentParserOptions {
       : run_scripts_(run_scripts) {}
   FragmentParserOptions(const FragmentParserOptions&) = default;
   FragmentParserOptions& operator=(const FragmentParserOptions&) = default;
-  explicit FragmentParserOptions(TrustedParserOptions* options)
+  explicit FragmentParserOptions(TrustedParserOptions* options,
+                                 Sanitizer::Mode sanitizer_mode)
       : trust_mode_(TrustMode::kTrusted),
         run_scripts_((options->runScripts() &&
+                      sanitizer_mode == Sanitizer::Mode::kUnsafe &&
                       RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled())
                          ? RunScripts::kRunScripts
                          : RunScripts::kDontRunScripts),
@@ -88,19 +89,8 @@ class CORE_EXPORT FragmentParserOptions {
         return FragmentParserOptions(options->GetAsSetHTMLUnsafeOptions());
       case V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions::ContentType::
           kTrustedParserOptions:
-        return FragmentParserOptions(options->GetAsTrustedParserOptions());
-    }
-  }
-
-  static FragmentParserOptions From(
-      const V8UnionSetHTMLOptionsOrTrustedParserOptions* options) {
-    switch (options->GetContentType()) {
-      case V8UnionSetHTMLOptionsOrTrustedParserOptions::ContentType::
-          kSetHTMLOptions:
-        return FragmentParserOptions(options->GetAsSetHTMLOptions());
-      case V8UnionSetHTMLOptionsOrTrustedParserOptions::ContentType::
-          kTrustedParserOptions:
-        return FragmentParserOptions(options->GetAsTrustedParserOptions());
+        return FragmentParserOptions(options->GetAsTrustedParserOptions(),
+                                     Sanitizer::Mode::kUnsafe);
     }
   }
 

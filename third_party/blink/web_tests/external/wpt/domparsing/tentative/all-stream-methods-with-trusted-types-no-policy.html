@@ -14,12 +14,18 @@
     <div id="container"></div>
     <script>
       const methods = [
-        "streamHTML", "streamHTMLUnsafe",
-        "streamAppendHTML", "streamAppendHTMLUnsafe",
-        "streamPrependHTML", "streamPrependHTMLUnsafe",
-        "streamBeforeHTML", "streamBeforeHTMLUnsafe",
-        "streamAfterHTML", "streamAfterHTMLUnsafe"
+        "streamHTML",
+        "streamHTMLUnsafe",
+        "streamAppendHTML",
+        "streamAppendHTMLUnsafe",
+        "streamPrependHTML",
+        "streamPrependHTMLUnsafe",
+        "streamBeforeHTML",
+        "streamBeforeHTMLUnsafe",
+        "streamAfterHTML",
+        "streamAfterHTMLUnsafe"
       ];
+
       for (const method of methods) {
         const safe = !method.endsWith("Unsafe");
         test((t) => {
@@ -30,7 +36,7 @@
           } else {
             assert_throws_js(TypeError, () => d[method]());
           }
-        }, `Streaming with trusted types and no default policy ${safe ? "does not throw" : "throws"} for ${method}.`);
+        }, `${method} with trusted types and no default policy ${safe ? "returns a WritableStream" : "throws"}.`);
       }
     </script>
   </body>

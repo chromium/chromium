@@ -13537,23 +13537,12 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                         exception_state),
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
       FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
-      FragmentParserOptions(options), trusted_types_names::kSetHTMLUnsafe,
-      exception_state);
+      FragmentParserOptions(options, Sanitizer::Mode::kUnsafe),
+      trusted_types_names::kSetHTMLUnsafe, exception_state);
 }
 
 void Element::setHTML(const String& html,
                       SetHTMLOptions* options,
-                      ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  SetInnerHTMLInternal(
-      html, FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
-      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), trusted_types_names::kSetHTML,
-      exception_state);
-}
-
-void Element::setHTML(const String& html,
-                      TrustedParserOptions* options,
                       ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   SetInnerHTMLInternal(

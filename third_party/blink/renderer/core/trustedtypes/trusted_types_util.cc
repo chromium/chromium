@@ -712,7 +712,7 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
     return options;
   }
 
-  return FragmentParserOptions(result);
+  return FragmentParserOptions(result, Sanitizer::Mode::kUnsafe);
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

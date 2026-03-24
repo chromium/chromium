@@ -147,9 +147,12 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
   }
 
   std::optional<FragmentParserOptions> trusted_options =
-      TrustedTypesCheckForParserOptions(
-          options, MarkupInsertionMode::kStream, target->GetExecutionContext(),
-          interface_name, property_name, exception_state);
+      sanitizer_mode == Sanitizer::Mode::kSafe
+          ? std::make_optional(options)
+          : TrustedTypesCheckForParserOptions(
+                options, MarkupInsertionMode::kStream,
+                target->GetExecutionContext(), interface_name, property_name,
+                exception_state);
 
   if (!trusted_options) {
     return nullptr;

@@ -1439,7 +1439,6 @@ class CORE_EXPORT Element : public ContainerNode {
                      TrustedParserOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
-  void setHTML(const String& html, TrustedParserOptions*, ExceptionState&);
 
   void setPointerCapture(PointerId, ExceptionState&);
   void releasePointerCapture(PointerId, ExceptionState&);

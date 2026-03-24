@@ -811,7 +811,8 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
+  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled() &&
+      config.sanitizer_mode == Sanitizer::Mode::kUnsafe) {
     auto trusted_options = TrustedTypesCheckForParserOptions(
         options, MarkupInsertionMode::kFragment,
         config.context_element->GetExecutionContext(), config.interface_name,

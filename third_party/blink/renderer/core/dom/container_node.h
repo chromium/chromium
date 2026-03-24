@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
@@ -48,8 +49,8 @@ class GetHTMLOptions;
 class HTMLCollection;
 class RadioNodeList;
 class ScriptState;
+class SetHTMLOptions;
 class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
-class V8UnionSetHTMLOptionsOrTrustedParserOptions;
 class StyleRecalcContext;
 class WhitespaceAttacher;
 class WritableStream;
@@ -408,23 +409,20 @@ class CORE_EXPORT ContainerNode : public Node {
       ScriptState*,
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
-  WritableStream* streamHTML(ScriptState*,
-                             V8UnionSetHTMLOptionsOrTrustedParserOptions*,
-                             ExceptionState&);
+  WritableStream* streamHTML(ScriptState*, SetHTMLOptions*, ExceptionState&);
   WritableStream* streamAppendHTML(ScriptState*,
-                                   V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                   SetHTMLOptions*,
                                    ExceptionState&);
   void appendHTML(const String& html,
-                  V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                  SetHTMLOptions* options,
                   ExceptionState& exception_state);
   WritableStream* streamPrependHTMLUnsafe(
       ScriptState*,
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
-  WritableStream* streamPrependHTML(
-      ScriptState*,
-      V8UnionSetHTMLOptionsOrTrustedParserOptions*,
-      ExceptionState&);
+  WritableStream* streamPrependHTML(ScriptState*,
+                                    SetHTMLOptions*,
+                                    ExceptionState&);
 
   void appendHTMLUnsafe(
       const V8UnionStringOrTrustedHTML* html,
@@ -432,7 +430,7 @@ class CORE_EXPORT ContainerNode : public Node {
       ExceptionState& exception_state);
 
   void prependHTML(const String& html,
-                   V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                   SetHTMLOptions* options,
                    ExceptionState& exception_state);
 
   void prependHTMLUnsafe(

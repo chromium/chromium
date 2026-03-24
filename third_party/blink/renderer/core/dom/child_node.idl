@@ -28,16 +28,16 @@ interface mixin ChildNode {
   [Unscopable, RaisesException, CEReactions] undefined remove();
 
   // https://github.com/whatwg/html/issues/11669
-  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void beforeHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void beforeHTML(DOMString html, optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void beforeHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void afterHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void afterHTML(DOMString html, optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void afterHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void replaceWithHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void replaceWithHTML(DOMString html, optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void replaceWithHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamBeforeHTML(optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamBeforeHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamBeforeHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAfterHTML(optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAfterHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAfterHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamReplaceWithHTML(optional SetHTMLOptions options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamReplaceWithHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
-  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamReplaceWithHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
 };
