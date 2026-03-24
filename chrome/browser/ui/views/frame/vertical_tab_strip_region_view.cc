@@ -65,6 +65,7 @@
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -208,6 +209,16 @@ void VerticalTabStripRegionView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalTabStripRegionView::UpdateColors, base::Unretained(this)));
+  if (GetFocusManager()) {
+    GetFocusManager()->AddFocusChangeListener(&focus_listener_);
+  }
+}
+
+void VerticalTabStripRegionView::RemovedFromWidget() {
+  TabStripRegionView::RemovedFromWidget();
+  if (GetFocusManager()) {
+    GetFocusManager()->RemoveFocusChangeListener(&focus_listener_);
+  }
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
@@ -689,6 +700,19 @@ VerticalTabStripRegionView::GetUnpinnedTabsContainer() {
   return tab_strip_view_->GetUnpinnedTabsContainer();
 }
 
+VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(
+    VerticalTabStripRegionView* region_view)
+    : region_view_(region_view) {}
+
+void VerticalTabStripRegionView::RegionViewFocusListener::OnDidChangeFocus(
+    views::View* focused_before,
+    views::View* focused_now) {
+  if (region_view_->Contains(focused_before) ||
+      region_view_->Contains(focused_now)) {
+    region_view_->UpdateExpandOnHoverState();
+  }
+}
+
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
@@ -868,7 +892,10 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
     return;
   }
 
-  const bool should_expand = IsMouseHovered();
+  const bool should_expand =
+      IsMouseHovered() ||
+      (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView()));
+
   if (expand_on_hover_timer_.IsRunning()) {
     if (should_expand) {
       // If the timer is already running then we are already waiting to

@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
+#include "ui/views/focus/focus_manager.h"
 
 class BrowserView;
 class RootTabCollectionNode;
@@ -110,6 +111,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   // views::View:
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void Layout(PassKey) override;
   views::View* GetDefaultFocusableChild() override;
   gfx::Size GetMinimumSize() const override;
@@ -181,6 +183,26 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
       DropArrow::Direction* direction);
 
  private:
+  // Since VerticalTabStripRegionView inherits from AccessiblePaneView, which is
+  // a FocusChangeListener, we need to have a separate focus listener to avoid
+  // conflicts with the base class implementation which conditionally listens
+  // for focus changes.
+  class RegionViewFocusListener : public views::FocusChangeListener {
+   public:
+    explicit RegionViewFocusListener(VerticalTabStripRegionView* region_view);
+    RegionViewFocusListener(const RegionViewFocusListener&) = delete;
+    RegionViewFocusListener& operator=(const RegionViewFocusListener&) = delete;
+    ~RegionViewFocusListener() override = default;
+
+    // views::FocusChangeListener:
+    void OnDidChangeFocus(views::View* focused_before,
+                          views::View* focused_now) override;
+
+   private:
+    raw_ptr<VerticalTabStripRegionView> region_view_;
+  };
+  friend class RegionViewFocusListener;
+
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
@@ -277,6 +299,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   // Used to track the time needed to create a new tab from the new tab button.
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
+
+  RegionViewFocusListener focus_listener_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
