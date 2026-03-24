@@ -1666,8 +1666,13 @@ TEST_F(WebContentsImplTest,
                                                     GURL("http://a.com"));
   main_rfh = main_test_rfh();
 
-  // Create a subframe and navigate it.
-  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  // Create a subframe with fullscreen Permissions Policy and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChildWithPolicy(
+      "subframe", {{network::mojom::PermissionsPolicyFeature::kFullscreen,
+                    /*allowed_origins=*/{},
+                    /*self_if_matches=*/std::nullopt,
+                    /*matches_all_origins=*/true,
+                    /*matches_opaque_src=*/false}});
   sub_rfh = static_cast<TestRenderFrameHost*>(
       NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
                                                          sub_rfh));
@@ -1703,8 +1708,13 @@ TEST_F(WebContentsImplTest,
                                                     GURL("http://a.com"));
   main_rfh = main_test_rfh();
 
-  // Create a subframe and navigate it.
-  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  // Create a subframe with fullscreen Permissions Policy and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChildWithPolicy(
+      "subframe", {{network::mojom::PermissionsPolicyFeature::kFullscreen,
+                    /*allowed_origins=*/{},
+                    /*self_if_matches=*/std::nullopt,
+                    /*matches_all_origins=*/true,
+                    /*matches_opaque_src=*/false}});
   sub_rfh = static_cast<TestRenderFrameHost*>(
       NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
                                                          sub_rfh));

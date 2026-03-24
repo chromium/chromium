@@ -9115,8 +9115,6 @@ void RenderFrameHostImpl::SetIsXrOverlaySetup() {
   last_xr_overlay_setup_time_ = base::TimeTicks::Now();
 }
 
-// TODO(alexmos): When the allowFullscreen flag is known in the browser
-// process, use it to double-check that fullscreen can be entered here.
 void RenderFrameHostImpl::EnterFullscreen(
     blink::mojom::FullscreenOptionsPtr options,
     EnterFullscreenCallback callback) {
@@ -9126,6 +9124,17 @@ void RenderFrameHostImpl::EnterFullscreen(
   // page should not enter fullscreen.
   if (!IsActive() || !GetPage().IsPrimary()) {
     std::move(callback).Run(/*granted=*/false);
+    return;
+  }
+
+  // Enforce the fullscreen Permissions Policy browser-side. Cross-origin
+  // iframes without the "allowfullscreen" attribute (or an explicit
+  // Permissions-Policy delegation) must not be able to enter fullscreen, even
+  // if the renderer-side check is bypassed by a compromised renderer.
+  if (!IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kFullscreen)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_ENTER_FULLSCREEN_PERMISSION_DENIED);
     return;
   }
 
@@ -9221,8 +9230,6 @@ void RenderFrameHostImpl::EnterFullscreen(
       ->SynchronizeVisualProperties();
 }
 
-// TODO(alexmos): When the allowFullscreen flag is known in the browser
-// process, use it to double-check that fullscreen can be entered here.
 void RenderFrameHostImpl::ExitFullscreen() {
   base::RecordAction(base::UserMetricsAction("ExitFullscreen_API"));
   delegate_->ExitFullscreenMode(/*will_cause_resize=*/true);
