@@ -19,6 +19,10 @@ interface ImageReplacement {
   //   `host_remote`: Will be used to communicate with the browser process about
   //     this image's replacement.
   StartReplacement(pending_remote<ImageReplacementHost> host_remote);
+
+  // Instructs the renderer to stop painting the original image content and
+  // start painting the replacement frame instead.
+  RenderReplacement();
 };
 
 // Renderer -> Browser interface to communicate status for a single image

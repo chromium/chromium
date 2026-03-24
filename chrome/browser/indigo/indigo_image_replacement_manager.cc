@@ -75,7 +75,7 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
-  // TODO(489445294): Replace this with a WebUI URL once implemented.
+  // TODO(b/489445294): Replace this with a WebUI URL once implemented.
   const GURL indigo_url("data:text/html;charset=utf-8," +
                         base::EscapeAllExceptUnreserved(kIndigoHtml));
   content::NavigationController::LoadURLParams params{indigo_url};
@@ -84,6 +84,10 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   content::WebContents::FromRenderFrameHost(&page().GetMainDocument())
       ->GetController()
       .LoadURLWithParams(std::move(params));
+
+  // TODO(b/489468738): We should wait for this subframe to finish loading
+  // before calling RenderReplacement.
+  receivers_.current_context()->RenderReplacement();
 }
 
 PAGE_USER_DATA_KEY_IMPL(IndigoImageReplacementManager);

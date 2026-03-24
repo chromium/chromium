@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -14,18 +16,38 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
+#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/image_replacement/document_image_replacements.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
+
+namespace {
+size_t CountDrawImageRectOps(const cc::PaintRecord& record) {
+  size_t count = 0;
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
+      count++;
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+      count += CountDrawImageRectOps(record_op.record);
+    }
+  }
+  return count;
+}
+}  // namespace
 
 class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  public:
@@ -106,8 +128,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   test::RunPendingTasks();
 
   // Verify replacement state
-  EXPECT_FALSE(img->GetLayoutObject()->IsLayoutImage());
-  EXPECT_TRUE(img->GetLayoutObject()->IsLayoutBlockFlow());
+  EXPECT_TRUE(img->GetLayoutObject()->IsLayoutImageReplacement());
   ASSERT_TRUE(img->UserAgentShadowRoot());
 
   auto* iframe =
@@ -130,6 +151,127 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   EXPECT_FALSE(img->UserAgentShadowRoot()->HasChildren());
   EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
                    ->GetImageReplacement(img));
+}
+
+TEST_F(ImageReplacementSimTest, ImageReplacementRendering) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  // Swap the replacement iframe's content frame to be a remote frame (to more
+  // accurately represent how image replacement will be used).
+  auto* iframe =
+      DynamicTo<HTMLIFrameElement>(img->UserAgentShadowRoot()->firstChild());
+  ASSERT_TRUE(iframe);
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(
+      WebFrame::FromCoreFrame(iframe->ContentFrame()), remote_frame);
+  ASSERT_TRUE(iframe->ContentFrame()->IsRemoteFrame());
+  Compositor().BeginFrame();
+
+  // Before RenderReplacement is called, the image should still be painted. The
+  // iframe should have a layout object created (and should be sized to fit
+  // the image's content box), and its rendering should not be throttled.
+  ASSERT_TRUE(iframe->GetLayoutBox());
+  EXPECT_EQ(iframe->GetLayoutBox()->PhysicalBorderBoxRect(),
+            img->GetLayoutBox()->PhysicalContentBoxRect());
+  EXPECT_GT(CountDrawImageRectOps(GetDocument().View()->GetPaintRecord()), 0u);
+  EXPECT_FALSE(iframe->ContentFrame()->View()->CanThrottleRendering());
+
+  replacement_remote->RenderReplacement();
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  // After RenderReplacement is called, the image should no longer be painted.
+  // The iframe should be visible and painted instead.
+  ASSERT_TRUE(iframe->GetLayoutBox());
+  EXPECT_EQ(iframe->GetLayoutBox()->PhysicalBorderBoxRect(),
+            img->GetLayoutBox()->PhysicalContentBoxRect());
+  EXPECT_EQ(0u, CountDrawImageRectOps(GetDocument().View()->GetPaintRecord()));
+  EXPECT_FALSE(iframe->ContentFrame()->View()->CanThrottleRendering());
+  EXPECT_TRUE(iframe->GetLayoutBox()->Layer()->IsSelfPaintingLayer());
+}
+
+TEST_F(ImageReplacementSimTest,
+       ReplacementContinuesToRenderAfterLayoutObjectIsRecreated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  auto* iframe =
+      DynamicTo<HTMLIFrameElement>(img->UserAgentShadowRoot()->firstChild());
+  ASSERT_TRUE(iframe);
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(
+      WebFrame::FromCoreFrame(iframe->ContentFrame()), remote_frame);
+  ASSERT_TRUE(iframe->ContentFrame()->IsRemoteFrame());
+  Compositor().BeginFrame();
+
+  replacement_remote->RenderReplacement();
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(0u, CountDrawImageRectOps(GetDocument().View()->GetPaintRecord()));
+
+  // Destroy and recreate the layout object to verify stickiness.
+  img->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_FALSE(img->GetLayoutObject());
+
+  img->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kBlock);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(img->GetLayoutObject());
+
+  // The original image should still not paint.
+  EXPECT_EQ(0u, CountDrawImageRectOps(GetDocument().View()->GetPaintRecord()));
 }
 
 TEST_F(ImageReplacementSimTest, ImageReplacementFailsIfNotLoaded) {

@@ -41,6 +41,9 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   // Creates the shadow tree in `html_image_element` for the image replacement.
   static void CreateImageReplacementShadowTree(base::PassKey<HTMLImageElement>,
                                                HTMLImageElement& image_element);
+  // Returns true if the original image should be painted (and the remote
+  // content should be kept invisible).
+  bool ShouldPaintOriginalImage() const { return should_paint_original_image_; }
 
   void Trace(Visitor*) const;
 
@@ -48,6 +51,7 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   // mojom::blink::ImageReplacement:
   void StartReplacement(mojo::PendingRemote<mojom::blink::ImageReplacementHost>
                             host_remote) override;
+  void RenderReplacement() override;
 
   mojo::PendingRemote<mojom::blink::ImageReplacement> BindReceiver();
   void Reset(Document& document);
@@ -58,6 +62,7 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   Member<HTMLImageElement> image_element_;
   HeapMojoReceiver<mojom::blink::ImageReplacement, ImageReplacement> receiver_;
   HeapMojoRemote<mojom::blink::ImageReplacementHost> host_;
+  bool should_paint_original_image_ = true;
 };
 
 }  // namespace blink

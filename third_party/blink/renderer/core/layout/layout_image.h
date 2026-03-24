@@ -152,14 +152,14 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     return true;
   }
 
+  void PaintReplaced(const PaintInfo&,
+                     const PhysicalOffset& paint_offset) const override;
+
  private:
   bool IsImage() const override {
     NOT_DESTROYED();
     return true;
   }
-
-  void PaintReplaced(const PaintInfo&,
-                     const PhysicalOffset& paint_offset) const override;
 
   bool ForegroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect,

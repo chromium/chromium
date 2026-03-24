@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
@@ -518,12 +519,13 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
 
   switch (layout_disposition_) {
     case LayoutDisposition::kFallbackContent:
-    // TODO(b/489468738): We want to be able to display the original image until
-    // the replacement is ready to render.
-    case LayoutDisposition::kImageReplacement:
       return LayoutObject::CreateBlockFlowOrListItem(this, style);
+    case LayoutDisposition::kImageReplacement:
     case LayoutDisposition::kPrimaryContent: {
-      LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
+      LayoutImage* image =
+          layout_disposition_ == LayoutDisposition::kImageReplacement
+              ? MakeGarbageCollected<LayoutImageReplacement>(this)
+              : MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
       image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
       if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {

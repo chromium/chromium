@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/image_replacement/document_image_replacements.h"
+#include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -115,6 +116,22 @@ void ImageReplacement::StartReplacement(
   }
 }
 
+void ImageReplacement::RenderReplacement() {
+  CHECK(image_element_);
+  should_paint_original_image_ = false;
+
+  if (auto* layout_image_replacement =
+          To<LayoutImageReplacement>(image_element_->GetLayoutObject())) {
+    layout_image_replacement
+        ->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+            PaintInvalidationReason::kImage);
+  }
+
+  auto& iframe = To<HTMLIFrameElement>(
+      *image_element_->UserAgentShadowRoot()->firstChild());
+  iframe.SetInlineStyleProperty(CSSPropertyID::kOpacity, "1");
+}
+
 void ImageReplacement::Trace(Visitor* visitor) const {
   visitor->Trace(image_element_);
   visitor->Trace(receiver_);
@@ -140,10 +157,15 @@ void ImageReplacement::CreateImageReplacementShadowTree(
   CHECK(shadow_root);
   HTMLIFrameElement* iframe =
       MakeGarbageCollected<HTMLIFrameElement>(image_element.GetDocument());
-  iframe->SetInlineStyleProperty(CSSPropertyID::kWidth, "100%");
-  iframe->SetInlineStyleProperty(CSSPropertyID::kHeight, "100%");
   iframe->SetInlineStyleProperty(CSSPropertyID::kBorderStyle, "none");
   iframe->SetInlineStyleProperty(CSSPropertyID::kBorderWidth, "0");
+  // Note: We use opacity: 0 (instead of visibility: hidden) to ensure that
+  // the iframe's rendering isn't throttled.
+  iframe->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0");
+  iframe->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
+  // We add this to ensure the iframe is always in a self-painting layer,
+  // otherwise it won't get painted.
+  iframe->SetInlineStyleProperty(CSSPropertyID::kIsolation, "isolate");
 
   shadow_root->AppendChild(iframe);
 }

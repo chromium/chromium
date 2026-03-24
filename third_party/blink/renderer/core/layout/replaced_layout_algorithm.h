@@ -25,6 +25,7 @@ class CORE_EXPORT ReplacedLayoutAlgorithm
  private:
   void LayoutMediaChildren();
   void LayoutCanvasChildren();
+  void LayoutImageReplacementChildren();
 };
 
 }  // namespace blink

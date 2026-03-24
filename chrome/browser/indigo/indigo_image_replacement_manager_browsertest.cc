@@ -58,14 +58,21 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
     start_replacement_future_.SetValue();
   }
 
+  void RenderReplacement() override { render_replacement_future_.SetValue(); }
+
   void WaitForStartReplacement() {
     EXPECT_TRUE(start_replacement_future_.Wait());
+  }
+
+  void WaitForRenderReplacement() {
+    EXPECT_TRUE(render_replacement_future_.Wait());
   }
 
  private:
   raw_ptr<content::WebContents> web_contents_;
   mojo::Remote<blink::mojom::ImageReplacementHost> host_remote_;
   base::test::TestFuture<void> start_replacement_future_;
+  base::test::TestFuture<void> render_replacement_future_;
 };
 
 }  // namespace
@@ -116,6 +123,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   EXPECT_FALSE(subframe->IsErrorDocument());
   EXPECT_EQ("REPLACED",
             content::EvalJs(subframe.get(), "document.body.innerText"));
+
+  mock_replacement.WaitForRenderReplacement();
 }
 
 }  // namespace indigo

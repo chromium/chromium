@@ -365,6 +365,8 @@ blink_core_sources_layout = [
   "layout_iframe.h",
   "layout_image.cc",
   "layout_image.h",
+  "layout_image_replacement.cc",
+  "layout_image_replacement.h",
   "layout_image_resource.cc",
   "layout_image_resource.h",
   "layout_image_resource_style_image.cc",
