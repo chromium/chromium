@@ -21,6 +21,7 @@ enum class QueryIntentType {
   kEmail,
   kCompanyName,
   kIban,
+  kIbanNickname,
   kVehicle,
   kVehicleMake,
   kVehicleModel,

@@ -26,20 +26,23 @@ void AccessibilityQueryService::Shutdown() {
 
 void AccessibilityQueryService::Query(
     std::u16string_view query,
-    base::RepeatingCallback<void(std::vector<MemorySearchResult>)>
-        update_callback) {
+    base::RepeatingCallback<void(MemorySearchResults)> update_callback) {
   if (!data_provider_) {
-    update_callback.Run({});
+    update_callback.Run(
+        MemorySearchResults(MemorySearchStatus::kInternalFailure));
     return;
   }
 
   QueryIntentType intent = classifier_.Run(query);
   if (intent == QueryIntentType::kUnknown) {
-    update_callback.Run({});
+    update_callback.Run(
+        MemorySearchResults(MemorySearchStatus::kUnsupportedQuery));
     return;
   }
 
-  update_callback.Run(data_provider_->RetrieveAll(intent));
+  update_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                          data_provider_->RetrieveAll(intent)));
 }
 
 }  // namespace accessibility_annotator

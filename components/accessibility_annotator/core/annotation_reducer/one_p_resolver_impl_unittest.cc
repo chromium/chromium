@@ -558,9 +558,8 @@ TEST_F(OnePResolverImplTest, ValidOnePServiceResponse) {
   std::vector<MemorySearchResult> results = future.Take();
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].value, u"NEXJ8P");
-  EXPECT_EQ(results[0].title, u"NEXJ8P");
-  EXPECT_EQ(results[0].description, u"Flight confirmation \u00B7 SFO-ASE");
-  EXPECT_DOUBLE_EQ(results[0].ranking_score, 0.95);
+  EXPECT_EQ(results[0].type_name, u"Flight confirmation \u00B7 SFO-ASE");
+  EXPECT_DOUBLE_EQ(results[0].confidence_score, 0.95);
 }
 
 // Verifies that the parser successfully strips markdown code blocks from the

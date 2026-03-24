@@ -272,25 +272,24 @@ void OnePResolverImpl::OnModelExecutionComplete(
     }
 
     const std::string* value_str = dict->FindString("value");
-    const std::string* title_str = dict->FindString("title");
     const std::string* description_str = dict->FindString("description");
 
-    // We require all three core fields to consider the result valid.
-    if (!value_str || !title_str || !description_str) {
+    // We require all core fields to consider the result valid.
+    if (!value_str || !description_str) {
       continue;
     }
 
-    MemorySearchResult search_result;
-    search_result.value = base::UTF8ToUTF16(*value_str);
-    search_result.title = base::UTF8ToUTF16(*title_str);
-    search_result.description = base::UTF8ToUTF16(*description_str);
-
+    double confidence_score = 0.0;
     if (std::optional<double> score = dict->FindDouble("ranking_score")) {
-      search_result.ranking_score = *score;
+      confidence_score = *score;
     } else if (const std::string* score_str =
                    dict->FindString("ranking_score")) {
-      base::StringToDouble(*score_str, &search_result.ranking_score);
+      base::StringToDouble(*score_str, &confidence_score);
     }
+
+    MemorySearchResult search_result = MemorySearchResult(
+        EntryType::kUnknown, base::UTF8ToUTF16(*description_str),
+        base::UTF8ToUTF16(*value_str), confidence_score);
 
     results.push_back(std::move(search_result));
   }
