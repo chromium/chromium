@@ -48,4 +48,7 @@
 
     // Used by Scoped Element Registries
     [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;
+
+    // Used by document patching
+    [CEReactions, Reflect=for, RuntimeEnabled=DocumentPatching] attribute DOMString htmlFor;
 };

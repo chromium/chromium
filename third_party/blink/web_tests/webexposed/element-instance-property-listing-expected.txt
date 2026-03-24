@@ -1187,6 +1187,7 @@ html element td
     property width
 html element template
     property content
+    property htmlFor
     property shadowRootClonable
     property shadowRootCustomElementRegistry
     property shadowRootDelegatesFocus

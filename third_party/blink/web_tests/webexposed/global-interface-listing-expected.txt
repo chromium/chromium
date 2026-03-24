@@ -5337,12 +5337,14 @@ interface HTMLTableSectionElement : HTMLElement
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
+    getter htmlFor
     getter shadowRootClonable
     getter shadowRootCustomElementRegistry
     getter shadowRootDelegatesFocus
     getter shadowRootMode
     getter shadowRootSerializable
     method constructor
+    setter htmlFor
     setter shadowRootClonable
     setter shadowRootCustomElementRegistry
     setter shadowRootDelegatesFocus
