@@ -778,6 +778,10 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
         "The groups must evenly divide the input channels to filter input "
         "channels."));
   }
+  if (output_channels % attributes.groups != 0) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The groups must evenly divide the output channels."));
+  }
 
   RETURN_IF_ERROR(ValidateIntermediatePaddedDescriptor(
       context_properties, input, attributes.padding, attributes.input_layout,
