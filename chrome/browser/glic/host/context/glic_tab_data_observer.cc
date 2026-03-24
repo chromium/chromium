@@ -35,6 +35,9 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
     tab_will_deactivate_subscription_ =
         tab_->RegisterWillDeactivate(base::BindRepeating(
             &TabObserver::HandleTabActivatedChange, base::Unretained(this)));
+    will_discard_contents_subscription_ =
+        tab_->RegisterWillDiscardContents(base::BindRepeating(
+            &TabObserver::OnWillDiscardContents, base::Unretained(this)));
     tab_data_observer_ = std::make_unique<TabDataObserver>(
         tab_, tab_->GetContents(),
         base::BindRepeating(&TabObserver::SendTabData, base::Unretained(this)));
@@ -110,6 +113,15 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
     }
   }
 
+  void OnWillDiscardContents(tabs::TabInterface* tab,
+                             content::WebContents* previous_contents,
+                             content::WebContents* new_contents) {
+    Observe(new_contents);
+    tab_data_observer_ = std::make_unique<TabDataObserver>(
+        tab_, new_contents,
+        base::BindRepeating(&TabObserver::SendTabData, base::Unretained(this)));
+  }
+
   void SendTabData(TabDataChange tab_data) {
     for (auto& receiver : tab_data_receivers_) {
       receiver->OnTabDataChanged(tab_data.tab_data->Clone());
@@ -125,6 +137,7 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
 
   base::CallbackListSubscription did_insert_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
+  base::CallbackListSubscription will_discard_contents_subscription_;
 
   // Subscriptions for changes to TabInterface::IsActivated.
   base::CallbackListSubscription tab_did_activate_subscription_;

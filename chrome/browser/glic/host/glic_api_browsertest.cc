@@ -2486,6 +2486,33 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabById) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabByIdWithDiscard) {
+  NavigateTabAndOpenGlic();
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  auto tab_id = browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle();
+  ExecuteJsTest(
+      {.params = base::Value(base::NumberToString(tab_id.raw_value()))});
+
+  // Discard the tab.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  content::WebContents* new_contents_ptr = new_contents.get();
+  browser()->tab_strip_model()->DiscardWebContentsAt(1,
+                                                     std::move(new_contents));
+
+  // Navigate the new contents.
+  GURL::Replacements replacements;
+  replacements.SetQueryStr("q=hi");
+  ASSERT_TRUE(content::NavigateToURL(
+      new_contents_ptr, page_url().ReplaceComponents(replacements)));
+  ContinueJsTest();
+
+  // Close the tab.
+  browser()->tab_strip_model()->CloseWebContentsAt(1, CLOSE_NONE);
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
   ExecuteJsTest();
   g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey,

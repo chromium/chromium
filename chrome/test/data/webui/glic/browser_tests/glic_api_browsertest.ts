@@ -2678,6 +2678,36 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('Prompt Suggestion', openData.promptSuggestion);
   }
 
+
+  async testGetTabByIdWithDiscard() {
+    assertDefined(this.host.getTabById);
+
+    // Observe a valid tab id.
+    const tabId = this.testParams as string;
+    const obs = this.host.getTabById(tabId);
+    assertUndefined(obs.getCurrentValue());
+    const sequence = observeSequence(obs);
+    const tabData = await sequence.next();
+    assertEquals(tabId, tabData.tabId);
+    assertTrue(
+        tabData.url.endsWith('test.html'), `unexpected url: ${tabData.url}`);
+
+    // Discard the tab in C++.
+    await this.advanceToNextStep();
+
+    // Navigate the new discarded tab in C++.
+    await sequence.waitFor(tabData => tabData.url.endsWith('test.html?q=hi'));
+
+    // Close the tab in C++.
+    await this.advanceToNextStep();
+    await sequence.waitForComplete();
+
+    // A new subscription should complete without receiving anything.
+    const newSeq = observeSequence(this.host.getTabById(tabId));
+    await newSeq.waitForComplete();
+    assertTrue(newSeq.isEmpty());
+  }
+
   async testGetTabById() {
     assertDefined(this.host.getTabById);
 
