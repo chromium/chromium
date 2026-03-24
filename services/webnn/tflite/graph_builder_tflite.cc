@@ -2090,6 +2090,19 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gemm& gemm) {
     return std::nullopt;
   }
 
+  // The FULLY_CONNECTED's underlying kernels expect the per-channel
+  // quantization axis to be the output channel dimension (axis 0). This means
+  // the first dimension of the scale can not be equal to 1.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/litert/src/tflite/kernels/internal/reference/integer_ops/fully_connected.h;l=68;drc=9213607704a73d1e877921d0454abb11f761bdcc
+  if (per_channel_quantization) {
+    const auto& scale_shape =
+        GetOperand(b_dequantize.scale_operand_id).descriptor.shape();
+
+    if (scale_shape[0] == 1) {
+      return std::nullopt;
+    }
+  }
+
   // The a_scale * b_scale should be about the same as c_scale for per-tensor
   // quantization.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/kernel_util.cc;l=303;drc=492dc9719f6e1845f4f5c0553cd5c7651115f671
