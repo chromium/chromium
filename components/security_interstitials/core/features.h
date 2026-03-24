@@ -11,6 +11,7 @@
 namespace security_interstitials::features {
 
 BASE_DECLARE_FEATURE(kHttpsFirstDialogUi);
+BASE_DECLARE_FEATURE(kInsecureFormNavigationThrottleForPrerender);
 
 }  // namespace security_interstitials::features
 

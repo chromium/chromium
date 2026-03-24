@@ -151,6 +151,22 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return CANCEL;
   }
 
+  if (navigation_handle()->IsFormSubmission()) {
+    // Form submission from a prerendered page is currently disallowed.
+    if (!IsInitialNavigation()) {
+      // TODO(crbug.com/346555939): Replace with a more fine grained status.
+      CancelPrerendering(PrerenderFinalStatus::kDestroyed);
+      return CANCEL;
+    }
+
+    // A prerender form submission requires `form_submission` to be true.
+    if (!prerender_host_->form_submission()) {
+      // TODO(crbug.com/346555939): Replace with a more fine grained status.
+      CancelPrerendering(PrerenderFinalStatus::kDestroyed);
+      return CANCEL;
+    }
+  }
+
   // Origin checks for the navigation (redirection), which varies depending on
   // whether the navigation is initial one or not.
   if (IsInitialNavigation()) {
