@@ -1,5 +1,15 @@
 # Using Skia Autoroller to manage third-party dependencies
 
+*** note
+**This isn't related to the [Skia project](https://skia.org/).**
+
+Skia is a 2D graphics library used by Chromium and other projects.
+
+The Skia Autoroller was developed by the now-defunct Skia Infrastructure team,
+and has been used by Skia project itself and Chromium projects to automatically
+update dependencies.
+***
+
 [TOC]
 
 If a dependency is a Git repository and can be used **without modification**,
@@ -114,6 +124,8 @@ For example, the following regular expression matches semantic version style
 Alternatively, you can request to track the latest commit in a branch (e.g.
 `main`). This is commonly used for Google maintained projects.
 
+You CAN request extra trybots to run on a roll (e.g. macOS bots).
+
 After Skia Autoroller is setup, it will propose future CLs to update the
 revision in DEPS, update Git submodules and set metadata fields in
 README.chromium.
@@ -125,9 +137,11 @@ Skia autoroller periodically checks the upstream for newer releases and
 creates an autoroll CL for you to review.
 
 ### When an autoroll CL is proposed
-The autoroller will send you a CL for review when a roll happens. You should
-review the upstream changes introduced by the roll is reasonable, then LGTM
-and submit the CL.
+The autoroller will send you a CL when a roll happens.
+
+The autoroller will trigger Chromium commit queue (including the "extra trybots"
+you requested in step 4). If everything passes, the autoroller will submit the CL
+automatically.
 
 The autoroller tries to generate a CL description to summarize the upstream
 change (e.g. a list of commits). In the rare cases where the CL description
@@ -144,6 +158,7 @@ committer review the change, then submit the CL.
 We recommend you download the CL from Gerrit Web UI, using the "Download"
 button, update the CL locally, then upload it for review (i.e. you
 become the autoroll CL's uploader).
+
 
 ### Applying urgent Chromium patches
 In general, you should work with the upstream to fix bugs. Skia Autoroller will
