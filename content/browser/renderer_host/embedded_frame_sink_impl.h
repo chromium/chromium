@@ -74,6 +74,11 @@ class EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
   void RegisterFrameSinkHierarchy();
   void UnregisterFrameSinkHierarchy();
 
+  // Adjusts the hierarchy for a new parent. This unregisters the current
+  // frame sink from its old parent and registers it as a child of
+  // `parent_frame_sink_id`.
+  void SetParentFrameSinkId(const viz::FrameSinkId& parent_frame_sink_id);
+
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnFrameTokenChanged(uint32_t frame_token,
@@ -90,7 +95,7 @@ class EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
   mojo::Remote<blink::mojom::EmbeddedFrameSinkClient> client_;
 
   // Surface-related state
-  const viz::FrameSinkId parent_frame_sink_id_;
+  viz::FrameSinkId parent_frame_sink_id_;
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId local_surface_id_;
 

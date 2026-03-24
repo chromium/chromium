@@ -654,6 +654,16 @@ BASE_FEATURE(kDocumentPictureInPictureAnimateResize,
 BASE_FEATURE(kDocumentPictureInPictureCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables reparenting the VideoFrameSubmitter's frame sink when moving to
+// or from a Document Picture-in-Picture window.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kDocumentPictureInPictureReparenting,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kDocumentPictureInPictureReparenting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Falls back to other decoders after audio/video decode error happens. The
 // implementation may choose different strategies on when to fallback. See
 // DecoderStream for details. When disabled, playback will fail immediately

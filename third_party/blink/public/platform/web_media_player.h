@@ -58,6 +58,10 @@ namespace media {
 class PaintCanvasVideoRenderer;
 }
 
+namespace viz {
+class FrameSinkId;
+}
+
 namespace blink {
 
 class WebContentDecryptionModule;
@@ -444,6 +448,14 @@ class WebMediaPlayer {
   // Adjusts the frame sink hierarchy for the media frame sink.
   virtual void RegisterFrameSinkHierarchy() {}
   virtual void UnregisterFrameSinkHierarchy() {}
+
+  // Reparents the video frame's SurfaceLayer to a new compositor FrameSink.
+  // This is used by Document Picture-in-Picture to ensure the video
+  // continues receiving vsyncs from the active PiP window's compositor,
+  // rather than relying on the opener window which may be backgrounded
+  // or suspended.
+  virtual void ReparentFrameSinkHierarchy(
+      const viz::FrameSinkId& new_parent_frame_sink_id) {}
 
   // Records the `MediaVideoVisibilityTracker` occlusion state, at the time that
   // HTMLVideoElement visibility is reported. The state is recorded using

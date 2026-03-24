@@ -47,6 +47,9 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
       const viz::FrameSinkId& frame_sink_id,
       mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client)
       override;
+  void SetParentFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::FrameSinkId& parent_frame_sink_id) override;
   void RegisterEmbeddedFrameSinkBundle(
       const viz::FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,

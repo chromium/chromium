@@ -41,6 +41,12 @@ interface EmbeddedFrameSinkProvider {
                             viz.mojom.FrameSinkId frame_sink_id,
                             pending_remote<EmbeddedFrameSinkClient> client);
 
+  // Updates the parent of the embedded frame sink. The frame sink hierarchy
+  // impacts what draw notifications are received, but doesn't control what
+  // content is embedded.
+  SetParentFrameSinkId(viz.mojom.FrameSinkId frame_sink_id,
+                       viz.mojom.FrameSinkId parent_frame_sink_id);
+
   // Registers a bundle of frame sinks identified by `bundle_id`. The
   // FrameSinkBundle and FrameSinkBundleClient endpoints are used to perform
   // batched communication between Viz and the client, regarding any of the

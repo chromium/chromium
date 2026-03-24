@@ -83,6 +83,16 @@ void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
   UpdateSurfaceLayerOpacity();
 }
 
+void SurfaceLayerBridge::ReparentFrameSinkHierarchy(
+    const viz::FrameSinkId& new_parent_frame_sink_id) {
+  if (parent_frame_sink_id_ == new_parent_frame_sink_id) {
+    return;
+  }
+  embedded_frame_sink_provider_->SetParentFrameSinkId(frame_sink_id_,
+                                                      new_parent_frame_sink_id);
+  parent_frame_sink_id_ = new_parent_frame_sink_id;
+}
+
 void SurfaceLayerBridge::BindSurfaceEmbedder(
     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder> receiver) {
   if (surface_embedder_receiver_.is_bound()) {

@@ -333,6 +333,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
+  void ReparentFrameSinkHierarchy(
+      const viz::FrameSinkId& new_parent_frame_sink_id) override;
 
   void RecordVideoOcclusionState(std::string_view occlusion_state) override;
   void SetVisibilityRatioAtPlaybackStart(double ratio) override;

@@ -389,4 +389,89 @@ TEST_F(EmbeddedFrameSinkProviderImplTest, RegisterFrameSinkHierarchy) {
               ElementsAre(kFrameSinkA));
 }
 
+TEST_F(EmbeddedFrameSinkProviderImplTest, SetParentFrameSinkId) {
+  StubEmbeddedFrameSinkClient efs_client;
+  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                        efs_client.GetInterfaceRemote());
+
+  // Create and register frame sink A as a child.
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  viz::MockCompositorFrameSinkClient compositor_frame_sink_client;
+  provider()->CreateCompositorFrameSink(
+      kFrameSinkA, compositor_frame_sink_client.BindInterfaceRemote(),
+      compositor_frame_sink.BindNewPipeAndPassReceiver());
+  RunUntilIdle();
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              ElementsAre(kFrameSinkA));
+
+  // Register frame sink B
+  StubEmbeddedFrameSinkClient efs_client_b;
+  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkB,
+                                        efs_client_b.GetInterfaceRemote());
+
+  provider()->SetParentFrameSinkId(kFrameSinkA, kFrameSinkB);
+  RunUntilIdle();
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              IsEmpty());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+}
+
+TEST_F(EmbeddedFrameSinkProviderImplTest, SetParentFrameSinkId_SameParent) {
+  StubEmbeddedFrameSinkClient efs_client;
+  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                        efs_client.GetInterfaceRemote());
+
+  // Create and register frame sink A as a child.
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  viz::MockCompositorFrameSinkClient compositor_frame_sink_client;
+  provider()->CreateCompositorFrameSink(
+      kFrameSinkA, compositor_frame_sink_client.BindInterfaceRemote(),
+      compositor_frame_sink.BindNewPipeAndPassReceiver());
+  RunUntilIdle();
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              ElementsAre(kFrameSinkA));
+
+  // Call SetParentFrameSinkId with the SAME parent.
+  // It should early return and not unregister/reregister.
+  provider()->SetParentFrameSinkId(kFrameSinkA, kFrameSinkParent);
+  RunUntilIdle();
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              ElementsAre(kFrameSinkA));
+}
+
+TEST_F(EmbeddedFrameSinkProviderImplTest, SetParentFrameSinkId_NotRegistered) {
+  StubEmbeddedFrameSinkClient efs_client;
+  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                        efs_client.GetInterfaceRemote());
+
+  // Do NOT call provider()->CreateCompositorFrameSink, so
+  // has_registered_compositor_frame_sink_ is false.
+
+  StubEmbeddedFrameSinkClient efs_client_b;
+  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkB,
+                                        efs_client_b.GetInterfaceRemote());
+
+  provider()->SetParentFrameSinkId(kFrameSinkA, kFrameSinkB);
+  RunUntilIdle();
+
+  // The hierarchy is immediately registered based on the current implementation
+  // which unconditionally calls RegisterFrameSinkHierarchy() at the end.
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              IsEmpty());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+
+  // If we now create the frame sink, it should still use the right parent.
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  viz::MockCompositorFrameSinkClient compositor_frame_sink_client;
+  provider()->CreateCompositorFrameSink(
+      kFrameSinkA, compositor_frame_sink_client.BindInterfaceRemote(),
+      compositor_frame_sink.BindNewPipeAndPassReceiver());
+  RunUntilIdle();
+
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+}
+
 }  // namespace content

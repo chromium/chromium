@@ -11,6 +11,10 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 
+namespace viz {
+class FrameSinkId;
+}
+
 namespace blink {
 
 // Listens for updates made on the cc::Layer by the WebSurfaceLayerBridge.
@@ -46,6 +50,8 @@ class BLINK_PLATFORM_EXPORT WebSurfaceLayerBridge {
   virtual void ClearObserver() = 0;
   virtual void RegisterFrameSinkHierarchy() = 0;
   virtual void UnregisterFrameSinkHierarchy() = 0;
+  virtual void ReparentFrameSinkHierarchy(
+      const viz::FrameSinkId& new_parent_frame_sink_id) = 0;
 };
 
 }  // namespace blink

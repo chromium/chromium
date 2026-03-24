@@ -33,6 +33,8 @@ class MockEmbeddedFrameSinkProvider
       void(const viz::FrameSinkId&,
            const viz::FrameSinkId&,
            mojo::PendingRemote<mojom::blink::EmbeddedFrameSinkClient>));
+  MOCK_METHOD2(SetParentFrameSinkId,
+               void(const viz::FrameSinkId&, const viz::FrameSinkId&));
   void RegisterEmbeddedFrameSinkBundle(
       const viz::FrameSinkBundleId&,
       mojo::PendingReceiver<viz::mojom::blink::FrameSinkBundle> receiver,

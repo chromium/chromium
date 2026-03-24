@@ -342,6 +342,7 @@ class MockSurfaceLayerBridge : public WebSurfaceLayerBridge {
   MOCK_METHOD0(ClearObserver, void());
   MOCK_METHOD0(RegisterFrameSinkHierarchy, void());
   MOCK_METHOD0(UnregisterFrameSinkHierarchy, void());
+  MOCK_METHOD1(ReparentFrameSinkHierarchy, void(const viz::FrameSinkId&));
 };
 
 class MockVideoFrameCompositor : public VideoFrameCompositor {

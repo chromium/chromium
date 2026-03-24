@@ -2884,6 +2884,7 @@ _CONFIG = [
             'cc::PaintCanvas',
             'cc::PaintFlags',
             'media::.+',
+            'viz::FrameSinkId',
         ]
     },
     {
@@ -3046,6 +3047,12 @@ _CONFIG = [
             'third_party/blink/common/scheduler/web_scheduler_tracked_feature.cc',
         ],
         'allowed': ['base::NoDestructor']
+    },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_surface_layer_bridge.h',
+        ],
+        'allowed': ['viz::FrameSinkId'],
     },
 ]
 

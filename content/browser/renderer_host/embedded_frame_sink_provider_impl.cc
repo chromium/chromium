@@ -56,6 +56,23 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
       std::move(client), std::move(destroy_callback));
 }
 
+void EmbeddedFrameSinkProviderImpl::SetParentFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::FrameSinkId& parent_frame_sink_id) {
+  if (!parent_frame_sink_id.is_valid() ||
+      parent_frame_sink_id.client_id() != renderer_client_id_) {
+    receivers_.ReportBadMessage("Invalid parent FrameSinkId");
+    return;
+  }
+
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    receivers_.ReportBadMessage("No EmbeddedFrameSinkImpl for client");
+    return;
+  }
+  iter->second->SetParentFrameSinkId(parent_frame_sink_id);
+}
+
 void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSinkBundle(
     const viz::FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,

@@ -4147,6 +4147,13 @@ void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
     bridge_->UnregisterFrameSinkHierarchy();
 }
 
+void WebMediaPlayerImpl::ReparentFrameSinkHierarchy(
+    const viz::FrameSinkId& new_parent_frame_sink_id) {
+  if (use_surface_layer_ && bridge_) {
+    bridge_->ReparentFrameSinkHierarchy(new_parent_frame_sink_id);
+  }
+}
+
 void WebMediaPlayerImpl::RecordVideoOcclusionState(
     std::string_view occlusion_state) {
   media_log_->AddEvent<MediaLogEvent::kVideoOcclusionState>(
