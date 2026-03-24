@@ -667,6 +667,7 @@ void SharedImageManager::QueryMultiplanarTextureSamplingSupport() {
 
 bool SharedImageManager::SupportsNV12TextureSampling() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  AutoLock autolock(this);
   if (!is_texture_sampling_queried_) {
     QueryMultiplanarTextureSamplingSupport();
   }
@@ -680,6 +681,7 @@ bool SharedImageManager::SupportsNV12TextureSampling() {
 
 bool SharedImageManager::SupportsP010TextureSampling() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  AutoLock autolock(this);
   if (!is_texture_sampling_queried_) {
     QueryMultiplanarTextureSamplingSupport();
   }
