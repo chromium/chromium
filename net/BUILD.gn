@@ -3858,6 +3858,7 @@ fuzzer_test("net_parse_proxy_host_matching_rules_fuzzer") {
   deps = [
     ":net_fuzzer_test_support",
     "//net",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 
@@ -3866,6 +3867,7 @@ fuzzer_test("net_parse_proxy_rules_fuzzer") {
   deps = [
     ":net_fuzzer_test_support",
     "//net",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   dict =
       "data/fuzzer_dictionaries/net_parse_proxy_host_matching_rules_fuzzer.dict"
