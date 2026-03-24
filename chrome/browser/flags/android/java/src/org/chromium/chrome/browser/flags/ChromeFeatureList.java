@@ -920,10 +920,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDefaultBrowserPromoFre =
             newCachedFlag(DEFAULT_BROWSER_PROMO_FRE, false);
     public static final CachedFlag sDesktopAndroidLinkCapturing =
-            newCachedFlag(
-                    DESKTOP_ANDROID_LINK_CAPTURING,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
             newCachedFlag(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
