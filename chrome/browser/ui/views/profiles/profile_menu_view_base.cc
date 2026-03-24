@@ -161,26 +161,35 @@ ui::ImageModel GetCircularSizedImage(const ui::ImageModel& image_model,
 }
 
 class FeatureButtonIconView : public views::ImageView {
+  METADATA_HEADER(FeatureButtonIconView, views::ImageView)
+
  public:
   FeatureButtonIconView(const gfx::VectorIcon& icon, float icon_to_image_ratio)
       : icon_(icon), icon_to_image_ratio_(icon_to_image_ratio) {}
   ~FeatureButtonIconView() override = default;
 
-  // views::ImageView:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
+  void UpdateColor(ui::ColorId color_id) {
     constexpr int kIconSize = 16;
-    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
+    const SkColor icon_color = GetColorProvider()->GetColor(color_id);
     gfx::ImageSkia image =
         ImageForMenu(*icon_, icon_to_image_ratio_, icon_color);
     SetImage(ui::ImageModel::FromImageSkia(
         SizeImage(ColorImage(image, icon_color), kIconSize)));
   }
 
+  // views::ImageView:
+  void OnThemeChanged() override {
+    views::ImageView::OnThemeChanged();
+    UpdateColor(ui::kColorIcon);
+  }
+
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
   const float icon_to_image_ratio_;
 };
+
+BEGIN_METADATA(FeatureButtonIconView)
+END_METADATA
 
 // AvatarImageView is used to ensure avatar adornments are kept in sync with
 // current theme colors.
@@ -293,12 +302,20 @@ class MenuButtonRowView : public HoverButton {
     HoverButton::OnFocus();
     title()->SetEnabledColor(ui::kColorMenuItemForegroundSelected);
     title()->SetBackgroundColor(ui::kColorMenuItemBackgroundSelected);
+    if (auto* feature_icon =
+            views::AsViewClass<FeatureButtonIconView>(icon_view())) {
+      feature_icon->UpdateColor(ui::kColorMenuItemForegroundSelected);
+    }
   }
 
   void OnBlur() override {
     HoverButton::OnBlur();
     title()->SetEnabledColor(ui::kColorMenuItemForeground);
     title()->SetBackgroundColor(kColorProfileMenuBackground);
+    if (auto* feature_icon =
+            views::AsViewClass<FeatureButtonIconView>(icon_view())) {
+      feature_icon->UpdateColor(ui::kColorIcon);
+    }
   }
 
   void OnPaintBackground(gfx::Canvas* canvas) override {
