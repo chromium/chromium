@@ -764,4 +764,72 @@ TEST_F(ContentAnnotatorServiceTest,
   EXPECT_FALSE(cached_data.has_value());
 }
 
+TEST_F(ContentAnnotatorServiceTest,
+       TestHandleModelExecutionResult_StripsMarkdown) {
+  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "true"}});
+
+  GURL url("https://example.com/markdown");
+  base::Time base_time = base::Time::Now();
+  std::string data = "{\n  \"key\": \"value\"\n}";
+  std::string data_with_markdown = base::StrCat({"```json\n", data, "\n```"});
+
+  // 2. Mock Classify to return a result that triggers full annotation.
+  ContentClassificationResult classifier_result;
+  classifier_result.title_keyword_result =
+      ContentClassificationResult::Result();
+  classifier_result.title_keyword_result->category = "test category";
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify).WillOnce(Return(classifier_result));
+
+  // 3. Capture the callback passed to ExecuteModel.
+  base::OnceCallback<void(
+      optimization_guide::OptimizationGuideModelExecutionResult,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>
+      captured_callback;
+
+  EXPECT_CALL(*mock_remote_model_executor_, ExecuteModel)
+      .WillOnce(
+          [&captured_callback](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) { captured_callback = std::move(callback); });
+
+  TriggerClassification(url, base_time);
+
+  // 4. Simulate the model execution by running the captured callback.
+  ASSERT_TRUE(captured_callback);
+  optimization_guide::proto::ContentAnnotationResponse mock_response_proto;
+  mock_response_proto.set_extracted_data(data_with_markdown);
+
+  optimization_guide::proto::Any any_proto;
+  any_proto.set_type_url(base::StrCat(
+      {"type.googleapis.com/", mock_response_proto.GetTypeName()}));
+  any_proto.set_value(mock_response_proto.SerializeAsString());
+
+  optimization_guide::OptimizationGuideModelExecutionResult mock_result(
+      base::ok(any_proto), /*execution_info=*/nullptr);
+
+  // 5. Validator is disabled, but stripping should still happen.
+  EXPECT_CALL(*mock_validator_, IsValidatorEnabled).WillOnce(Return(false));
+
+  ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
+                              .Run(std::move(mock_result),
+                                   /*log_entry=*/nullptr));
+
+  // 6. Verify that the stripped data is cached in the backend.
+  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+      cached_data =
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+  ASSERT_TRUE(cached_data.has_value());
+  EXPECT_EQ(cached_data->annotations, data);
+}
+
 }  // namespace accessibility_annotator
