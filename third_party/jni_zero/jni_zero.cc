@@ -38,9 +38,24 @@ static_assert(std::is_same<jdouble, double>::value);
 
 namespace jni_zero {
 namespace {
+#if defined(JNI_ZERO_IS_ROBOLECTRIC)
+using JniNativeInterface = JNINativeInterface_;
+#else
+using JniNativeInterface = JNINativeInterface;
+#endif
+
 // Until we fully migrate base's jni_android, we will maintain a copy of this
 // global here and will have base set this variable when it sets its own.
 JavaVM* g_jvm = nullptr;
+
+// We need to store a reference to the existing env functions because any
+// functions that we hook *we* will still need to call the underlying real
+// method.
+const JniNativeInterface* g_previous_functions;
+
+// The instance of this struct provided in JNIEnv is read-only, so we deep copy
+// it to allow individual functions to be hooked.
+JniNativeInterface g_hooked_functions;
 
 jclass (*g_class_resolver)(JNIEnv*, const char*, const char*) = nullptr;
 
@@ -53,12 +68,19 @@ jclass GetClassInternal(JNIEnv* env,
   if (g_class_resolver != nullptr) {
     clazz = g_class_resolver(env, class_name, split_name);
   } else {
-    clazz = env->FindClass(class_name);
+    // Because we're overriding the default env->FindClass with our own method
+    // we end up with infinite recursion unless we call the original function
+    // here.
+    clazz = g_previous_functions->FindClass(env, class_name);
   }
   if (ClearException(env) || !clazz) {
     JNI_ZERO_FLOG("Failed to find class %s", class_name);
   }
   return clazz;
+}
+
+jclass GetClassNoSplit(JNIEnv* env, const char* class_name) {
+  return GetClassInternal(env, class_name, "");
 }
 
 jclass LazyGetClassInternal(JNIEnv* env,
@@ -152,6 +174,17 @@ void InitVM(JavaVM* vm) {
   }
   g_jvm = vm;
   JNIEnv* env = AttachCurrentThread();
+
+  // We need to override the default `FindClass` method with one that is split
+  // aware. If we don't, third_party libraries who make their own direct JNI
+  // calls rather than through jni_zero, will not work and cause a crash.
+  // JNIEnv is thread-local and this overrides only the main thread.
+  // We'll need to do this for other threads if there is ever a need.
+  g_previous_functions = env->functions;
+  g_hooked_functions = *g_previous_functions;
+  env->functions = &g_hooked_functions;
+  g_hooked_functions.FindClass = &GetClassNoSplit;
+
   g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");
   g_string_class = GetSystemClassGlobalRef(env, "java/lang/String");
   g_empty_string.Reset(
