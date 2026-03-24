@@ -344,21 +344,31 @@ class RoundedEdgePathIterator {
       : iter_(rounded_center_path, /*forceClose*/ true),
         center_inset_(center_inset) {}
 
+ private:
+  // The three points are: start, control (the right-angle corner), end.
+  static constexpr size_t kArcPointCount = 3;
+  using ArcPointArray = std::array<SkPoint, kArcPointCount>;
+  using ArcPointSpan = base::span<const SkPoint, kArcPointCount>;
+
+ public:
   SkPath Next() {
     SkPath edge_stroke_path;
     while (true) {
       SkPoint points[4];
       switch (iter_.next(points)) {
-        case SkPath::kConic_Verb:
+        case SkPath::kConic_Verb: {
+          ArcPointSpan arc_points = base::span(points).first<kArcPointCount>();
           if (is_new_contour_) {
-            std::copy_n(points, kArcPointCount, prev_arc_points_);
-            std::copy_n(points, kArcPointCount, first_arc_points_);
+            base::span(prev_arc_points_).copy_from(arc_points);
+            base::span(first_arc_points_).copy_from(arc_points);
             is_new_contour_ = false;
             continue;
           }
-          edge_stroke_path = GenerateEdgeStrokePath(prev_arc_points_, points);
-          std::copy_n(points, kArcPointCount, prev_arc_points_);
+          edge_stroke_path =
+              GenerateEdgeStrokePath(prev_arc_points_, arc_points);
+          base::span(prev_arc_points_).copy_from(arc_points);
           return edge_stroke_path;
+        }
         case SkPath::kClose_Verb:
           DCHECK(!is_new_contour_);
           edge_stroke_path =
@@ -382,8 +392,8 @@ class RoundedEdgePathIterator {
   //           |   Short extension after the ending arc (see code comment)
   // The edge will drawn with a clip to remove the first half of the starting
   // arc and the second half of the ending arc.
-  SkPath GenerateEdgeStrokePath(base::span<const SkPoint> starting_arc_points,
-                                base::span<const SkPoint> ending_arc_points) {
+  SkPath GenerateEdgeStrokePath(ArcPointSpan starting_arc_points,
+                                ArcPointSpan ending_arc_points) {
     SkPoint line_start = starting_arc_points[2];
     SkPoint line_end = ending_arc_points[0];
     SkPathBuilder edge_stroke_path;
@@ -421,10 +431,8 @@ class RoundedEdgePathIterator {
   SkPath::Iter iter_;
   const int center_inset_;
   bool is_new_contour_ = true;
-  // The three points are: start, control (the right-angle corner), end.
-  static constexpr size_t kArcPointCount = 3;
-  SkPoint first_arc_points_[kArcPointCount];
-  SkPoint prev_arc_points_[kArcPointCount];
+  ArcPointArray first_arc_points_;
+  ArcPointArray prev_arc_points_;
 };
 
 class ComplexOutlinePainter {
