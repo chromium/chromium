@@ -714,7 +714,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns the number of bits per channel.
   size_t BitDepth() const;
 
-  void SetLostSharedImageResource(bool lost_si_resource);
+  // Sets the `lost_shared_image_resource_` to true.
+  void SetLostSharedImageResource();
 
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
@@ -816,7 +817,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Tracks whether the SharedImage within VideoFrame which is transported over
   // a TransferableResource to the Display Compositor is lost, and if such a
-  // VideoFrame can be reused.
+  // VideoFrame can be reused. This is to be read only during VideoFrame
+  // destruction.
+  // TODO(b/495385034): Track this over ClientSharedImage.
   bool lost_shared_image_resource_ = false;
 
   // Native texture shared image that is only set when the VideoFrame is

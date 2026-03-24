@@ -354,7 +354,7 @@ void ReturnTexture(
   // Note: This method is called for each plane texture in the frame! Which
   // means it may end up receiving the same `new_release_token` multiple times.
   if (lost_resource) {
-    video_frame->SetLostSharedImageResource(/*lost_si_resource=*/true);
+    video_frame->SetLostSharedImageResource();
     return;
   }
 

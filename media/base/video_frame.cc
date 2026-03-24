@@ -1457,12 +1457,12 @@ bool VideoFrame::HasReleaseMailboxCB() const {
                         : !!shared_image_release_cb_;
 }
 
-void VideoFrame::SetLostSharedImageResource(bool lost_si_resource) {
+void VideoFrame::SetLostSharedImageResource() {
   if (wrapped_frame_) {
-    wrapped_frame_->SetLostSharedImageResource(lost_si_resource);
+    wrapped_frame_->SetLostSharedImageResource();
     return;
   }
-  lost_shared_image_resource_ = lost_si_resource;
+  lost_shared_image_resource_ = true;
 }
 
 void VideoFrame::AddDestructionObserver(base::OnceClosure callback) {
