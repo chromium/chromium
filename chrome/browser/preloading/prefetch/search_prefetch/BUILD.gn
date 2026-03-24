@@ -2,6 +2,67 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("search_prefetch") {
+  public = [
+    "search_prefetch_keep_alive_request_tracker.h",
+    "search_prefetch_request.h",
+    "search_prefetch_service.h",
+    "search_prefetch_service_factory.h",
+    "search_prefetch_url_loader.h",
+    "search_prefetch_url_loader_interceptor.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/preloading/prerender",
+    "//chrome/browser/profiles:profile",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cache_alias_search_prefetch_url_loader.cc",
+    "cache_alias_search_prefetch_url_loader.h",
+    "search_prefetch_keep_alive_request_tracker.cc",
+    "search_prefetch_request.cc",
+    "search_prefetch_service.cc",
+    "search_prefetch_service_factory.cc",
+    "search_prefetch_url_loader.cc",
+    "search_prefetch_url_loader_interceptor.cc",
+    "streaming_search_prefetch_url_loader.cc",
+    "streaming_search_prefetch_url_loader.h",
+  ]
+
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+
+  deps = [
+    ":field_trial_settings",
+    ":search_prefetch",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/prefetch",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/search_preload",
+    "//chrome/browser/search_engines",
+    "//components/embedder_support:user_agent",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/content_settings/core/browser" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
+}
+
 source_set("field_trial_settings") {
   public = [ "field_trial_settings.h" ]
   sources = [ "field_trial_settings.cc" ]

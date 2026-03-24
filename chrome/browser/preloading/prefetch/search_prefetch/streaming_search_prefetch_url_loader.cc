@@ -42,8 +42,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/api/web_request/web_request_api.h"
-#include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/api/web_request/web_request_api.h"    // nogncheck
+#include "extensions/browser/browser_context_keyed_api_factory.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {

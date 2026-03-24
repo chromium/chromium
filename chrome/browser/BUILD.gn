@@ -884,22 +884,6 @@ static_library("browser") {
     "preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h",
     "preloading/prefetch/prefetch_service/prefetch_origin_decider.cc",
     "preloading/prefetch/prefetch_service/prefetch_origin_decider.h",
-    "preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.cc",
-    "preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_tracker.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_tracker.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_request.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_request.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_service.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_service.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_service_factory.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_service_factory.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_url_loader.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_url_loader.h",
-    "preloading/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.cc",
-    "preloading/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h",
-    "preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.cc",
-    "preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h",
 
     # TODO(crbug.com/408801109) Remove this once the privacy_sandbox_service_factory is moved to chrome/browser/prviacy_sandbox/BUILD.
     "privacy_sandbox/notice/notice_service_factory.cc",
@@ -1385,8 +1369,6 @@ static_library("browser") {
     # c/b/history/top_sites_factory.h"
     # c/b/history_embeddings/history_embeddings_service_factory.h"
     # c/b/history_embeddings/history_embeddings_utils.h"
-    # c/b/preloading/prefetch/search_prefetch/search_prefetch_service.h"
-    # c/b/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
     # c/b/browser_process_platform_part.h"
     "//chrome/browser/autocomplete:impl",
 
@@ -1429,6 +1411,12 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove this circular dependency when
     # profiles/profile_manager.h gets componentized.
     allow_circular_includes_from += [ "//chrome/browser/share" ]
+
+    # TODO(crbug.com/408146612): Remove this circular dependency when the
+    # following header get modularized:
+    # - c/b/android/omnibox/geolocation_header.h
+    allow_circular_includes_from +=
+        [ "//chrome/browser/preloading/prefetch/search_prefetch:impl" ]
   }
 
   public_deps = [
@@ -1666,7 +1654,9 @@ static_library("browser") {
     "//chrome/browser/preloading/new_tab_page_preload:impl",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
+    "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//chrome/browser/preloading/prefetch/search_prefetch:impl",
     "//chrome/browser/preloading/prerender",
     "//chrome/browser/preloading/prerender:impl",
     "//chrome/browser/preloading/search_preload",

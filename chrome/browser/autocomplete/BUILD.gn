@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/prefs",
+    "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/search_engines",
