@@ -2,7 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! TODO: Module docs (link to interface.rs?)
+//! This module defines the [`Remote`] and [`PendingRemote`] types, which
+//! represent the caller side of a Mojo interface. Each `Remote` or
+//! `PendingRemote` is associated with exactly one `Receiver` or
+//! `PendingReceiver` elsewhere in the program. A `PendingRemote` does
+//! nothing until bound to a sequence to create a `Remote<dyn SomeInterface>`.
+//!
+//! A `Remote<dyn SomeInterface>` sends messages to the corresponding
+//! `Receiver` and schedules response callbacks on its bound sequence.
+//!
+//! The standard way to obtain a `Remote` is to first create a pipe via
+//! [`PendingRemote::new_pipe`], then bind the `PendingRemote` to a sequence
+//! by calling [`PendingRemote::bind`]. `PendingRemote`s can also be obtained
+//! by manually wrapping a
+//! [`MessageEndpoint`](system::message_pipe::MessageEndpoint).
+//!
+//! Messages can be sent immediately after binding, even before the
+//! corresponding `Receiver` is bound. Response callbacks are processed
+//! asynchronously on the bound sequence.
+//!
+//! For a more detailed explanation, see the documentation for the
+//! [`interface`] module.
 
 chromium::import! {
   "//mojo/public/rust/system";
