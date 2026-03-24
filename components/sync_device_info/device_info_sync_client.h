@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -51,6 +52,8 @@ class DeviceInfoSyncClient {
 
   // Returns whether the receiving end of the Desktop to iOS promo is enabled.
   virtual bool GetDesktopToIOSPromoReceivingEnabled() const = 0;
+  virtual MobilePromoOnDesktopPromoTypeSet GetDesktopToIOSPromoReceivingTypes()
+      const = 0;
 };
 
 }  // namespace syncer

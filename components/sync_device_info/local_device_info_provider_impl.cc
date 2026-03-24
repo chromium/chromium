@@ -86,6 +86,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
 
   local_device_info_->set_desktop_to_ios_promo_receiving_enabled(
       sync_client_->GetDesktopToIOSPromoReceivingEnabled());
+  local_device_info_->set_desktop_to_ios_promo_receiving_types(
+      sync_client_->GetDesktopToIOSPromoReceivingTypes());
 
   return local_device_info_.get();
 }
@@ -149,7 +151,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       last_fcm_registration_token, last_interested_data_types,
       /*auto_sign_out_last_signin_timestamp=*/
       auto_sign_out_last_signin_timestamp,
-      sync_client_->GetDesktopToIOSPromoReceivingEnabled());
+      sync_client_->GetDesktopToIOSPromoReceivingEnabled(),
+      sync_client_->GetDesktopToIOSPromoReceivingTypes());
 
   full_hardware_class_ = full_hardware_class;
 

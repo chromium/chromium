@@ -58,8 +58,10 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     const std::string& guid,
     syncer::DeviceInfo::OsType os_type,
     syncer::DeviceInfo::FormFactor form_factor,
-    bool desktop_to_ios_promo_receiving_enabled) {
-  return std::make_unique<syncer::DeviceInfo>(
+    bool desktop_to_ios_promo_receiving_enabled,
+    const MobilePromoOnDesktopPromoTypeSet&
+        desktop_to_ios_promo_receiving_types = {}) {
+  auto device_info = std::make_unique<syncer::DeviceInfo>(
       guid, "name", "chrome_version", "user_agent",
       sync_pb::SyncEnums_DeviceType_TYPE_PHONE, os_type, form_factor,
       "scoped_id", "manufacturer", "model", "full_hardware_class",
@@ -76,6 +78,9 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*interested_data_types=*/syncer::DataTypeSet::All(),
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
       desktop_to_ios_promo_receiving_enabled);
+  device_info->set_desktop_to_ios_promo_receiving_types(
+      desktop_to_ios_promo_receiving_types);
+  return device_info;
 }
 
 }  // namespace
@@ -146,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
       CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true));
+                       syncer::DeviceInfo::FormFactor::kPhone, true,
+                       {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   views::Widget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
@@ -188,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
       CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true));
+                       syncer::DeviceInfo::FormFactor::kPhone, true,
+                       {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the last impression timestamp to now.
   browser()->profile()->GetPrefs()->SetTime(
@@ -214,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
       CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true));
+                       syncer::DeviceInfo::FormFactor::kPhone, true,
+                       {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the impression count to the maximum.
   browser()->profile()->GetPrefs()->SetInteger(
@@ -227,6 +235,98 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
+
+  // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is not shown when the "desktop to iOS promo" feature
+// is enabled on the user's iOS device, but not for the specific promo type.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_ReceivingEnabled_WrongType) {
+  // Add a device with receiving enabled, but for a different promo type (Lens).
+  // Note: An iOS client with only specific promos enabled (and not kAllPromos)
+  // will populate the legacy boolean as false.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, false,
+                       {MobilePromoOnDesktopPromoType::kLensPromo}));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
+
+  // Trigger the promo. Password maps to something else, not Lens.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is not shown when the "desktop to iOS promo" feature
+// legacy boolean is true (due to a different legacy promo being enabled), but
+// the specific promo type requested is not enabled on the user's iOS device.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_ReceivingEnabled_LegacyBooleanTrue_WrongType) {
+  // Add a device where legacy receiving is true (because ESBPromo is enabled),
+  // but AutofillPromo (Password) is not in the types list.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true,
+                       {MobilePromoOnDesktopPromoType::kESBPromo}));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
+
+  // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is shown when the "desktop to iOS promo" feature
+// is enabled on an older iOS device that only populates the legacy boolean.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_ReceivingEnabled_LegacyClient) {
+  // Add a device with legacy receiving enabled, and an empty types list.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true, {}));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(1);
+
+  // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is shown when the specific promo type is enabled,
+// even if kAllPromos is not present.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_ReceivingEnabled_SpecificType) {
+  // Add a device with legacy receiving enabled (because AutofillPromo is
+  // enabled), and the specific type (kAutofillPromo) is in the types list.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true,
+                       {MobilePromoOnDesktopPromoType::kAutofillPromo}));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(1);
 
   // Trigger the promo.
   promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);

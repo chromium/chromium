@@ -15,6 +15,7 @@
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/sync/base/data_type.h"
 
 namespace sync_pb {
@@ -152,7 +153,9 @@ class DeviceInfo {
       const std::string& fcm_registration_token,
       const DataTypeSet& interested_data_types,
       std::optional<base::Time> auto_sign_out_last_signin_timestamp,
-      bool desktop_to_ios_promo_receiving_enabled);
+      bool desktop_to_ios_promo_receiving_enabled = false,
+      const MobilePromoOnDesktopPromoTypeSet&
+          desktop_to_ios_promo_receiving_types = {});
 
   DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
@@ -235,9 +238,11 @@ class DeviceInfo {
   std::optional<base::Time> auto_sign_out_last_signin_timestamp() const;
 
   // Whether the receiving side of the Desktop to iOS Promo feature is enabled.
-  // TODO(crbug.com/438769954): Remove this field once kMobilePromoOnDesktop is
-  // cleaned up.
+  // TODO(crbug.com/438769954): Remove these fields once kMobilePromoOnDesktop
+  // is cleaned up.
   bool desktop_to_ios_promo_receiving_enabled() const;
+  const MobilePromoOnDesktopPromoTypeSet& desktop_to_ios_promo_receiving_types()
+      const;
 
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
@@ -265,6 +270,8 @@ class DeviceInfo {
   void set_auto_sign_out_last_signin_timestamp(std::optional<base::Time> time);
 
   void set_desktop_to_ios_promo_receiving_enabled(bool new_value);
+  void set_desktop_to_ios_promo_receiving_types(
+      const MobilePromoOnDesktopPromoTypeSet& new_types);
 
  private:
   const std::string guid_;
@@ -315,7 +322,17 @@ class DeviceInfo {
 
   std::optional<base::Time> auto_sign_out_last_signin_timestamp_;
 
+  // Tracks whether the Desktop to iOS Promo feature is enabled on the device.
+  // `desktop_to_ios_promo_receiving_enabled_` is maintained for backwards
+  // compatibility with older iOS clients that do not yet support granular
+  // promo types. It now acts as a legacy fallback representing the original
+  // promos: kAllPromos, kAutofillPromo (Passwords), and kESBPromo.
+  // `desktop_to_ios_promo_receiving_types_` specifies the exact
+  // types of promos the device is eligible to receive.
+  // TODO(crbug.com/438769954): Remove the boolean field once the granular
+  // promo types feature is fully launched.
   bool desktop_to_ios_promo_receiving_enabled_;
+  MobilePromoOnDesktopPromoTypeSet desktop_to_ios_promo_receiving_types_;
 
   // NOTE: when adding a member, don't forget to update
   // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else
