@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -352,17 +353,17 @@ class AutofillAiFunnelMetricsTest
                              std::string_view funnel_name,
                              int sample) {
     for (bool use_submitted : {false, true}) {
-      auto expect_correct_histogram =
-          [&](std::string_view histogram_name, bool use_entity_type,
-              bool use_record_type) {
-            std::string histogram_name_str = GetFunnelHistogram(
-                histogram_name,
-                use_submitted ? std::optional(submitted()) : std::nullopt,
-                use_entity_type ? std::optional(entity_type()) : std::nullopt,
-                use_record_type ? std::optional(record_type()) : std::nullopt);
+      auto expect_correct_histogram = [&](std::string_view histogram_name,
+                                          bool use_entity_type,
+                                          bool use_record_type) {
+        std::string histogram_name_str = GetFunnelHistogram(
+            histogram_name,
+            use_submitted ? std::optional(submitted()) : std::nullopt,
+            use_entity_type ? std::optional(entity_type()) : std::nullopt,
+            use_record_type ? std::optional(record_type()) : std::nullopt);
 
-            histogram_tester.ExpectUniqueSample(histogram_name_str, sample, 1);
-          };
+        histogram_tester.ExpectUniqueSample(histogram_name_str, sample, 1);
+      };
 
       expect_correct_histogram(funnel_name, /*use_entity_type=*/false,
                                /*use_record_type=*/false);
@@ -1091,6 +1092,33 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
                                                  /*submission_state=*/true,
                                                  /*opt_in_status=*/false);
   EXPECT_TRUE(mqls_logs().empty());
+}
+
+// Tests that when Autofill AI is available by default, MQLS metrics are not
+// emitted, but UMA Key metrics are.
+TEST_F(AutofillAiMqlsMetricsTest,
+       KeyMetrics_OptOut_AutofillAiAvailableByDefault) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
+
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  EntityInstance entity = test::GetPassportEntityInstance();
+  // Simulate data available for filling.
+  test_api(manager()).logger().OnFormHasDataToFill(form->global_id(),
+                                                   {entity.type()}, {entity});
+
+  base::HistogramTester histogram_tester;
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submission_state=*/true,
+                                                 /*opt_in_status=*/false);
+
+  // MQLS metrics are not emitted if the user is not opted-in.
+  EXPECT_TRUE(mqls_logs().empty());
+
+  // UMA metrics are still emitted if the feature is available by default.
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.KeyMetrics.FillingReadiness",
+                                      1, 1);
 }
 
 // Tests that KeyMetrics MQLS metrics aren't recorded if the form was abandoned

@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -225,7 +226,8 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
           combined_state.suggestions_shown, combined_state.did_fill_suggestions,
           combined_state.edited_autofilled_field, opt_in_status);
     }
-    if (opt_in_status) {
+    if (opt_in_status ||
+        base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault)) {
       RecordKeyMetrics(funnel_states);
     }
   }
