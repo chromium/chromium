@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] attachShadow() on declarative shadow root with manual slotAssignment
+  assert_equals: slotAssignment should be "manual" from declarative attribute expected "manual" but got "named"
+[FAIL] attachShadow() on declarative shadow root does not change slotAssignment
+  assert_equals: expected "manual" but got "named"
+Harness: the test ran to completion.
+

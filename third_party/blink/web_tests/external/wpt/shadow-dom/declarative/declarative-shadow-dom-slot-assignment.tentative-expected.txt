@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] shadowrootslotassignment reflection
+  assert_equals: Missing attribute should map to named expected (string) "named" but got (undefined) undefined
+[FAIL] shadowrootslotassignment reflection, setter
+  assert_equals: expected (string) "manual" but got (object) null
+[FAIL] Declarative Shadow DOM: shadowrootslotassignment=manual
+  assert_equals: slotAssignment should be "manual" expected "manual" but got "named"
+[FAIL] Declarative Shadow DOM: shadowrootslotassignment is case insensitive
+  assert_equals: slotAssignment should be "manual" (case insensitive) expected "manual" but got "named"
+[FAIL] Declarative Shadow DOM: shadowrootslotassignment on closed shadows can be set to manual
+  assert_equals: slotAssignment should be "manual" (closed root) expected "manual" but got "named"
+Harness: the test ran to completion.
+
