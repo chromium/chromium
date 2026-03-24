@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/scoped_observation.h"
-#include "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
-#include "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
+#import "base/scoped_observation.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 
 // Objective-C protocol for observing FullscreenBrowserAgent events.
 @protocol FullscreenBrowserAgentObserving <NSObject>
@@ -24,6 +24,9 @@
 
 // Called before the obscured inset range updates.
 - (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent;
+
+// Called after the obscured inset range updates.
+- (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent;
 
 @end
 
@@ -42,6 +45,7 @@ class FullscreenBrowserAgentObserverBridge
   void WillUpdateState(FullscreenBrowserAgent* agent) override;
   void DidUpdateState(FullscreenBrowserAgent* agent) override;
   void WillUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override;
+  void DidUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override;
 
   __weak id<FullscreenBrowserAgentObserving> observer_;
   base::ScopedObservation<FullscreenBrowserAgent,

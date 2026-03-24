@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_FULLSCREEN_MODEL_FULLSCREEN_BROWSER_AGENT_OBSERVER_H_
 #define IOS_CHROME_BROWSER_FULLSCREEN_MODEL_FULLSCREEN_BROWSER_AGENT_OBSERVER_H_
 
-#include "base/observer_list_types.h"
+#import "base/observer_list_types.h"
 
 class FullscreenBrowserAgent;
 
@@ -20,6 +20,9 @@ class FullscreenBrowserAgentObserver : public base::CheckedObserver {
 
   // Called before the obscured inset range updates.
   virtual void WillUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) {}
+
+  // Called after the obscured inset range updates.
+  virtual void DidUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_MODEL_FULLSCREEN_BROWSER_AGENT_OBSERVER_H_
