@@ -44,9 +44,7 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // deleted after its wrapper will be collected.
     // On the browser side, we ignore wrapper deletion events for named objects,
     // as they are only removed upon embedder's request (RemoveNamedObject).
-    if (objects_.contains(iter->second.object_id)) {
-      objects_.erase(iter->second.object_id);
-    }
+    objects_.erase(iter->second.object_id);
 
     // We will always receive an allowlist of origins. Only inject
     // if the origin matches one of the rules.

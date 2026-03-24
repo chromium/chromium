@@ -116,9 +116,9 @@ void TextFormattingMetricsRecorder::EmitHistograms(int text_length,
 }
 
 base::TimeDelta TextFormattingMetricsRecorder::GetTotalDuration() const {
-  CHECK(timers_.contains(TextFormattingMetric::kTotalDuration));
-  const auto& [timer, duration] =
-      timers_.at(TextFormattingMetric::kTotalDuration);
+  auto it = timers_.find(TextFormattingMetric::kTotalDuration);
+  CHECK(it != timers_.end());
+  const auto& [timer, duration] = it->second;
   return duration ? *duration : timer.Elapsed();
 }
 

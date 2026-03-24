@@ -758,11 +758,10 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
   }
 
   // We do not need to clear a node more than once per atomic update.
-  if (nodes_already_cleared_.contains(unique_id)) {
+  if (!nodes_already_cleared_.emplace(unique_id).second) {
     return;
   }
 
-  nodes_already_cleared_.emplace(unique_id);
   wcax->ClearNodeInfoCacheForGivenId(unique_id);
 }
 
