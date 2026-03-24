@@ -287,11 +287,13 @@ void PrerenderHandleImpl::OnHostDestroyed(PrerenderFinalStatus status) {
 
 void PrerenderHandleImpl::OnHeadersReceived(
     NavigationHandle& navigation_handle) {
-  if (state_ != State::kLoading) {
-    SCOPED_CRASH_KEY_NUMBER("BUG489979390", "state", static_cast<int>(state_));
-    base::debug::DumpWithoutCrashing();
+  // There is a small chance that the headers received callback
+  // will be called for a cancelled prerender host because the
+  // deferred destruction of the PrerenderHost.
+  if (state_ == State::kCanceled) {
     return;
   }
+  CHECK_EQ(state_, State::kLoading);
   state_ = State::kReady;
 
   for (auto& callback : on_headers_received_callbacks_) {
