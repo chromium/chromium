@@ -1,0 +1,4 @@
+team_email: "product-security@chromium.org"
+buganizer_public: {
+  component_id: 1517484
+}
