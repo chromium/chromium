@@ -1287,7 +1287,7 @@
       'filepath': 'fuchsia.*$(?<!sdk_override.txt)',
     },
     'fuzzing': {
-      'filepath': 'fuzz|Fuzz',
+      'filepath': '^(?!third_party/fuzztest/src$).*(fuzz|Fuzz)',
     },
     'gamepad': {
       'filepath': 'gamepad',
