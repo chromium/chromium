@@ -91,6 +91,14 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_NONDIGIT);
   builder->Add("internalError",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR);
+  builder->Add("configurePinComplexityErrorNone",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_NONE);
+  builder->Add("configurePinComplexityErrorLow",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_LOW);
+  builder->Add("configurePinComplexityErrorMedium",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_MEDIUM);
+  builder->Add("configurePinComplexityErrorHigh",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_HIGH);
 }
 
 void PinSetupScreenHandler::Show(const std::string& token,

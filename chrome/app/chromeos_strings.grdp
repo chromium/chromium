@@ -5222,6 +5222,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_MISMATCHED" desc="Message shown below the title that tells the user they have entered two different PIN values.">
     PINs do not match
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_NONE" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to None.">
+    Must be at least 1 digit
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_LOW" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to Low.">
+    Must be at least 4 digits
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_MEDIUM" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to Medium.">
+    Must be at least 6 digits and can't contain repeating or ordered sequences
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_HIGH" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to High.">
+    Must be at least 8 digits and can't contain repeating or ordered sequences
+  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE" desc="Notification message after account removal.">
     <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device
   </message>
