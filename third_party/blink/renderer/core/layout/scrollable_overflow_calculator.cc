@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -298,7 +299,8 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
         PhysicalRect::EnclosingRect(transform->MapRect(gfx::RectF(overflow)));
   }
 
-  if (has_block_fragmentation_ && child_fragment.IsOutOfFlowPositioned()) {
+  if (has_block_fragmentation_ && child_fragment.IsOutOfFlowPositioned() &&
+      !RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     // If the containing block of an out-of-flow positioned box is inside a
     // clipped-overflow container inside a fragmentation context, we shouldn't
     // propagate overflow. Nothing will be painted on the outside of the clipped
