@@ -4627,7 +4627,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
     ]
-    public_deps = [ ":android_runtime_jni_headers" ]
   }
 
   # JNI not supported in Robolectric.
@@ -4648,18 +4647,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/RadioUtils.java",
     ]
 
-    public_deps = [
-      ":android_runtime_jni_headers",
-      ":base_minimal_jni",
-    ]
-  }
-
-  generate_jar_jni("android_runtime_jni_headers") {
-    classes = [
-      "java/lang/Runnable.class",
-      "java/lang/Runtime.class",
-      "java/lang/Throwable.class",
-    ]
+    public_deps = [ ":base_minimal_jni" ]
   }
 
   generate_jar_jni("uuid_jni") {

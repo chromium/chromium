@@ -28,8 +28,8 @@
 #include "base/trace_event/trace_event.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/tasks_jni/TaskRunnerImpl_jni.h"
+#include "third_party/jni_zero/system_jni/Runnable_jni.h"
 
 namespace base {
 

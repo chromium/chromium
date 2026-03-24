@@ -5,9 +5,7 @@
 #include "base/android/java_runtime.h"
 
 #include "base/numerics/safe_conversions.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android_runtime_jni_headers/Runtime_jni.h"
+#include "third_party/jni_zero/system_jni/Runtime_jni.h"
 
 namespace base {
 namespace android {

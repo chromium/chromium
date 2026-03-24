@@ -3766,7 +3766,6 @@ if (is_android) {
   generate_jar_jni("reflection_jni_headers") {
     classes = [
       "java/lang/Class.class",
-      "java/lang/Object.class",
       "java/lang/reflect/AccessibleObject.class",
       "java/lang/reflect/Method.class",
       "java/lang/reflect/Modifier.class",

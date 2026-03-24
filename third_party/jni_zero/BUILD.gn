@@ -19,6 +19,9 @@ generate_jni("generate_jni") {
   ]
 }
 
+# Common classes to save projects from having to generate them.
+# Do not remove from this list without checking that no clients
+# use what you are removing.
 generate_jar_jni("system_jni") {
   classes = [
     "android/os/Process.class",
@@ -27,7 +30,10 @@ generate_jar_jni("system_jni") {
     "java/lang/Float.class",
     "java/lang/Double.class",
     "java/lang/Long.class",
+    "java/lang/Object.class",
     "java/lang/Runnable.class",
+    "java/lang/Runtime.class",
+    "java/lang/Throwable.class",
     "java/util/Arrays.class",
     "java/util/Collection.class",
     "java/util/List.class",
@@ -86,9 +92,9 @@ component("jni_zero") {
 
   deps = [
     ":generate_jni($default_toolchain)",
-    ":system_jni($default_toolchain)",
     ":system_jni_unchecked_exceptions($default_toolchain)",
   ]
+  public_deps = [ ":system_jni($default_toolchain)" ]
 }
 
 if (enable_java_templates && is_android) {
