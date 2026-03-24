@@ -11315,6 +11315,7 @@ from previous Chrome versions.
   <int value="-908421850" label="PointerEvent:enabled"/>
   <int value="-907968198" label="MediaIndicatorsAndroid:enabled"/>
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
+  <int value="-907413495" label="Apb144Patch9:disabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-906695076" label="CCTPageContentRequestAllowed:disabled"/>
   <int value="-906173229" label="AutofillEnableCardBenefitsSync:disabled"/>
@@ -15251,6 +15252,7 @@ from previous Chrome versions.
   <int value="411673190" label="PermissionsAIv4:disabled"/>
   <int value="411920294"
       label="FullscreenInsetsApiMigrationOnAutomotive:enabled"/>
+  <int value="411987377" label="Apb144Patch9:enabled"/>
   <int value="412185345"
       label="DownloadServiceForegroundSessionIOSFeature:enabled"/>
   <int value="412957264" label="tab-close-buttons-hidden-with-touch"/>

@@ -13191,6 +13191,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch8Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch8)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"apb144-patch9", flag_descriptions::kApb144Patch9Name,
+     flag_descriptions::kApb144Patch9Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch9)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
