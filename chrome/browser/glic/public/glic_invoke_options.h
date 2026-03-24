@@ -59,6 +59,8 @@ enum class GlicInvokeError {
   kInstanceDestroyed,
   // The instance is already handling an invocation.
   kInvokeInProgress,
+  // The provided invocation configuration is invalid.
+  kInvalidConfiguration,
 };
 
 // Configuration options for invoking Glic.
@@ -95,6 +97,10 @@ struct GlicInvokeOptions {
 
   // If this invocation is used by the skill feature, this specifies its ID.
   std::optional<std::string> skill_id;
+
+  // The FRE override, if any.
+  glic::mojom::FreOverride fre_override =
+      glic::mojom::FreOverride::kUnspecified;
 
   // A custom string message to show the user if something goes wrong.
   std::optional<std::string> error_message;
