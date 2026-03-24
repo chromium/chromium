@@ -56,15 +56,16 @@ void EqualPowerPanner::Pan(double azimuth,
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
   DCHECK_LE(frames_to_process, output_bus->length());
 
-  const float* source_l = input_bus->Channel(0)->Data();
-  const float* source_r =
-      number_of_input_channels > 1 ? input_bus->Channel(1)->Data() : source_l;
-  float* destination_l =
-      output_bus->ChannelByType(AudioBus::kChannelLeft)->MutableData();
-  float* destination_r =
-      output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
+  base::span<const float> source_l = input_bus->Channel(0)->Span();
+  base::span<const float> source_r =
+      number_of_input_channels > 1 ? input_bus->Channel(1)->Span() : source_l;
+  base::span<float> destination_l =
+      output_bus->ChannelByType(AudioBus::kChannelLeft)->MutableSpan();
+  base::span<float> destination_r =
+      output_bus->ChannelByType(AudioBus::kChannelRight)->MutableSpan();
 
-  if (!source_l || !source_r || !destination_l || !destination_r) {
+  if (source_l.empty() || source_r.empty() || destination_l.empty() ||
+      destination_r.empty()) {
     return;
   }
 
@@ -104,36 +105,27 @@ void EqualPowerPanner::Pan(double azimuth,
   desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
   desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 
-  int n = frames_to_process;
-
   if (number_of_input_channels == 1) {  // For mono source case.
-    while (n--) {
-      const float input_l = *UNSAFE_TODO(source_l++);
-
-      *UNSAFE_TODO(destination_l++) =
-          static_cast<float>(input_l * desired_gain_l);
-      *UNSAFE_TODO(destination_r++) =
-          static_cast<float>(input_l * desired_gain_r);
+    for (size_t i = 0; i < frames_to_process; ++i) {
+      const float input_l = source_l[i];
+      destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+      destination_r[i] = static_cast<float>(input_l * desired_gain_r);
     }
   } else {               // For stereo source case.
     if (azimuth <= 0) {  // from -90 -> 0
-      while (n--) {
-        const float input_l = *UNSAFE_TODO(source_l++);
-        const float input_r = *UNSAFE_TODO(source_r++);
-
-        *UNSAFE_TODO(destination_l++) =
+      for (size_t i = 0; i < frames_to_process; ++i) {
+        const float input_l = source_l[i];
+        const float input_r = source_r[i];
+        destination_l[i] =
             static_cast<float>(input_l + input_r * desired_gain_l);
-        *UNSAFE_TODO(destination_r++) =
-            static_cast<float>(input_r * desired_gain_r);
+        destination_r[i] = static_cast<float>(input_r * desired_gain_r);
       }
     } else {  // from 0 -> +90
-      while (n--) {
-        const float input_l = *UNSAFE_TODO(source_l++);
-        const float input_r = *UNSAFE_TODO(source_r++);
-
-        *UNSAFE_TODO(destination_l++) =
-            static_cast<float>(input_l * desired_gain_l);
-        *UNSAFE_TODO(destination_r++) =
+      for (size_t i = 0; i < frames_to_process; ++i) {
+        const float input_l = source_l[i];
+        const float input_r = source_r[i];
+        destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+        destination_r[i] =
             static_cast<float>(input_r + input_l * desired_gain_r);
       }
     }
@@ -158,54 +150,48 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
   DCHECK_LE(frames_to_process, output_bus->length());
 
-  const float* source_l = input_bus->Channel(0)->Data();
-  const float* source_r =
-      number_of_input_channels > 1 ? input_bus->Channel(1)->Data() : source_l;
-  float* destination_l =
-      output_bus->ChannelByType(AudioBus::kChannelLeft)->MutableData();
-  float* destination_r =
-      output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
+  base::span<const float> source_l = input_bus->Channel(0)->Span();
+  base::span<const float> source_r =
+      number_of_input_channels > 1 ? input_bus->Channel(1)->Span() : source_l;
+  base::span<float> destination_l =
+      output_bus->ChannelByType(AudioBus::kChannelLeft)->MutableSpan();
+  base::span<float> destination_r =
+      output_bus->ChannelByType(AudioBus::kChannelRight)->MutableSpan();
 
-  DCHECK(source_l);
-  DCHECK(source_r);
-  DCHECK(destination_l);
-  DCHECK(destination_r);
-
-  int n = frames_to_process;
+  if (source_l.empty() || source_r.empty() || destination_l.empty() ||
+      destination_r.empty()) {
+    return;
+  }
 
   if (number_of_input_channels == 1) {  // For mono source case.
-    for (int k = 0; k < n; ++k) {
+    for (size_t i = 0; i < frames_to_process; ++i) {
       double desired_gain_l;
       double desired_gain_r;
-      const float input_l = *UNSAFE_TODO(source_l++);
+      const float input_l = source_l[i];
 
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
+      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[i],
                            number_of_input_channels);
-      *UNSAFE_TODO(destination_l++) =
-          static_cast<float>(input_l * desired_gain_l);
-      *UNSAFE_TODO(destination_r++) =
-          static_cast<float>(input_l * desired_gain_r);
+      destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+      destination_r[i] = static_cast<float>(input_l * desired_gain_r);
     }
   } else {  // For stereo source case.
-    for (int k = 0; k < n; ++k) {
+    for (size_t i = 0; i < frames_to_process; ++i) {
       double desired_gain_l;
       double desired_gain_r;
 
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
+      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[i],
                            number_of_input_channels);
-      if (azimuth[k] <= 0) {  // from -90 -> 0
-        const float input_l = *UNSAFE_TODO(source_l++);
-        const float input_r = *UNSAFE_TODO(source_r++);
-        *UNSAFE_TODO(destination_l++) =
+      if (azimuth[i] <= 0) {  // from -90 -> 0
+        const float input_l = source_l[i];
+        const float input_r = source_r[i];
+        destination_l[i] =
             static_cast<float>(input_l + input_r * desired_gain_l);
-        *UNSAFE_TODO(destination_r++) =
-            static_cast<float>(input_r * desired_gain_r);
+        destination_r[i] = static_cast<float>(input_r * desired_gain_r);
       } else {  // from 0 -> +90
-        const float input_l = *UNSAFE_TODO(source_l++);
-        const float input_r = *UNSAFE_TODO(source_r++);
-        *UNSAFE_TODO(destination_l++) =
-            static_cast<float>(input_l * desired_gain_l);
-        *UNSAFE_TODO(destination_r++) =
+        const float input_l = source_l[i];
+        const float input_r = source_r[i];
+        destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+        destination_r[i] =
             static_cast<float>(input_r + input_l * desired_gain_r);
       }
     }
