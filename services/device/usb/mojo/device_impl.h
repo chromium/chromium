@@ -23,6 +23,19 @@
 
 namespace device::usb {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WebUsbControlTransferPermissionOutcome)
+enum class WebUsbControlTransferPermissionOutcome {
+  kAllowed = 0,
+  kBlocked = 1,
+  kError_InterfaceNotFound = 2,
+  // Failed because the device is not in a configured state
+  kError_NoConfiguration = 3,
+  kMaxValue = kError_NoConfiguration,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml)
+
 // Implementation of the public Device interface. Instances of this class are
 // constructed by DeviceManagerImpl and are strongly bound to their MessagePipe
 // lifetime.
@@ -51,6 +64,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
 
   // Checks interface permissions for control transfers.
   bool HasControlTransferPermission(
+      mojom::UsbTransferDirection direction,
       mojom::UsbControlTransferType type,
       mojom::UsbControlTransferRecipient recipient,
       uint16_t index);
