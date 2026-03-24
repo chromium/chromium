@@ -247,8 +247,6 @@ BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnlockDuringGpuImageOperations, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMainIdleBypassScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kBrowserControlsSmoothScroll, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrowserControlsHeightChangeCancelAnimations,

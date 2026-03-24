@@ -266,13 +266,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);
 // raster dark mode filter generation.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
 
-// Controls whether ProxyMain will post a state change to the cc/scheduler when
-// idle time is requested.
-// When enabled, ProxyMain will try to determine if it's safe to idle using it's
-// own state. When disabled, ProxyMain will rely on state change callbacks from
-// the scheduler.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainIdleBypassScheduler);
-
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
 
 // When enabled, browser controls height changed that does not request animation
