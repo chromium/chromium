@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -37,6 +38,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
 
@@ -276,6 +278,50 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
   CloseFloaty(options);
 }
 
+void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
+                                         GlicInvokeOptions options) {
+  if (!tab) {
+    // TODO(crbug.com/483387751): Add error handling for empty tab case.
+    return;
+  }
+
+  GlicInstanceImpl* instance = nullptr;
+
+  instance = std::visit(
+      absl::Overload{[&](const ConversationId& conversation_id) {
+                       // TODO(crbug.com/483387751): Handle empty conversation
+                       // id case.
+                       return GetOrCreateInstanceImplForConversationId(
+                           conversation_id);
+                     },
+                     [&](NewConversation) { return CreateGlicInstance(); },
+                     [&](DefaultConversation) {
+                       return GetOrCreateGlicInstanceImplForTab(tab);
+                     }},
+      options.conversation);
+
+  CHECK(instance);
+
+  if (invoke_handlers_.contains(instance)) {
+    // TODO(crbug.com/483387751): Don't just fail silently here.
+    return;
+  }
+
+  instance->Show(ShowOptions::ForSidePanel(
+      *tab, GlicPinTrigger::kInstanceCreation, options.invocation_source));
+
+  invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
+      *instance, std::move(options),
+      base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
+                     base::Unretained(this)));
+}
+
+void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(
+    GlicInstance* instance,
+    GlicInvokeHandler* handler) {
+  invoke_handlers_.erase(instance);
+}
+
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   for (auto* instance : GetInstances()) {
@@ -447,6 +493,20 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForConversationId(
     }
   }
   return nullptr;
+}
+
+GlicInstanceImpl*
+GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForConversationId(
+    const std::string& conversation_id) {
+  GlicInstanceImpl* instance =
+      GetInstanceImplForConversationId(conversation_id);
+  if (!instance) {
+    instance = CreateGlicInstance();
+    auto info = mojom::ConversationInfo::New();
+    info->conversation_id = conversation_id;
+    instance->RegisterConversation(std::move(info), base::DoNothing());
+  }
+  return instance;
 }
 
 GlicInstanceImpl*

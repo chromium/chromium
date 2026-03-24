@@ -19,7 +19,7 @@ class GlicInstanceImpl;
 class GlicInvokeHandler {
  public:
   using InvokeCompleteCallback =
-      base::OnceCallback<void(const InstanceId&, GlicInvokeHandler*)>;
+      base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
 
   GlicInvokeHandler(GlicInstanceImpl& instance,
                     GlicInvokeOptions options,
