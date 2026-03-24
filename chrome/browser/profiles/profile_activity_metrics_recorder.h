@@ -65,7 +65,10 @@ class ProfileActivityMetricsRecorder
 
   base::ActionCallback action_callback_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/495682727): remove when the ProfileActivityMetricsRecorder
+  // is no longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
