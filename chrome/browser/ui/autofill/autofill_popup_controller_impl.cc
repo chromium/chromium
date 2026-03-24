@@ -599,8 +599,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
           break;
         }
         case AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory:
-          NOTREACHED(base::NotFatalUntil::M144);
-          break;
+          NOTREACHED();
         case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
           NOTREACHED();
       }

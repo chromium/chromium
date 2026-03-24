@@ -192,8 +192,7 @@ void RecordFormSubmissionCountMetrics(const base::DictValue& message_body) {
   if (!source) {
     SCOPED_CRASH_KEY_NUMBER("FormSubmissionReport", "invalid-source",
                             static_cast<int>(*source));
-    NOTREACHED(base::NotFatalUntil::M141);
-    return;
+    NOTREACHED();
   }
 
   // Record one histogram for each count and type as we want to see
