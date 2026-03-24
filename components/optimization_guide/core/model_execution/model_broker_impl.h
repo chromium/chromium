@@ -47,9 +47,6 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
 
     // Creates a config describing this solution;
     virtual mojom::ModelSolutionConfigPtr MakeConfig() const = 0;
-
-    // Returns the adapter for this solution.
-    virtual const OnDeviceModelFeatureAdapter* GetAdapter() const = 0;
   };
 
   using MaybeSolution =

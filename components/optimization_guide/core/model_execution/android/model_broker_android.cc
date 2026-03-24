@@ -85,7 +85,6 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
   // ModelBrokerImpl::Solution:
   bool IsValid() const override;
   mojom::ModelSolutionConfigPtr MakeConfig() const override;
-  const OnDeviceModelFeatureAdapter* GetAdapter() const override;
 
   // mojom::ModelSolution
   void CreateSession(
@@ -129,10 +128,6 @@ mojom::ModelSolutionConfigPtr SolutionImpl::MakeConfig() const {
       mojo_base::ProtoWrapper(proto::FeatureTextSafetyConfiguration());
   config->model_capabilities = AICoreModelCapabilities();
   return config;
-}
-
-const OnDeviceModelFeatureAdapter* SolutionImpl::GetAdapter() const {
-  return adapter_.get();
 }
 
 void SolutionImpl::CreateSession(

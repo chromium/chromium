@@ -145,9 +145,6 @@ class OnDeviceModelServiceController final {
     // Creates a config describing this solution;
     mojom::ModelSolutionConfigPtr MakeConfig() const override;
 
-    // Returns the adapter for this solution.
-    const OnDeviceModelFeatureAdapter* GetAdapter() const override;
-
     const scoped_refptr<const OnDeviceModelFeatureAdapter>& adapter() const {
       return adapter_;
     }
