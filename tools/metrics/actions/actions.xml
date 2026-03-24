@@ -15245,6 +15245,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Open">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when Open is called on a new or closed instance.
+  </description>
+</action>
+
 <action name="Glic.Instance.PauseActorTask">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

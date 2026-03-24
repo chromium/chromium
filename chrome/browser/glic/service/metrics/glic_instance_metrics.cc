@@ -532,6 +532,8 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
     base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
                                   source);
   }
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));
+  LogEvent(GlicInstanceEvent::kOpen);
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.OpenSource", source);
   } else {

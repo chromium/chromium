@@ -82,6 +82,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
 
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   // Open the side panel
   GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
@@ -92,6 +93,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsButton, 1);
   histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
                                       mojom::InvocationSource::kOsButton, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 1);
 
   // Close the side panel
   GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
@@ -102,6 +105,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsButton, 2);
   histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
                                       mojom::InvocationSource::kOsButton, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Close"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,

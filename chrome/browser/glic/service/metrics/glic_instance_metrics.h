@@ -109,7 +109,8 @@ enum class GlicInstanceEvent {
   kTurnCompleted = 45,
   kReaction = 46,
   kShown = 47,
-  kMaxValue = kShown,
+  kOpen = 48,
+  kMaxValue = kOpen,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
