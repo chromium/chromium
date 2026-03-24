@@ -1,0 +1,8 @@
+Tests that CrashReportContext entries can be retrieved via protocol.
+
+Populating CrashReportContext in page...
+Requesting entries...
+another-key: another-value (has frameId)
+iframe-key: iframe-value (has frameId)
+test-key: test-value (has frameId)
+

@@ -15,6 +15,7 @@ domains = [
   "domains/CSS.pdl",
   "domains/CacheStorage.pdl",
   "domains/Cast.pdl",
+  "domains/CrashReportContext.pdl",
   "domains/DOM.pdl",
   "domains/DOMDebugger.pdl",
   "domains/DOMSnapshot.pdl",

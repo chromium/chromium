@@ -35,6 +35,10 @@ class CORE_EXPORT CrashReportContext final : public ScriptWrappable,
   void set(const String& key, const String& value, ExceptionState&);
   void deleteKey(const String& key, ExceptionState&);
 
+  const HashMap<String, String>& InternalContextForInspection() const {
+    return storage_;
+  }
+
   void Trace(Visitor*) const override;
 
  private:

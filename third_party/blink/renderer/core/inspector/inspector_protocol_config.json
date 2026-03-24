@@ -23,6 +23,9 @@
                 "async": ["requestCacheNames", "requestEntries", "deleteCache", "deleteEntry", "requestCachedResponse"]
             },
             {
+                "domain": "CrashReportContext"
+            },
+            {
                 "domain": "CSS",
                 "async": ["enable", "takeComputedStyleUpdates"]
             },

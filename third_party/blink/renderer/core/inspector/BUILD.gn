@@ -37,6 +37,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/audits.h",
     "inspector/protocol/cache_storage.cc",
     "inspector/protocol/cache_storage.h",
+    "inspector/protocol/crash_report_context.cc",
+    "inspector/protocol/crash_report_context.h",
     "inspector/protocol/css.cc",
     "inspector/protocol/css.h",
     "inspector/protocol/debugger.h",
