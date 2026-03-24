@@ -76,13 +76,14 @@
       const on_compositor = internals.isCompositedAnimation(anim);
       const has_no_effect = !on_main && !on_compositor;
       validate(anim, on_main,
-               !!anim.effect.pseudoElement.match(/group/),
+               !!anim.effect.pseudoElement.match(/group[^-]/),
                'animating on the main thread after update');
       validate(anim, on_compositor,
                !!anim.animationName.match(/fade/),
                'animating on the compositor after update');
       validate(anim, has_no_effect,
-               !!anim.animationName.match(/blend-mode/),
+               !!anim.animationName.match(/blend-mode/) ||
+               !!anim.effect.pseudoElement.match(/group-children/),
                'optimized out as a static animation');
     });
 

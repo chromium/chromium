@@ -14,52 +14,14 @@
 namespace blink {
 namespace {
 
-const char* const kGroupTagName = "html::view-transition-group";
-const char* const kGroupChildrenTagName =
-    "html::view-transition-group-children";
-const char* const kImagePairTagName = "html::view-transition-image-pair";
-const char* const kNewImageTagName = "html::view-transition-new";
-const char* const kOldImageTagName = "html::view-transition-old";
+const char* const kGroupTagName = "::view-transition-group";
+const char* const kGroupChildrenTagName = "::view-transition-group-children";
+const char* const kImagePairTagName = "::view-transition-image-pair";
+const char* const kNewImageTagName = "::view-transition-new";
+const char* const kOldImageTagName = "::view-transition-old";
 const char* const kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
 const char* const kGroupChildrenKeyframeNamePrefix =
     "-ua-view-transition-group-children-anim-";
-
-const char* const kGroupTagNameScoped = "::view-transition-group";
-const char* const kGroupChildrenTagNameScoped =
-    "::view-transition-group-children";
-const char* const kImagePairTagNameScoped = "::view-transition-image-pair";
-const char* const kNewImageTagNameScoped = "::view-transition-new";
-const char* const kOldImageTagNameScoped = "::view-transition-old";
-
-const char* GroupTagName() {
-  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-             ? kGroupTagNameScoped
-             : kGroupTagName;
-}
-
-const char* ImagePairTagName() {
-  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-             ? kImagePairTagNameScoped
-             : kImagePairTagName;
-}
-
-const char* NewImageTagName() {
-  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-             ? kNewImageTagNameScoped
-             : kNewImageTagName;
-}
-
-const char* OldImageTagName() {
-  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-             ? kOldImageTagNameScoped
-             : kOldImageTagName;
-}
-
-const char* GroupChildrenTagName() {
-  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-             ? kGroupChildrenTagNameScoped
-             : kGroupChildrenTagName;
-}
 
 }  // namespace
 
@@ -96,25 +58,25 @@ void ViewTransitionStyleBuilder::AddAnimations(
     const gfx::Transform& parent_transform) {
   switch (type) {
     case AnimationType::kOldOnly:
-      AddRules(OldImageTagName(), tag,
+      AddRules(kOldImageTagName, tag,
                "animation-name: -ua-view-transition-fade-out");
       break;
 
     case AnimationType::kNewOnly:
-      AddRules(NewImageTagName(), tag,
+      AddRules(kNewImageTagName, tag,
                "animation-name: -ua-view-transition-fade-in");
       break;
 
     case AnimationType::kBoth:
-      AddRules(OldImageTagName(), tag,
+      AddRules(kOldImageTagName, tag,
                "animation-name: -ua-view-transition-fade-out, "
                "-ua-mix-blend-mode-plus-lighter");
 
-      AddRules(NewImageTagName(), tag,
+      AddRules(kNewImageTagName, tag,
                "animation-name: -ua-view-transition-fade-in, "
                "-ua-mix-blend-mode-plus-lighter");
 
-      AddRules(ImagePairTagName(), tag, "isolation: isolate;\n");
+      AddRules(kImagePairTagName, tag, "isolation: isolate;\n");
 
       const String& animation_name = AddKeyframes(
           tag, source_properties, animated_css_properties, parent_transform);
@@ -126,7 +88,7 @@ void ViewTransitionStyleBuilder::AddAnimations(
       rule_builder.Append("animation-delay: 0s;\n");
       rule_builder.Append("animation-iteration-count: 1;\n");
       rule_builder.Append("animation-direction: normal;\n");
-      AddRules(GroupTagName(), tag, rule_builder.ReleaseString());
+      AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
       break;
   }
 }
@@ -148,7 +110,7 @@ void ViewTransitionStyleBuilder::AddGroupChildrenAnimations(
   rule_builder.Append("animation-delay: 0s;\n");
   rule_builder.Append("animation-iteration-count: 1;\n");
   rule_builder.Append("animation-direction: normal;\n");
-  AddRules(GroupChildrenTagName(), tag, rule_builder.ReleaseString());
+  AddRules(kGroupChildrenTagName, tag, rule_builder.ReleaseString());
 }
 
 namespace {
@@ -245,7 +207,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         value.Utf8().c_str());
   }
 
-  AddRules(GroupTagName(), tag, group_rule_builder.ReleaseString());
+  AddRules(kGroupTagName, tag, group_rule_builder.ReleaseString());
 }
 
 void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
@@ -262,7 +224,7 @@ void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
     builder.Append(value);
     builder.Append(";\n");
   }
-  AddRules(GroupChildrenTagName(), name, builder.ReleaseString());
+  AddRules(kGroupChildrenTagName, name, builder.ReleaseString());
 }
 
 }  // namespace blink

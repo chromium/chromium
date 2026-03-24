@@ -12,8 +12,6 @@ PseudoElement: view-transition-group root
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -39,8 +37,6 @@ PseudoElement: view-transition-group container
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -66,8 +62,6 @@ PseudoElement: view-transition-group shared
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -93,12 +87,9 @@ PseudoElement: view-transition-group shared
     font-size: 10px; @[undefined-undefined]
 }
 PseudoElement: view-transition-group-children container
-::view-transition-image-pair(*), *::view-transition-group-children(*)* {    user-agent    readonly
-    position: absolute; @[undefined-undefined]
-    top: 0px; @[undefined-undefined]
-    right: 0px; @[undefined-undefined]
-    bottom: 0px; @[undefined-undefined]
-    left: 0px; @[undefined-undefined]
+::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*), *::view-transition-group-children(*)* {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
@@ -106,6 +97,11 @@ PseudoElement: view-transition-group-children container
     animation-play-state: inherit; @[undefined-undefined]
 }
 *::view-transition-group-children(*)* {    user-agent    readonly
+    position: absolute; @[undefined-undefined]
+    top: 0px; @[undefined-undefined]
+    right: 0px; @[undefined-undefined]
+    bottom: 0px; @[undefined-undefined]
+    left: 0px; @[undefined-undefined]
     border-top-style: solid; @[undefined-undefined]
     border-right-style: solid; @[undefined-undefined]
     border-bottom-style: solid; @[undefined-undefined]
@@ -115,7 +111,7 @@ PseudoElement: view-transition-group-children container
     border-bottom-color: transparent; @[undefined-undefined]
     border-left-color: transparent; @[undefined-undefined]
 }
-*html::view-transition-group-children(*)* {    user-agent    readonly
+*::view-transition-group-children(*)* {    user-agent    readonly
     animation-duration: inherit; @[undefined-undefined]
     animation-fill-mode: inherit; @[undefined-undefined]
 }
@@ -145,61 +141,61 @@ PseudoElement: view-transition-group-children container
     opacity: 0.5; @[undefined-undefined]
 }
 PseudoElement: view-transition-image-pair root
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(root)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
 }
 PseudoElement: view-transition-image-pair container
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(container)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
 }
 PseudoElement: view-transition-image-pair shared
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(shared)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
@@ -209,21 +205,21 @@ PseudoElement: view-transition-image-pair shared
     left: 100px; @[undefined-undefined]
 }
 PseudoElement: view-transition-old root
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(root)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -241,21 +237,21 @@ PseudoElement: view-transition-old root
     background-color: red; @[undefined-undefined]
 }
 PseudoElement: view-transition-old container
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -273,21 +269,21 @@ PseudoElement: view-transition-old container
     background-color: red; @[undefined-undefined]
 }
 PseudoElement: view-transition-old shared
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(shared)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -305,61 +301,61 @@ PseudoElement: view-transition-old shared
     background-color: red; @[undefined-undefined]
 }
 PseudoElement: view-transition-new root
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-new(root)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
 }
 PseudoElement: view-transition-new container
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-new(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
 }
 PseudoElement: view-transition-new shared
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-new(shared)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -381,8 +377,6 @@ Dumping styles for : ::view-transition-group with id root
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -404,41 +398,41 @@ Dumping styles for : ::view-transition-group with id root
     animation-direction: normal; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-image-pair with id root
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(root)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-old with id root
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(root)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -456,21 +450,21 @@ Dumping styles for : ::view-transition-old with id root
     background-color: red; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-new with id root
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-new(root)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -480,8 +474,6 @@ Dumping styles for : ::view-transition-group with id container
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -503,41 +495,41 @@ Dumping styles for : ::view-transition-group with id container
     animation-direction: normal; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-image-pair with id container
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(container)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-old with id container
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -555,32 +547,29 @@ Dumping styles for : ::view-transition-old with id container
     background-color: red; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-new with id container
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
 }
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
-}
 *::view-transition-new(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-group-children with id container
-::view-transition-image-pair(*), *::view-transition-group-children(*)* {    user-agent    readonly
-    position: absolute; @[undefined-undefined]
-    top: 0px; @[undefined-undefined]
-    right: 0px; @[undefined-undefined]
-    bottom: 0px; @[undefined-undefined]
-    left: 0px; @[undefined-undefined]
+::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*), *::view-transition-group-children(*)* {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
@@ -588,6 +577,11 @@ Dumping styles for : ::view-transition-group-children with id container
     animation-play-state: inherit; @[undefined-undefined]
 }
 *::view-transition-group-children(*)* {    user-agent    readonly
+    position: absolute; @[undefined-undefined]
+    top: 0px; @[undefined-undefined]
+    right: 0px; @[undefined-undefined]
+    bottom: 0px; @[undefined-undefined]
+    left: 0px; @[undefined-undefined]
     border-top-style: solid; @[undefined-undefined]
     border-right-style: solid; @[undefined-undefined]
     border-bottom-style: solid; @[undefined-undefined]
@@ -597,7 +591,7 @@ Dumping styles for : ::view-transition-group-children with id container
     border-bottom-color: transparent; @[undefined-undefined]
     border-left-color: transparent; @[undefined-undefined]
 }
-*html::view-transition-group-children(*)* {    user-agent    readonly
+*::view-transition-group-children(*)* {    user-agent    readonly
     animation-duration: inherit; @[undefined-undefined]
     animation-fill-mode: inherit; @[undefined-undefined]
 }
@@ -631,8 +625,6 @@ Dumping styles for : ::view-transition-group with id shared
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
-}
-*::view-transition-group(*)* {    user-agent    readonly
     animation-duration: 0.25s; @[undefined-undefined]
     animation-fill-mode: both; @[undefined-undefined]
 }
@@ -658,21 +650,21 @@ Dumping styles for : ::view-transition-group with id shared
     font-size: 10px; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-image-pair with id shared
-*::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+*::view-transition-image-pair(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     top: 0px; @[undefined-undefined]
     right: 0px; @[undefined-undefined]
     bottom: 0px; @[undefined-undefined]
     left: 0px; @[undefined-undefined]
+}
+*::view-transition-image-pair(*)*, ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-image-pair(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-image-pair(shared)* {    user-agent    readonly
     isolation: isolate; @[undefined-undefined]
@@ -682,21 +674,21 @@ Dumping styles for : ::view-transition-image-pair with id shared
     left: 100px; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-old with id shared
-::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
+*::view-transition-old(*)*, ::view-transition-new(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), *::view-transition-old(*)*, ::view-transition-new(*), ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-old(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-old(shared)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
@@ -714,21 +706,21 @@ Dumping styles for : ::view-transition-old with id shared
     background-color: red; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-new with id shared
-*::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
+::view-transition-old(*), *::view-transition-new(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
     display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
+}
+::view-transition-image-pair(*), ::view-transition-old(*), *::view-transition-new(*)*, ::view-transition-group-children(*) {    user-agent    readonly
+    animation-duration: inherit; @[undefined-undefined]
+    animation-fill-mode: inherit; @[undefined-undefined]
     animation-delay: inherit; @[undefined-undefined]
     animation-timing-function: inherit; @[undefined-undefined]
     animation-iteration-count: inherit; @[undefined-undefined]
     animation-direction: inherit; @[undefined-undefined]
     animation-play-state: inherit; @[undefined-undefined]
-}
-*::view-transition-new(*)* {    user-agent    readonly
-    animation-duration: inherit; @[undefined-undefined]
-    animation-fill-mode: inherit; @[undefined-undefined]
 }
 *::view-transition-new(shared)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]

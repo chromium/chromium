@@ -516,13 +516,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (default_view_transition_style_sheet_) {
         return false;
       }
-      // TODO(crbug.com/492098877): Consolidate rules for view-transitions.
-      StringBuilder sb;
-      sb.Append(
-          UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_SCOPED_CSS));
-      sb.Append(UncompressResourceAsASCIIString(
-          IDR_UASTYLE_TRANSITION_ANIMATIONS_SCOPED_CSS));
-      default_view_transition_style_sheet_ = ParseUASheet(sb.ToString());
+      default_view_transition_style_sheet_ = ParseUASheet(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_CSS));
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
