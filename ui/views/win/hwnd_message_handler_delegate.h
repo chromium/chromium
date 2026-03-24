@@ -166,6 +166,9 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual void HandleBeginUserResize() = 0;
   virtual void HandleEndUserResize() = 0;
 
+  virtual void HandleBeginUserDrag() = 0;
+  virtual void HandleEndUserDrag() = 0;
+
   // Called when the window's position changed.
   virtual void HandleMove() = 0;
 

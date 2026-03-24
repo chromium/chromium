@@ -95,6 +95,8 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   void HandleEndWMSizeMove() override {}
   void HandleBeginUserResize() override {}
   void HandleEndUserResize() override {}
+  void HandleBeginUserDrag() override {}
+  void HandleEndUserDrag() override {}
   void HandleMove() override {}
   void HandleWorkAreaChanged() override {}
   void HandleVisibilityChanged(bool visible) override {}

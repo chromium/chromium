@@ -103,6 +103,10 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeWidgetUserResizeStarted() = 0;
   virtual void OnNativeWidgetUserResizeEnded() = 0;
 
+  // Called when the user begins/ends to dragging the window.
+  virtual void OnNativeWidgetUserDragStarted() = 0;
+  virtual void OnNativeWidgetUserDragEnded() = 0;
+
   // Called when NativeWidget changed workspaces or its visible on all
   // workspaces state changes.
   virtual void OnNativeWidgetWorkspaceChanged() = 0;

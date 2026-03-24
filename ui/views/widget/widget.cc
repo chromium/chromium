@@ -2059,6 +2059,14 @@ void Widget::OnNativeWidgetUserResizeEnded() {
   observers_.Notify(&WidgetObserver::OnWidgetUserResizeEnded, this);
 }
 
+void Widget::OnNativeWidgetUserDragStarted() {
+  observers_.Notify(&WidgetObserver::OnWidgetUserDragStarted, this);
+}
+
+void Widget::OnNativeWidgetUserDragEnded() {
+  observers_.Notify(&WidgetObserver::OnWidgetUserDragEnded, this);
+}
+
 void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {

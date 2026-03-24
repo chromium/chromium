@@ -242,6 +242,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleEndWMSizeMove() override;
   void HandleBeginUserResize() override;
   void HandleEndUserResize() override;
+  void HandleBeginUserDrag() override;
+  void HandleEndUserDrag() override;
   void HandleMove() override;
   void HandleWorkAreaChanged() override;
   void HandleVisibilityChanged(bool visible) override;

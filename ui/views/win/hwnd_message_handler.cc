@@ -2374,6 +2374,7 @@ void HWNDMessageHandler::OnMove(const gfx::Point& point) {
 }
 
 void HWNDMessageHandler::OnMoving(UINT param, const RECT* new_bounds) {
+  user_resize_detector_.OnMoving();
   delegate_->HandleMove();
 }
 

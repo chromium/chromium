@@ -196,12 +196,14 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
 void NativeWidgetMac::OnWindowWillMove() {
   if (delegate_) {
     delegate_->OnNativeWidgetBeginUserBoundsChange();
+    delegate_->OnNativeWidgetUserDragStarted();
   }
 }
 
 void NativeWidgetMac::OnWindowDidEndMove() {
   if (delegate_) {
     delegate_->OnNativeWidgetEndUserBoundsChange();
+    delegate_->OnNativeWidgetUserDragEnded();
   }
 }
 

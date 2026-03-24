@@ -1385,6 +1385,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override;
   void OnNativeWidgetUserResizeStarted() override;
   void OnNativeWidgetUserResizeEnded() override;
+  void OnNativeWidgetUserDragStarted() override;
+  void OnNativeWidgetUserDragEnded() override;
   void OnNativeWidgetWorkspaceChanged() override;
   void OnNativeWidgetWindowShowStateChanged() override;
   void OnNativeWidgetBeginUserBoundsChange() override;

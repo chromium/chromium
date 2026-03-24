@@ -27,9 +27,18 @@ void UserResizeDetector::OnSizing() {
   }
 }
 
+void UserResizeDetector::OnMoving() {
+  if (state_ == State::kInSizeMove) {
+    state_ = State::kInMoving;
+    hwnd_delegate_->HandleBeginUserDrag();
+  }
+}
+
 void UserResizeDetector::OnExitSizeMove() {
   if (state_ == State::kInSizing) {
     hwnd_delegate_->HandleEndUserResize();
+  } else if (state_ == State::kInMoving) {
+    hwnd_delegate_->HandleEndUserDrag();
   }
   state_ = State::kNotResizing;
 }

@@ -82,6 +82,12 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // Invoked when the user stopped resizing the window.
   virtual void OnWidgetUserResizeEnded(Widget* widget) {}
 
+  // Invoked when the user started dragging the window.
+  virtual void OnWidgetUserDragStarted(Widget* widget) {}
+
+  // Invoked when the user stopped dragging the window.
+  virtual void OnWidgetUserDragEnded(Widget* widget) {}
+
   virtual void OnWidgetThemeChanged(Widget* widget) {}
 
   virtual void OnWidgetSizeConstraintsChanged(Widget* widget) {}

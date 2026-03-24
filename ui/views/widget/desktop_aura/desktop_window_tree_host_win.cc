@@ -1146,6 +1146,18 @@ void DesktopWindowTreeHostWin::HandleEndUserResize() {
   }
 }
 
+void DesktopWindowTreeHostWin::HandleBeginUserDrag() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserDragStarted();
+  }
+}
+
+void DesktopWindowTreeHostWin::HandleEndUserDrag() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserDragEnded();
+  }
+}
+
 void DesktopWindowTreeHostWin::HandleMove() {
   // Adding/removing a monitor, or changing the primary monitor can cause a
   // WM_MOVE message before `OnDisplayChanged()`. Without this call, we would

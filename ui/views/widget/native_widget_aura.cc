@@ -1271,12 +1271,14 @@ void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
 
 void NativeWidgetAura::OnMoveLoopStarted(aura::Window* window) {
   if (delegate_) {
+    delegate_->OnNativeWidgetUserDragStarted();
     delegate_->OnNativeWidgetBeginUserBoundsChange();
   }
 }
 
 void NativeWidgetAura::OnMoveLoopEnded(aura::Window* window) {
   if (delegate_) {
+    delegate_->OnNativeWidgetUserDragEnded();
     delegate_->OnNativeWidgetEndUserBoundsChange();
   }
 }

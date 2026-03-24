@@ -11,8 +11,8 @@ namespace views {
 
 class HWNDMessageHandlerDelegate;
 
-// This class detects the start and end of user resizing and notifies the HWND
-// message handle delegate.
+// This class detects the start and end of user resizing/dragging and notifies
+// the HWND message handle delegate.
 class UserResizeDetector {
  public:
   explicit UserResizeDetector(HWNDMessageHandlerDelegate* hwnd_delegate);
@@ -22,6 +22,9 @@ class UserResizeDetector {
 
   // Called on WM_SIZING.
   void OnSizing();
+
+  // Called on WM_MOVING.
+  void OnMoving();
 
   // Called on WM_EXITSIZEMOVE.
   void OnExitSizeMove();
@@ -34,6 +37,7 @@ class UserResizeDetector {
     // dragging the resize handle.
     kInSizeMove = 1,
     kInSizing = 2,
+    kInMoving = 3,
     // When seeing WM_EXITSIZEMOVE, the user has ended resizing the window.
     kExitSizeMove = kNotResizing
   } state_ = State::kNotResizing;
