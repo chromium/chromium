@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -44,7 +43,6 @@ namespace blink {
 class ContainerNode;
 class Document;
 class DocumentFragment;
-class Element;
 class ExceptionState;
 class Node;
 class CSSPropertyValueSet;
@@ -89,23 +87,10 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(Document&,
                                                       unsigned fragment_end,
                                                       const String& base_url,
                                                       ParserContentPolicy);
-DocumentFragment* ParseHTMLFragment(const String& html,
-                                    const FragmentParserConfig& config,
-                                    FragmentParserOptions options,
-                                    ExceptionState& exception_state);
-FragmentParserConfig GetFragmentParserConfig(Sanitizer::Mode mode,
-                                             const AtomicString& interface_name,
-                                             const AtomicString& property_name,
-                                             ContainerNode* context);
-
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,
     const String& source_mime_type,
     Document& output_doc);
-
-DocumentFragment* CreateContextualFragment(const String& html,
-                                           Element*,
-                                           ExceptionState&);
 
 bool IsPlainTextMarkup(Node*);
 

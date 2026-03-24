@@ -69,7 +69,7 @@
 #include "third_party/blink/renderer/core/html/html_stream.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -1998,11 +1998,11 @@ void ContainerNode::appendHTML(const String& html,
                                ExceptionState& exception_state) {
   CHECK(IsElementNode() || IsShadowRoot());
   InsertHTMLBefore(nullptr, html,
-                   blink::GetFragmentParserConfig(
-                       Sanitizer::Mode::kSafe,
+                   FragmentParserConfig::ForContainer(
+                       this, Sanitizer::Mode::kSafe,
                        IsElementNode() ? trusted_types_names::kElement
                                        : trusted_types_names::kShadowRoot,
-                       trusted_types_names::kAppendHTML, this),
+                       trusted_types_names::kAppendHTML),
                    FragmentParserOptions(options), exception_state);
 }
 
@@ -2012,11 +2012,11 @@ void ContainerNode::appendHTMLUnsafe(
     ExceptionState& exception_state) {
   CHECK(IsElementNode() || IsShadowRoot());
 
-  const FragmentParserConfig config = blink::GetFragmentParserConfig(
-      Sanitizer::Mode::kUnsafe,
+  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
+      this, Sanitizer::Mode::kUnsafe,
       IsElementNode() ? trusted_types_names::kElement
                       : trusted_types_names::kShadowRoot,
-      trusted_types_names::kAppendHTMLUnsafe, this);
+      trusted_types_names::kAppendHTMLUnsafe);
   InsertHTMLBefore(nullptr,
                    TrustedTypesCheckForHTML(
                        html, GetExecutionContext(), config.interface_name,
@@ -2030,11 +2030,11 @@ void ContainerNode::prependHTML(const String& html,
                                 ExceptionState& exception_state) {
   CHECK(IsElementNode() || IsShadowRoot());
   InsertHTMLBefore(firstChild(), html,
-                   blink::GetFragmentParserConfig(
-                       Sanitizer::Mode::kSafe,
+                   FragmentParserConfig::ForContainer(
+                       this, Sanitizer::Mode::kSafe,
                        IsElementNode() ? trusted_types_names::kElement
                                        : trusted_types_names::kShadowRoot,
-                       trusted_types_names::kPrependHTML, this),
+                       trusted_types_names::kPrependHTML),
                    FragmentParserOptions(options), exception_state);
 }
 
@@ -2042,11 +2042,11 @@ void ContainerNode::prependHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
     V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
-  const FragmentParserConfig config = blink::GetFragmentParserConfig(
-      Sanitizer::Mode::kUnsafe,
+  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
+      this, Sanitizer::Mode::kUnsafe,
       IsElementNode() ? trusted_types_names::kElement
                       : trusted_types_names::kShadowRoot,
-      trusted_types_names::kPrependHTMLUnsafe, this);
+      trusted_types_names::kPrependHTMLUnsafe);
   InsertHTMLBefore(firstChild(),
                    TrustedTypesCheckForHTML(
                        html, GetExecutionContext(), config.interface_name,

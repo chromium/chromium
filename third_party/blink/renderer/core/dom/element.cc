@@ -214,7 +214,7 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -13537,8 +13537,8 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                         exception_state),
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
       FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
-      FragmentParserOptions(options, Sanitizer::Mode::kUnsafe),
-      trusted_types_names::kSetHTMLUnsafe, exception_state);
+      FragmentParserOptions(options), trusted_types_names::kSetHTMLUnsafe,
+      exception_state);
 }
 
 void Element::setHTML(const String& html,

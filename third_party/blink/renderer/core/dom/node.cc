@@ -113,7 +113,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_stream.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -1260,9 +1260,9 @@ void Node::replaceWithHTML(const String& html,
   if (CanInsertHTMLToParent(this)) {
     parentNode()->ReplaceChildWithHTML(
         this, html,
-        blink::GetFragmentParserConfig(
-            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
-            trusted_types_names::kReplaceWithHTML, parentNode()),
+        FragmentParserConfig::ForContainer(
+            parentNode(), Sanitizer::Mode::kSafe, trusted_types_names::kNode,
+            trusted_types_names::kReplaceWithHTML),
         FragmentParserOptions(options), exception_state);
   }
 }
@@ -1274,9 +1274,9 @@ void Node::replaceWithHTMLUnsafe(
   if (!CanInsertHTMLToParent(this)) {
     return;
   }
-  const FragmentParserConfig config = blink::GetFragmentParserConfig(
-      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kReplaceWithHTMLUnsafe, parentNode());
+  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
+      parentNode(), Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kReplaceWithHTMLUnsafe);
 
   parentNode()->ReplaceChildWithHTML(
       this,
@@ -1292,9 +1292,9 @@ void Node::beforeHTML(const String& html,
   if (CanInsertHTMLToParent(this)) {
     parentNode()->InsertHTMLBefore(
         this, html,
-        blink::GetFragmentParserConfig(
-            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
-            trusted_types_names::kBeforeHTML, parentNode()),
+        FragmentParserConfig::ForContainer(parentNode(), Sanitizer::Mode::kSafe,
+                                           trusted_types_names::kNode,
+                                           trusted_types_names::kBeforeHTML),
         FragmentParserOptions(options), exception_state);
   }
 }
@@ -1306,9 +1306,9 @@ void Node::beforeHTMLUnsafe(
   if (!CanInsertHTMLToParent(this)) {
     return;
   }
-  const FragmentParserConfig config = blink::GetFragmentParserConfig(
-      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kBeforeHTMLUnsafe, parentNode());
+  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
+      parentNode(), Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kBeforeHTMLUnsafe);
 
   parentNode()->InsertHTMLBefore(
       this,
@@ -1324,9 +1324,9 @@ void Node::afterHTML(const String& html,
   if (CanInsertHTMLToParent(this)) {
     parentNode()->InsertHTMLBefore(
         nextSibling(), html,
-        blink::GetFragmentParserConfig(
-            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
-            trusted_types_names::kAfterHTML, parentNode()),
+        FragmentParserConfig::ForContainer(parentNode(), Sanitizer::Mode::kSafe,
+                                           trusted_types_names::kNode,
+                                           trusted_types_names::kAfterHTML),
         FragmentParserOptions(options), exception_state);
   }
 }
@@ -1338,9 +1338,9 @@ void Node::afterHTMLUnsafe(
   if (!CanInsertHTMLToParent(this)) {
     return;
   }
-  const FragmentParserConfig config = blink::GetFragmentParserConfig(
-      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kAfterHTMLUnsafe, parentNode());
+  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
+      parentNode(), Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kAfterHTMLUnsafe);
 
   parentNode()->InsertHTMLBefore(
       nextSibling(),

@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
@@ -201,8 +201,7 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(
       CheckHTML(html, trusted_types_names::kSetHTMLUnsafe, exception_state),
-      FragmentParserOptions(options, Sanitizer::Mode::kUnsafe),
-      Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(options), Sanitizer::Mode::kUnsafe,
       FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
       trusted_types_names::kSetHTMLUnsafe, exception_state);
 }

@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -712,7 +712,7 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
     return options;
   }
 
-  return FragmentParserOptions(result, Sanitizer::Mode::kUnsafe);
+  return FragmentParserOptions(result);
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
