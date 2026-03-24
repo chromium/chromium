@@ -2702,8 +2702,7 @@ TEST_F(PopupViewViewsTest,
 }
 
 TEST_F(PopupViewViewsTest, Show_A11yAnnouncesLoadingState) {
-  controller().set_suggestions(
-      {SuggestionType::kLoadingThrobber, SuggestionType::kBnplFootnote});
+  controller().set_suggestions({SuggestionType::kLoadingThrobber});
   CreateView();
   base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
       announcement;
@@ -2738,8 +2737,39 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesLoadingState) {
               Run(l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
                   true));
+  controller().set_suggestions({SuggestionType::kLoadingThrobber});
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yAnnouncesBnplFootnote) {
+  controller().set_suggestions({SuggestionType::kBnplFootnote});
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
+  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesBnplFootnote) {
+  controller().set_suggestions({SuggestionType::kCreditCardEntry});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
+  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
   controller().set_suggestions(
-      {SuggestionType::kLoadingThrobber, SuggestionType::kBnplFootnote});
+      {SuggestionType::kCreditCardEntry, SuggestionType::kBnplFootnote});
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 

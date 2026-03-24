@@ -75,8 +75,10 @@ PopupBnplFootnoteView::PopupBnplFootnoteView(
       autofill::payments::GetBnplUiFooterTextForAi(
           pdm->payments_data_manager());
 
+  full_text_ = text_with_link.text;
+
   auto styled_label = std::make_unique<views::StyledLabel>();
-  styled_label->SetText(text_with_link.text);
+  styled_label->SetText(full_text_);
   styled_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   styled_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
   styled_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);

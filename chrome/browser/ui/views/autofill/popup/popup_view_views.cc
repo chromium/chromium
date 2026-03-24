@@ -326,6 +326,7 @@ bool PopupViewViews::Show(
   MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
+  MaybeAnnounceBnplFootnotePopup();
   MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
@@ -769,6 +770,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
+  MaybeAnnounceBnplFootnotePopup();
   MaybeA11yFocusInformationalSuggestion();
   ShowIPHFeaturePromos();
 }
@@ -989,6 +991,15 @@ void PopupViewViews::MaybeAnnounceLoadingState() {
     a11y_announcer_.Run(l10n_util::GetStringUTF16(
                             IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
                         /*polite=*/true);
+  }
+}
+
+void PopupViewViews::MaybeAnnounceBnplFootnotePopup() {
+  for (const RowPointer& row : rows_) {
+    if (const auto* footnote = std::get_if<PopupBnplFootnoteView*>(&row)) {
+      a11y_announcer_.Run((*footnote)->GetFullText(), /*polite=*/true);
+      return;
+    }
   }
 }
 

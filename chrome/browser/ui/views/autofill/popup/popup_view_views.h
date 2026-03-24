@@ -203,6 +203,10 @@ class PopupViewViews : public PopupBaseView,
   // If the current suggestions are for loading, announces it to the user.
   void MaybeAnnounceLoadingState();
 
+  // If the current suggestions contain a BNPL footnote, announces it to the
+  // user.
+  void MaybeAnnounceBnplFootnotePopup();
+
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
   // check false.

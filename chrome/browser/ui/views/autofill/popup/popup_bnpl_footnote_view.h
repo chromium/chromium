@@ -24,6 +24,11 @@ class PopupBnplFootnoteView : public views::View {
   PopupBnplFootnoteView(const PopupBnplFootnoteView&) = delete;
   PopupBnplFootnoteView& operator=(const PopupBnplFootnoteView&) = delete;
   ~PopupBnplFootnoteView() override;
+
+  const std::u16string& GetFullText() const { return full_text_; }
+
+ private:
+  std::u16string full_text_;
 };
 
 }  // namespace autofill
