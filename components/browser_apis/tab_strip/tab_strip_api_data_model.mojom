@@ -6,42 +6,13 @@ module tabs_api.mojom;
 
 import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "components/tabs/public/mojom/tabs.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Holds a data URL representation of an image, ie: favicon.
 struct Image {
   url.mojom.Url data_url;
-};
-
-// Must contain the same values as `TabAlertState` in
-// components/tabs/public/tab_alert.h Matching order is not important.
-enum AlertState {
-  kAudioMuting,
-  kAudioRecording,
-  kAudioPlaying,
-  kBluetoothConnected,
-  kBluetoothScanActive,
-  kDesktopCapturing,
-  kActorAccessing,
-  kActorWaitingOnUser,
-  kGlicAccessing,
-  kGlicSharing,
-  kHidConnected,
-  kMediaRecording,
-  kPipPlaying,
-  kSerialConnected,
-  kTabCapturing,
-  kUsbConnected,
-  kVideoRecording,
-  kVrPresentingInHeadset,
-};
-
-enum NetworkState {
-  kNone,
-  kWaiting,
-  kLoading,
-  kError,
 };
 
 struct Tab {
@@ -51,8 +22,8 @@ struct Tab {
 
   Image favicon;
 
-  array<AlertState> alert_states;
-  NetworkState network_state;
+  array<tabs.mojom.TabAlertState> alert_states;
+  tabs.mojom.TabNetworkState network_state;
 
   // The current tab is active.
   bool is_active;

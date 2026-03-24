@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojo_bindings") {
+mojom("mojom") {
   sources = [ "tabs.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
@@ -25,8 +25,6 @@ mojom("mojo_bindings") {
       traits_sources = [ "tabs_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
-        "//chrome/browser/ui/tabs:tab_enums",
-        "//chrome/browser/ui/tabs:tabs_public",
         "//components/tabs:enum",
       ]
     },

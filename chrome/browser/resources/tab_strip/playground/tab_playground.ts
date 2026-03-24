@@ -7,7 +7,6 @@ import '../alert_indicators.js';
 
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import {NetworkState} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -17,6 +16,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AlertIndicatorsElement} from '../alert_indicators.js';
 import {getTemplate} from '../tab.html.js';
+import {TabNetworkState} from '../tabs.mojom-webui.js';
 
 function getPaddingInlineEndProperty(): string {
   return isRTL() ? 'paddingLeft' : 'paddingRight';
@@ -99,9 +99,9 @@ export class TabElement extends CustomElement {
     this.toggleAttribute('active', this.isActive);
     this.toggleAttribute('hide-icon_', !this.showIcon);
     this.toggleAttribute(
-        'waiting_', tab.networkState === NetworkState.kWaiting);
+        'waiting_', tab.networkState === TabNetworkState.kWaiting);
     this.toggleAttribute(
-        'loading_', tab.networkState === NetworkState.kLoading);
+        'loading_', tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', this.isPinned);
     this.setAttribute('draggable', 'true');
     this.toggleAttribute('blocked_', this.blocked);
@@ -109,15 +109,15 @@ export class TabElement extends CustomElement {
 
     if (tab.title) {
       this.titleTextEl_.textContent = tab.title;
-    } else if ((tab.networkState === NetworkState.kWaiting ||
-                tab.networkState === NetworkState.kLoading)) {
+    } else if ((tab.networkState === TabNetworkState.kWaiting ||
+                tab.networkState === TabNetworkState.kLoading)) {
       this.titleTextEl_.textContent = loadTimeData.getString('loadingTab');
     } else {
       this.titleTextEl_.textContent = loadTimeData.getString('defaultTabTitle');
     }
     this.titleTextEl_.setAttribute('aria-label', tab.title);
 
-    if (tab.networkState === NetworkState.kWaiting) {
+    if (tab.networkState === TabNetworkState.kWaiting) {
       this.faviconEl_.style.backgroundImage = 'none';
     } else if (tab.favicon) {
       this.faviconEl_.style.backgroundImage = `url(${tab.favicon.dataUrl})`;

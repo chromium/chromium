@@ -36,6 +36,7 @@ mojom("mojom") {
 
   public_deps = [
     "//components/tab_groups/public/mojom:mojo_bindings",
+    "//components/tabs/public/mojom",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

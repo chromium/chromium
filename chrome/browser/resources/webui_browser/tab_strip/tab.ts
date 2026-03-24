@@ -7,7 +7,8 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import {NetworkState} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+
+import {TabNetworkState} from '../tabs.mojom-webui.js';
 
 import {getCss} from './tab.css.js';
 import {getHtml} from './tab.html.js';
@@ -46,7 +47,7 @@ export class TabElement extends CrLitElement {
     isActive: false,
     isBlocked: false,
     isSelected: false,
-    networkState: NetworkState.kNone,
+    networkState: TabNetworkState.kNone,
     title: '',
     url: '',
     lastActiveTimeTicks: {internalValue: 0n},

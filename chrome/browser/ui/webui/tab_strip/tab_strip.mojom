@@ -4,7 +4,7 @@
 
 module tab_strip.mojom;
 
-import "chrome/browser/ui/webui/tabs/tabs.mojom";
+import "components/tabs/public/mojom/tabs.mojom";
 import "url/mojom/url.mojom";
 
 // Information of an open tab.

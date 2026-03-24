@@ -33,16 +33,6 @@ tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMask(TabChangeType type);
 tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMaskForSelection(bool active,
                                                                bool selected);
 
-// Converts mojom::NetworkState back to a tabs::TabNetworkState.
-// TODO(crbug.com/458095449): Consider using bimap or just static casting these
-// enums if maintaining both this and ToMojo gets out of hand.
-tabs::TabNetworkState FromMojo(mojom::NetworkState state);
-
-// Converts mojom::AlertState back to a tabs::TabAlert.
-// TODO(crbug.com/458095449): Consider using bimap or just static casting these
-// enums if maintaining both this and ToMojo gets out of hand.
-tabs::TabAlert FromMojo(mojom::AlertState state);
-
 }  // namespace tabs_api::converters
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_CONVERTERS_TAB_CONVERTERS_H_

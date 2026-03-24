@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/tabs/tabs_mojom_traits.h"
+#include "components/tabs/public/mojom/tabs_mojom_traits.h"
 
 #include "base/notreached.h"
 

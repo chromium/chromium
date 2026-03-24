@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
-#define CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
+#ifndef COMPONENTS_TABS_PUBLIC_MOJOM_TABS_MOJOM_TRAITS_H_
+#define COMPONENTS_TABS_PUBLIC_MOJOM_TABS_MOJOM_TRAITS_H_
 
-#include "chrome/browser/ui/webui/tabs/tabs.mojom.h"
+#include "components/tabs/public/mojom/tabs.mojom.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_network_state.h"
 
@@ -34,4 +34,4 @@ struct EnumTraits<MojoTabAlertState, NativeTabAlertState> {
 
 }  // namespace mojo
 
-#endif  // CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
+#endif  // COMPONENTS_TABS_PUBLIC_MOJOM_TABS_MOJOM_TRAITS_H_

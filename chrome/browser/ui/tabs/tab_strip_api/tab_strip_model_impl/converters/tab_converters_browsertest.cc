@@ -61,18 +61,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest, ConvertTab) {
   ASSERT_TRUE(mojo->is_active);
   ASSERT_TRUE(mojo->is_selected);
   ASSERT_EQ(tabs::TabNetworkStateForWebContents(tab->GetContents()),
-            FromMojo(mojo->network_state));
-
-  std::vector<mojom::AlertState> tab_alerts = mojo->alert_states;
-  std::vector<tabs::TabAlert> mojom_tab_alerts = {};
-  mojom_tab_alerts.reserve(tab_alerts.size());
-
-  for (auto state : tab_alerts) {
-    mojom_tab_alerts.push_back(FromMojo(state));
-  }
+            mojo->network_state);
 
   ASSERT_EQ(tabs::TabAlertController::From(tab)->GetAllActiveAlerts(),
-            mojom_tab_alerts);
+            mojo->alert_states);
   ASSERT_EQ(tab->IsBlocked(), mojo->is_blocked);
   ASSERT_EQ(std::max(tab->GetContents()->GetLastInteractionTimeTicks(),
                      tab->GetContents()->GetLastActiveTimeTicks()),
