@@ -14,7 +14,7 @@ import './managed_user_profile_notice_data_handling.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -22,7 +22,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './managed_user_profile_notice_app_refresh.css.js';
 import {getHtml} from './managed_user_profile_notice_app_refresh.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
-import {BrowsingDataHandling, ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
+import {AppMode, BrowsingDataHandling, ManagedUserProfileNoticeBrowserProxyImpl, ScreenType, State} from './managed_user_profile_notice_browser_proxy.js';
 
 export interface ManagedUserProfileNoticeAppRefreshElement {
   $: {
@@ -73,6 +73,10 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       processingSubtitle_: {type: String},
       selectedDataHandling_: {type: String},
       usePrimaryAndTonalButtons_: {type: Boolean},
+      appMode_: {
+        type: String,
+        reflect: true,
+      },
     };
   }
 
@@ -95,6 +99,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
   protected accessor errorSubtitle_: string = '';
   protected accessor disableProceedButton_: boolean = false;
   protected accessor currentState_: State = State.DISCLOSURE;
+  protected accessor appMode_: AppMode = AppMode.FIRST_RUN;
   protected accessor processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
   protected accessor selectedDataHandling_: BrowsingDataHandling|null = null;
@@ -128,6 +133,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     this.managedUserProfileNoticeBrowserProxy_.initialized().then(info => {
       this.updateProfileInfo_(info);
       this.updateCurrentState_(loadTimeData.getInteger('initialState'));
+      this.updateAppMode_(loadTimeData.getInteger('screenType') as ScreenType);
 
       // Prefer using |document.body.offsetHeight| instead of
       // |document.body.scrollHeight| as it returns the correct height of the
@@ -188,6 +194,25 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
 
   private updateCurrentState_(state: State) {
     this.currentState_ = state;
+  }
+
+  private updateAppMode_(screenType: ScreenType) {
+    switch (screenType) {
+      case ScreenType.PROFILE_PICKER:
+      case ScreenType.ENTERPRISE_ACCOUNT_SYNC_ENABLED:
+      case ScreenType.ENTERPRISE_ACCOUNT_SYNC_DISABLED:
+      case ScreenType.CONSUMER_ACCOUNT_SYNC_DISABLED:
+        this.appMode_ = AppMode.PROFILE_PICKER;
+        break;
+      case ScreenType.FIRST_RUN:
+        this.appMode_ = AppMode.FIRST_RUN;
+        break;
+      case ScreenType.ENTERPRISE_ACCOUNT_CREATION:
+      case ScreenType.ENTERPRISE_OIDC:
+        assertNotReached();
+      default:
+        assertNotReachedCase(screenType);
+    }
   }
 
   private updateErrorStrings_(errorTitle: string, errorSubTitle: string) {

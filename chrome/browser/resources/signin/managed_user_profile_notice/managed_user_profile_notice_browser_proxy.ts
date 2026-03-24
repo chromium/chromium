@@ -24,6 +24,23 @@ export enum State {
   USER_DATA_HANDLING = 6,
 }
 
+// LINT.IfChange(ScreenType)
+export enum ScreenType {
+  ENTERPRISE_ACCOUNT_SYNC_ENABLED = 0,
+  ENTERPRISE_ACCOUNT_SYNC_DISABLED = 1,
+  CONSUMER_ACCOUNT_SYNC_DISABLED = 2,
+  ENTERPRISE_ACCOUNT_CREATION = 3,
+  ENTERPRISE_OIDC = 4,
+  PROFILE_PICKER = 5,
+  FIRST_RUN = 6,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h:ScreenType)
+
+export enum AppMode {
+  FIRST_RUN = 'first-run',
+  PROFILE_PICKER = 'profile-picker',
+}
+
 // Managed user profile info sent from C++.
 export interface ManagedUserProfileInfo {
   accountName: string;

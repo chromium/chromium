@@ -25,6 +25,7 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
         title="${this.i18n('profileDisclosureTitle')}"
         subtitle="${this.i18n('profileDisclosureSubtitle')}"
         picture-url="${this.profileInfo_.pictureUrl}"
+        app-mode="${this.appMode_}"
         ?show-enterprise-badge="${this.profileInfo_.showEnterpriseBadge}">
     </managed-user-profile-notice-disclosure-refresh>
   ` : ''}

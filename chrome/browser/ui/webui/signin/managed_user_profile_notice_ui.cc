@@ -241,6 +241,7 @@ void ManagedUserProfileNoticeUI::Initialize(
   base::DictValue update_data;
   std::string domain =
       enterprise_util::GetDomainFromEmail(create_param->account_info.email);
+  update_data.Set("screenType", static_cast<int>(type));
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     update_data.Set("isModalDialog", true);
