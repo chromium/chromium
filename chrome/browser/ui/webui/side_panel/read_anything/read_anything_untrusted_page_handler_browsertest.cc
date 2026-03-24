@@ -1947,13 +1947,19 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       CreationUpdatesMutingState) {
+  handler_ = CreateHandler();
+  EXPECT_CALL(page_, OnTabMuteStateChange(_)).Times(1);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        DidUpdateAudioMutingState) {
   handler_ = CreateHandler();
 
   handler_->DidUpdateAudioMutingState(true);
   EXPECT_CALL(page_, OnTabMuteStateChange(true)).Times(1);
   handler_->DidUpdateAudioMutingState(false);
-  EXPECT_CALL(page_, OnTabMuteStateChange(false)).Times(1);
+  EXPECT_CALL(page_, OnTabMuteStateChange(false)).Times(2);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,

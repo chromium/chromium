@@ -270,6 +270,8 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
   if (need_reset) {
     web_contents->ResetAccessibility();
   }
+
+  DidUpdateAudioMutingState(web_contents->IsAudioMuted());
 }
 
 ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() = default;
