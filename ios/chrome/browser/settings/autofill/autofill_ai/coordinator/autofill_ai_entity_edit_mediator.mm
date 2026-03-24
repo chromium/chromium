@@ -4,17 +4,19 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
-#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
-#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
@@ -25,9 +27,6 @@ using autofill::EntityDataManager;
 using autofill::EntityInstance;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeAttribute = kItemTypeEnumZero,
-};
 
 // Creates a date formatter for the given locale.
 NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
@@ -39,38 +38,6 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   dateFormatter.locale =
       [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(locale)];
   return dateFormatter;
-}
-
-// Creates a country item.
-AutofillAIEntityCountryItem* CreateCountryItem(
-    NSString* display_name,
-    NSString* value,
-    AttributeTypeName attr_type_name) {
-  AutofillAIEntityCountryItem* countryItem =
-      [[AutofillAIEntityCountryItem alloc] initWithType:ItemTypeAttribute];
-  countryItem.text = display_name;
-  countryItem.detailText = value;
-  countryItem.attributeType = attr_type_name;
-  countryItem.accessoryType = UITableViewCellAccessoryNone;
-  countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
-  countryItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  return countryItem;
-}
-
-// Creates an attribute item.
-AutofillAIEntityEditItem* CreateAttributeItem(
-    NSString* display_name,
-    NSString* value,
-    AttributeTypeName attr_type_name) {
-  AutofillAIEntityEditItem* item =
-      [[AutofillAIEntityEditItem alloc] initWithType:ItemTypeAttribute];
-  item.fieldNameLabelText = display_name;
-  item.textFieldPlaceholder = display_name;
-  item.textFieldValue = value;
-  item.attributeType = attr_type_name;
-  item.textFieldEnabled = NO;
-  item.hideIcon = YES;
-  return item;
 }
 
 }  // namespace
@@ -87,6 +54,12 @@ AutofillAIEntityEditItem* CreateAttributeItem(
 
   // The date formatter used to display the date.
   NSDateFormatter* _dateFormatter;
+
+  // Items to be displayed.
+  NSMutableArray<TableViewItem*>* _editItems;
+
+  // The item factory.
+  AutofillAIEntityEditItemFactory* _itemFactory;
 }
 
 - (instancetype)initWithEntityInstance:(EntityInstance)entityInstance
@@ -97,10 +70,14 @@ AutofillAIEntityEditItem* CreateAttributeItem(
     _entityDataManager = entityDataManager;
     _locale = GetApplicationContext()->GetApplicationLocaleStorage()->Get();
     _dateFormatter = CreateDateFormatterForLocale(_locale);
+    _itemFactory =
+        [[AutofillAIEntityEditItemFactory alloc] initWithLocale:_locale
+                                                  dateFormatter:_dateFormatter];
   }
   return self;
 }
 
+// Sets the consumer of the mediator.
 - (void)setConsumer:(id<AutofillAIEntityEditConsumer>)consumer {
   if (!consumer || !_entityInstance.has_value()) {
     return;
@@ -111,31 +88,12 @@ AutofillAIEntityEditItem* CreateAttributeItem(
 
   [consumer setEditingAllowed:!_entityInstance->are_attributes_read_only()];
 
-  NSMutableArray<TableViewItem*>* items = [[NSMutableArray alloc] init];
+  _editItems = [[NSMutableArray alloc] init];
   for (AttributeInstance attribute : _entityInstance->attributes()) {
-    const AttributeType attributeType = attribute.type();
-    NSString* displayName =
-        autofill::DisplayNameForAutofillAiAttributeType(attributeType);
-
-    NSString* value = @"";
-    if (attributeType.data_type() == AttributeType::DataType::kDate) {
-      value = [_dateFormatter
-          stringFromDate:NSDateFromAttributeInstance(attribute)];
-    } else {
-      value = base::SysUTF16ToNSString(attribute.GetInfo(
-          attribute.type().field_type(), _locale, std::nullopt));
-    }
-
-    if (attributeType.data_type() == AttributeType::DataType::kCountry) {
-      [items addObject:CreateCountryItem(displayName, value,
-                                         attributeType.name())];
-    } else {
-      [items addObject:CreateAttributeItem(displayName, value,
-                                           attributeType.name())];
-    }
+    [_editItems addObject:[_itemFactory createItemForAttribute:attribute]];
   }
 
-  [consumer setEditItems:items];
+  [consumer setEditItems:_editItems];
   _consumer = consumer;
 }
 

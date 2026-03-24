@@ -8,13 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_field_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 
 // Item for editing Autofill AI entity fields.
-@interface AutofillAIEntityEditItem : TableViewTextEditItem
+@interface AutofillAIEntityEditItem
+    : TableViewTextEditItem <AutofillAIEntityFieldItem>
 
-// The type of the attribute being edited.
-@property(nonatomic, assign) autofill::AttributeTypeName attributeType;
+// The date value of the attribute, if applicable.
+@property(nonatomic, strong) NSDate* dateValue;
 
 @end
 

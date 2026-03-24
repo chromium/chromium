@@ -121,3 +121,27 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, MediatorSetsConsumer) {
   EXPECT_GT(consumer.title.length, 0u);
   EXPECT_GT(consumer.editItems.count, 0u);
 }
+
+// Tests that the coordinator can create a new entity.
+TEST_F(AutofillAIEntityEditCoordinatorTest, CreateNewEntity) {
+  autofill::EntityType type =
+      autofill::EntityType(autofill::EntityTypeName::kVehicle);
+
+  coordinator_ = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:base_navigation_controller_
+                               browser:browser_.get()
+                            entityType:type];
+  [coordinator_ start];
+
+  AutofillAIEntityEditMediator* mediator = coordinator_.mediator;
+  ASSERT_TRUE(mediator);
+
+  FakeAutofillAIEntityEditConsumer* consumer =
+      [[FakeAutofillAIEntityEditConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  EXPECT_GT(consumer.title.length, 0u);
+  EXPECT_GE(consumer.editItems.count, 0u);
+  // TODO(crbug.com/480933727): Add more verifications when the new entity is
+  // created with pre-populated values.
+}

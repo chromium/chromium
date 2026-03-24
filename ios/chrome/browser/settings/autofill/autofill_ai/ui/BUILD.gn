@@ -6,25 +6,44 @@ source_set("ui") {
   sources = [
     "autofill_ai_add_entities_menu_builder.h",
     "autofill_ai_add_entities_menu_builder.mm",
-    "autofill_ai_entity_country_item.h",
-    "autofill_ai_entity_country_item.mm",
     "autofill_ai_entity_edit_consumer.h",
-    "autofill_ai_entity_edit_item.h",
-    "autofill_ai_entity_edit_item.mm",
     "autofill_ai_entity_edit_table_view_controller.h",
     "autofill_ai_entity_edit_table_view_controller.mm",
     "autofill_ai_entity_item.h",
     "autofill_ai_entity_item.mm",
   ]
   deps = [
+    ":edit_items",
     "//components/autofill/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
-    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/settings/autofill/ui",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("edit_items") {
+  sources = [
+    "autofill_ai_entity_country_item.h",
+    "autofill_ai_entity_country_item.mm",
+    "autofill_ai_entity_edit_date_item.h",
+    "autofill_ai_entity_edit_date_item.mm",
+    "autofill_ai_entity_edit_item.h",
+    "autofill_ai_entity_edit_item.mm",
+    "autofill_ai_entity_edit_item_factory.h",
+    "autofill_ai_entity_edit_item_factory.mm",
+    "autofill_ai_entity_field_item.h",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
   ]
@@ -34,6 +53,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "autofill_ai_add_entities_menu_builder_unittest.mm" ]
   deps = [
+    ":edit_items",
     ":ui",
     "//components/autofill/core/browser:test_support",
     "//components/sync:test_support",

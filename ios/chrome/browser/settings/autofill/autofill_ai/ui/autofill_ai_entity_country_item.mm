@@ -10,6 +10,8 @@
 
 @implementation AutofillAIEntityCountryItem
 
+@synthesize attributeType = _attributeType;
+
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
