@@ -27,7 +27,6 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace autofill::autofill_metrics {

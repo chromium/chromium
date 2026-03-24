@@ -156,7 +156,6 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -673,7 +672,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
 
   base::test::ScopedFeatureList ml_scoped_feature_list;
   if (EnableMLClassification()) {
-    ASSERT_TRUE(BUILDFLAG(BUILD_WITH_TFLITE_LIB));
     ASSERT_TRUE(base::CommandLine::ForCurrentProcess()->HasSwitch(
         "optimization-guide-model-override"))
         << "No model specified.";

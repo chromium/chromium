@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
@@ -71,7 +72,6 @@
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
@@ -86,10 +86,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
-#endif
 
 namespace autofill {
 
@@ -270,7 +266,6 @@ class TestAutofillClientTemplate : public T {
     return &test_address_normalizer_;
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override {
     return autofill_ml_prediction_model_handler_.get();
@@ -290,7 +285,6 @@ class TestAutofillClientTemplate : public T {
       std::unique_ptr<FieldClassificationModelHandler> handler) {
     password_ml_prediction_model_handler_ = std::move(handler);
   }
-#endif
 
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
     return last_committed_primary_main_frame_url_;
@@ -732,12 +726,10 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<one_time_tokens::OneTimeTokenService>
       injected_one_time_token_service_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FieldClassificationModelHandler>
       autofill_ml_prediction_model_handler_;
   std::unique_ptr<FieldClassificationModelHandler>
       password_ml_prediction_model_handler_;
-#endif
 
   bool autofill_profile_enabled_ = true;
   bool wallet_public_pass_storage_enabled_ = true;

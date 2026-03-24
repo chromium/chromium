@@ -556,6 +556,16 @@ static_library("browser") {
     "ml_model/autofill_ai/autofill_ai_model_executor.h",
     "ml_model/autofill_ai/autofill_ai_model_executor_impl.cc",
     "ml_model/autofill_ai/autofill_ai_model_executor_impl.h",
+    "ml_model/field_classification_model_encoder.cc",
+    "ml_model/field_classification_model_encoder.h",
+    "ml_model/field_classification_model_executor.cc",
+    "ml_model/field_classification_model_executor.h",
+    "ml_model/field_classification_model_handler.cc",
+    "ml_model/field_classification_model_handler.h",
+    "ml_model/logging/ml_log_router.cc",
+    "ml_model/logging/ml_log_router.h",
+    "ml_model/model_predictions.cc",
+    "ml_model/model_predictions.h",
     "network/autofill_ai/fake_wallet_pass_access_manager.cc",
     "network/autofill_ai/fake_wallet_pass_access_manager.h",
     "network/autofill_ai/private_pass_conversion_util.cc",
@@ -975,21 +985,6 @@ static_library("browser") {
     ]
   }
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "ml_model/field_classification_model_encoder.cc",
-      "ml_model/field_classification_model_encoder.h",
-      "ml_model/field_classification_model_executor.cc",
-      "ml_model/field_classification_model_executor.h",
-      "ml_model/field_classification_model_handler.cc",
-      "ml_model/field_classification_model_handler.h",
-      "ml_model/logging/ml_log_router.cc",
-      "ml_model/logging/ml_log_router.h",
-      "ml_model/model_predictions.cc",
-      "ml_model/model_predictions.h",
-    ]
-  }
-
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
@@ -1000,6 +995,7 @@ static_library("browser") {
     ":country_data",
     ":legal_message_line",
     ":payments_sync_utils",
+    "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/browser/proto:autofill_ai_proto",
@@ -1015,21 +1011,15 @@ static_library("browser") {
     "//third_party/abseil-cpp:absl",
     "//third_party/libaddressinput",
     "//third_party/libaddressinput:strings_grit",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
     "//url",
   ]
-
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
 
   deps = [
     ":autofill_address_rewriter_resources",
@@ -1037,7 +1027,6 @@ static_library("browser") {
     ":buildflags",
     ":entity_schema_enums_and_functions",
     ":generate_country_native_names",
-    ":payments_sync_utils",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
@@ -1059,7 +1048,6 @@ static_library("browser") {
     "//components/language/core/browser",
     "//components/language_detection/core",
     "//components/one_time_tokens/core/browser",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/common",
@@ -1422,7 +1410,6 @@ static_library("test_support") {
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
     "//components/leveldb_proto",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
     "//components/pref_registry",
@@ -1682,6 +1669,9 @@ source_set("unit_tests") {
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
     "ml_model/autofill_ai/autofill_ai_model_cache_impl_unittest.cc",
+    "ml_model/field_classification_model_encoder_unittest.cc",
+    "ml_model/field_classification_model_executor_unittest.cc",
+    "ml_model/field_classification_model_handler_unittest.cc",
     "network/autofill_ai/private_pass_conversion_util_unittest.cc",
     "network/autofill_ai/wallet_pass_access_manager_impl_unittest.cc",
     "payments/amount_extraction_heuristic_regexes_unittest.cc",
@@ -1840,14 +1830,6 @@ source_set("unit_tests") {
     sources += [
       "crowdsourcing/server_prediction_overrides_unittest.cc",
       "payments/desktop_bnpl_strategy_unittest.cc",
-    ]
-  }
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "ml_model/field_classification_model_encoder_unittest.cc",
-      "ml_model/field_classification_model_executor_unittest.cc",
-      "ml_model/field_classification_model_handler_unittest.cc",
     ]
   }
 
