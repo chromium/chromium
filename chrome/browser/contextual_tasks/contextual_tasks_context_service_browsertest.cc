@@ -864,6 +864,61 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SignalPopulation_ActiveTabNTP) {
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+
+  // Tab 1 (will become background candidate tab)
+  NavigateToValidURL();
+
+  // Set up an NTP as the active foreground tab.
+  GURL ntp_url("chrome://newtab/");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), ntp_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)},
+       {std::make_pair("candidate title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<void> logging_future;
+  logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+
+  ASSERT_TRUE(logging_future.Wait());
+
+  optimization_guide::proto::ContextualTasksContextQuality
+      uploaded_quality_log = logs_uploader()
+                                 ->uploaded_logs()[0]
+                                 ->contextual_tasks_context()
+                                 .quality();
+
+  ASSERT_GE(uploaded_quality_log.eligible_tabs().size(), 1);
+
+  // The active tab is NTP, so we should not have fetched embeddings for it,
+  // meaning active_tab_title_similarity should be 0 (default).
+  EXPECT_EQ(
+      uploaded_quality_log.eligible_tabs()[0].active_tab_title_similarity(),
+      0.0f);
+  EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0]
+                .query_passage_similarities()
+                .size(),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        SignalPopulation_MissingTitleEmbeddings) {
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();

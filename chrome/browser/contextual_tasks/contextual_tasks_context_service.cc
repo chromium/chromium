@@ -21,6 +21,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -393,19 +394,13 @@ ContextualTasksContextService::GetAllEligibleTabs() {
           tabs::TabInterface* tab = tab_list->GetTab(i);
           content::WebContents* web_contents =
               tab ? tab->GetContents() : nullptr;
-          if (!web_contents) {
+          if (!IsValidTab(web_contents)) {
+            AUTO_CONTEXT_LOG(
+                base::StringPrintf("Removing %s from relevant set as it is not "
+                                   "valid e.g. it is NTP, internal page, etc.",
+                                   web_contents->GetLastCommittedURL().spec()));
             continue;
           }
-
-          const GURL url = web_contents->GetLastCommittedURL();
-          const bool is_invalid_url = !url.is_valid() || url.IsAboutBlank();
-          const bool is_internal_page =
-              url.SchemeIs(content::kChromeUIScheme) ||
-              url.SchemeIs(content::kChromeUIUntrustedScheme);
-          if (is_invalid_url || is_internal_page) {
-            continue;
-          }
-
           if (!ShouldAddTabToSelection(web_contents)) {
             AUTO_CONTEXT_LOG(
                 base::StringPrintf("Removing %s from relevant set as it is not "
@@ -459,9 +454,8 @@ ContextualTasksContextService::CreateQueryState(
   query_state.query_embedding = query_embedding;
   query_state.query_word_count = GetWordCount(query);
 
-  // TODO(b/462793437): Do not set the features if the active tab is New Tab
-  // Page.
-  if (content::WebContents* active_tab_contents = GetActiveTabWebContents()) {
+  content::WebContents* active_tab_contents = GetActiveTabWebContents();
+  if (IsValidTab(active_tab_contents)) {
     query_state.active_tab = active_tab_contents->GetWeakPtr();
     query_state.active_tab_embeddings = page_embeddings_service_->GetEmbeddings(
         active_tab_contents->GetPrimaryPage());
@@ -625,6 +619,26 @@ ContextualTasksContextService::GetDurationOfCurrentOrLastVisit(
     }
   }
   return std::nullopt;
+}
+
+bool ContextualTasksContextService::IsValidTab(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+
+  if (!url.is_valid() || url.IsAboutBlank()) {
+    return false;
+  }
+
+  if (url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return false;
+  }
+
+  return !search::IsNTPOrRelatedURL(url, profile_);
 }
 
 bool ContextualTasksContextService::ShouldAddTabToSelection(

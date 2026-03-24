@@ -175,6 +175,9 @@ class ContextualTasksContextService
   std::optional<base::TimeDelta> GetDurationOfCurrentOrLastVisit(
       content::WebContents* web_contents);
 
+  // Returns whether the tab is valid i.e. it is not NTP, internal page, etc.
+  bool IsValidTab(content::WebContents* web_contents);
+
   // Returns whether the tab should be added to the selection.
   bool ShouldAddTabToSelection(content::WebContents* web_contents);
 
