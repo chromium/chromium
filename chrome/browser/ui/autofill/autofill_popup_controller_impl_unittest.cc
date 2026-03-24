@@ -565,8 +565,9 @@ TEST_F(AutofillPopupControllerImplTest, AtMemoryShowsSearchBarAndNoFiltering) {
   EXPECT_EQ(controller.GetMainFillingProduct(), FillingProduct::kAtMemory);
 
   EXPECT_CALL(*client().accessibility_query_service(), Query)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<accessibility_annotator::MemorySearchResult>{}));
+      .WillOnce(base::test::RunOnceCallback<
+                1>(accessibility_annotator::MemorySearchResults(
+          accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
   controller.SetFilter(AutofillPopupController::StringFilter(u"nono"));
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
 }
@@ -763,14 +764,14 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
   ShowSuggestions(manager(), {suggestion},
                   AutofillSuggestionTriggerSource::kAtMemory);
 
-  accessibility_annotator::MemorySearchResult result;
-  result.value = u"result";
-  result.title = u"result";
-  result.description = u"description";
+  accessibility_annotator::MemorySearchResult entry(
+      accessibility_annotator::QueryIntentType::kNameFull, u"Name", u"result");
+  accessibility_annotator::MemorySearchResults result(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {entry});
 
   EXPECT_CALL(*client().accessibility_query_service(), Query)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<accessibility_annotator::MemorySearchResult>{result}));
+      .WillOnce(base::test::RunOnceCallback<1>(result));
 
   client().suggestion_controller(manager()).SetFilter(
       AutofillPopupController::StringFilter(u"res"));
@@ -783,8 +784,9 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithNoResults_ShowMessage
                   AutofillSuggestionTriggerSource::kAtMemory);
 
   EXPECT_CALL(*client().accessibility_query_service(), Query)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<accessibility_annotator::MemorySearchResult>{}));
+      .WillOnce(base::test::RunOnceCallback<
+                1>(accessibility_annotator::MemorySearchResults(
+          accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
 
   client().suggestion_controller(manager()).SetFilter(
       AutofillPopupController::StringFilter(u"abc"));
