@@ -1301,4 +1301,169 @@ TEST_F(UrlPatternIndexTest, FindAllMatchesWithDisabledRuleIds) {
   }
 }
 
+// Tests for hardened constructor and FindMatch behavior with missing/corrupted
+// flatbuffer fields.
+
+TEST_F(UrlPatternIndexTest, NullFlatIndex) {
+  // A null flat_index should be handled gracefully.
+  UrlPatternIndexMatcher matcher(nullptr);
+  EXPECT_EQ(0u, matcher.GetRulesCount());
+  EXPECT_FALSE(matcher.FindMatch(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(),
+      UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
+TEST_F(UrlPatternIndexTest, CorruptedIndex_MissingNGramIndex) {
+  // Build a UrlPatternIndex flatbuffer with the ngram_index field missing
+  // (null vector). The matcher constructor should detect this and disable the
+  // index.
+  flatbuffers::FlatBufferBuilder builder;
+  auto empty_slot = flat::CreateNGramToRules(builder);
+  // Create index with no ngram_index vector (default = null).
+  auto index_offset = flat::CreateUrlPatternIndex(
+      builder, kNGramSize, /*ngram_index=*/0, empty_slot);
+  builder.Finish(index_offset);
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+
+  UrlPatternIndexMatcher matcher(index);
+  // The constructor should have disabled the index.
+  EXPECT_EQ(0u, matcher.GetRulesCount());
+  EXPECT_FALSE(matcher.FindMatch(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(),
+      UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
+TEST_F(UrlPatternIndexTest, CorruptedIndex_MissingEmptySlot) {
+  // Build a UrlPatternIndex flatbuffer with a valid ngram_index but a missing
+  // ngram_index_empty_slot. The matcher constructor should detect this and
+  // disable the index.
+  flatbuffers::FlatBufferBuilder builder;
+  // Create a minimal non-empty ngram_index vector.
+  auto entry = flat::CreateNGramToRules(builder);
+  std::vector<flatbuffers::Offset<flat::NGramToRules>> table = {entry};
+  auto ngram_index = builder.CreateVector(table);
+  // Create index with null empty_slot (default = null).
+  auto index_offset = flat::CreateUrlPatternIndex(
+      builder, kNGramSize, ngram_index, /*ngram_index_empty_slot=*/0);
+  builder.Finish(index_offset);
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+
+  UrlPatternIndexMatcher matcher(index);
+  EXPECT_EQ(0u, matcher.GetRulesCount());
+  EXPECT_FALSE(matcher.FindMatch(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(),
+      UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
+TEST_F(UrlPatternIndexTest, CorruptedIndex_EmptyNGramIndex) {
+  // Build a UrlPatternIndex with an empty (size 0) ngram_index vector.
+  // The matcher should treat this as corrupted and disable the index.
+  flatbuffers::FlatBufferBuilder builder;
+  auto empty_slot = flat::CreateNGramToRules(builder);
+  std::vector<flatbuffers::Offset<flat::NGramToRules>> empty_table;
+  auto ngram_index = builder.CreateVector(empty_table);
+  auto index_offset =
+      flat::CreateUrlPatternIndex(builder, kNGramSize, ngram_index, empty_slot);
+  builder.Finish(index_offset);
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+
+  UrlPatternIndexMatcher matcher(index);
+  EXPECT_EQ(0u, matcher.GetRulesCount());
+  EXPECT_FALSE(matcher.FindMatch(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(),
+      UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
+TEST_F(UrlPatternIndexTest, ValidIndex_NoMatchReturnsNull) {
+  // A valid but empty index (no rules) should return null, not crash.
+  ASSERT_NO_FATAL_FAILURE(Finish());
+  EXPECT_FALSE(FindMatch("http://example.com"));
+}
+
+TEST_F(UrlPatternIndexTest, FindAllMatches_CorruptedIndex) {
+  // FindAllMatches with a disabled index should return an empty vector.
+  flatbuffers::FlatBufferBuilder builder;
+  auto empty_slot = flat::CreateNGramToRules(builder);
+  auto index_offset = flat::CreateUrlPatternIndex(
+      builder, kNGramSize, /*ngram_index=*/0, empty_slot);
+  builder.Finish(index_offset);
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+
+  UrlPatternIndexMatcher matcher(index);
+  auto results = matcher.FindAllMatches(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(), {});
+  EXPECT_TRUE(results.empty());
+}
+
+TEST_F(UrlPatternIndexTest, CorruptedIndex_MissingFallbackRules) {
+  // Build a UrlPatternIndex with valid ngram_index and empty_slot but missing
+  // fallback_rules. The matcher constructor should detect this and disable the
+  // index, since GetRulesCount() unconditionally dereferences fallback_rules().
+  flatbuffers::FlatBufferBuilder builder;
+  auto empty_slot = flat::CreateNGramToRules(builder);
+  std::vector<flatbuffers::Offset<flat::NGramToRules>> table = {empty_slot};
+  auto ngram_index = builder.CreateVector(table);
+  // Create index with no fallback_rules (default = null).
+  auto index_offset = flat::CreateUrlPatternIndex(
+      builder, kNGramSize, ngram_index, empty_slot, /*fallback_rules=*/0);
+  builder.Finish(index_offset);
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+
+  UrlPatternIndexMatcher matcher(index);
+  EXPECT_EQ(0u, matcher.GetRulesCount());
+  EXPECT_FALSE(matcher.FindMatch(
+      GURL("http://example.com"), url::Origin(), testing::kOther, kNoActivation,
+      true, false, EmbedderConditionsMatcher(),
+      UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
+TEST_F(UrlPatternIndexTest, CorruptedIndex_ProbeExhaustion) {
+  // Construct a valid-looking flatbuffer index where every slot in the hash
+  // table contains a non-empty, non-matching NGramToRules entry. Since no
+  // slot is the empty-slot sentinel and no ngram matches the real URL query,
+  // the probe-exhaustion guard in FindMatchInFlatUrlPatternIndex must fire
+  // and return nullptr rather than looping indefinitely or crashing.
+  flatbuffers::FlatBufferBuilder builder;
+
+  auto empty_slot_offset = flat::CreateNGramToRules(builder);
+
+  // Create a filler entry with an ngram value that cannot appear as a
+  // kNGramSize-byte lowercase-ASCII ngram from any real URL (high bytes set).
+  auto filler_offset =
+      flat::CreateNGramToRules(builder, /*ngram=*/0xDEADBEEFDEADBEEF);
+
+  // A hash table where no probe finds a match or an empty slot.
+  constexpr uint32_t kTableSize = 4;
+  std::vector<flatbuffers::Offset<flat::NGramToRules>> table(kTableSize,
+                                                             filler_offset);
+  auto ngram_index = builder.CreateVector(table);
+
+  auto fallback_rules =
+      builder.CreateVector(std::vector<flatbuffers::Offset<flat::UrlRule>>());
+
+  auto index_offset = flat::CreateUrlPatternIndex(
+      builder, kNGramSize, ngram_index, empty_slot_offset, fallback_rules);
+  builder.Finish(index_offset);
+
+  const flat::UrlPatternIndex* index =
+      flat::GetUrlPatternIndex(builder.GetBufferPointer());
+  UrlPatternIndexMatcher matcher(index);
+
+  // Hit probe-exhaustion guard and return nullptr gracefully.
+  EXPECT_FALSE(
+      matcher.FindMatch(GURL("http://foo.com"), url::Origin(), testing::kOther,
+                        kNoActivation, true, false, EmbedderConditionsMatcher(),
+                        UrlPatternIndexMatcher::FindRuleStrategy::kAny, {}));
+}
+
 }  // namespace url_pattern_index

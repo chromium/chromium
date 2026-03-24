@@ -416,6 +416,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SubresourceFilter.UrlPatternIndex.CorruptedIndexFields"
+    enum="Boolean" expires_after="2027-03-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Recorded at most once per process (renderer or browser) when the
+    UrlPatternIndex hash table or empty slot is unexpectedly null or empty at
+    match time, despite passing validation at construction. This indicates that
+    the underlying flatbuffer index data was likely corrupted after loading
+    (e.g. due to mmap corruption). Always emitted as true.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.UrlPatternIndex.HashTableProbeExhausted"
+    enum="Boolean" expires_after="2027-03-12">
+  <owner>csharrison@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Recorded at most once per process (renderer or browser) when a hash table
+    probe in UrlPatternIndex exhausts all slots without finding a match or empty
+    slot, indicating that the underlying flatbuffer index data is likely
+    corrupted. Always emitted as true.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceFilter.WriteRuleset.Result"
     enum="SubresourceFilterWriteRulesetResult" expires_after="2027-01-17">
   <owner>alexmt@chromium.org</owner>

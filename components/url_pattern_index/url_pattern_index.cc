@@ -13,7 +13,9 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -713,7 +715,16 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
 
   const FlatNGramIndex* hash_table = index.ngram_index();
   const flat::NGramToRules* empty_slot = index.ngram_index_empty_slot();
-  DCHECK_NE(hash_table, nullptr);
+
+  if (!hash_table || hash_table->size() == 0 || !empty_slot) {
+    static bool logged_missing_index_fields = false;
+    if (!logged_missing_index_fields) {
+      logged_missing_index_fields = true;
+      base::UmaHistogramBoolean(
+          "SubresourceFilter.UrlPatternIndex.CorruptedIndexFields", true);
+    }
+    return nullptr;
+  }
 
   NGramHashTableProber prober;
 
@@ -733,19 +744,48 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
   };
   const flat::UrlRule* max_priority_rule = nullptr;
 
+  const uint32_t table_size = hash_table->size();
   for (uint64_t ngram : ngrams) {
+    // Track probe count to guard against runaway probing caused by corrupted
+    // hash table data. In a well-formed table with open addressing, probing
+    // always terminates within table_size iterations.
+    uint32_t probe_count = 0;
     const uint32_t slot_index = prober.FindSlot(
-        ngram, hash_table->size(),
-        [hash_table, empty_slot](NGram ngram, uint32_t slot_index) {
+        ngram, table_size,
+        [hash_table, empty_slot, &probe_count, table_size](
+            NGram ngram, uint32_t slot_index) {
+          if (++probe_count >= table_size) {
+            // Exhausted all slots without finding a match or empty slot.
+            // The hash table data is likely corrupted.
+            return true;
+          }
           const flat::NGramToRules* entry = hash_table->Get(slot_index);
-          DCHECK_NE(entry, nullptr);
-          return entry == empty_slot || entry->ngram() == ngram;
+          if (!entry || entry == empty_slot) {
+            return true;  // Treat null or empty slot as empty.
+          }
+          // Only dereference entry if it is not empty_slot and is valid.
+          return entry->ngram() == ngram;
         });
-    DCHECK_LT(slot_index, hash_table->size());
+
+    // If probing was exhausted due to corrupted data, the index is likely
+    // corrupted. Early return to avoid further undefined behavior.
+    if (probe_count >= table_size) {
+      DVLOG(1) << "UrlPatternIndex: hash table probe exhausted; index is "
+               << "likely corrupted; aborting match";
+      static bool logged_probe_exhaustion = false;
+      if (!logged_probe_exhaustion) {
+        logged_probe_exhaustion = true;
+        base::UmaHistogramBoolean(
+            "SubresourceFilter.UrlPatternIndex.HashTableProbeExhausted", true);
+      }
+      return nullptr;
+    }
+    DCHECK_LT(slot_index, table_size);
 
     const flat::NGramToRules* entry = hash_table->Get(slot_index);
-    if (entry == empty_slot)
+    if (!entry || entry == empty_slot) {
       continue;
+    }
     const flat::UrlRule* rule = FindMatchAmongCandidates(
         entry->rule_list(), url, document_origin, element_type, activation_type,
         request_method, is_third_party, disable_generic_rules,
@@ -869,12 +909,17 @@ bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
 
 UrlPatternIndexMatcher::UrlPatternIndexMatcher(
     const flat::UrlPatternIndex* flat_index)
-    : flat_index_(flat_index) {
-  DCHECK(!flat_index || flat_index->n() == kNGramSize);
-  // Speculative investigation for crash (see crbug.com/1286207): check that we
-  // can access the ngram_index on each UrlPatternIndexMatcher without failure.
-  if (flat_index) {
-    CHECK_GT(flat_index->ngram_index()->size(), 0u);
+    : flat_index_(nullptr) {
+  // Validate that the flatbuffer data is structurally sound before use.
+  // If any critical field is missing or inaccessible, leave the index
+  // disabled (nullptr) to prevent access violations during matching
+  // (see crbug.com/1286207).
+  if (flat_index && flat_index->n() == kNGramSize) {
+    const auto* ngram_index = flat_index->ngram_index();
+    if (ngram_index && ngram_index->size() > 0 &&
+        flat_index->ngram_index_empty_slot() && flat_index->fallback_rules()) {
+      flat_index_ = flat_index;
+    }
   }
 }
 
