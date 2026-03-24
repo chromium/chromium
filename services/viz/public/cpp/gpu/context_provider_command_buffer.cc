@@ -193,6 +193,9 @@ ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_sequence_checker_);
 
   if (bind_tried_ && bind_result_ == gpu::ContextResult::kSuccess) {
+    // Stop the IO thread from calling back into us.
+    command_buffer_->ShutdownClientMessageFilter();
+
     // Clear the lock to avoid DCHECKs that the lock is being held during
     // shutdown.
     command_buffer_->SetLock(nullptr);
