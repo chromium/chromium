@@ -458,8 +458,8 @@ class InitialWebUIMetricsDropBrowserTest : public InitialWebUIBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/491012584): Flaky on ChromeOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/491012584): Flaky on ChromeOS MSan and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
 #define MAYBE_WebiumRendererMetricsDroppedIfNoRule \
   DISABLED_WebiumRendererMetricsDroppedIfNoRule
 #else
