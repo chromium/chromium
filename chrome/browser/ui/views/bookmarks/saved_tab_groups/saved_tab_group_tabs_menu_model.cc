@@ -152,7 +152,7 @@ void STGTabsMenuModel::Build(
   }
 
   if (!saved_group.is_shared_tab_group() &&
-      features::IsTabGroupMenuImprovementsEnabled()) {
+      features::IsBookmarkTabGroupConversionEnabled()) {
     latest_command_id = get_next_command_id.Run();
     AddItemWithStringIdAndIcon(
         latest_command_id,

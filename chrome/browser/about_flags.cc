@@ -12064,11 +12064,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"tab-group-menu-improvements",
-     flag_descriptions::kTabGroupMenuImprovementsName,
-     flag_descriptions::kTabGroupMenuImprovementsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupMenuImprovements)},
-
     {"tab-group-more-entry-points",
      flag_descriptions::kTabGroupMenuMoreEntryPointsName,
      flag_descriptions::kTabGroupMenuMoreEntryPointsDescription, kOsDesktop,

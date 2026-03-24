@@ -657,44 +657,21 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
   bool left_mouse_button_pressed = event.flags() & ui::EF_LEFT_MOUSE_BUTTON;
 
   if (left_mouse_button_pressed || space_pressed) {
-    if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
-      // Open the context menu.
-      SavedTabGroupButton* saved_tab_group_button =
-          views::AsViewClass<SavedTabGroupButton>(
-              GetButton(group->saved_guid()));
-      CHECK(saved_tab_group_button);
+    // Open the tab group on click or space.
 
-      gfx::Point coordinates;
-      ui::mojom::MenuSourceType source_type;
-      if (left_mouse_button_pressed) {
-        coordinates = ConvertPointToScreen(saved_tab_group_button,
-                                           event.AsLocatedEvent()->location());
-        source_type = ui::mojom::MenuSourceType::kMouse;
-      } else {
-        coordinates = saved_tab_group_button->GetKeyboardContextMenuLocation();
-        source_type = ui::mojom::MenuSourceType::kKeyboard;
-      }
+    const bool will_open_shared_group =
+        group->is_shared_tab_group() && !group->local_group_id().has_value();
 
-      saved_tab_group_button->ShowContextMenuForView(saved_tab_group_button,
-                                                     coordinates, source_type);
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
+    tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+        browser_->GetBrowserForMigrationOnly(), group->saved_guid(),
+        OpeningSource::kOpenedFromRevisitUi);
 
-    } else {
-      // Open the tab group on click or space.
-
-      const bool will_open_shared_group =
-          group->is_shared_tab_group() && !group->local_group_id().has_value();
-
-      base::RecordAction(
-          base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
-      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
-          browser_->GetBrowserForMigrationOnly(), group->saved_guid(),
-          OpeningSource::kOpenedFromRevisitUi);
-
-      if (will_open_shared_group) {
-        saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-            saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-                kOpenedFromBookmarksBar);
-      }
+    if (will_open_shared_group) {
+      saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+          saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+              kOpenedFromBookmarksBar);
     }
   }
 }

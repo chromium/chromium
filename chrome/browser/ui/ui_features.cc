@@ -162,13 +162,6 @@ BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupsCollapseFreezing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
-// General improvements to tab group menus
-BASE_FEATURE(kTabGroupMenuImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabGroupMenuImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupMenuImprovements);
-}
-
 BASE_FEATURE(kTabGroupMenuMoreEntryPoints, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupMenuMoreEntryPointsEnabled() {
