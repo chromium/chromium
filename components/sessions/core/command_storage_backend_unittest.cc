@@ -85,7 +85,7 @@ class CommandStorageBackendTest : public testing::Test {
   void AssertCommandEqualsData(const TestData& data,
                                const SessionCommand* command) {
     EXPECT_EQ(data.command_id, command->id());
-    EXPECT_EQ(data.data.size(), command->size());
+    EXPECT_EQ(data.data.size(), command->contents().size());
     EXPECT_EQ(command->contents(), base::as_byte_span(data.data));
   }
 
@@ -518,7 +518,7 @@ TEST_P(CommandStorageBackendParamTest, BigData) {
   AssertCommandEqualsData(data[1], commands[2].get());
 
   EXPECT_EQ(big_id, commands[1]->id());
-  ASSERT_EQ(big_size, commands[1]->size());
+  ASSERT_EQ(big_size, commands[1]->contents().size());
   EXPECT_EQ('a', commands[1]->contents()[0]);
   EXPECT_EQ('z', commands[1]->contents()[big_size - 1]);
 }
@@ -594,21 +594,19 @@ TEST_P(CommandStorageBackendParamTest, Truncate) {
   AssertCommandEqualsData(second_data, commands[0].get());
 }
 
-std::unique_ptr<SessionCommand> CreateCommandWithMaxSize() {
-  const size_type max_size_value = std::numeric_limits<size_type>::max();
+std::unique_ptr<SessionCommand> CreateCommandWithSize(size_type size) {
   std::unique_ptr<SessionCommand> command =
-      std::make_unique<SessionCommand>(11, max_size_value);
-  for (int i = 0; i < max_size_value; ++i) {
+      std::make_unique<SessionCommand>(11, size);
+  for (int i = 0; i < size; ++i) {
     command->contents()[i] = i;
   }
   return command;
 }
 
-TEST_P(CommandStorageBackendParamTest, MaxSizeType) {
+TEST_P(CommandStorageBackendParamTest, MaximumSizeCommandContents) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
-
   SessionCommands commands;
-  commands.push_back(CreateCommandWithMaxSize());
+  commands.push_back(CreateCommandWithSize(SessionCommand::kMaxContentSize));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   // Read it back in.
@@ -617,13 +615,35 @@ TEST_P(CommandStorageBackendParamTest, MaxSizeType) {
   commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
-  auto expected_command = CreateCommandWithMaxSize();
+  ASSERT_EQ(SessionCommand::kMaxContentSize, (commands[0])->contents().size());
+  auto expected_command =
+      CreateCommandWithSize(SessionCommand::kMaxContentSize);
   EXPECT_EQ(expected_command->id(), (commands[0])->id());
-  const size_type expected_size =
-      expected_command->size() - sizeof(SessionCommand::id_type);
-  ASSERT_EQ(expected_size, (commands[0])->size());
-  EXPECT_EQ(commands[0]->contents(),
-            expected_command->contents().first(expected_size));
+  // No truncation should occur, so the contents should be the same.
+  EXPECT_EQ(expected_command->contents(), (commands[0])->contents());
+}
+
+TEST_P(CommandStorageBackendParamTest, CommandContentsExceedMaximum) {
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  SessionCommands commands;
+  size_type exceeding_size =
+      std::numeric_limits<SessionCommand::size_type>::max();
+  ASSERT_GT(exceeding_size, SessionCommand::kMaxContentSize);
+  commands.push_back(CreateCommandWithSize(exceeding_size));
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
+
+  // Read it back in.
+  backend = nullptr;
+  backend = CreateBackend();
+  commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(1U, commands.size());
+  // The command should be truncated to the maximum size but otherwise the same.
+  ASSERT_EQ(SessionCommand::kMaxContentSize, (commands[0])->contents().size());
+  auto expected_command = CreateCommandWithSize(exceeding_size);
+  EXPECT_EQ(expected_command->id(), (commands[0])->id());
+  EXPECT_EQ(expected_command->contents().first(SessionCommand::kMaxContentSize),
+            (commands[0])->contents());
 }
 
 TEST_P(CommandStorageBackendParamTest, GetSessionFiles) {

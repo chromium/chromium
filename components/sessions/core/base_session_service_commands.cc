@@ -182,7 +182,7 @@ bool RestoreUpdateTabNavigationCommand(
     const SessionCommand& command,
     sessions::SerializedNavigationEntry* navigation,
     SessionID* tab_id) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&iterator, tab_id) &&
          navigation->ReadFromPickle(&iterator);
@@ -191,7 +191,7 @@ bool RestoreUpdateTabNavigationCommand(
 bool RestoreSetTabExtensionAppIDCommand(const SessionCommand& command,
                                         SessionID* tab_id,
                                         std::string* extension_app_id) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&iterator, tab_id) &&
          iterator.ReadString(extension_app_id);
@@ -200,7 +200,7 @@ bool RestoreSetTabExtensionAppIDCommand(const SessionCommand& command,
 bool RestoreSetTabUserAgentOverrideCommand(const SessionCommand& command,
                                            SessionID* tab_id,
                                            std::string* user_agent_override) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&iterator, tab_id) &&
          iterator.ReadString(user_agent_override);
@@ -211,7 +211,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
     SessionID* tab_id,
     std::string* user_agent_override,
     std::optional<std::string>* opaque_ua_metadata_override) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   if (!ReadSessionIdFromPickle(&iterator, tab_id)) {
     return false;
@@ -241,7 +241,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
 bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
                                     SessionID* window_id,
                                     std::string* app_name) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&iterator, window_id) &&
          iterator.ReadString(app_name);
@@ -250,7 +250,7 @@ bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
 bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
                                       SessionID* window_id,
                                       std::string* user_title) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&iterator, window_id) &&
          iterator.ReadString(user_title);
@@ -260,7 +260,7 @@ bool RestoreAddExtraDataCommand(const SessionCommand& command,
                                 SessionID* session_id,
                                 std::string* key,
                                 std::string* data) {
-  base::PickleIterator it = command.PayloadAsPickle();
+  base::PickleIterator it = command.ContentsAsPickle();
 
   return ReadSessionIdFromPickle(&it, session_id) && it.ReadString(key) &&
          it.ReadString(data);
@@ -268,7 +268,7 @@ bool RestoreAddExtraDataCommand(const SessionCommand& command,
 
 bool RestoreSetPlatformSessionIdCommand(const SessionCommand& command,
                                         std::string* platform_session_id) {
-  base::PickleIterator iterator = command.PayloadAsPickle();
+  base::PickleIterator iterator = command.ContentsAsPickle();
 
   return iterator.ReadString(platform_session_id);
 }

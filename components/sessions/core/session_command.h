@@ -8,24 +8,30 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/sessions_export.h"
 
 namespace base {
 class Pickle;
 class PickleIterator;
-}
+}  // namespace base
 
 namespace sessions {
 
-// SessionCommand contains a command id and arbitrary chunk of data. The id
-// and chunk of data are specific to the service creating them.
+// SessionCommand stores information used for restoring a session.
+// It contains an identifier ("id") and arbitrary chunk of data ("contents").
 //
-// Both TabRestoreService and SessionService use SessionCommands to represent
-// state on disk.
+// The meaning of the identifier and the contents are specific to the service
+// creating them.
+//
+// Both TabRestoreService and SessionService use SessionCommands to store data
+// on disk using the CommandStorageManager.
 //
 // There are two ways to create a SessionCommand:
 // . Specify the size of the data block to create. This is useful for
@@ -33,11 +39,10 @@ namespace sessions {
 // . From a pickle, this is useful for commands whose length varies.
 class SESSIONS_EXPORT SessionCommand {
  public:
-  // These get written to disk, so we define types for them.
-  // Type for the identifier.
+  // The type of the identifier.
   using id_type = uint8_t;
 
-  // Type for writing the size.
+  // The type of the size of the contents.
   using size_type = uint16_t;
 
   // Creates a session command with the specified id. This allocates a buffer
@@ -51,29 +56,47 @@ class SESSIONS_EXPORT SessionCommand {
   SessionCommand(const SessionCommand&) = delete;
   SessionCommand& operator=(const SessionCommand&) = delete;
 
-  // The contents of the command.
+  // An identifier for the command.  The meaning of the identifier is specific
+  // to the service that creates the command.
+  id_type id() const { return id_; }
+
+  // The maximum size of the |contents|.
+  // Note that this is less than UINT16_MAX.
+  // If this size is exceeded, the contents will be truncated in Serialize().
+  static constexpr size_t kMaxContentSize =
+      std::numeric_limits<size_type>::max() - sizeof(id_type);
+
+  // The contents of the command.  This is an arbitrary chunk of data whose
+  // meaning is specific to the service that creates the command.
   base::span<const uint8_t> contents() const {
     return base::as_byte_span(contents_);
   }
   base::span<uint8_t> contents() {
     return base::as_writable_byte_span(contents_);
   }
-  // Identifier for the command.
-  id_type id() const { return id_; }
-
-  // Size of data.
-  size_type size() const { return static_cast<size_type>(contents_.size()); }
-
-  // The serialized format has overhead (the serialized format includes the
-  // id). This returns the size to use when serializing.
-  size_type GetSerializedSize() const;
 
   // Convenience for extracting the data to a target. Returns false if
   // count is not equal to the size of data this command contains.
-  bool GetPayload(void* dest, size_t count) const;
+  bool GetContents(void* dest, size_t count) const;
 
-  // Returns an iterator for reading the payload.
-  base::PickleIterator PayloadAsPickle() const;
+  // Returns an iterator for reading the contents.
+  base::PickleIterator ContentsAsPickle() const;
+
+  // Serializes the SessionCommand (e.g., so that it can be written to a file).
+  // The serialized form includes the size of the command, the id, and the
+  // contents.
+  // If the size of the contents is greater than kMaxContentSize, the contents
+  // will be truncated.
+  std::vector<uint8_t> Serialize() const;
+
+  // Returns the total serialized size of the command if there is enough data
+  // to determine it, or std::nullopt otherwise.
+  static std::optional<size_t> GetSerializedSize(
+      base::span<const uint8_t> data);
+
+  // Deserializes the SessionCommand (e.g., for reading from a file).
+  static std::unique_ptr<SessionCommand> Deserialize(
+      base::span<const uint8_t> data);
 
  private:
   const id_type id_;

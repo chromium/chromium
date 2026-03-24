@@ -293,7 +293,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
   auto type = sessions::SessionWindow::TYPE_NORMAL;
 
   if (command->id() == kCommandWindow) {
-    base::PickleIterator it = command->PayloadAsPickle();
+    base::PickleIterator it = command->ContentsAsPickle();
     WindowCommandFields parsed_fields;
 
     // The first version of the pickle contains all of the following fields, so
@@ -346,7 +346,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
 
     // Try to parse the command as a WindowPayloadObsolete2.
     WindowPayloadObsolete2 payload2;
-    if (command->GetPayload(&payload2, sizeof(payload2))) {
+    if (command->GetContents(&payload2, sizeof(payload2))) {
       fields.window_id = payload2.window_id;
       fields.selected_tab_index = payload2.selected_tab_index;
       fields.num_tabs = payload2.num_tabs;
@@ -357,7 +357,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
     // Finally, try the oldest WindowPayloadObsolete type.
     if (!parsed) {
       WindowPayloadObsolete payload;
-      if (command->GetPayload(&payload, sizeof(payload))) {
+      if (command->GetContents(&payload, sizeof(payload))) {
         fields.window_id = payload.window_id;
         fields.selected_tab_index = payload.selected_tab_index;
         fields.num_tabs = payload.num_tabs;
@@ -419,7 +419,7 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
     const SessionCommand* command,
     SessionID* session_id,
     int32_t* num_tabs) {
-  base::PickleIterator it = command->PayloadAsPickle();
+  base::PickleIterator it = command->ContentsAsPickle();
   GroupCommandFields parsed_fields;
 
   // The first version of the pickle contains all of the following fields, so
@@ -1114,7 +1114,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         current_group = std::nullopt;
 
         RestoredEntryPayload payload;
-        if (!command.GetPayload(&payload, sizeof(payload))) {
+        if (!command.GetContents(&payload, sizeof(payload))) {
           return;
         }
         RemoveEntryByID(SessionID::FromSerializedValue(payload), &entries);
@@ -1178,9 +1178,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
       }
       case kCommandSelectedNavigationInTab: {
         SelectedNavigationInTabPayload2 payload;
-        if (!command.GetPayload(&payload, sizeof(payload))) {
+        if (!command.GetContents(&payload, sizeof(payload))) {
           SelectedNavigationInTabPayload old_payload;
-          if (!command.GetPayload(&old_payload, sizeof(old_payload))) {
+          if (!command.GetContents(&old_payload, sizeof(old_payload))) {
             return;
           }
           payload.id = old_payload.id;
@@ -1259,7 +1259,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           // Should be in a tab when we get this.
           return;
         }
-        base::PickleIterator iter = command.PayloadAsPickle();
+        base::PickleIterator iter = command.ContentsAsPickle();
         std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         std::u16string title;
         uint32_t color_int;
