@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SelectCredentialDialogRequest, Subscriber} from '/glic/glic_api/glic_api.js';
-import {CredentialType, UserGrantedPermissionDuration} from '/glic/glic_api/glic_api.js';
+import type {CreateTaskError, SelectCredentialDialogRequest, Subscriber} from '/glic/glic_api/glic_api.js';
+import {CreateTaskErrorReason, CredentialType, UserGrantedPermissionDuration} from '/glic/glic_api/glic_api.js';
 
 import {client, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
@@ -17,6 +17,26 @@ function credentialTypeAsString(credType: CredentialType): string {
     default:
       return 'Unknown type';
   }
+}
+
+function createTaskErrorReasonAsString(error: any): string {
+  if (error.reasonType === 'createTask') {
+    const createTaskError = error as CreateTaskError;
+    switch (createTaskError.reason) {
+      case CreateTaskErrorReason.TASK_SYSTEM_UNAVAILABLE:
+        return 'TASK_SYSTEM_UNAVAILABLE';
+      case CreateTaskErrorReason.EXISTING_ACTIVE_TASK:
+        return 'EXISTING_ACTIVE_TASK';
+      case CreateTaskErrorReason.BLOCKED_BY_POLICY:
+        return 'BLOCKED_BY_POLICY';
+      case CreateTaskErrorReason.CONVERSATION_NOT_REGISTERED:
+        return 'CONVERSATION_NOT_REGISTERED';
+      default:
+        break;
+    }
+  }
+
+  return `${error}`;
 }
 
 function setIcon(imgElem: HTMLImageElement, getter?: () => Promise<Blob>) {
@@ -68,12 +88,32 @@ function initCredentialHandlingIfNeeded() {
 
 $.createActorTask.addEventListener('click', async () => {
   logMessage('Starting Create Actor Task');
+  const taskOptions = {title: `Test task ${(new Date()).toLocaleTimeString()}`};
   try {
-    const taskId = await client!.browser!.createTask!();
+    const taskId = await client!.browser!.createTask!(taskOptions);
     $.actorTaskId.value = taskId.toString();
     $.actionStatus.innerText = `Created task with ID: ${taskId}`;
-  } catch (error) {
-    $.actionStatus.innerText = `Error in Create Actor Task: ${error}`;
+  } catch (error: any) {
+    $.actionStatus.innerText =
+        `Error in Create Actor Task: ${createTaskErrorReasonAsString(error)}`;
+    if (error.reasonType === 'createTask' &&
+        error.reason === CreateTaskErrorReason.CONVERSATION_NOT_REGISTERED) {
+      try {
+        logMessage('Auto registering conversation for actor task testing.');
+        await client!.browser!.registerConversation!({
+          conversationId: 'testActor',
+          conversationTitle: taskOptions.title,
+        });
+        const taskId = await client!.browser!.createTask!(taskOptions);
+        $.actorTaskId.value = taskId.toString();
+        $.actionStatus.innerText =
+            `Registered test conversation and created task with ID: ${taskId}`;
+      } catch (error: any) {
+        $.actionStatus.innerText =
+            `Failed to retry Create Actor Task with conversation: ${
+                createTaskErrorReasonAsString(error)}`;
+      }
+    }
   }
 
   // We only handle credentials when running interactively, which is why we set
