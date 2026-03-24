@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
@@ -927,11 +928,13 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                                 : IconResourceIds.PLACE_WHITE_VALUE;
                 modelButtonDataList.add(
                         new PopupButtonData(
-                                () -> setModelMode(modelMode),
+                                this::onDynamicButtonClicked,
                                 modelConfig.getMenuLabel(),
                                 iconId,
                                 inputState.isModelEnabled(modelMode),
-                                selected));
+                                selected,
+                                PopupButtonType.MODEL,
+                                modelMode));
             }
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;
@@ -949,6 +952,13 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
         mInput.setRequestType(requestType);
         return true;
+    }
+
+    private void onDynamicButtonClicked(PopupButtonData data) {
+        if (data.type == PopupButtonType.MODEL) {
+            FuseboxMetrics.notifyModelButtonUsed(data.protoId);
+            setModelMode(data.protoId);
+        }
     }
 
     private void setModelMode(int modelMode) {

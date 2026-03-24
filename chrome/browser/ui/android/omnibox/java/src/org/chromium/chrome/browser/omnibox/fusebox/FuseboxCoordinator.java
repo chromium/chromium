@@ -334,7 +334,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
         // Skip cases where session should not be recorded (e.g. unsupported page class).
         if (mInput == null) return;
-        FuseboxMetrics.notifyOmniboxSessionEnded(userDidNavigate, mInput.getRequestType());
+        FuseboxMetrics.notifyOmniboxSessionEnded(
+                userDidNavigate, mInput.getRequestType(), mInput.getModelMode());
     }
 
     /**

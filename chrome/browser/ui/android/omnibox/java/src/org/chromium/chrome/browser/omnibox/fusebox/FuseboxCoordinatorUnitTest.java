@@ -47,6 +47,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -311,5 +313,29 @@ public class FuseboxCoordinatorUnitTest {
         int width = context.getResources().getDisplayMetrics().widthPixels;
         int height = context.getResources().getDisplayMetrics().heightPixels;
         assertEquals(new Rect(0, 0, width, height), viewportRectProvider.getRect());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNotifyOmniboxSessionEnded() {
+        mCoordinator.beginInput(createSession());
+        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mAutocompleteInput.setModelMode(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation",
+                                AutocompleteRequestType.AI_MODE)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ModelAtNavigation",
+                                ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .build();
+
+        mCoordinator.notifyOmniboxSessionEnded(true);
+
+        histogramWatcher.assertExpected();
     }
 }

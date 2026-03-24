@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -15,9 +18,20 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** The properties associated with the Fusebox bar. */
 @NullMarked
 class FuseboxProperties {
+    @IntDef({PopupButtonType.ATTACHMENT, PopupButtonType.TOOL, PopupButtonType.MODEL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PopupButtonType {
+        int ATTACHMENT = 0;
+        int TOOL = 1;
+        int MODEL = 2;
+    }
+
     /** Encapsulates the state for a button in the Fusebox popup. */
     public static class PopupButtonData {
         public final Runnable onClicked;
@@ -25,14 +39,24 @@ class FuseboxProperties {
         public final /*IconResourceIds*/ int iconId;
         public final boolean enabled;
         public final boolean selected;
+        public final @PopupButtonType int type;
+        public final int protoId;
 
         public PopupButtonData(
-                Runnable onClicked, String text, int iconId, boolean enabled, boolean selected) {
-            this.onClicked = onClicked;
+                Callback<PopupButtonData> onClicked,
+                String text,
+                int iconId,
+                boolean enabled,
+                boolean selected,
+                @PopupButtonType int type,
+                int protoId) {
+            this.onClicked = onClicked.bind(this);
             this.text = text;
             this.iconId = iconId;
             this.enabled = enabled;
             this.selected = selected;
+            this.type = type;
+            this.protoId = protoId;
         }
     }
 

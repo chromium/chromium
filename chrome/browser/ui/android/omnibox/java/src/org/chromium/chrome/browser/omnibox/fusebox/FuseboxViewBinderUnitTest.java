@@ -42,6 +42,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
@@ -642,7 +643,14 @@ public class FuseboxViewBinderUnitTest {
         }
 
         PopupButtonData build() {
-            return new PopupButtonData(mOnClicked, mText, mIconId, mEnabled, mSelected);
+            return new PopupButtonData(
+                    (data) -> mOnClicked.run(),
+                    mText,
+                    mIconId,
+                    mEnabled,
+                    mSelected,
+                    PopupButtonType.MODEL,
+                    /* protoId= */ 0);
         }
     }
 }
