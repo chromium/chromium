@@ -6123,21 +6123,6 @@
             ]
         }
     ],
-    "CompensateGestureScrollUpdateLatency": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260312",
-                    "enable_features": [
-                        "CompensateGestureScrollUpdateLatency"
-                    ]
-                }
-            ]
-        }
-    ],
     "ComposeAXSnapshot": [
         {
             "platforms": [
