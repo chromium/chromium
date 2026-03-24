@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/webstore_installer.h"
 
 using content::WebContents;
 

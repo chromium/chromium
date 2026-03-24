@@ -33,6 +33,10 @@ class StoragePartitionConfig;
 class RenderFrameHost;
 }  // namespace content
 
+namespace download {
+class DownloadItem;
+}  // namespace download
+
 namespace extensions {
 class Extension;
 class ExtensionSet;
@@ -174,6 +178,10 @@ bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
 // webstore, otherwise false.
 bool AnyCurrentlyInstalledExtensionIsFromWebstore(
     content::BrowserContext* context);
+
+// Returns true if this is an extension download. This also considers user
+// scripts to be extension downloads, since we convert those automatically.
+bool IsExtensionDownload(const download::DownloadItem& download_item);
 
 }  // namespace util
 }  // namespace extensions

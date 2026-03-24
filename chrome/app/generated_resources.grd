@@ -6326,11 +6326,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Hide Details
       </message>
 
-      <!-- Error messages for Chrome Web Store UI -->
-      <message name="IDS_WEBSTORE_DOWNLOAD_ACCESS_DENIED" desc="Text displayed in the error prompt when a CRX cannot be downloaded due to an authentication error.">
-        Access denied.
-      </message>
-
       <!-- Global error messages for extensions -->
       <message name="IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM" desc="The wrench menu item indicating that extensions caused problems.">
         Extension error

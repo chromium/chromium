@@ -869,6 +869,26 @@ source_set("crx_installer") {
     deps += [ "//components/user_manager" ]
   }
 }
+source_set("webstore_installer") {
+  sources = [
+    "webstore_installer.cc",
+    "webstore_installer.h",
+  ]
+  deps = [
+    ":browser_sources",
+    ":crx_installer",
+    "//base",
+    "//components/download/public/common:public",
+    "//components/update_client",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//extensions/strings",
+    "//net/traffic_annotation",
+    "//ui/base",
+    "//url",
+  ]
+}
 
 source_set("test_support") {
   testonly = true

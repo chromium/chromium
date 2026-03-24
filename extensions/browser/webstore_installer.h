@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALLER_H_
-#define CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALLER_H_
+#ifndef EXTENSIONS_BROWSER_WEBSTORE_INSTALLER_H_
+#define EXTENSIONS_BROWSER_WEBSTORE_INSTALLER_H_
 
 #include <list>
 #include <memory>
@@ -27,15 +27,14 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace base {
 class FilePath;
 }
 
 namespace content {
+class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -82,7 +81,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // with the given `id` from the Chrome Web Store. The `success_callback` and
   // `failure_callback` parameters must not be null. This also associates the
   // `approval` with this install.
-  WebstoreInstaller(Profile* profile,
+  WebstoreInstaller(content::BrowserContext* browser_context,
                     SuccessCallback success_callback,
                     FailureCallback failure_callback,
                     content::WebContents* web_contents,
@@ -157,7 +156,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<content::BrowserContext> browser_context_;
   SuccessCallback success_callback_;
   FailureCallback failure_callback_;
   std::string id_;
@@ -185,4 +184,4 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALLER_H_
+#endif  // EXTENSIONS_BROWSER_WEBSTORE_INSTALLER_H_

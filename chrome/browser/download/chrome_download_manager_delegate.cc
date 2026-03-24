@@ -137,8 +137,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
-#include "chrome/browser/extensions/webstore_installer.h"
 #include "extensions/browser/crx_installer.h"
+#include "extensions/browser/webstore_installer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/user_script.h"
 #endif

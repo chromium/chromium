@@ -52,7 +52,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/webstore_installer.h"
+#include "extensions/browser/webstore_installer.h"
 #include "extensions/common/feature_switch.h"
 #endif
 
