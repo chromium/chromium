@@ -10,8 +10,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_provider.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 
 namespace device {
@@ -34,9 +36,22 @@ GamepadPadStateProvider::GamepadPadStateProvider() {
 
 GamepadPadStateProvider::~GamepadPadStateProvider() = default;
 
-PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
-                                               int source_id,
-                                               bool new_gamepad_recognized) {
+PadState* GamepadPadStateProvider::GetPadState(
+    GamepadSource source,
+    int source_id,
+    bool new_gamepad_recognized,
+    std::optional<std::string_view> product_identifier) {
+  if (product_identifier.has_value() &&
+      base::FeatureList::IsEnabled(
+          features::kClaimDuplicateGamepadsProductIdentifier)) {
+    auto find_it =
+        claimed_product_identifiers_.find(product_identifier.value());
+    if (find_it != claimed_product_identifiers_.end() &&
+        find_it->second != source) {
+      return nullptr;
+    }
+  }
+
   // Check to see if the device already has a reserved slot
   std::optional<size_t> empty_slot_index;
   std::optional<size_t> unrecognized_slot_index;
@@ -82,6 +97,13 @@ PadState* GamepadPadStateProvider::GetConnectedPadState(uint32_t pad_index) {
     return nullptr;
 
   return &pad_state;
+}
+
+void GamepadPadStateProvider::ClaimProductIdentifierForSource(
+    GamepadSource source,
+    std::string_view product_identifier) {
+  claimed_product_identifiers_.try_emplace(std::string(product_identifier),
+                                           source);
 }
 
 void GamepadPadStateProvider::ClearPadState(PadState& state) {

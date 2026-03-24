@@ -178,6 +178,14 @@ void GameControllerDataFetcherMac::GameControllerDataFetcherMacImpl::
 
   auto gamepad = std::make_unique<GameControllerGamepad>(controller);
 
+  if (base::FeatureList::IsEnabled(
+          features::kClaimDuplicateGamepadsProductIdentifier)) {
+    // Claim gamepads enumerated by this datafetcher to avoid
+    // double-enumeration in GamepadPlatformDataFetcherMac.
+    std::string vendor_name = base::SysNSStringToUTF8(controller.vendorName);
+    owner_->ClaimProductIdentifier(vendor_name);
+  }
+
   // Initialize the pad state if a slot is available. If not, GetGamepadData
   // will try again during the next polling cycle.
   PadState* state = owner_->GetPadState(owner_->next_source_id_);

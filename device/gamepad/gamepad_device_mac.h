@@ -50,6 +50,9 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
   // Return the OS-assigned ID for this device.
   int GetLocationId() { return location_id_; }
 
+  // Return the product name for this device.
+  std::string_view GetProductName() const { return product_name_; }
+
   // Return true if |device| refers to this device.
   bool IsSameDevice(IOHIDDeviceRef device) { return device == device_ref_; }
 
@@ -96,6 +99,7 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
   int location_id_;
   IOHIDDeviceRef device_ref_;
   GamepadBusType bus_type_;
+  std::string product_name_;
 
   IOHIDElementRef button_elements_[Gamepad::kButtonsLengthCap];
   IOHIDElementRef axis_elements_[Gamepad::kAxesLengthCap];

@@ -32,6 +32,10 @@ BASE_FEATURE(kEnableSimulatedGamepadDataFetcher,
 // Enables `OnGamepadRawInputChanged` for the `GamepadConsumer` interface.
 BASE_FEATURE(kGamepadRawInputChangeEvent, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable claiming of enumerated gamepads by product identifier.
+BASE_FEATURE(kClaimDuplicateGamepadsProductIdentifier,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Ignores PlayStation 5 gamepads (DualSense, DualSense Edge) in
 // WgiDataFetcherWin to avoid double enumeration.

@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
@@ -109,9 +110,18 @@ class DEVICE_GAMEPAD_EXPORT GamepadPadStateProvider {
   // If no slots are available this returns nullptr. However, if one of those
   // slots contains an unrecognized gamepad and |new_gamepad_recognized| is true
   // that slot will be reset and returned.
+  //
+  // Returns nullptr if `product_identifier` is not nullopt and has been claimed
+  // by another source.
   PadState* GetPadState(GamepadSource source,
                         int source_id,
-                        bool new_gamepad_recognized);
+                        bool new_gamepad_recognized,
+                        std::optional<std::string_view> product_identifier);
+
+  // Claims `product_identifier` for a source if it is not already claimed for
+  // another source.
+  void ClaimProductIdentifierForSource(GamepadSource source,
+                                       std::string_view product_identifier);
 
   // Gets a PadState object for a connected gamepad by specifying its index in
   // the pad_states_ array. Returns NULL if there is no connected gamepad at
@@ -129,6 +139,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadPadStateProvider {
 
   // Tracks the state of each gamepad slot.
   base::HeapArray<PadState> pad_states_;
+
+  // Tracks which product_identifier has been claimed for exclusive use
+  // by a specific source.
+  base::flat_map<std::string, GamepadSource> claimed_product_identifiers_;
 
  private:
   // Calls the DisconnectUnrecognizedGamepad method on the data fetcher

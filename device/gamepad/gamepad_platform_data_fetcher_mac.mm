@@ -208,7 +208,7 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
 
   bool is_recognized = gamepad_id != GamepadId::kUnknownGamepad;
 
-  PadState* state = GetPadState(location_int, is_recognized);
+  PadState* state = GetPadState(location_int, is_recognized, product_name);
   if (!state)
     return;  // No available slot for this device
 
@@ -275,9 +275,15 @@ void GamepadPlatformDataFetcherMac::ValueChanged(IOHIDValueRef value) {
   if (!gamepad_device)
     return;
 
-  PadState* state = GetPadState(gamepad_device->GetLocationId());
-  if (!state)
+  PadState* state = GetPadState(gamepad_device->GetLocationId(),
+                                /*new_pad_recognized=*/true,
+                                gamepad_device->GetProductName());
+  if (!state) {
+    // If we no longer have a slot for this device, remove it.
+    gamepad_device->Shutdown();
+    devices_.erase(gamepad_device->GetLocationId());
     return;
+  }
 
   gamepad_device->UpdateGamepadForValue(value, &state->data);
 }
@@ -287,9 +293,17 @@ void GamepadPlatformDataFetcherMac::GetGamepadData(bool) {
     return;
 
   // Loop through and GetPadState to indicate the devices are still connected.
-  for (const auto& iter : devices_) {
-    GetPadState(iter.first);
-  }
+  std::erase_if(devices_, [this](auto& entry) {
+    const auto& [location_id, device] = entry;
+    PadState* state = GetPadState(location_id, /*new_pad_recognized=*/true,
+                                  device->GetProductName());
+    if (!state) {
+      // If we no longer have a slot for this device, remove it.
+      device->Shutdown();
+      return true;
+    }
+    return false;
+  });
 }
 
 void GamepadPlatformDataFetcherMac::PlayEffect(

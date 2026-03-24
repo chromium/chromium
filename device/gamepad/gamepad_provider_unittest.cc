@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
+#include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_test_helpers.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/cpp/gamepad_switches.h"
@@ -508,6 +509,30 @@ TEST_F(GamepadProviderTest, NoInputChangeDetectedWithUnchangedTimestamp) {
       base::BindOnce([](const Gamepads& output) {
         EXPECT_EQ(0.5f, output.items[0].buttons[0].value);
       }));
+}
+
+TEST_F(GamepadProviderTest, ClaimProductIdentifier) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kClaimDuplicateGamepadsProductIdentifier);
+
+  static constexpr char kTestProductIdentifier[] = "Wireless Controller";
+  GamepadProvider* provider = CreateProvider({});
+
+  EXPECT_TRUE(provider->GetPadState(GamepadSource::kTest, /*source_id=*/0,
+                                    /*new_gamepad_recognized=*/true,
+                                    kTestProductIdentifier));
+  EXPECT_TRUE(provider->GetPadState(GamepadSource::kSimulated, /*source_id=*/0,
+                                    /*new_gamepad_recognized=*/true,
+                                    kTestProductIdentifier));
+
+  provider->ClaimProductIdentifierForSource(GamepadSource::kTest,
+                                            kTestProductIdentifier);
+  EXPECT_TRUE(provider->GetPadState(GamepadSource::kTest, /*source_id=*/0,
+                                    /*new_gamepad_recognized=*/true,
+                                    kTestProductIdentifier));
+  EXPECT_FALSE(provider->GetPadState(GamepadSource::kSimulated, /*source_id=*/0,
+                                     /*new_gamepad_recognized=*/true,
+                                     kTestProductIdentifier));
 }
 
 }  // namespace
