@@ -216,6 +216,10 @@
   justify-content: center;
 }
 
+figure:has(img.distilled-full-width-img) {
+  margin-inline: 0;
+}
+
 img.distilled-inline-img {
   display: inline;
   vertical-align: middle;
