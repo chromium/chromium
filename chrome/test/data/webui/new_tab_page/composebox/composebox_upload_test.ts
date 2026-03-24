@@ -471,7 +471,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         });
         const testInputState = {
           ...testSupport.mockInputState,
-          maxInstances: {
+          maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 1,
             [InputType.kLensFile]: 1,
@@ -590,7 +590,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
     // Arrange.
     const testInputState = {
       ...testSupport.mockInputState,
-      maxInstances: {
+      maxInputsByType: {
         [InputType.kBrowserTab]: 1,
         [InputType.kLensImage]: 1,
         [InputType.kLensFile]: 1,
@@ -835,7 +835,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
         // Arrange.
         const testInputState = {
           ...testSupport.mockInputState,
-          maxInstances: {
+          maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 3,
             [InputType.kLensFile]: 1,

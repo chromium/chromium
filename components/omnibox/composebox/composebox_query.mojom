@@ -179,7 +179,7 @@ struct InputState {
   // Hint text to display in the input.
   string hint_text;
   // The max number of inputs of a given type.
-  map<InputType, int32> max_instances;
+  map<InputType, int32> max_inputs_by_type;
   // The max total number of inputs.
   int32 max_total_inputs;
 };

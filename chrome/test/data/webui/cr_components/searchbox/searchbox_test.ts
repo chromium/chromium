@@ -157,7 +157,7 @@ async function setupRealboxTest(): Promise<{
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',
-      maxInstances: {},
+      maxInputsByType: {},
       maxTotalInputs: 0,
     },
   });

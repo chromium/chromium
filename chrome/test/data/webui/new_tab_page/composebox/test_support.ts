@@ -100,7 +100,7 @@ export const mockInputState: InputState = {
   inputTypeConfigs: [],
   toolsSectionConfig: null,
   modelSectionConfig: null,
-  maxInstances: {},
+  maxInputsByType: {},
   maxTotalInputs: 0,
 };
 
@@ -144,7 +144,7 @@ export function setupComposeboxTest(): ComposeboxTestElement {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
-        maxInstances: {},
+        maxInputsByType: {},
         maxTotalInputs: 0,
       },
     });

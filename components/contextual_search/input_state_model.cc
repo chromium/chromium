@@ -198,7 +198,7 @@ InputStateModel::InputStateModel(
     }
     for (const auto& rule : rule_set_.input_type_rules()) {
       if (rule.has_input_type() && rule.has_max_instance()) {
-        state_.max_instances[rule.input_type()] = rule.max_instance();
+        state_.max_inputs_by_type[rule.input_type()] = rule.max_instance();
       }
     }
   }
@@ -508,7 +508,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
     return;
   }
 
-  const auto& limits = state_.max_instances;
+  const auto& limits = state_.max_inputs_by_type;
   std::map<omnibox::InputType, int> current_input_counts;
   for (const auto& input_type : current_inputs) {
     current_input_counts[input_type]++;

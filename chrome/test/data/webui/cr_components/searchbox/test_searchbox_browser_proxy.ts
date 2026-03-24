@@ -189,7 +189,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
-        maxInstances: {},
+        maxInputsByType: {},
         maxTotalInputs: 0,
       },
     });

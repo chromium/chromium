@@ -813,7 +813,7 @@ suite('NewTabPageComposeboxTest', () => {
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',
-      maxInstances: {},
+      maxInputsByType: {},
       maxTotalInputs: 0,
     } as InputState;
     testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);

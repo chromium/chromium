@@ -650,9 +650,9 @@ StructTraits<UsedInputStateDataView, omnibox::InputState>::hint_text(
 
 // static
 const std::map<omnibox::InputType, int>&
-StructTraits<UsedInputStateDataView, omnibox::InputState>::max_instances(
+StructTraits<UsedInputStateDataView, omnibox::InputState>::max_inputs_by_type(
     const omnibox::InputState& input) {
-  return input.max_instances;
+  return input.max_inputs_by_type;
 }
 
 // static
@@ -681,7 +681,7 @@ bool StructTraits<UsedInputStateDataView, omnibox::InputState>::Read(
          data.ReadToolsSectionConfig(&output->tools_section_config) &&
          data.ReadModelSectionConfig(&output->model_section_config) &&
          data.ReadHintText(&output->hint_text) &&
-         data.ReadMaxInstances(&output->max_instances);
+         data.ReadMaxInputsByType(&output->max_inputs_by_type);
 }
 
 }  // namespace mojo

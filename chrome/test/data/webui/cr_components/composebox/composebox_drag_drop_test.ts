@@ -233,7 +233,7 @@ suite('ComposeboxDragAndDrop', () => {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
-        maxInstances: {
+        maxInputsByType: {
           [InputType.kBrowserTab]: 1,
           [InputType.kLensImage]: 1,
           [InputType.kLensFile]: 1,
@@ -474,7 +474,7 @@ suite('ComposeboxDragAndDrop', () => {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
-        maxInstances: {[InputType.kLensImage]: 1, [InputType.kLensFile]: 1},
+        maxInputsByType: {[InputType.kLensImage]: 1, [InputType.kLensFile]: 1},
         maxTotalInputs: 2,
       },
     }));
@@ -526,7 +526,7 @@ suite('ComposeboxDragAndDrop', () => {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
-        maxInstances: {[InputType.kLensImage]: 1, [InputType.kLensFile]: 1},
+        maxInputsByType: {[InputType.kLensImage]: 1, [InputType.kLensFile]: 1},
         maxTotalInputs: 2,
       },
     }));

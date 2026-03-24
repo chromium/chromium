@@ -51,7 +51,7 @@ struct InputState {
   std::optional<SectionConfig> tools_section_config;
   std::optional<SectionConfig> model_section_config;
   // The max number of inputs of a given type.
-  std::map<InputType, int> max_instances;
+  std::map<InputType, int> max_inputs_by_type;
   int max_total_inputs = 0;
   std::string hint_text;
 
