@@ -13155,6 +13155,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixInCct)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"apb144-patch8", flag_descriptions::kApb144Patch8Name,
+     flag_descriptions::kApb144Patch8Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch8)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

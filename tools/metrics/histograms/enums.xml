@@ -8518,6 +8518,7 @@ from previous Chrome versions.
   <int value="-1845695586"
       label="WebAppManifestProtocolHandlerSupport:disabled"/>
   <int value="-1845410561" label="EnableNtpBrowserPromos:disabled"/>
+  <int value="-1845223394" label="Apb144Patch8:enabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
       label="NotificationsIgnoreRequireInteraction:disabled"/>
@@ -18054,6 +18055,7 @@ from previous Chrome versions.
   <int value="1363283577" label="CrOSLateBootAudioFlexibleLoopback:enabled"/>
   <int value="1364185019" label="LensOverlayNonBlockingPrivacyNotice:enabled"/>
   <int value="1364309298" label="SupportToolCopyTokenButton:enabled"/>
+  <int value="1364437976" label="Apb144Patch8:disabled"/>
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
   <int value="1366396538" label="GlanceablesV2:disabled"/>

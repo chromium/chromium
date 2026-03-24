@@ -554,7 +554,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             boolean shouldUpdateAnimatingView = true;
             if (shouldAnimateCompositedLayer()
                     && visibility == VISIBLE
-                    && !mAnimatingView.isRunning()) {
+                    && !mAnimatingView.isRunning()
+                    && ChromeFeatureList.sAndroidApb144Patch8.isEnabled()) {
                 shouldUpdateAnimatingView = false;
             }
 
