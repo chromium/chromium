@@ -583,9 +583,17 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
 }
 
 void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
-      !base::FeatureList::IsEnabled(
-          feature_engagement::kIPHSignInBenefitsFeature)) {
+  const bool show_new_signin =
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSignInBenefitsNewSigninFeature);
+  const bool show_legacy = base::FeatureList::IsEnabled(
+                               syncer::kReplaceSyncPromosWithSignInPromos) &&
+                           base::FeatureList::IsEnabled(
+                               feature_engagement::kIPHSignInBenefitsFeature);
+
+  if (!show_new_signin && !show_legacy) {
     return;
   }
 
@@ -623,8 +631,14 @@ void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
     return;
   }
 
+  // It should not matter in practice, but if both features are enabled, show
+  // the legacy IPH.
+  const base::Feature& feature_to_show =
+      show_legacy ? feature_engagement::kIPHSignInBenefitsFeature
+                  : feature_engagement::kIPHSignInBenefitsNewSigninFeature;
+
   BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
-      feature_engagement::kIPHSignInBenefitsFeature);
+      feature_to_show);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

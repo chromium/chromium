@@ -1349,18 +1349,32 @@ void MaybeRegisterChromeFeaturePromos(
                        "a new profile or an existing local profile")));
 
   // kIPHSignInBenefitsFeature:
-  int signin_benefits_feature_string_id = IDS_SIGN_IN_BENEFITS_IPH_TEXT;
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    signin_benefits_feature_string_id =
-        IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT;
-  }
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSignInBenefitsFeature,
-          kToolbarAvatarButtonElementId, signin_benefits_feature_string_id,
+          kToolbarAvatarButtonElementId, IDS_SIGN_IN_BENEFITS_IPH_TEXT,
+          IDS_PROMO_MANAGE_BUTTON,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                // Open account settings page.
+                ShowSingletonTab(GetBrowser(ctx),
+                                 GURL(chrome::kChromeUIAccountSettingsURL));
+              }))
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionIsDefault(false)
+          .SetMetadata(142, "ddac@google.com",
+                       "Triggered for a signed-in user who hasn't turned on "
+                       "sync yet, after the sync-to-signin migration.")));
+
+  // kIPHSignInBenefitsNewSigninFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHSignInBenefitsNewSigninFeature,
+          kToolbarAvatarButtonElementId,
+          IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT,
           IDS_PROMO_MANAGE_BUTTON,
           base::BindRepeating(
               [](ContextPtr ctx,

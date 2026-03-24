@@ -3479,6 +3479,61 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
   avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
   EXPECT_FALSE(WillShowPromo());
 }
+
+class AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest
+    : public InteractiveFeaturePromoTestMixin<AvatarToolbarButtonBrowserTest> {
+ public:
+  AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest()
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHSignInBenefitsNewSigninFeature})) {
+    if (content::IsPreTest()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+           feature_engagement::kIPHSignInBenefitsNewSigninFeature},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              feature_engagement::kIPHSignInBenefitsFeature});
+    }
+  }
+
+  bool WillShowPromo() {
+    auto* const user_education = BrowserUserEducationInterface::From(browser());
+    return user_education->IsFeaturePromoActive(
+               feature_engagement::kIPHSignInBenefitsNewSigninFeature) ||
+           user_education->IsFeaturePromoQueued(
+               feature_engagement::kIPHSignInBenefitsNewSigninFeature);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest,
+                       PRE_ShownForUsersSignedInBeforeMigration) {
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest,
+                       ShownForUsersSignedInBeforeMigration) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      WaitForPromo(feature_engagement::kIPHSignInBenefitsNewSigninFeature),
+      PressNonDefaultPromoButton(), InstrumentTab(kSecondTabContents, 1),
+      WaitForWebContentsReady(kSecondTabContents,
+                              GURL(chrome::kChromeUIAccountSettingsURL)),
+      CheckPromoActive(feature_engagement::kIPHSignInBenefitsNewSigninFeature,
+                       false));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -327,6 +327,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopPWAsLinkCapturingLaunch,
     &kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
     &kIPHSignInBenefitsFeature,
+    &kIPHSignInBenefitsNewSigninFeature,
     &kIPHSupervisedUserProfileSigninFeature,
 #endif  // BUILDFLAG(IS_WIN) ||  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

@@ -747,6 +747,8 @@ should be able to be added at any place in this file.
   <variant name="_SideSearchPageActionLabel"
       summary="For side search feature page action label triggering."/>
   <variant name="_SignInBenefits" summary="For sign-in benefits IPH feature."/>
+  <variant name="_SignInBenefitsNewSignin"
+      summary="For sign-in benefits IPH feature."/>
   <variant name="_SupervisedUserProfileSignin"
       summary="For displaying the supervised user sign-in IPH."/>
   <variant name="_TabAudioMuting" summary="For TabAudioMuting feature."/>
