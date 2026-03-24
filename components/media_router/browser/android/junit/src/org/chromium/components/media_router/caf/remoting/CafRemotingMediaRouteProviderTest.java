@@ -17,10 +17,12 @@ import androidx.mediarouter.media.MediaRouteSelector;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,6 +45,7 @@ import org.chromium.components.media_router.caf.ShadowMediaRouter;
         // Required to mock final.
         instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})
 public class CafRemotingMediaRouteProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private CafRemotingMediaRouteProvider mProvider;
     private MediaRouterTestHelper mMediaRouterHelper;
     @Mock private MediaRouteManager mManager;
@@ -50,7 +53,6 @@ public class CafRemotingMediaRouteProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mMediaRouterHelper = new MediaRouterTestHelper();
         MediaRouterClient.setInstance(new TestMediaRouterClient());
         mProvider = spy(CafRemotingMediaRouteProvider.create(mManager));

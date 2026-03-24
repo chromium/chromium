@@ -33,12 +33,14 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -63,6 +65,7 @@ import java.util.List;
         // Required to mock final.
         instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})
 public class CafBaseMediaRouteProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
     private TestMRP mProvider;
     private MediaRouterTestHelper mMediaRouterHelper;
@@ -75,7 +78,6 @@ public class CafBaseMediaRouteProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         mMediaRouterHelper = new MediaRouterTestHelper();
         MediaRouterClient.setInstance(new TestMediaRouterClient());

@@ -13,10 +13,12 @@ import com.google.android.gms.cast.framework.CastContext;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +36,7 @@ import org.chromium.components.media_router.caf.ShadowMediaRouter;
         manifest = Config.NONE,
         shadows = {ShadowMediaRouter.class, ShadowCastContext.class})
 public class RemotingSessionControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MediaRouterTestHelper mMediaRouterHelper;
     private RemotingSessionController mController;
     private CreateRouteRequestInfo mRequestInfo;
@@ -42,7 +45,6 @@ public class RemotingSessionControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mMediaRouterHelper = new MediaRouterTestHelper();
         MediaRouterClient.setInstance(new TestMediaRouterClient());
         ShadowCastContext.setInstance(mCastContext);

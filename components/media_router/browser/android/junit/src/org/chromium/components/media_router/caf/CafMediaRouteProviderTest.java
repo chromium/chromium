@@ -32,12 +32,14 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -63,6 +65,7 @@ import java.util.function.Function;
             ShadowLooper.class,
         })
 public class CafMediaRouteProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
     private CafMediaRouteProvider mProvider;
     private MediaRouterTestHelper mMediaRouterHelper;
@@ -84,7 +87,6 @@ public class CafMediaRouteProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         MediaRouterClient.setInstance(new TestMediaRouterClient());
 

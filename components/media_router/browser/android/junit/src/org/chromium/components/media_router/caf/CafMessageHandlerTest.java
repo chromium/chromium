@@ -33,12 +33,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -60,6 +62,7 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CafMessageHandlerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String SESSION_ID = "SESSION_ID";
     private static final String INVALID_SESSION_ID = "INVALID_SESSION_ID";
     private static final String CLIENT_ID1 = "client-id-1";
@@ -84,7 +87,6 @@ public class CafMessageHandlerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mRouteProvider = mock(CafMediaRouteProvider.class);
         mClientRecord1 =
                 new ClientRecord("route-id-1", CLIENT_ID1, "app-id", "auto-join", "origin", 1);
