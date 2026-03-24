@@ -906,5 +906,143 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       true, 1);
 }
 
+// Tests that EditedAutofilledFieldAtSubmission metrics are correctly recorded
+// as true when all fields filled by the actor are submitted unchanged.
+TEST_F(ActorKeyMetricsRecorderTest,
+       EditedAutofilledFieldAtSubmission_Address_Perfect) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate perfect filling (no user edits).
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(true);
+  fields[1].set_is_autofilled_according_to_renderer(true);
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_NOT_EDITED,
+      2);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_EDITED,
+      0);
+}
+
+// Tests that EditedAutofilledFieldAtSubmission metrics are correctly recorded
+// as false when a field filled by the actor is modified by the user.
+TEST_F(ActorKeyMetricsRecorderTest,
+       EditedAutofilledFieldAtSubmission_Address_Imperfect) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate imperfect filling (user edit).
+  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
+                                    base::TimeTicks::Now());
+
+  // Simulate submission.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(false);
+  fields[1].set_is_autofilled_according_to_renderer(true);
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_NOT_EDITED,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_EDITED,
+      1);
+}
+
+// Tests that EditedAutofilledFieldAtSubmission metrics are not recorded for
+// fields edited by the user that were not filled by the actor.
+TEST_F(ActorKeyMetricsRecorderTest,
+       EditedAutofilledFieldAtSubmission_UserEditedNonActorField) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm(
+      {.fields = {{.server_type = NAME_FULL}, {.server_type = UNKNOWN_TYPE}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate imperfect filling (user edit on an UNKNOWN_TYPE field that
+  // wasn't filled by actor).
+  manager().OnTextFieldValueChanged(form, form.fields()[1].global_id(),
+                                    base::TimeTicks::Now());
+
+  // Simulate submission.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(true);
+  fields[1].set_is_autofilled_according_to_renderer(false);
+  fields[1].set_value(u"User Content");
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_NOT_EDITED,
+      1);
+  // The field was not filled by the actor, so it should not be counted as an
+  // edited autofilled field.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate",
+      AutofillMetrics::AutofilledFieldUserEditingStatusMetric::
+          AUTOFILLED_FIELD_WAS_EDITED,
+      0);
+}
+
 }  // namespace
 }  // namespace autofill

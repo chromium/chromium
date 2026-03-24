@@ -90,6 +90,11 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
   void RecordPerfectFillingMetric(const FormStructure& form,
                                   const ProductState& state,
                                   std::string_view product_str);
+  void RecordEditedAutofilledFieldAtSubmission(const FormStructure& form);
+
+  // Returns true if the field with `field_id` in `form` was filled by
+  // actor with any `FillingProduct`.
+  bool WasFieldFilledByActor(const FormStructure& form, FieldGlobalId field_id);
 
   std::array<ProductState, std::to_underlying(FillingProduct::kMaxValue) + 1>
       states_;

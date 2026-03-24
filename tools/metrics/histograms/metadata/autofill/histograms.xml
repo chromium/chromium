@@ -1050,6 +1050,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Actor.EditedAutofilledFieldAtSubmission.Aggregate"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records at submission time for each field that was autofilled by actor
+    Autofill (not Autocomplete or Password Manager) whether the user edited the
+    autofilled field value or not. This metric is aggregated over all field
+    types.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Actor.FillSuggestions.{FillingComposition}.Latency"
     units="ms" expires_after="2026-11-30">
   <owner>battre@chromium.org</owner>
