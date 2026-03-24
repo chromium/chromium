@@ -309,10 +309,27 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
   std::vector<ReadPixelsContext> contexts(format().NumberOfPlanes());
   for (int i = 0; i < format().NumberOfPlanes(); i++) {
     const auto color_type = viz::ToClosestSkColorType(format(), i);
+
+    // When wrapping the backend texture for readback, we must use the backing's
+    // actual color space. If we use nullptr (defaulting to sRGB), Skia will
+    // perform an incorrect color conversion if the destination pixmap has a
+    // non-sRGB color space. This happens in the dynamic allocation path where
+    // CPUReadbackUploadCopyStrategy uses the backing's real color space for
+    // the sync copy. In the legacy fallback path, nullptr was "correct" only
+    // because the destination pixmaps also used nullptr, resulting in a raw
+    // copy. We only apply this fix when dynamic allocation is enabled to
+    // maintain parity with the legacy path's raw-copy behavior for now.
+    sk_sp<SkColorSpace> src_color_space = nullptr;
+    if (base::FeatureList::IsEnabled(
+            features::kUseCompoundImageBackingAsDefault) &&
+        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
+      src_color_space = color_space().ToSkColorSpace();
+    }
+
     sk_sp<SkImage> sk_image =
         SkImages::WrapTexture(context_state_->gpu_main_graphite_recorder(),
                               texture_holders_[i]->texture(), color_type,
-                              kOpaque_SkAlphaType, /*colorSpace=*/nullptr);
+                              kOpaque_SkAlphaType, std::move(src_color_space));
     if (!sk_image) {
       return false;
     }
