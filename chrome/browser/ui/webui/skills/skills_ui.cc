@@ -80,6 +80,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"noSearchResultsTitle", IDS_SKILLS_NO_SEARCH_RESULT_TITLE},
       {"noSearchResultsDescription", IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION},
       {"saveError", IDS_SKILLS_DIALOG_SAVE_ERROR},
+      {"emojiSearchPlaceholder", IDS_SKILLS_EMOJI_PICKER_SEARCH_PLACEHOLDER},
+      {"emojiPickerAriaLabel", IDS_SKILLS_EMOJI_PICKER_ARIA_LABEL},
   };
 
   source->AddLocalizedStrings(kStrings);

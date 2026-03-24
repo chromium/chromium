@@ -1,0 +1,109 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  background: var(--color-sys-surface);
+  border: 1px solid var(--color-sys-outline-variant);
+  border-radius: 12px;
+  box-shadow: var(--cr-card-shadow, 0 2px 4px rgba(0,0,0,0.2));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 230px;
+  overflow: hidden;
+  width: 320px;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#searchContainer {
+  border-bottom: 1px solid var(--color-sys-divider);
+  padding: 4px 12px;
+}
+
+cr-input {
+  --cr-input-background-color: transparent;
+  --cr-input-border-bottom: none;
+  --cr-input-padding-start: 0;
+  --cr-input-placeholder-color: var(--color-sys-on-surface-subtle);
+  --cr-input-error-display: none;
+  --cr-input-underline-display: none;
+  --cr-input-hover-background-color: transparent;
+  width: 100%;
+}
+
+cr-input::part(row-container) {
+  border: none;
+  box-shadow: none;
+}
+
+cr-input::part(inner-input) {
+  padding: 0;
+}
+
+cr-input::part(input) {
+  font-size: 13px;
+}
+
+cr-icon[slot='inline-prefix'] {
+  margin-inline-end: 8px;
+  margin-inline-start: 0;
+}
+
+#emojiGrid {
+  flex-grow: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 8px 8px 8px 12px;
+}
+
+.category-section {
+  margin-bottom: 12px;
+}
+
+.category-title {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.emoji-row {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(8, 32px);
+}
+
+.emoji-button {
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  font-size: 22px;
+  height: 32px;
+  justify-content: center;
+  transition: background-color 0.1s;
+  width: 32px;
+}
+
+.emoji-button:hover,
+.emoji-button:focus-visible {
+  background-color: var(--color-sys-state-hover-on-subtle);
+  outline: none;
+}
+
+.emoji-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-sys-primary);
+}
