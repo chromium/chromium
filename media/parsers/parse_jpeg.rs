@@ -83,6 +83,7 @@ mod ffi {
         ExpectedMarkerPrefix = 25,
         OnlySof0Supported = 26,
         DqtMarkerNotFound = 27,
+        InvalidQuantizationTableSelector = 28,
     }
 
     struct JpegParseResult {
@@ -214,6 +215,9 @@ fn parse_sof(data: &[u8], frame_header: &mut JpegFrameHeader) -> Result<(), Jpeg
         }
 
         let quantization_table_selector = read_u8(&mut cursor)?;
+        if quantization_table_selector as usize >= K_JPEG_MAX_QUANTIZATION_TABLE_NUM {
+            return Err(JpegParserError::InvalidQuantizationTableSelector);
+        }
 
         frame_header.components.push(JpegComponent {
             id,

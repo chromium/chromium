@@ -192,6 +192,11 @@ static bool ParseSOF(base::span<const uint8_t> buffer,
       return false;
     }
     READ_U8_OR_RETURN_FALSE(component.quantization_table_selector);
+    if (component.quantization_table_selector >= kJpegMaxQuantizationTableNum) {
+      DVLOG(1) << "Invalid quantization table selector "
+               << static_cast<int>(component.quantization_table_selector);
+      return false;
+    }
   }
 
   // The size of data unit is 8*8 and the coded size should be extended
