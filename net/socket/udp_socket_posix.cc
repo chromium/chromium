@@ -979,6 +979,14 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
 #endif  // !WORK_AROUND_CRBUG_40064248
   if (result < 0) {
     result = MapSystemError(errno);
+#if BUILDFLAG(IS_ANDROID)
+    if (errno == EPERM || errno == EACCES) {
+      if (android::GetNetworkBlockedReason(socket_) ==
+          android::NetworkBlockedReason::kLnp) {
+        result = ERR_LOCAL_NETWORK_PERMISSION_MISSING;
+      }
+    }
+#endif
   } else {
     CHECK_LE(result, buf_len);
   }
