@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -44,6 +45,14 @@ bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
   }
 
   return base::MakeFlatSet<Item>(old_data) != base::MakeFlatSet<Item>(new_data);
+}
+
+constexpr bool IsLoyaltyCardSyncEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif
 }
 
 // Tests if the valuable `specifics` are valid and can be converted into an
@@ -317,13 +326,15 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
             entity_data.specifics.autofill_valuable();
         switch (specifics.valuable_data_case()) {
           case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
-            const LoyaltyCard loyalty_card =
-                CreateLoyaltyCardFromSpecificsAndLoadMetadata(
-                    specifics, *GetValuablesTable());
-            if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(loyalty_card)) {
-              db_operation_result =
-                  ValuableDatabaseOperationResult::kDatabaseError;
-              break;
+            if (IsLoyaltyCardSyncEnabled()) {
+              const LoyaltyCard loyalty_card =
+                  CreateLoyaltyCardFromSpecificsAndLoadMetadata(
+                      specifics, *GetValuablesTable());
+              if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(loyalty_card)) {
+                db_operation_result =
+                    ValuableDatabaseOperationResult::kDatabaseError;
+                break;
+              }
             }
             break;
           }
@@ -382,10 +393,12 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
 
 std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
-    const std::string& id = card.id().value();
-    batch->Put(id, CreateEntityDataFromLoyaltyCard(
-                       card, GetPossiblyTrimmedValuableSpecifics(id)));
+  if (IsLoyaltyCardSyncEnabled()) {
+    for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
+      const std::string& id = card.id().value();
+      batch->Put(id, CreateEntityDataFromLoyaltyCard(
+                         card, GetPossiblyTrimmedValuableSpecifics(id)));
+    }
   }
 
   for (const EntityInstance& instance : GetEntityTable()->GetEntityInstances(
@@ -442,7 +455,8 @@ bool ValuableSyncBridge::IsEntityDataValid(
 
   switch (autofill_valuable.valuable_data_case()) {
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
-      return AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
+      return IsLoyaltyCardSyncEnabled() &&
+             AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kFlightReservation:
       return IsSyncWalletFlightReservationsEnabled();
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
@@ -599,9 +613,11 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
             change->data().specifics.autofill_valuable();
         switch (autofill_valuable.valuable_data_case()) {
           case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
-            loyalty_cards.push_back(
-                CreateLoyaltyCardFromSpecificsAndLoadMetadata(
-                    autofill_valuable, *GetValuablesTable()));
+            if (IsLoyaltyCardSyncEnabled()) {
+              loyalty_cards.push_back(
+                  CreateLoyaltyCardFromSpecificsAndLoadMetadata(
+                      autofill_valuable, *GetValuablesTable()));
+            }
             break;
           }
           case sync_pb::AutofillValuableSpecifics::kFlightReservation:

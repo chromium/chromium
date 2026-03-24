@@ -13,6 +13,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -49,6 +50,7 @@ using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
 
+#if !BUILDFLAG(IS_IOS)
 constexpr char kId1[] = "1";
 constexpr char kId2[] = "2";
 constexpr char kInvalidId[] = "";
@@ -64,17 +66,6 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
   return loyalty_cards;
 }
 
-std::vector<EntityInstance> ExtractEntitiesFromDataBatch(
-    std::unique_ptr<syncer::DataBatch> batch) {
-  std::vector<EntityInstance> entities;
-  while (batch->HasNext()) {
-    const syncer::KeyAndData& data_pair = batch->Next();
-    entities.push_back(*CreateEntityInstanceFromSpecifics(
-        data_pair.second->specifics.autofill_valuable()));
-  }
-  return entities;
-}
-
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCardSpecifics(
     const sync_pb::AutofillValuableSpecifics& card_specifics) {
   std::unique_ptr<syncer::EntityData> entity_data =
@@ -85,6 +76,18 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCardSpecifics(
   specifics->CopyFrom(card_specifics);
 
   return entity_data;
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
+std::vector<EntityInstance> ExtractEntitiesFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<EntityInstance> entities;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    entities.push_back(*CreateEntityInstanceFromSpecifics(
+        data_pair.second->specifics.autofill_valuable()));
+  }
+  return entities;
 }
 
 EntityInstance GetLocalVehicleEntityInstance(
@@ -134,6 +137,7 @@ class ValuableSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
+#if !BUILDFLAG(IS_IOS)
   // Tells the processor to starts syncing with pre-existing `loyalty_cards`.
   // Triggers the `bridge()`'s `MergeFullSyncData()`.
   // Returns true if syncing started successfully.
@@ -148,6 +152,20 @@ class ValuableSyncBridgeTest : public testing::Test {
     return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
                                        std::move(entity_data));
   }
+
+  void AddLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
+    valuables_table_.SetLoyaltyCards(loyalty_cards);
+  }
+
+  std::vector<LoyaltyCard> GetAllLoyaltyCardsFromTable() {
+    return valuables_table_.GetLoyaltyCards();
+  }
+
+  syncer::EntityData CardToEntityData(const LoyaltyCard& card) {
+    return std::move(*CreateEntityDataFromLoyaltyCard(card,
+                                                      /*base_specifics=*/{}));
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Tells the processor to starts syncing with pre-existing `entities`.
   // Triggers the `bridge()`'s `MergeFullSyncData()`.
@@ -164,27 +182,14 @@ class ValuableSyncBridgeTest : public testing::Test {
                                        std::move(entity_data));
   }
 
-  void AddLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
-    valuables_table_.SetLoyaltyCards(loyalty_cards);
-  }
-
   void AddEntities(const std::vector<EntityInstance>& entities) {
     for (const EntityInstance& entitity : entities) {
       entity_table_.AddOrUpdateEntityInstance(entitity);
     }
   }
 
-  std::vector<LoyaltyCard> GetAllLoyaltyCardsFromTable() {
-    return valuables_table_.GetLoyaltyCards();
-  }
-
   std::vector<EntityInstance> GetAllEntityInstancesFromTable() {
     return entity_table_.GetEntityInstances();
-  }
-
-  syncer::EntityData CardToEntityData(const LoyaltyCard& card) {
-    return std::move(*CreateEntityDataFromLoyaltyCard(card,
-                                                      /*base_specifics=*/{}));
   }
 
   syncer::EntityData EntityInstanceToEntityData(const EntityInstance& entity) {
@@ -229,15 +234,17 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
 
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
+  EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
-                                      /*base_specifics=*/{});
+      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{});
   EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
-  entity->specifics.mutable_autofill_valuable()->set_id(kInvalidId);
+  entity->specifics.mutable_autofill_valuable()->set_id("");
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid) {
   sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
   EXPECT_TRUE(bridge().IsEntityDataValid(
@@ -276,27 +283,33 @@ TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataInvalid) {
       bridge().IsEntityDataValid(*CreateEntityDataFromLoyaltyCardSpecifics(
           empty_merchant_name_specifics)));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ValuableSyncBridgeTest, GetStorageKey) {
+  EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
-                                      /*base_specifics=*/{});
+      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
-  EXPECT_EQ(kId1, bridge().GetStorageKey(*entity));
+  EXPECT_EQ("00000000-0000-4000-8000-300000000000",
+            bridge().GetStorageKey(*entity));
 }
 
 TEST_F(ValuableSyncBridgeTest, GetClientTag) {
+  EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
-                                      /*base_specifics=*/{});
+      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
-  EXPECT_EQ(kId1, bridge().GetClientTag(*entity));
+  EXPECT_EQ("00000000-0000-4000-8000-300000000000",
+            bridge().GetClientTag(*entity));
 }
 
 TEST_F(ValuableSyncBridgeTest, SupportsIncrementalUpdates) {
   EXPECT_TRUE(bridge().SupportsIncrementalUpdates());
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
 // loyalty cards.
 TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
@@ -382,6 +395,7 @@ TEST_F(ValuableSyncBridgeTest,
   EXPECT_THAT(data_pair.second->specifics.autofill_valuable(),
               HasUnknownField("unknown_field"));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that `GetDataForCommit()` returns only the requested entities.
 TEST_F(ValuableSyncBridgeTest, GetDataForCommit_Entities) {
@@ -422,8 +436,9 @@ TEST_F(ValuableSyncBridgeTest,
 
 // Tests that `GetDataForCommit()` returns an empty batch for no keys.
 TEST_F(ValuableSyncBridgeTest, GetDataForCommit_NoKeys) {
-  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
-  AddLoyaltyCards({card1});
+  const EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  AddEntities({vehicle});
 
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetDataForCommit({});
   EXPECT_FALSE(batch->HasNext());
@@ -431,14 +446,16 @@ TEST_F(ValuableSyncBridgeTest, GetDataForCommit_NoKeys) {
 
 // Tests that `GetDataForCommit()` returns an empty batch for non-existent keys.
 TEST_F(ValuableSyncBridgeTest, GetDataForCommit_NonExistentKeys) {
-  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
-  AddLoyaltyCards({card1});
+  const EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  AddEntities({vehicle});
 
   std::unique_ptr<syncer::DataBatch> batch =
       bridge().GetDataForCommit({"non-existent-key"});
   EXPECT_FALSE(batch->HasNext());
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that `GetAllDataForDebugging()` returns all loyalty cards.
 TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForLoyaltyCards) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
@@ -449,13 +466,15 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForLoyaltyCards) {
       ExtractLoyaltyCardsFromDataBatch(bridge().GetAllDataForDebugging());
   EXPECT_THAT(loyalty_cards, UnorderedElementsAre(card1, card2));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that `ApplyDisableSyncChanges()` clears all data in ValuablesTable when
 // the data type gets disabled.
 TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
-  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
-  ASSERT_TRUE(SyncLoyaltyCards({card1}));
-  ASSERT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(card1));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  ASSERT_TRUE(SyncEntityInstances({vehicle}));
+  ASSERT_THAT(GetAllEntityInstancesFromTable(), ElementsAre(vehicle));
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
@@ -463,9 +482,10 @@ TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
 
-  EXPECT_TRUE(GetAllLoyaltyCardsFromTable().empty());
+  EXPECT_TRUE(GetAllEntityInstancesFromTable().empty());
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that trimming `AutofillValuableSpecifics` with only supported values
 // set results in a zero-length specifics.
 TEST_F(ValuableSyncBridgeTest,
@@ -529,6 +549,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_SameValuablesData) {
   EXPECT_THAT(GetAllLoyaltyCardsFromTable(),
               UnorderedElementsAre(card1, card2));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that local metadata of server entities is preserved during a full sync.
 TEST_F(ValuableSyncBridgeTest,
@@ -563,6 +584,7 @@ TEST_F(ValuableSyncBridgeTest,
   EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that local metadata of server loyalty cards is preserved during a full
 // sync.
 TEST_F(ValuableSyncBridgeTest,
@@ -595,6 +617,7 @@ TEST_F(ValuableSyncBridgeTest,
   // Metadata should be the preserved local metadata.
   EXPECT_EQ(cards_in_db[0].metadata(), local_metadata);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
 TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
@@ -808,6 +831,7 @@ class ValuableSyncBridgeIncrementalUpdatesTest : public ValuableSyncBridgeTest {
   }
 };
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that loyalty card changes passed to `ApplyIncrementalSyncChanges()`
 // are applied.
 TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
@@ -928,6 +952,7 @@ TEST_F(
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that entity instance changes passed to `ApplyIncrementalSyncChanges()`
 // are applied.
