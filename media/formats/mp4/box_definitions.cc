@@ -797,7 +797,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
     uint16_t sps_length;
     RCHECK(reader->Read2(&sps_length) &&
            reader->ReadVec(&sps_list[i], sps_length));
-    RCHECK(sps_list[i].size() > 4);
+    RCHECK(!sps_list[i].empty());
   }
 
   uint8_t num_pps;

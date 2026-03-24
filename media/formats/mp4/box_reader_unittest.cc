@@ -572,6 +572,66 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
   ASSERT_THAT(output, testing::ElementsAreArray(test_data));
 }
 
+TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordAllowsShortSpsEntry) {
+  // Real-world malformed avcC:
+  // - num_sps = 2
+  // - second "SPS" is actually a PPS (NAL type 8), length 4.
+  std::vector<uint8_t> test_data{
+      0x01,       // configurationVersion = 1
+      0x64,       // AVCProfileIndication = 100
+      0x00,       // profile_compatibility = 0
+      0x1f,       // AVCLevelIndication = 31
+      0xff,       // lengthSizeMinusOne = 3
+      0xe2,       // numOfSequenceParameterSets = 2
+      0x00, 0x14, // sequenceParameterSetLength = 20
+
+      // sequenceParameterSet
+      0x67, 0x64, 0x00,
+      0x1f, 0xac, 0x1b, 0x1a, 0x80, 0x90, 0x0a, 0x1e, 0xf9, 0xb8, 0x08,
+      0x08, 0x08, 0x3c, 0x22, 0x11, 0xa8,
+
+      0x00, 0x04,  // sequenceParameterSetLength = 4
+
+      // sequenceParameterSet
+      0x68, 0xea, 0x43, 0xcb,
+
+      0x01,        // numOfPictureParameterSets
+      0x00, 0x04,  // pictureParameterSetLength = 4
+      0x68, 0xea, 0x43, 0xcb};
+
+  AVCDecoderConfigurationRecord record;
+  EXPECT_TRUE(record.Parse(test_data));
+
+  ASSERT_EQ(record.sps_list.size(), 2ull);
+  ASSERT_FALSE(record.sps_list[0].empty());
+  EXPECT_EQ(record.sps_list[0][0] & 0x1f, 7);  // H264 SPS NAL type.
+  ASSERT_FALSE(record.sps_list[1].empty());
+  EXPECT_EQ(record.sps_list[1][0] & 0x1f, 8);  // H264 PPS NAL type.
+
+  ASSERT_EQ(record.pps_list.size(), 1ull);
+  ASSERT_FALSE(record.pps_list[0].empty());
+  EXPECT_EQ(record.pps_list[0][0] & 0x1f, 8);  // H264 PPS NAL type.
+}
+
+TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordRejectsEmptySpsEntry) {
+  // Malformed avcC where the only SPS entry is empty.
+  std::vector<uint8_t> test_data{
+      0x01,       // configurationVersion = 1
+      0x64,       // AVCProfileIndication = 100
+      0x00,       // profile_compatibility = 0
+      0x0c,       // AVCLevelIndication = 12
+      0xff,       // lengthSizeMinusOne = 3
+      0xe1,       // numOfSequenceParameterSets = 1
+      0x00, 0x00, // sequenceParameterSetLength = 0
+
+      0x01,        // numOfPictureParameterSets
+      0x00, 0x04,  // pictureParameterSetLength = 4
+      0x68, 0xea, 0x43, 0xcb};
+
+  AVCDecoderConfigurationRecord record;
+  EXPECT_FALSE(record.Parse(test_data));
+}
+
 TEST_F(BoxReaderTest, MovieFragmentWithZeroTracks) {
   static const uint8_t kData[] = {
       0x00, 0x00, 0x00, 0x18, 'm', 'o', 'o', 'f',  // moof box
