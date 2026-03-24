@@ -37,7 +37,6 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -71,7 +70,6 @@ namespace {
 
 using ::testing::UnorderedElementsAre;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Different platforms may execute float models slightly differently, and this
 // results in a noticeable difference in the scores. See crbug.com/1307251.
 const double kMaxScoreErrorBetweenPlatforms = 0.1;
@@ -94,8 +92,6 @@ class TestPageContentAnnotationsObserver
   std::optional<PageContentAnnotationsResult>
       last_page_content_annotations_result_;
 };
-
-#endif
 
 // Generates a unique id for tab's WebContents that's sufficient for test
 // purposes.
@@ -304,13 +300,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
                 .SetModelFilePath(model_file_path)
                 .Build());
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.ModelExecutor.ModelFileUpdated.PageVisibility", 1);
-#else
-    base::RunLoop().RunUntilIdle();
-#endif
   }
 
   std::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
@@ -400,43 +392,29 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   // but the url stays the same.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   int expected_count = 2;
-#else
-  int expected_count = 0;
-#endif
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
-#endif
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
       2);
-#else
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", false,
-      2);
-#endif
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   WaitForHistoryServiceToFinish();
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::PageContentAnnotations2::kEntryName);
   EXPECT_EQ(2u, entries.size());
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
@@ -444,20 +422,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
   test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
-#endif
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   int expected_count = 1;
-#else
-  int expected_count = 0;
-#endif
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
@@ -466,17 +438,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
       1);
-#else
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", false,
-      1);
-#endif
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   WaitForHistoryServiceToFinish();
   std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -487,7 +452,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::PageContentAnnotations2::kEntryName);
   EXPECT_EQ(1u, entries.size());
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
@@ -495,11 +459,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
   test_annotator.UseVisibilityScores(std::nullopt, {{std::string(), 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
-#endif
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("data:,")));
   base::RunLoop().RunUntilIdle();
@@ -513,11 +475,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
   test_annotator.UseVisibilityScores(std::nullopt, {{std::string(), 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
-#endif
 
   GURL url(embedded_test_server()->GetURL("a.test", "/page404.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -527,7 +487,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ENPageVisibilityModel_GoldenData) {
   LoadAndWaitForModel();
@@ -1203,8 +1162,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
 class FakeEmbedderMetadataProvider
     : public passage_embeddings::EmbedderMetadataProvider {
  public:
@@ -1372,8 +1329,6 @@ IN_PROC_BROWSER_TEST_F(
 
   service()->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 class PageContentAnnotationsServiceContentExtractionTest
     : public InProcessBrowserTest {
@@ -1678,8 +1633,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
                    ukm::builders::OptimizationGuide_AnnotatedPdfContent::
                        kPdfPageCountName));
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 class PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag
     : public PageContentAnnotationsServiceContentExtractionTest {

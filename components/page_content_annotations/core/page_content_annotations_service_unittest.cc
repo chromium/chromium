@@ -196,12 +196,10 @@ class PageContentAnnotationsServiceTest : public testing::Test {
         /*embedder_metadata_provider=*/nullptr,
         /*background_task_runner=*/nullptr);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     test_annotator_ = std::make_unique<TestPageContentAnnotator>();
     test_annotator_->UseVisibilityScores(/*model_info=*/std::nullopt,
                                          {{"test", 0.5}});
     service_->OverridePageContentAnnotatorForTesting(test_annotator_.get());
-#endif
   }
 
   void TearDown() override {
@@ -255,10 +253,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
   history::VisitID visit_id = 1;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
-#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -270,11 +266,9 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
 TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
   history::VisitID visit_id = 1;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id))
       .Times(0);
-#endif
 
   VisitURL(GURL("data:,"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -286,11 +280,9 @@ TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
 TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
   history::VisitID visit_id = 1;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id))
       .Times(0);
-#endif
 
   VisitURL(GURL("https://example.com"), u"404test", visit_id,
            /*local_navigation_id=*/1,
@@ -304,10 +296,8 @@ TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
   history::VisitID visit_id = 1;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
-#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -322,10 +312,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
 
   EXPECT_CALL(*history_service_, AddSearchMetadataForVisit(_, _, visit_id));
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
-#endif
 
   VisitURL(GURL("http://www.google.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
@@ -343,10 +331,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
 
   EXPECT_CALL(*history_service_, AddSearchMetadataForVisit(_, _, visit_id));
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
-#endif
 
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
@@ -362,10 +348,8 @@ TEST_F(PageContentAnnotationsServiceTest, BatchLimitTriggersJob) {
         {{"annotate_visit_batch_size", "5"}}}},
       {});
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, _))
       .Times(5);
-#endif
 
   for (int i = 0; i < 5; ++i) {
     VisitURL(GURL("https://example.com"), u"test", i,
@@ -385,10 +369,8 @@ TEST_F(PageContentAnnotationsServiceTest, BatchSizeTimeout) {
 
   history::VisitID visit_id = 1;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
-#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -427,12 +409,10 @@ TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
   };
   test_annotator_->UseVisibilityScores(std::nullopt, titles_to_score);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 1));
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 0));
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 4));
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 2));
-#endif
 
   for (int i = 0; i < 6; ++i) {
     VisitURL(GURL("https://example.com"),
@@ -483,7 +463,6 @@ TEST_F(PageContentAnnotationsServiceTest,
            /*local_navigation_id=*/1);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
   MockPageContentAnnotationsObserver observer;
   service_->AddObserver(AnnotationType::kCategoryClassifier, &observer);
@@ -519,6 +498,5 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
 
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
 }
-#endif
 
 }  // namespace page_content_annotations

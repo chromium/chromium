@@ -30,8 +30,10 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/core/on_device_category_classifier.h"
 #include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_validator.h"
 #include "components/search/search.h"
@@ -41,11 +43,6 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/omnibox_proto/types.pb.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/page_content_annotations/core/on_device_category_classifier.h"
-#include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
-#endif
 
 namespace page_content_annotations {
 
@@ -102,7 +99,6 @@ void LogRelatedSearchesCacheHit(bool cache_hit) {
       cache_hit);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Record the visibility score of the provided visit as a RAPPOR-style record to
 // UKM.
 void MaybeRecordVisibilityUKM(
@@ -137,7 +133,6 @@ void MaybeRecordVisibilityUKM(
       .SetVisibilityScore(noisy_score)
       .Record(ukm::UkmRecorder::Get());
 }
-#endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
 // Generates the canonical URL associated with the the given search |url|.
 // |template_url_service| must not be null.
@@ -190,9 +185,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       missing_title_visits_by_url_(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
       last_visit_for_url_(features::MaxContentAnnotationRequestsCached()),
-#endif
       optimization_guide_logger_(optimization_guide_logger),
       optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_model_provider);
@@ -202,7 +195,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     zero_suggest_cache_service_observation_.Observe(
         zero_suggest_cache_service_);
   }
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_model_provider);
   annotator_ = model_manager_.get();
@@ -220,7 +212,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
             optimization_guide_model_provider, embedder_metadata_provider);
     on_device_category_classifier_->AddObserver(this);
   }
-#endif
 
   if (features::RemotePageMetadataEnabled(application_locale, country_code)) {
     std::vector<optimization_guide::proto::OptimizationType> optimization_types;
@@ -236,11 +227,9 @@ PageContentAnnotationsService::PageContentAnnotationsService(
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (on_device_category_classifier_) {
     on_device_category_classifier_->RemoveObserver(this);
   }
-#endif
 }
 
 void PageContentAnnotationsService::Shutdown() {
@@ -255,17 +244,15 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     return;
   }
   last_annotated_history_visits_.Put(visit, true);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   HistoryVisit visit_to_cache = visit;
   // Reset text_to_annotate to save memory since the category classifier uses
   // embeddings and doesn't need the raw text.
   visit_to_cache.text_to_annotate.reset();
   last_visit_for_url_.Put(visit_to_cache.url, visit_to_cache);
-#endif
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!visit.text_to_annotate)
+  if (!visit.text_to_annotate) {
     return;
+  }
   // Used for testing.
   LOCAL_HISTOGRAM_BOOLEAN(
       "PageContentAnnotations.AnnotateVisit.AnnotationRequested", true);
@@ -294,8 +281,9 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
       "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
       false);
 
-  if (MaybeStartAnnotateVisitBatch())
+  if (MaybeStartAnnotateVisitBatch()) {
     return;
+  }
 
   // Used for testing.
   LOCAL_HISTOGRAM_BOOLEAN(
@@ -309,10 +297,8 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "PageContentAnnotations.AnnotateVisit.QueueFullVisitDropped", true);
   }
-#endif
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnCategoriesClassified(
     const GURL& url,
     ukm::SourceId source_id,
@@ -459,7 +445,6 @@ void PageContentAnnotationsService::OnBatchVisitsAnnotated(
   current_visit_annotation_batch_.clear();
   MaybeStartAnnotateVisitBatch();
 }
-#endif
 
 void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
     PageContentAnnotator* annotator) {
@@ -498,26 +483,17 @@ void PageContentAnnotationsService::BatchAnnotate(
 
 std::optional<optimization_guide::ModelInfo>
 PageContentAnnotationsService::GetModelInfoForType(AnnotationType type) const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   DCHECK(annotator_);
   return annotator_->GetModelInfoForType(type);
-#else
-  return std::nullopt;
-#endif
 }
 
 void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
     AnnotationType type,
     base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   DCHECK(annotator_);
   annotator_->RequestAndNotifyWhenModelAvailable(type, std::move(callback));
-#else
-  std::move(callback).Run(false);
-#endif
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
     const std::optional<history::VisitContentModelAnnotations>&
@@ -525,8 +501,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       content_annotations.has_value());
-  if (!content_annotations)
+  if (!content_annotations) {
     return;
+  }
 
   if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
       annotated_text_cache_.end()) {
@@ -539,8 +516,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
       PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
           content_annotations->visibility_score));
 
-  if (!features::ShouldWriteContentAnnotationsToHistoryService())
+  if (!features::ShouldWriteContentAnnotationsToHistoryService()) {
     return;
+  }
 
   if (visit.visit_id) {
     // If the visit ID is known, directly add the annotations for that visit
@@ -555,7 +533,6 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
              PageContentAnnotationsType::kModelAnnotations);
   }
 }
-#endif
 
 bool PageContentAnnotationsService::ShouldExtractRelatedSearchesFromZPSCache() {
   return base::FeatureList::IsEnabled(

@@ -31,7 +31,6 @@
 #include "components/omnibox/common/zero_suggest_cache_service_interface.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
@@ -232,22 +231,15 @@ class PageContentAnnotationsService
           page_category_classifier_bridge);
 
   OnDeviceCategoryClassifier* on_device_category_classifier() const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     return on_device_category_classifier_.get();
-#else
-    return nullptr;
-#endif
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // OnDeviceCategoryClassifier::Observer:
   void OnCategoriesClassified(const GURL& url,
                               ukm::SourceId source_id,
                               const std::vector<Category>& categories) override;
-#endif
 
  private:
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
@@ -284,7 +276,6 @@ class PageContentAnnotationsService
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 
   std::unique_ptr<OnDeviceCategoryClassifier> on_device_category_classifier_;
-#endif
 
   // A bridge that allows page category classification. The functionality of the
   // bridge is type-erased at the 'core' level, but it's stored on this object
@@ -415,10 +406,8 @@ class PageContentAnnotationsService
   base::HashingLRUCache<std::string, history::VisitContentModelAnnotations>
       annotated_text_cache_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // A LRU cache from URL to the latest history visit for that URL.
   base::LRUCache<GURL, HistoryVisit> last_visit_for_url_;
-#endif
 
   // The set of visits to be annotated, this is added to by Annotate requests
   // from the web content observer. These will be annotated when the set is full
