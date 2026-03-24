@@ -271,6 +271,8 @@ void DownloadManagerTabHelper::DidCreateDownload(
                       didCreateDownload:task_.get()
                       webStateIsVisible:true];
   }
+
+  MaybeEnrollFileForAutoDeletion(task_.get());
 }
 
 void DownloadManagerTabHelper::OnDownloadPolicyDecision(
@@ -331,10 +333,11 @@ void DownloadManagerTabHelper::MoveComplete(bool move_completed,
                                             const base::FilePath& source_path,
                                             const base::FilePath& final_path) {
   DCHECK(move_completed);
-  MaybeScheduleFileForAutoDeletion();
+  MaybeSetDownloadPathForAutoDeletion();
 }
 
-void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
+void DownloadManagerTabHelper::MaybeEnrollFileForAutoDeletion(
+    web::DownloadTask* task) {
   PrefService* localState = GetApplicationContext()->GetLocalState();
   BOOL isAutoDeletionEnabled =
       localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled);
@@ -344,7 +347,20 @@ void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
 
   auto_deletion::AutoDeletionService* service =
       GetApplicationContext()->GetAutoDeletionService();
-  service->MarkTaskForDeletion(task_.get(), GetDownloadTaskFinalFilePath());
+  service->SetDownloadTask(task);
+}
+
+void DownloadManagerTabHelper::MaybeSetDownloadPathForAutoDeletion() {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  BOOL isAutoDeletionEnabled =
+      localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled);
+  if (!IsDownloadAutoDeletionFeatureEnabled() || !isAutoDeletionEnabled) {
+    return;
+  }
+
+  auto_deletion::AutoDeletionService* service =
+      GetApplicationContext()->GetAutoDeletionService();
+  service->SetDownloadPath(GetDownloadTaskFinalFilePath());
 }
 
 void DownloadManagerTabHelper::ScheduleTaskDestruction() {

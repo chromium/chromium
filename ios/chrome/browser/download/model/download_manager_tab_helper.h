@@ -120,8 +120,11 @@ class DownloadManagerTabHelper
                     const base::FilePath& source_path,
                     const base::FilePath& final_path);
 
-  // Schedules the downloaded file for Auto-deletion if enabled.
-  void MaybeScheduleFileForAutoDeletion();
+  // Begins the Auto-deletion enrollment process for the given task if enabled.
+  void MaybeEnrollFileForAutoDeletion(web::DownloadTask* task);
+
+  // Sets the download path for Auto-deletion if enabled.
+  void MaybeSetDownloadPathForAutoDeletion();
 
   // Defers task destruction to avoid iterator invalidation during notification.
   void ScheduleTaskDestruction();
