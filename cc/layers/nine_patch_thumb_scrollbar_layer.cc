@@ -65,10 +65,8 @@ bool NinePatchThumbScrollbarLayer::OpacityCanAnimateOnImplThread() const {
 void NinePatchThumbScrollbarLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
     uint8_t dirty_flag,
-    const CommitState& commit_state,
-    const ThreadUnsafeCommitState& unsafe_state) {
-  ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
-                                            unsafe_state);
+    const CommitState& commit_state) {
+  ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {
     NinePatchThumbScrollbarLayerImpl* scrollbar_layer =

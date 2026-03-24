@@ -41,11 +41,9 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
                      bool is_left_side_vertical_scrollbar);
   ~ScrollbarLayerBase() override;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
  private:
   bool IsScrollbarLayerForTesting() const final;

@@ -1160,6 +1160,9 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
         KeyframeModel* keyframe_model =
             animation_child_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
         animation_child_->RemoveKeyframeModel(keyframe_model->id());
+        // This is called by blink::ScrollAnimatorCompositorCoordinator
+        layer_tree_host()->DropActiveScrollDeltaNextCommit(
+            animation_child_->element_id());
         scroll_layer_->SetScrollOffset(final_postion_);
         break;
       }

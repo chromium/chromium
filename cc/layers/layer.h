@@ -55,7 +55,6 @@ class PictureLayer;
 class PropertyTrees;
 
 struct CommitState;
-struct ThreadUnsafeCommitState;
 
 enum class ElementListType;
 enum class RenderSurfaceReason : uint8_t;
@@ -751,9 +750,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // that state as well. The |layer| passed in will be of the type created by
   // CreateLayerImpl(), so can be safely down-casted if the subclass uses a
   // different type for the compositor thread.
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state);
+  void PushPropertiesTo(LayerImpl* layer, const CommitState& commit_state);
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
@@ -903,11 +900,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   ~Layer() override;
 
   // This is implementation helper for PushPropertiesTo().
-  virtual void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state);
+  virtual void PushDirtyPropertiesTo(LayerImpl* layer,
+                                     uint8_t dirty_flag,
+                                     const CommitState& commit_state);
 
   // These SetNeeds functions are in order of severity of update:
 

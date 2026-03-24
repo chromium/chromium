@@ -50,11 +50,9 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   explicit PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
   ~PaintedScrollbarLayer() override;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
   // For unit tests
   UIResourceId track_and_buttons_resource_id() {

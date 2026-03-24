@@ -52,11 +52,9 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   bool HasDrawableContent() const override;
 
   // Layer overrides.
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
  private:
   ~HeadsUpDisplayLayer() override;

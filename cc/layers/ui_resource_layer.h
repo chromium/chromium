@@ -45,11 +45,9 @@ class CC_EXPORT UIResourceLayer : public Layer {
   UIResourceLayer();
   ~UIResourceLayer() override;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
   bool HasDrawableContent() const override;
 

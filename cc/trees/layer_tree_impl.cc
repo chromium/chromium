@@ -738,7 +738,7 @@ void LayerTreeImpl::PullPropertiesFrom(
 
   {
     DiscardableImageMapUpdater updater(this);
-    TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
+    TreeSynchronizer::PushLayerProperties(commit_state, this);
     lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
     for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {

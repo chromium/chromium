@@ -52,13 +52,10 @@ class FakeScrollbarLayer : public BaseLayer {
 
   ~FakeScrollbarLayer() override = default;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override {
-    BaseLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
-                                     unsafe_state);
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override {
+    BaseLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
     ++push_properties_count_;
   }
 

@@ -48,10 +48,9 @@ class SurfaceLayerTest : public testing::Test {
 
   // Synchronizes |layer_tree_host_| and |host_impl_| and pushes surface ids.
   void SynchronizeTrees() {
-    auto& unsafe_state = layer_tree_host_->GetThreadUnsafeCommitState();
     std::unique_ptr<CommitState> commit_state =
         layer_tree_host_->ActivateCommitState();
-    TreeSynchronizer::PushLayerProperties(*commit_state, unsafe_state,
+    TreeSynchronizer::PushLayerProperties(*commit_state,
                                           host_impl_.pending_tree());
     if (commit_state->needs_surface_ranges_sync) {
       host_impl_.pending_tree()->ClearSurfaceRanges();

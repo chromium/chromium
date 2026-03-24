@@ -27,7 +27,6 @@ class MirrorLayerTest : public testing::Test {
   void SynchronizeTrees() {
     TreeSynchronizer::PushLayerProperties(
         *layer_tree_host_->GetPendingCommitState(),
-        layer_tree_host_->GetThreadUnsafeCommitState(),
         host_impl_.pending_tree());
   }
 

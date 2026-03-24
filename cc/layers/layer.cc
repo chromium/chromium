@@ -1482,8 +1482,7 @@ bool Layer::IsSnappedToPixelGridInTarget() const {
 
 void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
                                   uint8_t dirty_flag,
-                                  const CommitState& commit_state,
-                                  const ThreadUnsafeCommitState& unsafe_state) {
+                                  const CommitState& commit_state) {
   const PropertyTrees& property_trees = commit_state.property_trees;
 
   if (dirty_flag & kChangedPropertyTreeIndex) {
@@ -1524,17 +1523,6 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     // to call |SetScrollOffsetClobberActiveValue|.
     DCHECK(layer->layer_tree_impl()->lifecycle().AllowsPropertyTreeAccess());
 
-    // When a scroll offset animation is interrupted the new scroll position on
-    // the pending tree will clobber any impl-side scrolling occurring on the
-    // active tree. To do so, avoid scrolling the pending tree along with it
-    // instead of trying to undo that scrolling later.
-    if (unsafe_state.mutator_host->ScrollOffsetAnimationWasInterrupted(
-            element_id())) {
-      PropertyTrees* trees = layer->layer_tree_impl()->property_trees();
-      trees->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
-          layer->element_id());
-    }
-
     layer->UnionUpdateRect(update_rect_.Read(*this));
 
     // debug_info_->invalidations, if exist, will be cleared in the function.
@@ -1563,15 +1551,14 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer_impl,
-                             const CommitState& commit_state,
-                             const ThreadUnsafeCommitState& unsafe_state) {
+                             const CommitState& commit_state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "Layer::PushPropertiesTo");
   DCHECK(IsAttached());
 
   const uint8_t changed_props = changed_properties_.Read(*this);
 
-  PushDirtyPropertiesTo(layer_impl, changed_props, commit_state, unsafe_state);
+  PushDirtyPropertiesTo(layer_impl, changed_props, commit_state);
 
   // Reset change flags for next update.
   changed_properties_.Write(*this) = 0u;

@@ -79,13 +79,10 @@ class MockLayer : public Layer {
     return MockLayerImpl::Create(tree_impl, id());
   }
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer_impl,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override {
-    Layer::PushDirtyPropertiesTo(layer_impl, dirty_flag, commit_state,
-                                 unsafe_state);
+  void PushDirtyPropertiesTo(LayerImpl* layer_impl,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override {
+    Layer::PushDirtyPropertiesTo(layer_impl, dirty_flag, commit_state);
 
     MockLayerImpl* mock_layer_impl = static_cast<MockLayerImpl*>(layer_impl);
     mock_layer_impl->SetLayerImplDestructionList(layer_impl_destruction_list_);
@@ -238,7 +235,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
 
   // Push properties to make pending tree have valid property tree index.
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
 
   // Now sync from pending tree to active tree. This would clear the map of
@@ -263,7 +259,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
                                      host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
   EXPECT_TRUE(std::ranges::contains(
       host_->pending_tree()->LayersThatShouldPushProperties(), root));
@@ -296,7 +291,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
 
   // We have to push properties to pick up the destruction list pointer.
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
 
   // Add a new layer to the Layer side
@@ -349,7 +343,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
 
   // We have to push properties to pick up the destruction list pointer.
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
   host_->active_tree()->ResetAllChangeTracking();
 
@@ -367,7 +360,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
   host_->active_tree()->SetPropertyTrees(
       *layer_tree_root->layer_tree_host()->property_trees());
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Check that the impl thread properly tracked the change.
@@ -410,7 +402,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndProperties) {
                           host_->active_tree());
 
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Check that the property values we set on the Layer tree are reflected in
@@ -460,7 +451,6 @@ TEST_F(TreeSynchronizerTest, ReuseLayerImplsAfterStructuralChange) {
 
   // We have to push properties to pick up the destruction list pointer.
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Now restructure the tree to look like this:
@@ -520,7 +510,6 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeThenDestroy) {
 
   // We have to push properties to pick up the destruction list pointer.
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
-                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Remove all children on the Layer side.

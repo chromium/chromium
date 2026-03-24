@@ -51,9 +51,8 @@ void ViewTransitionContentLayer::SetMaxExtentsRectInOriginatingLayerSpace(
 void ViewTransitionContentLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
     uint8_t dirty_flag,
-    const CommitState& commit_state,
-    const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
+    const CommitState& commit_state) {
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
   if (dirty_flag & kChangedGeneralProperty) {
     static_cast<ViewTransitionContentLayerImpl*>(layer)->SetMaxExtentsRect(
         max_extents_rect_.Read(*this));

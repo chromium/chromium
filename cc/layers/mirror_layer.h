@@ -32,11 +32,9 @@ class CC_EXPORT MirrorLayer : public Layer {
   explicit MirrorLayer(scoped_refptr<Layer> mirrored_layer);
 
   // Layer overrides.
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
  private:
   ~MirrorLayer() override;

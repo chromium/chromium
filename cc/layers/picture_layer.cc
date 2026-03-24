@@ -40,13 +40,10 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayer::PushDirtyPropertiesTo(
-    LayerImpl* base_layer,
-    uint8_t dirty_flag,
-    const CommitState& commit_state,
-    const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushDirtyPropertiesTo(base_layer, dirty_flag, commit_state,
-                               unsafe_state);
+void PictureLayer::PushDirtyPropertiesTo(LayerImpl* base_layer,
+                                         uint8_t dirty_flag,
+                                         const CommitState& commit_state) {
+  Layer::PushDirtyPropertiesTo(base_layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),

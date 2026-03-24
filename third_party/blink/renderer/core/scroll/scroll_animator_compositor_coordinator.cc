@@ -8,6 +8,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -86,6 +87,15 @@ bool ScrollAnimatorCompositorCoordinator::AddAnimation(
 void ScrollAnimatorCompositorCoordinator::RemoveAnimation() {
   if (compositor_animation_id_) {
     compositor_animation_->RemoveKeyframeModel(compositor_animation_id_);
+    // When a scroll offset animation is interrupted the new scroll position on
+    // the pending tree will clobber any impl-side scrolling occurring on the
+    // active tree. To do so, avoid scrolling the pending tree along with it
+    // instead of trying to undo that scrolling later.
+    if (compositor_animation_->CcAnimation()
+            ->keyframe_effect()
+            ->scroll_offset_animation_was_interrupted()) {
+      GetScrollableArea()->DropCompositorScrollDeltaNextCommit();
+    }
     compositor_animation_id_ = 0;
     compositor_animation_group_id_ = 0;
   }

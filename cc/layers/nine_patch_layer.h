@@ -49,11 +49,9 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
   ProtectedSequenceReadable<gfx::Rect> border_;
   ProtectedSequenceReadable<bool> fill_center_;

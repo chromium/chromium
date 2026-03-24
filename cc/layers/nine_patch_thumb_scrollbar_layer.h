@@ -43,11 +43,9 @@ class CC_EXPORT NinePatchThumbScrollbarLayer : public ScrollbarLayerBase {
   explicit NinePatchThumbScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
   ~NinePatchThumbScrollbarLayer() override;
 
-  void PushDirtyPropertiesTo(
-      LayerImpl* layer,
-      uint8_t dirty_flag,
-      const CommitState& commit_state,
-      const ThreadUnsafeCommitState& unsafe_state) override;
+  void PushDirtyPropertiesTo(LayerImpl* layer,
+                             uint8_t dirty_flag,
+                             const CommitState& commit_state) override;
 
  private:
   template <typename T>

@@ -30,7 +30,6 @@ class CC_EXPORT TreeSynchronizer {
                                LayerTreeImpl* active_tree);
 
   static void PushLayerProperties(const CommitState& commit_state,
-                                  const ThreadUnsafeCommitState& unsafe_state,
                                   LayerTreeImpl* impl_tree);
 
   static void PushLayerProperties(LayerTreeImpl* pending_tree,

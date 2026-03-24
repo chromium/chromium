@@ -15,12 +15,10 @@ std::unique_ptr<LayerImpl> MirrorLayer::CreateLayerImpl(
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
-void MirrorLayer::PushDirtyPropertiesTo(
-    LayerImpl* layer,
-    uint8_t dirty_flag,
-    const CommitState& commit_state,
-    const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
+void MirrorLayer::PushDirtyPropertiesTo(LayerImpl* layer,
+                                        uint8_t dirty_flag,
+                                        const CommitState& commit_state) {
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {
     auto* mirror_layer = static_cast<MirrorLayerImpl*>(layer);

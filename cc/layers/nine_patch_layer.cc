@@ -56,13 +56,10 @@ void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
   SetNeedsCommit();
 }
 
-void NinePatchLayer::PushDirtyPropertiesTo(
-    LayerImpl* layer,
-    uint8_t dirty_flag,
-    const CommitState& commit_state,
-    const ThreadUnsafeCommitState& unsafe_state) {
-  UIResourceLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
-                                         unsafe_state);
+void NinePatchLayer::PushDirtyPropertiesTo(LayerImpl* layer,
+                                           uint8_t dirty_flag,
+                                           const CommitState& commit_state) {
+  UIResourceLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {
     TRACE_EVENT0("cc", "NinePatchLayer::PushPropertiesTo");
