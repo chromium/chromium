@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                                     0);
   // Second navigation should be allowed by static allowlist.
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
 }
 
@@ -866,11 +866,13 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  // The navigation should be allowed due to same origin, even though it's also
-  // in the static allow list.
+  // The navigation should be allowed due the site's membership in the static
+  // allow list. (Note that if the site weren't on the allowlist, the navigation
+  // would still be allowed since the navigation is same-origin and the site is
+  // not on the blocklist.)
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
-      ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
@@ -901,10 +903,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", blocked_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
 
-  // The navigation should be allowed because the allow list is checked before
-  // the block list.
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
   histogram_tester.ExpectBucketCount("Actor.NavigationGating.AppliedGate", true,
                                      1);
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result);
 
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
   histogram_tester.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
                                      false, 1);
@@ -1024,11 +1024,11 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   // First navigation should be allowed due to same origin.
   histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
   // Second navigation should be blocked by static blocklist = 3.
   histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
   // Second navigation should be blocked by static blocklist = 3.
   histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
@@ -1096,11 +1096,11 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   // First navigation should be allowed due to same origin.
   histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
   // Second navigation should be blocked by static blocklist = 3.
   histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 

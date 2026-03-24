@@ -349,24 +349,11 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
       return GatingDecision::kBlockByStaticList;
   }
 
-  url::Origin destination_origin = url::Origin::Create(destination_url);
-  const SafetyListManager& safety_list_manager =
-      *SafetyListManager::GetInstance();
-
-  auto manager_decision = safety_list_manager.Find(source_url, destination_url);
-  if (url::IsSameOriginWith(source_url, destination_url)) {
-    // Same-origin navigations are generally allowed unless the origin is on the
-    // static blocklist. Normally, the actor cannot interact with pages on this
-    // list, but we need to account for page-initiated navigations on blocked
-    // pages while the actor is deliberating the task.
-    return manager_decision == SafetyListManager::Decision::kBlock
-               ? GatingDecision::kBlockByStaticList
-               : GatingDecision::kAllowSameOrigin;
-  }
-
-  switch (manager_decision) {
+  switch (SafetyListManager::GetInstance()->Find(source_url, destination_url)) {
     case SafetyListManager::Decision::kNone:
-      return GatingDecision::kNeedsAsyncCheck;
+      return url::IsSameOriginWith(source_url, destination_url)
+                 ? GatingDecision::kAllowSameOrigin
+                 : GatingDecision::kNeedsAsyncCheck;
     case SafetyListManager::Decision::kAllow:
       return GatingDecision::kAllowByStaticList;
     case SafetyListManager::Decision::kBlock:

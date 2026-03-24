@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.GatingDecision" enum="GatingDecision"
+<histogram name="Actor.NavigationGating.GatingDecision2" enum="GatingDecision"
     expires_after="2026-08-23">
   <owner>tquintanilla@google.com</owner>
   <owner>dylancutler@google.com</owner>

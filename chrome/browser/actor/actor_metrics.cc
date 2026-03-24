@@ -160,7 +160,7 @@ void RecordScriptToolOutputSizeBytes(size_t size_bytes) {
 }
 
 void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision) {
-  base::UmaHistogramEnumeration("Actor.NavigationGating.GatingDecision",
+  base::UmaHistogramEnumeration("Actor.NavigationGating.GatingDecision2",
                                 decision);
 }
 

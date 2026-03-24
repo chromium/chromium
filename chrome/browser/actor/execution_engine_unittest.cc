@@ -1111,7 +1111,7 @@ TEST_F(ExecutionEngineNavigationGatingTest,
             content::NavigationThrottle::PROCEED);
 
   histograms_.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
+      "Actor.NavigationGating.GatingDecision2",
       /*sample=*/ExecutionEngine::GatingDecision::kAllowSameOrigin,
       /*expected_bucket_count=*/1);
 
