@@ -296,7 +296,12 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Deletes all timers, if any, associated with |tag|.
   void DeleteArcTimersInternal(const std::string& tag);
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   std::optional<bool> service_availability_ = true;
 
