@@ -291,46 +291,79 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     auto mapped_region = mapping.GetMemoryAsSpan<uint8_t>();
-    std::vector<media::ColorPlaneLayout> planes(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      if (offsets[i] > mapped_region.size()) {
-        DLOG(ERROR) << "Plane's offset is out of bounds. "
-                    << " offset: " << offsets[i]
+
+    if (format == media::PIXEL_FORMAT_MJPEG) {
+#if BUILDFLAG(IS_CHROMEOS)
+      if (offsets[0] >= mapped_region.size()) {
+        DLOG(ERROR) << "Plane's offset is out of bounds for MJPEG. "
+                    << " offset: " << offsets[0]
                     << " size: " << mapped_region.size();
         return false;
       }
 
-      planes[i].stride = strides[i];
-      planes[i].offset = base::strict_cast<size_t>(offsets[i]);
-      planes[i].size =
-          media::VideoFrame::Rows(i, format, coded_size.height()) * strides[i];
-    }
+      const size_t plane_offset = base::strict_cast<size_t>(offsets[0]);
+      std::vector<media::ColorPlaneLayout> planes = {
+          media::ColorPlaneLayout(/*stride=*/strides[0],
+                                  /*offset=*/plane_offset,
+                                  /*size=*/mapping.size() - plane_offset)};
 
-    auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
-                                                            std::move(planes));
-    if (!layout || !layout->FitsInContiguousBufferOfSize(mapping.size())) {
-      DLOG(ERROR) << "Invalid layout";
-      return false;
-    }
+      auto layout = media::VideoFrameLayout::CreateWithPlanes(
+          format, coded_size, std::move(planes));
+      if (!layout || !layout->FitsInContiguousBufferOfSize(mapping.size())) {
+        DLOG(ERROR) << "Invalid layout for MJPEG";
+        return false;
+      }
 
-    std::array<base::span<const uint8_t>, 3> plane_data;
-    for (size_t i = 0; i < num_planes; i++) {
-      plane_data[i] = mapped_region.subspan(layout->planes()[i].offset,
-                                            layout->planes()[i].size);
-    }
-
-    if (media::IsYuvPlanar(format) && media::IsOpaque(format)) {
-      frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-          *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
-          plane_data[2], timestamp);
-    } else if (media::IsRGB(format)) {
       frame = media::VideoFrame::WrapExternalDataWithLayout(
-          *layout, visible_rect, natural_size, plane_data[0], timestamp);
-    } else {
-      DLOG(ERROR) << "Format is not opaque YUV or RGB: "
-                  << VideoPixelFormatToString(format);
+          *layout, visible_rect, natural_size, mapped_region, timestamp);
+#else
+      DLOG(ERROR) << "PIXEL_FORMAT_MJPEG is only supported on ChromeOS";
       return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    } else {
+      std::vector<media::ColorPlaneLayout> planes(num_planes);
+      for (size_t i = 0; i < num_planes; i++) {
+        if (offsets[i] > mapped_region.size()) {
+          DLOG(ERROR) << "Plane's offset is out of bounds. "
+                      << " offset: " << offsets[i]
+                      << " size: " << mapped_region.size();
+          return false;
+        }
+
+        planes[i].stride = strides[i];
+        planes[i].offset = base::strict_cast<size_t>(offsets[i]);
+        planes[i].size =
+            media::VideoFrame::Rows(i, format, coded_size.height()) *
+            strides[i];
+      }
+
+      auto layout = media::VideoFrameLayout::CreateWithPlanes(
+          format, coded_size, std::move(planes));
+      if (!layout || !layout->FitsInContiguousBufferOfSize(mapping.size())) {
+        DLOG(ERROR) << "Invalid layout";
+        return false;
+      }
+
+      if (media::IsYuvPlanar(format) && media::IsOpaque(format)) {
+        std::array<base::span<const uint8_t>, media::VideoFrame::kMaxPlanes>
+            plane_data;
+        for (size_t i = 0; i < num_planes; i++) {
+          plane_data[i] = mapped_region.subspan(layout->planes()[i].offset,
+                                                layout->planes()[i].size);
+        }
+        frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+            *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
+            plane_data[2], timestamp);
+      } else if (media::IsRGB(format)) {
+        frame = media::VideoFrame::WrapExternalDataWithLayout(
+            *layout, visible_rect, natural_size, mapped_region, timestamp);
+      } else {
+        DLOG(ERROR) << "Format is not opaque YUV or RGB: "
+                    << VideoPixelFormatToString(format);
+        return false;
+      }
     }
+
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
