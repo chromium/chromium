@@ -165,7 +165,11 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui/skills" ]
+    deps += [
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/webui/skills",
+    ]
   }
 }
 
