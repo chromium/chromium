@@ -1,0 +1,3 @@
+Tests that declarative tool execution does not crash.
+Executing declarative tool...
+
