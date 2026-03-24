@@ -81,6 +81,13 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
+    if (timeout_) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), *timeout_);
+      run_loop.Run();
+    }
+
     if (status_ == passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
       passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
           priority, passages, std::move(callback));
@@ -95,9 +102,12 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
     status_ = status;
   }
 
+  void set_timeout(base::TimeDelta timeout) { timeout_ = timeout; }
+
  private:
   passage_embeddings::ComputeEmbeddingsStatus status_ =
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
+  std::optional<base::TimeDelta> timeout_;
 };
 
 class MockPageEmbeddingsService
@@ -277,6 +287,10 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     embedder_.set_status(status);
   }
 
+  void UpdateEmbedderTimeout(base::TimeDelta timeout) {
+    embedder_.set_timeout(timeout);
+  }
+
   passage_embeddings::Embedding CreateFakeEmbedding(float value) {
     constexpr size_t kMockPassageWordCount = 10;
     passage_embeddings::Embedding embedding(std::vector<float>(
@@ -427,6 +441,84 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SuccessWithTimeoutSpecified) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+  // Set timeout shorter than the request timeout.
+  UpdateEmbedderTimeout(base::Milliseconds(100));
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {// Not match.
+       {std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(0.1f)},
+       // Match - active tab is added.
+       {std::make_pair(
+            "passage 2",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)},
+       // Match - should be skipped.
+       {std::make_pair(
+            "passage 3",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch,
+       .tab_selection_timeout = base::Seconds(1)},
+      "some text",
+      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabOverlapCount",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
+                                      0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, TimedOut) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+  // Set timeout longer than the request timeout.
+  UpdateEmbedderTimeout(base::Milliseconds(200));
+
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch,
+       .tab_selection_timeout = base::Milliseconds(100)},
+      "some text",
+      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kTimedOut, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,

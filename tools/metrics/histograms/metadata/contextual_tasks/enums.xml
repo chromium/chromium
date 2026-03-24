@@ -32,6 +32,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Query embedding failed"/>
   <int value="3" label="Query embedding output malformed"/>
   <int value="4" label="No eligible tabs"/>
+  <int value="5" label="Timed out"/>
 </enum>
 
 <!-- LINT.IfChange(EntrypointSource) -->
