@@ -54,6 +54,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   METADATA_HEADER(VerticalTabStripRegionView, TabStripRegionView)
 
  public:
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
+
   // TODO(crbug.com/465833741): Replace constant with derived value based on
   // caption buttons.
   static constexpr int kUncollapsedMinWidth = 126;
@@ -65,8 +67,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   static constexpr int kCollapseSnapWidth =
       (kUncollapsedMinWidth + kCollapsedWidth) / 2;
 
-  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
-
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
@@ -76,18 +76,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
       delete;
   ~VerticalTabStripRegionView() override;
 
-  views::Separator* tabs_separator_for_testing() {
-    return tab_strip_view_->GetTabsSeparator();
-  }
-  views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   VerticalPinnedTabContainerView* GetPinnedTabsContainer();
   VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
-
-  RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
-
-  tabs::VerticalTabStripState target_collapse_state_for_testing() {
-    return target_collapse_state_;
-  }
 
   bool is_animating() { return resize_animation_.is_animating(); }
 
@@ -109,6 +99,18 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   double GetExpandOnHoverAnimationPercent() const;
 
+  bool IsPositionInWindowCaption(const gfx::Point& point);
+
+  // These methods provide the toolbar height and exclusion width, before the
+  // layout of this view, for use in calculating positioning of child views. If
+  // an exclusion width is provided, nothing can be rendered within the
+  // rectangle defined by `(caption_button_width, toolbar_height)` that is
+  // aligned to the leading, top corner.
+  void SetToolbarHeightForLayout(int toolbar_height);
+  void SetCaptionButtonWidthForLayout(int caption_button_width);
+
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
+
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
@@ -126,7 +128,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void InitializeTabStrip() override;
   void ResetTabStrip() override;
   bool IsTabStripEditable() const override;
-  void DisableTabStripEditingForTesting() override;
   bool IsTabStripCloseable() const override;
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
@@ -166,18 +167,15 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  bool IsPositionInWindowCaption(const gfx::Point& point);
-
-  // These methods provide the toolbar height and exclusion width, before the
-  // layout of this view, for use in calculating positioning of child views. If
-  // an exclusion width is provided, nothing can be rendered within the
-  // rectangle defined by `(caption_button_width, toolbar_height)` that is
-  // aligned to the leading, top corner.
-  void SetToolbarHeightForLayout(int toolbar_height);
-  void SetCaptionButtonWidthForLayout(int caption_button_width);
-
-  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
-
+  views::Separator* tabs_separator_for_testing() {
+    return tab_strip_view_->GetTabsSeparator();
+  }
+  views::ResizeArea* resize_area_for_testing() { return resize_area_; }
+  RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
+  tabs::VerticalTabStripState target_collapse_state_for_testing() {
+    return target_collapse_state_;
+  }
+  void DisableTabStripEditingForTesting() override;
   gfx::Rect GetLinkDropBoundsForTesting(
       const BrowserRootView::DropIndex& drop_index,
       DropArrow::Direction* direction);

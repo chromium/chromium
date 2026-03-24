@@ -194,6 +194,16 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
   }
 }
 
+VerticalPinnedTabContainerView*
+VerticalTabStripRegionView::GetPinnedTabsContainer() {
+  return tab_strip_view_->GetPinnedTabsContainer();
+}
+
+VerticalUnpinnedTabContainerView*
+VerticalTabStripRegionView::GetUnpinnedTabsContainer() {
+  return tab_strip_view_->GetUnpinnedTabsContainer();
+}
+
 std::optional<double> VerticalTabStripRegionView::GetCollapseAnimationPercent()
     const {
   return resize_animation_.is_animating()
@@ -203,6 +213,73 @@ std::optional<double> VerticalTabStripRegionView::GetCollapseAnimationPercent()
 
 double VerticalTabStripRegionView::GetExpandOnHoverAnimationPercent() const {
   return expand_on_hover_animation_.GetCurrentValue();
+}
+
+bool VerticalTabStripRegionView::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  // Check the resize area first, it should always take precedence over other
+  // children regardless of order.
+  if (IsHitInView(resize_area_, point)) {
+    return false;
+  }
+
+  if (IsHitInView(top_button_container_, point)) {
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, top_button_container_,
+                                      &point_in_child);
+    return top_button_container_->IsPositionInWindowCaption(point_in_child);
+  }
+
+  if (IsHitInView(bottom_button_container_, point)) {
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, bottom_button_container_,
+                                      &point_in_child);
+    return bottom_button_container_->IsPositionInWindowCaption(point_in_child);
+  }
+
+  // For any of the other children, absorb the click as non window caption.
+  for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, child, &point_in_child);
+    if (child->HitTestPoint(point_in_child)) {
+      return false;
+    }
+  }
+
+  // If the click doesnt fall under any view,then it counts as window caption.
+  return true;
+}
+
+void VerticalTabStripRegionView::SetToolbarHeightForLayout(int toolbar_height) {
+  top_button_container_->SetToolbarHeightForLayout(toolbar_height);
+}
+
+void VerticalTabStripRegionView::SetCaptionButtonWidthForLayout(
+    int caption_button_width) {
+  top_button_container_->SetCaptionButtonWidthForLayout(caption_button_width);
+}
+
+TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
+    const gfx::Point& point_in_screen) {
+  if (!drag_handler_) {
+    return nullptr;
+  }
+  gfx::Rect tab_strip_draggable_bounds = GetTabStripDraggableBounds();
+  if (!tab_strip_draggable_bounds.Contains(point_in_screen)) {
+    return nullptr;
+  }
+
+  // Note: if the drag has not attached to this tab strip yet, it doesn't matter
+  // which container is used because the first drag loop iteration just attaches
+  // it.
+  if (drag_handler_->IsDraggingPinnedTabs()) {
+    return &GetPinnedTabsContainer()->GetTabDragTarget(point_in_screen);
+  }
+  return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
 }
 
 void VerticalTabStripRegionView::AddedToWidget() {
@@ -238,76 +315,6 @@ views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
   }
 
   return top_button_container_;
-}
-
-void VerticalTabStripRegionView::InitializeTabStrip() {
-  if (root_node_) {
-    return;
-  }
-
-  root_node_ = std::make_unique<RootTabCollectionNode>(
-      tab_strip_model_,
-      base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
-                          base::Unretained(this)),
-      base::BindRepeating(&VerticalTabStripRegionView::ClearTabStripView,
-                          base::Unretained(this)));
-
-  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view_ && browser_view_->browser()->app_controller()) {
-    tab_menu_model_factory =
-        browser_view_->browser()->app_controller()->GetTabMenuModelFactory();
-  }
-
-  TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();
-  CHECK(tab_strip_model);
-  auto drag_handler = std::make_unique<VerticalTabDragHandlerImpl>(
-      *tab_strip_model, *root_node_.get());
-  drag_handler_ = drag_handler.get();
-
-  CHECK(!tab_strip_controller_);
-  tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
-      tab_strip_model, browser_view_, *AddChildView(std::move(drag_handler)),
-      hover_card_controller_.get(), std::move(tab_menu_model_factory));
-
-  root_node_->SetController(tab_strip_controller_.get());
-
-  root_node_->Init();
-
-  new_tab_button_pressed_start_time_ = std::nullopt;
-  on_children_added_subscription_ = root_node_->RegisterOnChildrenAddedCallback(
-      base::BindRepeating(&VerticalTabStripRegionView::OnChildrenAdded,
-                          base::Unretained(this)));
-  on_children_removed_subscription_ =
-      root_node_->RegisterOnChildRemovedCallback(
-          base::BindRepeating(&VerticalTabStripRegionView::OnChildrenRemoved,
-                              base::Unretained(this)));
-  on_child_moved_subscription_ =
-      root_node_->RegisterOnChildMovedCallback(base::BindRepeating(
-          &VerticalTabStripRegionView::OnChildMoved, base::Unretained(this)));
-}
-
-void VerticalTabStripRegionView::ResetTabStrip() {
-  if (!root_node_) {
-    return;
-  }
-
-  on_children_added_subscription_.reset();
-  on_children_removed_subscription_.reset();
-  on_child_moved_subscription_.reset();
-
-  root_node_->Reset();
-
-  root_node_->SetController(nullptr);
-  tab_strip_controller_.reset();
-
-  CHECK(drag_handler_);
-  auto* drag_handler = drag_handler_.get();
-  drag_handler_ = nullptr;
-  RemoveChildViewT(drag_handler->GetDragContext());
-
-  hover_tab_selector_->CancelTabTransition();
-
-  root_node_.reset();
 }
 
 gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
@@ -383,14 +390,80 @@ void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateExpandOnHoverState();
 }
 
+void VerticalTabStripRegionView::InitializeTabStrip() {
+  if (root_node_) {
+    return;
+  }
+
+  root_node_ = std::make_unique<RootTabCollectionNode>(
+      tab_strip_model_,
+      base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
+                          base::Unretained(this)),
+      base::BindRepeating(&VerticalTabStripRegionView::ClearTabStripView,
+                          base::Unretained(this)));
+
+  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
+  if (browser_view_ && browser_view_->browser()->app_controller()) {
+    tab_menu_model_factory =
+        browser_view_->browser()->app_controller()->GetTabMenuModelFactory();
+  }
+
+  TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();
+  CHECK(tab_strip_model);
+  auto drag_handler = std::make_unique<VerticalTabDragHandlerImpl>(
+      *tab_strip_model, *root_node_.get());
+  drag_handler_ = drag_handler.get();
+
+  CHECK(!tab_strip_controller_);
+  tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
+      tab_strip_model, browser_view_, *AddChildView(std::move(drag_handler)),
+      hover_card_controller_.get(), std::move(tab_menu_model_factory));
+
+  root_node_->SetController(tab_strip_controller_.get());
+
+  root_node_->Init();
+
+  new_tab_button_pressed_start_time_ = std::nullopt;
+  on_children_added_subscription_ = root_node_->RegisterOnChildrenAddedCallback(
+      base::BindRepeating(&VerticalTabStripRegionView::OnChildrenAdded,
+                          base::Unretained(this)));
+  on_children_removed_subscription_ =
+      root_node_->RegisterOnChildRemovedCallback(
+          base::BindRepeating(&VerticalTabStripRegionView::OnChildrenRemoved,
+                              base::Unretained(this)));
+  on_child_moved_subscription_ =
+      root_node_->RegisterOnChildMovedCallback(base::BindRepeating(
+          &VerticalTabStripRegionView::OnChildMoved, base::Unretained(this)));
+}
+
+void VerticalTabStripRegionView::ResetTabStrip() {
+  if (!root_node_) {
+    return;
+  }
+
+  on_children_added_subscription_.reset();
+  on_children_removed_subscription_.reset();
+  on_child_moved_subscription_.reset();
+
+  root_node_->Reset();
+
+  root_node_->SetController(nullptr);
+  tab_strip_controller_.reset();
+
+  CHECK(drag_handler_);
+  auto* drag_handler = drag_handler_.get();
+  drag_handler_ = nullptr;
+  RemoveChildViewT(drag_handler->GetDragContext());
+
+  hover_tab_selector_->CancelTabTransition();
+
+  root_node_.reset();
+}
+
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
   return tab_strip_editable_for_testing_ &&
          (!drag_handler_ ||
           !drag_handler_->GetDragContext()->GetDragController());
-}
-
-void VerticalTabStripRegionView::DisableTabStripEditingForTesting() {
-  tab_strip_editable_for_testing_ = false;
 }
 
 bool VerticalTabStripRegionView::IsTabStripCloseable() const {
@@ -497,19 +570,6 @@ TabDragContext* VerticalTabStripRegionView::GetDragContext() {
   return drag_handler_->GetDragContext();
 }
 
-BrowserRootView::DropTarget* VerticalTabStripRegionView::GetDropTarget(
-    gfx::Point loc_in_local_coords) {
-  if (tab_strip_view_ && IsTabStripEditable() &&
-      GetLocalBounds().Contains(loc_in_local_coords)) {
-    return this;
-  }
-  return nullptr;
-}
-
-views::View* VerticalTabStripRegionView::GetViewForDrop() {
-  return this;
-}
-
 std::optional<BrowserRootView::DropIndex>
 VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
   // Check pinned tabs.
@@ -550,6 +610,53 @@ VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
   }
 
   return std::nullopt;
+}
+
+BrowserRootView::DropTarget* VerticalTabStripRegionView::GetDropTarget(
+    gfx::Point loc_in_local_coords) {
+  if (tab_strip_view_ && IsTabStripEditable() &&
+      GetLocalBounds().Contains(loc_in_local_coords)) {
+    return this;
+  }
+  return nullptr;
+}
+
+views::View* VerticalTabStripRegionView::GetViewForDrop() {
+  return this;
+}
+
+bool VerticalTabStripRegionView::CanDrop(const OSExchangeData& data) {
+  if (drag_handler_ && drag_handler_->GetDragContext()) {
+    return drag_handler_->GetDragContext()->CanDrop(data);
+  }
+  return false;
+}
+
+bool VerticalTabStripRegionView::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  if (drag_handler_ && drag_handler_->GetDragContext()) {
+    return drag_handler_->GetDragContext()->GetDropFormats(formats,
+                                                           format_types);
+  }
+  return false;
+}
+
+void VerticalTabStripRegionView::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  CHECK(drag_handler_ && drag_handler_->GetDragContext());
+  drag_handler_->GetDragContext()->OnDragEntered(event);
+}
+
+int VerticalTabStripRegionView::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  CHECK(drag_handler_ && drag_handler_->GetDragContext());
+  return drag_handler_->GetDragContext()->OnDragUpdated(event);
+}
+
+void VerticalTabStripRegionView::OnDragExited() {
+  CHECK(drag_handler_ && drag_handler_->GetDragContext());
+  drag_handler_->GetDragContext()->OnDragExited();
 }
 
 void VerticalTabStripRegionView::SetTabStripObserver(
@@ -642,62 +749,14 @@ void VerticalTabStripRegionView::AnimationCanceled(
   }
 }
 
-bool VerticalTabStripRegionView::IsPositionInWindowCaption(
-    const gfx::Point& point) {
-  // Check the resize area first, it should always take precedence over other
-  // children regardless of order.
-  if (IsHitInView(resize_area_, point)) {
-    return false;
-  }
-
-  if (IsHitInView(top_button_container_, point)) {
-    gfx::Point point_in_child = point;
-    views::View::ConvertPointToTarget(this, top_button_container_,
-                                      &point_in_child);
-    return top_button_container_->IsPositionInWindowCaption(point_in_child);
-  }
-
-  if (IsHitInView(bottom_button_container_, point)) {
-    gfx::Point point_in_child = point;
-    views::View::ConvertPointToTarget(this, bottom_button_container_,
-                                      &point_in_child);
-    return bottom_button_container_->IsPositionInWindowCaption(point_in_child);
-  }
-
-  // For any of the other children, absorb the click as non window caption.
-  for (views::View* child : children()) {
-    if (!child->GetVisible()) {
-      continue;
-    }
-
-    gfx::Point point_in_child = point;
-    views::View::ConvertPointToTarget(this, child, &point_in_child);
-    if (child->HitTestPoint(point_in_child)) {
-      return false;
-    }
-  }
-
-  // If the click doesnt fall under any view,then it counts as window caption.
-  return true;
+void VerticalTabStripRegionView::DisableTabStripEditingForTesting() {
+  tab_strip_editable_for_testing_ = false;
 }
 
-void VerticalTabStripRegionView::SetToolbarHeightForLayout(int toolbar_height) {
-  top_button_container_->SetToolbarHeightForLayout(toolbar_height);
-}
-
-void VerticalTabStripRegionView::SetCaptionButtonWidthForLayout(
-    int caption_button_width) {
-  top_button_container_->SetCaptionButtonWidthForLayout(caption_button_width);
-}
-
-VerticalPinnedTabContainerView*
-VerticalTabStripRegionView::GetPinnedTabsContainer() {
-  return tab_strip_view_->GetPinnedTabsContainer();
-}
-
-VerticalUnpinnedTabContainerView*
-VerticalTabStripRegionView::GetUnpinnedTabsContainer() {
-  return tab_strip_view_->GetUnpinnedTabsContainer();
+gfx::Rect VerticalTabStripRegionView::GetLinkDropBoundsForTesting(
+    const BrowserRootView::DropIndex& drop_index,
+    DropArrow::Direction* direction) {
+  return GetLinkDropBounds(drop_index, direction);
 }
 
 VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(
@@ -927,65 +986,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
 void VerticalTabStripRegionView::ExpandOnHover() {
   expand_on_hover_animation_.Show();
   InvalidateLayout();
-}
-
-TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
-    const gfx::Point& point_in_screen) {
-  if (!drag_handler_) {
-    return nullptr;
-  }
-  gfx::Rect tab_strip_draggable_bounds = GetTabStripDraggableBounds();
-  if (!tab_strip_draggable_bounds.Contains(point_in_screen)) {
-    return nullptr;
-  }
-
-  // Note: if the drag has not attached to this tab strip yet, it doesn't matter
-  // which container is used because the first drag loop iteration just attaches
-  // it.
-  if (drag_handler_->IsDraggingPinnedTabs()) {
-    return &GetPinnedTabsContainer()->GetTabDragTarget(point_in_screen);
-  }
-  return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
-}
-
-gfx::Rect VerticalTabStripRegionView::GetLinkDropBoundsForTesting(
-    const BrowserRootView::DropIndex& drop_index,
-    DropArrow::Direction* direction) {
-  return GetLinkDropBounds(drop_index, direction);
-}
-
-bool VerticalTabStripRegionView::GetDropFormats(
-    int* formats,
-    std::set<ui::ClipboardFormatType>* format_types) {
-  if (drag_handler_ && drag_handler_->GetDragContext()) {
-    return drag_handler_->GetDragContext()->GetDropFormats(formats,
-                                                           format_types);
-  }
-  return false;
-}
-
-bool VerticalTabStripRegionView::CanDrop(const OSExchangeData& data) {
-  if (drag_handler_ && drag_handler_->GetDragContext()) {
-    return drag_handler_->GetDragContext()->CanDrop(data);
-  }
-  return false;
-}
-
-void VerticalTabStripRegionView::OnDragEntered(
-    const ui::DropTargetEvent& event) {
-  CHECK(drag_handler_ && drag_handler_->GetDragContext());
-  drag_handler_->GetDragContext()->OnDragEntered(event);
-}
-
-int VerticalTabStripRegionView::OnDragUpdated(
-    const ui::DropTargetEvent& event) {
-  CHECK(drag_handler_ && drag_handler_->GetDragContext());
-  return drag_handler_->GetDragContext()->OnDragUpdated(event);
-}
-
-void VerticalTabStripRegionView::OnDragExited() {
-  CHECK(drag_handler_ && drag_handler_->GetDragContext());
-  drag_handler_->GetDragContext()->OnDragExited();
 }
 
 void VerticalTabStripRegionView::SetLinkDropArrow(
