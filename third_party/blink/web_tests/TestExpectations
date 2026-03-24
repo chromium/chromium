@@ -9602,10 +9602,6 @@ crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure Pass ]
 
-# Temporarily disable failing Wasm global test cases as the desired behavior changed.
-crbug.com/484363412 external/wpt/wasm/jsapi/global/value-get-set.any.html [ Failure Pass ]
-crbug.com/484363412 external/wpt/wasm/jsapi/global/value-get-set.any.worker.html [ Failure Pass ]
-
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
 
