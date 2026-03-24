@@ -70,10 +70,6 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//components/no_state_prefetch/browser",
       "//components/safe_browsing/core/browser/db:test_database_manager",
-
-      # TODO(crbug.com/353332589): Revisit this when external_protocol_handler.h
-      # gets modularized.
-      "//chrome/browser",
     ]
     deps = [
       "//base",
@@ -136,10 +132,6 @@ if (!is_android) {
       "//components/privacy_sandbox:features",
       "//components/security_state/content",
       "//components/ukm:test_support",
-
-      # TODO(crbug.com/408146612): Revisit this when preloading_features.h
-      # moves into this file.
-      "//chrome/browser",
     ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

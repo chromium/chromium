@@ -55,7 +55,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    deps += [ "//components/content_settings/core/browser" ]
+    deps += [
+      "//chrome/browser/android/omnibox",
+      "//components/content_settings/core/browser",
+    ]
   }
 
   if (enable_extensions) {

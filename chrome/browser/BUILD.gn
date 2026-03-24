@@ -1405,12 +1405,6 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove this circular dependency when
     # profiles/profile_manager.h gets componentized.
     allow_circular_includes_from += [ "//chrome/browser/share" ]
-
-    # TODO(crbug.com/408146612): Remove this circular dependency when the
-    # following header get modularized:
-    # - c/b/android/omnibox/geolocation_header.h
-    allow_circular_includes_from +=
-        [ "//chrome/browser/preloading/prefetch/search_prefetch:impl" ]
   }
 
   public_deps = [
@@ -2584,8 +2578,6 @@ static_library("browser") {
       "android/omnibox/chrome_omnibox_navigation_observer_android.h",
       "android/omnibox/composebox_query_controller_bridge.cc",
       "android/omnibox/composebox_query_controller_bridge.h",
-      "android/omnibox/geolocation_header.cc",
-      "android/omnibox/geolocation_header.h",
       "android/omnibox/omnibox_prerender.cc",
       "android/omnibox/omnibox_prerender.h",
       "android/omnibox/tab_context_capture_request.cc",
@@ -3078,6 +3070,8 @@ static_library("browser") {
       "//chrome/browser/android/locale",
       "//chrome/browser/android/messages:jni_headers",
       "//chrome/browser/android/metrics:jni_headers",
+      "//chrome/browser/android/omnibox",
+      "//chrome/browser/android/omnibox:impl",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/auxiliary_search",
