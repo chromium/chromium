@@ -11,7 +11,7 @@
 
 The trust token WPTs in this directory are JavaScript tests that interact with a Python implementation of a trust token issuer.
 [Python file handlers](https://web-platform-tests.org/writing-tests/python-handlers/index.html) implement the server-side logic for trust token issuance and redemption.
-The supported issuer protocol is `TrustTokenV3VOPRF`.
+The supported issuer protocol is `PrivateStateTokenV1VOPRF`.
 
 Please refer to the [trust token API explainer](https://github.com/WICG/trust-token-api) for details about the API.
 
@@ -23,8 +23,8 @@ Please refer to the [trust token API explainer](https://github.com/WICG/trust-to
 ```json
 {
     "https://web-platform.test:8444": {
-        "TrustTokenV3VOPRF": {
-            "protocol_version": "TrustTokenV3VOPRF",
+        "PrivateStateTokenV1VOPRF": {
+            "protocol_version": "PrivateStateTokenV1VOPRF",
             "id": 1,
             "batchsize": 1,
             "keys": {

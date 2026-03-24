@@ -1,6 +1,6 @@
-"""A trust token issuer implementing issuer protocol TrustTokenV3VOPRF.
+"""A trust token issuer implementing issuer protocol PrivateStateTokenV1VOPRF.
 
-TrustTokenV3VOPRF uses the elliptic curve P-384 for cryptographic operations.
+PrivateStateTokenV1VOPRF uses the elliptic curve P-384 for cryptographic operations.
 Since this implementation is intended to be used for testing it is tailored
 specifically for operations over P-384.
 
@@ -25,7 +25,7 @@ import json
 import logging
 import os
 import sys
-from typing import List, Union
+from typing import List, Tuple, Union
 
 import ecdsa
 import ecdsa.ellipticcurve
@@ -51,6 +51,14 @@ WPT_HOST = "https://web-platform.test:8444"
 # The default redemption record to return in a redemption response
 DEFAULT_REDEMPTION_RECORD = bytes("dummy redemption record", encoding="utf-8")
 
+CONTEXT_STRING = "OPRFV1-\x01-P384-SHA384"
+SEED_STRING = "Seed"
+HASH_TO_SCALAR_STRING = "HashToScalar"
+SEED_DST = SEED_STRING + "-" + CONTEXT_STRING
+HASH_TO_SCALAR_DST = HASH_TO_SCALAR_STRING + "-" + CONTEXT_STRING
+
+# use a fixed private key for ease of debugging
+PRIVATE_KEY = ORDER_P384 - 1
 
 def bytes_to_base64_str(value: bytes) -> str:
     """Returns a Base64 string from bytes."""
@@ -60,6 +68,92 @@ def bytes_to_base64_str(value: bytes) -> str:
 def base64_str_to_bytes(s: str) -> bytes:
     """Returns bytes from a Base64 string."""
     return base64.b64decode(s)
+
+
+def rfc9497_compute_composites_fast(
+    k: int,
+    B: ecdsa.ellipticcurve.PointJacobi,
+    C: List[ecdsa.ellipticcurve.PointJacobi],
+    D: List[ecdsa.ellipticcurve.PointJacobi],
+) -> Tuple[ecdsa.ellipticcurve.PointJacobi, ecdsa.ellipticcurve.PointJacobi]:
+    """Implements ComputeCompositesFast in RFC9497 defined in the following section.
+    https://www.rfc-editor.org/rfc/rfc9497.html#name-proof-generation
+    """
+    Bm = B.to_bytes(encoding="compressed")
+    seed_dst = SEED_DST.encode("utf-8")
+    seed_transcript = \
+        h2f.I2OSP(len(Bm), 2) + Bm +\
+        h2f.I2OSP(len(seed_dst), 2) + seed_dst
+    seed = hashlib.sha384(seed_transcript).digest()
+
+    M = ecdsa.ellipticcurve.INFINITY
+    m = len(C)
+    for i in range(m):
+        Ci = C[i].to_bytes(encoding="compressed")
+        Di = D[i].to_bytes(encoding="compressed")
+        composite_transcript = \
+            h2f.I2OSP(len(seed), 2) + seed + h2f.I2OSP(i, 2) +\
+            h2f.I2OSP(len(Ci), 2) + Ci +\
+            h2f.I2OSP(len(Di), 2) + Di +\
+            b"Composite"
+        di = hash_to_scalar(msg=composite_transcript, count=1)[0][0]
+        M += di * C[i]
+    Z = k * M
+    return M, Z
+
+
+def random_scalar() -> int:
+    """This returns a fixed number for ease of debugging.
+    """
+    r = ORDER_P384 - 7
+    return r
+
+
+def rfc9497_generate_proof(
+    k: int,
+    A: ecdsa.ellipticcurve.PointJacobi,
+    B: ecdsa.ellipticcurve.PointJacobi,
+    C: List[ecdsa.ellipticcurve.PointJacobi],
+    D: List[ecdsa.ellipticcurve.PointJacobi],
+) -> Tuple[int, int]:
+    """Implements GenerateProof in RFC9497 defined in the following section.
+    https://www.rfc-editor.org/rfc/rfc9497.html#name-proof-generation
+    """
+    M, Z = rfc9497_compute_composites_fast(k, B, C, D)
+    r = random_scalar()
+    t2 = r * A
+    t3 = r * M
+    Bm = B.to_bytes("compressed")
+    a0 = M.to_bytes("compressed")
+    a1 = Z.to_bytes("compressed")
+    a2 = t2.to_bytes("compressed")
+    a3 = t3.to_bytes("compressed")
+    challenge_transcript = \
+        h2f.I2OSP(len(Bm), 2) + Bm +\
+        h2f.I2OSP(len(a0), 2) + a0 +\
+        h2f.I2OSP(len(a1), 2) + a1 +\
+        h2f.I2OSP(len(a2), 2) + a2 +\
+        h2f.I2OSP(len(a3), 2) + a3 +\
+        b"Challenge"
+    c = hash_to_scalar(msg=challenge_transcript, count=1)[0][0]
+    s = (r - c * k) % ORDER_P384
+    return c, s
+
+
+def blind_evaluate_batch(
+    skS: int,
+    pkS: ecdsa.ellipticcurve.PointJacobi,
+    blindedElements: List[ecdsa.ellipticcurve.PointJacobi],
+) -> Tuple[List[ecdsa.ellipticcurve.PointJacobi], int, int]:
+    """Implements BlindEvaluateBatch from the following draft
+    https://www.ietf.org/archive/id/draft-ietf-privacypass-batched-tokens-07.html
+    """
+    evaluatedElements = []
+    for blindedElement in blindedElements:
+        evaluatedElements.append(skS * blindedElement)
+    c, s = rfc9497_generate_proof(skS, ecdsa.NIST384p.generator, pkS,
+                                  blindedElements, evaluatedElements)
+    return evaluatedElements, c, s
 
 
 class DataBuffer:
@@ -237,44 +331,10 @@ class ECPoint:
         """Returns the point as a Base64 string."""
         return bytes_to_base64_str(self.to_bytes())
 
-
-def hash_to_field(
-        message: Union[bytes, str],
-        count: int,
-        dst: str,
-) -> List[List[int]]:
-    """Converts a string to one or more elements of the finite field F of P-384.
-
-    See https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-07#section-5
-    for implementation details.
-
-    Attributes:
-        dst: The domain separation tag.
-        message: The message to convert.
-        count: The number of field elements to generate.
-
-    Returns:
-        A list of the form `(u_0, ..., u_(count - 1))` where
-            `u_i = (e_0, ..., e_(m - 1))` and m is the extension degree of F.
-            For P-384, m is equal to 1.
-    """
-    expander = h2f.XMDExpander(dst=dst,
-                               hash_fn=hashlib.sha512,
-                               security_param=192)
-    return h2f.hash_to_field(
-        msg=message,
-        count=count,
-        modulus=MODULUS_P384,
-        degree=1,
-        blen=72,
-        expander=expander,
-    )
-
-
 def hash_to_scalar(
-        msg: Union[bytes, str],
-        count: int,
-        dst: str = "TrustToken VOPRF Experiment V2 HashToScalar\0",
+    msg: Union[bytes, str],
+    count: int,
+    dst: str = HASH_TO_SCALAR_DST,
 ) -> List[List[int]]:
     """Converts a string to one or more scalars.
 
@@ -287,7 +347,7 @@ def hash_to_scalar(
             For P-384, m is equal to 1.
     """
     expander = h2f.XMDExpander(dst=dst,
-                               hash_fn=hashlib.sha512,
+                               hash_fn=hashlib.sha384,
                                security_param=192)
     return h2f.hash_to_field(msg=msg,
                              count=count,
@@ -398,8 +458,7 @@ def generate_key_pair() -> TrustTokenKeyPair:
     Returns:
         The key pair.
     """
-    # priv cannot be 0
-    priv = ORDER_P384 - 1
+    priv = PRIVATE_KEY
     # Changes to the public key must be reflected in the key commitment
     pub: ecdsa.ellipticcurve.PointJacobi = ecdsa.NIST384p.generator * priv
     # Fix the key ID
@@ -629,7 +688,7 @@ class TrustTokenIssuer:
         self.key_pair = key_pair
         self.max_batchsize = max_batchsize
         self.key_commitment = KeyCommitment(
-            protocol_version="TrustTokenV3VOPRF",
+            protocol_version="PrivateStateTokenV1VOPRF",
             id=TrustTokenIssuer.KEY_COMMITMENT_ID,
             batchsize=self.max_batchsize,
             public_keys=[self.key_pair.public_key],
@@ -641,83 +700,27 @@ class TrustTokenIssuer:
         return str(self.__dict__)
 
     def issue(self, key_id: int, request: IssueRequest) -> IssueResponse:
-        """Parses an issuance request and returns a response with a valid DLEQ
-        proof.
+        """Parses an issuance request and returns a response. This function is
+        based on PST spec section https://wicg.github.io/trust-token-api/#voprf-methods
+        It calls RFC9497 and batch token issuance draft and creates IssueResponse
+        from them based on the IssueResponse definition in spec. Variable names are
+        as close to PST spec/draft as possible for ease of understanding.
         """
-        logger.info(f"Issuance request {request}")
-        blinded_tokens: List[ECPoint] = []
-        zs: List[ECPoint] = []
-        es: List[int] = []
-        batch = self.key_pair.public_key.value.to_bytes()
-        signed_nonces = []
-
-        num_to_issue = min(request.count, 1)
-        for i in range(num_to_issue):
-            blinded_token = request.nonces[i]
-            secret_key = self.key_pair.secret_key
-            z = blinded_token * secret_key.value
-            signed_nonces.append(SignedNonce(z))
-            batch += blinded_token.to_bytes()
-            batch += z.to_bytes()
-            blinded_tokens.append(blinded_token)
-            zs.append(z)
-
-        # Batch DLEQ
-        for i in range(num_to_issue):
-            buf = bytes("DLEQ BATCH\0", encoding="utf-8")
-            buf += batch
-            buf += i.to_bytes(2, byteorder="big")
-            e = hash_to_scalar(msg=buf, count=1)[0][0]
-            es.append(e)
-
-        bt_batch: ecdsa.ellipticcurve.PointJacobi = sum(
-            (bt.point * e for bt, e in zip(blinded_tokens, es)),
-            start=ecdsa.ellipticcurve.INFINITY,
-        )
-        z_batch: ecdsa.ellipticcurve.PointJacobi = sum(
-            (z.point * e for z, e in zip(zs, es)),
-            start=ecdsa.ellipticcurve.INFINITY)
-
-        proof = self._dleq_generate(self.key_pair, bt_batch, z_batch)
-
-        return IssueResponse(issued=len(signed_nonces),
-                             key_id=key_id,
-                             signed=signed_nonces,
-                             proof=proof)
-
-    def _dleq_generate(
-            self,
-            key_pair: TrustTokenKeyPair,
-            bt_batch: ecdsa.ellipticcurve.PointJacobi,
-            z_batch: ecdsa.ellipticcurve.PointJacobi,
-    ) -> bytes:
-        """Generates a DLEQ proof that the client may verify.
-
-        Args:
-            key_pair: The issuer's key pair.
-            bt_batch: The batched form of the blinded tokens.
-            z_batch: The batched form of the signed tokens.
-
-        Returns:
-            A byte string representing the DLEQ proof.
-        """
-        # Fix the random number r
-        r = ORDER_P384 - 1
-        k0: ecdsa.ellipticcurve.PointJacobi = ecdsa.NIST384p.generator * r
-        k1: ecdsa.ellipticcurve.PointJacobi = bt_batch * r
-
-        buf = bytes("DLEQ\0", encoding="utf-8")
-        buf += key_pair.public_key.value.to_bytes()
-        buf += bt_batch.to_bytes(encoding="uncompressed")
-        buf += z_batch.to_bytes(encoding="uncompressed")
-        buf += k0.to_bytes(encoding="uncompressed")
-        buf += k1.to_bytes(encoding="uncompressed")
-        c = hash_to_scalar(msg=buf, count=1)[0][0]
-        u = (r + c * key_pair.secret_key.value.value) % ORDER_P384
-
-        buf = c.to_bytes(ORDER_P384_LEN, byteorder="big")
-        buf += u.to_bytes(ORDER_P384_LEN, byteorder="big")
-        return buf
+        blinded_elements = [ni.point for ni in request.nonces]
+        evaluated_elements, c, s = \
+            blind_evaluate_batch(self.key_pair.secret_key.value.value,
+                                 self.key_pair.public_key.value.point,
+                                 blinded_elements)
+        proof = \
+            c.to_bytes(ORDER_P384_LEN, byteorder="big") + \
+            s.to_bytes(ORDER_P384_LEN, byteorder="big")
+        signed_nonce = \
+            [SignedNonce(ECPoint(ei.to_bytes("compressed"))) for ei in evaluated_elements]
+        response = IssueResponse(issued=len(signed_nonce),
+                                 key_id=key_id,
+                                 signed=signed_nonce,
+                                 proof=proof)
+        return response
 
     def redeem(self, request: RedeemRequest) -> RedeemResponse:
         """Parses a redemption request and returns a response.
@@ -743,7 +746,7 @@ def create_trust_token_issuer() -> TrustTokenIssuer:
 
 
 def issue_trust_token(issuer: TrustTokenIssuer, request_data: str,
-                      key_id) -> IssueResponse:
+                      key_id: int) -> IssueResponse:
     """Sends an issuance request to an issuer.
 
     Args:
