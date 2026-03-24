@@ -138,9 +138,10 @@ TEST(VideoDecoderConfigStructTraitsTest,
       media::mojom::VideoDecoderConfig::Serialize(&input);
   VideoDecoderConfig output;
 
-  // Deserialize should only pass for valid configs.
-  EXPECT_FALSE(
+  // Deserialize should still succeed for an invalid, but well-formed config.
+  EXPECT_TRUE(
       media::mojom::VideoDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_FALSE(output.IsValidConfig());
 
   // Next try an non-empty invalid config. Natural size must not be zero.
   const gfx::Size kInvalidNaturalSize(0, 0);
@@ -150,10 +151,11 @@ TEST(VideoDecoderConfigStructTraitsTest,
                    kInvalidNaturalSize, EmptyExtraData(),
                    EncryptionScheme::kUnencrypted);
   EXPECT_FALSE(input.IsValidConfig());
+  data = media::mojom::VideoDecoderConfig::Serialize(&input);
 
-  // Deserialize should again fail due to invalid config.
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       media::mojom::VideoDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_FALSE(output.IsValidConfig());
 }
 
 }  // namespace media

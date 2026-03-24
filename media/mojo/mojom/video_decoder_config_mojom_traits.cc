@@ -67,9 +67,6 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
   output->set_aspect_ratio(aspect_ratio);
   output->set_hdr_metadata(hdr_metadata);
 
-  if (!output->IsValidConfig())
-    return false;
-
   return true;
 }
 

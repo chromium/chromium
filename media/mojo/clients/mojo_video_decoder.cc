@@ -148,6 +148,11 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!config.IsValidConfig()) {
+    FailInit(std::move(init_cb), DecoderStatus::Codes::kUnsupportedConfig);
+    return;
+  }
+
   if (gpu_factories_)
     decoder_type_ = gpu_factories_->GetDecoderType();
 

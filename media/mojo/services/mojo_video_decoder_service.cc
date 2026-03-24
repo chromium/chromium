@@ -238,6 +238,8 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   std::optional<base::UnguessableToken> cdm_id = std::nullopt;
   if (cdm) {
     if (!cdm->is_cdm_id()) {
+      std::move(callback).Run(DecoderStatus::Codes::kFailed, false, 1,
+                              VideoDecoderType::kUnknown, false);
       CHECK(mojo::IsInMessageDispatch());
       mojo::ReportBadMessage(
           "Unexpected call to Initialize with a cdm context");
@@ -251,6 +253,14 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
            << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id));
   DCHECK(!init_cb_);
   DCHECK(callback);
+
+  if (!config.IsValidConfig()) {
+    std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig, false, 1,
+                            VideoDecoderType::kUnknown, false);
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage("Invalid VideoDecoderConfig");
+    return;
+  }
 
   TRACE_EVENT_BEGIN("media", kInitializeTraceName,
                     perfetto::Track::FromPointer(this), "config",
@@ -328,6 +338,21 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 
   if (buffer->is_eos()) {
     DVLOG(3) << __func__ << " EOS";
+    if (auto& config = buffer->get_eos()->next_config) {
+      if (!config->is_next_video_config()) {
+        std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig);
+        CHECK(mojo::IsInMessageDispatch());
+        mojo::ReportBadMessage("Invalid AudioConfig in VideoBuffer");
+        return;
+      }
+      const auto& video_config = config->get_next_video_config();
+      if (!video_config.IsValidConfig()) {
+        std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig);
+        CHECK(mojo::IsInMessageDispatch());
+        mojo::ReportBadMessage("Invalid VideoDecoderConfig");
+        return;
+      }
+    }
   } else {
     DVLOG(3) << __func__
              << " pts=" << buffer->get_data()->timestamp.InMilliseconds();
