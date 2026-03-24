@@ -760,7 +760,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   void SetSimulcastToSvcConverter(std::optional<webrtc::SimulcastToSvcConverter>
                                       simulcast_to_svc_converter);
-  void UpdateEncoderInfo(media::VideoEncoderInfo encoder_info);
 
  private:
   enum {
@@ -1140,6 +1139,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 
 void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
     const media::VideoEncoderInfo& info) {
+  encoder_info_ = info;
   update_encoder_info_callback_.Run(
       info,
       std::vector<webrtc::VideoFrameBuffer::Type>(
@@ -1279,11 +1279,6 @@ void RTCVideoEncoder::Impl::DrainCompleted(bool success) {
 void RTCVideoEncoder::Impl::SetSimulcastToSvcConverter(
     std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter) {
   simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
-}
-
-void RTCVideoEncoder::Impl::UpdateEncoderInfo(
-    media::VideoEncoderInfo encoder_info) {
-  encoder_info_ = std::move(encoder_info);
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
@@ -3031,7 +3026,6 @@ void RTCVideoEncoder::UpdateEncoderInfo(
     }
   }
 
-  impl_->UpdateEncoderInfo(media_enc_info);
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;
   encoder_info_.apply_alignment_to_all_simulcast_layers =
