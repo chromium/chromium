@@ -136,6 +136,7 @@ public class FuseboxSessionState implements UserData {
         if (mIsActive) {
             // This session is being re-activated. It has already been fully initialized so simply
             // emit the event.
+            linkSessionControllers();
             if (onFullyActivated != null) onFullyActivated.run();
             return;
         }
@@ -211,6 +212,7 @@ public class FuseboxSessionState implements UserData {
                     mFuseboxAttachmentChangeListener);
         }
 
+        linkSessionControllers();
         if (onFullyActivated != null) onFullyActivated.run();
     }
 
@@ -231,13 +233,27 @@ public class FuseboxSessionState implements UserData {
             mFuseboxAttachmentModelList = null;
         }
 
+        unlinkSessionControllers();
+
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
-            mComposeBoxQueryControllerBridge = null;
         }
 
+        mComposeBoxQueryControllerBridge = null;
         mAutocomplete = null;
         mProfile = null;
+    }
+
+    private void linkSessionControllers() {
+        if (mAutocomplete == null) return;
+        // Write <null> if there's no ComposeBox Bridge (intentional) to ensure decoupled session
+        // when user jumps tabs.
+        mAutocomplete.setComposeboxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+    }
+
+    private void unlinkSessionControllers() {
+        if (mAutocomplete == null) return;
+        mAutocomplete.setComposeboxQueryControllerBridge(null);
     }
 
     private void onAttachmentListChanged() {

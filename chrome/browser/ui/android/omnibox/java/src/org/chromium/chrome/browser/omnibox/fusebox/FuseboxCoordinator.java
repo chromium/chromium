@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -259,13 +258,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
 
         recreateMediatorIfProfileChanged(profile);
-
-        // TODO(crbug.com/474616308): move to FuseboxSessionState.
-        var controller = AutocompleteController.getForProfile(assumeNonNull(session.getProfile()));
-        if (controller != null) {
-            controller.setComposeboxQueryControllerBridge(
-                    session.getComposeboxQueryControllerBridge());
-        }
 
         mInput = session.getAutocompleteInput();
         mMediator.beginInput(session);
