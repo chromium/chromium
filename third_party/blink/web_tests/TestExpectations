@@ -1307,21 +1307,21 @@ crbug.com/387281256 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Fai
 crbug.com/488137634 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-005.html [ Failure ]
 
 # Failing locally on gLinux
-crbug.com/495458814 [ Linux ] external/wpt/css/css-content/element-replacement-dynamic.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-flexbox/anonymous-flex-item-restyle.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-fonts/variations/at-font-face-descriptors.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-content/element-replacement-dynamic.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-flexbox/anonymous-flex-item-restyle.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-fonts/variations/at-font-face-descriptors.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/backdrop-filter-bad-mask-image.html [ Pass Timeout ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/backdrop-filter-mask-image-while-loading.html [ Pass Timeout ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/bad-mask-image-svg.html [ Pass Timeout ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/bad-mask-image.html [ Pass Timeout ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/mask-image-cors-001.sub.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-auto-scrolling-with-margin-and-transform.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/mask-image-cors-001.sub.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-auto-scrolling-with-margin-and-transform.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-body-propagation-013.html [ Pass Timeout ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/scroll-markers/root-scroll-button-activation.html [ Pass Timeout ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-pseudo/text-selection.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Pass Failure ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-ui/text-overflow-005.html [ Pass Failure ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-pseudo/text-selection.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-ui/text-overflow-005.html [ Failure Pass ]
 
 # ====== Style team owned tests to here ======
 
@@ -2798,10 +2798,10 @@ crbug.com/494341371 [ Linux ] external/wpt/html/cross-origin-opener-policy/ifram
 crbug.com/438309773 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-005.html [ Failure ]
-external/wpt/css/css-text/text-autospace/text-autospace-ideograph-numeric-001.html [ Failure ]
-external/wpt/quirks/tables-inherit-color-from-body-quirk-004.html [ Failure ]
-external/wpt/quirks/tables-inherit-color-from-body-quirk-005.html [ Failure ]
+crbug.com/495814731 [ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-005.html [ Failure ]
+crbug.com/495814731 external/wpt/css/css-text/text-autospace/text-autospace-ideograph-numeric-001.html [ Failure ]
+crbug.com/495830989 external/wpt/quirks/tables-inherit-color-from-body-quirk-004.html [ Failure ]
+crbug.com/495830989 external/wpt/quirks/tables-inherit-color-from-body-quirk-005.html [ Failure ]
 crbug.com/494377597 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html [ Failure ]
 crbug.com/494377597 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic.html [ Failure ]
 crbug.com/494377597 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html [ Failure ]
