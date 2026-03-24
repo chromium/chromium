@@ -505,8 +505,10 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
     case GL_COMPRESSED_SRGB_S3TC_DXT1_EXT:
     case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT:
     case GL_ETC1_RGB8_OES:
-      bytes_required = (width + kS3TCBlockWidth - 1) / kS3TCBlockWidth;
-      bytes_required *= (height + kS3TCBlockHeight - 1) / kS3TCBlockHeight;
+      bytes_required = base::CheckDiv(
+          base::CheckAdd(width, kS3TCBlockWidth - 1), kS3TCBlockWidth);
+      bytes_required *= base::CheckDiv(
+          base::CheckAdd(height, kS3TCBlockHeight - 1), kS3TCBlockHeight);
       bytes_required *= kS3TCDXT1BlockSize;
       break;
     case GL_COMPRESSED_RGBA_ASTC_4x4_KHR:
@@ -546,8 +548,10 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
       const int kBlockWidth = kASTCBlockArray[index].blockWidth;
       const int kBlockHeight = kASTCBlockArray[index].blockHeight;
 
-      bytes_required = (width + kBlockWidth - 1) / kBlockWidth;
-      bytes_required *= (height + kBlockHeight - 1) / kBlockHeight;
+      bytes_required =
+          base::CheckDiv(base::CheckAdd(width, kBlockWidth - 1), kBlockWidth);
+      bytes_required *= base::CheckDiv(base::CheckAdd(height, kBlockHeight - 1),
+                                       kBlockHeight);
 
       bytes_required *= kASTCBlockSize;
       break;
@@ -558,8 +562,10 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
     case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT:
     case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
-      bytes_required = (width + kS3TCBlockWidth - 1) / kS3TCBlockWidth;
-      bytes_required *= (height + kS3TCBlockHeight - 1) / kS3TCBlockHeight;
+      bytes_required = base::CheckDiv(
+          base::CheckAdd(width, kS3TCBlockWidth - 1), kS3TCBlockWidth);
+      bytes_required *= base::CheckDiv(
+          base::CheckAdd(height, kS3TCBlockHeight - 1), kS3TCBlockHeight);
       bytes_required *= kS3TCDXT3AndDXT5BlockSize;
       break;
     case GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:
@@ -587,9 +593,11 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
     case GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
     case GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:
       bytes_required =
-          (width + kEACAndETC2BlockSize - 1) / kEACAndETC2BlockSize;
+          base::CheckDiv(base::CheckAdd(width, kEACAndETC2BlockSize - 1),
+                         kEACAndETC2BlockSize);
       bytes_required *=
-          (height + kEACAndETC2BlockSize - 1) / kEACAndETC2BlockSize;
+          base::CheckDiv(base::CheckAdd(height, kEACAndETC2BlockSize - 1),
+                         kEACAndETC2BlockSize);
       bytes_required *= 8;
       bytes_required *= depth;
       break;
@@ -598,9 +606,11 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
     case GL_COMPRESSED_RGBA8_ETC2_EAC:
     case GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC:
       bytes_required =
-          (width + kEACAndETC2BlockSize - 1) / kEACAndETC2BlockSize;
+          base::CheckDiv(base::CheckAdd(width, kEACAndETC2BlockSize - 1),
+                         kEACAndETC2BlockSize);
       bytes_required *=
-          (height + kEACAndETC2BlockSize - 1) / kEACAndETC2BlockSize;
+          base::CheckDiv(base::CheckAdd(height, kEACAndETC2BlockSize - 1),
+                         kEACAndETC2BlockSize);
       bytes_required *= 16;
       bytes_required *= depth;
       break;
@@ -608,22 +618,28 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
     case GL_COMPRESSED_RGBA_BPTC_UNORM_EXT:
     case GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT:
     case GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT:
-      bytes_required = (width + kBPTCBlockWidth - 1) / kBPTCBlockWidth;
-      bytes_required *= (height + kBPTCBlockHeight - 1) / kBPTCBlockHeight;
+      bytes_required = base::CheckDiv(
+          base::CheckAdd(width, kBPTCBlockWidth - 1), kBPTCBlockWidth);
+      bytes_required *= base::CheckDiv(
+          base::CheckAdd(height, kBPTCBlockHeight - 1), kBPTCBlockHeight);
       bytes_required *= 16;
       bytes_required *= depth;
       break;
     case GL_COMPRESSED_RED_RGTC1_EXT:
     case GL_COMPRESSED_SIGNED_RED_RGTC1_EXT:
-      bytes_required = (width + kRGTCBlockWidth - 1) / kRGTCBlockWidth;
-      bytes_required *= (height + kRGTCBlockHeight - 1) / kRGTCBlockHeight;
+      bytes_required = base::CheckDiv(
+          base::CheckAdd(width, kRGTCBlockWidth - 1), kRGTCBlockWidth);
+      bytes_required *= base::CheckDiv(
+          base::CheckAdd(height, kRGTCBlockHeight - 1), kRGTCBlockHeight);
       bytes_required *= 8;
       bytes_required *= depth;
       break;
     case GL_COMPRESSED_RED_GREEN_RGTC2_EXT:
     case GL_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT:
-      bytes_required = (width + kRGTCBlockWidth - 1) / kRGTCBlockWidth;
-      bytes_required *= (height + kRGTCBlockHeight - 1) / kRGTCBlockHeight;
+      bytes_required = base::CheckDiv(
+          base::CheckAdd(width, kRGTCBlockWidth - 1), kRGTCBlockWidth);
+      bytes_required *= base::CheckDiv(
+          base::CheckAdd(height, kRGTCBlockHeight - 1), kRGTCBlockHeight);
       bytes_required *= 16;
       bytes_required *= depth;
       break;
