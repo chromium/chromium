@@ -16,13 +16,6 @@ load("@chromium-luci//targets.star", "targets")
 # go/keep-sorted start newline_separated=yes numeric=yes skip_lines=1 group_prefixes=)
 
 targets.bundle(
-    name = "android_10_emulator_fyi_gtests",
-    targets = [
-        "android_content_browsertests_fyi",
-    ],
-)
-
-targets.bundle(
     name = "android_10_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
@@ -68,7 +61,7 @@ targets.bundle(
 targets.bundle(
     name = "android_11_emulator_fyi_gtests",
     targets = [
-        "android_content_browsertests_fyi",
+        "content_browsertests",
         "android_emulator_specific_chrome_public_tests",
     ],
 )
@@ -258,20 +251,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_15_emulator_fyi_gtests",
-    targets = [
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
-        "android_ci_only_fieldtrial_webview_tests",
-    ],
-)
-
-targets.bundle(
     name = "android_15_emulator_gtests",
     targets = [
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
@@ -418,20 +397,6 @@ targets.bundle(
             ],
             swarming = targets.swarming(
                 shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "android_content_browsertests_fyi",
-    targets = [
-        "content_browsertests",
-    ],
-    per_test_modifications = {
-        "content_browsertests": targets.mixin(
-            android_swarming = targets.swarming(
-                shards = 15,
             ),
         ),
     },

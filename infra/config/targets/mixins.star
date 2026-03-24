@@ -70,27 +70,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "12-google-atd-x64-emulator",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "android_31_google_atd_x64",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "android_31_google_atd_x64",
-                path = ".android_emulator/android_31_google_atd_x64",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "12-x64-emulator",
     description = "Run with android_31_google_apis_x64",
     args = [
@@ -107,49 +86,6 @@ targets.mixin(
             swarming.cache(
                 name = "android_31_google_apis_x64",
                 path = ".android_emulator/android_31_google_apis_x64",
-            ),
-        ],
-    ),
-)
-
-# TODO(crbug.com/347759127): Re-enable after 12L FYI evaluation is done.
-# targets.mixin(
-#     name = "12l-google-atd-x64-emulator",
-#     args = [
-#         "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
-#     ],
-#     swarming = targets.swarming(
-#         # soft affinity so that bots with caches will be picked first
-#         optional_dimensions = {
-#             60: {
-#                 "caches": "android_32_google_atd_x64_foldable",
-#             },
-#         },
-#         named_caches = [
-#             swarming.cache(
-#                 name = "android_32_google_atd_x64_foldable",
-#                 path = ".android_emulator/android_32_google_atd_x64_foldable",
-#             ),
-#         ],
-#     ),
-# )
-
-targets.mixin(
-    name = "12l-fyi-x64-emulator",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_fyi.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "android_32_google_apis_x64_foldable_fyi",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "android_32_google_apis_x64_foldable_fyi",
-                path = ".android_emulator/android_32_google_apis_x64_foldable_fyi",
             ),
         ],
     ),
@@ -192,27 +128,6 @@ targets.mixin(
             swarming.cache(
                 name = "android_32_google_apis_x64_foldable_landscape",
                 path = ".android_emulator/android_32_google_apis_x64_foldable_landscape",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
-    name = "13-google-atd-x64-emulator",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "android_33_google_atd_x64",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "android_33_google_atd_x64",
-                path = ".android_emulator/android_33_google_atd_x64",
             ),
         ],
     ),

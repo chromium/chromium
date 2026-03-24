@@ -20,9 +20,6 @@ _LEGACY_CROSS_BUILDER_GROUP_TRIGGERS = {
     ("ci", "Win x64 Builder"): [
         ("ci", "win-network-sandbox-tester"),
     ],
-    ("ci", "android-12-x64-rel"): [
-        ("ci", "android-12-x64-fyi-rel"),
-    ],
     ("ci", "mac-arm64-rel"): [
         ("ci", "mac-fieldtrial-tester"),
     ],
