@@ -69,6 +69,21 @@ struct SceneInfo {
   }
 }
 
+- (NSString*)gaiaIDForScene:(std::string_view)sceneSessionID {
+  auto it = _tasksPerScene.find(sceneSessionID);
+  if (it == _tasksPerScene.end()) {
+    return nil;
+  }
+
+  SceneInfo& sceneInfo = it->second;
+  for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
+    if (pendingTask.gaiaID) {
+      return pendingTask.gaiaID;
+    }
+  }
+  return nil;
+}
+
 #pragma mark - Private
 
 // Returns whether the task should be dropped.

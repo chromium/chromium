@@ -26,6 +26,7 @@
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/timer.h"
+#import "base/values.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
@@ -44,6 +45,7 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -71,6 +73,7 @@
 #import "ios/chrome/app/startup/register_experimental_settings.h"
 #import "ios/chrome/app/startup/setup_debugging.h"
 #import "ios/chrome/app/startup_tasks.h"
+#import "ios/chrome/app/task_orchestrator.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
@@ -322,6 +325,7 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
 
 // Possible choices for which profile to use for a scene.
 enum class ProfileChoice {
+  kProfileFromTask,
   kProfileForScene,
   kProfileFromActivity,
   kLastUsedProfile,
@@ -332,6 +336,7 @@ enum class ProfileChoice {
 // Returns the available ProfileChoices.
 base::span<const ProfileChoice> GetProfileChoices() {
   static constexpr auto kProfileChoices = std::to_array<ProfileChoice>({
+      ProfileChoice::kProfileFromTask,
       ProfileChoice::kProfileForScene,
       ProfileChoice::kProfileFromActivity,
       ProfileChoice::kLastUsedProfile,
@@ -341,14 +346,43 @@ base::span<const ProfileChoice> GetProfileChoices() {
   return kProfileChoices;
 }
 
+// Returns the profile name associated with a pending task for `scene_state` in
+// `orchestrator`, if any.
+std::string GetProfileNameFromTask(SceneState* scene_state,
+                                   TaskOrchestrator* orchestrator) {
+  if (!orchestrator) {
+    return std::string();
+  }
+  NSString* gaia_id = [orchestrator gaiaIDForScene:scene_state.sceneSessionID];
+  if (!gaia_id) {
+    return std::string();
+  }
+
+  if ([gaia_id isEqualToString:app_group::kNoAccount]) {
+    return GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->GetPersonalProfileName();
+  }
+
+  std::optional<std::string> profile_name =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(GaiaId(base::SysNSStringToUTF8(gaia_id)));
+
+  return profile_name.value_or(std::string());
+}
+
 // Returns the name of the profile for `choice`. May be empty in some cases,
 // e.g. when a corresponding pref isn't set yet.
 std::string GetProfileNameForChoice(ProfileChoice choice,
                                     SceneState* scene_state,
+                                    TaskOrchestrator* orchestrator,
                                     ProfileManagerIOS* manager,
                                     ProfileAttributesStorageIOS* storage,
                                     PrefService* local_state) {
   switch (choice) {
+    case ProfileChoice::kProfileFromTask:
+      return GetProfileNameFromTask(scene_state, orchestrator);
     case ProfileChoice::kProfileFromActivity: {
       for (NSUserActivity* activity in scene_state.connectionOptions
                .userActivities) {
@@ -1793,12 +1827,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   // Determine which profile to use. The logic is to take the first valid
   // profile (i.e. the value is set and the profile is known) amongst the
-  // following value: the profile configured for the scene, the last used
-  // profile, the personal profile, or as a last resort a new profile.
+  // following value: the profile required by the intent, the profile configured
+  // for the scene, the last used profile, the personal profile, or as a last
+  // resort a new profile.
   std::string profileName;
   for (ProfileChoice choice : GetProfileChoices()) {
-    profileName = GetProfileNameForChoice(choice, sceneState, manager, storage,
-                                          localState);
+    profileName = GetProfileNameForChoice(choice, sceneState,
+                                          self.appState.taskOrchestrator,
+                                          manager, storage, localState);
 
     // Pick the first valid profile name found.
     if (storage->HasProfileWithName(profileName)) {

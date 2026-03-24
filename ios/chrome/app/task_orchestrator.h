@@ -27,6 +27,10 @@
 - (void)updateToStage:(TaskExecutionStage)stage
              forScene:(std::string_view)sceneSessionID;
 
+// Returns the Gaia ID associated with the first pending task for
+// `sceneSessionID`, if any.
+- (NSString*)gaiaIDForScene:(std::string_view)sceneSessionID;
+
 @end
 
 #endif  // IOS_CHROME_APP_TASK_ORCHESTRATOR_H_

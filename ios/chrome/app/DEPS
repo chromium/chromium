@@ -46,6 +46,7 @@ include_rules = [
   "+components/version_info",
   "+components/web_resource",
   "+components/webauthn",
+  "+google_apis/gaia/gaia_id.h",
   "+ios/chrome/browser",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/components/cookie_util",
