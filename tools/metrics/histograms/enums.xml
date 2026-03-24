@@ -11727,6 +11727,7 @@ from previous Chrome versions.
   <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
   <int value="-761814801" label="NtpRealboxCr23HoverFillShape:disabled"/>
   <int value="-761538347" label="AutofillEnableVerveCardSupport:enabled"/>
+  <int value="-761267019" label="SkillsEnabled:enabled"/>
   <int value="-761009829" label="FedCmAlternativeIdentifiers:disabled"/>
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
@@ -19016,6 +19017,7 @@ from previous Chrome versions.
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>
   <int value="1689123607" label="enable-app-link"/>
   <int value="1689183477" label="enable-merge-key-char-events"/>
+  <int value="1689782472" label="SkillsEnabled:disabled"/>
   <int value="1690002671" label="CapturedSurfaceControl:enabled"/>
   <int value="1690248203" label="HelpAppV2:enabled"/>
   <int value="1690415951" label="PrivacySandboxSettings4:disabled"/>

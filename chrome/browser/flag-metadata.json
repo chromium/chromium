@@ -9030,6 +9030,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "skills",
+    "owners": [
+      "michelleabreo@google.com",
+      "skills-eng@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu@chromium.org" ],
     "expiry_milestone": 100
