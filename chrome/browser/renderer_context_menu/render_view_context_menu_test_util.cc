@@ -4,9 +4,6 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 
-#include <string>
-#include <vector>
-
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/context_menu_test_util.h"
 #include "content/public/browser/web_contents.h"

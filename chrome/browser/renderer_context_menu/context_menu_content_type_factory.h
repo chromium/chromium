@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "content/public/browser/context_menu_params.h"
-
 class ContextMenuContentType;
 
 namespace content {
+struct ContextMenuParams;
 class RenderFrameHost;
 }
 

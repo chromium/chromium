@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_MENU_OBSERVER_H_
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include <memory>
 #include <string>

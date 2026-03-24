@@ -14,17 +14,22 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
-#include "components/custom_handlers/protocol_handler_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/context_menu_matcher.h"
+namespace extensions {
+class ContextMenuMatcher;
+}
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 class ChromeComposeClient;
 #endif
+
+namespace custom_handlers {
+class ProtocolHandlerRegistry;
+}
 
 namespace content {
 class WebContents;

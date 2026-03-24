@@ -10,8 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
-
 namespace ui {
 class MenuModel;
 }

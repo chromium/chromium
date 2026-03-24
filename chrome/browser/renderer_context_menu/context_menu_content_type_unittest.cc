@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

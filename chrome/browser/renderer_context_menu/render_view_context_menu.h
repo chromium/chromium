@@ -18,7 +18,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
@@ -27,7 +26,6 @@
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
-#include "components/search_engines/template_url.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/buildflags.h"
@@ -45,6 +43,10 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
+#endif
+
 class AccessibilityLabelsMenuObserver;
 class Browser;
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -57,6 +59,7 @@ class Profile;
 class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+class TemplateURL;
 class ToastController;
 
 namespace content {

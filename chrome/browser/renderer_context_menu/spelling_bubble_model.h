@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "url/gurl.h"
 
 class Profile;
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 
 #include <algorithm>
-#include <vector>
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"

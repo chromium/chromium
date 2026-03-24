@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_MENU_OBSERVER_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_MENU_OBSERVER_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "base/memory/raw_ptr.h"
-#include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
 class RenderViewContextMenuProxy;

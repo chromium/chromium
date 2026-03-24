@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/common/url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -22,7 +20,6 @@
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_platform_app.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
 

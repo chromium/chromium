@@ -28,6 +28,7 @@
 #include "extensions/browser/process_manager.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-test-utils.h"

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_READ_WRITE_CARD_OBSERVER_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_READ_WRITE_CARD_OBSERVER_H_
 
-#include <memory>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
