@@ -6614,7 +6614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AndroidX.Profile.ExtraHeaderAttached"
-    enum="BooleanUsage" expires_after="2026-05-01">
+    enum="BooleanUsage" expires_after="2027-03-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6635,7 +6635,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AndroidX.Profile.ExtraHeaderTargetsCorsPreflight"
-    enum="Boolean" expires_after="2026-05-01">
+    enum="Boolean" expires_after="2027-03-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8580,7 +8580,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.ShouldInterceptRequest.DidIncludeMultiCookieHeader"
-    enum="BooleanIncluded" expires_after="2026-05-01">
+    enum="BooleanIncluded" expires_after="2027-03-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
