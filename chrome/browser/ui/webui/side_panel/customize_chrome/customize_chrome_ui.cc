@@ -162,7 +162,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showFooterToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_FOOTER_LABEL},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
-      {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
+      {"close", IDS_NTP_CLOSE},
       {"ok", IDS_OK},
       // CustomizeColorSchemeMode strings.
       {"colorSchemeModeLabel",

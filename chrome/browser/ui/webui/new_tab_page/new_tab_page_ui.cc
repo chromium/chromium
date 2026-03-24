@@ -360,6 +360,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       // code (here and elsewhere) into the searchbox directories or a new
       // component.
       {"audioError", IDS_NEW_TAB_VOICE_AUDIO_ERROR},
+      {"close", IDS_NTP_CLOSE},
       {"languageError", IDS_NEW_TAB_VOICE_LANGUAGE_ERROR},
       {"learnMore", IDS_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_NEW_TAB_VOICE_LEARN_MORE_ACCESSIBILITY_LABEL},

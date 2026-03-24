@@ -7805,7 +7805,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_WALLPAPER_SEARCH_LABEL" desc="Accessibility label for the wallpaper search gear icon. (On the New Tab Page)">
         Customize this page with AI
       </message>
-       <message name="IDS_NTP_DISMISS" desc="Used for Dismiss buttons">
+      <message name="IDS_NTP_CLOSE" desc="General purpose text label for close buttons on banners, dialogs, panels, promos, etc.">
+        Close
+      </message>
+      <message name="IDS_NTP_DISMISS" desc="Used for Dismiss buttons">
         Dismiss
       </message>
       <message name="IDS_NTP_DISMISS_PROMO" desc="The tooltip title and accessibility label for the (X) button to dismiss promotional messages on the middle / bottom of the New Tab page.">
